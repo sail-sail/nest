@@ -650,6 +650,9 @@ const options4SelectV2Compt = $computed(() => {
     return options4SelectV2;
   }
   const modelValueDataFilter = modelValueData.filter((item) => {
+    if (!item) {
+      return false;
+    }
     return !options4SelectV2.find((item2) => item2.value === props.optionsMap(item).value);
   });
   if (modelValueDataFilter.length === 0) {

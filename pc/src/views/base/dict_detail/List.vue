@@ -696,7 +696,7 @@ import {
 
 import {
   getListDict, // 系统字典
-} from "./Api";
+} from "./Api.ts";
 
 import {
   findOneDict,

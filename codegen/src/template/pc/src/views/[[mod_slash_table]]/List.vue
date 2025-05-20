@@ -2499,7 +2499,7 @@ import {<#
   getList<#=Foreign_Table_Up#>, // <#=column_comment#><#
   }
   #>
-} from "./Api";<#
+} from "./Api.ts";<#
 }
 #><#
 const foreignTableArr3 = [];
@@ -2534,7 +2534,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts?.list_tree) {
+  if (foreignSchema.opts?.list_tree !== true) {
     continue;
   }
   if (!column.search) {
@@ -3175,7 +3175,7 @@ function getTableColumns(): ColumnType[] {
     if (isPassword) continue;
     if (column_type) {
       if (
-        (column_type !== "int(1)" && column_type.startsWith("int"))
+        (column_type !== "int(1)" && column_type.startsWith("int") && !column.dict && !column.dictbiz)
         || column_type.startsWith("decimal")
       ) {
         column.align = column.align || "right";
