@@ -108,7 +108,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "usr_id",
         width: 240,
-        modelLabel: "usr_id_lbl",
       },
       {
         COLUMN_NAME: "appid",
@@ -307,7 +306,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "usr_id",
         width: 240,
-        modelLabel: "usr_id_lbl",
       },
       {
         COLUMN_NAME: "appid",

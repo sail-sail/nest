@@ -687,8 +687,6 @@ impl From<WxoUsrInput> for WxoUsrSearch {
       head_img: input.head_img,
       // 绑定用户
       usr_id: input.usr_id.map(|x| vec![x]),
-      // 绑定用户
-      usr_id_lbl: input.usr_id_lbl.map(|x| vec![x]),
       // 开发者ID
       appid: input.appid,
       // 公众号用户唯一标识
