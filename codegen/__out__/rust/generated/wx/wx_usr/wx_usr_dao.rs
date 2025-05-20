@@ -190,21 +190,19 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query.push_str(" and t.usr_id_lbl in (");
+      where_query.push_str(" and usr_id_lbl.lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
-    {
-      let usr_id_lbl_like = match search {
-        Some(item) => item.usr_id_lbl_like.clone(),
-        None => None,
-      };
-      if let Some(usr_id_lbl_like) = usr_id_lbl_like {
-        if !usr_id_lbl_like.is_empty() {
-          where_query.push_str(" and usr_id_lbl like ?");
-          args.push(format!("%{}%", sql_like(&usr_id_lbl_like)).into());
-        }
-      }
+  }
+  {
+    let usr_id_lbl_like = match search {
+      Some(item) => item.usr_id_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(usr_id_lbl_like) = usr_id_lbl_like {
+      where_query.push_str(" and usr_id_lbl.lbl like ?");
+      args.push(format!("%{}%", sql_like(&usr_id_lbl_like)).into());
     }
   }
   // 开发者ID
@@ -620,7 +618,8 @@ async fn get_from_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let from_query = r#"wx_wx_usr t"#.to_owned();
+  let from_query = r#"wx_wx_usr t
+  left join base_usr usr_id_lbl on usr_id_lbl.id=t.usr_id"#.to_owned();
   Ok(from_query)
 }
 
@@ -758,6 +757,7 @@ pub async fn find_all_wx_usr(
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
+  ,usr_id_lbl.lbl usr_id_lbl
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -1791,8 +1791,6 @@ async fn _creates(
   // 名称
   sql_fields += ",lbl";
   // 用户
-  sql_fields += ",usr_id_lbl";
-  // 用户
   sql_fields += ",usr_id";
   // 开发者ID
   sql_fields += ",appid";
@@ -1950,17 +1948,6 @@ async fn _creates(
     if let Some(lbl) = input.lbl {
       sql_values += ",?";
       args.push(lbl.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 用户
-    if let Some(usr_id_lbl) = input.usr_id_lbl {
-      if !usr_id_lbl.is_empty() {
-        sql_values += ",?";
-        args.push(usr_id_lbl.into());
-      } else {
-        sql_values += ",default";
-      }
     } else {
       sql_values += ",default";
     }
@@ -2308,14 +2295,6 @@ pub async fn update_by_id_wx_usr(
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
-  }
-  // 用户
-  if let Some(usr_id_lbl) = input.usr_id_lbl {
-    if !usr_id_lbl.is_empty() {
-      field_num += 1;
-      sql_fields += "usr_id_lbl=?,";
-      args.push(usr_id_lbl.into());
-    }
   }
   // 用户
   if let Some(usr_id) = input.usr_id {

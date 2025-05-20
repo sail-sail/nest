@@ -210,7 +210,6 @@ pub async fn code2session(
       wx_usr_model.id.clone(),
       WxUsrInput {
         usr_id: Some(usr_id.clone()),
-        usr_id_lbl: Some("游客".to_string()),
         ..Default::default()
       },
       options.clone(),

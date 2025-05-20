@@ -742,8 +742,6 @@ impl From<WxUsrInput> for WxUsrSearch {
       lbl: input.lbl,
       // 用户
       usr_id: input.usr_id.map(|x| vec![x]),
-      // 用户
-      usr_id_lbl: input.usr_id_lbl.map(|x| vec![x]),
       // 开发者ID
       appid: input.appid,
       // 昵称
