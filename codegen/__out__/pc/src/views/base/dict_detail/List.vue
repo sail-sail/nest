@@ -695,7 +695,7 @@ import {
 
 import {
   getListDict, // 系统字典
-} from "./Api";
+} from "./Api.ts";
 
 defineOptions({
   name: "系统字典明细",
