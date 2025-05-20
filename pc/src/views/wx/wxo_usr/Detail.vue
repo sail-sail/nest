@@ -109,7 +109,6 @@
           >
             <CustomSelect
               v-model="dialogModel.usr_id"
-              v-model:model-label="dialogModel.usr_id_lbl"
               :method="getListUsr"
               :find-by-values="findByIdsUsr"
               :options-map="((item: UsrModel) => {
