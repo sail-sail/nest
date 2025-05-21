@@ -998,6 +998,11 @@ export interface TablesConfigItem {
       
     };
     
+    /**
+     * 是否生成uni手机端的Api接口代码, 默认为false
+     */
+    isUniApi?: boolean;
+    
   },
   columns: TableCloumn[];
   records?: any[];
