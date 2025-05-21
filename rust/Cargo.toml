@@ -42,7 +42,7 @@ smallvec = { version = "1.15.0", features = ["union", "serde"] }
 # downcast-rs = "2.0.1"
 uuid = { version = "1.16.0", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12.2"
-deadpool-redis = "0.20.0"
+deadpool-redis = "0.21.0"
 redis = { version = "0.31.0", features = ["tokio-comp"], default-features = false }
 # pin-project = "1.1"
 bigdecimal = "0.4.8"
