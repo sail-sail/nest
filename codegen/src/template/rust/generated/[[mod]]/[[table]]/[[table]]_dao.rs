@@ -779,14 +779,13 @@ async fn get_where_query(
         Some(item) => item.tenant_id.clone(),
         None => None,
       };
-      let tenant_id = match tenant_id {
+      match tenant_id {
         None => get_auth_tenant_id(),
         Some(item) => match item.as_str() {
           "-" => None,
           _ => item.into(),
         },
-      };
-      tenant_id
+      }
     };
     if let Some(tenant_id) = tenant_id {
       where_query.push_str(" and t.tenant_id=?");
@@ -3054,9 +3053,23 @@ pub async fn find_by_unique_<#=table#>(
     let search = <#=tableUP#>Search {<#
       for (let k = 0; k < uniques.length; k++) {
         const unique = uniques[k];
+        const column = columns.find((item) => item.COLUMN_NAME === unique);
+        if (column.ignoreCodegen) continue;
+        if (column.isVirtual) continue;
+        if (column.isPassword) continue;
+        if (column.isEncrypt) continue;
+        const data_type = column.DATA_TYPE;
         const unique_rust = rustKeyEscape(unique);
+        let hasClone = true;
+        if ([ "int", "decimal", "tinyint", "date", "datetime" ].includes(data_type)) {
+          hasClone = false;
+        }
       #>
-      <#=unique_rust#>: search.<#=unique_rust#>.clone(),<#
+      <#=unique_rust#>: search.<#=unique_rust#><#
+        if (hasClone) {
+      #>.clone()<#
+        }
+      #>,<#
       }
       #>
       ..Default::default()
@@ -4640,14 +4653,12 @@ async fn _creates(
       if (column_name === "create_time") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const column_comment = column.COLUMN_COMMENT || "";
       const foreignKey = column.foreignKey;
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
+      const modelLabel = column.modelLabel;
     #><#
     if (foreignKey && foreignKey.type === "many2many") {
       if (column.inlineMany2manyTab) continue;
@@ -4683,6 +4694,14 @@ async fn _creates(
       }).join("");
       const inline_column_name = inlineForeignTab.column_name;
       const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+      const inline_column = inlineForeignSchema.columns.find(function(item) {
+        return item.COLUMN_NAME === inlineForeignTab.column;
+      });
+      if (!inline_column) {
+        throw `inlineForeignTab 中的表: ${ mod }_${ table } 不存在`;
+        process.exit(1);
+      }
+      const inline_column_modelLabel = inline_column.modelLabel;
     #><#
       if (inline_foreign_type === "one2many") {
     #>
@@ -4690,7 +4709,12 @@ async fn _creates(
     // <#=inlineForeignTab.label#>
     if let Some(<#=inline_column_name#>) = input.<#=inline_column_name#> {
       for mut model in <#=inline_column_name#> {
-        model.<#=inlineForeignTab.column#> = id.clone().into();
+        model.<#=inlineForeignTab.column#> = Some(id.clone());<#
+        if (inline_column_modelLabel && opts?.lbl_field) {
+        #>
+        model.<#=inlineForeignTab.column#>_lbl = input.<#=opts?.lbl_field#>.clone();<#
+        }
+        #>
         create_<#=table#>(
           model,
           options.clone(),
@@ -4702,7 +4726,12 @@ async fn _creates(
     
     // <#=inlineForeignTab.label#>
     if let Some(mut <#=inline_column_name#>) = input.<#=inline_column_name#> {
-      <#=inline_column_name#>.<#=inlineForeignTab.column#> = id.clone().into();
+      <#=inline_column_name#>.<#=inlineForeignTab.column#> = Some(id.clone());<#
+      if (inline_column_modelLabel && opts?.lbl_field) {
+      #>
+      <#=inline_column_name#>.<#=inlineForeignTab.column#>_lbl = input.<#=opts?.lbl_field#>.clone();<#
+      }
+      #>
       create_<#=table#>(
         <#=inline_column_name#>,
         options.clone(),
@@ -4739,15 +4768,21 @@ async fn _creates(
       const Table_Up = tableUp.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
       }).join("");
+      const modelLabel = column.modelLabel;
     #>
     
     // <#=column_comment#>
     if let Some(<#=column_name#>_<#=table#>_models) = input.<#=column_name#>_<#=table#>_models {
-      for input in <#=column_name#>_<#=table#>_models {
-        let mut input = input;
-        input.<#=many2many.column1#> = id.clone().into();
+      for input2 in <#=column_name#>_<#=table#>_models {
+        let mut input2 = input2;
+        input2.<#=many2many.column1#> = Some(id.clone());<#
+        if (modelLabel && opts?.lbl_field) {
+        #>
+        input2.<#=many2many.column1#>_lbl = input.<#=opts?.lbl_field#>.clone();<#
+        }
+        #>
         create_<#=table#>(
-          input,
+          input2,
           options.clone(),
         ).await?;
       }
@@ -5818,7 +5853,11 @@ pub async fn update_by_id_<#=table#>(
     } else {
   #>
   // <#=column_comment#>
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#><#
+    if (column_name === opts?.lbl_field) {
+  #>.clone()<#
+    }
+  #> {
     field_num += 1;<#
       if (!langTableRecords.some((item) => item.COLUMN_NAME === column_name)) {
     #>
@@ -5902,9 +5941,19 @@ pub async fn update_by_id_<#=table#>(
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
     const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    const inline_column = inlineForeignSchema.columns.find(function(item) {
+      return item.COLUMN_NAME === inlineForeignTab.column;
+    });
+    if (!inline_column) {
+      throw `inlineForeignTab 中的表: ${ mod }_${ table } 不存在`;
+      process.exit(1);
+    }
+    const inline_column_modelLabel = inline_column.modelLabel;
   #><#
     if (inline_foreign_type === "one2many") {
   #>
+  
+  let <#=inlineForeignTab.column#>_lbl = input.<#=opts?.lbl_field#>.clone();
   
   // <#=inlineForeignTab.label#>
   if let Some(<#=inline_column_name#>_input) = input.<#=inline_column_name#> {
@@ -5938,35 +5987,48 @@ pub async fn update_by_id_<#=table#>(
         options.clone(),
       ).await?;
     }
-    for mut input in <#=inline_column_name#>_input {
-      if input.id.is_none() {
-        input.<#=inlineForeignTab.column#> = id.clone().into();
+    for mut input2 in <#=inline_column_name#>_input {
+      if input2.id.is_none() {
+        input2.<#=inlineForeignTab.column#> = Some(id.clone());<#
+        if (inline_column_modelLabel && opts?.lbl_field) {
+        #>
+        input2.<#=inlineForeignTab.column#>_lbl = <#=inlineForeignTab.column#>_lbl.clone();<#
+        }
+        #>
         create_<#=table#>(
-          input,
+          input2,
           options.clone(),
         ).await?;
         continue;
       }
-      let id = input.id.clone().unwrap();
+      let id2 = input2.id.clone().unwrap();
       if !<#=inline_column_name#>_models
         .iter()
-        .any(|item| item.id == id)
+        .any(|item| item.id == id2)
       {
         revert_by_ids_<#=table#>(
-          vec![id.clone()],
+          vec![id2.clone()],
           options.clone(),
         ).await?;
       }
-      input.id = None;
+      input2.id = None;
+      input2.<#=inlineForeignTab.column#> = Some(id.clone());<#
+      if (inline_column_modelLabel && opts?.lbl_field) {
+      #>
+      input2.<#=inlineForeignTab.column#>_lbl = <#=inlineForeignTab.column#>_lbl.clone();<#
+      }
+      #>
       update_by_id_<#=table#>(
-        id.clone(),
-        input,
+        id2.clone(),
+        input2,
         options.clone(),
       ).await?;
     }
   }<#
     } else if (inline_foreign_type === "one2one") {
   #>
+  
+  let <#=inlineForeignTab.column#>_lbl = input.<#=opts?.lbl_field#>.clone();
   
   // <#=inlineForeignTab.label#>
   if let Some(<#=inline_column_name#>_input) = input.<#=inline_column_name#> {
@@ -5994,26 +6056,36 @@ pub async fn update_by_id_<#=table#>(
         options.clone(),
       ).await?;
     }
-    if let Some(id) = <#=inline_column_name#>_input.id.clone() {
+    if let Some(id2) = <#=inline_column_name#>_input.id.clone() {
       if !<#=inline_column_name#>_models
         .iter()
-        .any(|item| item.id == id)
+        .any(|item| item.id == id2)
       {
         revert_by_ids_<#=table#>(
-          vec![id.clone()],
+          vec![id2.clone()],
           options.clone(),
         ).await?;
       }
       let mut <#=inline_column_name#>_input = <#=inline_column_name#>_input;
-      <#=inline_column_name#>_input.id = None;
+      <#=inline_column_name#>_input.id = None;<#
+      if (inline_column_modelLabel && opts?.lbl_field) {
+      #>
+      <#=inline_column_name#>_input.<#=inlineForeignTab.column#>_lbl = <#=inlineForeignTab.column#>_lbl.clone();<#
+      }
+      #>
       update_by_id_<#=table#>(
-        id.clone(),
+        id2.clone(),
         <#=inline_column_name#>_input,
         options.clone(),
       ).await?;
     } else {
       let mut <#=inline_column_name#>_input = <#=inline_column_name#>_input;
-      <#=inline_column_name#>_input.<#=inlineForeignTab.column#> = id.clone().into();
+      <#=inline_column_name#>_input.<#=inlineForeignTab.column#> = Some(id2.clone());<#
+      if (inline_column_modelLabel && opts?.lbl_field) {
+      #>
+      <#=inline_column_name#>_input.<#=inlineForeignTab.column#>_lbl = <#=inlineForeignTab.column#>_lbl.clone();<#
+      }
+      #>
       create_<#=table#>(
         <#=inline_column_name#>_input,
         options.clone(),
