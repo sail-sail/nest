@@ -2242,7 +2242,7 @@ pub async fn update_by_id_menu(
     args.push(parent_id.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
