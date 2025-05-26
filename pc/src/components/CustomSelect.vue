@@ -875,4 +875,27 @@ defineExpose({
     top: calc(50% - 1px);
   }
 }
+:deep(.el-select__selected-item .el-tag) {
+  height: auto;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  box-sizing: border-box;
+  .el-select__tags-text {
+    text-wrap-mode: wrap;
+  }
+}
+.custom_select_readonly {
+  min-height: 30px;
+  :deep(.el-tag) {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    box-sizing: border-box;
+    height: auto;
+    .el-tag__content {
+      text-wrap-mode: wrap;
+      white-space: normal;
+      word-break: break-all;
+    }
+  }
+}
 </style>
