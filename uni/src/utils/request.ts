@@ -46,9 +46,9 @@ export async function uploadFile(config: {
     if (!config.url) {
       let url = "";
       if (config?.isPublic) {
-        url += `/api/${ config.type }/uploadPublic`;
+        url += `${ cfg.url }/${ config.type }/uploadPublic`;
       } else {
-        url += `/api/${ config.type }/upload`;
+        url += `${ cfg.url }/${ config.type }/upload`;
       }
       config.url = url;
     }
