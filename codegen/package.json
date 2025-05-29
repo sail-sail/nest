@@ -32,7 +32,7 @@
   "devDependencies": {
     "@swc/wasm": "1.11.29",
     "@types/fs-extra": "11.0.4",
-    "@types/node": "22.15.21",
+    "@types/node": "22.15.24",
     "@types/shelljs": "0.8.16",
     "@types/uuid": "10.0.0",
     "ts-node": "10.9.2",
