@@ -14,12 +14,21 @@ export async function uploadFile(config: {
   url?: string;
   name?: string;
   filePath?: string;
+  /**
+   * 文件类型，image/video/audio，仅支付宝小程序，且必填。
+   * - image: 图像
+   * - video: 视频
+   * - audio: 音频
+   */
+  fileType?: 'image' | 'video' | 'audio';
   header?: { [key: string]: any };
   notLoading?: boolean;
   showErrMsg?: boolean;
   reqType?: string;
   notLogin?: boolean;
   type?: "oss" | "tmpfile";
+  db?: string;
+  isPublic?: boolean;
 }): Promise<string> {
   const indexStore = useIndexStore();
   const usrStore = useUsrStore();
@@ -32,7 +41,20 @@ export async function uploadFile(config: {
     if (!config.name) {
       config.name = "file";
     }
-    config.url = config.url || `${ cfg.url }/${ config.type }/upload`;
+    config = config || { };
+    config.type = config.type || "oss";
+    if (!config.url) {
+      let url = "";
+      if (config?.isPublic) {
+        url += `/api/${ config.type }/uploadPublic`;
+      } else {
+        url += `/api/${ config.type }/upload`;
+      }
+      config.url = url;
+    }
+    if (config.db) {
+      config.url += `?db=${ encodeURIComponent(config.db) }`;
+    }
     const authorization = usrStore.getAuthorization();
     if (authorization) {
       config.header = config.header || { };
