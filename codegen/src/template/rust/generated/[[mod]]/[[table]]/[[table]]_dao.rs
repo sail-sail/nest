@@ -142,6 +142,21 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
 
+const inline_column_modelLabels = [ ];
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const inline_column = inlineForeignSchema.columns.find(function(item) {
+    return item.COLUMN_NAME === inlineForeignTab.column;
+  });
+  if (!inline_column) {
+    throw `inlineForeignTab 中的表: ${ mod }_${ table } 不存在`;
+    process.exit(1);
+  }
+  const inline_column_modelLabel = inline_column.modelLabel;
+  if (inline_column_modelLabel) {
+    inline_column_modelLabels.push(inline_column_modelLabel);
+  }
+}
 #>#[allow(unused_imports)]
 use serde::{Serialize, Deserialize};
 #[allow(unused_imports)]
@@ -4712,7 +4727,7 @@ async fn _creates(
         model.<#=inlineForeignTab.column#> = Some(id.clone());<#
         if (inline_column_modelLabel && opts?.lbl_field) {
         #>
-        model.<#=inlineForeignTab.column#>_lbl = input.<#=opts?.lbl_field#>.clone();<#
+        model.<#=inline_column_modelLabel#> = input.<#=opts?.lbl_field#>.clone();<#
         }
         #>
         create_<#=table#>(
@@ -4729,7 +4744,7 @@ async fn _creates(
       <#=inline_column_name#>.<#=inlineForeignTab.column#> = Some(id.clone());<#
       if (inline_column_modelLabel && opts?.lbl_field) {
       #>
-      <#=inline_column_name#>.<#=inlineForeignTab.column#>_lbl = input.<#=opts?.lbl_field#>.clone();<#
+      <#=inline_column_name#>.<#=inline_column_modelLabel#> = input.<#=opts?.lbl_field#>.clone();<#
       }
       #>
       create_<#=table#>(
@@ -5776,7 +5791,11 @@ pub async fn update_by_id_<#=table#>(
     if (modelLabel) {
   #>
   // <#=column_comment#>
-  if let Some(<#=modelLabel#>) = input.<#=modelLabel#> {
+  if let Some(<#=modelLabel#>) = input.<#=modelLabel#><#
+    if (inline_column_modelLabels.length > 0 && modelLabel === opts?.lbl_field) {
+  #>.clone()<#
+    }
+  #> {
     if !<#=modelLabel#>.is_empty() {
       field_num += 1;<#
       if (!langTableRecords.some((item) => item.COLUMN_NAME === modelLabel)) {
@@ -5854,7 +5873,7 @@ pub async fn update_by_id_<#=table#>(
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#><#
-    if (column_name === opts?.lbl_field) {
+    if (inline_column_modelLabels.length > 0 && column_name === opts?.lbl_field) {
   #>.clone()<#
     }
   #> {
@@ -5944,16 +5963,16 @@ pub async fn update_by_id_<#=table#>(
     const inline_column = inlineForeignSchema.columns.find(function(item) {
       return item.COLUMN_NAME === inlineForeignTab.column;
     });
-    if (!inline_column) {
-      throw `inlineForeignTab 中的表: ${ mod }_${ table } 不存在`;
-      process.exit(1);
-    }
     const inline_column_modelLabel = inline_column.modelLabel;
   #><#
     if (inline_foreign_type === "one2many") {
+  #><#
+  if (inline_column_modelLabel && opts?.lbl_field) {
   #>
   
-  let <#=inlineForeignTab.column#>_lbl = input.<#=opts?.lbl_field#>.clone();
+  let <#=inline_column_modelLabel#> = input.<#=opts?.lbl_field#>.clone();<#
+  }
+  #>
   
   // <#=inlineForeignTab.label#>
   if let Some(<#=inline_column_name#>_input) = input.<#=inline_column_name#> {
@@ -5992,7 +6011,7 @@ pub async fn update_by_id_<#=table#>(
         input2.<#=inlineForeignTab.column#> = Some(id.clone());<#
         if (inline_column_modelLabel && opts?.lbl_field) {
         #>
-        input2.<#=inlineForeignTab.column#>_lbl = <#=inlineForeignTab.column#>_lbl.clone();<#
+        input2.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
         }
         #>
         create_<#=table#>(
@@ -6015,7 +6034,7 @@ pub async fn update_by_id_<#=table#>(
       input2.<#=inlineForeignTab.column#> = Some(id.clone());<#
       if (inline_column_modelLabel && opts?.lbl_field) {
       #>
-      input2.<#=inlineForeignTab.column#>_lbl = <#=inlineForeignTab.column#>_lbl.clone();<#
+      input2.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
       }
       #>
       update_by_id_<#=table#>(
@@ -6026,9 +6045,13 @@ pub async fn update_by_id_<#=table#>(
     }
   }<#
     } else if (inline_foreign_type === "one2one") {
+  #><#
+  if (inline_column_modelLabel && opts?.lbl_field) {
   #>
   
-  let <#=inlineForeignTab.column#>_lbl = input.<#=opts?.lbl_field#>.clone();
+  let <#=inline_column_modelLabel#> = input.<#=opts?.lbl_field#>.clone();<#
+  }
+  #>
   
   // <#=inlineForeignTab.label#>
   if let Some(<#=inline_column_name#>_input) = input.<#=inline_column_name#> {
@@ -6070,7 +6093,7 @@ pub async fn update_by_id_<#=table#>(
       <#=inline_column_name#>_input.id = None;<#
       if (inline_column_modelLabel && opts?.lbl_field) {
       #>
-      <#=inline_column_name#>_input.<#=inlineForeignTab.column#>_lbl = <#=inlineForeignTab.column#>_lbl.clone();<#
+      <#=inline_column_name#>_input.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
       }
       #>
       update_by_id_<#=table#>(
@@ -6083,7 +6106,7 @@ pub async fn update_by_id_<#=table#>(
       <#=inline_column_name#>_input.<#=inlineForeignTab.column#> = Some(id2.clone());<#
       if (inline_column_modelLabel && opts?.lbl_field) {
       #>
-      <#=inline_column_name#>_input.<#=inlineForeignTab.column#>_lbl = <#=inlineForeignTab.column#>_lbl.clone();<#
+      <#=inline_column_name#>_input.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
       }
       #>
       create_<#=table#>(
