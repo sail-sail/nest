@@ -759,7 +759,7 @@ import {
 
 import {
   getListJob, // 任务
-} from "./Api";
+} from "./Api.ts";
 
 import ForeignTabs from "./ForeignTabs.vue";
 

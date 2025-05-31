@@ -577,7 +577,7 @@ import {
 
 import {
   getListCronJob, // 定时任务
-} from "./Api";
+} from "./Api.ts";
 
 import ForeignTabs from "./ForeignTabs.vue";
 
