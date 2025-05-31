@@ -1837,7 +1837,7 @@ pub async fn update_by_id_operation_record(
     args.push(method_lbl.into());
   }
   // 操作
-  if let Some(lbl) = input.lbl.clone() {
+  if let Some(lbl) = input.lbl {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
