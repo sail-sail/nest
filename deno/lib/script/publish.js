@@ -1,7 +1,7 @@
 const SSH2Promise = require("ssh2-promise");
 const fs = require("fs/promises");
 const { randomUUID } = require("node:crypto");
-const ecosystem = require(`${ __dirname }/../../ecosystem.config.js`);
+const ecosystem = require(`${ __dirname }/../../ecosystem.config.json`);
 const publish_cnf = require(`${ __dirname }/publish_cnf.js`);
 
 const { Command } = require("commander");

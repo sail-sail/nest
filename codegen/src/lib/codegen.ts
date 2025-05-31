@@ -428,6 +428,14 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           return;
         }
       }
+      if (opts.onlyCodegenDeno || !opts.isUniApi) {
+        if (dir === "/uni/src/pages/[[table]]/Api.ts") {
+          return;
+        }
+        if (dir === "/uni/src/pages/[[table]]/Model.ts") {
+          return;
+        }
+      }
       let htmlStr = includeFtl(
         await readFile(fileTng ,"utf8"),
         "<#",
