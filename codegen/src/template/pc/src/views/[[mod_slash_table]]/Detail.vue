@@ -3857,10 +3857,7 @@ import {<#
     if (column_name === "tenant_id") continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     if (!foreignKey) continue;
     if (foreignKey.showType === "dialog") {
@@ -3890,7 +3887,7 @@ import {<#
   getList<#=Foreign_Table_Up#>,<#
   }
   #>
-} from "./Api";<#
+} from "./Api.ts";<#
 }
 #><#
 for (let i = 0; i < columns.length; i++) {
@@ -3924,6 +3921,9 @@ for (let i = 0; i < columns.length; i++) {
   }).join("");
   const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
   if (foreignSchema && foreignSchema.opts?.list_tree) {
+    continue;
+  }
+  if (foreignKey.selectType !== "select" && foreignKey.selectType != null) {
     continue;
   }
   if (foreignTableFindByIdsArr.includes(foreignTable)) continue;
