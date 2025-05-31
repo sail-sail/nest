@@ -14,6 +14,9 @@ const agentid = "";
 
 const homePage = `/${pages.pages[0]?.path}`;
 
+const accountInfo = uni.getAccountInfoSync?.();
+const envVersion = accountInfo?.miniProgram.envVersion;
+
 if (import.meta.env.MODE === "development") {
   // #ifndef H5
   host = "localhost";
@@ -33,34 +36,28 @@ if (import.meta.env.MODE === "development") {
     wsProt = "ws:";
   }
   // #endif
-  // domain = "localhost:4000";
-} else if (import.meta.env.MODE === "test") {
-  // #ifndef H5
-  host = "localhost";
-  port = "4000";
-  domain = `${ host }${ port ? `:${ port }` : "" }`;
-  protocol = "http:";
-  wsProt = "ws:";
-  // #endif
-  // #ifdef H5
-  host = location.hostname;
-  port = location.port;
-  domain = location.host;
-  protocol = location.protocol;
-  if(protocol === "https:") {
-    wsProt = "wss:";
-  } else {
-    wsProt = "ws:";
-  }
-  // #endif
-  // domain = "localhost:4000";
+  domain = "localhost:4000";
 } else if (import.meta.env.MODE === "production") {
   // #ifndef H5
-  host = "localhost";
-  port = undefined;
-  domain = `${ host }${ port ? `:${ port }` : "" }`;
-  protocol = "https:";
-  wsProt = "wss:";
+  if (envVersion === "develop") {
+    host = "localhost";
+    port = "4000";
+    domain = `${ host }${ port ? `:${ port }` : "" }`;
+    protocol = "http:";
+    wsProt = "ws:";
+  } else if (envVersion === "trial") {
+    host = "localhost";
+    port = "4000";
+    domain = `${ host }${ port ? `:${ port }` : "" }`;
+    protocol = "https:";
+    wsProt = "wss:";
+  } else if (envVersion === "release") {
+    host = "localhost";
+    port = "4000";
+    domain = `${ host }${ port ? `:${ port }` : "" }`;
+    protocol = "https:";
+    wsProt = "wss:";
+  }
   // #endif
   // #ifdef H5
   host = location.hostname;
@@ -73,6 +70,7 @@ if (import.meta.env.MODE === "development") {
     wsProt = "ws:";
   }
   // #endif
+  domain = "localhost:4000";
 } else {
   uni.showModal({
     title: "错误",

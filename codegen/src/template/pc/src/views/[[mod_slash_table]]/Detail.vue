@@ -26,13 +26,13 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   inputName = Table_Up + "Input";
   searchName = Table_Up + "Search";
 }
+let hasIsFluentEditor = false;
 let columnNum = 0;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
   if (column.onlyCodegenDeno) continue;
-  if (column.noAdd && column.noEdit) continue;
-  if (column.isAtt) continue;
+  if (column.noDetail) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   if (column_name === "is_locked") continue;
@@ -48,6 +48,10 @@ for (let i = 0; i < columns.length; i++) {
       "is_default",
     ].includes(column_name)
   ) {
+    continue;
+  }
+  if (column.isFluentEditor) {
+    hasIsFluentEditor = true;
     continue;
   }
   columnNum++;
@@ -272,8 +276,7 @@ for (let i = 0; i < columns.length; i++) {
           const column = columns[i];
           if (column.ignoreCodegen) continue;
           if (column.onlyCodegenDeno) continue;
-          if (column.noAdd && column.noEdit) continue;
-          // if (column.isAtt) continue;
+          if (column.noDetail) continue;
           const column_name = column.COLUMN_NAME;
           if (column_name === "id") continue;
           if (column_name === "is_locked") continue;
@@ -310,6 +313,9 @@ for (let i = 0; i < columns.length; i++) {
               "is_default",
             ].includes(column_name)
           ) {
+            continue;
+          }
+          if (column.isFluentEditor) {
             continue;
           }
           const readonlyPlaceholder = column.readonlyPlaceholder;
@@ -1124,6 +1130,52 @@ for (let i = 0; i < columns.length; i++) {
         #>
         
       </el-form><#
+      if (hasIsFluentEditor) {
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        const column_name = column.COLUMN_NAME;
+        if (column_name === "id") continue;
+        if (column_name === "is_locked") continue;
+        if (column_name === "is_deleted") continue;
+        if (column_name === "version") continue;
+        if (column_name === "tenant_id") continue;
+        if (column.noDetail) continue;
+        const foreignKey = column.foreignKey;
+        if (foreignKey && foreignKey.showType === "dialog") {
+          continue;
+        }
+        if (
+          [
+            "is_default",
+          ].includes(column_name)
+        ) {
+          continue;
+        }
+        if (!column.isFluentEditor) {
+          continue;
+        }
+      #>
+      
+      <div
+        un-m="t-1"
+        un-flex="~ [1_0_0] col basis-[inherit]"
+        un-overflow="hidden"
+        un-w="full"
+      >
+        <div
+          ref="<#=column_name#>Ref"
+          un-flex="~ [1_0_0] basis-[inherit]"
+          un-overflow="hidden"
+          un-w="full"
+        ></div>
+      </div><#
+      }
+      #><#
+      }
+      #><#
       if (hasInlineForeignTabs) {
       #>
       <div
@@ -1187,7 +1239,7 @@ for (let i = 0; i < columns.length; i++) {
                 const column = columns[i];
                 if (column.ignoreCodegen) continue;
                 if (column.onlyCodegenDeno) continue;
-                if (column.noAdd && column.noEdit) continue;
+                if (column.noDetail) continue;
                 if (column.isAtt) continue;
                 const column_name = column.COLUMN_NAME;
                 if (column_name === "id") continue;
@@ -1658,6 +1710,7 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
+                      align="center"
                     ></CustomInputNumber><#
                     } else if (column.DATA_TYPE === "decimal") {
                       let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -1707,6 +1760,7 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
+                      align="center"
                     ></CustomInputNumber><#
                     } else {
                     #>
@@ -1847,7 +1901,7 @@ for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
               if (column.onlyCodegenDeno) continue;
-              if (column.noAdd && column.noEdit) continue;
+              if (column.noDetail) continue;
               if (column.isAtt) continue;
               const column_name = column.COLUMN_NAME;
               if (column_name === "id") continue;
@@ -1899,7 +1953,7 @@ for (let i = 0; i < columns.length; i++) {
                   const column = columns[i];
                   if (column.ignoreCodegen) continue;
                   if (column.onlyCodegenDeno) continue;
-                  if (column.noAdd && column.noEdit) continue;
+                  if (column.noDetail) continue;
                   if (column.isAtt) continue;
                   const column_name = column.COLUMN_NAME;
                   if (column_name === "id") continue;
@@ -2712,7 +2766,7 @@ for (let i = 0; i < columns.length; i++) {
                 const column = inlineMany2manyColumns[i];
                 if (column.ignoreCodegen) continue;
                 if (column.onlyCodegenDeno) continue;
-                if (column.noAdd && column.noEdit) continue;
+                if (column.noDetail) continue;
                 if (column.isAtt) continue;
                 const column_name = column.COLUMN_NAME;
                 if (column_name === "id") continue;
@@ -3609,7 +3663,7 @@ for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
-    if (column.noAdd && column.noEdit) continue;
+    if (column.noDetail) continue;
     if (column.isAtt) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
@@ -3803,10 +3857,7 @@ import {<#
     if (column_name === "tenant_id") continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     if (!foreignKey) continue;
     if (foreignKey.showType === "dialog") {
@@ -3836,7 +3887,7 @@ import {<#
   getList<#=Foreign_Table_Up#>,<#
   }
   #>
-} from "./Api";<#
+} from "./Api.ts";<#
 }
 #><#
 for (let i = 0; i < columns.length; i++) {
@@ -3870,6 +3921,9 @@ for (let i = 0; i < columns.length; i++) {
   }).join("");
   const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
   if (foreignSchema && foreignSchema.opts?.list_tree) {
+    continue;
+  }
+  if (foreignKey.selectType !== "select" && foreignKey.selectType != null) {
     continue;
   }
   if (foreignTableFindByIdsArr.includes(foreignTable)) continue;
@@ -4261,7 +4315,7 @@ for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
   if (column.onlyCodegenDeno) continue;
-  if (column.noAdd && column.noEdit) continue;
+  if (column.noDetail) continue;
   if (column.isAtt) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
@@ -4305,6 +4359,13 @@ if (mod === "cron" && table === "cron_job") {
 import cronstrue from "cronstrue/i18n";
 import { lang } from "@/locales/index";<#
 }
+#><#
+if (hasIsFluentEditor) {
+#>
+
+import FluentEditor from "@opentiny/fluent-editor";
+import "@opentiny/fluent-editor/style.css";<#
+}
 #>
 
 const emit = defineEmits<{
@@ -4347,7 +4408,7 @@ for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
   if (column.onlyCodegenDeno) continue;
-  if (column.noAdd && column.noEdit) continue;
+  if (column.noDetail) continue;
   if (column.isAtt) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
@@ -4513,6 +4574,9 @@ watchEffect(async () => {
         continue;
       }
       if (column.noAdd && column.noEdit) {
+        continue;
+      }
+      if (column.noDetail) {
         continue;
       }
       const isIcon = column.isIcon;
@@ -4996,7 +5060,7 @@ for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
   if (column.onlyCodegenDeno) continue;
-  if (column.noAdd && column.noEdit) continue;
+  if (column.noDetail) continue;
   if (column.isAtt) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
@@ -5103,7 +5167,7 @@ for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
   if (column.onlyCodegenDeno) continue;
-  if (column.noAdd && column.noEdit) continue;
+  if (column.noDetail) continue;
   if (column.isAtt) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
@@ -5581,7 +5645,7 @@ async function showDialog(
           const column = columns[i];
           if (column.ignoreCodegen) continue;
           if (column.onlyCodegenDeno) continue;
-          if (column.noAdd && column.noEdit) continue;
+          if (column.noDetail) continue;
           if (column.isAtt) continue;
           const column_name = column.COLUMN_NAME;
           if (column_name === "id") continue;
@@ -6196,6 +6260,41 @@ async function onRefresh() {
   if (data) {
     dialogModel = intoInput<#=Table_Up#>({
       ...data,<#
+      if (hasIsFluentEditor) {
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "is_locked") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "version") continue;
+      if (column_name === "tenant_id") continue;
+      if (column.noDetail) continue;
+      const foreignKey = column.foreignKey;
+      if (foreignKey && foreignKey.showType === "dialog") {
+        continue;
+      }
+      if (
+        [
+          "is_default",
+        ].includes(column_name)
+      ) {
+        continue;
+      }
+      if (!column.isFluentEditor) {
+        continue;
+      }
+      #>
+      if (<#=column_name#>FluentEditor) {
+        <#=column_name#>FluentEditor.root.innerHTML = dialogModel.<#=column_name#> || "";
+      }<#
+      }
+      #><#
+      }
+      #><#
       for (const inlineForeignTab of inlineForeignTabs) {
         const table = inlineForeignTab.table;
         const mod = inlineForeignTab.mod;
@@ -6790,6 +6889,39 @@ async function save() {
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {
       ...dialogModel,<#
+      if (hasIsFluentEditor) {
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "is_locked") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "version") continue;
+      if (column_name === "tenant_id") continue;
+      if (column.noDetail) continue;
+      const foreignKey = column.foreignKey;
+      if (foreignKey && foreignKey.showType === "dialog") {
+        continue;
+      }
+      if (
+        [
+          "is_default",
+        ].includes(column_name)
+      ) {
+        continue;
+      }
+      if (!column.isFluentEditor) {
+        continue;
+      }
+      #>
+      <#=column_name#>: <#=column_name#>FluentEditor?.root.innerHTML,<#
+      }
+      #><#
+      }
+      #><#
       for (const inlineForeignTab of inlineForeignTabs) {
         const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
         const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
@@ -6871,6 +7003,39 @@ async function save() {
     }
     const dialogModel2 = {
       ...dialogModel,<#
+      if (hasIsFluentEditor) {
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "is_locked") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "version") continue;
+      if (column_name === "tenant_id") continue;
+      if (column.noDetail) continue;
+      const foreignKey = column.foreignKey;
+      if (foreignKey && foreignKey.showType === "dialog") {
+        continue;
+      }
+      if (
+        [
+          "is_default",
+        ].includes(column_name)
+      ) {
+        continue;
+      }
+      if (!column.isFluentEditor) {
+        continue;
+      }
+      #>
+      <#=column_name#>: <#=column_name#>FluentEditor?.root.innerHTML,<#
+      }
+      #><#
+      }
+      #><#
       for (const inlineForeignTab of inlineForeignTabs) {
         const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
         const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
@@ -7009,7 +7174,7 @@ async function onSaveAndCopy() {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       if (column.onlyCodegenDeno) continue;
-      if (column.noAdd && column.noEdit) continue;
+      if (column.noDetail) continue;
       if (column.isAtt) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
@@ -7577,6 +7742,71 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }<#
+if (hasIsFluentEditor) {
+#>
+
+const fluentEditorConfig = {
+  theme: "snow",
+  modules: {
+    toolbar: [
+      ["undo", "redo"],
+      [{ header: [ ] }],
+      ["bold", "italic", "underline", "link"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["clean"],
+      ["image", "video"],
+    ],
+  },
+};<#
+for (let i = 0; i < columns.length; i++) {
+const column = columns[i];
+if (column.ignoreCodegen) continue;
+if (column.onlyCodegenDeno) continue;
+const column_name = column.COLUMN_NAME;
+if (column_name === "id") continue;
+if (column_name === "is_locked") continue;
+if (column_name === "is_deleted") continue;
+if (column_name === "version") continue;
+if (column_name === "tenant_id") continue;
+if (column.noDetail) continue;
+const foreignKey = column.foreignKey;
+if (foreignKey && foreignKey.showType === "dialog") {
+  continue;
+}
+if (
+  [
+    "is_default",
+  ].includes(column_name)
+) {
+  continue;
+}
+if (!column.isFluentEditor) {
+  continue;
+}
+#>
+
+const <#=column_name#>Ref = $(useTemplateRef<HTMLDivElement>("<#=column_name#>Ref"));
+let <#=column_name#>FluentEditor: InstanceType<typeof FluentEditor> | undefined = undefined;
+
+watch(
+  () => [
+    inited,
+    <#=column_name#>Ref,
+  ],
+  async () => {
+    if (!inited || !<#=column_name#>Ref) {
+      return;
+    }
+    if (<#=column_name#>FluentEditor) {
+      return;
+    }
+    <#=column_name#>FluentEditor = new FluentEditor(<#=column_name#>Ref, fluentEditorConfig);
+  },
+);<#
+}
+#><#
+}
+#><#
 if (isUseI18n) {
 #>
 

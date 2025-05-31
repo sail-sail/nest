@@ -18,6 +18,7 @@
     }
   ],
   "settings": {
+    "diffEditor.useInlineViewWhenSpaceIsLimited": false,
     "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
     "git.openRepositoryInParentFolders": "never",
     "git.autofetch": false,
@@ -37,7 +38,7 @@
     "pair-diff.patterns": [
       {
         "source": "./deno/gen/**/*/*.ts",
-        "target": "./codegen/template/<basename>"
+        "target": "./codegen/src/template/<basename>"
       }
     ],
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,

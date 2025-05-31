@@ -4,6 +4,7 @@
   class="app_loading"
 >
   <i
+    v-if="!props.isTransparent"
     un-i="iconfont-loading"
     un-h="12"
     un-w="12"
@@ -15,6 +16,13 @@
 </template>
 
 <script lang="ts" setup>
+
+const props = withDefaults(defineProps<{
+  isTransparent?: boolean;
+}>(), {
+  isTransparent: false,
+});
+
 const indexStore = useIndexStore();
 
 const loading = computed(() => {

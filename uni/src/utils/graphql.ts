@@ -100,6 +100,11 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     queryInfos.push(queryInfo);
   }
   await nextTick();
+  await nextTick();
+  gqlArg.query = gqlArg.query.trim();
+  if (!gqlArg.query.startsWith("query") && !gqlArg.query.startsWith("fragment ")) {
+    throw new Error("query must start with 'query'");
+  }
   const queryInfos2 = queryInfos;
   const queryInfosRepeat2 = queryInfosRepeat;
   queryInfos = [ ];
@@ -259,6 +264,23 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
  * 发送 GraphQL 修改请求 
  */
 export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
+  const indexStore = useIndexStore();
+  if (!opt?.notLoading && indexStore.getLoading() > 0 && opt?.isMutation) {
+    uni.showToast({
+      title: "繁忙中，请稍后再重试",
+      icon: "none",
+      duration: 3000,
+      mask: true,
+      position: "center",
+    });
+    throw "mutation loading";
+  }
+  opt = opt || { };
+  opt.isMutation = true;
+  gqlArg.query = gqlArg.query.trim();
+  if (!gqlArg.query.startsWith("mutation") && !gqlArg.query.startsWith("fragment ")) {
+    throw new Error("mutation must start with 'mutation'");
+  }
   return await gqlQuery(gqlArg, opt);
 }
 
@@ -266,7 +288,6 @@ export async function gqlQuery(
   gqlArg: GqlArg,
   config?: GqlOpt,
 ): Promise<any> {
-  // gqlArg.query = gqlArg.query.trim().replace(/\s+/gm, " ");
   const header: {
     "Request-ID"?: string;
   } = { };

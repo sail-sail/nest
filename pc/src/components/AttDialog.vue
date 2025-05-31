@@ -171,6 +171,23 @@
             ></VueOfficeDocx>
           </template>
           
+          <!-- 是否为证书文件 application/octet-stream -->
+          <template
+            v-else-if="fileStats[i]?.contentType?.startsWith('application/octet')"
+          >
+            <div
+              v-if="iframeShoweds[i]"
+              v-show="i === nowIndex"
+              un-flex="~ [1_0_0]"
+              un-overflow-auto
+              un-w="full"
+              un-justify-center
+              un-items-center
+            >
+              {{ ns("证书文件不支持预览") }}
+            </div>
+          </template>
+          
           <template
             v-else
           >

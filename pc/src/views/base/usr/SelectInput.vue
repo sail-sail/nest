@@ -7,14 +7,15 @@
   :class="{
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
+    'select_input_isShowModelLabel': props.pageInited && hasModelLabel && modelLabel != inputValue,
   }"
   @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
-  @keydown.enter.stop="onEnter"
+  @keydown.enter="onEnter"
 >
   <CustomInput
     v-bind="$attrs"
-    :model-value="inputValue || props.modelLabel"
+    :model-value="hasModelLabel ? modelLabel : inputValue"
     :readonly="props.labelReadonly"
     :clearable="false"
     class="select_input"
@@ -90,9 +91,14 @@
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly select_input_readonly"
+    :class="{
+      label_readonly_1: props.labelReadonly,
+      label_readonly_0: !props.labelReadonly,
+      'select_input_isShowModelLabel': props.pageInited && hasModelLabel && modelLabel != inputValue,
+    }"
     v-bind="$attrs"
   >
-    {{ inputValue || props.modelLabel }}
+    {{ hasModelLabel ? modelLabel : inputValue }}
   </div>
 </template>
 </template>
@@ -133,10 +139,11 @@ const props = withDefaults(
     labelReadonly?: boolean;
     selectListReadonly?: boolean;
     validateEvent?: boolean;
+    pageInited?: boolean;
   }>(),
   {
     modelValue: undefined,
-    modelLabel: "",
+    modelLabel: undefined,
     multiple: false,
     placeholder: undefined,
     disabled: false,
@@ -144,6 +151,7 @@ const props = withDefaults(
     labelReadonly: true,
     selectListReadonly: true,
     validateEvent: undefined,
+    pageInited: false,
   },
 );
 
@@ -153,6 +161,17 @@ let oldInputValue = $ref("");
 let modelValue = $ref(props.modelValue);
 let selectedValue: UsrModel | (UsrModel | undefined)[] | null | undefined = undefined;
 
+let modelLabel = $ref(props.modelLabel);
+let hasModelLabel = $ref(false);
+
+watch(
+  () => props.modelLabel,
+  () => {
+    hasModelLabel = true;
+    modelLabel = props.modelLabel;
+  },
+);
+
 watch(
   () => props.modelValue,
   () => {
@@ -160,7 +179,7 @@ watch(
   },
   {
     immediate: true,
-  }
+  },
 );
 
 watch(
@@ -184,9 +203,10 @@ function onMouseLeave() {
 }
 
 async function onEnter(e: KeyboardEvent) {
-  if (e.ctrlKey) {
+  if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
     return;
   }
+  e.stopImmediatePropagation();
   await onInput("icon");
 }
 
@@ -241,6 +261,7 @@ async function refreshInputValue() {
   } else {
     models = await getModelsByIds(modelValueArr);
   }
+  selectedValue = undefined;
   inputValue = models.map((item) => item?.lbl || "").join(",");
   oldInputValue = inputValue;
 }
@@ -251,6 +272,7 @@ async function onClear(e?: PointerEvent) {
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  modelLabel = inputValue;
   emit("update:modelLabel", inputValue);
   emit("change");
   emit("clear");
@@ -300,6 +322,7 @@ async function onInput(
   inputValue = selectedModels.map((item) => item.lbl || "").join(",");
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  modelLabel = inputValue;
   emit("update:modelLabel", inputValue);
 }
 

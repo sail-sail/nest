@@ -3,6 +3,76 @@ import type {
   Query,
 } from "#/types.ts";
 
+/** 小程序升级检测 */
+export function appCheckUpgrade() {
+  const updateManager = uni.getUpdateManager();
+
+  updateManager.onCheckForUpdate(function (res) {
+    // 请求完新版本信息的回调
+    // console.log(res.hasUpdate);
+  });
+
+  updateManager.onUpdateReady(async function (res) {
+    // const {
+    //   confirm,
+    // } = await uni.showModal({
+    //   title: "更新提示",
+    //   content: "新版本已经准备好，是否重启应用？",
+    // });
+    // if (confirm) {
+    //   updateManager.applyUpdate();
+    // }
+    updateManager.applyUpdate();
+  });
+
+}
+
+/** 授权 */
+export async function authorize(
+  scope: string,
+  lbl: string,
+) {
+  
+  console.log(await uni.getSetting());
+  
+  const {
+    authSetting,
+  } = await uni.getSetting();
+  
+  if (authSetting[scope]) {
+    return true;
+  }
+  
+  try {
+    await uni.authorize({
+      scope,
+    });
+  } catch (e) {
+    console.error(e);
+    const {
+      confirm,
+    } = await uni.showModal({
+      content: "请允许授权" + lbl,
+    });
+    if (!confirm) {
+      uni.showToast({
+        title: `请允许授权${ lbl }后再试`,
+        icon: "none",
+      });
+      return false;
+    }
+    await uni.openSetting();
+    try {
+      await uni.authorize({
+        scope,
+      });
+    } catch (e2) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export async function getDict(
   codes: string[],
   opt?: GqlOpt,

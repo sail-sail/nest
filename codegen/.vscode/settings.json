@@ -43,6 +43,7 @@
     "cache": true,
     "**/.husky": true
   },
+  "diffEditor.useInlineViewWhenSpaceIsLimited": false,
   "git.timeline.showUncommitted": true,
   "scm.showHistoryGraph": false,
   "deno.enable": false,

@@ -22,7 +22,8 @@
     "**/.npmrc": true,
     "public/ejsexcel.min.js": true,
     "**/.husky": true,
-    "graphql.config.js": true
+    "graphql.config.js": true,
+    "uno.config.ts": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -47,8 +48,10 @@
     "**/.npmrc": true,
     "public/ejsexcel.min.js": true,
     "**/.husky": true,
-    "graphql.config.js": true
+    "graphql.config.js": true,
+    "uno.config.ts": true
   },
+  "diffEditor.useInlineViewWhenSpaceIsLimited": false,
   "git.timeline.showUncommitted": true,
   "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
   "git.openRepositoryInParentFolders": "never",
@@ -70,5 +73,8 @@
   "terminal.integrated.env.windows": {
     "VUE_EDITOR": "code"
   },
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
 }

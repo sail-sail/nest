@@ -41,10 +41,12 @@
 >
   <div
     un-w="full"
+    un-min="h-8"
     un-whitespace-nowrap
     un-flex="~"
     un-justify="start"
     un-items="center"
+    un-box-border
     class="custom_input_readonly"
     :class="{
       'custom_input_readonly_border': props.isReadonlyBorder,
@@ -58,12 +60,12 @@
       un-box-border
       un-w="full"
       un-min="h-7.5"
-      un-break-words
+      un-break-all
       un-whitespace-pre-wrap
       class="custom_input_readonly_content"
       :class="{
-        'items-center': type !== 'textarea',
-        'custom_input_placeholder': shouldShowPlaceholder
+        'items-safe-center': type !== 'textarea',
+        'custom_input_placeholder': shouldShowPlaceholder,
       }"
       :style="{
         'min-height': textareaHeight != null ? textareaHeight + 'px' : undefined,
@@ -71,7 +73,7 @@
       v-bind="$attrs"
     >
       <span
-        v-if="!(modelValue ?? '')"
+        v-if="shouldShowPlaceholder"
         un-relative
         un-top="-1px"
       >
@@ -86,6 +88,7 @@
       </span>
     </div>
     <div
+      v-if="$slots.suffix"
       un-flex="~"
       un-overflow-hidden
       un-p="x-2.5"
@@ -196,47 +199,53 @@ defineExpose({
 
 <style lang="scss" scoped>
 .custom_input_readonly_border {
-  @apply b-1 b-solid b-[var(--el-border-color)] rounded;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--el-border-color);
+  border-radius: 4px;
 }
 .custom_input_readonly_no_border {
   .custom_input_readonly_content {
-    @apply p-y-1.5;
+    padding-top: calc(var(--spacing) * 1.5);
+    padding-bottom: calc(var(--spacing) * 1.5);
   }
 }
 .custom_input_align_center {
   :deep(.el-input__wrapper) {
     .el-input__inner {
-      @apply m-r-5.5 relative right--2.75;
+      margin-right: calc(var(--spacing) * 5.5);
+      position: relative;
+      right: calc(var(--spacing) * -2.75);
     }
   }
   :deep(.el-input__wrapper:has(.el-input__suffix)) {
     .el-input__inner {
-      @apply m-r-0;
+      margin-right: 0;
     }
   }
 }
 .custom_input_align_left {
   .custom_input_readonly_content {
-    @apply text-left;
+    text-align: left;
   }
   :deep(el-input__inner) {
-    @apply text-left;
+    text-align: left;
   }
 }
 .custom_input_align_center {
   .custom_input_readonly_content {
-    @apply text-center;
+    text-align: center;
   }
   :deep(.el-input__inner) {
-    @apply text-center;
+    text-align: center;
   }
 }
 .custom_input_align_right {
   .custom_input_readonly_content {
-    @apply text-right;
+    text-align: right;
   }
   :deep(.el-input__inner) {
-    @apply text-right;
+    text-align: right;
   }
 }
 </style>
