@@ -1,7 +1,7 @@
 const SSH2Promise = require("ssh2-promise");
 const fs = require("fs/promises");
 const { randomUUID } = require("node:crypto");
-const ecosystem = require(`${ __dirname }/../../../ecosystem.config.js`);
+const ecosystem = require(`${ __dirname }/../../../ecosystem.config.json`);
 const publish_cnf = require(`${ __dirname }/publish_cnf.js`);
 
 const { Command } = require("commander");
@@ -103,7 +103,7 @@ console.log(publishPath);
       cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
       cmd += ` ; rmdir ${ publishPathTmp }`;
       cmd += ` ; chmod -R 755 ${ publishPath }/rust/${ ecosystem.apps[0].script.replace("./", "") }`;
-      cmd += ` ; cd ${ publishPath }/rust/ && pm2 start`;
+      cmd += ` ; cd ${ publishPath }/rust/ && pm2 start ecosystem.config.json`;
       data = await ssh.exec(cmd);
     } catch (err) {
       console.error(err);
@@ -124,7 +124,7 @@ console.log(publishPath);
       cmd += ` ; cp ${ publishPathTmp }/rust/.env ${ publishPath }/rust/`;
       cmd += ` ; mv -f ${ publishPathTmp }/rust/* ${ publishPath }/rust/`;
       cmd += ` ; chmod -R 755 ${ publishPath }/rust/${ ecosystem.apps[0].name.replaceAll("4{env}", "") }`;
-      cmd += ` ; cd ${ publishPath }/rust/ && pm2 start`;
+      cmd += ` ; cd ${ publishPath }/rust/ && pm2 start ecosystem.config.json`;
       let data;
       try {
         data = await ssh.exec(cmd);
