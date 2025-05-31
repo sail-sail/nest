@@ -1039,7 +1039,7 @@ function getTableColumns(): ColumnType[] {
       prop: "gender_lbl",
       sortBy: "gender",
       width: 80,
-      align: "right",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
