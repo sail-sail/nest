@@ -696,7 +696,7 @@ import {
 
 import {
   getListDictbiz, // 业务字典
-} from "./Api";
+} from "./Api.ts";
 
 import {
   findOneDictbiz,

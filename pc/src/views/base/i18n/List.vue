@@ -657,7 +657,7 @@ import {
 
 import {
   getListLang, // 语言
-} from "./Api";
+} from "./Api.ts";
 
 import {
   getTreeMenu,
