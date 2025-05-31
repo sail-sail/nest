@@ -22,6 +22,7 @@
     }
   ],
   "settings": {
+    "diffEditor.useInlineViewWhenSpaceIsLimited": false,
     "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
     "git.openRepositoryInParentFolders": "never",
     "git.autofetch": false,

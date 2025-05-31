@@ -64,8 +64,8 @@
       un-whitespace-pre-wrap
       class="custom_input_readonly_content"
       :class="{
-        'items-center': type !== 'textarea',
-        'custom_input_placeholder': shouldShowPlaceholder
+        'items-safe-center': type !== 'textarea',
+        'custom_input_placeholder': shouldShowPlaceholder,
       }"
       :style="{
         'min-height': textareaHeight != null ? textareaHeight + 'px' : undefined,
@@ -73,7 +73,7 @@
       v-bind="$attrs"
     >
       <span
-        v-if="!(modelValue ?? '')"
+        v-if="shouldShowPlaceholder"
         un-relative
         un-top="-1px"
       >
