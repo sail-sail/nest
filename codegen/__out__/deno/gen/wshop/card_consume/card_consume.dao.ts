@@ -780,6 +780,48 @@ export async function checkByUniqueCardConsume(
   return;
 }
 
+// MARK: findOneOkCardConsume
+/** 根据条件查找第一会员卡消费记录 */
+export async function findOneOkCardConsume(
+  search?: Readonly<CardConsumeSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CardConsumeModel> {
+  
+  const table = "wshop_card_consume";
+  const method = "findOneOkCardConsume";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_card_consume = validateOptionCardConsume(
+    await findOneCardConsume(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_card_consume;
+}
+
 // MARK: findOneCardConsume
 /** 根据条件查找第一会员卡消费记录 */
 export async function findOneCardConsume(
@@ -826,6 +868,43 @@ export async function findOneCardConsume(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkCardConsume
+/** 根据 id 查找会员卡消费记录 */
+export async function findByIdOkCardConsume(
+  id?: CardConsumeId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CardConsumeModel> {
+  
+  const table = "wshop_card_consume";
+  const method = "findByIdOkCardConsume";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_card_consume = validateOptionCardConsume(
+    await findByIdCardConsume(
+      id,
+      options,
+    ),
+  );
+  
+  return model_card_consume;
 }
 
 // MARK: findByIdCardConsume

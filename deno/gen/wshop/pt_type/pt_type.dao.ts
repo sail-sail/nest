@@ -854,6 +854,48 @@ export async function checkByUniquePtType(
   return;
 }
 
+// MARK: findOneOkPtType
+/** 根据条件查找第一产品类别 */
+export async function findOneOkPtType(
+  search?: Readonly<PtTypeSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PtTypeModel> {
+  
+  const table = "wshop_pt_type";
+  const method = "findOneOkPtType";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_pt_type = validateOptionPtType(
+    await findOnePtType(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_pt_type;
+}
+
 // MARK: findOnePtType
 /** 根据条件查找第一产品类别 */
 export async function findOnePtType(
@@ -900,6 +942,43 @@ export async function findOnePtType(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkPtType
+/** 根据 id 查找产品类别 */
+export async function findByIdOkPtType(
+  id?: PtTypeId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PtTypeModel> {
+  
+  const table = "wshop_pt_type";
+  const method = "findByIdOkPtType";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_pt_type = validateOptionPtType(
+    await findByIdPtType(
+      id,
+      options,
+    ),
+  );
+  
+  return model_pt_type;
 }
 
 // MARK: findByIdPtType

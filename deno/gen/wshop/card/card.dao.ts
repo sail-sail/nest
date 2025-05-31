@@ -973,6 +973,48 @@ export async function checkByUniqueCard(
   return;
 }
 
+// MARK: findOneOkCard
+/** 根据条件查找第一会员卡 */
+export async function findOneOkCard(
+  search?: Readonly<CardSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CardModel> {
+  
+  const table = "wshop_card";
+  const method = "findOneOkCard";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_card = validateOptionCard(
+    await findOneCard(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_card;
+}
+
 // MARK: findOneCard
 /** 根据条件查找第一会员卡 */
 export async function findOneCard(
@@ -1019,6 +1061,43 @@ export async function findOneCard(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkCard
+/** 根据 id 查找会员卡 */
+export async function findByIdOkCard(
+  id?: CardId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CardModel> {
+  
+  const table = "wshop_card";
+  const method = "findByIdOkCard";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_card = validateOptionCard(
+    await findByIdCard(
+      id,
+      options,
+    ),
+  );
+  
+  return model_card;
 }
 
 // MARK: findByIdCard

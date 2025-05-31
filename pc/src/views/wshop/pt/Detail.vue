@@ -386,7 +386,7 @@ import {
 
 import {
   getListPtType,
-} from "./Api";
+} from "./Api.ts";
 
 import {
   findByIdsPtType,
