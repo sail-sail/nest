@@ -284,7 +284,7 @@ import {
 import {
   getListUsr,
   getListOrg,
-} from "./Api";
+} from "./Api.ts";
 
 import {
   findByIdsUsr,

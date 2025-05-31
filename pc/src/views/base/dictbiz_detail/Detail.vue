@@ -258,7 +258,7 @@ import {
 
 import {
   getListDictbiz,
-} from "./Api";
+} from "./Api.ts";
 
 import {
   findByIdsDictbiz,

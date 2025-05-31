@@ -55,6 +55,7 @@
     "uno_uni.config.ts": true,
     "uno.config.ts": true
   },
+  "diffEditor.useInlineViewWhenSpaceIsLimited": false,
   "git.timeline.showUncommitted": true,
   "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
   "git.openRepositoryInParentFolders": "never",
