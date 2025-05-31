@@ -51,11 +51,9 @@ declare global {
     /** 附加数据 */
     attach?: string;
     attach_like?: string;
-    /** 支付完成时间 */
-    success_time?: [(string|undefined|null), (string|undefined|null)];
-    /** 总金额 */
+    /** 总金额(分) */
     total?: [(number|undefined|null), (number|undefined|null)];
-    /** 用户支付金额 */
+    /** 用户支付金额(分) */
     payer_total?: [(number|undefined|null), (number|undefined|null)];
     /** 货币类型 */
     currency?: WxPayNoticeCurrency[];
@@ -67,9 +65,6 @@ declare global {
     /** 备注 */
     rem?: string;
     rem_like?: string;
-    /** 原始数据 */
-    raw?: string;
-    raw_like?: string;
     /** 创建时间 */
     create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
@@ -111,8 +106,8 @@ declare global {
 
 /** 微信支付通知 前端允许排序的字段 */
 export const canSortInApiWxPayNotice = {
-  // 微信支付订单号
-  "transaction_id": true,
+  // 支付完成时间
+  "success_time": true,
   // 创建时间
   "create_time": true,
   // 更新时间

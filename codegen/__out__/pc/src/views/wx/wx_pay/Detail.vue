@@ -188,7 +188,7 @@
             <CustomInput
               v-model="dialogModel.notify_url"
               placeholder="请输入 通知地址"
-              :readonly="isLocked || isReadonly"
+              :readonly="true"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -398,18 +398,6 @@ watchEffect(async () => {
         message: "开发者ID 长度不能超过 22",
       },
     ],
-    // 通知地址
-    notify_url: [
-      {
-        required: true,
-        message: "请输入 通知地址",
-      },
-      {
-        type: "string",
-        max: 256,
-        message: "通知地址 长度不能超过 256",
-      },
-    ],
     // 排序
     order_by: [
       {
@@ -535,9 +523,11 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
+      defaultInput,
       data,
       order_by,
     ] = await Promise.all([
+      getDefaultInputWxPay(),
       findOneModel({
         id,
         is_deleted,
@@ -550,6 +540,7 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
+        notify_url: defaultInput.notify_url,
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,

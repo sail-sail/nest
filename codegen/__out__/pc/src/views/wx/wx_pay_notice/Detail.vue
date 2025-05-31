@@ -222,12 +222,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.total == null)">
           <el-form-item
-            label="总金额"
+            label="总金额(分)"
             prop="total"
           >
             <CustomInputNumber
               v-model="dialogModel.total"
-              placeholder="请输入 总金额"
+              placeholder="请输入 总金额(分)"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -235,12 +235,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.payer_total == null)">
           <el-form-item
-            label="用户支付金额"
+            label="用户支付金额(分)"
             prop="payer_total"
           >
             <CustomInputNumber
               v-model="dialogModel.payer_total"
-              placeholder="请输入 用户支付金额"
+              placeholder="请输入 用户支付金额(分)"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -302,19 +302,6 @@
               placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.raw == null)">
-          <el-form-item
-            label="原始数据"
-            prop="raw"
-          >
-            <CustomInput
-              v-model="dialogModel.raw"
-              placeholder="请输入 原始数据"
-              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>

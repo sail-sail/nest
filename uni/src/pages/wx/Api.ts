@@ -1,6 +1,8 @@
 import type {
   Query,
   Mutation,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   MutationBindWxUsrArgs,
 } from "#/types";
 
@@ -10,6 +12,8 @@ export async function checkBindWxUsr() {
   // #ifndef H5
   {
     const res: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       checkBindWxUsr: Query["checkBindWxUsr"],
     } = await query({
       query: /* GraphQL */ `
@@ -25,6 +29,8 @@ export async function checkBindWxUsr() {
   // #ifdef H5
   {
     const res: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       checkBindWxUsr: Query["checkBindWxUsr"],
     } = await query({
       query: /* GraphQL */ `
@@ -44,6 +50,8 @@ export async function bindWxUsr(
   opt?: GqlOpt,
 ) {
   const res: {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     bindWxUsr: Mutation["bindWxUsr"],
   } = await mutation({
     query: /* GraphQL */ `
@@ -72,9 +80,10 @@ export async function getTestPayOpt() {
   const res: {
     getTestPayOpt: Mutation["getTestPayOpt"],
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       mutation($appid: String!) {
         getTestPayOpt(appid: $appid) {
+          out_trade_no
           timeStamp
           nonceStr
           package

@@ -53,10 +53,6 @@ export function intoInputPayTransactionsJsapi(
     time_expire: model?.time_expire,
     // 附加数据
     attach: model?.attach,
-    // 附加数据2
-    attach2: model?.attach2,
-    // 通知地址
-    notify_url: model?.notify_url,
     // 开发票
     receipt: model?.receipt,
     // 分账
@@ -68,8 +64,6 @@ export function intoInputPayTransactionsJsapi(
     currency_lbl: model?.currency_lbl,
     // 用户标识
     openid: model?.openid,
-    // 预支付交易会话标识
-    prepay_id: model?.prepay_id,
   };
   return input;
 }

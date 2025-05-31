@@ -920,6 +920,48 @@ export async function checkByUniqueWxoApp(
   return;
 }
 
+// MARK: findOneOkWxoApp
+/** 根据条件查找第一公众号设置 */
+export async function findOneOkWxoApp(
+  search?: Readonly<WxoAppSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoAppModel> {
+  
+  const table = "wx_wxo_app";
+  const method = "findOneOkWxoApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxo_app = validateOptionWxoApp(
+    await findOneWxoApp(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_wxo_app;
+}
+
 // MARK: findOneWxoApp
 /** 根据条件查找第一公众号设置 */
 export async function findOneWxoApp(
@@ -966,6 +1008,43 @@ export async function findOneWxoApp(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkWxoApp
+/** 根据 id 查找公众号设置 */
+export async function findByIdOkWxoApp(
+  id?: WxoAppId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoAppModel> {
+  
+  const table = "wx_wxo_app";
+  const method = "findByIdOkWxoApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxo_app = validateOptionWxoApp(
+    await findByIdWxoApp(
+      id,
+      options,
+    ),
+  );
+  
+  return model_wxo_app;
 }
 
 // MARK: findByIdWxoApp

@@ -19,7 +19,7 @@
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-grid="~ cols-[repeat(auto-fill,340px)]"
       un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
@@ -1049,8 +1049,8 @@ function getTableColumns(): ColumnType[] {
     {
       label: "名称",
       prop: "lbl",
-      width: 120,
-      align: "left",
+      width: 200,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
@@ -1089,7 +1089,7 @@ function getTableColumns(): ColumnType[] {
       label: "支付终端IP",
       prop: "payer_client_ip",
       width: 180,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1149,7 +1149,7 @@ function getTableColumns(): ColumnType[] {
       label: "创建时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",
@@ -1168,7 +1168,7 @@ function getTableColumns(): ColumnType[] {
       label: "更新时间",
       prop: "update_time_lbl",
       sortBy: "update_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",
@@ -1452,7 +1452,6 @@ async function onImportExcel() {
     [ "公钥" ]: "public_key",
     [ "私钥" ]: "private_key",
     [ "支付终端IP" ]: "payer_client_ip",
-    [ "通知地址" ]: "notify_url",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
@@ -1484,7 +1483,6 @@ async function onImportExcel() {
           "public_key": "string",
           "private_key": "string",
           "payer_client_ip": "string",
-          "notify_url": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",

@@ -55,9 +55,9 @@ export const wxPayNoticeFields = [
   // 支付完成时间
   "success_time",
   "success_time_lbl",
-  // 总金额
+  // 总金额(分)
   "total",
-  // 用户支付金额
+  // 用户支付金额(分)
   "payer_total",
   // 货币类型
   "currency",
@@ -69,8 +69,6 @@ export const wxPayNoticeFields = [
   "device_id",
   // 备注
   "rem",
-  // 原始数据
-  "raw",
   // 创建人
   "create_usr_id",
   "create_usr_id_lbl",

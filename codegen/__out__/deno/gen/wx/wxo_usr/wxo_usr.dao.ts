@@ -127,10 +127,10 @@ async function getWhereQuery(
     whereQuery += ` and t.usr_id is null`;
   }
   if (search?.usr_id_lbl != null) {
-    whereQuery += ` and t.usr_id_lbl in (${ args.push(search.usr_id_lbl) })`;
+    whereQuery += ` and usr_id_lbl.lbl in (${ args.push(search.usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.usr_id_lbl_like)) {
-    whereQuery += ` and t.usr_id_lbl like ${ args.push("%" + sqlLike(search.usr_id_lbl_like) + "%") }`;
+    whereQuery += ` and usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.usr_id_lbl_like) + "%") }`;
   }
   if (search?.appid != null) {
     whereQuery += ` and t.appid=${ args.push(search.appid) }`;
@@ -233,7 +233,8 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  let fromQuery = `wx_wxo_usr t`;
+  let fromQuery = `wx_wxo_usr t
+  left join base_usr usr_id_lbl on usr_id_lbl.id=t.usr_id`;
   return fromQuery;
 }
 
@@ -425,6 +426,7 @@ export async function findAllWxoUsr(
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
+      ,usr_id_lbl.lbl usr_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -481,6 +483,9 @@ export async function findAllWxoUsr(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 绑定用户
+    model.usr_id_lbl = model.usr_id_lbl || "";
     
     // 性别
     let sex_lbl = model.sex?.toString() || "";
@@ -721,6 +726,48 @@ export async function checkByUniqueWxoUsr(
   return;
 }
 
+// MARK: findOneOkWxoUsr
+/** 根据条件查找第一公众号用户 */
+export async function findOneOkWxoUsr(
+  search?: Readonly<WxoUsrSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoUsrModel> {
+  
+  const table = "wx_wxo_usr";
+  const method = "findOneOkWxoUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxo_usr = validateOptionWxoUsr(
+    await findOneWxoUsr(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_wxo_usr;
+}
+
 // MARK: findOneWxoUsr
 /** 根据条件查找第一公众号用户 */
 export async function findOneWxoUsr(
@@ -767,6 +814,43 @@ export async function findOneWxoUsr(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkWxoUsr
+/** 根据 id 查找公众号用户 */
+export async function findByIdOkWxoUsr(
+  id?: WxoUsrId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoUsrModel> {
+  
+  const table = "wx_wxo_usr";
+  const method = "findByIdOkWxoUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxo_usr = validateOptionWxoUsr(
+    await findByIdWxoUsr(
+      id,
+      options,
+    ),
+  );
+  
+  return model_wxo_usr;
 }
 
 // MARK: findByIdWxoUsr
@@ -1293,7 +1377,7 @@ async function _creates(
   await delCacheWxoUsr();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wxo_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,head_img,usr_id_lbl,usr_id,appid,openid,unionid,sex,province,city,country,privilege,rem)values";
+  let sql = "insert into wx_wxo_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,head_img,usr_id,appid,openid,unionid,sex,province,city,country,privilege,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1398,11 +1482,6 @@ async function _creates(
       }
       if (input.head_img != null) {
         sql += `,${ args.push(input.head_img) }`;
-      } else {
-        sql += ",default";
-      }
-      if (input.usr_id_lbl != null) {
-        sql += `,${ args.push(input.usr_id_lbl) }`;
       } else {
         sql += ",default";
       }
@@ -1612,11 +1691,6 @@ export async function updateByIdWxoUsr(
       sql += `head_img=${ args.push(input.head_img) },`;
       updateFldNum++;
     }
-  }
-  if (isNotEmpty(input.usr_id_lbl)) {
-    sql += `usr_id_lbl=?,`;
-    args.push(input.usr_id_lbl);
-    updateFldNum++;
   }
   if (input.usr_id != null) {
     if (input.usr_id != oldModel.usr_id) {

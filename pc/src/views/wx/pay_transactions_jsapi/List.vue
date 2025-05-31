@@ -19,7 +19,7 @@
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-grid="~ cols-[repeat(auto-fill,340px)]"
       un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
@@ -38,6 +38,37 @@
             placeholder="请输入 微信支付订单号"
             @clear="onSearchClear"
           ></CustomInput>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(showBuildIn || builtInSearch?.trade_state == null)">
+        <el-form-item
+          label="交易状态"
+          prop="trade_state"
+        >
+          <DictSelect
+            v-model="trade_state_search"
+            code="wx_pay_notice_trade_state"
+            placeholder="请选择 交易状态"
+            multiple
+            @change="onSearch(false)"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(showBuildIn || builtInSearch?.success_time == null)">
+        <el-form-item
+          label="支付完成时间"
+          prop="success_time"
+        >
+          <CustomDatePicker
+            v-model="success_time_search"
+            type="daterange"
+            start-placeholder="开始"
+            end-placeholder="结束"
+            @clear="onSearchClear"
+            @change="onSearch(false)"
+          ></CustomDatePicker>
         </el-form-item>
       </template>
       
@@ -410,11 +441,26 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignPage(
+                    '微信支付通知',
+                    row.transaction_id,
+                    {
+                      transaction_id: row.transaction_id,
+                      showBuildIn: '1',
+                    },
+                  )"
+                >
+                  {{ row[column.property] }}
+                </el-link>
+              </template>
             </el-table-column>
           </template>
           
           <!-- 交易状态 -->
-          <template v-else-if="'trade_state_lbl' === col.prop">
+          <template v-else-if="'trade_state_lbl' === col.prop && (showBuildIn || builtInSearch?.trade_state == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -432,7 +478,7 @@
           </template>
           
           <!-- 支付完成时间 -->
-          <template v-else-if="'success_time_lbl' === col.prop">
+          <template v-else-if="'success_time_lbl' === col.prop && (showBuildIn || builtInSearch?.success_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -451,24 +497,6 @@
           
           <!-- 附加数据 -->
           <template v-else-if="'attach' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 附加数据2 -->
-          <template v-else-if="'attach2' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 通知地址 -->
-          <template v-else-if="'notify_url' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -514,15 +542,6 @@
           
           <!-- 用户标识 -->
           <template v-else-if="'openid' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 预支付交易会话标识 -->
-          <template v-else-if="'prepay_id' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -619,6 +638,10 @@ import {
   useExportExcelPayTransactionsJsapi,
 } from "./Api.ts";
 
+import {
+  openForeignPage,
+} from "@/router/util.ts";
+
 defineOptions({
   name: "微信JSAPI下单",
 });
@@ -661,6 +684,8 @@ const props = defineProps<{
   id?: PayTransactionsJsapiId; // ID
   transaction_id?: string; // 微信支付订单号
   transaction_id_like?: string; // 微信支付订单号
+  trade_state?: string|string[]; // 交易状态
+  success_time?: string; // 支付完成时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -672,6 +697,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
+  trade_state: "string[]",
+  trade_state_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -730,6 +757,37 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 交易状态
+const trade_state_search = $computed({
+  get() {
+    return search.trade_state || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.trade_state = undefined;
+    } else {
+      search.trade_state = val;
+    }
+  },
+});
+
+// 支付完成时间
+const success_time_search = $computed({
+  get() {
+    return search.success_time || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.success_time = undefined;
+    } else {
+      search.success_time = [
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      ];
+    }
+  },
+});
 
 /** 回收站 */
 async function onRecycle() {
@@ -902,7 +960,7 @@ function getTableColumns(): ColumnType[] {
       label: "商品描述",
       prop: "description",
       width: 200,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -917,7 +975,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "微信支付订单号",
       prop: "transaction_id",
-      width: 240,
+      width: 250,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -944,6 +1002,7 @@ function getTableColumns(): ColumnType[] {
       prop: "success_time_lbl",
       sortBy: "success_time",
       width: 150,
+      sortable: "custom",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -960,22 +1019,6 @@ function getTableColumns(): ColumnType[] {
       label: "附加数据",
       prop: "attach",
       width: 150,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "附加数据2",
-      prop: "attach2",
-      width: 120,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "通知地址",
-      prop: "notify_url",
-      width: 200,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1022,14 +1065,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "预支付交易会话标识",
-      prop: "prepay_id",
-      width: 180,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "创建人",
       prop: "create_usr_id_lbl",
       sortBy: "create_usr_id_lbl",
@@ -1042,7 +1077,7 @@ function getTableColumns(): ColumnType[] {
       label: "创建时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",
@@ -1061,7 +1096,7 @@ function getTableColumns(): ColumnType[] {
       label: "更新时间",
       prop: "update_time_lbl",
       sortBy: "update_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",

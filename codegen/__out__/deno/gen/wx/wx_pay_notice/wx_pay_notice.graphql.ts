@@ -83,9 +83,9 @@ type WxPayNoticeModel {
   success_time: NaiveDateTime
   "支付完成时间"
   success_time_lbl: String!
-  "总金额"
+  "总金额(分)"
   total: Int!
-  "用户支付金额"
+  "用户支付金额(分)"
   payer_total: Int!
   "货币类型"
   currency: WxPayNoticeCurrency!
@@ -99,8 +99,6 @@ type WxPayNoticeModel {
   device_id: String!
   "备注"
   rem: String!
-  "原始数据"
-  raw: String
   "创建人"
   create_usr_id: UsrId!
   "创建人"
@@ -151,9 +149,9 @@ type WxPayNoticeFieldComment {
   success_time: String!
   "支付完成时间"
   success_time_lbl: String!
-  "总金额"
+  "总金额(分)"
   total: String!
-  "用户支付金额"
+  "用户支付金额(分)"
   payer_total: String!
   "货币类型"
   currency: String!
@@ -167,8 +165,6 @@ type WxPayNoticeFieldComment {
   device_id: String!
   "备注"
   rem: String!
-  "原始数据"
-  raw: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -219,9 +215,9 @@ input WxPayNoticeInput {
   success_time_lbl: String
   "支付完成时间"
   success_time_save_null: Boolean
-  "总金额"
+  "总金额(分)"
   total: Int
-  "用户支付金额"
+  "用户支付金额(分)"
   payer_total: Int
   "货币类型"
   currency: WxPayNoticeCurrency
@@ -235,8 +231,6 @@ input WxPayNoticeInput {
   device_id: String
   "备注"
   rem: String
-  "原始数据"
-  raw: String
 }
 input WxPayNoticeSearch {
   "已删除"
@@ -251,6 +245,8 @@ input WxPayNoticeSearch {
   "微信支付订单号"
   transaction_id: String
   transaction_id_like: String
+  "支付完成时间"
+  success_time: [NaiveDateTime]
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
