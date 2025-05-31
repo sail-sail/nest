@@ -92,19 +92,11 @@
             label="用户"
             prop="usr_id"
           >
-            <CustomSelect
+            <SelectInputUsr
               v-model="dialogModel.usr_id"
-              :method="getListUsr"
-              :find-by-values="findByIdsUsr"
-              :options-map="((item: UsrModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
               placeholder="请选择 用户"
               :readonly="isLocked || isReadonly"
-            ></CustomSelect>
+            ></SelectInputUsr>
           </el-form-item>
         </template>
         
@@ -376,13 +368,7 @@ import {
   intoInputWxUsr,
 } from "./Api.ts";
 
-import {
-  getListUsr,
-} from "./Api.ts";
-
-import {
-  findByIdsUsr,
-} from "@/views/base/usr/Api.ts";
+import SelectInputUsr from "@/views/base/usr/SelectInput.vue";
 
 const emit = defineEmits<{
   nextId: [
