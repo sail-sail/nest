@@ -2,7 +2,7 @@
 const child_process = require("node:child_process");
 const path = require("node:path");
 const minimist = require("minimist");
-const ecosystem = require(`${ __dirname }/../../../ecosystem.config.js`);
+const ecosystem = require(`${ __dirname }/../../../ecosystem.config.json`);
 
 const {
   copy,
@@ -48,10 +48,10 @@ async function codegen() {
 
 async function copyEnv() {
   console.log("copyEnv");
-  const ecosystemStr = await readFile(`${ rustDir }/ecosystem.config.js`, "utf8");
+  const ecosystemStr = await readFile(`${ rustDir }/ecosystem.config.json`, "utf8");
   const ecosystemStr2 = ecosystemStr.replaceAll("{env}", env);
   await mkdir(`${ buildDir }/rust`, { recursive: true });
-  await writeFile(buildDir + "/rust/ecosystem.config.js", ecosystemStr2);
+  await writeFile(buildDir + "/rust/ecosystem.config.json", ecosystemStr2);
   await copy(rustDir + "/.env." + env, buildDir + "/rust/.env");
 }
 

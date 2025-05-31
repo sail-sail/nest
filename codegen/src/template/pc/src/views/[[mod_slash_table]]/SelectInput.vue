@@ -28,7 +28,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   :class="{
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
-    'select_input_isShowModelLabel': hasModelLabel && modelLabel != inputValue,
+    'select_input_isShowModelLabel': props.pageInited && hasModelLabel && modelLabel != inputValue,
   }"
   @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
@@ -115,7 +115,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     :class="{
       label_readonly_1: props.labelReadonly,
       label_readonly_0: !props.labelReadonly,
-      'select_input_isShowModelLabel': hasModelLabel && modelLabel != inputValue,
+      'select_input_isShowModelLabel': props.pageInited && hasModelLabel && modelLabel != inputValue,
     }"
     v-bind="$attrs"
   >
@@ -171,6 +171,7 @@ const props = withDefaults(
     labelReadonly?: boolean;
     selectListReadonly?: boolean;
     validateEvent?: boolean;
+    pageInited?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -182,6 +183,7 @@ const props = withDefaults(
     labelReadonly: true,
     selectListReadonly: true,
     validateEvent: undefined,
+    pageInited: false,
   },
 );
 
