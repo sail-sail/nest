@@ -8971,7 +8971,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/media/image?id=chooseimage](http://uniapp.dcloud.io/api/media/image?id=chooseimage)
      */
-    chooseImage(options: UniNamespace.ChooseImageOptions): void;
+    chooseImage(options: UniNamespace.ChooseImageOptions): Promise<UniNamespace.ChooseImageSuccessCallbackResult>;
     /**
      * 从本地选择文件（仅支持H5）
      *
@@ -8983,7 +8983,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/media/image?id=previewimage](http://uniapp.dcloud.io/api/media/image?id=previewimage)
      */
-    previewImage(options: UniNamespace.PreviewImageOptions): void;
+    previewImage(options: UniNamespace.PreviewImageOptions): Promise<void>;
     /**
      * 预览图片
      *
@@ -9001,7 +9001,9 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/media/image?id=saveimagetophotosalbum](http://uniapp.dcloud.io/api/media/image?id=saveimagetophotosalbum)
      */
-    saveImageToPhotosAlbum(options: UniNamespace.SaveImageToPhotosAlbumOptions): void;
+    saveImageToPhotosAlbum(options: UniNamespace.SaveImageToPhotosAlbumOptions): Promise<{
+        errMsg: string;
+    }>;
     /**
      * 压缩图片
      *
@@ -9999,19 +10001,21 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/plugins/payment?id=requestpayment](http://uniapp.dcloud.io/api/plugins/payment?id=requestpayment)
      */
-    requestPayment(options: UniNamespace.RequestPaymentOptions): Promise<any>;
+    requestPayment(options: UniNamespace.RequestPaymentOptions): Promise<{
+        errMsg: string;
+    }>;
     /**
      * 提前向用户发起授权请求
      *
      * 文档: [http://uniapp.dcloud.io/api/other/authorize?id=authorize](http://uniapp.dcloud.io/api/other/authorize?id=authorize)
      */
-    authorize(options: UniNamespace.AuthorizeOptions): void;
+    authorize(options: UniNamespace.AuthorizeOptions): Promise<any>;
     /**
      * 调起客户端小程序设置界面，返回用户设置的操作结果
      *
      * 文档: [http://uniapp.dcloud.io/api/other/authorize?id=opensetting](http://uniapp.dcloud.io/api/other/authorize?id=opensetting)
      */
-    openSetting(options?: UniNamespace.OpenSettingOptions): void;
+    openSetting(options?: UniNamespace.OpenSettingOptions): Promise<any>;
     /**
      * 获取用户的当前设置
      *
