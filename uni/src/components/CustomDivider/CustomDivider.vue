@@ -15,9 +15,11 @@
     un-h="1"
   ></view>
   <text
-    un-text="2.75 gray-300"
+    un-text="gray-300"
   >
-    此处是底线
+    <slot>
+      此处是底线
+    </slot>
   </text>
   <view
     un-flex="[1_0_0]"

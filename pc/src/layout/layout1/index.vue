@@ -349,6 +349,11 @@ import {
 
 import config from "@/utils/config";
 
+// import {
+//   clearDictbizCache,
+//   clearDictCache,
+// } from "@/utils/common";
+
 const router = useRouter();
 
 const {
@@ -538,6 +543,8 @@ async function onClearCache() {
   } catch (err) {
     return;
   }
+  // clearDictCache();
+  // clearDictbizCache();
   indexStore.i18n_version = null;
   localStorage.removeItem("__i18n_version");
   localStorage.removeItem("i18nLblsLang");
@@ -654,6 +661,8 @@ initFrame();
   }
 }
 .tab_active_line {
-  @apply transition-property-[width,left] duration-[300ms] ease-in;
+  transition-property: width, left;
+  transition-duration: 300ms;
+  transition-timing-function: ease-in;
 }
 </style>

@@ -8,7 +8,7 @@ import type {
 
 import {
   dictDetailFields,
-} from "@/views/base/dict_detail/Model";
+} from "@/views/base/dict_detail/Model.ts";
 
 declare global {
   

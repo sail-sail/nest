@@ -250,6 +250,9 @@ async function getSchema0(
       item.ignoreCodegen = false;
       item.noAdd = true;
       item.noEdit = true;
+      if (item.noDetail == null) {
+        item.noDetail = true;
+      }
     }
     if (column_name === "is_default") {
       if (item.width == null) {
@@ -288,7 +291,7 @@ async function getSchema0(
     }
     if ([ "create_time", "update_time" ].includes(column_name)) {
       if (item.width == null) {
-        item.width = 150;
+        item.width = 160;
       }
     }
     if (column_name === "lbl") {
@@ -312,8 +315,6 @@ async function getSchema0(
       }
       if (item.fixed == null) {
         item.fixed = "left";
-      } else if (item.fixed === false) {
-        delete item.fixed;
       }
     }
     if (column_name === "code") {
@@ -335,10 +336,8 @@ async function getSchema0(
       if (item.align == null) {
         item.align = "left";
       }
-      if (item.fixed === undefined) {
+      if (item.fixed == null) {
         item.fixed = "left";
-      } else if (item.fixed === null) {
-        delete item.fixed;
       }
     }
     if ([ "is_locked" ].includes(column_name)) {
@@ -379,6 +378,9 @@ async function getSchema0(
         if (item.canSearch == null) {
           item.canSearch = true;
         }
+      }
+      if (item.noDetail == null) {
+        item.noDetail = true;
       }
     }
     if (column_name.startsWith("is_")
@@ -521,7 +523,7 @@ async function getSchema0(
     }
     if (record && record.DATA_TYPE === "datetime") {
       if (item.width == null) {
-        item.width = 150;
+        item.width = 160;
       }
     }
     
@@ -750,10 +752,10 @@ async function getSchema0(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.detailFormWidth = "380px";
   }
-  // List.vue 中表单中表单文本框的宽度, 默认为: 280px
+  // List.vue 中表单中表单文本框的宽度, 默认为: 340px
   if (tables[table_name]?.opts?.searchFormWidth == null) {
     tables[table_name].opts = tables[table_name].opts || { };
-    tables[table_name].opts.searchFormWidth = "280px";
+    tables[table_name].opts.searchFormWidth = "340px";
   }
   return records2;
 }

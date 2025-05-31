@@ -14,12 +14,21 @@ export async function uploadFile(config: {
   url?: string;
   name?: string;
   filePath?: string;
+  /**
+   * 文件类型，image/video/audio，仅支付宝小程序，且必填。
+   * - image: 图像
+   * - video: 视频
+   * - audio: 音频
+   */
+  fileType?: 'image' | 'video' | 'audio';
   header?: { [key: string]: any };
   notLoading?: boolean;
   showErrMsg?: boolean;
   reqType?: string;
   notLogin?: boolean;
   type?: "oss" | "tmpfile";
+  db?: string;
+  isPublic?: boolean;
 }): Promise<string> {
   const indexStore = useIndexStore();
   const usrStore = useUsrStore();
@@ -32,7 +41,20 @@ export async function uploadFile(config: {
     if (!config.name) {
       config.name = "file";
     }
-    config.url = config.url || `${ cfg.url }/${ config.type }/upload`;
+    config = config || { };
+    config.type = config.type || "oss";
+    if (!config.url) {
+      let url = "";
+      if (config?.isPublic) {
+        url += `${ cfg.url }/${ config.type }/uploadPublic`;
+      } else {
+        url += `${ cfg.url }/${ config.type }/upload`;
+      }
+      config.url = url;
+    }
+    if (config.db) {
+      config.url += `?db=${ encodeURIComponent(config.db) }`;
+    }
     const authorization = usrStore.getAuthorization();
     if (authorization) {
       config.header = config.header || { };
@@ -145,6 +167,11 @@ export async function downloadFile(
     if (model.remove != null) {
       paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.remove) }`;
     }
+    const usrStore = useUsrStore();
+    const authorization = usrStore.getAuthorization();
+    if (authorization) {
+      paramStr = `${ paramStr }&authorization=${ encodeURIComponent(authorization) }`;
+    }
     if (paramStr.startsWith("&")) {
       paramStr = paramStr.substring(1);
     }
@@ -202,6 +229,7 @@ export function getDownloadUrl(
   if (!type) {
     type = "tmpfile";
   }
+  const usrStore = useUsrStore();
   let paramStr = "";
   if (model.id) {
     paramStr = `${ paramStr }&id=${ encodeURIComponent(model.id) }`;
@@ -214,6 +242,10 @@ export function getDownloadUrl(
   }
   if (model.remove != null) {
     paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.remove) }`;
+  }
+  const authorization = usrStore.getAuthorization();
+  if (authorization) {
+    paramStr = `${ paramStr }&authorization=${ encodeURIComponent(authorization) }`;
   }
   if (paramStr.startsWith("&")) {
     paramStr = paramStr.substring(1);
@@ -237,8 +269,9 @@ export function getImgUrl(
     quality?: number;
     filename?: string;
     inline?: "0"|"1";
+    notAuthorization?: boolean;
   } | string,
-) {
+): string {
   if (typeof model === "string") {
     model = {
       id: model,
@@ -246,8 +279,9 @@ export function getImgUrl(
     };
   }
   if (!model.id) {
-    return;
+    return "";
   }
+  const usrStore = useUsrStore();
   let params = `id=${ encodeURIComponent(model.id) }`;
   if (model.filename) {
     params += `&filename=${ encodeURIComponent(model.filename) }`;
@@ -258,6 +292,9 @@ export function getImgUrl(
   if (model.format) {
     params += `&f=${ encodeURIComponent(model.format) }`;
   }
+  if (!model.width) {
+    model.width = 750;
+  }
   if (model.width) {
     params += `&w=${ encodeURIComponent(model.width.toString()) }`;
   }
@@ -266,6 +303,12 @@ export function getImgUrl(
   }
   if (model.quality) {
     params += `&q=${ encodeURIComponent(model.quality.toString()) }`;
+  }
+  if (model.notAuthorization !== true) {
+    const authorization = usrStore.getAuthorization();
+    if (authorization) {
+      params += `&authorization=${ encodeURIComponent(authorization) }`;
+    }
   }
   return `${ cfg.url }/oss/img?${ params }`;
 }
@@ -363,12 +406,18 @@ export function getAppid() {
   return cfg.appid;
 }
 
+let code2SessionPromise: Promise<LoginModel | undefined> | undefined = undefined;
+
 async function code2Session(
   model: {
     code: string;
     lang: string;
   },
 ) {
+  if (code2SessionPromise) {
+    return code2SessionPromise;
+  }
+  code2SessionPromise = (async function() {
   const appid = getAppid();
   const loginModel: LoginModel | undefined = await request({
     url: "wx_usr/code2Session",
@@ -381,7 +430,10 @@ async function code2Session(
     notLogin: true,
     notLoading: true,
   });
+    
   return loginModel;
+  })();
+  return await code2SessionPromise;
 }
 
 export async function uniLogin() {
@@ -393,15 +445,22 @@ export async function uniLogin() {
     providers = providerInfo.provider;
   } catch (err) { /* empty */ }
   if (providers && providers.includes("weixin")) {
+    let loginRes: UniApp.LoginRes | undefined;
+    try {
+      loginRes = await uni.login({ provider: "weixin" });
+    } catch (err) { /* empty */ }
+    const code = loginRes?.code;
+    if (!code) {
+      indexStore.setIsGuest(true);
+      return false;
+    }
     const appBaseInfo = indexStore.getAppBaseInfo();
-    let appLanguage = appBaseInfo.appLanguage || "zh-CN";
+    let appLanguage = appBaseInfo?.appLanguage || "zh-CN";
     if (appLanguage === "en") {
       appLanguage = "en-US";
     } else if (["zh", "zh-hans", "zh-hant", "zh-hans-cn"].includes(appLanguage?.toLocaleLowerCase())) {
       appLanguage = "zh-CN";
     }
-    const loginRes = await uni.login({ provider: "weixin" });
-    const code = loginRes?.code;
     if (code) {
       let login_model: LoginModel | undefined;
       try {
@@ -421,7 +480,7 @@ export async function uniLogin() {
         usrStore.setUsrId(login_model.usr_id);
         usrStore.setUsername(login_model.username);
         usrStore.setTenantId(login_model.tenant_id);
-        usrStore.setLang(login_model.lang ?? "");
+        usrStore.setLang(login_model.lang || "");
         return true;
       }
       return false;

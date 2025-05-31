@@ -6,10 +6,9 @@ import {
   defineConfig,
   presetAttributify,
   presetIcons,
-  presetUno,
+  presetWind3,
   transformerAttributifyJsx,
   transformerCompileClass,
-  transformerDirectives,
   transformerVariantGroup,
 } from "unocss";
 
@@ -36,7 +35,7 @@ export default defineConfig({
     ],
   ],
   presets: [
-    presetUno(),
+    presetWind3(),
     presetRemToPx(),
     presetIcons({
       warn: true,
@@ -51,7 +50,6 @@ export default defineConfig({
   ],
   transformers: [
     transformerCompileClass(),
-    transformerDirectives(),
     transformerVariantGroup(),
     transformerAttributifyJsx(),
   ],

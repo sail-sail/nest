@@ -707,6 +707,48 @@ export async function checkByUniqueDict(
   return;
 }
 
+// MARK: findOneOkDict
+/** 根据条件查找第一系统字典 */
+export async function findOneOkDict(
+  search?: Readonly<DictSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictModel> {
+  
+  const table = "base_dict";
+  const method = "findOneOkDict";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_dict = validateOptionDict(
+    await findOneDict(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_dict;
+}
+
 // MARK: findOneDict
 /** 根据条件查找第一系统字典 */
 export async function findOneDict(
@@ -753,6 +795,43 @@ export async function findOneDict(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkDict
+/** 根据 id 查找系统字典 */
+export async function findByIdOkDict(
+  id?: DictId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictModel> {
+  
+  const table = "base_dict";
+  const method = "findByIdOkDict";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_dict = validateOptionDict(
+    await findByIdDict(
+      id,
+      options,
+    ),
+  );
+  
+  return model_dict;
 }
 
 // MARK: findByIdDict

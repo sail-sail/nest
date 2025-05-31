@@ -881,13 +881,14 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "ky",
-        width: 140,
+        width: 240,
         align: "left",
+        search: true,
       },
       {
         COLUMN_NAME: "val",
         search: true,
-        width: 140,
+        width: 180,
         align: "left",
       },
       {
@@ -963,15 +964,13 @@ export default defineConfig({
         COLUMN_NAME: "old_data",
         align: "left",
         width: 100,
-        noAdd: true,
-        noEdit: true,
+        noDetail: true,
       },
       {
         COLUMN_NAME: "new_data",
         align: "left",
         width: 100,
-        noAdd: true,
-        noEdit: true,
+        noDetail: true,
       },
       {
         COLUMN_NAME: "create_usr_id",

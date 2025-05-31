@@ -1027,7 +1027,7 @@ for (let i = 0; i < columns.length; i++) {
       
       <el-button
         plain
-        @click="onOpenForeignTabs(tabGroup, label)"
+        @click="onOpenForeignTabs('<#=tabGroup#>', '<#=label#>')"
       >
         <template #icon>
           <ElIconTickets />
@@ -1248,7 +1248,7 @@ for (let i = 0; i < columns.length; i++) {
             
             <el-dropdown-item
               un-justify-center
-              @click="onOpenForeignTabs(tabGroup, label)"
+              @click="onOpenForeignTabs('<#=tabGroup#>', '<#=label#>')"
             >
               <template #icon>
                 <ElIconTickets />
@@ -1565,6 +1565,9 @@ for (let i = 0; i < columns.length; i++) {
             if (column_name === "version") continue;
             if (column_name === "is_deleted") continue;
             if (column_name === "tenant_id") continue;
+            if (column.isFluentEditor) {
+              continue;
+            }
             const foreignKey = column.foreignKey;
             const data_type = column.DATA_TYPE;
             const column_type = column.COLUMN_TYPE;
@@ -1697,8 +1700,15 @@ for (let i = 0; i < columns.length; i++) {
                     {<#
                       for (const key of queryKeys) {
                         const value = foreignPage.query[key];
+                      #><#
+                      if (key === "showBuildIn") {
+                      #>
+                      showBuildIn: '<#=value#>',<#
+                      } else {
                       #>
                       <#=key#>: row.<#=value#>,<#
+                      }
+                      #><#
                       }
                       #>
                     },
@@ -1891,8 +1901,15 @@ for (let i = 0; i < columns.length; i++) {
                     {<#
                       for (const key of queryKeys) {
                         const value = foreignPage.query[key];
+                      #><#
+                      if (key === "showBuildIn") {
+                      #>
+                      showBuildIn: '<#=value#>',<#
+                      } else {
                       #>
                       <#=key#>: row.<#=value#>,<#
+                      }
+                      #><#
                       }
                       #>
                     },
@@ -2006,8 +2023,15 @@ for (let i = 0; i < columns.length; i++) {
                     {<#
                       for (const key of queryKeys) {
                         const value = foreignPage.query[key];
+                      #><#
+                      if (key === "showBuildIn") {
+                      #>
+                      showBuildIn: '<#=value#>',<#
+                      } else {
                       #>
                       <#=key#>: row.<#=value#>,<#
+                      }
+                      #><#
                       }
                       #>
                     },
@@ -2074,6 +2098,59 @@ for (let i = 0; i < columns.length; i++) {
                   @click="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row)"
                 >
                   {{ row.<#=column_name#>?.length || 0 }}
+                </el-link>
+              </template><#
+              } else if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
+              #>
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
+                  if (opts.lbl_field) {
+                  #> + ' - ' + row.<#=opts.lbl_field#><#
+                  }
+                  #>)"
+                >
+                  <#=prefix#>{{ row[column.property] }}
+                </el-link>
+              </template><#
+              } else if (foreignPage) {
+                const queryKeys = Object.keys(foreignPage.query || { });
+                if (!foreignPage.routeName) {
+                  throw new Error(`表: ${ table_name } 字段: ${ column_name } 未配置 foreignPage.routeName`);
+                }
+              #>
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignPage(
+                    '<#=foreignPage.routeName#>',<#
+                    if (foreignPage.tabNameField) {
+                    #>
+                    row.<#=foreignPage.tabNameField#>,<#
+                    } else {
+                    #>
+                    undefined,<#
+                    }
+                    #>
+                    {<#
+                      for (const key of queryKeys) {
+                        const value = foreignPage.query[key];
+                      #><#
+                      if (key === "showBuildIn") {
+                      #>
+                      showBuildIn: '<#=value#>',<#
+                      } else {
+                      #>
+                      <#=key#>: row.<#=value#>,<#
+                      }
+                      #><#
+                      }
+                      #>
+                    },
+                  )"
+                >
+                  <#=prefix#>{{ row[column.property] }}
                 </el-link>
               </template><#
               } else if (column.inlineMany2manyTab) {
@@ -2475,7 +2552,7 @@ import {<#
   getList<#=Foreign_Table_Up#>, // <#=column_comment#><#
   }
   #>
-} from "./Api";<#
+} from "./Api.ts";<#
 }
 #><#
 const foreignTableArr3 = [];
@@ -2510,7 +2587,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts?.list_tree) {
+  if (foreignSchema.opts?.list_tree !== true) {
     continue;
   }
   if (!column.search) {
@@ -2948,8 +3025,8 @@ const <#=column_name#>_search = $computed({
       search.<#=column_name#> = undefined;
     } else {
       search.<#=column_name#> = [
-        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
-        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DD"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DD"),
       ];
     }
   },
@@ -3140,6 +3217,9 @@ function getTableColumns(): ColumnType[] {
     if (column_name === "version") continue;
     if (column_name === "is_deleted") continue;
     if (column_name === "tenant_id") continue;
+    if (column.isFluentEditor) {
+      continue;
+    }
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
@@ -3148,7 +3228,7 @@ function getTableColumns(): ColumnType[] {
     if (isPassword) continue;
     if (column_type) {
       if (
-        (column_type !== "int(1)" && column_type.startsWith("int"))
+        (column_type !== "int(1)" && column_type.startsWith("int") && !column.dict && !column.dictbiz)
         || column_type.startsWith("decimal")
       ) {
         column.align = column.align || "right";
@@ -3164,9 +3244,7 @@ function getTableColumns(): ColumnType[] {
       column.showOverflowTooltip = true;
     }
     let fixed = column.fixed;
-    if (fixed === false) {
-      fixed = undefined;
-    } else if (fixed === true) {
+    if (fixed === true) {
       fixed = "left";
     }
     const isIcon = column.isIcon;
