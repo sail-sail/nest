@@ -1096,6 +1096,48 @@ export async function checkByUniqueOrder(
   return;
 }
 
+// MARK: findOneOkOrder
+/** 根据条件查找第一订单 */
+export async function findOneOkOrder(
+  search?: Readonly<OrderSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OrderModel> {
+  
+  const table = "wshop_order";
+  const method = "findOneOkOrder";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_order = validateOptionOrder(
+    await findOneOrder(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_order;
+}
+
 // MARK: findOneOrder
 /** 根据条件查找第一订单 */
 export async function findOneOrder(
@@ -1142,6 +1184,43 @@ export async function findOneOrder(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkOrder
+/** 根据 id 查找订单 */
+export async function findByIdOkOrder(
+  id?: OrderId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OrderModel> {
+  
+  const table = "wshop_order";
+  const method = "findByIdOkOrder";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_order = validateOptionOrder(
+    await findByIdOrder(
+      id,
+      options,
+    ),
+  );
+  
+  return model_order;
 }
 
 // MARK: findByIdOrder

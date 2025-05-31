@@ -964,6 +964,48 @@ export async function checkByUniquePt(
   return;
 }
 
+// MARK: findOneOkPt
+/** 根据条件查找第一产品 */
+export async function findOneOkPt(
+  search?: Readonly<PtSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PtModel> {
+  
+  const table = "wshop_pt";
+  const method = "findOneOkPt";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_pt = validateOptionPt(
+    await findOnePt(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_pt;
+}
+
 // MARK: findOnePt
 /** 根据条件查找第一产品 */
 export async function findOnePt(
@@ -1010,6 +1052,43 @@ export async function findOnePt(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkPt
+/** 根据 id 查找产品 */
+export async function findByIdOkPt(
+  id?: PtId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PtModel> {
+  
+  const table = "wshop_pt";
+  const method = "findByIdOkPt";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_pt = validateOptionPt(
+    await findByIdPt(
+      id,
+      options,
+    ),
+  );
+  
+  return model_pt;
 }
 
 // MARK: findByIdPt

@@ -741,6 +741,48 @@ export async function checkByUniqueWxappConfig(
   return;
 }
 
+// MARK: findOneOkWxappConfig
+/** 根据条件查找第一小程序配置 */
+export async function findOneOkWxappConfig(
+  search?: Readonly<WxappConfigSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxappConfigModel> {
+  
+  const table = "wshop_wxapp_config";
+  const method = "findOneOkWxappConfig";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxapp_config = validateOptionWxappConfig(
+    await findOneWxappConfig(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_wxapp_config;
+}
+
 // MARK: findOneWxappConfig
 /** 根据条件查找第一小程序配置 */
 export async function findOneWxappConfig(
@@ -787,6 +829,43 @@ export async function findOneWxappConfig(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkWxappConfig
+/** 根据 id 查找小程序配置 */
+export async function findByIdOkWxappConfig(
+  id?: WxappConfigId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxappConfigModel> {
+  
+  const table = "wshop_wxapp_config";
+  const method = "findByIdOkWxappConfig";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxapp_config = validateOptionWxappConfig(
+    await findByIdWxappConfig(
+      id,
+      options,
+    ),
+  );
+  
+  return model_wxapp_config;
 }
 
 // MARK: findByIdWxappConfig

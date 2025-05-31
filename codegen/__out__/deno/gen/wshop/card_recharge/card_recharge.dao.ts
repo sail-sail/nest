@@ -780,6 +780,48 @@ export async function checkByUniqueCardRecharge(
   return;
 }
 
+// MARK: findOneOkCardRecharge
+/** 根据条件查找第一会员卡充值记录 */
+export async function findOneOkCardRecharge(
+  search?: Readonly<CardRechargeSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CardRechargeModel> {
+  
+  const table = "wshop_card_recharge";
+  const method = "findOneOkCardRecharge";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_card_recharge = validateOptionCardRecharge(
+    await findOneCardRecharge(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_card_recharge;
+}
+
 // MARK: findOneCardRecharge
 /** 根据条件查找第一会员卡充值记录 */
 export async function findOneCardRecharge(
@@ -826,6 +868,43 @@ export async function findOneCardRecharge(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkCardRecharge
+/** 根据 id 查找会员卡充值记录 */
+export async function findByIdOkCardRecharge(
+  id?: CardRechargeId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CardRechargeModel> {
+  
+  const table = "wshop_card_recharge";
+  const method = "findByIdOkCardRecharge";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_card_recharge = validateOptionCardRecharge(
+    await findByIdCardRecharge(
+      id,
+      options,
+    ),
+  );
+  
+  return model_card_recharge;
 }
 
 // MARK: findByIdCardRecharge

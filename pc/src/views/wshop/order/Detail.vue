@@ -193,6 +193,79 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.amt == null) && dialogAction !== 'add' && dialogAction !== 'copy' && dialogAction !== 'edit'">
+          <el-form-item
+            label="消费充值金额"
+            prop="amt"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.amt"
+              :max="99999999999.99"
+              :precision="2"
+              placeholder="请输入 消费充值金额"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.give_amt == null) && dialogAction !== 'add' && dialogAction !== 'copy' && dialogAction !== 'edit'">
+          <el-form-item
+            label="消费赠送金额"
+            prop="give_amt"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.give_amt"
+              :max="99999999999.99"
+              :precision="2"
+              placeholder="请输入 消费赠送金额"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.integral == null) && dialogAction !== 'add' && dialogAction !== 'copy' && dialogAction !== 'edit'">
+          <el-form-item
+            label="获得积分"
+            prop="integral"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.integral"
+              placeholder="请输入 获得积分"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.balance == null) && dialogAction !== 'add' && dialogAction !== 'copy' && dialogAction !== 'edit'">
+          <el-form-item
+            label="消费后充值余额"
+            prop="balance"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.balance"
+              :max="99999999999.99"
+              :precision="2"
+              placeholder="请输入 消费后充值余额"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.give_balance == null) && dialogAction !== 'add' && dialogAction !== 'copy' && dialogAction !== 'edit'">
+          <el-form-item
+            label="消费后赠送余额"
+            prop="give_balance"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.give_balance"
+              :max="99999999999.99"
+              :precision="2"
+              placeholder="请输入 消费后赠送余额"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             label="备注"
@@ -316,15 +389,11 @@ import {
 
 import {
   getListUsr,
-} from "./Api";
+} from "./Api.ts";
 
 import {
   findByIdsUsr,
 } from "@/views/base/usr/Api.ts";
-
-import {
-  findByIdsCard,
-} from "@/views/wshop/card/Api.ts";
 
 import SelectInputCard from "@/views/wshop/card/SelectInput.vue";
 

@@ -341,6 +341,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "会员卡",
         component: () => import("@/views/wshop/card/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "会员卡",
+        },
       },
     ],
   },
@@ -353,6 +356,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "会员卡消费记录",
         component: () => import("@/views/wshop/card_consume/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "会员卡消费记录",
+        },
       },
     ],
   },
@@ -365,6 +371,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "会员卡充值记录",
         component: () => import("@/views/wshop/card_recharge/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "会员卡充值记录",
+        },
       },
     ],
   },
@@ -377,6 +386,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "订单",
         component: () => import("@/views/wshop/order/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "订单",
+        },
       },
     ],
   },
@@ -389,6 +401,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "产品",
         component: () => import("@/views/wshop/pt/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "产品",
+        },
       },
     ],
   },
@@ -401,6 +416,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "产品类别",
         component: () => import("@/views/wshop/pt_type/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "产品类别",
+        },
       },
     ],
   },
@@ -413,6 +431,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "充值赠送规则",
         component: () => import("@/views/wshop/recharge_rule/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "充值赠送规则",
+        },
       },
     ],
   },
@@ -425,6 +446,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "小程序配置",
         component: () => import("@/views/wshop/wxapp_config/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "小程序配置",
+        },
       },
     ],
   },
