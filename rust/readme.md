@@ -30,7 +30,7 @@ ab -c100 -n10000 -p /data/software/test.json -T application/json -H "Content-Typ
 ```
 
 ## 换工程名字
-1. `ecosystem.config.js`
+1. `ecosystem.config.json`
     - 第3行: `name: "[工程名]"`
     - 第4行: `script: "./[工程名]"`
 2. `Cargo.toml`
