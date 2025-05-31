@@ -107,14 +107,13 @@ async fn get_where_query(
         Some(item) => item.tenant_id.clone(),
         None => None,
       };
-      let tenant_id = match tenant_id {
+      match tenant_id {
         None => get_auth_tenant_id(),
         Some(item) => match item.as_str() {
           "-" => None,
           _ => item.into(),
         },
-      };
-      tenant_id
+      }
     };
     if let Some(tenant_id) = tenant_id {
       where_query.push_str(" and t.tenant_id=?");

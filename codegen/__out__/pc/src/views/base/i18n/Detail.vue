@@ -258,7 +258,7 @@ import {
 
 import {
   getListLang,
-} from "./Api";
+} from "./Api.ts";
 
 import {
   findByIdsLang,

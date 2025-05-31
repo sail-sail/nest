@@ -650,6 +650,9 @@ const options4SelectV2Compt = $computed(() => {
     return options4SelectV2;
   }
   const modelValueDataFilter = modelValueData.filter((item) => {
+    if (!item) {
+      return false;
+    }
     return !options4SelectV2.find((item2) => item2.value === props.optionsMap(item).value);
   });
   if (modelValueDataFilter.length === 0) {
@@ -870,6 +873,29 @@ defineExpose({
     line-height: normal;
     white-space: normal;
     top: calc(50% - 1px);
+  }
+}
+:deep(.el-select__selected-item .el-tag) {
+  height: auto;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  box-sizing: border-box;
+  .el-select__tags-text {
+    text-wrap-mode: wrap;
+  }
+}
+.custom_select_readonly {
+  min-height: 30px;
+  :deep(.el-tag) {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    box-sizing: border-box;
+    height: auto;
+    .el-tag__content {
+      text-wrap-mode: wrap;
+      white-space: normal;
+      word-break: break-all;
+    }
   }
 }
 </style>
