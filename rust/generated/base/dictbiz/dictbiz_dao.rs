@@ -2168,7 +2168,7 @@ pub async fn update_by_id_dictbiz(
     args.push(code.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl.clone() {
+  if let Some(lbl) = input.lbl {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
@@ -2209,8 +2209,6 @@ pub async fn update_by_id_dictbiz(
     sql_fields += "is_sys=?,";
     args.push(is_sys.into());
   }
-  
-  let dictbiz_id_lbl = input.lbl.clone();
   
   // 业务字典明细
   if let Some(dictbiz_detail_input) = input.dictbiz_detail {

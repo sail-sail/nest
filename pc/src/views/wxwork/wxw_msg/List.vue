@@ -574,7 +574,7 @@ import {
 
 import {
   getListWxwApp, // 企微应用
-} from "./Api";
+} from "./Api.ts";
 
 defineOptions({
   name: "企微消息",
