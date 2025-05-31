@@ -2011,7 +2011,7 @@ pub async fn update_by_id_options(
   
   let mut field_num: usize = 0;
   // 名称
-  if let Some(lbl) = input.lbl.clone() {
+  if let Some(lbl) = input.lbl {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());

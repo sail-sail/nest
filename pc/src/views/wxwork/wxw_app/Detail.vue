@@ -297,7 +297,7 @@ import {
 
 import {
   getListDomain,
-} from "./Api";
+} from "./Api.ts";
 
 import {
   findByIdsDomain,
