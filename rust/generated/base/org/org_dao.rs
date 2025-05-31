@@ -2007,7 +2007,7 @@ pub async fn update_by_id_org(
     args.push(tenant_id.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl.clone() {
+  if let Some(lbl) = input.lbl {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
