@@ -2084,7 +2084,7 @@ pub async fn update_by_id_dict(
     args.push(code.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl.clone() {
+  if let Some(lbl) = input.lbl {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
@@ -2125,8 +2125,6 @@ pub async fn update_by_id_dict(
     sql_fields += "is_sys=?,";
     args.push(is_sys.into());
   }
-  
-  let dict_id_lbl = input.lbl.clone();
   
   // 系统字典明细
   if let Some(dict_detail_input) = input.dict_detail {
