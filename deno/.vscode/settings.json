@@ -51,6 +51,7 @@
     "**/.husky": true,
     "graphql.config.js": true
   },
+  "diffEditor.useInlineViewWhenSpaceIsLimited": false,
   "terminal.integrated.defaultProfile.windows": "Command Prompt",
   "git.timeline.showUncommitted": true,
   "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",

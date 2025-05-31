@@ -333,7 +333,7 @@ import {
 import {
   getListDomain,
   getListLang,
-} from "./Api";
+} from "./Api.ts";
 
 import {
   findByIdsDomain,
