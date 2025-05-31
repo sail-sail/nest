@@ -205,32 +205,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.attach2 == null)">
-          <el-form-item
-            label="附加数据2"
-            prop="attach2"
-          >
-            <CustomInput
-              v-model="dialogModel.attach2"
-              placeholder="请输入 附加数据2"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.notify_url == null)">
-          <el-form-item
-            label="通知地址"
-            prop="notify_url"
-          >
-            <CustomInput
-              v-model="dialogModel.notify_url"
-              placeholder="请输入 通知地址"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.receipt == null)">
           <el-form-item
             label="开发票"
@@ -293,19 +267,6 @@
             <CustomInput
               v-model="dialogModel.openid"
               placeholder="请输入 用户标识"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.prepay_id == null)">
-          <el-form-item
-            label="预支付交易会话标识"
-            prop="prepay_id"
-          >
-            <CustomInput
-              v-model="dialogModel.prepay_id"
-              placeholder="请输入 预支付交易会话标识"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>

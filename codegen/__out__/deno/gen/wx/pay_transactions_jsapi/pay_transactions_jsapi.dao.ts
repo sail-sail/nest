@@ -647,15 +647,12 @@ export async function getFieldCommentsPayTransactionsJsapi(): Promise<PayTransac
     success_time_lbl: "支付完成时间",
     time_expire: "交易限制时间",
     attach: "附加数据",
-    attach2: "附加数据2",
-    notify_url: "通知地址",
     receipt: "开发票",
     profit_sharing: "分账",
     total_fee: "订单金额(分)",
     currency: "货币类型",
     currency_lbl: "货币类型",
     openid: "用户标识",
-    prepay_id: "预支付交易会话标识",
     create_usr_id: "创建人",
     create_usr_id_lbl: "创建人",
     create_time: "创建时间",
@@ -763,6 +760,48 @@ export async function checkByUniquePayTransactionsJsapi(
   return;
 }
 
+// MARK: findOneOkPayTransactionsJsapi
+/** 根据条件查找第一微信JSAPI下单 */
+export async function findOneOkPayTransactionsJsapi(
+  search?: Readonly<PayTransactionsJsapiSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PayTransactionsJsapiModel> {
+  
+  const table = "wx_pay_transactions_jsapi";
+  const method = "findOneOkPayTransactionsJsapi";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_pay_transactions_jsapi = validateOptionPayTransactionsJsapi(
+    await findOnePayTransactionsJsapi(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_pay_transactions_jsapi;
+}
+
 // MARK: findOnePayTransactionsJsapi
 /** 根据条件查找第一微信JSAPI下单 */
 export async function findOnePayTransactionsJsapi(
@@ -809,6 +848,43 @@ export async function findOnePayTransactionsJsapi(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkPayTransactionsJsapi
+/** 根据 id 查找微信JSAPI下单 */
+export async function findByIdOkPayTransactionsJsapi(
+  id?: PayTransactionsJsapiId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PayTransactionsJsapiModel> {
+  
+  const table = "wx_pay_transactions_jsapi";
+  const method = "findByIdOkPayTransactionsJsapi";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_pay_transactions_jsapi = validateOptionPayTransactionsJsapi(
+    await findByIdPayTransactionsJsapi(
+      id,
+      options,
+    ),
+  );
+  
+  return model_pay_transactions_jsapi;
 }
 
 // MARK: findByIdPayTransactionsJsapi
@@ -1068,20 +1144,6 @@ export async function validatePayTransactionsJsapi(
     fieldComments.attach,
   );
   
-  // 附加数据2
-  await validators.chars_max_length(
-    input.attach2,
-    256,
-    fieldComments.attach2,
-  );
-  
-  // 通知地址
-  await validators.chars_max_length(
-    input.notify_url,
-    256,
-    fieldComments.notify_url,
-  );
-  
   // 开发票
   await validators.chars_max_length(
     input.receipt,
@@ -1101,13 +1163,6 @@ export async function validatePayTransactionsJsapi(
     input.openid,
     128,
     fieldComments.openid,
-  );
-  
-  // 预支付交易会话标识
-  await validators.chars_max_length(
-    input.prepay_id,
-    64,
-    fieldComments.prepay_id,
   );
   
   // 创建人

@@ -19,7 +19,7 @@
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-grid="~ cols-[repeat(auto-fill,340px)]"
       un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
@@ -51,6 +51,22 @@
             placeholder="请输入 微信支付订单号"
             @clear="onSearchClear"
           ></CustomInput>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(showBuildIn || builtInSearch?.success_time == null)">
+        <el-form-item
+          label="支付完成时间"
+          prop="success_time"
+        >
+          <CustomDatePicker
+            v-model="success_time_search"
+            type="daterange"
+            start-placeholder="开始"
+            end-placeholder="结束"
+            @clear="onSearchClear"
+            @change="onSearch(false)"
+          ></CustomDatePicker>
         </el-form-item>
       </template>
       
@@ -423,6 +439,21 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignPage(
+                    '微信JSAPI下单',
+                    row.transaction_id,
+                    {
+                      transaction_id: row.transaction_id,
+                      showBuildIn: '1',
+                    },
+                  )"
+                >
+                  {{ row[column.property] }}
+                </el-link>
+              </template>
             </el-table-column>
           </template>
           
@@ -472,7 +503,7 @@
           </template>
           
           <!-- 支付完成时间 -->
-          <template v-else-if="'success_time_lbl' === col.prop">
+          <template v-else-if="'success_time_lbl' === col.prop && (showBuildIn || builtInSearch?.success_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -480,7 +511,7 @@
             </el-table-column>
           </template>
           
-          <!-- 总金额 -->
+          <!-- 总金额(分) -->
           <template v-else-if="'total' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
@@ -489,7 +520,7 @@
             </el-table-column>
           </template>
           
-          <!-- 用户支付金额 -->
+          <!-- 用户支付金额(分) -->
           <template v-else-if="'payer_total' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
@@ -527,15 +558,6 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 原始数据 -->
-          <template v-else-if="'raw' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -632,6 +654,10 @@ import {
   useExportExcelWxPayNotice,
 } from "./Api.ts";
 
+import {
+  openForeignPage,
+} from "@/router/util.ts";
+
 defineOptions({
   name: "微信支付通知",
 });
@@ -676,6 +702,7 @@ const props = defineProps<{
   openid_like?: string; // 用户标识
   transaction_id?: string; // 微信支付订单号
   transaction_id_like?: string; // 微信支付订单号
+  success_time?: string; // 支付完成时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -745,6 +772,23 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 支付完成时间
+const success_time_search = $computed({
+  get() {
+    return search.success_time || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.success_time = undefined;
+    } else {
+      search.success_time = [
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      ];
+    }
+  },
+});
 
 /** 回收站 */
 async function onRecycle() {
@@ -924,7 +968,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "商户订单号",
       prop: "out_trade_no",
-      width: 140,
+      width: 260,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -932,7 +976,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "微信支付订单号",
       prop: "transaction_id",
-      width: 140,
+      width: 250,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -984,20 +1028,21 @@ function getTableColumns(): ColumnType[] {
       prop: "success_time_lbl",
       sortBy: "success_time",
       width: 150,
+      sortable: "custom",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
-      label: "总金额",
+      label: "总金额(分)",
       prop: "total",
-      width: 80,
+      width: 90,
       align: "right",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
-      label: "用户支付金额",
+      label: "用户支付金额(分)",
       prop: "payer_total",
       width: 140,
       align: "right",
@@ -1039,14 +1084,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "原始数据",
-      prop: "raw",
-      width: 140,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "创建人",
       prop: "create_usr_id_lbl",
       sortBy: "create_usr_id_lbl",
@@ -1059,7 +1096,7 @@ function getTableColumns(): ColumnType[] {
       label: "创建时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",
@@ -1078,7 +1115,7 @@ function getTableColumns(): ColumnType[] {
       label: "更新时间",
       prop: "update_time_lbl",
       sortBy: "update_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",
@@ -1186,7 +1223,7 @@ async function useFindCount(
 }
 
 const _defaultSort: Sort = {
-  prop: "transaction_id",
+  prop: "success_time",
   order: "descending",
 };
 

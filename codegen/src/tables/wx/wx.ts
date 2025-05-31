@@ -14,12 +14,12 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "code",
-        align: "center",
         width: 140,
         fixed: "left",
       },
       {
         COLUMN_NAME: "lbl",
+        align: "center",
       },
       {
         COLUMN_NAME: "appid",
@@ -108,7 +108,11 @@ export default defineConfig({
       {
         COLUMN_NAME: "usr_id",
         width: 240,
-        modelLabel: "usr_id_lbl",
+        foreignKey: {
+          selectType: "selectInput",
+          isSearchByLbl: true,
+        },
+        search: true,
       },
       {
         COLUMN_NAME: "appid",
@@ -130,11 +134,11 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "openid",
-        width: 240,
+        width: 260,
       },
       {
         COLUMN_NAME: "unionid",
-        width: 180,
+        width: 260,
       },
       {
         COLUMN_NAME: "gender",
@@ -307,7 +311,11 @@ export default defineConfig({
       {
         COLUMN_NAME: "usr_id",
         width: 240,
-        modelLabel: "usr_id_lbl",
+        foreignKey: {
+          selectType: "selectInput",
+          isSearchByLbl: true,
+        },
+        search: true,
       },
       {
         COLUMN_NAME: "appid",
@@ -317,11 +325,11 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "openid",
-        width: 240,
+        width: 260,
       },
       {
         COLUMN_NAME: "unionid",
-        width: 180,
+        width: 260,
       },
       {
         COLUMN_NAME: "sex",
@@ -373,9 +381,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        width: 120,
+        align: "center",
       },
       {
         COLUMN_NAME: "appid",
@@ -410,7 +416,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "payer_client_ip",
-        align: "left",
+        align: "center",
         width: 180,
       },
       {
@@ -418,6 +424,7 @@ export default defineConfig({
         align: "left",
         width: 200,
         require: true,
+        readonly: true,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -470,7 +477,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "description",
-        align: "left",
         width: 200,
       },
       {
@@ -480,12 +486,21 @@ export default defineConfig({
       {
         COLUMN_NAME: "transaction_id",
         search: true,
-        width: 240,
+        width: 250,
         notForeignKeyById: true,
+        foreignPage: {
+          routeName: "微信支付通知",
+          tabNameField: "transaction_id",
+          query: {
+            transaction_id: "transaction_id",
+            showBuildIn: "1",
+          },
+        },
       },
       {
         COLUMN_NAME: "trade_state",
         width: 120,
+        search: true,
       },
       {
         COLUMN_NAME: "trade_state_desc",
@@ -494,6 +509,8 @@ export default defineConfig({
       {
         COLUMN_NAME: "success_time",
         width: 150,
+        search: true,
+        sortable: true,
       },
       {
         COLUMN_NAME: "time_expire",
@@ -506,13 +523,11 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "attach2",
-        align: "left",
-        width: 120,
+        onlyCodegenDeno: true,
       },
       {
         COLUMN_NAME: "notify_url",
-        align: "left",
-        width: 200,
+        onlyCodegenDeno: true,
       },
       {
         COLUMN_NAME: "receipt",
@@ -538,8 +553,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "prepay_id",
-        align: "left",
-        width: 180,
+        onlyCodegenDeno: true,
         notForeignKeyById: true,
       },
       {
@@ -565,7 +579,7 @@ export default defineConfig({
       noRevert: true,
       noForceDelete: true,
       defaultSort: {
-        prop: "transaction_id",
+        prop: "success_time",
         order: "descending",
       },
     },
@@ -585,13 +599,21 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "out_trade_no",
-        width: 140,
+        width: 260,
       },
       {
         COLUMN_NAME: "transaction_id",
         search: true,
-        width: 140,
+        width: 250,
         notForeignKeyById: true,
+        foreignPage: {
+          routeName: "微信JSAPI下单",
+          tabNameField: "transaction_id",
+          query: {
+            transaction_id: "transaction_id",
+            showBuildIn: "1",
+          },
+        },
       },
       {
         COLUMN_NAME: "trade_type",
@@ -616,10 +638,12 @@ export default defineConfig({
       {
         COLUMN_NAME: "success_time",
         width: 150,
+        search: true,
+        sortable: true,
       },
       {
         COLUMN_NAME: "total",
-        width: 80,
+        width: 90,
       },
       {
         COLUMN_NAME: "payer_total",
@@ -641,10 +665,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
         width: 100,
-      },
-      {
-        COLUMN_NAME: "raw",
-        width: 140,
       },
       {
         COLUMN_NAME: "create_usr_id",

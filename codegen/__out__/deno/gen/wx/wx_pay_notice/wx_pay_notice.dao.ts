@@ -202,12 +202,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.raw != null) {
-    whereQuery += ` and t.raw=${ args.push(search.raw) }`;
-  }
-  if (isNotEmpty(search?.raw_like)) {
-    whereQuery += ` and t.raw like ${ args.push("%" + sqlLike(search?.raw_like) + "%") }`;
-  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
@@ -504,7 +498,7 @@ export async function findAllWxPayNotice(
   sort = sort.filter((item) => item.prop);
   
   sort.push({
-    prop: "transaction_id",
+    prop: "success_time",
     order: SortOrderEnum.Desc,
   });
   
@@ -748,15 +742,14 @@ export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldCom
     attach: "附加数据",
     success_time: "支付完成时间",
     success_time_lbl: "支付完成时间",
-    total: "总金额",
-    payer_total: "用户支付金额",
+    total: "总金额(分)",
+    payer_total: "用户支付金额(分)",
     currency: "货币类型",
     currency_lbl: "货币类型",
     payer_currency: "用户支付币种",
     payer_currency_lbl: "用户支付币种",
     device_id: "商户端设备号",
     rem: "备注",
-    raw: "原始数据",
     create_usr_id: "创建人",
     create_usr_id_lbl: "创建人",
     create_time: "创建时间",
@@ -864,6 +857,48 @@ export async function checkByUniqueWxPayNotice(
   return;
 }
 
+// MARK: findOneOkWxPayNotice
+/** 根据条件查找第一微信支付通知 */
+export async function findOneOkWxPayNotice(
+  search?: Readonly<WxPayNoticeSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxPayNoticeModel> {
+  
+  const table = "wx_wx_pay_notice";
+  const method = "findOneOkWxPayNotice";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wx_pay_notice = validateOptionWxPayNotice(
+    await findOneWxPayNotice(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_wx_pay_notice;
+}
+
 // MARK: findOneWxPayNotice
 /** 根据条件查找第一微信支付通知 */
 export async function findOneWxPayNotice(
@@ -910,6 +945,43 @@ export async function findOneWxPayNotice(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkWxPayNotice
+/** 根据 id 查找微信支付通知 */
+export async function findByIdOkWxPayNotice(
+  id?: WxPayNoticeId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxPayNoticeModel> {
+  
+  const table = "wx_wx_pay_notice";
+  const method = "findByIdOkWxPayNotice";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wx_pay_notice = validateOptionWxPayNotice(
+    await findByIdWxPayNotice(
+      id,
+      options,
+    ),
+  );
+  
+  return model_wx_pay_notice;
 }
 
 // MARK: findByIdWxPayNotice
@@ -1425,7 +1497,7 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wx_pay_notice(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,appid,mchid,openid,out_trade_no,transaction_id,trade_type,trade_state,trade_state_desc,bank_type,attach,success_time,total,payer_total,currency,payer_currency,device_id,rem,raw)values";
+  let sql = "insert into wx_wx_pay_notice(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,appid,mchid,openid,out_trade_no,transaction_id,trade_type,trade_state,trade_state_desc,bank_type,attach,success_time,total,payer_total,currency,payer_currency,device_id,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1605,11 +1677,6 @@ async function _creates(
       }
       if (input.rem != null) {
         sql += `,${ args.push(input.rem) }`;
-      } else {
-        sql += ",default";
-      }
-      if (input.raw != null) {
-        sql += `,${ args.push(input.raw) }`;
       } else {
         sql += ",default";
       }
@@ -1847,12 +1914,6 @@ export async function updateByIdWxPayNotice(
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem=${ args.push(input.rem) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.raw != null) {
-    if (input.raw != oldModel.raw) {
-      sql += `raw=${ args.push(input.raw) },`;
       updateFldNum++;
     }
   }

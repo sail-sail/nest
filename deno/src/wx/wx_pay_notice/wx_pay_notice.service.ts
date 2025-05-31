@@ -240,7 +240,6 @@ export async function pay_notice(
     currency: result.amount.currency as unknown as WxPayNoticeCurrency,
     payer_currency: result.amount.payer_currency as unknown as WxPayNoticePayerCurrency,
     device_id: result.device_id,
-    raw: JSON.stringify(result),
   });
   const transaction_id = result.transaction_id;
   const trade_state = result.trade_state as unknown as PayTransactionsJsapiTradeState;

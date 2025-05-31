@@ -650,6 +650,48 @@ export async function checkByUniqueWxAppToken(
   return;
 }
 
+// MARK: findOneOkWxAppToken
+/** 根据条件查找第一小程序接口凭据 */
+export async function findOneOkWxAppToken(
+  search?: Readonly<WxAppTokenSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxAppTokenModel> {
+  
+  const table = "wx_wx_app_token";
+  const method = "findOneOkWxAppToken";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wx_app_token = validateOptionWxAppToken(
+    await findOneWxAppToken(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_wx_app_token;
+}
+
 // MARK: findOneWxAppToken
 /** 根据条件查找第一小程序接口凭据 */
 export async function findOneWxAppToken(
@@ -696,6 +738,43 @@ export async function findOneWxAppToken(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkWxAppToken
+/** 根据 id 查找小程序接口凭据 */
+export async function findByIdOkWxAppToken(
+  id?: WxAppTokenId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxAppTokenModel> {
+  
+  const table = "wx_wx_app_token";
+  const method = "findByIdOkWxAppToken";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wx_app_token = validateOptionWxAppToken(
+    await findByIdWxAppToken(
+      id,
+      options,
+    ),
+  );
+  
+  return model_wx_app_token;
 }
 
 // MARK: findByIdWxAppToken
