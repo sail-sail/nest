@@ -844,7 +844,7 @@ import {
 import {
   getListRole, // 所属角色
   getListOrg, // 所属组织
-} from "./Api";
+} from "./Api.ts";
 
 import {
   getTreeDept,

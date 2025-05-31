@@ -120,14 +120,13 @@ async fn get_where_query(
         Some(item) => item.tenant_id.clone(),
         None => None,
       };
-      let tenant_id = match tenant_id {
+      match tenant_id {
         None => get_auth_tenant_id(),
         Some(item) => match item.as_str() {
           "-" => None,
           _ => item.into(),
         },
-      };
-      tenant_id
+      }
     };
     if let Some(tenant_id) = tenant_id {
       where_query.push_str(" and t.tenant_id=?");
@@ -1933,7 +1932,7 @@ async fn _creates(
     // 业务字典明细
     if let Some(dictbiz_detail) = input.dictbiz_detail {
       for mut model in dictbiz_detail {
-        model.dictbiz_id = id.clone().into();
+        model.dictbiz_id = Some(id.clone());
         create_dictbiz_detail(
           model,
           options.clone(),
@@ -2169,7 +2168,7 @@ pub async fn update_by_id_dictbiz(
     args.push(code.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
@@ -2211,6 +2210,8 @@ pub async fn update_by_id_dictbiz(
     args.push(is_sys.into());
   }
   
+  let dictbiz_id_lbl = input.lbl.clone();
+  
   // 业务字典明细
   if let Some(dictbiz_detail_input) = input.dictbiz_detail {
     let dictbiz_detail_models = find_all_dictbiz_detail(
@@ -2239,29 +2240,30 @@ pub async fn update_by_id_dictbiz(
         options.clone(),
       ).await?;
     }
-    for mut input in dictbiz_detail_input {
-      if input.id.is_none() {
-        input.dictbiz_id = id.clone().into();
+    for mut input2 in dictbiz_detail_input {
+      if input2.id.is_none() {
+        input2.dictbiz_id = Some(id.clone());
         create_dictbiz_detail(
-          input,
+          input2,
           options.clone(),
         ).await?;
         continue;
       }
-      let id = input.id.clone().unwrap();
+      let id2 = input2.id.clone().unwrap();
       if !dictbiz_detail_models
         .iter()
-        .any(|item| item.id == id)
+        .any(|item| item.id == id2)
       {
         revert_by_ids_dictbiz_detail(
-          vec![id.clone()],
+          vec![id2.clone()],
           options.clone(),
         ).await?;
       }
-      input.id = None;
+      input2.id = None;
+      input2.dictbiz_id = Some(id.clone());
       update_by_id_dictbiz_detail(
-        id.clone(),
-        input,
+        id2.clone(),
+        input2,
         options.clone(),
       ).await?;
     }
