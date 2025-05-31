@@ -52,9 +52,20 @@
     class="custom_input_readonly_content"
     :class="{
       'items-center': type !== 'textarea',
+      'custom_input_placeholder': shouldShowPlaceholder,
     }"
   >
-    {{ modelValue || '' }}
+    <template
+      v-if="shouldShowPlaceholder"
+    >
+      {{ props.readonlyPlaceholder || "" }}
+    </template>
+    
+    <template
+      v-else
+    >
+      {{ modelValue || "" }}
+    </template>
   </view>
   
   <template #right>
@@ -83,6 +94,7 @@ const props = withDefaults(
     pageInited?: boolean;
     showClear?: boolean;
     placeholder?: string;
+    readonlyPlaceholder?: string;
     color?: string;
   }>(),
   {
@@ -92,6 +104,7 @@ const props = withDefaults(
     pageInited: true,
     showClear: true,
     placeholder: undefined,
+    readonlyPlaceholder: undefined,
     color: "transparent",
   },
 );
@@ -111,6 +124,10 @@ watch(
     emit("update:modelValue", modelValue.value);
   },
 );
+
+const shouldShowPlaceholder = $computed<boolean>(() => {
+  return modelValue.value == null || modelValue.value === "";
+});
 
 function onBlur(value: string) {
   emit("blur", value);

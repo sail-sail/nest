@@ -196,7 +196,7 @@ body .el-table--small {
   .cell {
     padding-top: 2px;
     padding-bottom: 2px;
-    font-size: 13px;
+    font-size: var(--el-font-size-base);
   }
   th.el-table__cell {
     padding: 3px 0;
@@ -567,4 +567,12 @@ html .ql-toolbar span.ql-picker-label svg,
 html .ql-toolbar span.ql-picker-label polygon,
 html .ql-toolbar span.ql-picker-label path {
   color: var(--el-text-color-regular);
+}
+
+.select_input_isShowModelLabel {
+  color: red;
+}
+
+.el-table__empty-text {
+  font-size: var(--el-font-size-base);
 }
