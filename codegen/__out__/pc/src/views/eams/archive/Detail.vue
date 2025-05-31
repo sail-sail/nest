@@ -258,7 +258,7 @@ import {
 
 import {
   getListCompany,
-} from "./Api";
+} from "./Api.ts";
 
 import {
   findByIdsCompany,
