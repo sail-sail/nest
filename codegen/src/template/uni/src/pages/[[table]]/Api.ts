@@ -276,7 +276,7 @@ for (let i = 0; i < columns.length; i++) {
 
 import {
   findTree<#=Foreign_Table_Up#>,
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api.ts";<#
+} from "@/pages/<#=foreignTable#>/Api.ts";<#
 }
 #><#
 for (const inlineForeignTab of inlineForeignTabs) {
@@ -325,7 +325,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 
 import {
   findTree<#=Foreign_Table_Up#>,
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api.ts";<#
+} from "@/pages/<#=foreignTable#>/Api.ts";<#
   }
 }
 #><#
@@ -369,7 +369,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 import {
   intoInput<#=Table_Up#>,
-} from "@/views/<#=mod#>/<#=table#>/Api.ts";<#
+} from "@/pages/<#=table#>/Api.ts";<#
   }
 #><#
 }
@@ -410,7 +410,7 @@ for (let i = 0; i < columns.length; i++) {
 #>
 import {
   intoInput<#=Table_Up#>,
-} from "@/views/<#=mod#>/<#=table#>/Api.ts";<#
+} from "@/pages/<#=table#>/Api.ts";<#
   }
 #><#
 }
@@ -456,7 +456,7 @@ for (let i = 0; i < columns.length; i++) {
 // <#=foreignSchema.opts?.table_comment#>
 import {
   findOne<#=foreignTable_Up#> as findOne<#=foreignTable_Up#>0,
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api.ts";<#
+} from "@/pages/<#=foreignTable#>/Api.ts";<#
 }
 #>
 
