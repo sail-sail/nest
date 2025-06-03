@@ -737,6 +737,7 @@ export async function findOne<#=Table_Up#>(
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOne<#=Table_Up2#>?: <#=modelName#>;
   } = await query({
@@ -764,8 +765,55 @@ export async function findOne<#=Table_Up#>(
       sort,
     },
   }, opt);
+  
   const model = data.findOne<#=Table_Up2#>;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 <#=table_comment#>, 如果不存在则抛错
+ */
+export async function findOneOk<#=Table_Up#>(
+  search?: <#=searchName#>,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOk<#=Table_Up2#>?: <#=modelName#>;
+  } = await query({
+    query: `
+      query($search: <#=searchName#>, $sort: [SortInput!]) {
+        findOneOk<#=Table_Up2#>(search: $search, sort: $sort) {
+          ${ <#=table_Up#>QueryField }<#
+          if (hasAudit && auditTable_Up) {
+          #>
+          <#=auditColumn#>_recent_model {
+            id
+            audit
+            audit_usr_id
+            audit_usr_id_lbl
+            audit_time
+            rem
+          }<#
+          }
+          #>
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOk<#=Table_Up2#>;
+  
+  await setLblById(model);
+  
   return model;
 }<#
 if (hasDataPermit() && hasCreateUsrId) {
@@ -971,6 +1019,7 @@ export async function auditSubmit<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ) {
+  
   const data: {
     auditSubmit<#=Table_Up2#>: Mutation["auditSubmit<#=Table_Up2#>"];
   } = await mutation({
@@ -983,7 +1032,9 @@ export async function auditSubmit<#=Table_Up#>(
       id,
     },
   }, opt);
+  
   const res = data.auditSubmit<#=Table_Up2#>;
+  
   return res;
 }
 
@@ -992,6 +1043,7 @@ export async function auditPass<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ) {
+  
   const data: {
     auditPass<#=Table_Up2#>: Mutation["auditPass<#=Table_Up2#>"];
   } = await mutation({
@@ -1004,7 +1056,9 @@ export async function auditPass<#=Table_Up#>(
       id,
     },
   }, opt);
+  
   const res = data.auditPass<#=Table_Up2#>;
+  
   return res;
 }
 
@@ -1014,6 +1068,7 @@ export async function auditReject<#=Table_Up#>(
   input: <#=auditTable_Up#>Input,
   opt?: GqlOpt,
 ) {
+  
   const data: {
     auditReject<#=Table_Up2#>: Mutation["auditReject<#=Table_Up2#>"];
   } = await mutation({
@@ -1027,7 +1082,9 @@ export async function auditReject<#=Table_Up#>(
       input,
     },
   }, opt);
+  
   const res = data.auditReject<#=Table_Up2#>;
+  
   return res;
 }<#
 if (hasReviewed) {
@@ -1038,6 +1095,7 @@ export async function auditReview<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ) {
+  
   const data: {
     auditReview<#=Table_Up2#>: Mutation["auditReview<#=Table_Up2#>"];
   } = await mutation({
@@ -1050,7 +1108,9 @@ export async function auditReview<#=Table_Up#>(
       id,
     },
   }, opt);
+  
   const res = data.auditReview<#=Table_Up2#>;
+  
   return res;
 }<#
 }
@@ -1062,12 +1122,14 @@ export async function auditReview<#=Table_Up#>(
  * 根据 id 查找 <#=table_comment#>
  */
 export async function findById<#=Table_Up#>(
-  id?: <#=Table_Up#>Id,
+  id: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ): Promise<<#=modelName#> | undefined> {
+
   if (!id) {
     return;
   }
+  
   const data: {
     findById<#=Table_Up2#>?: <#=modelName#>;
   } = await query({
@@ -1094,8 +1156,53 @@ export async function findById<#=Table_Up#>(
       id,
     },
   }, opt);
+  
   const model = data.findById<#=Table_Up2#>;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 <#=table_comment#>, 如果不存在则抛错
+ */
+export async function findByIdOk<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  opt?: GqlOpt,
+): Promise<<#=modelName#>> {
+  
+  const data: {
+    findByIdOk<#=Table_Up2#>: <#=modelName#>;
+  } = await query({
+    query: `
+      query($id: <#=Table_Up#>Id!) {
+        findByIdOk<#=Table_Up2#>(id: $id) {
+          ${ <#=table_Up#>QueryField }<#
+          if (hasAudit && auditTable_Up) {
+          #>
+          <#=auditColumn#>_recent_model {
+            id
+            audit
+            audit_usr_id
+            audit_usr_id_lbl
+            audit_time
+            rem
+          }<#
+          }
+          #>
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOk<#=Table_Up2#>;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -1111,40 +1218,89 @@ export async function findByIds<#=Table_Up#>(
   }
   opt = opt || { };
   opt.showErrMsg = false;
-  let models: <#=modelName#>[] = [ ];
-  try {
-    const data: {
-      findByIds<#=Table_Up2#>: <#=modelName#>[];
-    } = await query({
-      query: `
-        query($ids: [<#=Table_Up#>Id!]!) {
-          findByIds<#=Table_Up2#>(ids: $ids) {
-            ${ <#=table_Up#>QueryField }<#
-            if (hasAudit && auditTable_Up) {
-            #>
-            <#=auditColumn#>_recent_model {
-              id
-              audit
-              audit_usr_id
-              audit_usr_id_lbl
-              audit_time
-              rem
-            }<#
-            }
-            #>
+  const data: {
+    findByIds<#=Table_Up2#>: <#=modelName#>[];
+  } = await query({
+    query: `
+      query($ids: [<#=Table_Up#>Id!]!) {
+        findByIds<#=Table_Up2#>(ids: $ids) {
+          ${ <#=table_Up#>QueryField }<#
+          if (hasAudit && auditTable_Up) {
+          #>
+          <#=auditColumn#>_recent_model {
+            id
+            audit
+            audit_usr_id
+            audit_usr_id_lbl
+            audit_time
+            rem
+          }<#
           }
+          #>
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIds<#=Table_Up2#>;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIds<#=Table_Up2#>;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 <#=table_comment#>, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOk<#=Table_Up#>(
+  ids: <#=Table_Up#>Id[],
+  opt?: GqlOpt,
+): Promise<<#=modelName#>[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  const data: {
+    findByIdsOk<#=Table_Up2#>: <#=modelName#>[];
+  } = await query({
+    query: `
+      query($ids: [<#=Table_Up#>Id!]!) {
+        findByIdsOk<#=Table_Up2#>(ids: $ids) {
+          ${ <#=table_Up#>QueryField }<#
+          if (hasAudit && auditTable_Up) {
+          #>
+          <#=auditColumn#>_recent_model {
+            id
+            audit
+            audit_usr_id
+            audit_usr_id_lbl
+            audit_time
+            rem
+          }<#
+          }
+          #>
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOk<#=Table_Up2#>;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }<#
 if (opts.noDelete !== true) {
