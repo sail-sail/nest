@@ -89,6 +89,25 @@ export async function findOneBackgroundTask(
 }
 
 /**
+ * 根据条件查找第一个后台任务, 如果不存在则抛错
+ */
+export async function findOneOkBackgroundTask(
+  search?: BackgroundTaskSearch,
+  sort?: SortInput[],
+): Promise<BackgroundTaskModel> {
+  
+  const {
+    findOneOkBackgroundTask,
+  } = await import("./background_task.service.ts");
+  
+  checkSortBackgroundTask(sort);
+  
+  const model = await findOneOkBackgroundTask(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找后台任务
  */
 export async function findByIdBackgroundTask(
@@ -105,6 +124,22 @@ export async function findByIdBackgroundTask(
 }
 
 /**
+ * 根据 id 查找后台任务, 如果不存在则抛错
+ */
+export async function findByIdOkBackgroundTask(
+  id: BackgroundTaskId,
+): Promise<BackgroundTaskModel | undefined> {
+  
+  const {
+    findByIdOkBackgroundTask,
+  } = await import("./background_task.service.ts");
+  
+  const model = await findByIdOkBackgroundTask(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找后台任务
  */
 export async function findByIdsBackgroundTask(
@@ -116,6 +151,25 @@ export async function findByIdsBackgroundTask(
   } = await import("./background_task.service.ts");
   
   const models = await findByIdsBackgroundTask(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找后台任务, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkBackgroundTask(
+  ids: BackgroundTaskId[],
+): Promise<BackgroundTaskModel[]> {
+  
+  const {
+    findByIdsOkBackgroundTask,
+  } = await import("./background_task.service.ts");
+  
+  const models = await findByIdsOkBackgroundTask(ids);
   
   for (const model of models) {
   }

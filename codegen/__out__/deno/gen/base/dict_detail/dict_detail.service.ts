@@ -73,13 +73,42 @@ export async function findOneDictDetail(
 }
 
 /**
+ * 根据条件查找第一个系统字典明细, 如果不存在则抛错
+ */
+export async function findOneOkDictDetail(
+  search?: DictDetailSearch,
+  sort?: SortInput[],
+): Promise<DictDetailModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const dict_detail_model = await dict_detailDao.findOneOkDictDetail(search, sort);
+  
+  return dict_detail_model;
+}
+
+/**
  * 根据 id 查找系统字典明细
  */
 export async function findByIdDictDetail(
-  dict_detail_id?: DictDetailId | null,
+  dict_detail_id: DictDetailId,
 ): Promise<DictDetailModel | undefined> {
   
   const dict_detail_model = await dict_detailDao.findByIdDictDetail(dict_detail_id);
+  
+  return dict_detail_model;
+}
+
+/**
+ * 根据 id 查找系统字典明细, 如果不存在则抛错
+ */
+export async function findByIdOkDictDetail(
+  dict_detail_id: DictDetailId,
+): Promise<DictDetailModel> {
+  
+  const dict_detail_model = await dict_detailDao.findByIdOkDictDetail(dict_detail_id);
   
   return dict_detail_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsDictDetail(
 ): Promise<DictDetailModel[]> {
   
   const dict_detail_models = await dict_detailDao.findByIdsDictDetail(dict_detail_ids);
+  
+  return dict_detail_models;
+}
+
+/**
+ * 根据 ids 查找系统字典明细, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDictDetail(
+  dict_detail_ids: DictDetailId[],
+): Promise<DictDetailModel[]> {
+  
+  const dict_detail_models = await dict_detailDao.findByIdsOkDictDetail(dict_detail_ids);
   
   return dict_detail_models;
 }

@@ -1135,48 +1135,6 @@ export async function checkByUniqueUsr(
   return;
 }
 
-// MARK: findOneOkUsr
-/** 根据条件查找第一用户 */
-export async function findOneOkUsr(
-  search?: Readonly<UsrSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<UsrModel> {
-  
-  const table = "base_usr";
-  const method = "findOneOkUsr";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_usr = validateOptionUsr(
-    await findOneUsr(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_usr;
-}
-
 // MARK: findOneUsr
 /** 根据条件查找第一用户 */
 export async function findOneUsr(
@@ -1208,41 +1166,45 @@ export async function findOneUsr(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllUsr(
+  
+  const usr_models = await findAllUsr(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const usr_model = usr_models[0];
+  
+  return usr_model;
 }
 
-// MARK: findByIdOkUsr
-/** 根据 id 查找用户 */
-export async function findByIdOkUsr(
-  id?: UsrId | null,
+// MARK: findOneOkUsr
+/** 根据条件查找第一用户, 如果不存在则抛错 */
+export async function findOneOkUsr(
+  search?: Readonly<UsrSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<UsrModel> {
   
   const table = "base_usr";
-  const method = "findByIdOkUsr";
+  const method = "findOneOkUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -1252,20 +1214,32 @@ export async function findByIdOkUsr(
     options.is_debug = false;
   }
   
-  const model_usr = validateOptionUsr(
-    await findByIdUsr(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const usr_models = await findAllUsr(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_usr;
+  const usr_model = usr_models[0];
+  
+  if (!usr_model) {
+    const err_msg = "此 用户 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return usr_model;
 }
 
 // MARK: findByIdUsr
 /** 根据 id 查找用户 */
 export async function findByIdUsr(
-  id?: UsrId | null,
+  id: UsrId,
   options?: {
     is_debug?: boolean;
   },
@@ -1293,7 +1267,7 @@ export async function findByIdUsr(
     return;
   }
   
-  const model = await findOneUsr(
+  const usr_model = await findOneUsr(
     {
       id,
     },
@@ -1301,7 +1275,47 @@ export async function findByIdUsr(
     options,
   );
   
-  return model;
+  return usr_model;
+}
+
+// MARK: findByIdOkUsr
+/** 根据 id 查找用户, 如果不存在则抛错 */
+export async function findByIdOkUsr(
+  id: UsrId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<UsrModel> {
+  
+  const table = "base_usr";
+  const method = "findByIdOkUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const usr_model = await findByIdUsr(
+    id,
+    options,
+  );
+  
+  if (!usr_model) {
+    const err_msg = "此 用户 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return usr_model;
 }
 
 // MARK: findByIdsUsr
@@ -1341,6 +1355,41 @@ export async function findByIdsUsr(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkUsr
+/** 根据 ids 查找用户, 出现查询不到的 id 则报错 */
+export async function findByIdsOkUsr(
+  ids: UsrId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<UsrModel[]> {
+  
+  const table = "base_usr";
+  const method = "findByIdsOkUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsUsr(
+    ids,
     options,
   );
   
