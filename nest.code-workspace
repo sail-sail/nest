@@ -41,7 +41,6 @@
         "target": "./codegen/src/template/<basename>"
       }
     ],
-    "diffEditor.useInlineViewWhenSpaceIsLimited": false,
     "diffEditor.wordWrap": "off",
     "editor.formatOnSave": false,
     "editor.inlineSuggest.syntaxHighlightingEnabled": true,

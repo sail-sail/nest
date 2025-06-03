@@ -73,13 +73,42 @@ export async function findOneOrg(
 }
 
 /**
+ * 根据条件查找第一个组织, 如果不存在则抛错
+ */
+export async function findOneOkOrg(
+  search?: OrgSearch,
+  sort?: SortInput[],
+): Promise<OrgModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const org_model = await orgDao.findOneOkOrg(search, sort);
+  
+  return org_model;
+}
+
+/**
  * 根据 id 查找组织
  */
 export async function findByIdOrg(
-  org_id?: OrgId | null,
+  org_id: OrgId,
 ): Promise<OrgModel | undefined> {
   
   const org_model = await orgDao.findByIdOrg(org_id);
+  
+  return org_model;
+}
+
+/**
+ * 根据 id 查找组织, 如果不存在则抛错
+ */
+export async function findByIdOkOrg(
+  org_id: OrgId,
+): Promise<OrgModel> {
+  
+  const org_model = await orgDao.findByIdOkOrg(org_id);
   
   return org_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsOrg(
 ): Promise<OrgModel[]> {
   
   const org_models = await orgDao.findByIdsOrg(org_ids);
+  
+  return org_models;
+}
+
+/**
+ * 根据 ids 查找组织, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOrg(
+  org_ids: OrgId[],
+): Promise<OrgModel[]> {
+  
+  const org_models = await orgDao.findByIdsOkOrg(org_ids);
   
   return org_models;
 }
