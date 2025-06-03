@@ -2535,7 +2535,7 @@ pub async fn get_field_comments_<#=table#>(
 }
 
 // MARK: find_one_ok_<#=table#>
-/// 根据条件查找第一个<#=table_comment#>
+/// 根据条件查找第一个<#=table_comment#>, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_<#=table#>(
   search: Option<<#=tableUP#>Search>,
@@ -2569,13 +2569,33 @@ pub async fn find_one_ok_<#=table#>(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let <#=table#>_model = validate_option_<#=table#>(
-    find_one_<#=table#>(
-      search,
-      sort,
-      options,
-    ).await?,
+  let <#=table#>_model = find_one_<#=table#>(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(<#=table#>_model) = <#=table#>_model else {<#
+    if (isUseI18n) {
+    #>
+    let table_comment = i18n_dao::ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = i18n_dao::ns(
+      "此 {0} 已被删除".to_owned(),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "此 <#=table_comment#> 已被删除";<#
+    }
+    #>
+    return Err(eyre!(err_msg));
+  };
   
   Ok(<#=table#>_model)
 }
@@ -2639,7 +2659,7 @@ pub async fn find_one_<#=table#>(
 }
 
 // MARK: find_by_id_ok_<#=table#>
-/// 根据 id 查找<#=table_comment#>
+/// 根据 id 查找<#=table_comment#>, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_<#=table#>(
   id: <#=Table_Up#>Id,
@@ -2667,12 +2687,32 @@ pub async fn find_by_id_ok_<#=table#>(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let <#=table#>_model = validate_option_<#=table#>(
-    find_by_id_<#=table#>(
-      id,
-      options,
-    ).await?,
+  let <#=table#>_model = find_by_id_<#=table#>(
+    id,
+    options,
   ).await?;
+  
+  let Some(<#=table#>_model) = <#=table#>_model else {<#
+    if (isUseI18n) {
+    #>
+    let table_comment = i18n_dao::ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = i18n_dao::ns(
+      "此 {0} 已被删除".to_owned(),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "此 <#=table_comment#> 已被删除";<#
+    }
+    #>
+    return Err(eyre!(err_msg));
+  };
   
   Ok(<#=table#>_model)
 }
@@ -2723,6 +2763,112 @@ pub async fn find_by_id_<#=table#>(
   Ok(<#=table#>_model)
 }
 
+// MARK: find_by_ids_ok_<#=table#>
+/// 根据 ids 查找<#=table_comment#>, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_<#=table#>(
+  ids: Vec<<#=Table_Up#>Id>,
+  options: Option<Options>,
+) -> Result<Vec<<#=Table_Up#>Model>> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let method = "find_by_ids_ok_<#=table#>";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let <#=table#>_models = find_by_ids_<#=table#>(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if <#=table#>_models.len() != len {<#
+    if (isUseI18n) {
+    #>
+    let table_comment = i18n_dao::ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = i18n_dao::ns(
+      "此 {0} 已被删除".to_owned(),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "此 <#=table_comment#> 已被删除";<#
+    }
+    #>
+    return Err(eyre!(err_msg));
+  }
+  
+  let <#=table#>_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = <#=table#>_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }<#
+      if (isUseI18n) {
+      #>
+      let table_comment = i18n_dao::ns(
+        "<#=table_comment#>".to_owned(),
+        None,
+      ).await?;
+      let map = HashMap::from([
+        ("0".to_owned(), table_comment),
+      ]);
+      let err_msg = i18n_dao::ns(
+        "此 {0} 已经被删除".to_owned(),
+        map.into(),
+      ).await?;<#
+      } else {
+      #>
+      let err_msg = "此 <#=table_comment#> 已经被删除";<#
+      }
+      #>
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<<#=Table_Up#>Model>>>()?;
+  
+  Ok(<#=table#>_models)
+}
+
 // MARK: find_by_ids_<#=table#>
 /// 根据 ids 查找<#=table_comment#>
 #[allow(dead_code)]
@@ -2759,7 +2905,13 @@ pub async fn find_by_ids_<#=table#>(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = <#=Table_Up#>Search {
@@ -2767,67 +2919,14 @@ pub async fn find_by_ids_<#=table#>(
     ..Default::default()
   }.into();
   
-  let models = find_all_<#=table#>(
+  let <#=table#>_models = find_all_<#=table#>(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {<#
-    if (isUseI18n) {
-    #>
-    let table_comment = i18n_dao::ns(
-      "<#=table_comment#>".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "此 {0} 已被删除".to_owned(),
-      map.into(),
-    ).await?;<#
-    } else {
-    #>
-    let err_msg = "此 <#=table_comment#> 已被删除";<#
-    }
-    #>
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }<#
-      if (isUseI18n) {
-      #>
-      let table_comment = i18n_dao::ns(
-        "<#=table_comment#>".to_owned(),
-        None,
-      ).await?;
-      let map = HashMap::from([
-        ("0".to_owned(), table_comment),
-      ]);
-      let err_msg = i18n_dao::ns(
-        "此 {0} 已经被删除".to_owned(),
-        map.into(),
-      ).await?;<#
-      } else {
-      #>
-      let err_msg = "此 <#=table_comment#> 已经被删除";<#
-      }
-      #>
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<<#=Table_Up#>Model>>>()?;
-  
-  Ok(models)
+  Ok(<#=table#>_models)
 }
 
 // MARK: exists_<#=table#>
@@ -4998,7 +5097,6 @@ pub async fn create_return_<#=table#>(
     let err_msg = "create_return_<#=table#>: model_<#=table#>.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -8312,10 +8410,9 @@ pub async fn validate_option_<#=table#>(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }
