@@ -73,13 +73,42 @@ export async function findOneBaiduAppToken(
 }
 
 /**
+ * 根据条件查找第一个百度接口凭据, 如果不存在则抛错
+ */
+export async function findOneOkBaiduAppToken(
+  search?: BaiduAppTokenSearch,
+  sort?: SortInput[],
+): Promise<BaiduAppTokenModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const baidu_app_token_model = await baidu_app_tokenDao.findOneOkBaiduAppToken(search, sort);
+  
+  return baidu_app_token_model;
+}
+
+/**
  * 根据 id 查找百度接口凭据
  */
 export async function findByIdBaiduAppToken(
-  baidu_app_token_id?: BaiduAppTokenId | null,
+  baidu_app_token_id: BaiduAppTokenId,
 ): Promise<BaiduAppTokenModel | undefined> {
   
   const baidu_app_token_model = await baidu_app_tokenDao.findByIdBaiduAppToken(baidu_app_token_id);
+  
+  return baidu_app_token_model;
+}
+
+/**
+ * 根据 id 查找百度接口凭据, 如果不存在则抛错
+ */
+export async function findByIdOkBaiduAppToken(
+  baidu_app_token_id: BaiduAppTokenId,
+): Promise<BaiduAppTokenModel> {
+  
+  const baidu_app_token_model = await baidu_app_tokenDao.findByIdOkBaiduAppToken(baidu_app_token_id);
   
   return baidu_app_token_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsBaiduAppToken(
 ): Promise<BaiduAppTokenModel[]> {
   
   const baidu_app_token_models = await baidu_app_tokenDao.findByIdsBaiduAppToken(baidu_app_token_ids);
+  
+  return baidu_app_token_models;
+}
+
+/**
+ * 根据 ids 查找百度接口凭据, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkBaiduAppToken(
+  baidu_app_token_ids: BaiduAppTokenId[],
+): Promise<BaiduAppTokenModel[]> {
+  
+  const baidu_app_token_models = await baidu_app_tokenDao.findByIdsOkBaiduAppToken(baidu_app_token_ids);
   
   return baidu_app_token_models;
 }

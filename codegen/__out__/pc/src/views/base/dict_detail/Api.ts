@@ -80,13 +80,14 @@ export async function findAllDictDetail(
 }
 
 /**
- * 根据条件查找第一个系统字典明细
+ * 根据条件查找第一个 系统字典明细
  */
 export async function findOneDictDetail(
   search?: DictDetailSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneDictDetail?: DictDetailModel;
   } = await query({
@@ -102,8 +103,43 @@ export async function findOneDictDetail(
       sort,
     },
   }, opt);
+  
   const model = data.findOneDictDetail;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 系统字典明细, 如果不存在则抛错
+ */
+export async function findOneOkDictDetail(
+  search?: DictDetailSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkDictDetail?: DictDetailModel;
+  } = await query({
+    query: `
+      query($search: DictDetailSearch, $sort: [SortInput!]) {
+        findOneOkDictDetail(search: $search, sort: $sort) {
+          ${ dictDetailQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkDictDetail;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -203,12 +239,14 @@ export async function updateByIdDictDetail(
  * 根据 id 查找 系统字典明细
  */
 export async function findByIdDictDetail(
-  id?: DictDetailId,
+  id: DictDetailId,
   opt?: GqlOpt,
 ): Promise<DictDetailModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdDictDetail?: DictDetailModel;
   } = await query({
@@ -223,8 +261,41 @@ export async function findByIdDictDetail(
       id,
     },
   }, opt);
+  
   const model = data.findByIdDictDetail;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 系统字典明细, 如果不存在则抛错
+ */
+export async function findByIdOkDictDetail(
+  id: DictDetailId,
+  opt?: GqlOpt,
+): Promise<DictDetailModel> {
+  
+  const data: {
+    findByIdOkDictDetail: DictDetailModel;
+  } = await query({
+    query: `
+      query($id: DictDetailId!) {
+        findByIdOkDictDetail(id: $id) {
+          ${ dictDetailQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkDictDetail;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -235,33 +306,70 @@ export async function findByIdsDictDetail(
   ids: DictDetailId[],
   opt?: GqlOpt,
 ): Promise<DictDetailModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: DictDetailModel[] = [ ];
-  try {
-    const data: {
-      findByIdsDictDetail: DictDetailModel[];
-    } = await query({
-      query: `
-        query($ids: [DictDetailId!]!) {
-          findByIdsDictDetail(ids: $ids) {
-            ${ dictDetailQueryField }
-          }
+  
+  const data: {
+    findByIdsDictDetail: DictDetailModel[];
+  } = await query({
+    query: `
+      query($ids: [DictDetailId!]!) {
+        findByIdsDictDetail(ids: $ids) {
+          ${ dictDetailQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsDictDetail;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsDictDetail;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 系统字典明细, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDictDetail(
+  ids: DictDetailId[],
+  opt?: GqlOpt,
+): Promise<DictDetailModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkDictDetail: DictDetailModel[];
+  } = await query({
+    query: `
+      query($ids: [DictDetailId!]!) {
+        findByIdsOkDictDetail(ids: $ids) {
+          ${ dictDetailQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkDictDetail;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
