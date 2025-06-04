@@ -78,13 +78,14 @@ export async function findAllOrg(
 }
 
 /**
- * 根据条件查找第一个组织
+ * 根据条件查找第一个 组织
  */
 export async function findOneOrg(
   search?: OrgSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneOrg?: OrgModel;
   } = await query({
@@ -100,8 +101,43 @@ export async function findOneOrg(
       sort,
     },
   }, opt);
+  
   const model = data.findOneOrg;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 组织, 如果不存在则抛错
+ */
+export async function findOneOkOrg(
+  search?: OrgSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkOrg?: OrgModel;
+  } = await query({
+    query: `
+      query($search: OrgSearch, $sort: [SortInput!]) {
+        findOneOkOrg(search: $search, sort: $sort) {
+          ${ orgQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkOrg;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -201,12 +237,14 @@ export async function updateByIdOrg(
  * 根据 id 查找 组织
  */
 export async function findByIdOrg(
-  id?: OrgId,
+  id: OrgId,
   opt?: GqlOpt,
 ): Promise<OrgModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdOrg?: OrgModel;
   } = await query({
@@ -221,8 +259,41 @@ export async function findByIdOrg(
       id,
     },
   }, opt);
+  
   const model = data.findByIdOrg;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 组织, 如果不存在则抛错
+ */
+export async function findByIdOkOrg(
+  id: OrgId,
+  opt?: GqlOpt,
+): Promise<OrgModel> {
+  
+  const data: {
+    findByIdOkOrg: OrgModel;
+  } = await query({
+    query: `
+      query($id: OrgId!) {
+        findByIdOkOrg(id: $id) {
+          ${ orgQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkOrg;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -233,33 +304,70 @@ export async function findByIdsOrg(
   ids: OrgId[],
   opt?: GqlOpt,
 ): Promise<OrgModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: OrgModel[] = [ ];
-  try {
-    const data: {
-      findByIdsOrg: OrgModel[];
-    } = await query({
-      query: `
-        query($ids: [OrgId!]!) {
-          findByIdsOrg(ids: $ids) {
-            ${ orgQueryField }
-          }
+  
+  const data: {
+    findByIdsOrg: OrgModel[];
+  } = await query({
+    query: `
+      query($ids: [OrgId!]!) {
+        findByIdsOrg(ids: $ids) {
+          ${ orgQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsOrg;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOrg;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 组织, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOrg(
+  ids: OrgId[],
+  opt?: GqlOpt,
+): Promise<OrgModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkOrg: OrgModel[];
+  } = await query({
+    query: `
+      query($ids: [OrgId!]!) {
+        findByIdsOkOrg(ids: $ids) {
+          ${ orgQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkOrg;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
