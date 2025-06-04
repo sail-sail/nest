@@ -145,9 +145,10 @@ watch(tmFormVaildType, (val: string) => {
     }
     if (val == 'valid') {
         let value = tmFormModelValue.value[props.name]
-        if (typeof value !== 'undefined') {
-            _validFun(value)
-        }
+        _validFun(value)
+        // if (typeof value !== 'undefined') {
+        //     _validFun(value)
+        // }
         isFirstVaild.value = false;
 
     }

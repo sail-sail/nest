@@ -91,6 +91,25 @@ export async function findOneLang(
 }
 
 /**
+ * 根据条件查找第一个语言, 如果不存在则抛错
+ */
+export async function findOneOkLang(
+  search?: LangSearch,
+  sort?: SortInput[],
+): Promise<LangModel> {
+  
+  const {
+    findOneOkLang,
+  } = await import("./lang.service.ts");
+  
+  checkSortLang(sort);
+  
+  const model = await findOneOkLang(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找语言
  */
 export async function findByIdLang(
@@ -107,6 +126,22 @@ export async function findByIdLang(
 }
 
 /**
+ * 根据 id 查找语言, 如果不存在则抛错
+ */
+export async function findByIdOkLang(
+  id: LangId,
+): Promise<LangModel | undefined> {
+  
+  const {
+    findByIdOkLang,
+  } = await import("./lang.service.ts");
+  
+  const model = await findByIdOkLang(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找语言
  */
 export async function findByIdsLang(
@@ -118,6 +153,25 @@ export async function findByIdsLang(
   } = await import("./lang.service.ts");
   
   const models = await findByIdsLang(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找语言, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkLang(
+  ids: LangId[],
+): Promise<LangModel[]> {
+  
+  const {
+    findByIdsOkLang,
+  } = await import("./lang.service.ts");
+  
+  const models = await findByIdsOkLang(ids);
   
   for (const model of models) {
   }

@@ -690,48 +690,6 @@ export async function checkByUniqueI18n(
   return;
 }
 
-// MARK: findOneOkI18n
-/** 根据条件查找第一国际化 */
-export async function findOneOkI18n(
-  search?: Readonly<I18nSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<I18nModel> {
-  
-  const table = "base_i18n";
-  const method = "findOneOkI18n";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_i18n = validateOptionI18n(
-    await findOneI18n(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_i18n;
-}
-
 // MARK: findOneI18n
 /** 根据条件查找第一国际化 */
 export async function findOneI18n(
@@ -763,41 +721,45 @@ export async function findOneI18n(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllI18n(
+  
+  const i18n_models = await findAllI18n(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const i18n_model = i18n_models[0];
+  
+  return i18n_model;
 }
 
-// MARK: findByIdOkI18n
-/** 根据 id 查找国际化 */
-export async function findByIdOkI18n(
-  id?: I18nId | null,
+// MARK: findOneOkI18n
+/** 根据条件查找第一国际化, 如果不存在则抛错 */
+export async function findOneOkI18n(
+  search?: Readonly<I18nSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<I18nModel> {
   
   const table = "base_i18n";
-  const method = "findByIdOkI18n";
+  const method = "findOneOkI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -807,20 +769,32 @@ export async function findByIdOkI18n(
     options.is_debug = false;
   }
   
-  const model_i18n = validateOptionI18n(
-    await findByIdI18n(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const i18n_models = await findAllI18n(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_i18n;
+  const i18n_model = i18n_models[0];
+  
+  if (!i18n_model) {
+    const err_msg = "此 国际化 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return i18n_model;
 }
 
 // MARK: findByIdI18n
 /** 根据 id 查找国际化 */
 export async function findByIdI18n(
-  id?: I18nId | null,
+  id: I18nId,
   options?: {
     is_debug?: boolean;
   },
@@ -848,7 +822,7 @@ export async function findByIdI18n(
     return;
   }
   
-  const model = await findOneI18n(
+  const i18n_model = await findOneI18n(
     {
       id,
     },
@@ -856,7 +830,47 @@ export async function findByIdI18n(
     options,
   );
   
-  return model;
+  return i18n_model;
+}
+
+// MARK: findByIdOkI18n
+/** 根据 id 查找国际化, 如果不存在则抛错 */
+export async function findByIdOkI18n(
+  id: I18nId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<I18nModel> {
+  
+  const table = "base_i18n";
+  const method = "findByIdOkI18n";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const i18n_model = await findByIdI18n(
+    id,
+    options,
+  );
+  
+  if (!i18n_model) {
+    const err_msg = "此 国际化 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return i18n_model;
 }
 
 // MARK: findByIdsI18n
@@ -896,6 +910,41 @@ export async function findByIdsI18n(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkI18n
+/** 根据 ids 查找国际化, 出现查询不到的 id 则报错 */
+export async function findByIdsOkI18n(
+  ids: I18nId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<I18nModel[]> {
+  
+  const table = "base_i18n";
+  const method = "findByIdsOkI18n";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsI18n(
+    ids,
     options,
   );
   

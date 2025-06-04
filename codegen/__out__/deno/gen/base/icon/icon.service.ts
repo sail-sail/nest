@@ -73,13 +73,42 @@ export async function findOneIcon(
 }
 
 /**
+ * 根据条件查找第一个图标库, 如果不存在则抛错
+ */
+export async function findOneOkIcon(
+  search?: IconSearch,
+  sort?: SortInput[],
+): Promise<IconModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const icon_model = await iconDao.findOneOkIcon(search, sort);
+  
+  return icon_model;
+}
+
+/**
  * 根据 id 查找图标库
  */
 export async function findByIdIcon(
-  icon_id?: IconId | null,
+  icon_id: IconId,
 ): Promise<IconModel | undefined> {
   
   const icon_model = await iconDao.findByIdIcon(icon_id);
+  
+  return icon_model;
+}
+
+/**
+ * 根据 id 查找图标库, 如果不存在则抛错
+ */
+export async function findByIdOkIcon(
+  icon_id: IconId,
+): Promise<IconModel> {
+  
+  const icon_model = await iconDao.findByIdOkIcon(icon_id);
   
   return icon_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsIcon(
 ): Promise<IconModel[]> {
   
   const icon_models = await iconDao.findByIdsIcon(icon_ids);
+  
+  return icon_models;
+}
+
+/**
+ * 根据 ids 查找图标库, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkIcon(
+  icon_ids: IconId[],
+): Promise<IconModel[]> {
+  
+  const icon_models = await iconDao.findByIdsOkIcon(icon_ids);
   
   return icon_models;
 }

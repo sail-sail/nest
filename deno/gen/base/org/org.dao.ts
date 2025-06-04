@@ -668,48 +668,6 @@ export async function checkByUniqueOrg(
   return;
 }
 
-// MARK: findOneOkOrg
-/** 根据条件查找第一组织 */
-export async function findOneOkOrg(
-  search?: Readonly<OrgSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<OrgModel> {
-  
-  const table = "base_org";
-  const method = "findOneOkOrg";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_org = validateOptionOrg(
-    await findOneOrg(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_org;
-}
-
 // MARK: findOneOrg
 /** 根据条件查找第一组织 */
 export async function findOneOrg(
@@ -741,41 +699,45 @@ export async function findOneOrg(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllOrg(
+  
+  const org_models = await findAllOrg(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const org_model = org_models[0];
+  
+  return org_model;
 }
 
-// MARK: findByIdOkOrg
-/** 根据 id 查找组织 */
-export async function findByIdOkOrg(
-  id?: OrgId | null,
+// MARK: findOneOkOrg
+/** 根据条件查找第一组织, 如果不存在则抛错 */
+export async function findOneOkOrg(
+  search?: Readonly<OrgSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<OrgModel> {
   
   const table = "base_org";
-  const method = "findByIdOkOrg";
+  const method = "findOneOkOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -785,20 +747,32 @@ export async function findByIdOkOrg(
     options.is_debug = false;
   }
   
-  const model_org = validateOptionOrg(
-    await findByIdOrg(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const org_models = await findAllOrg(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_org;
+  const org_model = org_models[0];
+  
+  if (!org_model) {
+    const err_msg = "此 组织 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return org_model;
 }
 
 // MARK: findByIdOrg
 /** 根据 id 查找组织 */
 export async function findByIdOrg(
-  id?: OrgId | null,
+  id: OrgId,
   options?: {
     is_debug?: boolean;
   },
@@ -826,7 +800,7 @@ export async function findByIdOrg(
     return;
   }
   
-  const model = await findOneOrg(
+  const org_model = await findOneOrg(
     {
       id,
     },
@@ -834,7 +808,47 @@ export async function findByIdOrg(
     options,
   );
   
-  return model;
+  return org_model;
+}
+
+// MARK: findByIdOkOrg
+/** 根据 id 查找组织, 如果不存在则抛错 */
+export async function findByIdOkOrg(
+  id: OrgId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OrgModel> {
+  
+  const table = "base_org";
+  const method = "findByIdOkOrg";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const org_model = await findByIdOrg(
+    id,
+    options,
+  );
+  
+  if (!org_model) {
+    const err_msg = "此 组织 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return org_model;
 }
 
 // MARK: findByIdsOrg
@@ -874,6 +888,41 @@ export async function findByIdsOrg(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkOrg
+/** 根据 ids 查找组织, 出现查询不到的 id 则报错 */
+export async function findByIdsOkOrg(
+  ids: OrgId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OrgModel[]> {
+  
+  const table = "base_org";
+  const method = "findByIdsOkOrg";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsOrg(
+    ids,
     options,
   );
   

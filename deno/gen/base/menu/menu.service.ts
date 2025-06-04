@@ -73,13 +73,42 @@ export async function findOneMenu(
 }
 
 /**
+ * 根据条件查找第一个菜单, 如果不存在则抛错
+ */
+export async function findOneOkMenu(
+  search?: MenuSearch,
+  sort?: SortInput[],
+): Promise<MenuModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const menu_model = await menuDao.findOneOkMenu(search, sort);
+  
+  return menu_model;
+}
+
+/**
  * 根据 id 查找菜单
  */
 export async function findByIdMenu(
-  menu_id?: MenuId | null,
+  menu_id: MenuId,
 ): Promise<MenuModel | undefined> {
   
   const menu_model = await menuDao.findByIdMenu(menu_id);
+  
+  return menu_model;
+}
+
+/**
+ * 根据 id 查找菜单, 如果不存在则抛错
+ */
+export async function findByIdOkMenu(
+  menu_id: MenuId,
+): Promise<MenuModel> {
+  
+  const menu_model = await menuDao.findByIdOkMenu(menu_id);
   
   return menu_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsMenu(
 ): Promise<MenuModel[]> {
   
   const menu_models = await menuDao.findByIdsMenu(menu_ids);
+  
+  return menu_models;
+}
+
+/**
+ * 根据 ids 查找菜单, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkMenu(
+  menu_ids: MenuId[],
+): Promise<MenuModel[]> {
+  
+  const menu_models = await menuDao.findByIdsOkMenu(menu_ids);
   
   return menu_models;
 }

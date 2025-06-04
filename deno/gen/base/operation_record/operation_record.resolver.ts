@@ -89,6 +89,25 @@ export async function findOneOperationRecord(
 }
 
 /**
+ * 根据条件查找第一个操作记录, 如果不存在则抛错
+ */
+export async function findOneOkOperationRecord(
+  search?: OperationRecordSearch,
+  sort?: SortInput[],
+): Promise<OperationRecordModel> {
+  
+  const {
+    findOneOkOperationRecord,
+  } = await import("./operation_record.service.ts");
+  
+  checkSortOperationRecord(sort);
+  
+  const model = await findOneOkOperationRecord(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找操作记录
  */
 export async function findByIdOperationRecord(
@@ -105,6 +124,22 @@ export async function findByIdOperationRecord(
 }
 
 /**
+ * 根据 id 查找操作记录, 如果不存在则抛错
+ */
+export async function findByIdOkOperationRecord(
+  id: OperationRecordId,
+): Promise<OperationRecordModel | undefined> {
+  
+  const {
+    findByIdOkOperationRecord,
+  } = await import("./operation_record.service.ts");
+  
+  const model = await findByIdOkOperationRecord(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找操作记录
  */
 export async function findByIdsOperationRecord(
@@ -116,6 +151,25 @@ export async function findByIdsOperationRecord(
   } = await import("./operation_record.service.ts");
   
   const models = await findByIdsOperationRecord(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找操作记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOperationRecord(
+  ids: OperationRecordId[],
+): Promise<OperationRecordModel[]> {
+  
+  const {
+    findByIdsOkOperationRecord,
+  } = await import("./operation_record.service.ts");
+  
+  const models = await findByIdsOkOperationRecord(ids);
   
   for (const model of models) {
   }
