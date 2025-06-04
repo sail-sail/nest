@@ -82,6 +82,25 @@ impl DictbizGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个业务字典, 如果不存在则抛错
+  async fn find_one_ok_dictbiz(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<DictbizSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<DictbizModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dictbiz_resolver::find_one_ok_dictbiz(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找业务字典
   async fn find_by_id_dictbiz(
     &self,
@@ -99,6 +118,23 @@ impl DictbizGenQuery {
       }).await
   }
   
+  /// 根据 id 查找业务字典, 如果不存在则抛错
+  async fn find_by_id_ok_dictbiz(
+    &self,
+    ctx: &Context<'_>,
+    id: DictbizId,
+  ) -> Result<DictbizModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dictbiz_resolver::find_by_id_ok_dictbiz(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找业务字典
   async fn find_by_ids_dictbiz(
     &self,
@@ -110,6 +146,23 @@ impl DictbizGenQuery {
       .build()
       .scope({
         dictbiz_resolver::find_by_ids_dictbiz(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找业务字典
+  async fn find_by_ids_ok_dictbiz(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DictbizId>,
+  ) -> Result<Vec<DictbizModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dictbiz_resolver::find_by_ids_ok_dictbiz(
           ids,
           None,
         )

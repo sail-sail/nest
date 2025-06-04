@@ -922,7 +922,7 @@ pub async fn get_field_comments_wx_pay(
 }
 
 // MARK: find_one_ok_wx_pay
-/// 根据条件查找第一个微信支付设置
+/// 根据条件查找第一个微信支付设置, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_wx_pay(
   search: Option<WxPaySearch>,
@@ -956,13 +956,16 @@ pub async fn find_one_ok_wx_pay(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let wx_pay_model = validate_option_wx_pay(
-    find_one_wx_pay(
-      search,
-      sort,
-      options,
-    ).await?,
+  let wx_pay_model = find_one_wx_pay(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(wx_pay_model) = wx_pay_model else {
+    let err_msg = "此 微信支付设置 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(wx_pay_model)
 }
@@ -1026,7 +1029,7 @@ pub async fn find_one_wx_pay(
 }
 
 // MARK: find_by_id_ok_wx_pay
-/// 根据 id 查找微信支付设置
+/// 根据 id 查找微信支付设置, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_wx_pay(
   id: WxPayId,
@@ -1054,12 +1057,15 @@ pub async fn find_by_id_ok_wx_pay(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let wx_pay_model = validate_option_wx_pay(
-    find_by_id_wx_pay(
-      id,
-      options,
-    ).await?,
+  let wx_pay_model = find_by_id_wx_pay(
+    id,
+    options,
   ).await?;
+  
+  let Some(wx_pay_model) = wx_pay_model else {
+    let err_msg = "此 微信支付设置 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(wx_pay_model)
 }
@@ -1110,6 +1116,78 @@ pub async fn find_by_id_wx_pay(
   Ok(wx_pay_model)
 }
 
+// MARK: find_by_ids_ok_wx_pay
+/// 根据 ids 查找微信支付设置, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_wx_pay(
+  ids: Vec<WxPayId>,
+  options: Option<Options>,
+) -> Result<Vec<WxPayModel>> {
+  
+  let table = "wx_wx_pay";
+  let method = "find_by_ids_ok_wx_pay";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let wx_pay_models = find_by_ids_wx_pay(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if wx_pay_models.len() != len {
+    let err_msg = "此 微信支付设置 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let wx_pay_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = wx_pay_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 微信支付设置 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<WxPayModel>>>()?;
+  
+  Ok(wx_pay_models)
+}
+
 // MARK: find_by_ids_wx_pay
 /// 根据 ids 查找微信支付设置
 #[allow(dead_code)]
@@ -1146,7 +1224,13 @@ pub async fn find_by_ids_wx_pay(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = WxPaySearch {
@@ -1154,33 +1238,14 @@ pub async fn find_by_ids_wx_pay(
     ..Default::default()
   }.into();
   
-  let models = find_all_wx_pay(
+  let wx_pay_models = find_all_wx_pay(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 微信支付设置 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 微信支付设置 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<WxPayModel>>>()?;
-  
-  Ok(models)
+  Ok(wx_pay_models)
 }
 
 // MARK: exists_wx_pay
@@ -2071,7 +2136,6 @@ pub async fn create_return_wx_pay(
     let err_msg = "create_return_wx_pay: model_wx_pay.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -3053,10 +3117,9 @@ pub async fn validate_option_wx_pay(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

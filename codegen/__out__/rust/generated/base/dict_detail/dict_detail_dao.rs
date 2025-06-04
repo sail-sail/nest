@@ -795,7 +795,7 @@ pub async fn get_field_comments_dict_detail(
 }
 
 // MARK: find_one_ok_dict_detail
-/// 根据条件查找第一个系统字典明细
+/// 根据条件查找第一个系统字典明细, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_dict_detail(
   search: Option<DictDetailSearch>,
@@ -829,13 +829,16 @@ pub async fn find_one_ok_dict_detail(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let dict_detail_model = validate_option_dict_detail(
-    find_one_dict_detail(
-      search,
-      sort,
-      options,
-    ).await?,
+  let dict_detail_model = find_one_dict_detail(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(dict_detail_model) = dict_detail_model else {
+    let err_msg = "此 系统字典明细 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(dict_detail_model)
 }
@@ -899,7 +902,7 @@ pub async fn find_one_dict_detail(
 }
 
 // MARK: find_by_id_ok_dict_detail
-/// 根据 id 查找系统字典明细
+/// 根据 id 查找系统字典明细, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_dict_detail(
   id: DictDetailId,
@@ -927,12 +930,15 @@ pub async fn find_by_id_ok_dict_detail(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let dict_detail_model = validate_option_dict_detail(
-    find_by_id_dict_detail(
-      id,
-      options,
-    ).await?,
+  let dict_detail_model = find_by_id_dict_detail(
+    id,
+    options,
   ).await?;
+  
+  let Some(dict_detail_model) = dict_detail_model else {
+    let err_msg = "此 系统字典明细 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(dict_detail_model)
 }
@@ -983,6 +989,78 @@ pub async fn find_by_id_dict_detail(
   Ok(dict_detail_model)
 }
 
+// MARK: find_by_ids_ok_dict_detail
+/// 根据 ids 查找系统字典明细, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_dict_detail(
+  ids: Vec<DictDetailId>,
+  options: Option<Options>,
+) -> Result<Vec<DictDetailModel>> {
+  
+  let table = "base_dict_detail";
+  let method = "find_by_ids_ok_dict_detail";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let dict_detail_models = find_by_ids_dict_detail(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if dict_detail_models.len() != len {
+    let err_msg = "此 系统字典明细 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let dict_detail_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = dict_detail_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 系统字典明细 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<DictDetailModel>>>()?;
+  
+  Ok(dict_detail_models)
+}
+
 // MARK: find_by_ids_dict_detail
 /// 根据 ids 查找系统字典明细
 #[allow(dead_code)]
@@ -1019,7 +1097,13 @@ pub async fn find_by_ids_dict_detail(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = DictDetailSearch {
@@ -1027,33 +1111,14 @@ pub async fn find_by_ids_dict_detail(
     ..Default::default()
   }.into();
   
-  let models = find_all_dict_detail(
+  let dict_detail_models = find_all_dict_detail(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 系统字典明细 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 系统字典明细 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<DictDetailModel>>>()?;
-  
-  Ok(models)
+  Ok(dict_detail_models)
 }
 
 // MARK: exists_dict_detail
@@ -1850,7 +1915,6 @@ pub async fn create_return_dict_detail(
     let err_msg = "create_return_dict_detail: model_dict_detail.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -2653,10 +2717,9 @@ pub async fn validate_option_dict_detail(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

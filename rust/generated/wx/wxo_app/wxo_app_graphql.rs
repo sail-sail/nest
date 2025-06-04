@@ -82,6 +82,25 @@ impl WxoAppGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个公众号设置, 如果不存在则抛错
+  async fn find_one_ok_wxo_app(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<WxoAppSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<WxoAppModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxo_app_resolver::find_one_ok_wxo_app(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找公众号设置
   async fn find_by_id_wxo_app(
     &self,
@@ -99,6 +118,23 @@ impl WxoAppGenQuery {
       }).await
   }
   
+  /// 根据 id 查找公众号设置, 如果不存在则抛错
+  async fn find_by_id_ok_wxo_app(
+    &self,
+    ctx: &Context<'_>,
+    id: WxoAppId,
+  ) -> Result<WxoAppModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxo_app_resolver::find_by_id_ok_wxo_app(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找公众号设置
   async fn find_by_ids_wxo_app(
     &self,
@@ -110,6 +146,23 @@ impl WxoAppGenQuery {
       .build()
       .scope({
         wxo_app_resolver::find_by_ids_wxo_app(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找公众号设置
+  async fn find_by_ids_ok_wxo_app(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<WxoAppId>,
+  ) -> Result<Vec<WxoAppModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxo_app_resolver::find_by_ids_ok_wxo_app(
           ids,
           None,
         )

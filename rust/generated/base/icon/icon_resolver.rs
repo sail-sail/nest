@@ -89,6 +89,31 @@ pub async fn find_one_icon(
   Ok(model)
 }
 
+/// 根据条件查找第一个图标库, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_icon(
+  search: Option<IconSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<IconModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_icon(sort.as_deref())?;
+  
+  let model = icon_service::find_one_ok_icon(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找图标库
 #[function_name::named]
 pub async fn find_by_id_icon(
@@ -110,6 +135,27 @@ pub async fn find_by_id_icon(
   Ok(model)
 }
 
+/// 根据 id 查找图标库, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_icon(
+  id: IconId,
+  options: Option<Options>,
+) -> Result<IconModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = icon_service::find_by_id_ok_icon(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找图标库
 #[function_name::named]
 pub async fn find_by_ids_icon(
@@ -124,6 +170,27 @@ pub async fn find_by_ids_icon(
   );
   
   let models = icon_service::find_by_ids_icon(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找图标库, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_icon(
+  ids: Vec<IconId>,
+  options: Option<Options>,
+) -> Result<Vec<IconModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = icon_service::find_by_ids_ok_icon(
     ids,
     options,
   ).await?;

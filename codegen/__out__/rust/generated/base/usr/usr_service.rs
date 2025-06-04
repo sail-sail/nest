@@ -94,6 +94,29 @@ pub async fn find_one_usr(
   Ok(usr_model)
 }
 
+/// 根据条件查找第一个用户, 如果不存在则抛错
+pub async fn find_one_ok_usr(
+  search: Option<UsrSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<UsrModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let usr_model = usr_dao::find_one_ok_usr(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(usr_model)
+}
+
 /// 根据 id 查找用户
 pub async fn find_by_id_usr(
   usr_id: UsrId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_usr(
   Ok(usr_model)
 }
 
-/// 根据 usr_ids 查找用户
+/// 根据 id 查找用户, 如果不存在则抛错
+pub async fn find_by_id_ok_usr(
+  usr_id: UsrId,
+  options: Option<Options>,
+) -> Result<UsrModel> {
+  
+  let usr_model = usr_dao::find_by_id_ok_usr(
+    usr_id,
+    options,
+  ).await?;
+  
+  Ok(usr_model)
+}
+
+/// 根据 ids 查找用户
 pub async fn find_by_ids_usr(
   usr_ids: Vec<UsrId>,
   options: Option<Options>,
 ) -> Result<Vec<UsrModel>> {
   
   let usr_models = usr_dao::find_by_ids_usr(
+    usr_ids,
+    options,
+  ).await?;
+  
+  Ok(usr_models)
+}
+
+/// 根据 ids 查找用户, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_usr(
+  usr_ids: Vec<UsrId>,
+  options: Option<Options>,
+) -> Result<Vec<UsrModel>> {
+  
+  let usr_models = usr_dao::find_by_ids_ok_usr(
     usr_ids,
     options,
   ).await?;

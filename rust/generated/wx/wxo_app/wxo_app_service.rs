@@ -94,6 +94,29 @@ pub async fn find_one_wxo_app(
   Ok(wxo_app_model)
 }
 
+/// 根据条件查找第一个公众号设置, 如果不存在则抛错
+pub async fn find_one_ok_wxo_app(
+  search: Option<WxoAppSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxoAppModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let wxo_app_model = wxo_app_dao::find_one_ok_wxo_app(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(wxo_app_model)
+}
+
 /// 根据 id 查找公众号设置
 pub async fn find_by_id_wxo_app(
   wxo_app_id: WxoAppId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_wxo_app(
   Ok(wxo_app_model)
 }
 
-/// 根据 wxo_app_ids 查找公众号设置
+/// 根据 id 查找公众号设置, 如果不存在则抛错
+pub async fn find_by_id_ok_wxo_app(
+  wxo_app_id: WxoAppId,
+  options: Option<Options>,
+) -> Result<WxoAppModel> {
+  
+  let wxo_app_model = wxo_app_dao::find_by_id_ok_wxo_app(
+    wxo_app_id,
+    options,
+  ).await?;
+  
+  Ok(wxo_app_model)
+}
+
+/// 根据 ids 查找公众号设置
 pub async fn find_by_ids_wxo_app(
   wxo_app_ids: Vec<WxoAppId>,
   options: Option<Options>,
 ) -> Result<Vec<WxoAppModel>> {
   
   let wxo_app_models = wxo_app_dao::find_by_ids_wxo_app(
+    wxo_app_ids,
+    options,
+  ).await?;
+  
+  Ok(wxo_app_models)
+}
+
+/// 根据 ids 查找公众号设置, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_wxo_app(
+  wxo_app_ids: Vec<WxoAppId>,
+  options: Option<Options>,
+) -> Result<Vec<WxoAppModel>> {
+  
+  let wxo_app_models = wxo_app_dao::find_by_ids_ok_wxo_app(
     wxo_app_ids,
     options,
   ).await?;

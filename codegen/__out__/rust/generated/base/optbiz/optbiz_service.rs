@@ -94,6 +94,29 @@ pub async fn find_one_optbiz(
   Ok(optbiz_model)
 }
 
+/// 根据条件查找第一个业务选项, 如果不存在则抛错
+pub async fn find_one_ok_optbiz(
+  search: Option<OptbizSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<OptbizModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let optbiz_model = optbiz_dao::find_one_ok_optbiz(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(optbiz_model)
+}
+
 /// 根据 id 查找业务选项
 pub async fn find_by_id_optbiz(
   optbiz_id: OptbizId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_optbiz(
   Ok(optbiz_model)
 }
 
-/// 根据 optbiz_ids 查找业务选项
+/// 根据 id 查找业务选项, 如果不存在则抛错
+pub async fn find_by_id_ok_optbiz(
+  optbiz_id: OptbizId,
+  options: Option<Options>,
+) -> Result<OptbizModel> {
+  
+  let optbiz_model = optbiz_dao::find_by_id_ok_optbiz(
+    optbiz_id,
+    options,
+  ).await?;
+  
+  Ok(optbiz_model)
+}
+
+/// 根据 ids 查找业务选项
 pub async fn find_by_ids_optbiz(
   optbiz_ids: Vec<OptbizId>,
   options: Option<Options>,
 ) -> Result<Vec<OptbizModel>> {
   
   let optbiz_models = optbiz_dao::find_by_ids_optbiz(
+    optbiz_ids,
+    options,
+  ).await?;
+  
+  Ok(optbiz_models)
+}
+
+/// 根据 ids 查找业务选项, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_optbiz(
+  optbiz_ids: Vec<OptbizId>,
+  options: Option<Options>,
+) -> Result<Vec<OptbizModel>> {
+  
+  let optbiz_models = optbiz_dao::find_by_ids_ok_optbiz(
     optbiz_ids,
     options,
   ).await?;

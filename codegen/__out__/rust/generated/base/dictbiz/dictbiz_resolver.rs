@@ -91,6 +91,31 @@ pub async fn find_one_dictbiz(
   Ok(model)
 }
 
+/// 根据条件查找第一个业务字典, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_dictbiz(
+  search: Option<DictbizSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<DictbizModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_dictbiz(sort.as_deref())?;
+  
+  let model = dictbiz_service::find_one_ok_dictbiz(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找业务字典
 #[function_name::named]
 pub async fn find_by_id_dictbiz(
@@ -112,6 +137,27 @@ pub async fn find_by_id_dictbiz(
   Ok(model)
 }
 
+/// 根据 id 查找业务字典, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_dictbiz(
+  id: DictbizId,
+  options: Option<Options>,
+) -> Result<DictbizModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = dictbiz_service::find_by_id_ok_dictbiz(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找业务字典
 #[function_name::named]
 pub async fn find_by_ids_dictbiz(
@@ -126,6 +172,27 @@ pub async fn find_by_ids_dictbiz(
   );
   
   let models = dictbiz_service::find_by_ids_dictbiz(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找业务字典, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_dictbiz(
+  ids: Vec<DictbizId>,
+  options: Option<Options>,
+) -> Result<Vec<DictbizModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = dictbiz_service::find_by_ids_ok_dictbiz(
     ids,
     options,
   ).await?;

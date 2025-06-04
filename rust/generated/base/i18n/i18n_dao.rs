@@ -794,7 +794,7 @@ pub async fn get_field_comments_i18n(
 }
 
 // MARK: find_one_ok_i18n
-/// 根据条件查找第一个国际化
+/// 根据条件查找第一个国际化, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_i18n(
   search: Option<I18nSearch>,
@@ -828,13 +828,16 @@ pub async fn find_one_ok_i18n(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let i18n_model = validate_option_i18n(
-    find_one_i18n(
-      search,
-      sort,
-      options,
-    ).await?,
+  let i18n_model = find_one_i18n(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(i18n_model) = i18n_model else {
+    let err_msg = "此 国际化 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(i18n_model)
 }
@@ -898,7 +901,7 @@ pub async fn find_one_i18n(
 }
 
 // MARK: find_by_id_ok_i18n
-/// 根据 id 查找国际化
+/// 根据 id 查找国际化, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_i18n(
   id: I18nId,
@@ -926,12 +929,15 @@ pub async fn find_by_id_ok_i18n(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let i18n_model = validate_option_i18n(
-    find_by_id_i18n(
-      id,
-      options,
-    ).await?,
+  let i18n_model = find_by_id_i18n(
+    id,
+    options,
   ).await?;
+  
+  let Some(i18n_model) = i18n_model else {
+    let err_msg = "此 国际化 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(i18n_model)
 }
@@ -982,6 +988,78 @@ pub async fn find_by_id_i18n(
   Ok(i18n_model)
 }
 
+// MARK: find_by_ids_ok_i18n
+/// 根据 ids 查找国际化, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_i18n(
+  ids: Vec<I18nId>,
+  options: Option<Options>,
+) -> Result<Vec<I18nModel>> {
+  
+  let table = "base_i18n";
+  let method = "find_by_ids_ok_i18n";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let i18n_models = find_by_ids_i18n(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if i18n_models.len() != len {
+    let err_msg = "此 国际化 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let i18n_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = i18n_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 国际化 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<I18nModel>>>()?;
+  
+  Ok(i18n_models)
+}
+
 // MARK: find_by_ids_i18n
 /// 根据 ids 查找国际化
 #[allow(dead_code)]
@@ -1018,7 +1096,13 @@ pub async fn find_by_ids_i18n(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = I18nSearch {
@@ -1026,33 +1110,14 @@ pub async fn find_by_ids_i18n(
     ..Default::default()
   }.into();
   
-  let models = find_all_i18n(
+  let i18n_models = find_all_i18n(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 国际化 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 国际化 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<I18nModel>>>()?;
-  
-  Ok(models)
+  Ok(i18n_models)
 }
 
 // MARK: exists_i18n
@@ -1826,7 +1891,6 @@ pub async fn create_return_i18n(
     let err_msg = "create_return_i18n: model_i18n.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -2460,10 +2524,9 @@ pub async fn validate_option_i18n(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

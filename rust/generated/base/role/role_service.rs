@@ -94,6 +94,29 @@ pub async fn find_one_role(
   Ok(role_model)
 }
 
+/// 根据条件查找第一个角色, 如果不存在则抛错
+pub async fn find_one_ok_role(
+  search: Option<RoleSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<RoleModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let role_model = role_dao::find_one_ok_role(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(role_model)
+}
+
 /// 根据 id 查找角色
 pub async fn find_by_id_role(
   role_id: RoleId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_role(
   Ok(role_model)
 }
 
-/// 根据 role_ids 查找角色
+/// 根据 id 查找角色, 如果不存在则抛错
+pub async fn find_by_id_ok_role(
+  role_id: RoleId,
+  options: Option<Options>,
+) -> Result<RoleModel> {
+  
+  let role_model = role_dao::find_by_id_ok_role(
+    role_id,
+    options,
+  ).await?;
+  
+  Ok(role_model)
+}
+
+/// 根据 ids 查找角色
 pub async fn find_by_ids_role(
   role_ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
   
   let role_models = role_dao::find_by_ids_role(
+    role_ids,
+    options,
+  ).await?;
+  
+  Ok(role_models)
+}
+
+/// 根据 ids 查找角色, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_role(
+  role_ids: Vec<RoleId>,
+  options: Option<Options>,
+) -> Result<Vec<RoleModel>> {
+  
+  let role_models = role_dao::find_by_ids_ok_role(
     role_ids,
     options,
   ).await?;

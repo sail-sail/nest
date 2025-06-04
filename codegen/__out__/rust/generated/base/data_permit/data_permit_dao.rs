@@ -819,7 +819,7 @@ pub async fn get_field_comments_data_permit(
 }
 
 // MARK: find_one_ok_data_permit
-/// 根据条件查找第一个数据权限
+/// 根据条件查找第一个数据权限, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_data_permit(
   search: Option<DataPermitSearch>,
@@ -853,13 +853,16 @@ pub async fn find_one_ok_data_permit(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let data_permit_model = validate_option_data_permit(
-    find_one_data_permit(
-      search,
-      sort,
-      options,
-    ).await?,
+  let data_permit_model = find_one_data_permit(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(data_permit_model) = data_permit_model else {
+    let err_msg = "此 数据权限 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(data_permit_model)
 }
@@ -923,7 +926,7 @@ pub async fn find_one_data_permit(
 }
 
 // MARK: find_by_id_ok_data_permit
-/// 根据 id 查找数据权限
+/// 根据 id 查找数据权限, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_data_permit(
   id: DataPermitId,
@@ -951,12 +954,15 @@ pub async fn find_by_id_ok_data_permit(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let data_permit_model = validate_option_data_permit(
-    find_by_id_data_permit(
-      id,
-      options,
-    ).await?,
+  let data_permit_model = find_by_id_data_permit(
+    id,
+    options,
   ).await?;
+  
+  let Some(data_permit_model) = data_permit_model else {
+    let err_msg = "此 数据权限 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(data_permit_model)
 }
@@ -1007,6 +1013,78 @@ pub async fn find_by_id_data_permit(
   Ok(data_permit_model)
 }
 
+// MARK: find_by_ids_ok_data_permit
+/// 根据 ids 查找数据权限, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_data_permit(
+  ids: Vec<DataPermitId>,
+  options: Option<Options>,
+) -> Result<Vec<DataPermitModel>> {
+  
+  let table = "base_data_permit";
+  let method = "find_by_ids_ok_data_permit";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let data_permit_models = find_by_ids_data_permit(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if data_permit_models.len() != len {
+    let err_msg = "此 数据权限 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let data_permit_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = data_permit_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 数据权限 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<DataPermitModel>>>()?;
+  
+  Ok(data_permit_models)
+}
+
 // MARK: find_by_ids_data_permit
 /// 根据 ids 查找数据权限
 #[allow(dead_code)]
@@ -1043,7 +1121,13 @@ pub async fn find_by_ids_data_permit(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = DataPermitSearch {
@@ -1051,33 +1135,14 @@ pub async fn find_by_ids_data_permit(
     ..Default::default()
   }.into();
   
-  let models = find_all_data_permit(
+  let data_permit_models = find_all_data_permit(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 数据权限 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 数据权限 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<DataPermitModel>>>()?;
-  
-  Ok(models)
+  Ok(data_permit_models)
 }
 
 // MARK: exists_data_permit
@@ -1924,7 +1989,6 @@ pub async fn create_return_data_permit(
     let err_msg = "create_return_data_permit: model_data_permit.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -2632,10 +2696,9 @@ pub async fn validate_option_data_permit(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

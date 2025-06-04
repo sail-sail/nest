@@ -80,6 +80,25 @@ impl WxoAppTokenGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个小程序接口凭据, 如果不存在则抛错
+  async fn find_one_ok_wxo_app_token(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<WxoAppTokenSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<WxoAppTokenModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxo_app_token_resolver::find_one_ok_wxo_app_token(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找小程序接口凭据
   async fn find_by_id_wxo_app_token(
     &self,
@@ -97,6 +116,23 @@ impl WxoAppTokenGenQuery {
       }).await
   }
   
+  /// 根据 id 查找小程序接口凭据, 如果不存在则抛错
+  async fn find_by_id_ok_wxo_app_token(
+    &self,
+    ctx: &Context<'_>,
+    id: WxoAppTokenId,
+  ) -> Result<WxoAppTokenModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxo_app_token_resolver::find_by_id_ok_wxo_app_token(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找小程序接口凭据
   async fn find_by_ids_wxo_app_token(
     &self,
@@ -108,6 +144,23 @@ impl WxoAppTokenGenQuery {
       .build()
       .scope({
         wxo_app_token_resolver::find_by_ids_wxo_app_token(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找小程序接口凭据
+  async fn find_by_ids_ok_wxo_app_token(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<WxoAppTokenId>,
+  ) -> Result<Vec<WxoAppTokenModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxo_app_token_resolver::find_by_ids_ok_wxo_app_token(
           ids,
           None,
         )

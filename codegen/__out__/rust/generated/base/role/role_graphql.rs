@@ -82,6 +82,25 @@ impl RoleGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个角色, 如果不存在则抛错
+  async fn find_one_ok_role(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<RoleSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<RoleModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        role_resolver::find_one_ok_role(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找角色
   async fn find_by_id_role(
     &self,
@@ -99,6 +118,23 @@ impl RoleGenQuery {
       }).await
   }
   
+  /// 根据 id 查找角色, 如果不存在则抛错
+  async fn find_by_id_ok_role(
+    &self,
+    ctx: &Context<'_>,
+    id: RoleId,
+  ) -> Result<RoleModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        role_resolver::find_by_id_ok_role(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找角色
   async fn find_by_ids_role(
     &self,
@@ -110,6 +146,23 @@ impl RoleGenQuery {
       .build()
       .scope({
         role_resolver::find_by_ids_role(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找角色
+  async fn find_by_ids_ok_role(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<RoleId>,
+  ) -> Result<Vec<RoleModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        role_resolver::find_by_ids_ok_role(
           ids,
           None,
         )

@@ -94,6 +94,29 @@ pub async fn find_one_wx_app(
   Ok(wx_app_model)
 }
 
+/// 根据条件查找第一个小程序设置, 如果不存在则抛错
+pub async fn find_one_ok_wx_app(
+  search: Option<WxAppSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxAppModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let wx_app_model = wx_app_dao::find_one_ok_wx_app(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(wx_app_model)
+}
+
 /// 根据 id 查找小程序设置
 pub async fn find_by_id_wx_app(
   wx_app_id: WxAppId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_wx_app(
   Ok(wx_app_model)
 }
 
-/// 根据 wx_app_ids 查找小程序设置
+/// 根据 id 查找小程序设置, 如果不存在则抛错
+pub async fn find_by_id_ok_wx_app(
+  wx_app_id: WxAppId,
+  options: Option<Options>,
+) -> Result<WxAppModel> {
+  
+  let wx_app_model = wx_app_dao::find_by_id_ok_wx_app(
+    wx_app_id,
+    options,
+  ).await?;
+  
+  Ok(wx_app_model)
+}
+
+/// 根据 ids 查找小程序设置
 pub async fn find_by_ids_wx_app(
   wx_app_ids: Vec<WxAppId>,
   options: Option<Options>,
 ) -> Result<Vec<WxAppModel>> {
   
   let wx_app_models = wx_app_dao::find_by_ids_wx_app(
+    wx_app_ids,
+    options,
+  ).await?;
+  
+  Ok(wx_app_models)
+}
+
+/// 根据 ids 查找小程序设置, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_wx_app(
+  wx_app_ids: Vec<WxAppId>,
+  options: Option<Options>,
+) -> Result<Vec<WxAppModel>> {
+  
+  let wx_app_models = wx_app_dao::find_by_ids_ok_wx_app(
     wx_app_ids,
     options,
   ).await?;

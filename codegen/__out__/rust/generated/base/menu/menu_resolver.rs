@@ -107,6 +107,37 @@ pub async fn find_one_menu(
   Ok(model)
 }
 
+/// 根据条件查找第一个菜单, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_menu(
+  search: Option<MenuSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<MenuModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let search = Some({
+    let mut search = search.unwrap_or_default();
+    search.is_hidden = Some(vec![0]);
+    search
+  });
+  
+  check_sort_menu(sort.as_deref())?;
+  
+  let model = menu_service::find_one_ok_menu(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找菜单
 #[function_name::named]
 pub async fn find_by_id_menu(
@@ -128,6 +159,27 @@ pub async fn find_by_id_menu(
   Ok(model)
 }
 
+/// 根据 id 查找菜单, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_menu(
+  id: MenuId,
+  options: Option<Options>,
+) -> Result<MenuModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = menu_service::find_by_id_ok_menu(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找菜单
 #[function_name::named]
 pub async fn find_by_ids_menu(
@@ -142,6 +194,27 @@ pub async fn find_by_ids_menu(
   );
   
   let models = menu_service::find_by_ids_menu(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找菜单, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_menu(
+  ids: Vec<MenuId>,
+  options: Option<Options>,
+) -> Result<Vec<MenuModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = menu_service::find_by_ids_ok_menu(
     ids,
     options,
   ).await?;

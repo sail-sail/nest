@@ -1002,7 +1002,7 @@ pub async fn get_field_comments_pay_transactions_jsapi(
 }
 
 // MARK: find_one_ok_pay_transactions_jsapi
-/// 根据条件查找第一个微信JSAPI下单
+/// 根据条件查找第一个微信JSAPI下单, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_pay_transactions_jsapi(
   search: Option<PayTransactionsJsapiSearch>,
@@ -1036,13 +1036,16 @@ pub async fn find_one_ok_pay_transactions_jsapi(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let pay_transactions_jsapi_model = validate_option_pay_transactions_jsapi(
-    find_one_pay_transactions_jsapi(
-      search,
-      sort,
-      options,
-    ).await?,
+  let pay_transactions_jsapi_model = find_one_pay_transactions_jsapi(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(pay_transactions_jsapi_model) = pay_transactions_jsapi_model else {
+    let err_msg = "此 微信JSAPI下单 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(pay_transactions_jsapi_model)
 }
@@ -1106,7 +1109,7 @@ pub async fn find_one_pay_transactions_jsapi(
 }
 
 // MARK: find_by_id_ok_pay_transactions_jsapi
-/// 根据 id 查找微信JSAPI下单
+/// 根据 id 查找微信JSAPI下单, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_pay_transactions_jsapi(
   id: PayTransactionsJsapiId,
@@ -1134,12 +1137,15 @@ pub async fn find_by_id_ok_pay_transactions_jsapi(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let pay_transactions_jsapi_model = validate_option_pay_transactions_jsapi(
-    find_by_id_pay_transactions_jsapi(
-      id,
-      options,
-    ).await?,
+  let pay_transactions_jsapi_model = find_by_id_pay_transactions_jsapi(
+    id,
+    options,
   ).await?;
+  
+  let Some(pay_transactions_jsapi_model) = pay_transactions_jsapi_model else {
+    let err_msg = "此 微信JSAPI下单 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(pay_transactions_jsapi_model)
 }
@@ -1190,6 +1196,78 @@ pub async fn find_by_id_pay_transactions_jsapi(
   Ok(pay_transactions_jsapi_model)
 }
 
+// MARK: find_by_ids_ok_pay_transactions_jsapi
+/// 根据 ids 查找微信JSAPI下单, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_pay_transactions_jsapi(
+  ids: Vec<PayTransactionsJsapiId>,
+  options: Option<Options>,
+) -> Result<Vec<PayTransactionsJsapiModel>> {
+  
+  let table = "wx_pay_transactions_jsapi";
+  let method = "find_by_ids_ok_pay_transactions_jsapi";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let pay_transactions_jsapi_models = find_by_ids_pay_transactions_jsapi(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if pay_transactions_jsapi_models.len() != len {
+    let err_msg = "此 微信JSAPI下单 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let pay_transactions_jsapi_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = pay_transactions_jsapi_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 微信JSAPI下单 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<PayTransactionsJsapiModel>>>()?;
+  
+  Ok(pay_transactions_jsapi_models)
+}
+
 // MARK: find_by_ids_pay_transactions_jsapi
 /// 根据 ids 查找微信JSAPI下单
 #[allow(dead_code)]
@@ -1226,7 +1304,13 @@ pub async fn find_by_ids_pay_transactions_jsapi(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = PayTransactionsJsapiSearch {
@@ -1234,33 +1318,14 @@ pub async fn find_by_ids_pay_transactions_jsapi(
     ..Default::default()
   }.into();
   
-  let models = find_all_pay_transactions_jsapi(
+  let pay_transactions_jsapi_models = find_all_pay_transactions_jsapi(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 微信JSAPI下单 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 微信JSAPI下单 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<PayTransactionsJsapiModel>>>()?;
-  
-  Ok(models)
+  Ok(pay_transactions_jsapi_models)
 }
 
 // MARK: exists_pay_transactions_jsapi
@@ -2153,7 +2218,6 @@ pub async fn create_return_pay_transactions_jsapi(
     let err_msg = "create_return_pay_transactions_jsapi: model_pay_transactions_jsapi.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -2899,10 +2963,9 @@ pub async fn validate_option_pay_transactions_jsapi(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

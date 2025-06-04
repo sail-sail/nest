@@ -80,6 +80,25 @@ impl IconGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个图标库, 如果不存在则抛错
+  async fn find_one_ok_icon(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<IconSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<IconModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        icon_resolver::find_one_ok_icon(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找图标库
   async fn find_by_id_icon(
     &self,
@@ -97,6 +116,23 @@ impl IconGenQuery {
       }).await
   }
   
+  /// 根据 id 查找图标库, 如果不存在则抛错
+  async fn find_by_id_ok_icon(
+    &self,
+    ctx: &Context<'_>,
+    id: IconId,
+  ) -> Result<IconModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        icon_resolver::find_by_id_ok_icon(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找图标库
   async fn find_by_ids_icon(
     &self,
@@ -108,6 +144,23 @@ impl IconGenQuery {
       .build()
       .scope({
         icon_resolver::find_by_ids_icon(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找图标库
+  async fn find_by_ids_ok_icon(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<IconId>,
+  ) -> Result<Vec<IconModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        icon_resolver::find_by_ids_ok_icon(
           ids,
           None,
         )

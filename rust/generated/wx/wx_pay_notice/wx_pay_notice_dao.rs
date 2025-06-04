@@ -1088,7 +1088,7 @@ pub async fn get_field_comments_wx_pay_notice(
 }
 
 // MARK: find_one_ok_wx_pay_notice
-/// 根据条件查找第一个微信支付通知
+/// 根据条件查找第一个微信支付通知, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_wx_pay_notice(
   search: Option<WxPayNoticeSearch>,
@@ -1122,13 +1122,16 @@ pub async fn find_one_ok_wx_pay_notice(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let wx_pay_notice_model = validate_option_wx_pay_notice(
-    find_one_wx_pay_notice(
-      search,
-      sort,
-      options,
-    ).await?,
+  let wx_pay_notice_model = find_one_wx_pay_notice(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(wx_pay_notice_model) = wx_pay_notice_model else {
+    let err_msg = "此 微信支付通知 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(wx_pay_notice_model)
 }
@@ -1192,7 +1195,7 @@ pub async fn find_one_wx_pay_notice(
 }
 
 // MARK: find_by_id_ok_wx_pay_notice
-/// 根据 id 查找微信支付通知
+/// 根据 id 查找微信支付通知, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_wx_pay_notice(
   id: WxPayNoticeId,
@@ -1220,12 +1223,15 @@ pub async fn find_by_id_ok_wx_pay_notice(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let wx_pay_notice_model = validate_option_wx_pay_notice(
-    find_by_id_wx_pay_notice(
-      id,
-      options,
-    ).await?,
+  let wx_pay_notice_model = find_by_id_wx_pay_notice(
+    id,
+    options,
   ).await?;
+  
+  let Some(wx_pay_notice_model) = wx_pay_notice_model else {
+    let err_msg = "此 微信支付通知 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(wx_pay_notice_model)
 }
@@ -1276,6 +1282,78 @@ pub async fn find_by_id_wx_pay_notice(
   Ok(wx_pay_notice_model)
 }
 
+// MARK: find_by_ids_ok_wx_pay_notice
+/// 根据 ids 查找微信支付通知, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_wx_pay_notice(
+  ids: Vec<WxPayNoticeId>,
+  options: Option<Options>,
+) -> Result<Vec<WxPayNoticeModel>> {
+  
+  let table = "wx_wx_pay_notice";
+  let method = "find_by_ids_ok_wx_pay_notice";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let wx_pay_notice_models = find_by_ids_wx_pay_notice(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if wx_pay_notice_models.len() != len {
+    let err_msg = "此 微信支付通知 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let wx_pay_notice_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = wx_pay_notice_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 微信支付通知 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<WxPayNoticeModel>>>()?;
+  
+  Ok(wx_pay_notice_models)
+}
+
 // MARK: find_by_ids_wx_pay_notice
 /// 根据 ids 查找微信支付通知
 #[allow(dead_code)]
@@ -1312,7 +1390,13 @@ pub async fn find_by_ids_wx_pay_notice(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = WxPayNoticeSearch {
@@ -1320,33 +1404,14 @@ pub async fn find_by_ids_wx_pay_notice(
     ..Default::default()
   }.into();
   
-  let models = find_all_wx_pay_notice(
+  let wx_pay_notice_models = find_all_wx_pay_notice(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 微信支付通知 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 微信支付通知 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<WxPayNoticeModel>>>()?;
-  
-  Ok(models)
+  Ok(wx_pay_notice_models)
 }
 
 // MARK: exists_wx_pay_notice
@@ -2344,7 +2409,6 @@ pub async fn create_return_wx_pay_notice(
     let err_msg = "create_return_wx_pay_notice: model_wx_pay_notice.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -3084,10 +3148,9 @@ pub async fn validate_option_wx_pay_notice(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

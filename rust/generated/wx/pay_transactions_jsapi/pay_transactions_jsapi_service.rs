@@ -94,6 +94,29 @@ pub async fn find_one_pay_transactions_jsapi(
   Ok(pay_transactions_jsapi_model)
 }
 
+/// 根据条件查找第一个微信JSAPI下单, 如果不存在则抛错
+pub async fn find_one_ok_pay_transactions_jsapi(
+  search: Option<PayTransactionsJsapiSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<PayTransactionsJsapiModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let pay_transactions_jsapi_model = pay_transactions_jsapi_dao::find_one_ok_pay_transactions_jsapi(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(pay_transactions_jsapi_model)
+}
+
 /// 根据 id 查找微信JSAPI下单
 pub async fn find_by_id_pay_transactions_jsapi(
   pay_transactions_jsapi_id: PayTransactionsJsapiId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_pay_transactions_jsapi(
   Ok(pay_transactions_jsapi_model)
 }
 
-/// 根据 pay_transactions_jsapi_ids 查找微信JSAPI下单
+/// 根据 id 查找微信JSAPI下单, 如果不存在则抛错
+pub async fn find_by_id_ok_pay_transactions_jsapi(
+  pay_transactions_jsapi_id: PayTransactionsJsapiId,
+  options: Option<Options>,
+) -> Result<PayTransactionsJsapiModel> {
+  
+  let pay_transactions_jsapi_model = pay_transactions_jsapi_dao::find_by_id_ok_pay_transactions_jsapi(
+    pay_transactions_jsapi_id,
+    options,
+  ).await?;
+  
+  Ok(pay_transactions_jsapi_model)
+}
+
+/// 根据 ids 查找微信JSAPI下单
 pub async fn find_by_ids_pay_transactions_jsapi(
   pay_transactions_jsapi_ids: Vec<PayTransactionsJsapiId>,
   options: Option<Options>,
 ) -> Result<Vec<PayTransactionsJsapiModel>> {
   
   let pay_transactions_jsapi_models = pay_transactions_jsapi_dao::find_by_ids_pay_transactions_jsapi(
+    pay_transactions_jsapi_ids,
+    options,
+  ).await?;
+  
+  Ok(pay_transactions_jsapi_models)
+}
+
+/// 根据 ids 查找微信JSAPI下单, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_pay_transactions_jsapi(
+  pay_transactions_jsapi_ids: Vec<PayTransactionsJsapiId>,
+  options: Option<Options>,
+) -> Result<Vec<PayTransactionsJsapiModel>> {
+  
+  let pay_transactions_jsapi_models = pay_transactions_jsapi_dao::find_by_ids_ok_pay_transactions_jsapi(
     pay_transactions_jsapi_ids,
     options,
   ).await?;
