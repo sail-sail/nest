@@ -82,6 +82,25 @@ impl WxPayGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个微信支付设置, 如果不存在则抛错
+  async fn find_one_ok_wx_pay(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<WxPaySearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<WxPayModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_pay_resolver::find_one_ok_wx_pay(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找微信支付设置
   async fn find_by_id_wx_pay(
     &self,
@@ -99,6 +118,23 @@ impl WxPayGenQuery {
       }).await
   }
   
+  /// 根据 id 查找微信支付设置, 如果不存在则抛错
+  async fn find_by_id_ok_wx_pay(
+    &self,
+    ctx: &Context<'_>,
+    id: WxPayId,
+  ) -> Result<WxPayModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_pay_resolver::find_by_id_ok_wx_pay(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找微信支付设置
   async fn find_by_ids_wx_pay(
     &self,
@@ -110,6 +146,23 @@ impl WxPayGenQuery {
       .build()
       .scope({
         wx_pay_resolver::find_by_ids_wx_pay(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找微信支付设置
+  async fn find_by_ids_ok_wx_pay(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<WxPayId>,
+  ) -> Result<Vec<WxPayModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_pay_resolver::find_by_ids_ok_wx_pay(
           ids,
           None,
         )

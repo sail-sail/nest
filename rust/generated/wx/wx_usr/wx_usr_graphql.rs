@@ -82,6 +82,25 @@ impl WxUsrGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个小程序用户, 如果不存在则抛错
+  async fn find_one_ok_wx_usr(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<WxUsrSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<WxUsrModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_usr_resolver::find_one_ok_wx_usr(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找小程序用户
   async fn find_by_id_wx_usr(
     &self,
@@ -99,6 +118,23 @@ impl WxUsrGenQuery {
       }).await
   }
   
+  /// 根据 id 查找小程序用户, 如果不存在则抛错
+  async fn find_by_id_ok_wx_usr(
+    &self,
+    ctx: &Context<'_>,
+    id: WxUsrId,
+  ) -> Result<WxUsrModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_usr_resolver::find_by_id_ok_wx_usr(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找小程序用户
   async fn find_by_ids_wx_usr(
     &self,
@@ -110,6 +146,23 @@ impl WxUsrGenQuery {
       .build()
       .scope({
         wx_usr_resolver::find_by_ids_wx_usr(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找小程序用户
+  async fn find_by_ids_ok_wx_usr(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<WxUsrId>,
+  ) -> Result<Vec<WxUsrModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_usr_resolver::find_by_ids_ok_wx_usr(
           ids,
           None,
         )

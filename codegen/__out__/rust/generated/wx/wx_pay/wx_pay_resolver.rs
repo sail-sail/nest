@@ -91,6 +91,31 @@ pub async fn find_one_wx_pay(
   Ok(model)
 }
 
+/// 根据条件查找第一个微信支付设置, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_wx_pay(
+  search: Option<WxPaySearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxPayModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_wx_pay(sort.as_deref())?;
+  
+  let model = wx_pay_service::find_one_ok_wx_pay(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找微信支付设置
 #[function_name::named]
 pub async fn find_by_id_wx_pay(
@@ -112,6 +137,27 @@ pub async fn find_by_id_wx_pay(
   Ok(model)
 }
 
+/// 根据 id 查找微信支付设置, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_wx_pay(
+  id: WxPayId,
+  options: Option<Options>,
+) -> Result<WxPayModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = wx_pay_service::find_by_id_ok_wx_pay(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找微信支付设置
 #[function_name::named]
 pub async fn find_by_ids_wx_pay(
@@ -126,6 +172,27 @@ pub async fn find_by_ids_wx_pay(
   );
   
   let models = wx_pay_service::find_by_ids_wx_pay(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找微信支付设置, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_wx_pay(
+  ids: Vec<WxPayId>,
+  options: Option<Options>,
+) -> Result<Vec<WxPayModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = wx_pay_service::find_by_ids_ok_wx_pay(
     ids,
     options,
   ).await?;

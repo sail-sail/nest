@@ -82,6 +82,25 @@ impl PayTransactionsJsapiGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个微信JSAPI下单, 如果不存在则抛错
+  async fn find_one_ok_pay_transactions_jsapi(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<PayTransactionsJsapiSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<PayTransactionsJsapiModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        pay_transactions_jsapi_resolver::find_one_ok_pay_transactions_jsapi(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找微信JSAPI下单
   async fn find_by_id_pay_transactions_jsapi(
     &self,
@@ -99,6 +118,23 @@ impl PayTransactionsJsapiGenQuery {
       }).await
   }
   
+  /// 根据 id 查找微信JSAPI下单, 如果不存在则抛错
+  async fn find_by_id_ok_pay_transactions_jsapi(
+    &self,
+    ctx: &Context<'_>,
+    id: PayTransactionsJsapiId,
+  ) -> Result<PayTransactionsJsapiModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        pay_transactions_jsapi_resolver::find_by_id_ok_pay_transactions_jsapi(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找微信JSAPI下单
   async fn find_by_ids_pay_transactions_jsapi(
     &self,
@@ -110,6 +146,23 @@ impl PayTransactionsJsapiGenQuery {
       .build()
       .scope({
         pay_transactions_jsapi_resolver::find_by_ids_pay_transactions_jsapi(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找微信JSAPI下单
+  async fn find_by_ids_ok_pay_transactions_jsapi(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<PayTransactionsJsapiId>,
+  ) -> Result<Vec<PayTransactionsJsapiModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        pay_transactions_jsapi_resolver::find_by_ids_ok_pay_transactions_jsapi(
           ids,
           None,
         )

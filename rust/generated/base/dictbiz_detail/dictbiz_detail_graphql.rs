@@ -82,6 +82,25 @@ impl DictbizDetailGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个业务字典明细, 如果不存在则抛错
+  async fn find_one_ok_dictbiz_detail(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<DictbizDetailSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<DictbizDetailModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dictbiz_detail_resolver::find_one_ok_dictbiz_detail(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找业务字典明细
   async fn find_by_id_dictbiz_detail(
     &self,
@@ -99,6 +118,23 @@ impl DictbizDetailGenQuery {
       }).await
   }
   
+  /// 根据 id 查找业务字典明细, 如果不存在则抛错
+  async fn find_by_id_ok_dictbiz_detail(
+    &self,
+    ctx: &Context<'_>,
+    id: DictbizDetailId,
+  ) -> Result<DictbizDetailModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dictbiz_detail_resolver::find_by_id_ok_dictbiz_detail(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找业务字典明细
   async fn find_by_ids_dictbiz_detail(
     &self,
@@ -110,6 +146,23 @@ impl DictbizDetailGenQuery {
       .build()
       .scope({
         dictbiz_detail_resolver::find_by_ids_dictbiz_detail(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找业务字典明细
+  async fn find_by_ids_ok_dictbiz_detail(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DictbizDetailId>,
+  ) -> Result<Vec<DictbizDetailModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dictbiz_detail_resolver::find_by_ids_ok_dictbiz_detail(
           ids,
           None,
         )

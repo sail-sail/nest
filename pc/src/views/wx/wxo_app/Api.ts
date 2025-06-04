@@ -107,13 +107,14 @@ export async function findAllWxoApp(
 }
 
 /**
- * 根据条件查找第一个公众号设置
+ * 根据条件查找第一个 公众号设置
  */
 export async function findOneWxoApp(
   search?: WxoAppSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneWxoApp?: WxoAppModel;
   } = await query({
@@ -129,8 +130,43 @@ export async function findOneWxoApp(
       sort,
     },
   }, opt);
+  
   const model = data.findOneWxoApp;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 公众号设置, 如果不存在则抛错
+ */
+export async function findOneOkWxoApp(
+  search?: WxoAppSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkWxoApp?: WxoAppModel;
+  } = await query({
+    query: `
+      query($search: WxoAppSearch, $sort: [SortInput!]) {
+        findOneOkWxoApp(search: $search, sort: $sort) {
+          ${ wxoAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkWxoApp;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -230,12 +266,14 @@ export async function updateByIdWxoApp(
  * 根据 id 查找 公众号设置
  */
 export async function findByIdWxoApp(
-  id?: WxoAppId,
+  id: WxoAppId,
   opt?: GqlOpt,
 ): Promise<WxoAppModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdWxoApp?: WxoAppModel;
   } = await query({
@@ -250,8 +288,41 @@ export async function findByIdWxoApp(
       id,
     },
   }, opt);
+  
   const model = data.findByIdWxoApp;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 公众号设置, 如果不存在则抛错
+ */
+export async function findByIdOkWxoApp(
+  id: WxoAppId,
+  opt?: GqlOpt,
+): Promise<WxoAppModel> {
+  
+  const data: {
+    findByIdOkWxoApp: WxoAppModel;
+  } = await query({
+    query: `
+      query($id: WxoAppId!) {
+        findByIdOkWxoApp(id: $id) {
+          ${ wxoAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkWxoApp;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -262,33 +333,70 @@ export async function findByIdsWxoApp(
   ids: WxoAppId[],
   opt?: GqlOpt,
 ): Promise<WxoAppModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: WxoAppModel[] = [ ];
-  try {
-    const data: {
-      findByIdsWxoApp: WxoAppModel[];
-    } = await query({
-      query: `
-        query($ids: [WxoAppId!]!) {
-          findByIdsWxoApp(ids: $ids) {
-            ${ wxoAppQueryField }
-          }
+  
+  const data: {
+    findByIdsWxoApp: WxoAppModel[];
+  } = await query({
+    query: `
+      query($ids: [WxoAppId!]!) {
+        findByIdsWxoApp(ids: $ids) {
+          ${ wxoAppQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsWxoApp;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsWxoApp;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 公众号设置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxoApp(
+  ids: WxoAppId[],
+  opt?: GqlOpt,
+): Promise<WxoAppModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkWxoApp: WxoAppModel[];
+  } = await query({
+    query: `
+      query($ids: [WxoAppId!]!) {
+        findByIdsOkWxoApp(ids: $ids) {
+          ${ wxoAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkWxoApp;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

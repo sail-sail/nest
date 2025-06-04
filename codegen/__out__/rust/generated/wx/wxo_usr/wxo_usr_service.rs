@@ -94,6 +94,29 @@ pub async fn find_one_wxo_usr(
   Ok(wxo_usr_model)
 }
 
+/// 根据条件查找第一个公众号用户, 如果不存在则抛错
+pub async fn find_one_ok_wxo_usr(
+  search: Option<WxoUsrSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxoUsrModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let wxo_usr_model = wxo_usr_dao::find_one_ok_wxo_usr(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(wxo_usr_model)
+}
+
 /// 根据 id 查找公众号用户
 pub async fn find_by_id_wxo_usr(
   wxo_usr_id: WxoUsrId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_wxo_usr(
   Ok(wxo_usr_model)
 }
 
-/// 根据 wxo_usr_ids 查找公众号用户
+/// 根据 id 查找公众号用户, 如果不存在则抛错
+pub async fn find_by_id_ok_wxo_usr(
+  wxo_usr_id: WxoUsrId,
+  options: Option<Options>,
+) -> Result<WxoUsrModel> {
+  
+  let wxo_usr_model = wxo_usr_dao::find_by_id_ok_wxo_usr(
+    wxo_usr_id,
+    options,
+  ).await?;
+  
+  Ok(wxo_usr_model)
+}
+
+/// 根据 ids 查找公众号用户
 pub async fn find_by_ids_wxo_usr(
   wxo_usr_ids: Vec<WxoUsrId>,
   options: Option<Options>,
 ) -> Result<Vec<WxoUsrModel>> {
   
   let wxo_usr_models = wxo_usr_dao::find_by_ids_wxo_usr(
+    wxo_usr_ids,
+    options,
+  ).await?;
+  
+  Ok(wxo_usr_models)
+}
+
+/// 根据 ids 查找公众号用户, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_wxo_usr(
+  wxo_usr_ids: Vec<WxoUsrId>,
+  options: Option<Options>,
+) -> Result<Vec<WxoUsrModel>> {
+  
+  let wxo_usr_models = wxo_usr_dao::find_by_ids_ok_wxo_usr(
     wxo_usr_ids,
     options,
   ).await?;

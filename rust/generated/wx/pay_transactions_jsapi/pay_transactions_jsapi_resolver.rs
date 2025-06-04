@@ -91,6 +91,31 @@ pub async fn find_one_pay_transactions_jsapi(
   Ok(model)
 }
 
+/// 根据条件查找第一个微信JSAPI下单, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_pay_transactions_jsapi(
+  search: Option<PayTransactionsJsapiSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<PayTransactionsJsapiModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_pay_transactions_jsapi(sort.as_deref())?;
+  
+  let model = pay_transactions_jsapi_service::find_one_ok_pay_transactions_jsapi(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找微信JSAPI下单
 #[function_name::named]
 pub async fn find_by_id_pay_transactions_jsapi(
@@ -112,6 +137,27 @@ pub async fn find_by_id_pay_transactions_jsapi(
   Ok(model)
 }
 
+/// 根据 id 查找微信JSAPI下单, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_pay_transactions_jsapi(
+  id: PayTransactionsJsapiId,
+  options: Option<Options>,
+) -> Result<PayTransactionsJsapiModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = pay_transactions_jsapi_service::find_by_id_ok_pay_transactions_jsapi(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找微信JSAPI下单
 #[function_name::named]
 pub async fn find_by_ids_pay_transactions_jsapi(
@@ -126,6 +172,27 @@ pub async fn find_by_ids_pay_transactions_jsapi(
   );
   
   let models = pay_transactions_jsapi_service::find_by_ids_pay_transactions_jsapi(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找微信JSAPI下单, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_pay_transactions_jsapi(
+  ids: Vec<PayTransactionsJsapiId>,
+  options: Option<Options>,
+) -> Result<Vec<PayTransactionsJsapiModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = pay_transactions_jsapi_service::find_by_ids_ok_pay_transactions_jsapi(
     ids,
     options,
   ).await?;

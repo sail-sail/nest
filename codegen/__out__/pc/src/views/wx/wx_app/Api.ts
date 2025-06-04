@@ -84,13 +84,14 @@ export async function findAllWxApp(
 }
 
 /**
- * 根据条件查找第一个小程序设置
+ * 根据条件查找第一个 小程序设置
  */
 export async function findOneWxApp(
   search?: WxAppSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneWxApp?: WxAppModel;
   } = await query({
@@ -106,8 +107,43 @@ export async function findOneWxApp(
       sort,
     },
   }, opt);
+  
   const model = data.findOneWxApp;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 小程序设置, 如果不存在则抛错
+ */
+export async function findOneOkWxApp(
+  search?: WxAppSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkWxApp?: WxAppModel;
+  } = await query({
+    query: `
+      query($search: WxAppSearch, $sort: [SortInput!]) {
+        findOneOkWxApp(search: $search, sort: $sort) {
+          ${ wxAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkWxApp;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -207,12 +243,14 @@ export async function updateByIdWxApp(
  * 根据 id 查找 小程序设置
  */
 export async function findByIdWxApp(
-  id?: WxAppId,
+  id: WxAppId,
   opt?: GqlOpt,
 ): Promise<WxAppModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdWxApp?: WxAppModel;
   } = await query({
@@ -227,8 +265,41 @@ export async function findByIdWxApp(
       id,
     },
   }, opt);
+  
   const model = data.findByIdWxApp;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 小程序设置, 如果不存在则抛错
+ */
+export async function findByIdOkWxApp(
+  id: WxAppId,
+  opt?: GqlOpt,
+): Promise<WxAppModel> {
+  
+  const data: {
+    findByIdOkWxApp: WxAppModel;
+  } = await query({
+    query: `
+      query($id: WxAppId!) {
+        findByIdOkWxApp(id: $id) {
+          ${ wxAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkWxApp;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -239,33 +310,70 @@ export async function findByIdsWxApp(
   ids: WxAppId[],
   opt?: GqlOpt,
 ): Promise<WxAppModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: WxAppModel[] = [ ];
-  try {
-    const data: {
-      findByIdsWxApp: WxAppModel[];
-    } = await query({
-      query: `
-        query($ids: [WxAppId!]!) {
-          findByIdsWxApp(ids: $ids) {
-            ${ wxAppQueryField }
-          }
+  
+  const data: {
+    findByIdsWxApp: WxAppModel[];
+  } = await query({
+    query: `
+      query($ids: [WxAppId!]!) {
+        findByIdsWxApp(ids: $ids) {
+          ${ wxAppQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsWxApp;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsWxApp;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 小程序设置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxApp(
+  ids: WxAppId[],
+  opt?: GqlOpt,
+): Promise<WxAppModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkWxApp: WxAppModel[];
+  } = await query({
+    query: `
+      query($ids: [WxAppId!]!) {
+        findByIdsOkWxApp(ids: $ids) {
+          ${ wxAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkWxApp;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

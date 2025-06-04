@@ -1103,7 +1103,7 @@ pub async fn get_field_comments_wxo_app(
 }
 
 // MARK: find_one_ok_wxo_app
-/// 根据条件查找第一个公众号设置
+/// 根据条件查找第一个公众号设置, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_wxo_app(
   search: Option<WxoAppSearch>,
@@ -1137,13 +1137,16 @@ pub async fn find_one_ok_wxo_app(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let wxo_app_model = validate_option_wxo_app(
-    find_one_wxo_app(
-      search,
-      sort,
-      options,
-    ).await?,
+  let wxo_app_model = find_one_wxo_app(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(wxo_app_model) = wxo_app_model else {
+    let err_msg = "此 公众号设置 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(wxo_app_model)
 }
@@ -1207,7 +1210,7 @@ pub async fn find_one_wxo_app(
 }
 
 // MARK: find_by_id_ok_wxo_app
-/// 根据 id 查找公众号设置
+/// 根据 id 查找公众号设置, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_wxo_app(
   id: WxoAppId,
@@ -1235,12 +1238,15 @@ pub async fn find_by_id_ok_wxo_app(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let wxo_app_model = validate_option_wxo_app(
-    find_by_id_wxo_app(
-      id,
-      options,
-    ).await?,
+  let wxo_app_model = find_by_id_wxo_app(
+    id,
+    options,
   ).await?;
+  
+  let Some(wxo_app_model) = wxo_app_model else {
+    let err_msg = "此 公众号设置 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(wxo_app_model)
 }
@@ -1291,6 +1297,78 @@ pub async fn find_by_id_wxo_app(
   Ok(wxo_app_model)
 }
 
+// MARK: find_by_ids_ok_wxo_app
+/// 根据 ids 查找公众号设置, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_wxo_app(
+  ids: Vec<WxoAppId>,
+  options: Option<Options>,
+) -> Result<Vec<WxoAppModel>> {
+  
+  let table = "wx_wxo_app";
+  let method = "find_by_ids_ok_wxo_app";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let wxo_app_models = find_by_ids_wxo_app(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if wxo_app_models.len() != len {
+    let err_msg = "此 公众号设置 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let wxo_app_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = wxo_app_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 公众号设置 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<WxoAppModel>>>()?;
+  
+  Ok(wxo_app_models)
+}
+
 // MARK: find_by_ids_wxo_app
 /// 根据 ids 查找公众号设置
 #[allow(dead_code)]
@@ -1327,7 +1405,13 @@ pub async fn find_by_ids_wxo_app(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = WxoAppSearch {
@@ -1335,33 +1419,14 @@ pub async fn find_by_ids_wxo_app(
     ..Default::default()
   }.into();
   
-  let models = find_all_wxo_app(
+  let wxo_app_models = find_all_wxo_app(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 公众号设置 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 公众号设置 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<WxoAppModel>>>()?;
-  
-  Ok(models)
+  Ok(wxo_app_models)
 }
 
 // MARK: exists_wxo_app
@@ -2445,7 +2510,6 @@ pub async fn create_return_wxo_app(
     let err_msg = "create_return_wxo_app: model_wxo_app.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -3427,10 +3491,9 @@ pub async fn validate_option_wxo_app(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

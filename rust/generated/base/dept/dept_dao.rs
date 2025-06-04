@@ -1056,7 +1056,7 @@ pub async fn get_field_comments_dept(
 }
 
 // MARK: find_one_ok_dept
-/// 根据条件查找第一个部门
+/// 根据条件查找第一个部门, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_dept(
   search: Option<DeptSearch>,
@@ -1090,13 +1090,16 @@ pub async fn find_one_ok_dept(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let dept_model = validate_option_dept(
-    find_one_dept(
-      search,
-      sort,
-      options,
-    ).await?,
+  let dept_model = find_one_dept(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(dept_model) = dept_model else {
+    let err_msg = "此 部门 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(dept_model)
 }
@@ -1160,7 +1163,7 @@ pub async fn find_one_dept(
 }
 
 // MARK: find_by_id_ok_dept
-/// 根据 id 查找部门
+/// 根据 id 查找部门, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_dept(
   id: DeptId,
@@ -1188,12 +1191,15 @@ pub async fn find_by_id_ok_dept(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let dept_model = validate_option_dept(
-    find_by_id_dept(
-      id,
-      options,
-    ).await?,
+  let dept_model = find_by_id_dept(
+    id,
+    options,
   ).await?;
+  
+  let Some(dept_model) = dept_model else {
+    let err_msg = "此 部门 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(dept_model)
 }
@@ -1244,6 +1250,78 @@ pub async fn find_by_id_dept(
   Ok(dept_model)
 }
 
+// MARK: find_by_ids_ok_dept
+/// 根据 ids 查找部门, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_dept(
+  ids: Vec<DeptId>,
+  options: Option<Options>,
+) -> Result<Vec<DeptModel>> {
+  
+  let table = "base_dept";
+  let method = "find_by_ids_ok_dept";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let dept_models = find_by_ids_dept(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if dept_models.len() != len {
+    let err_msg = "此 部门 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let dept_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = dept_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 部门 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<DeptModel>>>()?;
+  
+  Ok(dept_models)
+}
+
 // MARK: find_by_ids_dept
 /// 根据 ids 查找部门
 #[allow(dead_code)]
@@ -1280,7 +1358,13 @@ pub async fn find_by_ids_dept(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = DeptSearch {
@@ -1288,33 +1372,14 @@ pub async fn find_by_ids_dept(
     ..Default::default()
   }.into();
   
-  let models = find_all_dept(
+  let dept_models = find_all_dept(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 部门 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 部门 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<DeptModel>>>()?;
-  
-  Ok(models)
+  Ok(dept_models)
 }
 
 // MARK: exists_dept
@@ -2318,7 +2383,6 @@ pub async fn create_return_dept(
     let err_msg = "create_return_dept: model_dept.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -3392,10 +3456,9 @@ pub async fn validate_option_dept(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

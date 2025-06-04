@@ -82,6 +82,25 @@ impl OrgGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个组织, 如果不存在则抛错
+  async fn find_one_ok_org(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<OrgSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<OrgModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        org_resolver::find_one_ok_org(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找组织
   async fn find_by_id_org(
     &self,
@@ -99,6 +118,23 @@ impl OrgGenQuery {
       }).await
   }
   
+  /// 根据 id 查找组织, 如果不存在则抛错
+  async fn find_by_id_ok_org(
+    &self,
+    ctx: &Context<'_>,
+    id: OrgId,
+  ) -> Result<OrgModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        org_resolver::find_by_id_ok_org(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找组织
   async fn find_by_ids_org(
     &self,
@@ -110,6 +146,23 @@ impl OrgGenQuery {
       .build()
       .scope({
         org_resolver::find_by_ids_org(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找组织
+  async fn find_by_ids_ok_org(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<OrgId>,
+  ) -> Result<Vec<OrgModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        org_resolver::find_by_ids_ok_org(
           ids,
           None,
         )

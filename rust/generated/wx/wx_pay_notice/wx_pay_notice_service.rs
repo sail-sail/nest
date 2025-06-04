@@ -94,6 +94,29 @@ pub async fn find_one_wx_pay_notice(
   Ok(wx_pay_notice_model)
 }
 
+/// 根据条件查找第一个微信支付通知, 如果不存在则抛错
+pub async fn find_one_ok_wx_pay_notice(
+  search: Option<WxPayNoticeSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxPayNoticeModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let wx_pay_notice_model = wx_pay_notice_dao::find_one_ok_wx_pay_notice(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(wx_pay_notice_model)
+}
+
 /// 根据 id 查找微信支付通知
 pub async fn find_by_id_wx_pay_notice(
   wx_pay_notice_id: WxPayNoticeId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_wx_pay_notice(
   Ok(wx_pay_notice_model)
 }
 
-/// 根据 wx_pay_notice_ids 查找微信支付通知
+/// 根据 id 查找微信支付通知, 如果不存在则抛错
+pub async fn find_by_id_ok_wx_pay_notice(
+  wx_pay_notice_id: WxPayNoticeId,
+  options: Option<Options>,
+) -> Result<WxPayNoticeModel> {
+  
+  let wx_pay_notice_model = wx_pay_notice_dao::find_by_id_ok_wx_pay_notice(
+    wx_pay_notice_id,
+    options,
+  ).await?;
+  
+  Ok(wx_pay_notice_model)
+}
+
+/// 根据 ids 查找微信支付通知
 pub async fn find_by_ids_wx_pay_notice(
   wx_pay_notice_ids: Vec<WxPayNoticeId>,
   options: Option<Options>,
 ) -> Result<Vec<WxPayNoticeModel>> {
   
   let wx_pay_notice_models = wx_pay_notice_dao::find_by_ids_wx_pay_notice(
+    wx_pay_notice_ids,
+    options,
+  ).await?;
+  
+  Ok(wx_pay_notice_models)
+}
+
+/// 根据 ids 查找微信支付通知, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_wx_pay_notice(
+  wx_pay_notice_ids: Vec<WxPayNoticeId>,
+  options: Option<Options>,
+) -> Result<Vec<WxPayNoticeModel>> {
+  
+  let wx_pay_notice_models = wx_pay_notice_dao::find_by_ids_ok_wx_pay_notice(
     wx_pay_notice_ids,
     options,
   ).await?;

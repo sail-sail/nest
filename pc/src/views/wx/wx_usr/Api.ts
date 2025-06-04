@@ -104,13 +104,14 @@ export async function findAllWxUsr(
 }
 
 /**
- * 根据条件查找第一个小程序用户
+ * 根据条件查找第一个 小程序用户
  */
 export async function findOneWxUsr(
   search?: WxUsrSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneWxUsr?: WxUsrModel;
   } = await query({
@@ -126,8 +127,43 @@ export async function findOneWxUsr(
       sort,
     },
   }, opt);
+  
   const model = data.findOneWxUsr;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 小程序用户, 如果不存在则抛错
+ */
+export async function findOneOkWxUsr(
+  search?: WxUsrSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkWxUsr?: WxUsrModel;
+  } = await query({
+    query: `
+      query($search: WxUsrSearch, $sort: [SortInput!]) {
+        findOneOkWxUsr(search: $search, sort: $sort) {
+          ${ wxUsrQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkWxUsr;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -227,12 +263,14 @@ export async function updateByIdWxUsr(
  * 根据 id 查找 小程序用户
  */
 export async function findByIdWxUsr(
-  id?: WxUsrId,
+  id: WxUsrId,
   opt?: GqlOpt,
 ): Promise<WxUsrModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdWxUsr?: WxUsrModel;
   } = await query({
@@ -247,8 +285,41 @@ export async function findByIdWxUsr(
       id,
     },
   }, opt);
+  
   const model = data.findByIdWxUsr;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 小程序用户, 如果不存在则抛错
+ */
+export async function findByIdOkWxUsr(
+  id: WxUsrId,
+  opt?: GqlOpt,
+): Promise<WxUsrModel> {
+  
+  const data: {
+    findByIdOkWxUsr: WxUsrModel;
+  } = await query({
+    query: `
+      query($id: WxUsrId!) {
+        findByIdOkWxUsr(id: $id) {
+          ${ wxUsrQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkWxUsr;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -259,33 +330,70 @@ export async function findByIdsWxUsr(
   ids: WxUsrId[],
   opt?: GqlOpt,
 ): Promise<WxUsrModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: WxUsrModel[] = [ ];
-  try {
-    const data: {
-      findByIdsWxUsr: WxUsrModel[];
-    } = await query({
-      query: `
-        query($ids: [WxUsrId!]!) {
-          findByIdsWxUsr(ids: $ids) {
-            ${ wxUsrQueryField }
-          }
+  
+  const data: {
+    findByIdsWxUsr: WxUsrModel[];
+  } = await query({
+    query: `
+      query($ids: [WxUsrId!]!) {
+        findByIdsWxUsr(ids: $ids) {
+          ${ wxUsrQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsWxUsr;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsWxUsr;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 小程序用户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxUsr(
+  ids: WxUsrId[],
+  opt?: GqlOpt,
+): Promise<WxUsrModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkWxUsr: WxUsrModel[];
+  } = await query({
+    query: `
+      query($ids: [WxUsrId!]!) {
+        findByIdsOkWxUsr(ids: $ids) {
+          ${ wxUsrQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkWxUsr;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

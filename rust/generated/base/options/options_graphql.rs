@@ -80,6 +80,25 @@ impl OptionsGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个系统选项, 如果不存在则抛错
+  async fn find_one_ok_options(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<OptionsSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<OptionsModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        options_resolver::find_one_ok_options(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统选项
   async fn find_by_id_options(
     &self,
@@ -97,6 +116,23 @@ impl OptionsGenQuery {
       }).await
   }
   
+  /// 根据 id 查找系统选项, 如果不存在则抛错
+  async fn find_by_id_ok_options(
+    &self,
+    ctx: &Context<'_>,
+    id: OptionsId,
+  ) -> Result<OptionsModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        options_resolver::find_by_id_ok_options(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统选项
   async fn find_by_ids_options(
     &self,
@@ -108,6 +144,23 @@ impl OptionsGenQuery {
       .build()
       .scope({
         options_resolver::find_by_ids_options(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找系统选项
+  async fn find_by_ids_ok_options(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<OptionsId>,
+  ) -> Result<Vec<OptionsModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        options_resolver::find_by_ids_ok_options(
           ids,
           None,
         )

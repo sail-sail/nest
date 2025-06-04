@@ -92,6 +92,29 @@ pub async fn find_one_wx_app_token(
   Ok(wx_app_token_model)
 }
 
+/// 根据条件查找第一个小程序接口凭据, 如果不存在则抛错
+pub async fn find_one_ok_wx_app_token(
+  search: Option<WxAppTokenSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxAppTokenModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let wx_app_token_model = wx_app_token_dao::find_one_ok_wx_app_token(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(wx_app_token_model)
+}
+
 /// 根据 id 查找小程序接口凭据
 pub async fn find_by_id_wx_app_token(
   wx_app_token_id: WxAppTokenId,
@@ -106,13 +129,41 @@ pub async fn find_by_id_wx_app_token(
   Ok(wx_app_token_model)
 }
 
-/// 根据 wx_app_token_ids 查找小程序接口凭据
+/// 根据 id 查找小程序接口凭据, 如果不存在则抛错
+pub async fn find_by_id_ok_wx_app_token(
+  wx_app_token_id: WxAppTokenId,
+  options: Option<Options>,
+) -> Result<WxAppTokenModel> {
+  
+  let wx_app_token_model = wx_app_token_dao::find_by_id_ok_wx_app_token(
+    wx_app_token_id,
+    options,
+  ).await?;
+  
+  Ok(wx_app_token_model)
+}
+
+/// 根据 ids 查找小程序接口凭据
 pub async fn find_by_ids_wx_app_token(
   wx_app_token_ids: Vec<WxAppTokenId>,
   options: Option<Options>,
 ) -> Result<Vec<WxAppTokenModel>> {
   
   let wx_app_token_models = wx_app_token_dao::find_by_ids_wx_app_token(
+    wx_app_token_ids,
+    options,
+  ).await?;
+  
+  Ok(wx_app_token_models)
+}
+
+/// 根据 ids 查找小程序接口凭据, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_wx_app_token(
+  wx_app_token_ids: Vec<WxAppTokenId>,
+  options: Option<Options>,
+) -> Result<Vec<WxAppTokenModel>> {
+  
+  let wx_app_token_models = wx_app_token_dao::find_by_ids_ok_wx_app_token(
     wx_app_token_ids,
     options,
   ).await?;

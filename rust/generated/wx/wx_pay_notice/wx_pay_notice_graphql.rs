@@ -82,6 +82,25 @@ impl WxPayNoticeGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个微信支付通知, 如果不存在则抛错
+  async fn find_one_ok_wx_pay_notice(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<WxPayNoticeSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<WxPayNoticeModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_pay_notice_resolver::find_one_ok_wx_pay_notice(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找微信支付通知
   async fn find_by_id_wx_pay_notice(
     &self,
@@ -99,6 +118,23 @@ impl WxPayNoticeGenQuery {
       }).await
   }
   
+  /// 根据 id 查找微信支付通知, 如果不存在则抛错
+  async fn find_by_id_ok_wx_pay_notice(
+    &self,
+    ctx: &Context<'_>,
+    id: WxPayNoticeId,
+  ) -> Result<WxPayNoticeModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_pay_notice_resolver::find_by_id_ok_wx_pay_notice(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找微信支付通知
   async fn find_by_ids_wx_pay_notice(
     &self,
@@ -110,6 +146,23 @@ impl WxPayNoticeGenQuery {
       .build()
       .scope({
         wx_pay_notice_resolver::find_by_ids_wx_pay_notice(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找微信支付通知
+  async fn find_by_ids_ok_wx_pay_notice(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<WxPayNoticeId>,
+  ) -> Result<Vec<WxPayNoticeModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_pay_notice_resolver::find_by_ids_ok_wx_pay_notice(
           ids,
           None,
         )

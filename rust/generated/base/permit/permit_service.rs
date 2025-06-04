@@ -92,6 +92,29 @@ pub async fn find_one_permit(
   Ok(permit_model)
 }
 
+/// 根据条件查找第一个按钮权限, 如果不存在则抛错
+pub async fn find_one_ok_permit(
+  search: Option<PermitSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<PermitModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let permit_model = permit_dao::find_one_ok_permit(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(permit_model)
+}
+
 /// 根据 id 查找按钮权限
 pub async fn find_by_id_permit(
   permit_id: PermitId,
@@ -106,13 +129,41 @@ pub async fn find_by_id_permit(
   Ok(permit_model)
 }
 
-/// 根据 permit_ids 查找按钮权限
+/// 根据 id 查找按钮权限, 如果不存在则抛错
+pub async fn find_by_id_ok_permit(
+  permit_id: PermitId,
+  options: Option<Options>,
+) -> Result<PermitModel> {
+  
+  let permit_model = permit_dao::find_by_id_ok_permit(
+    permit_id,
+    options,
+  ).await?;
+  
+  Ok(permit_model)
+}
+
+/// 根据 ids 查找按钮权限
 pub async fn find_by_ids_permit(
   permit_ids: Vec<PermitId>,
   options: Option<Options>,
 ) -> Result<Vec<PermitModel>> {
   
   let permit_models = permit_dao::find_by_ids_permit(
+    permit_ids,
+    options,
+  ).await?;
+  
+  Ok(permit_models)
+}
+
+/// 根据 ids 查找按钮权限, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_permit(
+  permit_ids: Vec<PermitId>,
+  options: Option<Options>,
+) -> Result<Vec<PermitModel>> {
+  
+  let permit_models = permit_dao::find_by_ids_ok_permit(
     permit_ids,
     options,
   ).await?;

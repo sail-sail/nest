@@ -82,6 +82,25 @@ impl WxoUsrGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个公众号用户, 如果不存在则抛错
+  async fn find_one_ok_wxo_usr(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<WxoUsrSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<WxoUsrModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxo_usr_resolver::find_one_ok_wxo_usr(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找公众号用户
   async fn find_by_id_wxo_usr(
     &self,
@@ -99,6 +118,23 @@ impl WxoUsrGenQuery {
       }).await
   }
   
+  /// 根据 id 查找公众号用户, 如果不存在则抛错
+  async fn find_by_id_ok_wxo_usr(
+    &self,
+    ctx: &Context<'_>,
+    id: WxoUsrId,
+  ) -> Result<WxoUsrModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxo_usr_resolver::find_by_id_ok_wxo_usr(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找公众号用户
   async fn find_by_ids_wxo_usr(
     &self,
@@ -110,6 +146,23 @@ impl WxoUsrGenQuery {
       .build()
       .scope({
         wxo_usr_resolver::find_by_ids_wxo_usr(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找公众号用户
+  async fn find_by_ids_ok_wxo_usr(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<WxoUsrId>,
+  ) -> Result<Vec<WxoUsrModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxo_usr_resolver::find_by_ids_ok_wxo_usr(
           ids,
           None,
         )

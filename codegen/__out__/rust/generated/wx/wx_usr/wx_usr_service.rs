@@ -94,6 +94,29 @@ pub async fn find_one_wx_usr(
   Ok(wx_usr_model)
 }
 
+/// 根据条件查找第一个小程序用户, 如果不存在则抛错
+pub async fn find_one_ok_wx_usr(
+  search: Option<WxUsrSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxUsrModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let wx_usr_model = wx_usr_dao::find_one_ok_wx_usr(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(wx_usr_model)
+}
+
 /// 根据 id 查找小程序用户
 pub async fn find_by_id_wx_usr(
   wx_usr_id: WxUsrId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_wx_usr(
   Ok(wx_usr_model)
 }
 
-/// 根据 wx_usr_ids 查找小程序用户
+/// 根据 id 查找小程序用户, 如果不存在则抛错
+pub async fn find_by_id_ok_wx_usr(
+  wx_usr_id: WxUsrId,
+  options: Option<Options>,
+) -> Result<WxUsrModel> {
+  
+  let wx_usr_model = wx_usr_dao::find_by_id_ok_wx_usr(
+    wx_usr_id,
+    options,
+  ).await?;
+  
+  Ok(wx_usr_model)
+}
+
+/// 根据 ids 查找小程序用户
 pub async fn find_by_ids_wx_usr(
   wx_usr_ids: Vec<WxUsrId>,
   options: Option<Options>,
 ) -> Result<Vec<WxUsrModel>> {
   
   let wx_usr_models = wx_usr_dao::find_by_ids_wx_usr(
+    wx_usr_ids,
+    options,
+  ).await?;
+  
+  Ok(wx_usr_models)
+}
+
+/// 根据 ids 查找小程序用户, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_wx_usr(
+  wx_usr_ids: Vec<WxUsrId>,
+  options: Option<Options>,
+) -> Result<Vec<WxUsrModel>> {
+  
+  let wx_usr_models = wx_usr_dao::find_by_ids_ok_wx_usr(
     wx_usr_ids,
     options,
   ).await?;

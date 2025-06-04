@@ -94,6 +94,29 @@ pub async fn find_one_login_log(
   Ok(login_log_model)
 }
 
+/// 根据条件查找第一个登录日志, 如果不存在则抛错
+pub async fn find_one_ok_login_log(
+  search: Option<LoginLogSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<LoginLogModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let login_log_model = login_log_dao::find_one_ok_login_log(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(login_log_model)
+}
+
 /// 根据 id 查找登录日志
 pub async fn find_by_id_login_log(
   login_log_id: LoginLogId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_login_log(
   Ok(login_log_model)
 }
 
-/// 根据 login_log_ids 查找登录日志
+/// 根据 id 查找登录日志, 如果不存在则抛错
+pub async fn find_by_id_ok_login_log(
+  login_log_id: LoginLogId,
+  options: Option<Options>,
+) -> Result<LoginLogModel> {
+  
+  let login_log_model = login_log_dao::find_by_id_ok_login_log(
+    login_log_id,
+    options,
+  ).await?;
+  
+  Ok(login_log_model)
+}
+
+/// 根据 ids 查找登录日志
 pub async fn find_by_ids_login_log(
   login_log_ids: Vec<LoginLogId>,
   options: Option<Options>,
 ) -> Result<Vec<LoginLogModel>> {
   
   let login_log_models = login_log_dao::find_by_ids_login_log(
+    login_log_ids,
+    options,
+  ).await?;
+  
+  Ok(login_log_models)
+}
+
+/// 根据 ids 查找登录日志, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_login_log(
+  login_log_ids: Vec<LoginLogId>,
+  options: Option<Options>,
+) -> Result<Vec<LoginLogModel>> {
+  
+  let login_log_models = login_log_dao::find_by_ids_ok_login_log(
     login_log_ids,
     options,
   ).await?;

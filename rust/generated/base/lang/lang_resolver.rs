@@ -89,6 +89,31 @@ pub async fn find_one_lang(
   Ok(model)
 }
 
+/// 根据条件查找第一个语言, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_lang(
+  search: Option<LangSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<LangModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_lang(sort.as_deref())?;
+  
+  let model = lang_service::find_one_ok_lang(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找语言
 #[function_name::named]
 pub async fn find_by_id_lang(
@@ -110,6 +135,27 @@ pub async fn find_by_id_lang(
   Ok(model)
 }
 
+/// 根据 id 查找语言, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_lang(
+  id: LangId,
+  options: Option<Options>,
+) -> Result<LangModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = lang_service::find_by_id_ok_lang(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找语言
 #[function_name::named]
 pub async fn find_by_ids_lang(
@@ -124,6 +170,27 @@ pub async fn find_by_ids_lang(
   );
   
   let models = lang_service::find_by_ids_lang(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找语言, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_lang(
+  ids: Vec<LangId>,
+  options: Option<Options>,
+) -> Result<Vec<LangModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = lang_service::find_by_ids_ok_lang(
     ids,
     options,
   ).await?;

@@ -91,6 +91,31 @@ pub async fn find_one_wx_usr(
   Ok(model)
 }
 
+/// 根据条件查找第一个小程序用户, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_wx_usr(
+  search: Option<WxUsrSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxUsrModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_wx_usr(sort.as_deref())?;
+  
+  let model = wx_usr_service::find_one_ok_wx_usr(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找小程序用户
 #[function_name::named]
 pub async fn find_by_id_wx_usr(
@@ -112,6 +137,27 @@ pub async fn find_by_id_wx_usr(
   Ok(model)
 }
 
+/// 根据 id 查找小程序用户, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_wx_usr(
+  id: WxUsrId,
+  options: Option<Options>,
+) -> Result<WxUsrModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = wx_usr_service::find_by_id_ok_wx_usr(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找小程序用户
 #[function_name::named]
 pub async fn find_by_ids_wx_usr(
@@ -126,6 +172,27 @@ pub async fn find_by_ids_wx_usr(
   );
   
   let models = wx_usr_service::find_by_ids_wx_usr(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找小程序用户, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_wx_usr(
+  ids: Vec<WxUsrId>,
+  options: Option<Options>,
+) -> Result<Vec<WxUsrModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = wx_usr_service::find_by_ids_ok_wx_usr(
     ids,
     options,
   ).await?;
