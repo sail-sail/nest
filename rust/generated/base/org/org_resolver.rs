@@ -91,6 +91,31 @@ pub async fn find_one_org(
   Ok(model)
 }
 
+/// 根据条件查找第一个组织, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_org(
+  search: Option<OrgSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<OrgModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_org(sort.as_deref())?;
+  
+  let model = org_service::find_one_ok_org(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找组织
 #[function_name::named]
 pub async fn find_by_id_org(
@@ -112,6 +137,27 @@ pub async fn find_by_id_org(
   Ok(model)
 }
 
+/// 根据 id 查找组织, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_org(
+  id: OrgId,
+  options: Option<Options>,
+) -> Result<OrgModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = org_service::find_by_id_ok_org(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找组织
 #[function_name::named]
 pub async fn find_by_ids_org(
@@ -126,6 +172,27 @@ pub async fn find_by_ids_org(
   );
   
   let models = org_service::find_by_ids_org(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找组织, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_org(
+  ids: Vec<OrgId>,
+  options: Option<Options>,
+) -> Result<Vec<OrgModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = org_service::find_by_ids_ok_org(
     ids,
     options,
   ).await?;

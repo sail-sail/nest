@@ -94,6 +94,29 @@ pub async fn find_one_dictbiz_detail(
   Ok(dictbiz_detail_model)
 }
 
+/// 根据条件查找第一个业务字典明细, 如果不存在则抛错
+pub async fn find_one_ok_dictbiz_detail(
+  search: Option<DictbizDetailSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<DictbizDetailModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let dictbiz_detail_model = dictbiz_detail_dao::find_one_ok_dictbiz_detail(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(dictbiz_detail_model)
+}
+
 /// 根据 id 查找业务字典明细
 pub async fn find_by_id_dictbiz_detail(
   dictbiz_detail_id: DictbizDetailId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_dictbiz_detail(
   Ok(dictbiz_detail_model)
 }
 
-/// 根据 dictbiz_detail_ids 查找业务字典明细
+/// 根据 id 查找业务字典明细, 如果不存在则抛错
+pub async fn find_by_id_ok_dictbiz_detail(
+  dictbiz_detail_id: DictbizDetailId,
+  options: Option<Options>,
+) -> Result<DictbizDetailModel> {
+  
+  let dictbiz_detail_model = dictbiz_detail_dao::find_by_id_ok_dictbiz_detail(
+    dictbiz_detail_id,
+    options,
+  ).await?;
+  
+  Ok(dictbiz_detail_model)
+}
+
+/// 根据 ids 查找业务字典明细
 pub async fn find_by_ids_dictbiz_detail(
   dictbiz_detail_ids: Vec<DictbizDetailId>,
   options: Option<Options>,
 ) -> Result<Vec<DictbizDetailModel>> {
   
   let dictbiz_detail_models = dictbiz_detail_dao::find_by_ids_dictbiz_detail(
+    dictbiz_detail_ids,
+    options,
+  ).await?;
+  
+  Ok(dictbiz_detail_models)
+}
+
+/// 根据 ids 查找业务字典明细, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_dictbiz_detail(
+  dictbiz_detail_ids: Vec<DictbizDetailId>,
+  options: Option<Options>,
+) -> Result<Vec<DictbizDetailModel>> {
+  
+  let dictbiz_detail_models = dictbiz_detail_dao::find_by_ids_ok_dictbiz_detail(
     dictbiz_detail_ids,
     options,
   ).await?;

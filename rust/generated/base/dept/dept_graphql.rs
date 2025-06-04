@@ -82,6 +82,25 @@ impl DeptGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个部门, 如果不存在则抛错
+  async fn find_one_ok_dept(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<DeptSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<DeptModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dept_resolver::find_one_ok_dept(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找部门
   async fn find_by_id_dept(
     &self,
@@ -99,6 +118,23 @@ impl DeptGenQuery {
       }).await
   }
   
+  /// 根据 id 查找部门, 如果不存在则抛错
+  async fn find_by_id_ok_dept(
+    &self,
+    ctx: &Context<'_>,
+    id: DeptId,
+  ) -> Result<DeptModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dept_resolver::find_by_id_ok_dept(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找部门
   async fn find_by_ids_dept(
     &self,
@@ -110,6 +146,23 @@ impl DeptGenQuery {
       .build()
       .scope({
         dept_resolver::find_by_ids_dept(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找部门
+  async fn find_by_ids_ok_dept(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DeptId>,
+  ) -> Result<Vec<DeptModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dept_resolver::find_by_ids_ok_dept(
           ids,
           None,
         )

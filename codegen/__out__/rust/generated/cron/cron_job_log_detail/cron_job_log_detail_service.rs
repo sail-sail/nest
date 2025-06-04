@@ -94,6 +94,29 @@ pub async fn find_one_cron_job_log_detail(
   Ok(cron_job_log_detail_model)
 }
 
+/// 根据条件查找第一个定时任务日志明细, 如果不存在则抛错
+pub async fn find_one_ok_cron_job_log_detail(
+  search: Option<CronJobLogDetailSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<CronJobLogDetailModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let cron_job_log_detail_model = cron_job_log_detail_dao::find_one_ok_cron_job_log_detail(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(cron_job_log_detail_model)
+}
+
 /// 根据 id 查找定时任务日志明细
 pub async fn find_by_id_cron_job_log_detail(
   cron_job_log_detail_id: CronJobLogDetailId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_cron_job_log_detail(
   Ok(cron_job_log_detail_model)
 }
 
-/// 根据 cron_job_log_detail_ids 查找定时任务日志明细
+/// 根据 id 查找定时任务日志明细, 如果不存在则抛错
+pub async fn find_by_id_ok_cron_job_log_detail(
+  cron_job_log_detail_id: CronJobLogDetailId,
+  options: Option<Options>,
+) -> Result<CronJobLogDetailModel> {
+  
+  let cron_job_log_detail_model = cron_job_log_detail_dao::find_by_id_ok_cron_job_log_detail(
+    cron_job_log_detail_id,
+    options,
+  ).await?;
+  
+  Ok(cron_job_log_detail_model)
+}
+
+/// 根据 ids 查找定时任务日志明细
 pub async fn find_by_ids_cron_job_log_detail(
   cron_job_log_detail_ids: Vec<CronJobLogDetailId>,
   options: Option<Options>,
 ) -> Result<Vec<CronJobLogDetailModel>> {
   
   let cron_job_log_detail_models = cron_job_log_detail_dao::find_by_ids_cron_job_log_detail(
+    cron_job_log_detail_ids,
+    options,
+  ).await?;
+  
+  Ok(cron_job_log_detail_models)
+}
+
+/// 根据 ids 查找定时任务日志明细, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_cron_job_log_detail(
+  cron_job_log_detail_ids: Vec<CronJobLogDetailId>,
+  options: Option<Options>,
+) -> Result<Vec<CronJobLogDetailModel>> {
+  
+  let cron_job_log_detail_models = cron_job_log_detail_dao::find_by_ids_ok_cron_job_log_detail(
     cron_job_log_detail_ids,
     options,
   ).await?;

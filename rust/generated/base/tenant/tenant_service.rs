@@ -92,6 +92,29 @@ pub async fn find_one_tenant(
   Ok(tenant_model)
 }
 
+/// 根据条件查找第一个租户, 如果不存在则抛错
+pub async fn find_one_ok_tenant(
+  search: Option<TenantSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<TenantModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let tenant_model = tenant_dao::find_one_ok_tenant(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(tenant_model)
+}
+
 /// 根据 id 查找租户
 pub async fn find_by_id_tenant(
   tenant_id: TenantId,
@@ -106,13 +129,41 @@ pub async fn find_by_id_tenant(
   Ok(tenant_model)
 }
 
-/// 根据 tenant_ids 查找租户
+/// 根据 id 查找租户, 如果不存在则抛错
+pub async fn find_by_id_ok_tenant(
+  tenant_id: TenantId,
+  options: Option<Options>,
+) -> Result<TenantModel> {
+  
+  let tenant_model = tenant_dao::find_by_id_ok_tenant(
+    tenant_id,
+    options,
+  ).await?;
+  
+  Ok(tenant_model)
+}
+
+/// 根据 ids 查找租户
 pub async fn find_by_ids_tenant(
   tenant_ids: Vec<TenantId>,
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
   
   let tenant_models = tenant_dao::find_by_ids_tenant(
+    tenant_ids,
+    options,
+  ).await?;
+  
+  Ok(tenant_models)
+}
+
+/// 根据 ids 查找租户, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_tenant(
+  tenant_ids: Vec<TenantId>,
+  options: Option<Options>,
+) -> Result<Vec<TenantModel>> {
+  
+  let tenant_models = tenant_dao::find_by_ids_ok_tenant(
     tenant_ids,
     options,
   ).await?;

@@ -94,6 +94,29 @@ pub async fn find_one_org(
   Ok(org_model)
 }
 
+/// 根据条件查找第一个组织, 如果不存在则抛错
+pub async fn find_one_ok_org(
+  search: Option<OrgSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<OrgModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let org_model = org_dao::find_one_ok_org(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(org_model)
+}
+
 /// 根据 id 查找组织
 pub async fn find_by_id_org(
   org_id: OrgId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_org(
   Ok(org_model)
 }
 
-/// 根据 org_ids 查找组织
+/// 根据 id 查找组织, 如果不存在则抛错
+pub async fn find_by_id_ok_org(
+  org_id: OrgId,
+  options: Option<Options>,
+) -> Result<OrgModel> {
+  
+  let org_model = org_dao::find_by_id_ok_org(
+    org_id,
+    options,
+  ).await?;
+  
+  Ok(org_model)
+}
+
+/// 根据 ids 查找组织
 pub async fn find_by_ids_org(
   org_ids: Vec<OrgId>,
   options: Option<Options>,
 ) -> Result<Vec<OrgModel>> {
   
   let org_models = org_dao::find_by_ids_org(
+    org_ids,
+    options,
+  ).await?;
+  
+  Ok(org_models)
+}
+
+/// 根据 ids 查找组织, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_org(
+  org_ids: Vec<OrgId>,
+  options: Option<Options>,
+) -> Result<Vec<OrgModel>> {
+  
+  let org_models = org_dao::find_by_ids_ok_org(
     org_ids,
     options,
   ).await?;

@@ -82,6 +82,25 @@ impl CronJobGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个定时任务, 如果不存在则抛错
+  async fn find_one_ok_cron_job(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<CronJobSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<CronJobModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        cron_job_resolver::find_one_ok_cron_job(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找定时任务
   async fn find_by_id_cron_job(
     &self,
@@ -99,6 +118,23 @@ impl CronJobGenQuery {
       }).await
   }
   
+  /// 根据 id 查找定时任务, 如果不存在则抛错
+  async fn find_by_id_ok_cron_job(
+    &self,
+    ctx: &Context<'_>,
+    id: CronJobId,
+  ) -> Result<CronJobModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        cron_job_resolver::find_by_id_ok_cron_job(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找定时任务
   async fn find_by_ids_cron_job(
     &self,
@@ -110,6 +146,23 @@ impl CronJobGenQuery {
       .build()
       .scope({
         cron_job_resolver::find_by_ids_cron_job(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找定时任务
+  async fn find_by_ids_ok_cron_job(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<CronJobId>,
+  ) -> Result<Vec<CronJobModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        cron_job_resolver::find_by_ids_ok_cron_job(
           ids,
           None,
         )

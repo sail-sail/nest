@@ -782,7 +782,7 @@ pub async fn get_field_comments_job(
 }
 
 // MARK: find_one_ok_job
-/// 根据条件查找第一个任务
+/// 根据条件查找第一个任务, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_job(
   search: Option<JobSearch>,
@@ -816,13 +816,16 @@ pub async fn find_one_ok_job(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let job_model = validate_option_job(
-    find_one_job(
-      search,
-      sort,
-      options,
-    ).await?,
+  let job_model = find_one_job(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(job_model) = job_model else {
+    let err_msg = "此 任务 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(job_model)
 }
@@ -886,7 +889,7 @@ pub async fn find_one_job(
 }
 
 // MARK: find_by_id_ok_job
-/// 根据 id 查找任务
+/// 根据 id 查找任务, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_job(
   id: JobId,
@@ -914,12 +917,15 @@ pub async fn find_by_id_ok_job(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let job_model = validate_option_job(
-    find_by_id_job(
-      id,
-      options,
-    ).await?,
+  let job_model = find_by_id_job(
+    id,
+    options,
   ).await?;
+  
+  let Some(job_model) = job_model else {
+    let err_msg = "此 任务 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(job_model)
 }
@@ -970,6 +976,78 @@ pub async fn find_by_id_job(
   Ok(job_model)
 }
 
+// MARK: find_by_ids_ok_job
+/// 根据 ids 查找任务, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_job(
+  ids: Vec<JobId>,
+  options: Option<Options>,
+) -> Result<Vec<JobModel>> {
+  
+  let table = "cron_job";
+  let method = "find_by_ids_ok_job";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let job_models = find_by_ids_job(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if job_models.len() != len {
+    let err_msg = "此 任务 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let job_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = job_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 任务 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<JobModel>>>()?;
+  
+  Ok(job_models)
+}
+
 // MARK: find_by_ids_job
 /// 根据 ids 查找任务
 #[allow(dead_code)]
@@ -1006,7 +1084,13 @@ pub async fn find_by_ids_job(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = JobSearch {
@@ -1014,33 +1098,14 @@ pub async fn find_by_ids_job(
     ..Default::default()
   }.into();
   
-  let models = find_all_job(
+  let job_models = find_all_job(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 任务 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 任务 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<JobModel>>>()?;
-  
-  Ok(models)
+  Ok(job_models)
 }
 
 // MARK: exists_job
@@ -1877,7 +1942,6 @@ pub async fn create_return_job(
     let err_msg = "create_return_job: model_job.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -2823,10 +2887,9 @@ pub async fn validate_option_job(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

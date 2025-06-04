@@ -85,13 +85,14 @@ export async function findAllCronJobLog(
 }
 
 /**
- * 根据条件查找第一个定时任务日志
+ * 根据条件查找第一个 定时任务日志
  */
 export async function findOneCronJobLog(
   search?: CronJobLogSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneCronJobLog?: CronJobLogModel;
   } = await query({
@@ -107,8 +108,43 @@ export async function findOneCronJobLog(
       sort,
     },
   }, opt);
+  
   const model = data.findOneCronJobLog;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 定时任务日志, 如果不存在则抛错
+ */
+export async function findOneOkCronJobLog(
+  search?: CronJobLogSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkCronJobLog?: CronJobLogModel;
+  } = await query({
+    query: `
+      query($search: CronJobLogSearch, $sort: [SortInput!]) {
+        findOneOkCronJobLog(search: $search, sort: $sort) {
+          ${ cronJobLogQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkCronJobLog;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -139,12 +175,14 @@ export async function findCountCronJobLog(
  * 根据 id 查找 定时任务日志
  */
 export async function findByIdCronJobLog(
-  id?: CronJobLogId,
+  id: CronJobLogId,
   opt?: GqlOpt,
 ): Promise<CronJobLogModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdCronJobLog?: CronJobLogModel;
   } = await query({
@@ -159,8 +197,41 @@ export async function findByIdCronJobLog(
       id,
     },
   }, opt);
+  
   const model = data.findByIdCronJobLog;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 定时任务日志, 如果不存在则抛错
+ */
+export async function findByIdOkCronJobLog(
+  id: CronJobLogId,
+  opt?: GqlOpt,
+): Promise<CronJobLogModel> {
+  
+  const data: {
+    findByIdOkCronJobLog: CronJobLogModel;
+  } = await query({
+    query: `
+      query($id: CronJobLogId!) {
+        findByIdOkCronJobLog(id: $id) {
+          ${ cronJobLogQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkCronJobLog;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -171,33 +242,70 @@ export async function findByIdsCronJobLog(
   ids: CronJobLogId[],
   opt?: GqlOpt,
 ): Promise<CronJobLogModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: CronJobLogModel[] = [ ];
-  try {
-    const data: {
-      findByIdsCronJobLog: CronJobLogModel[];
-    } = await query({
-      query: `
-        query($ids: [CronJobLogId!]!) {
-          findByIdsCronJobLog(ids: $ids) {
-            ${ cronJobLogQueryField }
-          }
+  
+  const data: {
+    findByIdsCronJobLog: CronJobLogModel[];
+  } = await query({
+    query: `
+      query($ids: [CronJobLogId!]!) {
+        findByIdsCronJobLog(ids: $ids) {
+          ${ cronJobLogQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsCronJobLog;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsCronJobLog;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 定时任务日志, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCronJobLog(
+  ids: CronJobLogId[],
+  opt?: GqlOpt,
+): Promise<CronJobLogModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkCronJobLog: CronJobLogModel[];
+  } = await query({
+    query: `
+      query($ids: [CronJobLogId!]!) {
+        findByIdsOkCronJobLog(ids: $ids) {
+          ${ cronJobLogQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkCronJobLog;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

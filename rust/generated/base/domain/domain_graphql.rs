@@ -80,6 +80,25 @@ impl DomainGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个域名, 如果不存在则抛错
+  async fn find_one_ok_domain(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<DomainSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<DomainModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        domain_resolver::find_one_ok_domain(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找域名
   async fn find_by_id_domain(
     &self,
@@ -97,6 +116,23 @@ impl DomainGenQuery {
       }).await
   }
   
+  /// 根据 id 查找域名, 如果不存在则抛错
+  async fn find_by_id_ok_domain(
+    &self,
+    ctx: &Context<'_>,
+    id: DomainId,
+  ) -> Result<DomainModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        domain_resolver::find_by_id_ok_domain(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找域名
   async fn find_by_ids_domain(
     &self,
@@ -108,6 +144,23 @@ impl DomainGenQuery {
       .build()
       .scope({
         domain_resolver::find_by_ids_domain(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找域名
+  async fn find_by_ids_ok_domain(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DomainId>,
+  ) -> Result<Vec<DomainModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        domain_resolver::find_by_ids_ok_domain(
           ids,
           None,
         )

@@ -722,7 +722,7 @@ pub async fn get_field_comments_login_log(
 }
 
 // MARK: find_one_ok_login_log
-/// 根据条件查找第一个登录日志
+/// 根据条件查找第一个登录日志, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_login_log(
   search: Option<LoginLogSearch>,
@@ -756,13 +756,16 @@ pub async fn find_one_ok_login_log(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let login_log_model = validate_option_login_log(
-    find_one_login_log(
-      search,
-      sort,
-      options,
-    ).await?,
+  let login_log_model = find_one_login_log(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(login_log_model) = login_log_model else {
+    let err_msg = "此 登录日志 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(login_log_model)
 }
@@ -826,7 +829,7 @@ pub async fn find_one_login_log(
 }
 
 // MARK: find_by_id_ok_login_log
-/// 根据 id 查找登录日志
+/// 根据 id 查找登录日志, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_login_log(
   id: LoginLogId,
@@ -854,12 +857,15 @@ pub async fn find_by_id_ok_login_log(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let login_log_model = validate_option_login_log(
-    find_by_id_login_log(
-      id,
-      options,
-    ).await?,
+  let login_log_model = find_by_id_login_log(
+    id,
+    options,
   ).await?;
+  
+  let Some(login_log_model) = login_log_model else {
+    let err_msg = "此 登录日志 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(login_log_model)
 }
@@ -910,6 +916,78 @@ pub async fn find_by_id_login_log(
   Ok(login_log_model)
 }
 
+// MARK: find_by_ids_ok_login_log
+/// 根据 ids 查找登录日志, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_login_log(
+  ids: Vec<LoginLogId>,
+  options: Option<Options>,
+) -> Result<Vec<LoginLogModel>> {
+  
+  let table = "base_login_log";
+  let method = "find_by_ids_ok_login_log";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let login_log_models = find_by_ids_login_log(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if login_log_models.len() != len {
+    let err_msg = "此 登录日志 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let login_log_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = login_log_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 登录日志 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<LoginLogModel>>>()?;
+  
+  Ok(login_log_models)
+}
+
 // MARK: find_by_ids_login_log
 /// 根据 ids 查找登录日志
 #[allow(dead_code)]
@@ -946,7 +1024,13 @@ pub async fn find_by_ids_login_log(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = LoginLogSearch {
@@ -954,33 +1038,14 @@ pub async fn find_by_ids_login_log(
     ..Default::default()
   }.into();
   
-  let models = find_all_login_log(
+  let login_log_models = find_all_login_log(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 登录日志 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 登录日志 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<LoginLogModel>>>()?;
-  
-  Ok(models)
+  Ok(login_log_models)
 }
 
 // MARK: exists_login_log
@@ -1726,7 +1791,6 @@ pub async fn create_return_login_log(
     let err_msg = "create_return_login_log: model_login_log.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -2385,10 +2449,9 @@ pub async fn validate_option_login_log(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

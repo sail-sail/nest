@@ -92,6 +92,29 @@ pub async fn find_one_icon(
   Ok(icon_model)
 }
 
+/// 根据条件查找第一个图标库, 如果不存在则抛错
+pub async fn find_one_ok_icon(
+  search: Option<IconSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<IconModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let icon_model = icon_dao::find_one_ok_icon(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(icon_model)
+}
+
 /// 根据 id 查找图标库
 pub async fn find_by_id_icon(
   icon_id: IconId,
@@ -106,13 +129,41 @@ pub async fn find_by_id_icon(
   Ok(icon_model)
 }
 
-/// 根据 icon_ids 查找图标库
+/// 根据 id 查找图标库, 如果不存在则抛错
+pub async fn find_by_id_ok_icon(
+  icon_id: IconId,
+  options: Option<Options>,
+) -> Result<IconModel> {
+  
+  let icon_model = icon_dao::find_by_id_ok_icon(
+    icon_id,
+    options,
+  ).await?;
+  
+  Ok(icon_model)
+}
+
+/// 根据 ids 查找图标库
 pub async fn find_by_ids_icon(
   icon_ids: Vec<IconId>,
   options: Option<Options>,
 ) -> Result<Vec<IconModel>> {
   
   let icon_models = icon_dao::find_by_ids_icon(
+    icon_ids,
+    options,
+  ).await?;
+  
+  Ok(icon_models)
+}
+
+/// 根据 ids 查找图标库, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_icon(
+  icon_ids: Vec<IconId>,
+  options: Option<Options>,
+) -> Result<Vec<IconModel>> {
+  
+  let icon_models = icon_dao::find_by_ids_ok_icon(
     icon_ids,
     options,
   ).await?;

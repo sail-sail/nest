@@ -91,6 +91,31 @@ pub async fn find_one_cron_job_log_detail(
   Ok(model)
 }
 
+/// 根据条件查找第一个定时任务日志明细, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_cron_job_log_detail(
+  search: Option<CronJobLogDetailSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<CronJobLogDetailModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_cron_job_log_detail(sort.as_deref())?;
+  
+  let model = cron_job_log_detail_service::find_one_ok_cron_job_log_detail(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找定时任务日志明细
 #[function_name::named]
 pub async fn find_by_id_cron_job_log_detail(
@@ -112,6 +137,27 @@ pub async fn find_by_id_cron_job_log_detail(
   Ok(model)
 }
 
+/// 根据 id 查找定时任务日志明细, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_cron_job_log_detail(
+  id: CronJobLogDetailId,
+  options: Option<Options>,
+) -> Result<CronJobLogDetailModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = cron_job_log_detail_service::find_by_id_ok_cron_job_log_detail(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找定时任务日志明细
 #[function_name::named]
 pub async fn find_by_ids_cron_job_log_detail(
@@ -126,6 +172,27 @@ pub async fn find_by_ids_cron_job_log_detail(
   );
   
   let models = cron_job_log_detail_service::find_by_ids_cron_job_log_detail(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找定时任务日志明细, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_cron_job_log_detail(
+  ids: Vec<CronJobLogDetailId>,
+  options: Option<Options>,
+) -> Result<Vec<CronJobLogDetailModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = cron_job_log_detail_service::find_by_ids_ok_cron_job_log_detail(
     ids,
     options,
   ).await?;

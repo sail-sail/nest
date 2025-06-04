@@ -82,6 +82,25 @@ impl CronJobLogDetailGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个定时任务日志明细, 如果不存在则抛错
+  async fn find_one_ok_cron_job_log_detail(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<CronJobLogDetailSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<CronJobLogDetailModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        cron_job_log_detail_resolver::find_one_ok_cron_job_log_detail(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找定时任务日志明细
   async fn find_by_id_cron_job_log_detail(
     &self,
@@ -99,6 +118,23 @@ impl CronJobLogDetailGenQuery {
       }).await
   }
   
+  /// 根据 id 查找定时任务日志明细, 如果不存在则抛错
+  async fn find_by_id_ok_cron_job_log_detail(
+    &self,
+    ctx: &Context<'_>,
+    id: CronJobLogDetailId,
+  ) -> Result<CronJobLogDetailModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        cron_job_log_detail_resolver::find_by_id_ok_cron_job_log_detail(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找定时任务日志明细
   async fn find_by_ids_cron_job_log_detail(
     &self,
@@ -110,6 +146,23 @@ impl CronJobLogDetailGenQuery {
       .build()
       .scope({
         cron_job_log_detail_resolver::find_by_ids_cron_job_log_detail(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找定时任务日志明细
+  async fn find_by_ids_ok_cron_job_log_detail(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<CronJobLogDetailId>,
+  ) -> Result<Vec<CronJobLogDetailModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        cron_job_log_detail_resolver::find_by_ids_ok_cron_job_log_detail(
           ids,
           None,
         )
