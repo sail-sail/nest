@@ -73,13 +73,42 @@ export async function findOneRole(
 }
 
 /**
+ * 根据条件查找第一个角色, 如果不存在则抛错
+ */
+export async function findOneOkRole(
+  search?: RoleSearch,
+  sort?: SortInput[],
+): Promise<RoleModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const role_model = await roleDao.findOneOkRole(search, sort);
+  
+  return role_model;
+}
+
+/**
  * 根据 id 查找角色
  */
 export async function findByIdRole(
-  role_id?: RoleId | null,
+  role_id: RoleId,
 ): Promise<RoleModel | undefined> {
   
   const role_model = await roleDao.findByIdRole(role_id);
+  
+  return role_model;
+}
+
+/**
+ * 根据 id 查找角色, 如果不存在则抛错
+ */
+export async function findByIdOkRole(
+  role_id: RoleId,
+): Promise<RoleModel> {
+  
+  const role_model = await roleDao.findByIdOkRole(role_id);
   
   return role_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsRole(
 ): Promise<RoleModel[]> {
   
   const role_models = await roleDao.findByIdsRole(role_ids);
+  
+  return role_models;
+}
+
+/**
+ * 根据 ids 查找角色, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkRole(
+  role_ids: RoleId[],
+): Promise<RoleModel[]> {
+  
+  const role_models = await roleDao.findByIdsOkRole(role_ids);
   
   return role_models;
 }

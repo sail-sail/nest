@@ -91,6 +91,25 @@ export async function findOneI18n(
 }
 
 /**
+ * 根据条件查找第一个国际化, 如果不存在则抛错
+ */
+export async function findOneOkI18n(
+  search?: I18nSearch,
+  sort?: SortInput[],
+): Promise<I18nModel> {
+  
+  const {
+    findOneOkI18n,
+  } = await import("./i18n.service.ts");
+  
+  checkSortI18n(sort);
+  
+  const model = await findOneOkI18n(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找国际化
  */
 export async function findByIdI18n(
@@ -107,6 +126,22 @@ export async function findByIdI18n(
 }
 
 /**
+ * 根据 id 查找国际化, 如果不存在则抛错
+ */
+export async function findByIdOkI18n(
+  id: I18nId,
+): Promise<I18nModel | undefined> {
+  
+  const {
+    findByIdOkI18n,
+  } = await import("./i18n.service.ts");
+  
+  const model = await findByIdOkI18n(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找国际化
  */
 export async function findByIdsI18n(
@@ -118,6 +153,25 @@ export async function findByIdsI18n(
   } = await import("./i18n.service.ts");
   
   const models = await findByIdsI18n(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找国际化, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkI18n(
+  ids: I18nId[],
+): Promise<I18nModel[]> {
+  
+  const {
+    findByIdsOkI18n,
+  } = await import("./i18n.service.ts");
+  
+  const models = await findByIdsOkI18n(ids);
   
   for (const model of models) {
   }

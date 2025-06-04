@@ -633,48 +633,6 @@ export async function checkByUniqueIcon(
   return;
 }
 
-// MARK: findOneOkIcon
-/** 根据条件查找第一图标库 */
-export async function findOneOkIcon(
-  search?: Readonly<IconSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<IconModel> {
-  
-  const table = "base_icon";
-  const method = "findOneOkIcon";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_icon = validateOptionIcon(
-    await findOneIcon(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_icon;
-}
-
 // MARK: findOneIcon
 /** 根据条件查找第一图标库 */
 export async function findOneIcon(
@@ -706,41 +664,45 @@ export async function findOneIcon(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllIcon(
+  
+  const icon_models = await findAllIcon(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const icon_model = icon_models[0];
+  
+  return icon_model;
 }
 
-// MARK: findByIdOkIcon
-/** 根据 id 查找图标库 */
-export async function findByIdOkIcon(
-  id?: IconId | null,
+// MARK: findOneOkIcon
+/** 根据条件查找第一图标库, 如果不存在则抛错 */
+export async function findOneOkIcon(
+  search?: Readonly<IconSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<IconModel> {
   
   const table = "base_icon";
-  const method = "findByIdOkIcon";
+  const method = "findOneOkIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -750,20 +712,32 @@ export async function findByIdOkIcon(
     options.is_debug = false;
   }
   
-  const model_icon = validateOptionIcon(
-    await findByIdIcon(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const icon_models = await findAllIcon(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_icon;
+  const icon_model = icon_models[0];
+  
+  if (!icon_model) {
+    const err_msg = "此 图标库 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return icon_model;
 }
 
 // MARK: findByIdIcon
 /** 根据 id 查找图标库 */
 export async function findByIdIcon(
-  id?: IconId | null,
+  id: IconId,
   options?: {
     is_debug?: boolean;
   },
@@ -791,7 +765,7 @@ export async function findByIdIcon(
     return;
   }
   
-  const model = await findOneIcon(
+  const icon_model = await findOneIcon(
     {
       id,
     },
@@ -799,7 +773,47 @@ export async function findByIdIcon(
     options,
   );
   
-  return model;
+  return icon_model;
+}
+
+// MARK: findByIdOkIcon
+/** 根据 id 查找图标库, 如果不存在则抛错 */
+export async function findByIdOkIcon(
+  id: IconId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<IconModel> {
+  
+  const table = "base_icon";
+  const method = "findByIdOkIcon";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const icon_model = await findByIdIcon(
+    id,
+    options,
+  );
+  
+  if (!icon_model) {
+    const err_msg = "此 图标库 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return icon_model;
 }
 
 // MARK: findByIdsIcon
@@ -839,6 +853,41 @@ export async function findByIdsIcon(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkIcon
+/** 根据 ids 查找图标库, 出现查询不到的 id 则报错 */
+export async function findByIdsOkIcon(
+  ids: IconId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<IconModel[]> {
+  
+  const table = "base_icon";
+  const method = "findByIdsOkIcon";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsIcon(
+    ids,
     options,
   );
   

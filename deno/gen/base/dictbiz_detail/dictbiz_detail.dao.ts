@@ -705,48 +705,6 @@ export async function checkByUniqueDictbizDetail(
   return;
 }
 
-// MARK: findOneOkDictbizDetail
-/** 根据条件查找第一业务字典明细 */
-export async function findOneOkDictbizDetail(
-  search?: Readonly<DictbizDetailSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<DictbizDetailModel> {
-  
-  const table = "base_dictbiz_detail";
-  const method = "findOneOkDictbizDetail";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_dictbiz_detail = validateOptionDictbizDetail(
-    await findOneDictbizDetail(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_dictbiz_detail;
-}
-
 // MARK: findOneDictbizDetail
 /** 根据条件查找第一业务字典明细 */
 export async function findOneDictbizDetail(
@@ -778,41 +736,45 @@ export async function findOneDictbizDetail(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllDictbizDetail(
+  
+  const dictbiz_detail_models = await findAllDictbizDetail(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const dictbiz_detail_model = dictbiz_detail_models[0];
+  
+  return dictbiz_detail_model;
 }
 
-// MARK: findByIdOkDictbizDetail
-/** 根据 id 查找业务字典明细 */
-export async function findByIdOkDictbizDetail(
-  id?: DictbizDetailId | null,
+// MARK: findOneOkDictbizDetail
+/** 根据条件查找第一业务字典明细, 如果不存在则抛错 */
+export async function findOneOkDictbizDetail(
+  search?: Readonly<DictbizDetailSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<DictbizDetailModel> {
   
   const table = "base_dictbiz_detail";
-  const method = "findByIdOkDictbizDetail";
+  const method = "findOneOkDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -822,20 +784,32 @@ export async function findByIdOkDictbizDetail(
     options.is_debug = false;
   }
   
-  const model_dictbiz_detail = validateOptionDictbizDetail(
-    await findByIdDictbizDetail(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const dictbiz_detail_models = await findAllDictbizDetail(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_dictbiz_detail;
+  const dictbiz_detail_model = dictbiz_detail_models[0];
+  
+  if (!dictbiz_detail_model) {
+    const err_msg = "此 业务字典明细 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return dictbiz_detail_model;
 }
 
 // MARK: findByIdDictbizDetail
 /** 根据 id 查找业务字典明细 */
 export async function findByIdDictbizDetail(
-  id?: DictbizDetailId | null,
+  id: DictbizDetailId,
   options?: {
     is_debug?: boolean;
   },
@@ -863,7 +837,7 @@ export async function findByIdDictbizDetail(
     return;
   }
   
-  const model = await findOneDictbizDetail(
+  const dictbiz_detail_model = await findOneDictbizDetail(
     {
       id,
     },
@@ -871,7 +845,47 @@ export async function findByIdDictbizDetail(
     options,
   );
   
-  return model;
+  return dictbiz_detail_model;
+}
+
+// MARK: findByIdOkDictbizDetail
+/** 根据 id 查找业务字典明细, 如果不存在则抛错 */
+export async function findByIdOkDictbizDetail(
+  id: DictbizDetailId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictbizDetailModel> {
+  
+  const table = "base_dictbiz_detail";
+  const method = "findByIdOkDictbizDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const dictbiz_detail_model = await findByIdDictbizDetail(
+    id,
+    options,
+  );
+  
+  if (!dictbiz_detail_model) {
+    const err_msg = "此 业务字典明细 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return dictbiz_detail_model;
 }
 
 // MARK: findByIdsDictbizDetail
@@ -911,6 +925,41 @@ export async function findByIdsDictbizDetail(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkDictbizDetail
+/** 根据 ids 查找业务字典明细, 出现查询不到的 id 则报错 */
+export async function findByIdsOkDictbizDetail(
+  ids: DictbizDetailId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictbizDetailModel[]> {
+  
+  const table = "base_dictbiz_detail";
+  const method = "findByIdsOkDictbizDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsDictbizDetail(
+    ids,
     options,
   );
   
