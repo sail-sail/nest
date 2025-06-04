@@ -91,6 +91,25 @@ export async function findOneDept(
 }
 
 /**
+ * 根据条件查找第一个部门, 如果不存在则抛错
+ */
+export async function findOneOkDept(
+  search?: DeptSearch,
+  sort?: SortInput[],
+): Promise<DeptModel> {
+  
+  const {
+    findOneOkDept,
+  } = await import("./dept.service.ts");
+  
+  checkSortDept(sort);
+  
+  const model = await findOneOkDept(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找部门
  */
 export async function findByIdDept(
@@ -107,6 +126,22 @@ export async function findByIdDept(
 }
 
 /**
+ * 根据 id 查找部门, 如果不存在则抛错
+ */
+export async function findByIdOkDept(
+  id: DeptId,
+): Promise<DeptModel | undefined> {
+  
+  const {
+    findByIdOkDept,
+  } = await import("./dept.service.ts");
+  
+  const model = await findByIdOkDept(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找部门
  */
 export async function findByIdsDept(
@@ -118,6 +153,25 @@ export async function findByIdsDept(
   } = await import("./dept.service.ts");
   
   const models = await findByIdsDept(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找部门, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDept(
+  ids: DeptId[],
+): Promise<DeptModel[]> {
+  
+  const {
+    findByIdsOkDept,
+  } = await import("./dept.service.ts");
+  
+  const models = await findByIdsOkDept(ids);
   
   for (const model of models) {
   }

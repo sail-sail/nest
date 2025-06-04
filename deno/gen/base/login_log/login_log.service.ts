@@ -73,13 +73,42 @@ export async function findOneLoginLog(
 }
 
 /**
+ * 根据条件查找第一个登录日志, 如果不存在则抛错
+ */
+export async function findOneOkLoginLog(
+  search?: LoginLogSearch,
+  sort?: SortInput[],
+): Promise<LoginLogModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const login_log_model = await login_logDao.findOneOkLoginLog(search, sort);
+  
+  return login_log_model;
+}
+
+/**
  * 根据 id 查找登录日志
  */
 export async function findByIdLoginLog(
-  login_log_id?: LoginLogId | null,
+  login_log_id: LoginLogId,
 ): Promise<LoginLogModel | undefined> {
   
   const login_log_model = await login_logDao.findByIdLoginLog(login_log_id);
+  
+  return login_log_model;
+}
+
+/**
+ * 根据 id 查找登录日志, 如果不存在则抛错
+ */
+export async function findByIdOkLoginLog(
+  login_log_id: LoginLogId,
+): Promise<LoginLogModel> {
+  
+  const login_log_model = await login_logDao.findByIdOkLoginLog(login_log_id);
   
   return login_log_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsLoginLog(
 ): Promise<LoginLogModel[]> {
   
   const login_log_models = await login_logDao.findByIdsLoginLog(login_log_ids);
+  
+  return login_log_models;
+}
+
+/**
+ * 根据 ids 查找登录日志, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkLoginLog(
+  login_log_ids: LoginLogId[],
+): Promise<LoginLogModel[]> {
+  
+  const login_log_models = await login_logDao.findByIdsOkLoginLog(login_log_ids);
   
   return login_log_models;
 }
