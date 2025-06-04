@@ -73,13 +73,42 @@ export async function findOneTenant(
 }
 
 /**
+ * 根据条件查找第一个租户, 如果不存在则抛错
+ */
+export async function findOneOkTenant(
+  search?: TenantSearch,
+  sort?: SortInput[],
+): Promise<TenantModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const tenant_model = await tenantDao.findOneOkTenant(search, sort);
+  
+  return tenant_model;
+}
+
+/**
  * 根据 id 查找租户
  */
 export async function findByIdTenant(
-  tenant_id?: TenantId | null,
+  tenant_id: TenantId,
 ): Promise<TenantModel | undefined> {
   
   const tenant_model = await tenantDao.findByIdTenant(tenant_id);
+  
+  return tenant_model;
+}
+
+/**
+ * 根据 id 查找租户, 如果不存在则抛错
+ */
+export async function findByIdOkTenant(
+  tenant_id: TenantId,
+): Promise<TenantModel> {
+  
+  const tenant_model = await tenantDao.findByIdOkTenant(tenant_id);
   
   return tenant_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsTenant(
 ): Promise<TenantModel[]> {
   
   const tenant_models = await tenantDao.findByIdsTenant(tenant_ids);
+  
+  return tenant_models;
+}
+
+/**
+ * 根据 ids 查找租户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkTenant(
+  tenant_ids: TenantId[],
+): Promise<TenantModel[]> {
+  
+  const tenant_models = await tenantDao.findByIdsOkTenant(tenant_ids);
   
   return tenant_models;
 }

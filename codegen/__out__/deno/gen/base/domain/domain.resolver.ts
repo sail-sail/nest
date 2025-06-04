@@ -91,6 +91,25 @@ export async function findOneDomain(
 }
 
 /**
+ * 根据条件查找第一个域名, 如果不存在则抛错
+ */
+export async function findOneOkDomain(
+  search?: DomainSearch,
+  sort?: SortInput[],
+): Promise<DomainModel> {
+  
+  const {
+    findOneOkDomain,
+  } = await import("./domain.service.ts");
+  
+  checkSortDomain(sort);
+  
+  const model = await findOneOkDomain(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找域名
  */
 export async function findByIdDomain(
@@ -107,6 +126,22 @@ export async function findByIdDomain(
 }
 
 /**
+ * 根据 id 查找域名, 如果不存在则抛错
+ */
+export async function findByIdOkDomain(
+  id: DomainId,
+): Promise<DomainModel | undefined> {
+  
+  const {
+    findByIdOkDomain,
+  } = await import("./domain.service.ts");
+  
+  const model = await findByIdOkDomain(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找域名
  */
 export async function findByIdsDomain(
@@ -118,6 +153,25 @@ export async function findByIdsDomain(
   } = await import("./domain.service.ts");
   
   const models = await findByIdsDomain(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找域名, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDomain(
+  ids: DomainId[],
+): Promise<DomainModel[]> {
+  
+  const {
+    findByIdsOkDomain,
+  } = await import("./domain.service.ts");
+  
+  const models = await findByIdsOkDomain(ids);
   
   for (const model of models) {
   }

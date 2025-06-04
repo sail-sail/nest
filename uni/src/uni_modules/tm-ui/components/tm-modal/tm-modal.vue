@@ -438,52 +438,61 @@ export default {
                             transitionDuration: _duration + 'ms',
                             'transition-timing-function': _animationFun
                         }">
-                        <view ref="tmModalWrapBox" class="tmModalWrapBox" :style="{ borderRadius: _round }">
-                            <view class="tmModalXclose">
-                                <tm-icon v-if="_showClose" @click="closeAlert" color="#dcdcdc" size="52"
-                                    name="close-circle-fill"></tm-icon>
-                            </view>
+                        <slot name="tmModalWrapBox">
+                            <scroll-view
+                                scroll-y
+                                enable-flex
+                                un-h="full"
+                                un-w="full"
+                            >
+                                <view ref="tmModalWrapBox" class="tmModalWrapBox" :style="{ borderRadius: _round }">
+                                    <view class="tmModalXclose">
+                                        <tm-icon v-if="_showClose" @click="closeAlert" color="#dcdcdc" size="52"
+                                            name="close-circle-fill"></tm-icon>
+                                    </view>
 
-                            <view>
-                                <view v-if="_showTitle" class="tmModalTitleBox">
-                                    <!-- 
-                                    @slot 标题插槽
-                                    @binding {Boolean} show - 当前是否已显示
-                                    -->
-                                    <slot name="title" :show="show">
-                                        <tm-text font-size="34" class="tmModaltitleBoxTitle">{{ _title }}</tm-text>
-                                    </slot>
-                                </view>
-                            </view>
+                                    <view>
+                                        <view v-if="_showTitle" class="tmModalTitleBox">
+                                            <!-- 
+                                            @slot 标题插槽
+                                            @binding {Boolean} show - 当前是否已显示
+                                            -->
+                                            <slot name="title" :show="show">
+                                                <tm-text font-size="34" class="tmModaltitleBoxTitle">{{ _title }}</tm-text>
+                                            </slot>
+                                        </view>
+                                    </view>
 
-                            <view v-if="!disabledScroll&&_c_height!='auto'" style="flex: 1;" class="tmModalWrapBoxContent" >
-                                <scroll-view  style="height:100%;position:absolute;width:100%" :scroll-y="true"
-                                    :rebound="false">
-                                    <view :style="{ padding: `0px ${_contentPadding}  0px ${_contentPadding}` }">
+                                    <view v-if="!disabledScroll&&_c_height!='auto'" style="flex: 1;" class="tmModalWrapBoxContent" >
+                                        <scroll-view  style="height:100%;position:absolute;width:100%" :scroll-y="true"
+                                            :rebound="false">
+                                            <view :style="{ padding: `0px ${_contentPadding}  0px ${_contentPadding}` }">
+                                                <!--
+                                                @slot 默认插槽
+                                                -->
+                                                <slot></slot>
+                                            </view>
+                                        </scroll-view>
+                                    </view>
+                                    <view v-else :style="{ height: _showTitle ? 'calc(100% - 50px)' : '100%', padding: _contentPadding }">
                                         <!--
                                         @slot 默认插槽
                                         -->
                                         <slot></slot>
                                     </view>
-                                </scroll-view>
-                            </view>
-                            <view v-else :style="{ height: _showTitle ? 'calc(100% - 50px)' : '100%', padding: _contentPadding }">
-                                <!--
-                                @slot 默认插槽
-                                -->
-                                <slot></slot>
-                            </view>
-                            <view v-if="showFooter" class="tmModalFooter" :style="{ backgroundColor: _bgColor }">
-                                <!--
-                                @slot 底部操作栏
-                                -->
-                                <slot name="footer">
-                                    <tm-button :color="_btnColor" @click="cancelEvt" v-if="_showCancel" skin="thin"
-                                        style="margin-right: 16px;flex:1">{{ _cancelText }}</tm-button>
-                                    <tm-button :color="_btnColor" @click="confirmEvt" style="flex:1">{{ _confirmText }}</tm-button>
-                                </slot>
-                            </view>
-                        </view>
+                                    <view v-if="showFooter" class="tmModalFooter" :style="{ backgroundColor: _bgColor }">
+                                        <!--
+                                        @slot 底部操作栏
+                                        -->
+                                        <slot name="footer">
+                                            <tm-button :color="_btnColor" @click="cancelEvt" v-if="_showCancel" skin="thin"
+                                                style="margin-right: 16px;flex:1">{{ _cancelText }}</tm-button>
+                                            <tm-button :color="_btnColor" @click="confirmEvt" style="flex:1">{{ _confirmText }}</tm-button>
+                                        </slot>
+                                    </view>
+                                </view>
+                            </scroll-view>
+                        </slot>
                     </view>
 
                 </view>
@@ -502,7 +511,7 @@ export default {
     display: flex;
     flex-direction: column;
     /* background-color: white; */
-    height: 100%;
+    // height: 100%;
     width: 100%;
 
 }
@@ -512,6 +521,7 @@ export default {
     width: 100%;
     /* background-color: white; */
     padding: 24rpx;
+    padding-top: 0;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
