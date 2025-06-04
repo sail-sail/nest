@@ -73,13 +73,42 @@ export async function findOneSeo(
 }
 
 /**
+ * 根据条件查找第一个SEO优化, 如果不存在则抛错
+ */
+export async function findOneOkSeo(
+  search?: SeoSearch,
+  sort?: SortInput[],
+): Promise<SeoModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const seo_model = await seoDao.findOneOkSeo(search, sort);
+  
+  return seo_model;
+}
+
+/**
  * 根据 id 查找SEO优化
  */
 export async function findByIdSeo(
-  seo_id?: SeoId | null,
+  seo_id: SeoId,
 ): Promise<SeoModel | undefined> {
   
   const seo_model = await seoDao.findByIdSeo(seo_id);
+  
+  return seo_model;
+}
+
+/**
+ * 根据 id 查找SEO优化, 如果不存在则抛错
+ */
+export async function findByIdOkSeo(
+  seo_id: SeoId,
+): Promise<SeoModel> {
+  
+  const seo_model = await seoDao.findByIdOkSeo(seo_id);
   
   return seo_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsSeo(
 ): Promise<SeoModel[]> {
   
   const seo_models = await seoDao.findByIdsSeo(seo_ids);
+  
+  return seo_models;
+}
+
+/**
+ * 根据 ids 查找SEO优化, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkSeo(
+  seo_ids: SeoId[],
+): Promise<SeoModel[]> {
+  
+  const seo_models = await seoDao.findByIdsOkSeo(seo_ids);
   
   return seo_models;
 }
