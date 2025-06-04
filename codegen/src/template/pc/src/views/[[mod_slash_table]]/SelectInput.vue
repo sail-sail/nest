@@ -358,7 +358,7 @@ async function onInput(
   } else {
     modelValue = selectedIds[0];
   }
-  inputValue = selectedModels.map((item) => item.lbl || "").join(",");
+  inputValue = selectedModels.map((item) => item.<#=opts?.lbl_field#> || "").join(",");
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
   modelLabel = inputValue;

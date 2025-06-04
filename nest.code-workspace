@@ -33,13 +33,6 @@
     "unocss.colorPreview": false,
     "references.preferredLocation": "peek",
     "rust-analyzer.inlayHints.parameterHints.enable": false,
-    "pair-diff.patterns": [
-      {
-        "source": "./rust/generated/**/*/*.rs",
-        "target": "./codegen/__out__/rust/generated/<basename>"
-      }
-    ],
-    "diffEditor.useInlineViewWhenSpaceIsLimited": false,
     "diffEditor.wordWrap": "off",
     "editor.formatOnSave": false,
     "rust-analyzer.showUnlinkedFileNotification": false,
