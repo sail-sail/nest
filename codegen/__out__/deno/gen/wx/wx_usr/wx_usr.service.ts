@@ -73,13 +73,42 @@ export async function findOneWxUsr(
 }
 
 /**
+ * 根据条件查找第一个小程序用户, 如果不存在则抛错
+ */
+export async function findOneOkWxUsr(
+  search?: WxUsrSearch,
+  sort?: SortInput[],
+): Promise<WxUsrModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const wx_usr_model = await wx_usrDao.findOneOkWxUsr(search, sort);
+  
+  return wx_usr_model;
+}
+
+/**
  * 根据 id 查找小程序用户
  */
 export async function findByIdWxUsr(
-  wx_usr_id?: WxUsrId | null,
+  wx_usr_id: WxUsrId,
 ): Promise<WxUsrModel | undefined> {
   
   const wx_usr_model = await wx_usrDao.findByIdWxUsr(wx_usr_id);
+  
+  return wx_usr_model;
+}
+
+/**
+ * 根据 id 查找小程序用户, 如果不存在则抛错
+ */
+export async function findByIdOkWxUsr(
+  wx_usr_id: WxUsrId,
+): Promise<WxUsrModel> {
+  
+  const wx_usr_model = await wx_usrDao.findByIdOkWxUsr(wx_usr_id);
   
   return wx_usr_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsWxUsr(
 ): Promise<WxUsrModel[]> {
   
   const wx_usr_models = await wx_usrDao.findByIdsWxUsr(wx_usr_ids);
+  
+  return wx_usr_models;
+}
+
+/**
+ * 根据 ids 查找小程序用户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxUsr(
+  wx_usr_ids: WxUsrId[],
+): Promise<WxUsrModel[]> {
+  
+  const wx_usr_models = await wx_usrDao.findByIdsOkWxUsr(wx_usr_ids);
   
   return wx_usr_models;
 }

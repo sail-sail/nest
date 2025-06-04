@@ -760,48 +760,6 @@ export async function checkByUniquePayTransactionsJsapi(
   return;
 }
 
-// MARK: findOneOkPayTransactionsJsapi
-/** 根据条件查找第一微信JSAPI下单 */
-export async function findOneOkPayTransactionsJsapi(
-  search?: Readonly<PayTransactionsJsapiSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<PayTransactionsJsapiModel> {
-  
-  const table = "wx_pay_transactions_jsapi";
-  const method = "findOneOkPayTransactionsJsapi";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_pay_transactions_jsapi = validateOptionPayTransactionsJsapi(
-    await findOnePayTransactionsJsapi(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_pay_transactions_jsapi;
-}
-
 // MARK: findOnePayTransactionsJsapi
 /** 根据条件查找第一微信JSAPI下单 */
 export async function findOnePayTransactionsJsapi(
@@ -833,41 +791,45 @@ export async function findOnePayTransactionsJsapi(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllPayTransactionsJsapi(
+  
+  const pay_transactions_jsapi_models = await findAllPayTransactionsJsapi(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const pay_transactions_jsapi_model = pay_transactions_jsapi_models[0];
+  
+  return pay_transactions_jsapi_model;
 }
 
-// MARK: findByIdOkPayTransactionsJsapi
-/** 根据 id 查找微信JSAPI下单 */
-export async function findByIdOkPayTransactionsJsapi(
-  id?: PayTransactionsJsapiId | null,
+// MARK: findOneOkPayTransactionsJsapi
+/** 根据条件查找第一微信JSAPI下单, 如果不存在则抛错 */
+export async function findOneOkPayTransactionsJsapi(
+  search?: Readonly<PayTransactionsJsapiSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<PayTransactionsJsapiModel> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "findByIdOkPayTransactionsJsapi";
+  const method = "findOneOkPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -877,20 +839,32 @@ export async function findByIdOkPayTransactionsJsapi(
     options.is_debug = false;
   }
   
-  const model_pay_transactions_jsapi = validateOptionPayTransactionsJsapi(
-    await findByIdPayTransactionsJsapi(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const pay_transactions_jsapi_models = await findAllPayTransactionsJsapi(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_pay_transactions_jsapi;
+  const pay_transactions_jsapi_model = pay_transactions_jsapi_models[0];
+  
+  if (!pay_transactions_jsapi_model) {
+    const err_msg = "此 微信JSAPI下单 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return pay_transactions_jsapi_model;
 }
 
 // MARK: findByIdPayTransactionsJsapi
 /** 根据 id 查找微信JSAPI下单 */
 export async function findByIdPayTransactionsJsapi(
-  id?: PayTransactionsJsapiId | null,
+  id: PayTransactionsJsapiId,
   options?: {
     is_debug?: boolean;
   },
@@ -918,7 +892,7 @@ export async function findByIdPayTransactionsJsapi(
     return;
   }
   
-  const model = await findOnePayTransactionsJsapi(
+  const pay_transactions_jsapi_model = await findOnePayTransactionsJsapi(
     {
       id,
     },
@@ -926,7 +900,47 @@ export async function findByIdPayTransactionsJsapi(
     options,
   );
   
-  return model;
+  return pay_transactions_jsapi_model;
+}
+
+// MARK: findByIdOkPayTransactionsJsapi
+/** 根据 id 查找微信JSAPI下单, 如果不存在则抛错 */
+export async function findByIdOkPayTransactionsJsapi(
+  id: PayTransactionsJsapiId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PayTransactionsJsapiModel> {
+  
+  const table = "wx_pay_transactions_jsapi";
+  const method = "findByIdOkPayTransactionsJsapi";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const pay_transactions_jsapi_model = await findByIdPayTransactionsJsapi(
+    id,
+    options,
+  );
+  
+  if (!pay_transactions_jsapi_model) {
+    const err_msg = "此 微信JSAPI下单 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return pay_transactions_jsapi_model;
 }
 
 // MARK: findByIdsPayTransactionsJsapi
@@ -966,6 +980,41 @@ export async function findByIdsPayTransactionsJsapi(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkPayTransactionsJsapi
+/** 根据 ids 查找微信JSAPI下单, 出现查询不到的 id 则报错 */
+export async function findByIdsOkPayTransactionsJsapi(
+  ids: PayTransactionsJsapiId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PayTransactionsJsapiModel[]> {
+  
+  const table = "wx_pay_transactions_jsapi";
+  const method = "findByIdsOkPayTransactionsJsapi";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsPayTransactionsJsapi(
+    ids,
     options,
   );
   

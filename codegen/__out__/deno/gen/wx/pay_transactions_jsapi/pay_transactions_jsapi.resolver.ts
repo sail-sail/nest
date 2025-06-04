@@ -89,6 +89,25 @@ export async function findOnePayTransactionsJsapi(
 }
 
 /**
+ * 根据条件查找第一个微信JSAPI下单, 如果不存在则抛错
+ */
+export async function findOneOkPayTransactionsJsapi(
+  search?: PayTransactionsJsapiSearch,
+  sort?: SortInput[],
+): Promise<PayTransactionsJsapiModel> {
+  
+  const {
+    findOneOkPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.service.ts");
+  
+  checkSortPayTransactionsJsapi(sort);
+  
+  const model = await findOneOkPayTransactionsJsapi(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找微信JSAPI下单
  */
 export async function findByIdPayTransactionsJsapi(
@@ -105,6 +124,22 @@ export async function findByIdPayTransactionsJsapi(
 }
 
 /**
+ * 根据 id 查找微信JSAPI下单, 如果不存在则抛错
+ */
+export async function findByIdOkPayTransactionsJsapi(
+  id: PayTransactionsJsapiId,
+): Promise<PayTransactionsJsapiModel | undefined> {
+  
+  const {
+    findByIdOkPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.service.ts");
+  
+  const model = await findByIdOkPayTransactionsJsapi(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找微信JSAPI下单
  */
 export async function findByIdsPayTransactionsJsapi(
@@ -116,6 +151,25 @@ export async function findByIdsPayTransactionsJsapi(
   } = await import("./pay_transactions_jsapi.service.ts");
   
   const models = await findByIdsPayTransactionsJsapi(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找微信JSAPI下单, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkPayTransactionsJsapi(
+  ids: PayTransactionsJsapiId[],
+): Promise<PayTransactionsJsapiModel[]> {
+  
+  const {
+    findByIdsOkPayTransactionsJsapi,
+  } = await import("./pay_transactions_jsapi.service.ts");
+  
+  const models = await findByIdsOkPayTransactionsJsapi(ids);
   
   for (const model of models) {
   }

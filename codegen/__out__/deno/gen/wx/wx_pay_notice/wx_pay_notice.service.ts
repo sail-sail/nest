@@ -73,13 +73,42 @@ export async function findOneWxPayNotice(
 }
 
 /**
+ * 根据条件查找第一个微信支付通知, 如果不存在则抛错
+ */
+export async function findOneOkWxPayNotice(
+  search?: WxPayNoticeSearch,
+  sort?: SortInput[],
+): Promise<WxPayNoticeModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const wx_pay_notice_model = await wx_pay_noticeDao.findOneOkWxPayNotice(search, sort);
+  
+  return wx_pay_notice_model;
+}
+
+/**
  * 根据 id 查找微信支付通知
  */
 export async function findByIdWxPayNotice(
-  wx_pay_notice_id?: WxPayNoticeId | null,
+  wx_pay_notice_id: WxPayNoticeId,
 ): Promise<WxPayNoticeModel | undefined> {
   
   const wx_pay_notice_model = await wx_pay_noticeDao.findByIdWxPayNotice(wx_pay_notice_id);
+  
+  return wx_pay_notice_model;
+}
+
+/**
+ * 根据 id 查找微信支付通知, 如果不存在则抛错
+ */
+export async function findByIdOkWxPayNotice(
+  wx_pay_notice_id: WxPayNoticeId,
+): Promise<WxPayNoticeModel> {
+  
+  const wx_pay_notice_model = await wx_pay_noticeDao.findByIdOkWxPayNotice(wx_pay_notice_id);
   
   return wx_pay_notice_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsWxPayNotice(
 ): Promise<WxPayNoticeModel[]> {
   
   const wx_pay_notice_models = await wx_pay_noticeDao.findByIdsWxPayNotice(wx_pay_notice_ids);
+  
+  return wx_pay_notice_models;
+}
+
+/**
+ * 根据 ids 查找微信支付通知, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxPayNotice(
+  wx_pay_notice_ids: WxPayNoticeId[],
+): Promise<WxPayNoticeModel[]> {
+  
+  const wx_pay_notice_models = await wx_pay_noticeDao.findByIdsOkWxPayNotice(wx_pay_notice_ids);
   
   return wx_pay_notice_models;
 }

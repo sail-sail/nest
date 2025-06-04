@@ -741,48 +741,6 @@ export async function checkByUniqueWxUsr(
   return;
 }
 
-// MARK: findOneOkWxUsr
-/** 根据条件查找第一小程序用户 */
-export async function findOneOkWxUsr(
-  search?: Readonly<WxUsrSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<WxUsrModel> {
-  
-  const table = "wx_wx_usr";
-  const method = "findOneOkWxUsr";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_wx_usr = validateOptionWxUsr(
-    await findOneWxUsr(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_wx_usr;
-}
-
 // MARK: findOneWxUsr
 /** 根据条件查找第一小程序用户 */
 export async function findOneWxUsr(
@@ -814,41 +772,45 @@ export async function findOneWxUsr(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllWxUsr(
+  
+  const wx_usr_models = await findAllWxUsr(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const wx_usr_model = wx_usr_models[0];
+  
+  return wx_usr_model;
 }
 
-// MARK: findByIdOkWxUsr
-/** 根据 id 查找小程序用户 */
-export async function findByIdOkWxUsr(
-  id?: WxUsrId | null,
+// MARK: findOneOkWxUsr
+/** 根据条件查找第一小程序用户, 如果不存在则抛错 */
+export async function findOneOkWxUsr(
+  search?: Readonly<WxUsrSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<WxUsrModel> {
   
   const table = "wx_wx_usr";
-  const method = "findByIdOkWxUsr";
+  const method = "findOneOkWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -858,20 +820,32 @@ export async function findByIdOkWxUsr(
     options.is_debug = false;
   }
   
-  const model_wx_usr = validateOptionWxUsr(
-    await findByIdWxUsr(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const wx_usr_models = await findAllWxUsr(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_wx_usr;
+  const wx_usr_model = wx_usr_models[0];
+  
+  if (!wx_usr_model) {
+    const err_msg = "此 小程序用户 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wx_usr_model;
 }
 
 // MARK: findByIdWxUsr
 /** 根据 id 查找小程序用户 */
 export async function findByIdWxUsr(
-  id?: WxUsrId | null,
+  id: WxUsrId,
   options?: {
     is_debug?: boolean;
   },
@@ -899,7 +873,7 @@ export async function findByIdWxUsr(
     return;
   }
   
-  const model = await findOneWxUsr(
+  const wx_usr_model = await findOneWxUsr(
     {
       id,
     },
@@ -907,7 +881,47 @@ export async function findByIdWxUsr(
     options,
   );
   
-  return model;
+  return wx_usr_model;
+}
+
+// MARK: findByIdOkWxUsr
+/** 根据 id 查找小程序用户, 如果不存在则抛错 */
+export async function findByIdOkWxUsr(
+  id: WxUsrId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxUsrModel> {
+  
+  const table = "wx_wx_usr";
+  const method = "findByIdOkWxUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const wx_usr_model = await findByIdWxUsr(
+    id,
+    options,
+  );
+  
+  if (!wx_usr_model) {
+    const err_msg = "此 小程序用户 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wx_usr_model;
 }
 
 // MARK: findByIdsWxUsr
@@ -947,6 +961,41 @@ export async function findByIdsWxUsr(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkWxUsr
+/** 根据 ids 查找小程序用户, 出现查询不到的 id 则报错 */
+export async function findByIdsOkWxUsr(
+  ids: WxUsrId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxUsrModel[]> {
+  
+  const table = "wx_wx_usr";
+  const method = "findByIdsOkWxUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsWxUsr(
+    ids,
     options,
   );
   

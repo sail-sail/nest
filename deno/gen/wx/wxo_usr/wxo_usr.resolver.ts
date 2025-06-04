@@ -91,6 +91,25 @@ export async function findOneWxoUsr(
 }
 
 /**
+ * 根据条件查找第一个公众号用户, 如果不存在则抛错
+ */
+export async function findOneOkWxoUsr(
+  search?: WxoUsrSearch,
+  sort?: SortInput[],
+): Promise<WxoUsrModel> {
+  
+  const {
+    findOneOkWxoUsr,
+  } = await import("./wxo_usr.service.ts");
+  
+  checkSortWxoUsr(sort);
+  
+  const model = await findOneOkWxoUsr(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找公众号用户
  */
 export async function findByIdWxoUsr(
@@ -107,6 +126,22 @@ export async function findByIdWxoUsr(
 }
 
 /**
+ * 根据 id 查找公众号用户, 如果不存在则抛错
+ */
+export async function findByIdOkWxoUsr(
+  id: WxoUsrId,
+): Promise<WxoUsrModel | undefined> {
+  
+  const {
+    findByIdOkWxoUsr,
+  } = await import("./wxo_usr.service.ts");
+  
+  const model = await findByIdOkWxoUsr(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找公众号用户
  */
 export async function findByIdsWxoUsr(
@@ -118,6 +153,25 @@ export async function findByIdsWxoUsr(
   } = await import("./wxo_usr.service.ts");
   
   const models = await findByIdsWxoUsr(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找公众号用户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxoUsr(
+  ids: WxoUsrId[],
+): Promise<WxoUsrModel[]> {
+  
+  const {
+    findByIdsOkWxoUsr,
+  } = await import("./wxo_usr.service.ts");
+  
+  const models = await findByIdsOkWxoUsr(ids);
   
   for (const model of models) {
   }
