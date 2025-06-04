@@ -94,6 +94,29 @@ pub async fn find_one_cron_job_log(
   Ok(cron_job_log_model)
 }
 
+/// 根据条件查找第一个定时任务日志, 如果不存在则抛错
+pub async fn find_one_ok_cron_job_log(
+  search: Option<CronJobLogSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<CronJobLogModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let cron_job_log_model = cron_job_log_dao::find_one_ok_cron_job_log(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(cron_job_log_model)
+}
+
 /// 根据 id 查找定时任务日志
 pub async fn find_by_id_cron_job_log(
   cron_job_log_id: CronJobLogId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_cron_job_log(
   Ok(cron_job_log_model)
 }
 
-/// 根据 cron_job_log_ids 查找定时任务日志
+/// 根据 id 查找定时任务日志, 如果不存在则抛错
+pub async fn find_by_id_ok_cron_job_log(
+  cron_job_log_id: CronJobLogId,
+  options: Option<Options>,
+) -> Result<CronJobLogModel> {
+  
+  let cron_job_log_model = cron_job_log_dao::find_by_id_ok_cron_job_log(
+    cron_job_log_id,
+    options,
+  ).await?;
+  
+  Ok(cron_job_log_model)
+}
+
+/// 根据 ids 查找定时任务日志
 pub async fn find_by_ids_cron_job_log(
   cron_job_log_ids: Vec<CronJobLogId>,
   options: Option<Options>,
 ) -> Result<Vec<CronJobLogModel>> {
   
   let cron_job_log_models = cron_job_log_dao::find_by_ids_cron_job_log(
+    cron_job_log_ids,
+    options,
+  ).await?;
+  
+  Ok(cron_job_log_models)
+}
+
+/// 根据 ids 查找定时任务日志, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_cron_job_log(
+  cron_job_log_ids: Vec<CronJobLogId>,
+  options: Option<Options>,
+) -> Result<Vec<CronJobLogModel>> {
+  
+  let cron_job_log_models = cron_job_log_dao::find_by_ids_ok_cron_job_log(
     cron_job_log_ids,
     options,
   ).await?;

@@ -1089,7 +1089,7 @@ pub async fn get_field_comments_tenant(
 }
 
 // MARK: find_one_ok_tenant
-/// 根据条件查找第一个租户
+/// 根据条件查找第一个租户, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_tenant(
   search: Option<TenantSearch>,
@@ -1123,13 +1123,16 @@ pub async fn find_one_ok_tenant(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let tenant_model = validate_option_tenant(
-    find_one_tenant(
-      search,
-      sort,
-      options,
-    ).await?,
+  let tenant_model = find_one_tenant(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(tenant_model) = tenant_model else {
+    let err_msg = "此 租户 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(tenant_model)
 }
@@ -1193,7 +1196,7 @@ pub async fn find_one_tenant(
 }
 
 // MARK: find_by_id_ok_tenant
-/// 根据 id 查找租户
+/// 根据 id 查找租户, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_tenant(
   id: TenantId,
@@ -1221,12 +1224,15 @@ pub async fn find_by_id_ok_tenant(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let tenant_model = validate_option_tenant(
-    find_by_id_tenant(
-      id,
-      options,
-    ).await?,
+  let tenant_model = find_by_id_tenant(
+    id,
+    options,
   ).await?;
+  
+  let Some(tenant_model) = tenant_model else {
+    let err_msg = "此 租户 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(tenant_model)
 }
@@ -1277,6 +1283,78 @@ pub async fn find_by_id_tenant(
   Ok(tenant_model)
 }
 
+// MARK: find_by_ids_ok_tenant
+/// 根据 ids 查找租户, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_tenant(
+  ids: Vec<TenantId>,
+  options: Option<Options>,
+) -> Result<Vec<TenantModel>> {
+  
+  let table = "base_tenant";
+  let method = "find_by_ids_ok_tenant";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let tenant_models = find_by_ids_tenant(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if tenant_models.len() != len {
+    let err_msg = "此 租户 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let tenant_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = tenant_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 租户 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<TenantModel>>>()?;
+  
+  Ok(tenant_models)
+}
+
 // MARK: find_by_ids_tenant
 /// 根据 ids 查找租户
 #[allow(dead_code)]
@@ -1313,7 +1391,13 @@ pub async fn find_by_ids_tenant(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = TenantSearch {
@@ -1321,33 +1405,14 @@ pub async fn find_by_ids_tenant(
     ..Default::default()
   }.into();
   
-  let models = find_all_tenant(
+  let tenant_models = find_all_tenant(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 租户 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 租户 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<TenantModel>>>()?;
-  
-  Ok(models)
+  Ok(tenant_models)
 }
 
 // MARK: exists_tenant
@@ -2503,7 +2568,6 @@ pub async fn create_return_tenant(
     let err_msg = "create_return_tenant: model_tenant.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -3668,10 +3732,9 @@ pub async fn validate_option_tenant(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

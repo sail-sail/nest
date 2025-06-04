@@ -82,6 +82,25 @@ impl OperationRecordGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个操作记录, 如果不存在则抛错
+  async fn find_one_ok_operation_record(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<OperationRecordSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<OperationRecordModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        operation_record_resolver::find_one_ok_operation_record(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找操作记录
   async fn find_by_id_operation_record(
     &self,
@@ -99,6 +118,23 @@ impl OperationRecordGenQuery {
       }).await
   }
   
+  /// 根据 id 查找操作记录, 如果不存在则抛错
+  async fn find_by_id_ok_operation_record(
+    &self,
+    ctx: &Context<'_>,
+    id: OperationRecordId,
+  ) -> Result<OperationRecordModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        operation_record_resolver::find_by_id_ok_operation_record(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找操作记录
   async fn find_by_ids_operation_record(
     &self,
@@ -110,6 +146,23 @@ impl OperationRecordGenQuery {
       .build()
       .scope({
         operation_record_resolver::find_by_ids_operation_record(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找操作记录
+  async fn find_by_ids_ok_operation_record(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<OperationRecordId>,
+  ) -> Result<Vec<OperationRecordModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        operation_record_resolver::find_by_ids_ok_operation_record(
           ids,
           None,
         )

@@ -813,7 +813,7 @@ pub async fn get_field_comments_background_task(
 }
 
 // MARK: find_one_ok_background_task
-/// 根据条件查找第一个后台任务
+/// 根据条件查找第一个后台任务, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_background_task(
   search: Option<BackgroundTaskSearch>,
@@ -847,13 +847,16 @@ pub async fn find_one_ok_background_task(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let background_task_model = validate_option_background_task(
-    find_one_background_task(
-      search,
-      sort,
-      options,
-    ).await?,
+  let background_task_model = find_one_background_task(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(background_task_model) = background_task_model else {
+    let err_msg = "此 后台任务 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(background_task_model)
 }
@@ -917,7 +920,7 @@ pub async fn find_one_background_task(
 }
 
 // MARK: find_by_id_ok_background_task
-/// 根据 id 查找后台任务
+/// 根据 id 查找后台任务, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_background_task(
   id: BackgroundTaskId,
@@ -945,12 +948,15 @@ pub async fn find_by_id_ok_background_task(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let background_task_model = validate_option_background_task(
-    find_by_id_background_task(
-      id,
-      options,
-    ).await?,
+  let background_task_model = find_by_id_background_task(
+    id,
+    options,
   ).await?;
+  
+  let Some(background_task_model) = background_task_model else {
+    let err_msg = "此 后台任务 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(background_task_model)
 }
@@ -1001,6 +1007,78 @@ pub async fn find_by_id_background_task(
   Ok(background_task_model)
 }
 
+// MARK: find_by_ids_ok_background_task
+/// 根据 ids 查找后台任务, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_background_task(
+  ids: Vec<BackgroundTaskId>,
+  options: Option<Options>,
+) -> Result<Vec<BackgroundTaskModel>> {
+  
+  let table = "base_background_task";
+  let method = "find_by_ids_ok_background_task";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let background_task_models = find_by_ids_background_task(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if background_task_models.len() != len {
+    let err_msg = "此 后台任务 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let background_task_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = background_task_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 后台任务 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<BackgroundTaskModel>>>()?;
+  
+  Ok(background_task_models)
+}
+
 // MARK: find_by_ids_background_task
 /// 根据 ids 查找后台任务
 #[allow(dead_code)]
@@ -1037,7 +1115,13 @@ pub async fn find_by_ids_background_task(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = BackgroundTaskSearch {
@@ -1045,33 +1129,14 @@ pub async fn find_by_ids_background_task(
     ..Default::default()
   }.into();
   
-  let models = find_all_background_task(
+  let background_task_models = find_all_background_task(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 后台任务 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 后台任务 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<BackgroundTaskModel>>>()?;
-  
-  Ok(models)
+  Ok(background_task_models)
 }
 
 // MARK: exists_background_task
@@ -1895,7 +1960,6 @@ pub async fn create_return_background_task(
     let err_msg = "create_return_background_task: model_background_task.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -2584,10 +2648,9 @@ pub async fn validate_option_background_task(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

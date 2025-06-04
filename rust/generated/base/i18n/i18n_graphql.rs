@@ -83,6 +83,26 @@ impl I18nGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个国际化, 如果不存在则抛错
+  #[graphql(name = "findOneOkI18n")]
+  async fn find_one_ok_i18n(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<I18nSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<I18nModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        i18n_resolver::find_one_ok_i18n(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找国际化
   #[graphql(name = "findByIdI18n")]
   async fn find_by_id_i18n(
@@ -101,6 +121,24 @@ impl I18nGenQuery {
       }).await
   }
   
+  /// 根据 id 查找国际化, 如果不存在则抛错
+  #[graphql(name = "findByIdOkI18n")]
+  async fn find_by_id_ok_i18n(
+    &self,
+    ctx: &Context<'_>,
+    id: I18nId,
+  ) -> Result<I18nModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        i18n_resolver::find_by_id_ok_i18n(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找国际化
   #[graphql(name = "findByIdsI18n")]
   async fn find_by_ids_i18n(
@@ -113,6 +151,24 @@ impl I18nGenQuery {
       .build()
       .scope({
         i18n_resolver::find_by_ids_i18n(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找国际化
+  #[graphql(name = "findByIdsOkI18n")]
+  async fn find_by_ids_ok_i18n(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<I18nId>,
+  ) -> Result<Vec<I18nModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        i18n_resolver::find_by_ids_ok_i18n(
           ids,
           None,
         )

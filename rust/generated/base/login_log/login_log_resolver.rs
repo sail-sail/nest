@@ -91,6 +91,31 @@ pub async fn find_one_login_log(
   Ok(model)
 }
 
+/// 根据条件查找第一个登录日志, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_login_log(
+  search: Option<LoginLogSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<LoginLogModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_login_log(sort.as_deref())?;
+  
+  let model = login_log_service::find_one_ok_login_log(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找登录日志
 #[function_name::named]
 pub async fn find_by_id_login_log(
@@ -112,6 +137,27 @@ pub async fn find_by_id_login_log(
   Ok(model)
 }
 
+/// 根据 id 查找登录日志, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_login_log(
+  id: LoginLogId,
+  options: Option<Options>,
+) -> Result<LoginLogModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = login_log_service::find_by_id_ok_login_log(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找登录日志
 #[function_name::named]
 pub async fn find_by_ids_login_log(
@@ -126,6 +172,27 @@ pub async fn find_by_ids_login_log(
   );
   
   let models = login_log_service::find_by_ids_login_log(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找登录日志, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_login_log(
+  ids: Vec<LoginLogId>,
+  options: Option<Options>,
+) -> Result<Vec<LoginLogModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = login_log_service::find_by_ids_ok_login_log(
     ids,
     options,
   ).await?;

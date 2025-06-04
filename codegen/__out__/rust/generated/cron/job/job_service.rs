@@ -94,6 +94,29 @@ pub async fn find_one_job(
   Ok(job_model)
 }
 
+/// 根据条件查找第一个任务, 如果不存在则抛错
+pub async fn find_one_ok_job(
+  search: Option<JobSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<JobModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let job_model = job_dao::find_one_ok_job(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(job_model)
+}
+
 /// 根据 id 查找任务
 pub async fn find_by_id_job(
   job_id: JobId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_job(
   Ok(job_model)
 }
 
-/// 根据 job_ids 查找任务
+/// 根据 id 查找任务, 如果不存在则抛错
+pub async fn find_by_id_ok_job(
+  job_id: JobId,
+  options: Option<Options>,
+) -> Result<JobModel> {
+  
+  let job_model = job_dao::find_by_id_ok_job(
+    job_id,
+    options,
+  ).await?;
+  
+  Ok(job_model)
+}
+
+/// 根据 ids 查找任务
 pub async fn find_by_ids_job(
   job_ids: Vec<JobId>,
   options: Option<Options>,
 ) -> Result<Vec<JobModel>> {
   
   let job_models = job_dao::find_by_ids_job(
+    job_ids,
+    options,
+  ).await?;
+  
+  Ok(job_models)
+}
+
+/// 根据 ids 查找任务, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_job(
+  job_ids: Vec<JobId>,
+  options: Option<Options>,
+) -> Result<Vec<JobModel>> {
+  
+  let job_models = job_dao::find_by_ids_ok_job(
     job_ids,
     options,
   ).await?;

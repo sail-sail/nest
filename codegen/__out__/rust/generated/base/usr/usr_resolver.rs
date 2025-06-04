@@ -123,6 +123,42 @@ pub async fn find_one_usr(
   Ok(model)
 }
 
+/// 根据条件查找第一个用户, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_usr(
+  search: Option<UsrSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<UsrModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let search = Some({
+    let mut search = search.unwrap_or_default();
+    search.is_hidden = Some(vec![0]);
+    search
+  });
+  
+  check_sort_usr(sort.as_deref())?;
+  
+  let model = usr_service::find_one_ok_usr(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  let mut model = model;
+  // 密码
+  model.password = String::new();
+  let model = model;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找用户
 #[function_name::named]
 pub async fn find_by_id_usr(
@@ -151,6 +187,32 @@ pub async fn find_by_id_usr(
   Ok(model)
 }
 
+/// 根据 id 查找用户, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_usr(
+  id: UsrId,
+  options: Option<Options>,
+) -> Result<UsrModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = usr_service::find_by_id_ok_usr(
+    id,
+    options,
+  ).await?;
+  
+  let mut model = model;
+  // 密码
+  model.password = String::new();
+  let model = model;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找用户
 #[function_name::named]
 pub async fn find_by_ids_usr(
@@ -165,6 +227,34 @@ pub async fn find_by_ids_usr(
   );
   
   let models = usr_service::find_by_ids_usr(
+    ids,
+    options,
+  ).await?;
+  
+  let mut models = models;
+  for model in models.iter_mut() {
+    // 密码
+    model.password = String::new();
+  }
+  let models = models;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找用户, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_usr(
+  ids: Vec<UsrId>,
+  options: Option<Options>,
+) -> Result<Vec<UsrModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = usr_service::find_by_ids_ok_usr(
     ids,
     options,
   ).await?;

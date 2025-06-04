@@ -80,13 +80,14 @@ export async function findAllJob(
 }
 
 /**
- * 根据条件查找第一个任务
+ * 根据条件查找第一个 任务
  */
 export async function findOneJob(
   search?: JobSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneJob?: JobModel;
   } = await query({
@@ -102,8 +103,43 @@ export async function findOneJob(
       sort,
     },
   }, opt);
+  
   const model = data.findOneJob;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 任务, 如果不存在则抛错
+ */
+export async function findOneOkJob(
+  search?: JobSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkJob?: JobModel;
+  } = await query({
+    query: `
+      query($search: JobSearch, $sort: [SortInput!]) {
+        findOneOkJob(search: $search, sort: $sort) {
+          ${ jobQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkJob;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -203,12 +239,14 @@ export async function updateByIdJob(
  * 根据 id 查找 任务
  */
 export async function findByIdJob(
-  id?: JobId,
+  id: JobId,
   opt?: GqlOpt,
 ): Promise<JobModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdJob?: JobModel;
   } = await query({
@@ -223,8 +261,41 @@ export async function findByIdJob(
       id,
     },
   }, opt);
+  
   const model = data.findByIdJob;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 任务, 如果不存在则抛错
+ */
+export async function findByIdOkJob(
+  id: JobId,
+  opt?: GqlOpt,
+): Promise<JobModel> {
+  
+  const data: {
+    findByIdOkJob: JobModel;
+  } = await query({
+    query: `
+      query($id: JobId!) {
+        findByIdOkJob(id: $id) {
+          ${ jobQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkJob;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -235,33 +306,70 @@ export async function findByIdsJob(
   ids: JobId[],
   opt?: GqlOpt,
 ): Promise<JobModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: JobModel[] = [ ];
-  try {
-    const data: {
-      findByIdsJob: JobModel[];
-    } = await query({
-      query: `
-        query($ids: [JobId!]!) {
-          findByIdsJob(ids: $ids) {
-            ${ jobQueryField }
-          }
+  
+  const data: {
+    findByIdsJob: JobModel[];
+  } = await query({
+    query: `
+      query($ids: [JobId!]!) {
+        findByIdsJob(ids: $ids) {
+          ${ jobQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsJob;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsJob;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 任务, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkJob(
+  ids: JobId[],
+  opt?: GqlOpt,
+): Promise<JobModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkJob: JobModel[];
+  } = await query({
+    query: `
+      query($ids: [JobId!]!) {
+        findByIdsOkJob(ids: $ids) {
+          ${ jobQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkJob;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
