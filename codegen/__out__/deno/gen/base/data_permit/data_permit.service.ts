@@ -73,13 +73,42 @@ export async function findOneDataPermit(
 }
 
 /**
+ * 根据条件查找第一个数据权限, 如果不存在则抛错
+ */
+export async function findOneOkDataPermit(
+  search?: DataPermitSearch,
+  sort?: SortInput[],
+): Promise<DataPermitModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const data_permit_model = await data_permitDao.findOneOkDataPermit(search, sort);
+  
+  return data_permit_model;
+}
+
+/**
  * 根据 id 查找数据权限
  */
 export async function findByIdDataPermit(
-  data_permit_id?: DataPermitId | null,
+  data_permit_id: DataPermitId,
 ): Promise<DataPermitModel | undefined> {
   
   const data_permit_model = await data_permitDao.findByIdDataPermit(data_permit_id);
+  
+  return data_permit_model;
+}
+
+/**
+ * 根据 id 查找数据权限, 如果不存在则抛错
+ */
+export async function findByIdOkDataPermit(
+  data_permit_id: DataPermitId,
+): Promise<DataPermitModel> {
+  
+  const data_permit_model = await data_permitDao.findByIdOkDataPermit(data_permit_id);
   
   return data_permit_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsDataPermit(
 ): Promise<DataPermitModel[]> {
   
   const data_permit_models = await data_permitDao.findByIdsDataPermit(data_permit_ids);
+  
+  return data_permit_models;
+}
+
+/**
+ * 根据 ids 查找数据权限, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDataPermit(
+  data_permit_ids: DataPermitId[],
+): Promise<DataPermitModel[]> {
+  
+  const data_permit_models = await data_permitDao.findByIdsOkDataPermit(data_permit_ids);
   
   return data_permit_models;
 }

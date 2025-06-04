@@ -73,13 +73,42 @@ export async function findOneOperationRecord(
 }
 
 /**
+ * 根据条件查找第一个操作记录, 如果不存在则抛错
+ */
+export async function findOneOkOperationRecord(
+  search?: OperationRecordSearch,
+  sort?: SortInput[],
+): Promise<OperationRecordModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const operation_record_model = await operation_recordDao.findOneOkOperationRecord(search, sort);
+  
+  return operation_record_model;
+}
+
+/**
  * 根据 id 查找操作记录
  */
 export async function findByIdOperationRecord(
-  operation_record_id?: OperationRecordId | null,
+  operation_record_id: OperationRecordId,
 ): Promise<OperationRecordModel | undefined> {
   
   const operation_record_model = await operation_recordDao.findByIdOperationRecord(operation_record_id);
+  
+  return operation_record_model;
+}
+
+/**
+ * 根据 id 查找操作记录, 如果不存在则抛错
+ */
+export async function findByIdOkOperationRecord(
+  operation_record_id: OperationRecordId,
+): Promise<OperationRecordModel> {
+  
+  const operation_record_model = await operation_recordDao.findByIdOkOperationRecord(operation_record_id);
   
   return operation_record_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsOperationRecord(
 ): Promise<OperationRecordModel[]> {
   
   const operation_record_models = await operation_recordDao.findByIdsOperationRecord(operation_record_ids);
+  
+  return operation_record_models;
+}
+
+/**
+ * 根据 ids 查找操作记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOperationRecord(
+  operation_record_ids: OperationRecordId[],
+): Promise<OperationRecordModel[]> {
+  
+  const operation_record_models = await operation_recordDao.findByIdsOkOperationRecord(operation_record_ids);
   
   return operation_record_models;
 }

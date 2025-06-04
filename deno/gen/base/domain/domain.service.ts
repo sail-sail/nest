@@ -73,13 +73,42 @@ export async function findOneDomain(
 }
 
 /**
+ * 根据条件查找第一个域名, 如果不存在则抛错
+ */
+export async function findOneOkDomain(
+  search?: DomainSearch,
+  sort?: SortInput[],
+): Promise<DomainModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const domain_model = await domainDao.findOneOkDomain(search, sort);
+  
+  return domain_model;
+}
+
+/**
  * 根据 id 查找域名
  */
 export async function findByIdDomain(
-  domain_id?: DomainId | null,
+  domain_id: DomainId,
 ): Promise<DomainModel | undefined> {
   
   const domain_model = await domainDao.findByIdDomain(domain_id);
+  
+  return domain_model;
+}
+
+/**
+ * 根据 id 查找域名, 如果不存在则抛错
+ */
+export async function findByIdOkDomain(
+  domain_id: DomainId,
+): Promise<DomainModel> {
+  
+  const domain_model = await domainDao.findByIdOkDomain(domain_id);
   
   return domain_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsDomain(
 ): Promise<DomainModel[]> {
   
   const domain_models = await domainDao.findByIdsDomain(domain_ids);
+  
+  return domain_models;
+}
+
+/**
+ * 根据 ids 查找域名, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDomain(
+  domain_ids: DomainId[],
+): Promise<DomainModel[]> {
+  
+  const domain_models = await domainDao.findByIdsOkDomain(domain_ids);
   
   return domain_models;
 }

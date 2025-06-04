@@ -104,13 +104,42 @@ export async function findOneDept(
 }
 
 /**
+ * 根据条件查找第一个部门, 如果不存在则抛错
+ */
+export async function findOneOkDept(
+  search?: DeptSearch,
+  sort?: SortInput[],
+): Promise<DeptModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const dept_model = await deptDao.findOneOkDept(search, sort);
+  
+  return dept_model;
+}
+
+/**
  * 根据 id 查找部门
  */
 export async function findByIdDept(
-  dept_id?: DeptId | null,
+  dept_id: DeptId,
 ): Promise<DeptModel | undefined> {
   
   const dept_model = await deptDao.findByIdDept(dept_id);
+  
+  return dept_model;
+}
+
+/**
+ * 根据 id 查找部门, 如果不存在则抛错
+ */
+export async function findByIdOkDept(
+  dept_id: DeptId,
+): Promise<DeptModel> {
+  
+  const dept_model = await deptDao.findByIdOkDept(dept_id);
   
   return dept_model;
 }
@@ -123,6 +152,18 @@ export async function findByIdsDept(
 ): Promise<DeptModel[]> {
   
   const dept_models = await deptDao.findByIdsDept(dept_ids);
+  
+  return dept_models;
+}
+
+/**
+ * 根据 ids 查找部门, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDept(
+  dept_ids: DeptId[],
+): Promise<DeptModel[]> {
+  
+  const dept_models = await deptDao.findByIdsOkDept(dept_ids);
   
   return dept_models;
 }
