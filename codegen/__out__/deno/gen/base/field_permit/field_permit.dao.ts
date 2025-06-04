@@ -495,48 +495,6 @@ export async function checkByUniqueFieldPermit(
   return;
 }
 
-// MARK: findOneOkFieldPermit
-/** 根据条件查找第一字段权限 */
-export async function findOneOkFieldPermit(
-  search?: Readonly<FieldPermitSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<FieldPermitModel> {
-  
-  const table = "base_field_permit";
-  const method = "findOneOkFieldPermit";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_field_permit = validateOptionFieldPermit(
-    await findOneFieldPermit(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_field_permit;
-}
-
 // MARK: findOneFieldPermit
 /** 根据条件查找第一字段权限 */
 export async function findOneFieldPermit(
@@ -568,41 +526,45 @@ export async function findOneFieldPermit(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllFieldPermit(
+  
+  const field_permit_models = await findAllFieldPermit(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const field_permit_model = field_permit_models[0];
+  
+  return field_permit_model;
 }
 
-// MARK: findByIdOkFieldPermit
-/** 根据 id 查找字段权限 */
-export async function findByIdOkFieldPermit(
-  id?: FieldPermitId | null,
+// MARK: findOneOkFieldPermit
+/** 根据条件查找第一字段权限, 如果不存在则抛错 */
+export async function findOneOkFieldPermit(
+  search?: Readonly<FieldPermitSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<FieldPermitModel> {
   
   const table = "base_field_permit";
-  const method = "findByIdOkFieldPermit";
+  const method = "findOneOkFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -612,20 +574,32 @@ export async function findByIdOkFieldPermit(
     options.is_debug = false;
   }
   
-  const model_field_permit = validateOptionFieldPermit(
-    await findByIdFieldPermit(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const field_permit_models = await findAllFieldPermit(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_field_permit;
+  const field_permit_model = field_permit_models[0];
+  
+  if (!field_permit_model) {
+    const err_msg = "此 字段权限 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return field_permit_model;
 }
 
 // MARK: findByIdFieldPermit
 /** 根据 id 查找字段权限 */
 export async function findByIdFieldPermit(
-  id?: FieldPermitId | null,
+  id: FieldPermitId,
   options?: {
     is_debug?: boolean;
   },
@@ -653,7 +627,7 @@ export async function findByIdFieldPermit(
     return;
   }
   
-  const model = await findOneFieldPermit(
+  const field_permit_model = await findOneFieldPermit(
     {
       id,
     },
@@ -661,7 +635,47 @@ export async function findByIdFieldPermit(
     options,
   );
   
-  return model;
+  return field_permit_model;
+}
+
+// MARK: findByIdOkFieldPermit
+/** 根据 id 查找字段权限, 如果不存在则抛错 */
+export async function findByIdOkFieldPermit(
+  id: FieldPermitId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<FieldPermitModel> {
+  
+  const table = "base_field_permit";
+  const method = "findByIdOkFieldPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const field_permit_model = await findByIdFieldPermit(
+    id,
+    options,
+  );
+  
+  if (!field_permit_model) {
+    const err_msg = "此 字段权限 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return field_permit_model;
 }
 
 // MARK: findByIdsFieldPermit
@@ -701,6 +715,41 @@ export async function findByIdsFieldPermit(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkFieldPermit
+/** 根据 ids 查找字段权限, 出现查询不到的 id 则报错 */
+export async function findByIdsOkFieldPermit(
+  ids: FieldPermitId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<FieldPermitModel[]> {
+  
+  const table = "base_field_permit";
+  const method = "findByIdsOkFieldPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsFieldPermit(
+    ids,
     options,
   );
   

@@ -91,6 +91,25 @@ export async function findOneDataPermit(
 }
 
 /**
+ * 根据条件查找第一个数据权限, 如果不存在则抛错
+ */
+export async function findOneOkDataPermit(
+  search?: DataPermitSearch,
+  sort?: SortInput[],
+): Promise<DataPermitModel> {
+  
+  const {
+    findOneOkDataPermit,
+  } = await import("./data_permit.service.ts");
+  
+  checkSortDataPermit(sort);
+  
+  const model = await findOneOkDataPermit(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找数据权限
  */
 export async function findByIdDataPermit(
@@ -107,6 +126,22 @@ export async function findByIdDataPermit(
 }
 
 /**
+ * 根据 id 查找数据权限, 如果不存在则抛错
+ */
+export async function findByIdOkDataPermit(
+  id: DataPermitId,
+): Promise<DataPermitModel | undefined> {
+  
+  const {
+    findByIdOkDataPermit,
+  } = await import("./data_permit.service.ts");
+  
+  const model = await findByIdOkDataPermit(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找数据权限
  */
 export async function findByIdsDataPermit(
@@ -118,6 +153,25 @@ export async function findByIdsDataPermit(
   } = await import("./data_permit.service.ts");
   
   const models = await findByIdsDataPermit(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找数据权限, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDataPermit(
+  ids: DataPermitId[],
+): Promise<DataPermitModel[]> {
+  
+  const {
+    findByIdsOkDataPermit,
+  } = await import("./data_permit.service.ts");
+  
+  const models = await findByIdsOkDataPermit(ids);
   
   for (const model of models) {
   }

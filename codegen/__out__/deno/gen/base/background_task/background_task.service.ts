@@ -95,13 +95,42 @@ export async function findOneBackgroundTask(
 }
 
 /**
+ * 根据条件查找第一个后台任务, 如果不存在则抛错
+ */
+export async function findOneOkBackgroundTask(
+  search?: BackgroundTaskSearch,
+  sort?: SortInput[],
+): Promise<BackgroundTaskModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const background_task_model = await background_taskDao.findOneOkBackgroundTask(search, sort);
+  
+  return background_task_model;
+}
+
+/**
  * 根据 id 查找后台任务
  */
 export async function findByIdBackgroundTask(
-  background_task_id?: BackgroundTaskId | null,
+  background_task_id: BackgroundTaskId,
 ): Promise<BackgroundTaskModel | undefined> {
   
   const background_task_model = await background_taskDao.findByIdBackgroundTask(background_task_id);
+  
+  return background_task_model;
+}
+
+/**
+ * 根据 id 查找后台任务, 如果不存在则抛错
+ */
+export async function findByIdOkBackgroundTask(
+  background_task_id: BackgroundTaskId,
+): Promise<BackgroundTaskModel> {
+  
+  const background_task_model = await background_taskDao.findByIdOkBackgroundTask(background_task_id);
   
   return background_task_model;
 }
@@ -114,6 +143,18 @@ export async function findByIdsBackgroundTask(
 ): Promise<BackgroundTaskModel[]> {
   
   const background_task_models = await background_taskDao.findByIdsBackgroundTask(background_task_ids);
+  
+  return background_task_models;
+}
+
+/**
+ * 根据 ids 查找后台任务, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkBackgroundTask(
+  background_task_ids: BackgroundTaskId[],
+): Promise<BackgroundTaskModel[]> {
+  
+  const background_task_models = await background_taskDao.findByIdsOkBackgroundTask(background_task_ids);
   
   return background_task_models;
 }

@@ -707,48 +707,6 @@ export async function checkByUniqueDict(
   return;
 }
 
-// MARK: findOneOkDict
-/** 根据条件查找第一系统字典 */
-export async function findOneOkDict(
-  search?: Readonly<DictSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<DictModel> {
-  
-  const table = "base_dict";
-  const method = "findOneOkDict";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_dict = validateOptionDict(
-    await findOneDict(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_dict;
-}
-
 // MARK: findOneDict
 /** 根据条件查找第一系统字典 */
 export async function findOneDict(
@@ -780,41 +738,45 @@ export async function findOneDict(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllDict(
+  
+  const dict_models = await findAllDict(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const dict_model = dict_models[0];
+  
+  return dict_model;
 }
 
-// MARK: findByIdOkDict
-/** 根据 id 查找系统字典 */
-export async function findByIdOkDict(
-  id?: DictId | null,
+// MARK: findOneOkDict
+/** 根据条件查找第一系统字典, 如果不存在则抛错 */
+export async function findOneOkDict(
+  search?: Readonly<DictSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<DictModel> {
   
   const table = "base_dict";
-  const method = "findByIdOkDict";
+  const method = "findOneOkDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -824,20 +786,32 @@ export async function findByIdOkDict(
     options.is_debug = false;
   }
   
-  const model_dict = validateOptionDict(
-    await findByIdDict(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const dict_models = await findAllDict(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_dict;
+  const dict_model = dict_models[0];
+  
+  if (!dict_model) {
+    const err_msg = "此 系统字典 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return dict_model;
 }
 
 // MARK: findByIdDict
 /** 根据 id 查找系统字典 */
 export async function findByIdDict(
-  id?: DictId | null,
+  id: DictId,
   options?: {
     is_debug?: boolean;
   },
@@ -865,7 +839,7 @@ export async function findByIdDict(
     return;
   }
   
-  const model = await findOneDict(
+  const dict_model = await findOneDict(
     {
       id,
     },
@@ -873,7 +847,47 @@ export async function findByIdDict(
     options,
   );
   
-  return model;
+  return dict_model;
+}
+
+// MARK: findByIdOkDict
+/** 根据 id 查找系统字典, 如果不存在则抛错 */
+export async function findByIdOkDict(
+  id: DictId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictModel> {
+  
+  const table = "base_dict";
+  const method = "findByIdOkDict";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const dict_model = await findByIdDict(
+    id,
+    options,
+  );
+  
+  if (!dict_model) {
+    const err_msg = "此 系统字典 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return dict_model;
 }
 
 // MARK: findByIdsDict
@@ -913,6 +927,41 @@ export async function findByIdsDict(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkDict
+/** 根据 ids 查找系统字典, 出现查询不到的 id 则报错 */
+export async function findByIdsOkDict(
+  ids: DictId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictModel[]> {
+  
+  const table = "base_dict";
+  const method = "findByIdsOkDict";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsDict(
+    ids,
     options,
   );
   

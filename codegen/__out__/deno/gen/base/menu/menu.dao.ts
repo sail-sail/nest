@@ -768,48 +768,6 @@ export async function checkByUniqueMenu(
   return;
 }
 
-// MARK: findOneOkMenu
-/** 根据条件查找第一菜单 */
-export async function findOneOkMenu(
-  search?: Readonly<MenuSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<MenuModel> {
-  
-  const table = "base_menu";
-  const method = "findOneOkMenu";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_menu = validateOptionMenu(
-    await findOneMenu(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_menu;
-}
-
 // MARK: findOneMenu
 /** 根据条件查找第一菜单 */
 export async function findOneMenu(
@@ -841,41 +799,45 @@ export async function findOneMenu(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllMenu(
+  
+  const menu_models = await findAllMenu(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const menu_model = menu_models[0];
+  
+  return menu_model;
 }
 
-// MARK: findByIdOkMenu
-/** 根据 id 查找菜单 */
-export async function findByIdOkMenu(
-  id?: MenuId | null,
+// MARK: findOneOkMenu
+/** 根据条件查找第一菜单, 如果不存在则抛错 */
+export async function findOneOkMenu(
+  search?: Readonly<MenuSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<MenuModel> {
   
   const table = "base_menu";
-  const method = "findByIdOkMenu";
+  const method = "findOneOkMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -885,20 +847,32 @@ export async function findByIdOkMenu(
     options.is_debug = false;
   }
   
-  const model_menu = validateOptionMenu(
-    await findByIdMenu(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const menu_models = await findAllMenu(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_menu;
+  const menu_model = menu_models[0];
+  
+  if (!menu_model) {
+    const err_msg = "此 菜单 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return menu_model;
 }
 
 // MARK: findByIdMenu
 /** 根据 id 查找菜单 */
 export async function findByIdMenu(
-  id?: MenuId | null,
+  id: MenuId,
   options?: {
     is_debug?: boolean;
   },
@@ -926,7 +900,7 @@ export async function findByIdMenu(
     return;
   }
   
-  const model = await findOneMenu(
+  const menu_model = await findOneMenu(
     {
       id,
     },
@@ -934,7 +908,47 @@ export async function findByIdMenu(
     options,
   );
   
-  return model;
+  return menu_model;
+}
+
+// MARK: findByIdOkMenu
+/** 根据 id 查找菜单, 如果不存在则抛错 */
+export async function findByIdOkMenu(
+  id: MenuId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<MenuModel> {
+  
+  const table = "base_menu";
+  const method = "findByIdOkMenu";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const menu_model = await findByIdMenu(
+    id,
+    options,
+  );
+  
+  if (!menu_model) {
+    const err_msg = "此 菜单 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return menu_model;
 }
 
 // MARK: findByIdsMenu
@@ -974,6 +988,41 @@ export async function findByIdsMenu(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkMenu
+/** 根据 ids 查找菜单, 出现查询不到的 id 则报错 */
+export async function findByIdsOkMenu(
+  ids: MenuId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<MenuModel[]> {
+  
+  const table = "base_menu";
+  const method = "findByIdsOkMenu";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsMenu(
+    ids,
     options,
   );
   

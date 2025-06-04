@@ -73,13 +73,42 @@ export async function findOneUsr(
 }
 
 /**
+ * 根据条件查找第一个用户, 如果不存在则抛错
+ */
+export async function findOneOkUsr(
+  search?: UsrSearch,
+  sort?: SortInput[],
+): Promise<UsrModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const usr_model = await usrDao.findOneOkUsr(search, sort);
+  
+  return usr_model;
+}
+
+/**
  * 根据 id 查找用户
  */
 export async function findByIdUsr(
-  usr_id?: UsrId | null,
+  usr_id: UsrId,
 ): Promise<UsrModel | undefined> {
   
   const usr_model = await usrDao.findByIdUsr(usr_id);
+  
+  return usr_model;
+}
+
+/**
+ * 根据 id 查找用户, 如果不存在则抛错
+ */
+export async function findByIdOkUsr(
+  usr_id: UsrId,
+): Promise<UsrModel> {
+  
+  const usr_model = await usrDao.findByIdOkUsr(usr_id);
   
   return usr_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsUsr(
 ): Promise<UsrModel[]> {
   
   const usr_models = await usrDao.findByIdsUsr(usr_ids);
+  
+  return usr_models;
+}
+
+/**
+ * 根据 ids 查找用户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkUsr(
+  usr_ids: UsrId[],
+): Promise<UsrModel[]> {
+  
+  const usr_models = await usrDao.findByIdsOkUsr(usr_ids);
   
   return usr_models;
 }
