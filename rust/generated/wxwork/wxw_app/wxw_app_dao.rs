@@ -901,7 +901,7 @@ pub async fn get_field_comments_wxw_app(
 }
 
 // MARK: find_one_ok_wxw_app
-/// 根据条件查找第一个企微应用
+/// 根据条件查找第一个企微应用, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_wxw_app(
   search: Option<WxwAppSearch>,
@@ -935,13 +935,16 @@ pub async fn find_one_ok_wxw_app(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let wxw_app_model = validate_option_wxw_app(
-    find_one_wxw_app(
-      search,
-      sort,
-      options,
-    ).await?,
+  let wxw_app_model = find_one_wxw_app(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(wxw_app_model) = wxw_app_model else {
+    let err_msg = "此 企微应用 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(wxw_app_model)
 }
@@ -1005,7 +1008,7 @@ pub async fn find_one_wxw_app(
 }
 
 // MARK: find_by_id_ok_wxw_app
-/// 根据 id 查找企微应用
+/// 根据 id 查找企微应用, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_wxw_app(
   id: WxwAppId,
@@ -1033,12 +1036,15 @@ pub async fn find_by_id_ok_wxw_app(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let wxw_app_model = validate_option_wxw_app(
-    find_by_id_wxw_app(
-      id,
-      options,
-    ).await?,
+  let wxw_app_model = find_by_id_wxw_app(
+    id,
+    options,
   ).await?;
+  
+  let Some(wxw_app_model) = wxw_app_model else {
+    let err_msg = "此 企微应用 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(wxw_app_model)
 }
@@ -1089,6 +1095,78 @@ pub async fn find_by_id_wxw_app(
   Ok(wxw_app_model)
 }
 
+// MARK: find_by_ids_ok_wxw_app
+/// 根据 ids 查找企微应用, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_wxw_app(
+  ids: Vec<WxwAppId>,
+  options: Option<Options>,
+) -> Result<Vec<WxwAppModel>> {
+  
+  let table = "wxwork_wxw_app";
+  let method = "find_by_ids_ok_wxw_app";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let wxw_app_models = find_by_ids_wxw_app(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if wxw_app_models.len() != len {
+    let err_msg = "此 企微应用 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let wxw_app_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = wxw_app_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 企微应用 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<WxwAppModel>>>()?;
+  
+  Ok(wxw_app_models)
+}
+
 // MARK: find_by_ids_wxw_app
 /// 根据 ids 查找企微应用
 #[allow(dead_code)]
@@ -1125,7 +1203,13 @@ pub async fn find_by_ids_wxw_app(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = WxwAppSearch {
@@ -1133,33 +1217,14 @@ pub async fn find_by_ids_wxw_app(
     ..Default::default()
   }.into();
   
-  let models = find_all_wxw_app(
+  let wxw_app_models = find_all_wxw_app(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 企微应用 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 企微应用 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<WxwAppModel>>>()?;
-  
-  Ok(models)
+  Ok(wxw_app_models)
 }
 
 // MARK: exists_wxw_app
@@ -2105,7 +2170,6 @@ pub async fn create_return_wxw_app(
     let err_msg = "create_return_wxw_app: model_wxw_app.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -3069,10 +3133,9 @@ pub async fn validate_option_wxw_app(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

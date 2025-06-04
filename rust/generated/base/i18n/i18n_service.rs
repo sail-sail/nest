@@ -93,6 +93,29 @@ pub async fn find_one_i18n(
   Ok(i18n_model)
 }
 
+/// 根据条件查找第一个国际化, 如果不存在则抛错
+pub async fn find_one_ok_i18n(
+  search: Option<I18nSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<I18nModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let i18n_model = i18n_dao::find_one_ok_i18n(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(i18n_model)
+}
+
 /// 根据 id 查找国际化
 pub async fn find_by_id_i18n(
   i18n_id: I18nId,
@@ -107,13 +130,41 @@ pub async fn find_by_id_i18n(
   Ok(i18n_model)
 }
 
-/// 根据 i18n_ids 查找国际化
+/// 根据 id 查找国际化, 如果不存在则抛错
+pub async fn find_by_id_ok_i18n(
+  i18n_id: I18nId,
+  options: Option<Options>,
+) -> Result<I18nModel> {
+  
+  let i18n_model = i18n_dao::find_by_id_ok_i18n(
+    i18n_id,
+    options,
+  ).await?;
+  
+  Ok(i18n_model)
+}
+
+/// 根据 ids 查找国际化
 pub async fn find_by_ids_i18n(
   i18n_ids: Vec<I18nId>,
   options: Option<Options>,
 ) -> Result<Vec<I18nModel>> {
   
   let i18n_models = i18n_dao::find_by_ids_i18n(
+    i18n_ids,
+    options,
+  ).await?;
+  
+  Ok(i18n_models)
+}
+
+/// 根据 ids 查找国际化, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_i18n(
+  i18n_ids: Vec<I18nId>,
+  options: Option<Options>,
+) -> Result<Vec<I18nModel>> {
+  
+  let i18n_models = i18n_dao::find_by_ids_ok_i18n(
     i18n_ids,
     options,
   ).await?;

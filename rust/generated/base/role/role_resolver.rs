@@ -91,6 +91,31 @@ pub async fn find_one_role(
   Ok(model)
 }
 
+/// 根据条件查找第一个角色, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_role(
+  search: Option<RoleSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<RoleModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_role(sort.as_deref())?;
+  
+  let model = role_service::find_one_ok_role(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找角色
 #[function_name::named]
 pub async fn find_by_id_role(
@@ -112,6 +137,27 @@ pub async fn find_by_id_role(
   Ok(model)
 }
 
+/// 根据 id 查找角色, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_role(
+  id: RoleId,
+  options: Option<Options>,
+) -> Result<RoleModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = role_service::find_by_id_ok_role(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找角色
 #[function_name::named]
 pub async fn find_by_ids_role(
@@ -126,6 +172,27 @@ pub async fn find_by_ids_role(
   );
   
   let models = role_service::find_by_ids_role(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找角色, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_role(
+  ids: Vec<RoleId>,
+  options: Option<Options>,
+) -> Result<Vec<RoleModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = role_service::find_by_ids_ok_role(
     ids,
     options,
   ).await?;

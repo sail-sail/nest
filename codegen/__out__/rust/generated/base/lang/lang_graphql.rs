@@ -80,6 +80,25 @@ impl LangGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个语言, 如果不存在则抛错
+  async fn find_one_ok_lang(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<LangSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<LangModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        lang_resolver::find_one_ok_lang(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找语言
   async fn find_by_id_lang(
     &self,
@@ -97,6 +116,23 @@ impl LangGenQuery {
       }).await
   }
   
+  /// 根据 id 查找语言, 如果不存在则抛错
+  async fn find_by_id_ok_lang(
+    &self,
+    ctx: &Context<'_>,
+    id: LangId,
+  ) -> Result<LangModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        lang_resolver::find_by_id_ok_lang(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找语言
   async fn find_by_ids_lang(
     &self,
@@ -108,6 +144,23 @@ impl LangGenQuery {
       .build()
       .scope({
         lang_resolver::find_by_ids_lang(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找语言
+  async fn find_by_ids_ok_lang(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<LangId>,
+  ) -> Result<Vec<LangModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        lang_resolver::find_by_ids_ok_lang(
           ids,
           None,
         )

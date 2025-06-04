@@ -82,6 +82,25 @@ impl OptbizGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个业务选项, 如果不存在则抛错
+  async fn find_one_ok_optbiz(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<OptbizSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<OptbizModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        optbiz_resolver::find_one_ok_optbiz(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找业务选项
   async fn find_by_id_optbiz(
     &self,
@@ -99,6 +118,23 @@ impl OptbizGenQuery {
       }).await
   }
   
+  /// 根据 id 查找业务选项, 如果不存在则抛错
+  async fn find_by_id_ok_optbiz(
+    &self,
+    ctx: &Context<'_>,
+    id: OptbizId,
+  ) -> Result<OptbizModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        optbiz_resolver::find_by_id_ok_optbiz(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找业务选项
   async fn find_by_ids_optbiz(
     &self,
@@ -110,6 +146,23 @@ impl OptbizGenQuery {
       .build()
       .scope({
         optbiz_resolver::find_by_ids_optbiz(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找业务选项
+  async fn find_by_ids_ok_optbiz(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<OptbizId>,
+  ) -> Result<Vec<OptbizModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        optbiz_resolver::find_by_ids_ok_optbiz(
           ids,
           None,
         )

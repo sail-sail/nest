@@ -92,6 +92,29 @@ pub async fn find_one_menu(
   Ok(menu_model)
 }
 
+/// 根据条件查找第一个菜单, 如果不存在则抛错
+pub async fn find_one_ok_menu(
+  search: Option<MenuSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<MenuModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let menu_model = menu_dao::find_one_ok_menu(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(menu_model)
+}
+
 /// 根据 id 查找菜单
 pub async fn find_by_id_menu(
   menu_id: MenuId,
@@ -106,13 +129,41 @@ pub async fn find_by_id_menu(
   Ok(menu_model)
 }
 
-/// 根据 menu_ids 查找菜单
+/// 根据 id 查找菜单, 如果不存在则抛错
+pub async fn find_by_id_ok_menu(
+  menu_id: MenuId,
+  options: Option<Options>,
+) -> Result<MenuModel> {
+  
+  let menu_model = menu_dao::find_by_id_ok_menu(
+    menu_id,
+    options,
+  ).await?;
+  
+  Ok(menu_model)
+}
+
+/// 根据 ids 查找菜单
 pub async fn find_by_ids_menu(
   menu_ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
   let menu_models = menu_dao::find_by_ids_menu(
+    menu_ids,
+    options,
+  ).await?;
+  
+  Ok(menu_models)
+}
+
+/// 根据 ids 查找菜单, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_menu(
+  menu_ids: Vec<MenuId>,
+  options: Option<Options>,
+) -> Result<Vec<MenuModel>> {
+  
+  let menu_models = menu_dao::find_by_ids_ok_menu(
     menu_ids,
     options,
   ).await?;

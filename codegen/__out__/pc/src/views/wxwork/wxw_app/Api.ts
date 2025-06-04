@@ -94,13 +94,14 @@ export async function findAllWxwApp(
 }
 
 /**
- * 根据条件查找第一个企微应用
+ * 根据条件查找第一个 企微应用
  */
 export async function findOneWxwApp(
   search?: WxwAppSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneWxwApp?: WxwAppModel;
   } = await query({
@@ -116,8 +117,43 @@ export async function findOneWxwApp(
       sort,
     },
   }, opt);
+  
   const model = data.findOneWxwApp;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 企微应用, 如果不存在则抛错
+ */
+export async function findOneOkWxwApp(
+  search?: WxwAppSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkWxwApp?: WxwAppModel;
+  } = await query({
+    query: `
+      query($search: WxwAppSearch, $sort: [SortInput!]) {
+        findOneOkWxwApp(search: $search, sort: $sort) {
+          ${ wxwAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkWxwApp;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -217,12 +253,14 @@ export async function updateByIdWxwApp(
  * 根据 id 查找 企微应用
  */
 export async function findByIdWxwApp(
-  id?: WxwAppId,
+  id: WxwAppId,
   opt?: GqlOpt,
 ): Promise<WxwAppModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdWxwApp?: WxwAppModel;
   } = await query({
@@ -237,8 +275,41 @@ export async function findByIdWxwApp(
       id,
     },
   }, opt);
+  
   const model = data.findByIdWxwApp;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 企微应用, 如果不存在则抛错
+ */
+export async function findByIdOkWxwApp(
+  id: WxwAppId,
+  opt?: GqlOpt,
+): Promise<WxwAppModel> {
+  
+  const data: {
+    findByIdOkWxwApp: WxwAppModel;
+  } = await query({
+    query: `
+      query($id: WxwAppId!) {
+        findByIdOkWxwApp(id: $id) {
+          ${ wxwAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkWxwApp;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -249,33 +320,70 @@ export async function findByIdsWxwApp(
   ids: WxwAppId[],
   opt?: GqlOpt,
 ): Promise<WxwAppModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: WxwAppModel[] = [ ];
-  try {
-    const data: {
-      findByIdsWxwApp: WxwAppModel[];
-    } = await query({
-      query: `
-        query($ids: [WxwAppId!]!) {
-          findByIdsWxwApp(ids: $ids) {
-            ${ wxwAppQueryField }
-          }
+  
+  const data: {
+    findByIdsWxwApp: WxwAppModel[];
+  } = await query({
+    query: `
+      query($ids: [WxwAppId!]!) {
+        findByIdsWxwApp(ids: $ids) {
+          ${ wxwAppQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsWxwApp;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsWxwApp;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 企微应用, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxwApp(
+  ids: WxwAppId[],
+  opt?: GqlOpt,
+): Promise<WxwAppModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkWxwApp: WxwAppModel[];
+  } = await query({
+    query: `
+      query($ids: [WxwAppId!]!) {
+        findByIdsOkWxwApp(ids: $ids) {
+          ${ wxwAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkWxwApp;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

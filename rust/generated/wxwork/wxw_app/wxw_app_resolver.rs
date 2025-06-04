@@ -91,6 +91,31 @@ pub async fn find_one_wxw_app(
   Ok(model)
 }
 
+/// 根据条件查找第一个企微应用, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_wxw_app(
+  search: Option<WxwAppSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxwAppModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_wxw_app(sort.as_deref())?;
+  
+  let model = wxw_app_service::find_one_ok_wxw_app(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找企微应用
 #[function_name::named]
 pub async fn find_by_id_wxw_app(
@@ -112,6 +137,27 @@ pub async fn find_by_id_wxw_app(
   Ok(model)
 }
 
+/// 根据 id 查找企微应用, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_wxw_app(
+  id: WxwAppId,
+  options: Option<Options>,
+) -> Result<WxwAppModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = wxw_app_service::find_by_id_ok_wxw_app(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找企微应用
 #[function_name::named]
 pub async fn find_by_ids_wxw_app(
@@ -126,6 +172,27 @@ pub async fn find_by_ids_wxw_app(
   );
   
   let models = wxw_app_service::find_by_ids_wxw_app(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找企微应用, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_wxw_app(
+  ids: Vec<WxwAppId>,
+  options: Option<Options>,
+) -> Result<Vec<WxwAppModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = wxw_app_service::find_by_ids_ok_wxw_app(
     ids,
     options,
   ).await?;

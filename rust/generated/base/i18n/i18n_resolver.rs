@@ -89,6 +89,31 @@ pub async fn find_one_i18n(
   Ok(model)
 }
 
+/// 根据条件查找第一个国际化, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_i18n(
+  search: Option<I18nSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<I18nModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_i18n(sort.as_deref())?;
+  
+  let model = i18n_service::find_one_ok_i18n(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找国际化
 #[function_name::named]
 pub async fn find_by_id_i18n(
@@ -110,6 +135,27 @@ pub async fn find_by_id_i18n(
   Ok(model)
 }
 
+/// 根据 id 查找国际化, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_i18n(
+  id: I18nId,
+  options: Option<Options>,
+) -> Result<I18nModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = i18n_service::find_by_id_ok_i18n(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找国际化
 #[function_name::named]
 pub async fn find_by_ids_i18n(
@@ -124,6 +170,27 @@ pub async fn find_by_ids_i18n(
   );
   
   let models = i18n_service::find_by_ids_i18n(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找国际化, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_i18n(
+  ids: Vec<I18nId>,
+  options: Option<Options>,
+) -> Result<Vec<I18nModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = i18n_service::find_by_ids_ok_i18n(
     ids,
     options,
   ).await?;

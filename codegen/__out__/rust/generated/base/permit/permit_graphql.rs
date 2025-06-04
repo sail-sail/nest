@@ -80,6 +80,25 @@ impl PermitGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个按钮权限, 如果不存在则抛错
+  async fn find_one_ok_permit(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<PermitSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<PermitModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        permit_resolver::find_one_ok_permit(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找按钮权限
   async fn find_by_id_permit(
     &self,
@@ -97,6 +116,23 @@ impl PermitGenQuery {
       }).await
   }
   
+  /// 根据 id 查找按钮权限, 如果不存在则抛错
+  async fn find_by_id_ok_permit(
+    &self,
+    ctx: &Context<'_>,
+    id: PermitId,
+  ) -> Result<PermitModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        permit_resolver::find_by_id_ok_permit(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找按钮权限
   async fn find_by_ids_permit(
     &self,
@@ -108,6 +144,23 @@ impl PermitGenQuery {
       .build()
       .scope({
         permit_resolver::find_by_ids_permit(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找按钮权限
+  async fn find_by_ids_ok_permit(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<PermitId>,
+  ) -> Result<Vec<PermitModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        permit_resolver::find_by_ids_ok_permit(
           ids,
           None,
         )

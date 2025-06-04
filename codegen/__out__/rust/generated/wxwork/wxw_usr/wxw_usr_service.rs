@@ -94,6 +94,29 @@ pub async fn find_one_wxw_usr(
   Ok(wxw_usr_model)
 }
 
+/// 根据条件查找第一个企微用户, 如果不存在则抛错
+pub async fn find_one_ok_wxw_usr(
+  search: Option<WxwUsrSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxwUsrModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let wxw_usr_model = wxw_usr_dao::find_one_ok_wxw_usr(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(wxw_usr_model)
+}
+
 /// 根据 id 查找企微用户
 pub async fn find_by_id_wxw_usr(
   wxw_usr_id: WxwUsrId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_wxw_usr(
   Ok(wxw_usr_model)
 }
 
-/// 根据 wxw_usr_ids 查找企微用户
+/// 根据 id 查找企微用户, 如果不存在则抛错
+pub async fn find_by_id_ok_wxw_usr(
+  wxw_usr_id: WxwUsrId,
+  options: Option<Options>,
+) -> Result<WxwUsrModel> {
+  
+  let wxw_usr_model = wxw_usr_dao::find_by_id_ok_wxw_usr(
+    wxw_usr_id,
+    options,
+  ).await?;
+  
+  Ok(wxw_usr_model)
+}
+
+/// 根据 ids 查找企微用户
 pub async fn find_by_ids_wxw_usr(
   wxw_usr_ids: Vec<WxwUsrId>,
   options: Option<Options>,
 ) -> Result<Vec<WxwUsrModel>> {
   
   let wxw_usr_models = wxw_usr_dao::find_by_ids_wxw_usr(
+    wxw_usr_ids,
+    options,
+  ).await?;
+  
+  Ok(wxw_usr_models)
+}
+
+/// 根据 ids 查找企微用户, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_wxw_usr(
+  wxw_usr_ids: Vec<WxwUsrId>,
+  options: Option<Options>,
+) -> Result<Vec<WxwUsrModel>> {
+  
+  let wxw_usr_models = wxw_usr_dao::find_by_ids_ok_wxw_usr(
     wxw_usr_ids,
     options,
   ).await?;
