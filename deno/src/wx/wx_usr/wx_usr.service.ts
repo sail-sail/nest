@@ -241,10 +241,10 @@ export async function bindWxUsr(
 ): Promise<LoginModel> {
   const authModel = await getAuthModel();
   
-  const authUsrModel = await validateOptionUsr(
+  const authUsrModel = authModel?.id ? await validateOptionUsr(
     await findByIdUsr(authModel?.id),
-  );
-  if (!authUsrModel.is_hidden) {
+  ) : undefined;
+  if (!authUsrModel?.is_hidden) {
     throw await ns("此微信已被其它用户绑定");
   }
   
