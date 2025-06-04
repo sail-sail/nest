@@ -91,6 +91,25 @@ export async function findOneSmsApp(
 }
 
 /**
+ * 根据条件查找第一个短信应用, 如果不存在则抛错
+ */
+export async function findOneOkSmsApp(
+  search?: SmsAppSearch,
+  sort?: SortInput[],
+): Promise<SmsAppModel> {
+  
+  const {
+    findOneOkSmsApp,
+  } = await import("./sms_app.service.ts");
+  
+  checkSortSmsApp(sort);
+  
+  const model = await findOneOkSmsApp(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找短信应用
  */
 export async function findByIdSmsApp(
@@ -107,6 +126,22 @@ export async function findByIdSmsApp(
 }
 
 /**
+ * 根据 id 查找短信应用, 如果不存在则抛错
+ */
+export async function findByIdOkSmsApp(
+  id: SmsAppId,
+): Promise<SmsAppModel | undefined> {
+  
+  const {
+    findByIdOkSmsApp,
+  } = await import("./sms_app.service.ts");
+  
+  const model = await findByIdOkSmsApp(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找短信应用
  */
 export async function findByIdsSmsApp(
@@ -118,6 +153,25 @@ export async function findByIdsSmsApp(
   } = await import("./sms_app.service.ts");
   
   const models = await findByIdsSmsApp(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找短信应用, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkSmsApp(
+  ids: SmsAppId[],
+): Promise<SmsAppModel[]> {
+  
+  const {
+    findByIdsOkSmsApp,
+  } = await import("./sms_app.service.ts");
+  
+  const models = await findByIdsOkSmsApp(ids);
   
   for (const model of models) {
   }

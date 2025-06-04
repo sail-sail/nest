@@ -92,13 +92,14 @@ export async function findAllDictbiz(
 }
 
 /**
- * 根据条件查找第一个业务字典
+ * 根据条件查找第一个 业务字典
  */
 export async function findOneDictbiz(
   search?: DictbizSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneDictbiz?: DictbizModel;
   } = await query({
@@ -114,8 +115,43 @@ export async function findOneDictbiz(
       sort,
     },
   }, opt);
+  
   const model = data.findOneDictbiz;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 业务字典, 如果不存在则抛错
+ */
+export async function findOneOkDictbiz(
+  search?: DictbizSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkDictbiz?: DictbizModel;
+  } = await query({
+    query: `
+      query($search: DictbizSearch, $sort: [SortInput!]) {
+        findOneOkDictbiz(search: $search, sort: $sort) {
+          ${ dictbizQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkDictbiz;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -215,12 +251,14 @@ export async function updateByIdDictbiz(
  * 根据 id 查找 业务字典
  */
 export async function findByIdDictbiz(
-  id?: DictbizId,
+  id: DictbizId,
   opt?: GqlOpt,
 ): Promise<DictbizModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdDictbiz?: DictbizModel;
   } = await query({
@@ -235,8 +273,41 @@ export async function findByIdDictbiz(
       id,
     },
   }, opt);
+  
   const model = data.findByIdDictbiz;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 业务字典, 如果不存在则抛错
+ */
+export async function findByIdOkDictbiz(
+  id: DictbizId,
+  opt?: GqlOpt,
+): Promise<DictbizModel> {
+  
+  const data: {
+    findByIdOkDictbiz: DictbizModel;
+  } = await query({
+    query: `
+      query($id: DictbizId!) {
+        findByIdOkDictbiz(id: $id) {
+          ${ dictbizQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkDictbiz;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -247,33 +318,70 @@ export async function findByIdsDictbiz(
   ids: DictbizId[],
   opt?: GqlOpt,
 ): Promise<DictbizModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: DictbizModel[] = [ ];
-  try {
-    const data: {
-      findByIdsDictbiz: DictbizModel[];
-    } = await query({
-      query: `
-        query($ids: [DictbizId!]!) {
-          findByIdsDictbiz(ids: $ids) {
-            ${ dictbizQueryField }
-          }
+  
+  const data: {
+    findByIdsDictbiz: DictbizModel[];
+  } = await query({
+    query: `
+      query($ids: [DictbizId!]!) {
+        findByIdsDictbiz(ids: $ids) {
+          ${ dictbizQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsDictbiz;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsDictbiz;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 业务字典, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDictbiz(
+  ids: DictbizId[],
+  opt?: GqlOpt,
+): Promise<DictbizModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkDictbiz: DictbizModel[];
+  } = await query({
+    query: `
+      query($ids: [DictbizId!]!) {
+        findByIdsOkDictbiz(ids: $ids) {
+          ${ dictbizQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkDictbiz;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

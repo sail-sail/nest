@@ -89,6 +89,25 @@ export async function findOneSmsSendRecord(
 }
 
 /**
+ * 根据条件查找第一个短信发送记录, 如果不存在则抛错
+ */
+export async function findOneOkSmsSendRecord(
+  search?: SmsSendRecordSearch,
+  sort?: SortInput[],
+): Promise<SmsSendRecordModel> {
+  
+  const {
+    findOneOkSmsSendRecord,
+  } = await import("./sms_send_record.service.ts");
+  
+  checkSortSmsSendRecord(sort);
+  
+  const model = await findOneOkSmsSendRecord(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找短信发送记录
  */
 export async function findByIdSmsSendRecord(
@@ -105,6 +124,22 @@ export async function findByIdSmsSendRecord(
 }
 
 /**
+ * 根据 id 查找短信发送记录, 如果不存在则抛错
+ */
+export async function findByIdOkSmsSendRecord(
+  id: SmsSendRecordId,
+): Promise<SmsSendRecordModel | undefined> {
+  
+  const {
+    findByIdOkSmsSendRecord,
+  } = await import("./sms_send_record.service.ts");
+  
+  const model = await findByIdOkSmsSendRecord(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找短信发送记录
  */
 export async function findByIdsSmsSendRecord(
@@ -116,6 +151,25 @@ export async function findByIdsSmsSendRecord(
   } = await import("./sms_send_record.service.ts");
   
   const models = await findByIdsSmsSendRecord(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找短信发送记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkSmsSendRecord(
+  ids: SmsSendRecordId[],
+): Promise<SmsSendRecordModel[]> {
+  
+  const {
+    findByIdsOkSmsSendRecord,
+  } = await import("./sms_send_record.service.ts");
+  
+  const models = await findByIdsOkSmsSendRecord(ids);
   
   for (const model of models) {
   }

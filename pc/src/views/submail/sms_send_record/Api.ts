@@ -85,13 +85,14 @@ export async function findAllSmsSendRecord(
 }
 
 /**
- * 根据条件查找第一个短信发送记录
+ * 根据条件查找第一个 短信发送记录
  */
 export async function findOneSmsSendRecord(
   search?: SmsSendRecordSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneSmsSendRecord?: SmsSendRecordModel;
   } = await query({
@@ -107,8 +108,43 @@ export async function findOneSmsSendRecord(
       sort,
     },
   }, opt);
+  
   const model = data.findOneSmsSendRecord;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 短信发送记录, 如果不存在则抛错
+ */
+export async function findOneOkSmsSendRecord(
+  search?: SmsSendRecordSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkSmsSendRecord?: SmsSendRecordModel;
+  } = await query({
+    query: `
+      query($search: SmsSendRecordSearch, $sort: [SortInput!]) {
+        findOneOkSmsSendRecord(search: $search, sort: $sort) {
+          ${ smsSendRecordQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkSmsSendRecord;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -139,12 +175,14 @@ export async function findCountSmsSendRecord(
  * 根据 id 查找 短信发送记录
  */
 export async function findByIdSmsSendRecord(
-  id?: SmsSendRecordId,
+  id: SmsSendRecordId,
   opt?: GqlOpt,
 ): Promise<SmsSendRecordModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdSmsSendRecord?: SmsSendRecordModel;
   } = await query({
@@ -159,8 +197,41 @@ export async function findByIdSmsSendRecord(
       id,
     },
   }, opt);
+  
   const model = data.findByIdSmsSendRecord;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 短信发送记录, 如果不存在则抛错
+ */
+export async function findByIdOkSmsSendRecord(
+  id: SmsSendRecordId,
+  opt?: GqlOpt,
+): Promise<SmsSendRecordModel> {
+  
+  const data: {
+    findByIdOkSmsSendRecord: SmsSendRecordModel;
+  } = await query({
+    query: `
+      query($id: SmsSendRecordId!) {
+        findByIdOkSmsSendRecord(id: $id) {
+          ${ smsSendRecordQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkSmsSendRecord;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -171,33 +242,70 @@ export async function findByIdsSmsSendRecord(
   ids: SmsSendRecordId[],
   opt?: GqlOpt,
 ): Promise<SmsSendRecordModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: SmsSendRecordModel[] = [ ];
-  try {
-    const data: {
-      findByIdsSmsSendRecord: SmsSendRecordModel[];
-    } = await query({
-      query: `
-        query($ids: [SmsSendRecordId!]!) {
-          findByIdsSmsSendRecord(ids: $ids) {
-            ${ smsSendRecordQueryField }
-          }
+  
+  const data: {
+    findByIdsSmsSendRecord: SmsSendRecordModel[];
+  } = await query({
+    query: `
+      query($ids: [SmsSendRecordId!]!) {
+        findByIdsSmsSendRecord(ids: $ids) {
+          ${ smsSendRecordQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsSmsSendRecord;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsSmsSendRecord;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 短信发送记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkSmsSendRecord(
+  ids: SmsSendRecordId[],
+  opt?: GqlOpt,
+): Promise<SmsSendRecordModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkSmsSendRecord: SmsSendRecordModel[];
+  } = await query({
+    query: `
+      query($ids: [SmsSendRecordId!]!) {
+        findByIdsOkSmsSendRecord(ids: $ids) {
+          ${ smsSendRecordQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkSmsSendRecord;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

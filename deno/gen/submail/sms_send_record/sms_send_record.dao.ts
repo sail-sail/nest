@@ -622,48 +622,6 @@ export async function checkByUniqueSmsSendRecord(
   return;
 }
 
-// MARK: findOneOkSmsSendRecord
-/** 根据条件查找第一短信发送记录 */
-export async function findOneOkSmsSendRecord(
-  search?: Readonly<SmsSendRecordSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<SmsSendRecordModel> {
-  
-  const table = "submail_sms_send_record";
-  const method = "findOneOkSmsSendRecord";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_sms_send_record = validateOptionSmsSendRecord(
-    await findOneSmsSendRecord(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_sms_send_record;
-}
-
 // MARK: findOneSmsSendRecord
 /** 根据条件查找第一短信发送记录 */
 export async function findOneSmsSendRecord(
@@ -695,41 +653,45 @@ export async function findOneSmsSendRecord(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllSmsSendRecord(
+  
+  const sms_send_record_models = await findAllSmsSendRecord(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const sms_send_record_model = sms_send_record_models[0];
+  
+  return sms_send_record_model;
 }
 
-// MARK: findByIdOkSmsSendRecord
-/** 根据 id 查找短信发送记录 */
-export async function findByIdOkSmsSendRecord(
-  id?: SmsSendRecordId | null,
+// MARK: findOneOkSmsSendRecord
+/** 根据条件查找第一短信发送记录, 如果不存在则抛错 */
+export async function findOneOkSmsSendRecord(
+  search?: Readonly<SmsSendRecordSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<SmsSendRecordModel> {
   
   const table = "submail_sms_send_record";
-  const method = "findByIdOkSmsSendRecord";
+  const method = "findOneOkSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -739,20 +701,32 @@ export async function findByIdOkSmsSendRecord(
     options.is_debug = false;
   }
   
-  const model_sms_send_record = validateOptionSmsSendRecord(
-    await findByIdSmsSendRecord(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const sms_send_record_models = await findAllSmsSendRecord(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_sms_send_record;
+  const sms_send_record_model = sms_send_record_models[0];
+  
+  if (!sms_send_record_model) {
+    const err_msg = "此 短信发送记录 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return sms_send_record_model;
 }
 
 // MARK: findByIdSmsSendRecord
 /** 根据 id 查找短信发送记录 */
 export async function findByIdSmsSendRecord(
-  id?: SmsSendRecordId | null,
+  id: SmsSendRecordId,
   options?: {
     is_debug?: boolean;
   },
@@ -780,7 +754,7 @@ export async function findByIdSmsSendRecord(
     return;
   }
   
-  const model = await findOneSmsSendRecord(
+  const sms_send_record_model = await findOneSmsSendRecord(
     {
       id,
     },
@@ -788,7 +762,47 @@ export async function findByIdSmsSendRecord(
     options,
   );
   
-  return model;
+  return sms_send_record_model;
+}
+
+// MARK: findByIdOkSmsSendRecord
+/** 根据 id 查找短信发送记录, 如果不存在则抛错 */
+export async function findByIdOkSmsSendRecord(
+  id: SmsSendRecordId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<SmsSendRecordModel> {
+  
+  const table = "submail_sms_send_record";
+  const method = "findByIdOkSmsSendRecord";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const sms_send_record_model = await findByIdSmsSendRecord(
+    id,
+    options,
+  );
+  
+  if (!sms_send_record_model) {
+    const err_msg = "此 短信发送记录 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return sms_send_record_model;
 }
 
 // MARK: findByIdsSmsSendRecord
@@ -828,6 +842,41 @@ export async function findByIdsSmsSendRecord(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkSmsSendRecord
+/** 根据 ids 查找短信发送记录, 出现查询不到的 id 则报错 */
+export async function findByIdsOkSmsSendRecord(
+  ids: SmsSendRecordId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<SmsSendRecordModel[]> {
+  
+  const table = "submail_sms_send_record";
+  const method = "findByIdsOkSmsSendRecord";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsSmsSendRecord(
+    ids,
     options,
   );
   

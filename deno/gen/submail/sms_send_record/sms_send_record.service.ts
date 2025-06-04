@@ -73,13 +73,42 @@ export async function findOneSmsSendRecord(
 }
 
 /**
+ * 根据条件查找第一个短信发送记录, 如果不存在则抛错
+ */
+export async function findOneOkSmsSendRecord(
+  search?: SmsSendRecordSearch,
+  sort?: SortInput[],
+): Promise<SmsSendRecordModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const sms_send_record_model = await sms_send_recordDao.findOneOkSmsSendRecord(search, sort);
+  
+  return sms_send_record_model;
+}
+
+/**
  * 根据 id 查找短信发送记录
  */
 export async function findByIdSmsSendRecord(
-  sms_send_record_id?: SmsSendRecordId | null,
+  sms_send_record_id: SmsSendRecordId,
 ): Promise<SmsSendRecordModel | undefined> {
   
   const sms_send_record_model = await sms_send_recordDao.findByIdSmsSendRecord(sms_send_record_id);
+  
+  return sms_send_record_model;
+}
+
+/**
+ * 根据 id 查找短信发送记录, 如果不存在则抛错
+ */
+export async function findByIdOkSmsSendRecord(
+  sms_send_record_id: SmsSendRecordId,
+): Promise<SmsSendRecordModel> {
+  
+  const sms_send_record_model = await sms_send_recordDao.findByIdOkSmsSendRecord(sms_send_record_id);
   
   return sms_send_record_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsSmsSendRecord(
 ): Promise<SmsSendRecordModel[]> {
   
   const sms_send_record_models = await sms_send_recordDao.findByIdsSmsSendRecord(sms_send_record_ids);
+  
+  return sms_send_record_models;
+}
+
+/**
+ * 根据 ids 查找短信发送记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkSmsSendRecord(
+  sms_send_record_ids: SmsSendRecordId[],
+): Promise<SmsSendRecordModel[]> {
+  
+  const sms_send_record_models = await sms_send_recordDao.findByIdsOkSmsSendRecord(sms_send_record_ids);
   
   return sms_send_record_models;
 }

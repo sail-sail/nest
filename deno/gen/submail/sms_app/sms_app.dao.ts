@@ -754,48 +754,6 @@ export async function checkByUniqueSmsApp(
   return;
 }
 
-// MARK: findOneOkSmsApp
-/** 根据条件查找第一短信应用 */
-export async function findOneOkSmsApp(
-  search?: Readonly<SmsAppSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<SmsAppModel> {
-  
-  const table = "submail_sms_app";
-  const method = "findOneOkSmsApp";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_sms_app = validateOptionSmsApp(
-    await findOneSmsApp(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_sms_app;
-}
-
 // MARK: findOneSmsApp
 /** 根据条件查找第一短信应用 */
 export async function findOneSmsApp(
@@ -827,41 +785,45 @@ export async function findOneSmsApp(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllSmsApp(
+  
+  const sms_app_models = await findAllSmsApp(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const sms_app_model = sms_app_models[0];
+  
+  return sms_app_model;
 }
 
-// MARK: findByIdOkSmsApp
-/** 根据 id 查找短信应用 */
-export async function findByIdOkSmsApp(
-  id?: SmsAppId | null,
+// MARK: findOneOkSmsApp
+/** 根据条件查找第一短信应用, 如果不存在则抛错 */
+export async function findOneOkSmsApp(
+  search?: Readonly<SmsAppSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<SmsAppModel> {
   
   const table = "submail_sms_app";
-  const method = "findByIdOkSmsApp";
+  const method = "findOneOkSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -871,20 +833,32 @@ export async function findByIdOkSmsApp(
     options.is_debug = false;
   }
   
-  const model_sms_app = validateOptionSmsApp(
-    await findByIdSmsApp(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const sms_app_models = await findAllSmsApp(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_sms_app;
+  const sms_app_model = sms_app_models[0];
+  
+  if (!sms_app_model) {
+    const err_msg = "此 短信应用 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return sms_app_model;
 }
 
 // MARK: findByIdSmsApp
 /** 根据 id 查找短信应用 */
 export async function findByIdSmsApp(
-  id?: SmsAppId | null,
+  id: SmsAppId,
   options?: {
     is_debug?: boolean;
   },
@@ -912,7 +886,7 @@ export async function findByIdSmsApp(
     return;
   }
   
-  const model = await findOneSmsApp(
+  const sms_app_model = await findOneSmsApp(
     {
       id,
     },
@@ -920,7 +894,47 @@ export async function findByIdSmsApp(
     options,
   );
   
-  return model;
+  return sms_app_model;
+}
+
+// MARK: findByIdOkSmsApp
+/** 根据 id 查找短信应用, 如果不存在则抛错 */
+export async function findByIdOkSmsApp(
+  id: SmsAppId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<SmsAppModel> {
+  
+  const table = "submail_sms_app";
+  const method = "findByIdOkSmsApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const sms_app_model = await findByIdSmsApp(
+    id,
+    options,
+  );
+  
+  if (!sms_app_model) {
+    const err_msg = "此 短信应用 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return sms_app_model;
 }
 
 // MARK: findByIdsSmsApp
@@ -960,6 +974,41 @@ export async function findByIdsSmsApp(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkSmsApp
+/** 根据 ids 查找短信应用, 出现查询不到的 id 则报错 */
+export async function findByIdsOkSmsApp(
+  ids: SmsAppId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<SmsAppModel[]> {
+  
+  const table = "submail_sms_app";
+  const method = "findByIdsOkSmsApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsSmsApp(
+    ids,
     options,
   );
   
