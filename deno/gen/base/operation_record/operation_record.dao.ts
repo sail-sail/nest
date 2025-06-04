@@ -545,48 +545,6 @@ export async function checkByUniqueOperationRecord(
   return;
 }
 
-// MARK: findOneOkOperationRecord
-/** 根据条件查找第一操作记录 */
-export async function findOneOkOperationRecord(
-  search?: Readonly<OperationRecordSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<OperationRecordModel> {
-  
-  const table = "base_operation_record";
-  const method = "findOneOkOperationRecord";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_operation_record = validateOptionOperationRecord(
-    await findOneOperationRecord(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_operation_record;
-}
-
 // MARK: findOneOperationRecord
 /** 根据条件查找第一操作记录 */
 export async function findOneOperationRecord(
@@ -618,41 +576,45 @@ export async function findOneOperationRecord(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllOperationRecord(
+  
+  const operation_record_models = await findAllOperationRecord(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const operation_record_model = operation_record_models[0];
+  
+  return operation_record_model;
 }
 
-// MARK: findByIdOkOperationRecord
-/** 根据 id 查找操作记录 */
-export async function findByIdOkOperationRecord(
-  id?: OperationRecordId | null,
+// MARK: findOneOkOperationRecord
+/** 根据条件查找第一操作记录, 如果不存在则抛错 */
+export async function findOneOkOperationRecord(
+  search?: Readonly<OperationRecordSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<OperationRecordModel> {
   
   const table = "base_operation_record";
-  const method = "findByIdOkOperationRecord";
+  const method = "findOneOkOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -662,20 +624,32 @@ export async function findByIdOkOperationRecord(
     options.is_debug = false;
   }
   
-  const model_operation_record = validateOptionOperationRecord(
-    await findByIdOperationRecord(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const operation_record_models = await findAllOperationRecord(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_operation_record;
+  const operation_record_model = operation_record_models[0];
+  
+  if (!operation_record_model) {
+    const err_msg = "此 操作记录 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return operation_record_model;
 }
 
 // MARK: findByIdOperationRecord
 /** 根据 id 查找操作记录 */
 export async function findByIdOperationRecord(
-  id?: OperationRecordId | null,
+  id: OperationRecordId,
   options?: {
     is_debug?: boolean;
   },
@@ -703,7 +677,7 @@ export async function findByIdOperationRecord(
     return;
   }
   
-  const model = await findOneOperationRecord(
+  const operation_record_model = await findOneOperationRecord(
     {
       id,
     },
@@ -711,7 +685,47 @@ export async function findByIdOperationRecord(
     options,
   );
   
-  return model;
+  return operation_record_model;
+}
+
+// MARK: findByIdOkOperationRecord
+/** 根据 id 查找操作记录, 如果不存在则抛错 */
+export async function findByIdOkOperationRecord(
+  id: OperationRecordId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OperationRecordModel> {
+  
+  const table = "base_operation_record";
+  const method = "findByIdOkOperationRecord";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const operation_record_model = await findByIdOperationRecord(
+    id,
+    options,
+  );
+  
+  if (!operation_record_model) {
+    const err_msg = "此 操作记录 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return operation_record_model;
 }
 
 // MARK: findByIdsOperationRecord
@@ -751,6 +765,41 @@ export async function findByIdsOperationRecord(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkOperationRecord
+/** 根据 ids 查找操作记录, 出现查询不到的 id 则报错 */
+export async function findByIdsOkOperationRecord(
+  ids: OperationRecordId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OperationRecordModel[]> {
+  
+  const table = "base_operation_record";
+  const method = "findByIdsOkOperationRecord";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsOperationRecord(
+    ids,
     options,
   );
   

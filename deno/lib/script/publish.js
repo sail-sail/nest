@@ -106,8 +106,8 @@ console.log(publishPath);
       cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
       cmd += ` ; rm -rf ${ publishPathTmp }`;
       cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
-      cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
-      cmd += ` ; cd ${ publishPath }/nuxt/ && pm2 start`;
+      cmd += ` ; cd ${ publishPath }/deno/ && pm2 start ecosystem.config.json`;
+      cmd += ` ; cd ${ publishPath }/nuxt/ && pm2 start ecosystem.config.json`;
       data = await ssh.exec(cmd);
     } catch (err) {
       console.error(err);
@@ -128,7 +128,7 @@ console.log(publishPath);
       cmd += ` ; cp ${ publishPathTmp }/deno/.env.${ env } ${ publishPath }/deno/`;
       cmd += ` ; mv -f ${ publishPathTmp }/deno/* ${ publishPath }/deno/`;
       cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
-      cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
+      cmd += ` ; cd ${ publishPath }/deno/ && pm2 start ecosystem.config.json`;
       let data;
       try {
         data = await ssh.exec(cmd);

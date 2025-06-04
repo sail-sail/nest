@@ -40,13 +40,6 @@
     "unocss.colorPreview": false,
     "references.preferredLocation": "peek",
     "rust-analyzer.inlayHints.parameterHints.enable": false,
-    "pair-diff.patterns": [
-      {
-        "source": "./deno/gen/**/*/*.ts",
-        "target": "./codegen/src/template/<basename>"
-      }
-    ],
-    "diffEditor.useInlineViewWhenSpaceIsLimited": false,
     "diffEditor.wordWrap": "off",
     "editor.formatOnSave": false,
     "editor.inlineSuggest.syntaxHighlightingEnabled": true,

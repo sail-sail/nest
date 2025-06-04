@@ -91,6 +91,25 @@ export async function findOneOrg(
 }
 
 /**
+ * 根据条件查找第一个组织, 如果不存在则抛错
+ */
+export async function findOneOkOrg(
+  search?: OrgSearch,
+  sort?: SortInput[],
+): Promise<OrgModel> {
+  
+  const {
+    findOneOkOrg,
+  } = await import("./org.service.ts");
+  
+  checkSortOrg(sort);
+  
+  const model = await findOneOkOrg(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找组织
  */
 export async function findByIdOrg(
@@ -107,6 +126,22 @@ export async function findByIdOrg(
 }
 
 /**
+ * 根据 id 查找组织, 如果不存在则抛错
+ */
+export async function findByIdOkOrg(
+  id: OrgId,
+): Promise<OrgModel | undefined> {
+  
+  const {
+    findByIdOkOrg,
+  } = await import("./org.service.ts");
+  
+  const model = await findByIdOkOrg(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找组织
  */
 export async function findByIdsOrg(
@@ -118,6 +153,25 @@ export async function findByIdsOrg(
   } = await import("./org.service.ts");
   
   const models = await findByIdsOrg(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找组织, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOrg(
+  ids: OrgId[],
+): Promise<OrgModel[]> {
+  
+  const {
+    findByIdsOkOrg,
+  } = await import("./org.service.ts");
+  
+  const models = await findByIdsOkOrg(ids);
   
   for (const model of models) {
   }

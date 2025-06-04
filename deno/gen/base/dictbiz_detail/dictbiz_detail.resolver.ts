@@ -91,6 +91,25 @@ export async function findOneDictbizDetail(
 }
 
 /**
+ * 根据条件查找第一个业务字典明细, 如果不存在则抛错
+ */
+export async function findOneOkDictbizDetail(
+  search?: DictbizDetailSearch,
+  sort?: SortInput[],
+): Promise<DictbizDetailModel> {
+  
+  const {
+    findOneOkDictbizDetail,
+  } = await import("./dictbiz_detail.service.ts");
+  
+  checkSortDictbizDetail(sort);
+  
+  const model = await findOneOkDictbizDetail(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找业务字典明细
  */
 export async function findByIdDictbizDetail(
@@ -107,6 +126,22 @@ export async function findByIdDictbizDetail(
 }
 
 /**
+ * 根据 id 查找业务字典明细, 如果不存在则抛错
+ */
+export async function findByIdOkDictbizDetail(
+  id: DictbizDetailId,
+): Promise<DictbizDetailModel | undefined> {
+  
+  const {
+    findByIdOkDictbizDetail,
+  } = await import("./dictbiz_detail.service.ts");
+  
+  const model = await findByIdOkDictbizDetail(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找业务字典明细
  */
 export async function findByIdsDictbizDetail(
@@ -118,6 +153,25 @@ export async function findByIdsDictbizDetail(
   } = await import("./dictbiz_detail.service.ts");
   
   const models = await findByIdsDictbizDetail(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找业务字典明细, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDictbizDetail(
+  ids: DictbizDetailId[],
+): Promise<DictbizDetailModel[]> {
+  
+  const {
+    findByIdsOkDictbizDetail,
+  } = await import("./dictbiz_detail.service.ts");
+  
+  const models = await findByIdsOkDictbizDetail(ids);
   
   for (const model of models) {
   }
