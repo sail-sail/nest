@@ -104,13 +104,14 @@ export async function findAllRole(
 }
 
 /**
- * 根据条件查找第一个角色
+ * 根据条件查找第一个 角色
  */
 export async function findOneRole(
   search?: RoleSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneRole?: RoleModel;
   } = await query({
@@ -126,8 +127,43 @@ export async function findOneRole(
       sort,
     },
   }, opt);
+  
   const model = data.findOneRole;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 角色, 如果不存在则抛错
+ */
+export async function findOneOkRole(
+  search?: RoleSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkRole?: RoleModel;
+  } = await query({
+    query: `
+      query($search: RoleSearch, $sort: [SortInput!]) {
+        findOneOkRole(search: $search, sort: $sort) {
+          ${ roleQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkRole;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -227,12 +263,14 @@ export async function updateByIdRole(
  * 根据 id 查找 角色
  */
 export async function findByIdRole(
-  id?: RoleId,
+  id: RoleId,
   opt?: GqlOpt,
 ): Promise<RoleModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdRole?: RoleModel;
   } = await query({
@@ -247,8 +285,41 @@ export async function findByIdRole(
       id,
     },
   }, opt);
+  
   const model = data.findByIdRole;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 角色, 如果不存在则抛错
+ */
+export async function findByIdOkRole(
+  id: RoleId,
+  opt?: GqlOpt,
+): Promise<RoleModel> {
+  
+  const data: {
+    findByIdOkRole: RoleModel;
+  } = await query({
+    query: `
+      query($id: RoleId!) {
+        findByIdOkRole(id: $id) {
+          ${ roleQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkRole;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -259,33 +330,70 @@ export async function findByIdsRole(
   ids: RoleId[],
   opt?: GqlOpt,
 ): Promise<RoleModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: RoleModel[] = [ ];
-  try {
-    const data: {
-      findByIdsRole: RoleModel[];
-    } = await query({
-      query: `
-        query($ids: [RoleId!]!) {
-          findByIdsRole(ids: $ids) {
-            ${ roleQueryField }
-          }
+  
+  const data: {
+    findByIdsRole: RoleModel[];
+  } = await query({
+    query: `
+      query($ids: [RoleId!]!) {
+        findByIdsRole(ids: $ids) {
+          ${ roleQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsRole;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsRole;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 角色, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkRole(
+  ids: RoleId[],
+  opt?: GqlOpt,
+): Promise<RoleModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkRole: RoleModel[];
+  } = await query({
+    query: `
+      query($ids: [RoleId!]!) {
+        findByIdsOkRole(ids: $ids) {
+          ${ roleQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkRole;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
