@@ -89,6 +89,25 @@ export async function findOnePermit(
 }
 
 /**
+ * 根据条件查找第一个按钮权限, 如果不存在则抛错
+ */
+export async function findOneOkPermit(
+  search?: PermitSearch,
+  sort?: SortInput[],
+): Promise<PermitModel> {
+  
+  const {
+    findOneOkPermit,
+  } = await import("./permit.service.ts");
+  
+  checkSortPermit(sort);
+  
+  const model = await findOneOkPermit(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找按钮权限
  */
 export async function findByIdPermit(
@@ -105,6 +124,22 @@ export async function findByIdPermit(
 }
 
 /**
+ * 根据 id 查找按钮权限, 如果不存在则抛错
+ */
+export async function findByIdOkPermit(
+  id: PermitId,
+): Promise<PermitModel | undefined> {
+  
+  const {
+    findByIdOkPermit,
+  } = await import("./permit.service.ts");
+  
+  const model = await findByIdOkPermit(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找按钮权限
  */
 export async function findByIdsPermit(
@@ -116,6 +151,25 @@ export async function findByIdsPermit(
   } = await import("./permit.service.ts");
   
   const models = await findByIdsPermit(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找按钮权限, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkPermit(
+  ids: PermitId[],
+): Promise<PermitModel[]> {
+  
+  const {
+    findByIdsOkPermit,
+  } = await import("./permit.service.ts");
+  
+  const models = await findByIdsOkPermit(ids);
   
   for (const model of models) {
   }

@@ -688,48 +688,6 @@ export async function checkByUniqueDictDetail(
   return;
 }
 
-// MARK: findOneOkDictDetail
-/** 根据条件查找第一系统字典明细 */
-export async function findOneOkDictDetail(
-  search?: Readonly<DictDetailSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<DictDetailModel> {
-  
-  const table = "base_dict_detail";
-  const method = "findOneOkDictDetail";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_dict_detail = validateOptionDictDetail(
-    await findOneDictDetail(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_dict_detail;
-}
-
 // MARK: findOneDictDetail
 /** 根据条件查找第一系统字典明细 */
 export async function findOneDictDetail(
@@ -761,41 +719,45 @@ export async function findOneDictDetail(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllDictDetail(
+  
+  const dict_detail_models = await findAllDictDetail(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const dict_detail_model = dict_detail_models[0];
+  
+  return dict_detail_model;
 }
 
-// MARK: findByIdOkDictDetail
-/** 根据 id 查找系统字典明细 */
-export async function findByIdOkDictDetail(
-  id?: DictDetailId | null,
+// MARK: findOneOkDictDetail
+/** 根据条件查找第一系统字典明细, 如果不存在则抛错 */
+export async function findOneOkDictDetail(
+  search?: Readonly<DictDetailSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<DictDetailModel> {
   
   const table = "base_dict_detail";
-  const method = "findByIdOkDictDetail";
+  const method = "findOneOkDictDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -805,20 +767,32 @@ export async function findByIdOkDictDetail(
     options.is_debug = false;
   }
   
-  const model_dict_detail = validateOptionDictDetail(
-    await findByIdDictDetail(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const dict_detail_models = await findAllDictDetail(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_dict_detail;
+  const dict_detail_model = dict_detail_models[0];
+  
+  if (!dict_detail_model) {
+    const err_msg = "此 系统字典明细 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return dict_detail_model;
 }
 
 // MARK: findByIdDictDetail
 /** 根据 id 查找系统字典明细 */
 export async function findByIdDictDetail(
-  id?: DictDetailId | null,
+  id: DictDetailId,
   options?: {
     is_debug?: boolean;
   },
@@ -846,7 +820,7 @@ export async function findByIdDictDetail(
     return;
   }
   
-  const model = await findOneDictDetail(
+  const dict_detail_model = await findOneDictDetail(
     {
       id,
     },
@@ -854,7 +828,47 @@ export async function findByIdDictDetail(
     options,
   );
   
-  return model;
+  return dict_detail_model;
+}
+
+// MARK: findByIdOkDictDetail
+/** 根据 id 查找系统字典明细, 如果不存在则抛错 */
+export async function findByIdOkDictDetail(
+  id: DictDetailId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictDetailModel> {
+  
+  const table = "base_dict_detail";
+  const method = "findByIdOkDictDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const dict_detail_model = await findByIdDictDetail(
+    id,
+    options,
+  );
+  
+  if (!dict_detail_model) {
+    const err_msg = "此 系统字典明细 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return dict_detail_model;
 }
 
 // MARK: findByIdsDictDetail
@@ -894,6 +908,41 @@ export async function findByIdsDictDetail(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkDictDetail
+/** 根据 ids 查找系统字典明细, 出现查询不到的 id 则报错 */
+export async function findByIdsOkDictDetail(
+  ids: DictDetailId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictDetailModel[]> {
+  
+  const table = "base_dict_detail";
+  const method = "findByIdsOkDictDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsDictDetail(
+    ids,
     options,
   );
   
