@@ -91,6 +91,25 @@ export async function findOneBaiduAppToken(
 }
 
 /**
+ * 根据条件查找第一个百度接口凭据, 如果不存在则抛错
+ */
+export async function findOneOkBaiduAppToken(
+  search?: BaiduAppTokenSearch,
+  sort?: SortInput[],
+): Promise<BaiduAppTokenModel> {
+  
+  const {
+    findOneOkBaiduAppToken,
+  } = await import("./baidu_app_token.service.ts");
+  
+  checkSortBaiduAppToken(sort);
+  
+  const model = await findOneOkBaiduAppToken(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找百度接口凭据
  */
 export async function findByIdBaiduAppToken(
@@ -107,6 +126,22 @@ export async function findByIdBaiduAppToken(
 }
 
 /**
+ * 根据 id 查找百度接口凭据, 如果不存在则抛错
+ */
+export async function findByIdOkBaiduAppToken(
+  id: BaiduAppTokenId,
+): Promise<BaiduAppTokenModel | undefined> {
+  
+  const {
+    findByIdOkBaiduAppToken,
+  } = await import("./baidu_app_token.service.ts");
+  
+  const model = await findByIdOkBaiduAppToken(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找百度接口凭据
  */
 export async function findByIdsBaiduAppToken(
@@ -118,6 +153,25 @@ export async function findByIdsBaiduAppToken(
   } = await import("./baidu_app_token.service.ts");
   
   const models = await findByIdsBaiduAppToken(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找百度接口凭据, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkBaiduAppToken(
+  ids: BaiduAppTokenId[],
+): Promise<BaiduAppTokenModel[]> {
+  
+  const {
+    findByIdsOkBaiduAppToken,
+  } = await import("./baidu_app_token.service.ts");
+  
+  const models = await findByIdsOkBaiduAppToken(ids);
   
   for (const model of models) {
   }

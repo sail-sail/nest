@@ -77,13 +77,14 @@ export async function findAllLoginLog(
 }
 
 /**
- * 根据条件查找第一个登录日志
+ * 根据条件查找第一个 登录日志
  */
 export async function findOneLoginLog(
   search?: LoginLogSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneLoginLog?: LoginLogModel;
   } = await query({
@@ -99,8 +100,43 @@ export async function findOneLoginLog(
       sort,
     },
   }, opt);
+  
   const model = data.findOneLoginLog;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 登录日志, 如果不存在则抛错
+ */
+export async function findOneOkLoginLog(
+  search?: LoginLogSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkLoginLog?: LoginLogModel;
+  } = await query({
+    query: `
+      query($search: LoginLogSearch, $sort: [SortInput!]) {
+        findOneOkLoginLog(search: $search, sort: $sort) {
+          ${ loginLogQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkLoginLog;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -131,12 +167,14 @@ export async function findCountLoginLog(
  * 根据 id 查找 登录日志
  */
 export async function findByIdLoginLog(
-  id?: LoginLogId,
+  id: LoginLogId,
   opt?: GqlOpt,
 ): Promise<LoginLogModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdLoginLog?: LoginLogModel;
   } = await query({
@@ -151,8 +189,41 @@ export async function findByIdLoginLog(
       id,
     },
   }, opt);
+  
   const model = data.findByIdLoginLog;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 登录日志, 如果不存在则抛错
+ */
+export async function findByIdOkLoginLog(
+  id: LoginLogId,
+  opt?: GqlOpt,
+): Promise<LoginLogModel> {
+  
+  const data: {
+    findByIdOkLoginLog: LoginLogModel;
+  } = await query({
+    query: `
+      query($id: LoginLogId!) {
+        findByIdOkLoginLog(id: $id) {
+          ${ loginLogQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkLoginLog;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -163,33 +234,70 @@ export async function findByIdsLoginLog(
   ids: LoginLogId[],
   opt?: GqlOpt,
 ): Promise<LoginLogModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: LoginLogModel[] = [ ];
-  try {
-    const data: {
-      findByIdsLoginLog: LoginLogModel[];
-    } = await query({
-      query: `
-        query($ids: [LoginLogId!]!) {
-          findByIdsLoginLog(ids: $ids) {
-            ${ loginLogQueryField }
-          }
+  
+  const data: {
+    findByIdsLoginLog: LoginLogModel[];
+  } = await query({
+    query: `
+      query($ids: [LoginLogId!]!) {
+        findByIdsLoginLog(ids: $ids) {
+          ${ loginLogQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsLoginLog;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsLoginLog;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 登录日志, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkLoginLog(
+  ids: LoginLogId[],
+  opt?: GqlOpt,
+): Promise<LoginLogModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkLoginLog: LoginLogModel[];
+  } = await query({
+    query: `
+      query($ids: [LoginLogId!]!) {
+        findByIdsOkLoginLog(ids: $ids) {
+          ${ loginLogQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkLoginLog;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

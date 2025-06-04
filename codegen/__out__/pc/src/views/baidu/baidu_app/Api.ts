@@ -86,13 +86,14 @@ export async function findAllBaiduApp(
 }
 
 /**
- * 根据条件查找第一个百度应用
+ * 根据条件查找第一个 百度应用
  */
 export async function findOneBaiduApp(
   search?: BaiduAppSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneBaiduApp?: BaiduAppModel;
   } = await query({
@@ -108,8 +109,43 @@ export async function findOneBaiduApp(
       sort,
     },
   }, opt);
+  
   const model = data.findOneBaiduApp;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 百度应用, 如果不存在则抛错
+ */
+export async function findOneOkBaiduApp(
+  search?: BaiduAppSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkBaiduApp?: BaiduAppModel;
+  } = await query({
+    query: `
+      query($search: BaiduAppSearch, $sort: [SortInput!]) {
+        findOneOkBaiduApp(search: $search, sort: $sort) {
+          ${ baiduAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkBaiduApp;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -209,12 +245,14 @@ export async function updateByIdBaiduApp(
  * 根据 id 查找 百度应用
  */
 export async function findByIdBaiduApp(
-  id?: BaiduAppId,
+  id: BaiduAppId,
   opt?: GqlOpt,
 ): Promise<BaiduAppModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdBaiduApp?: BaiduAppModel;
   } = await query({
@@ -229,8 +267,41 @@ export async function findByIdBaiduApp(
       id,
     },
   }, opt);
+  
   const model = data.findByIdBaiduApp;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 百度应用, 如果不存在则抛错
+ */
+export async function findByIdOkBaiduApp(
+  id: BaiduAppId,
+  opt?: GqlOpt,
+): Promise<BaiduAppModel> {
+  
+  const data: {
+    findByIdOkBaiduApp: BaiduAppModel;
+  } = await query({
+    query: `
+      query($id: BaiduAppId!) {
+        findByIdOkBaiduApp(id: $id) {
+          ${ baiduAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkBaiduApp;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -241,33 +312,70 @@ export async function findByIdsBaiduApp(
   ids: BaiduAppId[],
   opt?: GqlOpt,
 ): Promise<BaiduAppModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: BaiduAppModel[] = [ ];
-  try {
-    const data: {
-      findByIdsBaiduApp: BaiduAppModel[];
-    } = await query({
-      query: `
-        query($ids: [BaiduAppId!]!) {
-          findByIdsBaiduApp(ids: $ids) {
-            ${ baiduAppQueryField }
-          }
+  
+  const data: {
+    findByIdsBaiduApp: BaiduAppModel[];
+  } = await query({
+    query: `
+      query($ids: [BaiduAppId!]!) {
+        findByIdsBaiduApp(ids: $ids) {
+          ${ baiduAppQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsBaiduApp;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsBaiduApp;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 百度应用, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkBaiduApp(
+  ids: BaiduAppId[],
+  opt?: GqlOpt,
+): Promise<BaiduAppModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkBaiduApp: BaiduAppModel[];
+  } = await query({
+    query: `
+      query($ids: [BaiduAppId!]!) {
+        findByIdsOkBaiduApp(ids: $ids) {
+          ${ baiduAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkBaiduApp;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

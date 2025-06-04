@@ -73,13 +73,42 @@ export async function findOneBaiduApp(
 }
 
 /**
+ * 根据条件查找第一个百度应用, 如果不存在则抛错
+ */
+export async function findOneOkBaiduApp(
+  search?: BaiduAppSearch,
+  sort?: SortInput[],
+): Promise<BaiduAppModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const baidu_app_model = await baidu_appDao.findOneOkBaiduApp(search, sort);
+  
+  return baidu_app_model;
+}
+
+/**
  * 根据 id 查找百度应用
  */
 export async function findByIdBaiduApp(
-  baidu_app_id?: BaiduAppId | null,
+  baidu_app_id: BaiduAppId,
 ): Promise<BaiduAppModel | undefined> {
   
   const baidu_app_model = await baidu_appDao.findByIdBaiduApp(baidu_app_id);
+  
+  return baidu_app_model;
+}
+
+/**
+ * 根据 id 查找百度应用, 如果不存在则抛错
+ */
+export async function findByIdOkBaiduApp(
+  baidu_app_id: BaiduAppId,
+): Promise<BaiduAppModel> {
+  
+  const baidu_app_model = await baidu_appDao.findByIdOkBaiduApp(baidu_app_id);
   
   return baidu_app_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsBaiduApp(
 ): Promise<BaiduAppModel[]> {
   
   const baidu_app_models = await baidu_appDao.findByIdsBaiduApp(baidu_app_ids);
+  
+  return baidu_app_models;
+}
+
+/**
+ * 根据 ids 查找百度应用, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkBaiduApp(
+  baidu_app_ids: BaiduAppId[],
+): Promise<BaiduAppModel[]> {
+  
+  const baidu_app_models = await baidu_appDao.findByIdsOkBaiduApp(baidu_app_ids);
   
   return baidu_app_models;
 }

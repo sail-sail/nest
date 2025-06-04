@@ -653,48 +653,6 @@ export async function checkByUniqueBaiduAppToken(
   return;
 }
 
-// MARK: findOneOkBaiduAppToken
-/** 根据条件查找第一百度接口凭据 */
-export async function findOneOkBaiduAppToken(
-  search?: Readonly<BaiduAppTokenSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<BaiduAppTokenModel> {
-  
-  const table = "baidu_baidu_app_token";
-  const method = "findOneOkBaiduAppToken";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_baidu_app_token = validateOptionBaiduAppToken(
-    await findOneBaiduAppToken(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_baidu_app_token;
-}
-
 // MARK: findOneBaiduAppToken
 /** 根据条件查找第一百度接口凭据 */
 export async function findOneBaiduAppToken(
@@ -726,41 +684,45 @@ export async function findOneBaiduAppToken(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllBaiduAppToken(
+  
+  const baidu_app_token_models = await findAllBaiduAppToken(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const baidu_app_token_model = baidu_app_token_models[0];
+  
+  return baidu_app_token_model;
 }
 
-// MARK: findByIdOkBaiduAppToken
-/** 根据 id 查找百度接口凭据 */
-export async function findByIdOkBaiduAppToken(
-  id?: BaiduAppTokenId | null,
+// MARK: findOneOkBaiduAppToken
+/** 根据条件查找第一百度接口凭据, 如果不存在则抛错 */
+export async function findOneOkBaiduAppToken(
+  search?: Readonly<BaiduAppTokenSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<BaiduAppTokenModel> {
   
   const table = "baidu_baidu_app_token";
-  const method = "findByIdOkBaiduAppToken";
+  const method = "findOneOkBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -770,20 +732,32 @@ export async function findByIdOkBaiduAppToken(
     options.is_debug = false;
   }
   
-  const model_baidu_app_token = validateOptionBaiduAppToken(
-    await findByIdBaiduAppToken(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const baidu_app_token_models = await findAllBaiduAppToken(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_baidu_app_token;
+  const baidu_app_token_model = baidu_app_token_models[0];
+  
+  if (!baidu_app_token_model) {
+    const err_msg = "此 百度接口凭据 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return baidu_app_token_model;
 }
 
 // MARK: findByIdBaiduAppToken
 /** 根据 id 查找百度接口凭据 */
 export async function findByIdBaiduAppToken(
-  id?: BaiduAppTokenId | null,
+  id: BaiduAppTokenId,
   options?: {
     is_debug?: boolean;
   },
@@ -811,7 +785,7 @@ export async function findByIdBaiduAppToken(
     return;
   }
   
-  const model = await findOneBaiduAppToken(
+  const baidu_app_token_model = await findOneBaiduAppToken(
     {
       id,
     },
@@ -819,7 +793,47 @@ export async function findByIdBaiduAppToken(
     options,
   );
   
-  return model;
+  return baidu_app_token_model;
+}
+
+// MARK: findByIdOkBaiduAppToken
+/** 根据 id 查找百度接口凭据, 如果不存在则抛错 */
+export async function findByIdOkBaiduAppToken(
+  id: BaiduAppTokenId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<BaiduAppTokenModel> {
+  
+  const table = "baidu_baidu_app_token";
+  const method = "findByIdOkBaiduAppToken";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const baidu_app_token_model = await findByIdBaiduAppToken(
+    id,
+    options,
+  );
+  
+  if (!baidu_app_token_model) {
+    const err_msg = "此 百度接口凭据 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return baidu_app_token_model;
 }
 
 // MARK: findByIdsBaiduAppToken
@@ -859,6 +873,41 @@ export async function findByIdsBaiduAppToken(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkBaiduAppToken
+/** 根据 ids 查找百度接口凭据, 出现查询不到的 id 则报错 */
+export async function findByIdsOkBaiduAppToken(
+  ids: BaiduAppTokenId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<BaiduAppTokenModel[]> {
+  
+  const table = "baidu_baidu_app_token";
+  const method = "findByIdsOkBaiduAppToken";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsBaiduAppToken(
+    ids,
     options,
   );
   

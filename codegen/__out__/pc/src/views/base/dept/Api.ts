@@ -88,13 +88,14 @@ export async function findAllDept(
 }
 
 /**
- * 根据条件查找第一个部门
+ * 根据条件查找第一个 部门
  */
 export async function findOneDept(
   search?: DeptSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneDept?: DeptModel;
   } = await query({
@@ -110,8 +111,43 @@ export async function findOneDept(
       sort,
     },
   }, opt);
+  
   const model = data.findOneDept;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 部门, 如果不存在则抛错
+ */
+export async function findOneOkDept(
+  search?: DeptSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkDept?: DeptModel;
+  } = await query({
+    query: `
+      query($search: DeptSearch, $sort: [SortInput!]) {
+        findOneOkDept(search: $search, sort: $sort) {
+          ${ deptQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkDept;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -233,12 +269,14 @@ export async function updateByIdDept(
  * 根据 id 查找 部门
  */
 export async function findByIdDept(
-  id?: DeptId,
+  id: DeptId,
   opt?: GqlOpt,
 ): Promise<DeptModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdDept?: DeptModel;
   } = await query({
@@ -253,8 +291,41 @@ export async function findByIdDept(
       id,
     },
   }, opt);
+  
   const model = data.findByIdDept;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 部门, 如果不存在则抛错
+ */
+export async function findByIdOkDept(
+  id: DeptId,
+  opt?: GqlOpt,
+): Promise<DeptModel> {
+  
+  const data: {
+    findByIdOkDept: DeptModel;
+  } = await query({
+    query: `
+      query($id: DeptId!) {
+        findByIdOkDept(id: $id) {
+          ${ deptQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkDept;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -265,33 +336,70 @@ export async function findByIdsDept(
   ids: DeptId[],
   opt?: GqlOpt,
 ): Promise<DeptModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: DeptModel[] = [ ];
-  try {
-    const data: {
-      findByIdsDept: DeptModel[];
-    } = await query({
-      query: `
-        query($ids: [DeptId!]!) {
-          findByIdsDept(ids: $ids) {
-            ${ deptQueryField }
-          }
+  
+  const data: {
+    findByIdsDept: DeptModel[];
+  } = await query({
+    query: `
+      query($ids: [DeptId!]!) {
+        findByIdsDept(ids: $ids) {
+          ${ deptQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsDept;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsDept;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 部门, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDept(
+  ids: DeptId[],
+  opt?: GqlOpt,
+): Promise<DeptModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkDept: DeptModel[];
+  } = await query({
+    query: `
+      query($ids: [DeptId!]!) {
+        findByIdsOkDept(ids: $ids) {
+          ${ deptQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkDept;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

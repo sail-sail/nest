@@ -80,13 +80,14 @@ export async function findAllDictbizDetail(
 }
 
 /**
- * 根据条件查找第一个业务字典明细
+ * 根据条件查找第一个 业务字典明细
  */
 export async function findOneDictbizDetail(
   search?: DictbizDetailSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneDictbizDetail?: DictbizDetailModel;
   } = await query({
@@ -102,8 +103,43 @@ export async function findOneDictbizDetail(
       sort,
     },
   }, opt);
+  
   const model = data.findOneDictbizDetail;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 业务字典明细, 如果不存在则抛错
+ */
+export async function findOneOkDictbizDetail(
+  search?: DictbizDetailSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkDictbizDetail?: DictbizDetailModel;
+  } = await query({
+    query: `
+      query($search: DictbizDetailSearch, $sort: [SortInput!]) {
+        findOneOkDictbizDetail(search: $search, sort: $sort) {
+          ${ dictbizDetailQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkDictbizDetail;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -203,12 +239,14 @@ export async function updateByIdDictbizDetail(
  * 根据 id 查找 业务字典明细
  */
 export async function findByIdDictbizDetail(
-  id?: DictbizDetailId,
+  id: DictbizDetailId,
   opt?: GqlOpt,
 ): Promise<DictbizDetailModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdDictbizDetail?: DictbizDetailModel;
   } = await query({
@@ -223,8 +261,41 @@ export async function findByIdDictbizDetail(
       id,
     },
   }, opt);
+  
   const model = data.findByIdDictbizDetail;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 业务字典明细, 如果不存在则抛错
+ */
+export async function findByIdOkDictbizDetail(
+  id: DictbizDetailId,
+  opt?: GqlOpt,
+): Promise<DictbizDetailModel> {
+  
+  const data: {
+    findByIdOkDictbizDetail: DictbizDetailModel;
+  } = await query({
+    query: `
+      query($id: DictbizDetailId!) {
+        findByIdOkDictbizDetail(id: $id) {
+          ${ dictbizDetailQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkDictbizDetail;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -235,33 +306,70 @@ export async function findByIdsDictbizDetail(
   ids: DictbizDetailId[],
   opt?: GqlOpt,
 ): Promise<DictbizDetailModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: DictbizDetailModel[] = [ ];
-  try {
-    const data: {
-      findByIdsDictbizDetail: DictbizDetailModel[];
-    } = await query({
-      query: `
-        query($ids: [DictbizDetailId!]!) {
-          findByIdsDictbizDetail(ids: $ids) {
-            ${ dictbizDetailQueryField }
-          }
+  
+  const data: {
+    findByIdsDictbizDetail: DictbizDetailModel[];
+  } = await query({
+    query: `
+      query($ids: [DictbizDetailId!]!) {
+        findByIdsDictbizDetail(ids: $ids) {
+          ${ dictbizDetailQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsDictbizDetail;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsDictbizDetail;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 业务字典明细, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDictbizDetail(
+  ids: DictbizDetailId[],
+  opt?: GqlOpt,
+): Promise<DictbizDetailModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkDictbizDetail: DictbizDetailModel[];
+  } = await query({
+    query: `
+      query($ids: [DictbizDetailId!]!) {
+        findByIdsOkDictbizDetail(ids: $ids) {
+          ${ dictbizDetailQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkDictbizDetail;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

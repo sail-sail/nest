@@ -716,48 +716,6 @@ export async function checkByUniqueBaiduApp(
   return;
 }
 
-// MARK: findOneOkBaiduApp
-/** 根据条件查找第一百度应用 */
-export async function findOneOkBaiduApp(
-  search?: Readonly<BaiduAppSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<BaiduAppModel> {
-  
-  const table = "baidu_baidu_app";
-  const method = "findOneOkBaiduApp";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_baidu_app = validateOptionBaiduApp(
-    await findOneBaiduApp(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_baidu_app;
-}
-
 // MARK: findOneBaiduApp
 /** 根据条件查找第一百度应用 */
 export async function findOneBaiduApp(
@@ -789,41 +747,45 @@ export async function findOneBaiduApp(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllBaiduApp(
+  
+  const baidu_app_models = await findAllBaiduApp(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const baidu_app_model = baidu_app_models[0];
+  
+  return baidu_app_model;
 }
 
-// MARK: findByIdOkBaiduApp
-/** 根据 id 查找百度应用 */
-export async function findByIdOkBaiduApp(
-  id?: BaiduAppId | null,
+// MARK: findOneOkBaiduApp
+/** 根据条件查找第一百度应用, 如果不存在则抛错 */
+export async function findOneOkBaiduApp(
+  search?: Readonly<BaiduAppSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<BaiduAppModel> {
   
   const table = "baidu_baidu_app";
-  const method = "findByIdOkBaiduApp";
+  const method = "findOneOkBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -833,20 +795,32 @@ export async function findByIdOkBaiduApp(
     options.is_debug = false;
   }
   
-  const model_baidu_app = validateOptionBaiduApp(
-    await findByIdBaiduApp(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const baidu_app_models = await findAllBaiduApp(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_baidu_app;
+  const baidu_app_model = baidu_app_models[0];
+  
+  if (!baidu_app_model) {
+    const err_msg = "此 百度应用 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return baidu_app_model;
 }
 
 // MARK: findByIdBaiduApp
 /** 根据 id 查找百度应用 */
 export async function findByIdBaiduApp(
-  id?: BaiduAppId | null,
+  id: BaiduAppId,
   options?: {
     is_debug?: boolean;
   },
@@ -874,7 +848,7 @@ export async function findByIdBaiduApp(
     return;
   }
   
-  const model = await findOneBaiduApp(
+  const baidu_app_model = await findOneBaiduApp(
     {
       id,
     },
@@ -882,7 +856,47 @@ export async function findByIdBaiduApp(
     options,
   );
   
-  return model;
+  return baidu_app_model;
+}
+
+// MARK: findByIdOkBaiduApp
+/** 根据 id 查找百度应用, 如果不存在则抛错 */
+export async function findByIdOkBaiduApp(
+  id: BaiduAppId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<BaiduAppModel> {
+  
+  const table = "baidu_baidu_app";
+  const method = "findByIdOkBaiduApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const baidu_app_model = await findByIdBaiduApp(
+    id,
+    options,
+  );
+  
+  if (!baidu_app_model) {
+    const err_msg = "此 百度应用 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return baidu_app_model;
 }
 
 // MARK: findByIdsBaiduApp
@@ -922,6 +936,41 @@ export async function findByIdsBaiduApp(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkBaiduApp
+/** 根据 ids 查找百度应用, 出现查询不到的 id 则报错 */
+export async function findByIdsOkBaiduApp(
+  ids: BaiduAppId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<BaiduAppModel[]> {
+  
+  const table = "baidu_baidu_app";
+  const method = "findByIdsOkBaiduApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsBaiduApp(
+    ids,
     options,
   );
   

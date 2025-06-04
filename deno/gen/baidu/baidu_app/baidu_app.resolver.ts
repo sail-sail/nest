@@ -91,6 +91,25 @@ export async function findOneBaiduApp(
 }
 
 /**
+ * 根据条件查找第一个百度应用, 如果不存在则抛错
+ */
+export async function findOneOkBaiduApp(
+  search?: BaiduAppSearch,
+  sort?: SortInput[],
+): Promise<BaiduAppModel> {
+  
+  const {
+    findOneOkBaiduApp,
+  } = await import("./baidu_app.service.ts");
+  
+  checkSortBaiduApp(sort);
+  
+  const model = await findOneOkBaiduApp(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找百度应用
  */
 export async function findByIdBaiduApp(
@@ -107,6 +126,22 @@ export async function findByIdBaiduApp(
 }
 
 /**
+ * 根据 id 查找百度应用, 如果不存在则抛错
+ */
+export async function findByIdOkBaiduApp(
+  id: BaiduAppId,
+): Promise<BaiduAppModel | undefined> {
+  
+  const {
+    findByIdOkBaiduApp,
+  } = await import("./baidu_app.service.ts");
+  
+  const model = await findByIdOkBaiduApp(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找百度应用
  */
 export async function findByIdsBaiduApp(
@@ -118,6 +153,25 @@ export async function findByIdsBaiduApp(
   } = await import("./baidu_app.service.ts");
   
   const models = await findByIdsBaiduApp(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找百度应用, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkBaiduApp(
+  ids: BaiduAppId[],
+): Promise<BaiduAppModel[]> {
+  
+  const {
+    findByIdsOkBaiduApp,
+  } = await import("./baidu_app.service.ts");
+  
+  const models = await findByIdsOkBaiduApp(ids);
   
   for (const model of models) {
   }
