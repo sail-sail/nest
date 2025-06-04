@@ -391,7 +391,7 @@ watch(
 );
 
 const selectedValueArr = computed(() => {
-  if (selectedValue.value == null) {
+  if (selectedValue.value == null || selectedValue.value === "") {
     return [ ];
   }
   if (props.multiple) {

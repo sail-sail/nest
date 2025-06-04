@@ -82,13 +82,14 @@ export async function findAllI18n(
 }
 
 /**
- * 根据条件查找第一个国际化
+ * 根据条件查找第一个 国际化
  */
 export async function findOneI18n(
   search?: I18nSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneI18n?: I18nModel;
   } = await query({
@@ -104,8 +105,43 @@ export async function findOneI18n(
       sort,
     },
   }, opt);
+  
   const model = data.findOneI18n;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 国际化, 如果不存在则抛错
+ */
+export async function findOneOkI18n(
+  search?: I18nSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkI18n?: I18nModel;
+  } = await query({
+    query: `
+      query($search: I18nSearch, $sort: [SortInput!]) {
+        findOneOkI18n(search: $search, sort: $sort) {
+          ${ i18nQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkI18n;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -205,12 +241,14 @@ export async function updateByIdI18n(
  * 根据 id 查找 国际化
  */
 export async function findByIdI18n(
-  id?: I18nId,
+  id: I18nId,
   opt?: GqlOpt,
 ): Promise<I18nModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdI18n?: I18nModel;
   } = await query({
@@ -225,8 +263,41 @@ export async function findByIdI18n(
       id,
     },
   }, opt);
+  
   const model = data.findByIdI18n;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 国际化, 如果不存在则抛错
+ */
+export async function findByIdOkI18n(
+  id: I18nId,
+  opt?: GqlOpt,
+): Promise<I18nModel> {
+  
+  const data: {
+    findByIdOkI18n: I18nModel;
+  } = await query({
+    query: `
+      query($id: I18nId!) {
+        findByIdOkI18n(id: $id) {
+          ${ i18nQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkI18n;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -237,33 +308,70 @@ export async function findByIdsI18n(
   ids: I18nId[],
   opt?: GqlOpt,
 ): Promise<I18nModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: I18nModel[] = [ ];
-  try {
-    const data: {
-      findByIdsI18n: I18nModel[];
-    } = await query({
-      query: `
-        query($ids: [I18nId!]!) {
-          findByIdsI18n(ids: $ids) {
-            ${ i18nQueryField }
-          }
+  
+  const data: {
+    findByIdsI18n: I18nModel[];
+  } = await query({
+    query: `
+      query($ids: [I18nId!]!) {
+        findByIdsI18n(ids: $ids) {
+          ${ i18nQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsI18n;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsI18n;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 国际化, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkI18n(
+  ids: I18nId[],
+  opt?: GqlOpt,
+): Promise<I18nModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkI18n: I18nModel[];
+  } = await query({
+    query: `
+      query($ids: [I18nId!]!) {
+        findByIdsOkI18n(ids: $ids) {
+          ${ i18nQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkI18n;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
