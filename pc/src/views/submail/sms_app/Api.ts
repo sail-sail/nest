@@ -85,13 +85,14 @@ export async function findAllSmsApp(
 }
 
 /**
- * 根据条件查找第一个短信应用
+ * 根据条件查找第一个 短信应用
  */
 export async function findOneSmsApp(
   search?: SmsAppSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneSmsApp?: SmsAppModel;
   } = await query({
@@ -107,8 +108,43 @@ export async function findOneSmsApp(
       sort,
     },
   }, opt);
+  
   const model = data.findOneSmsApp;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 短信应用, 如果不存在则抛错
+ */
+export async function findOneOkSmsApp(
+  search?: SmsAppSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkSmsApp?: SmsAppModel;
+  } = await query({
+    query: `
+      query($search: SmsAppSearch, $sort: [SortInput!]) {
+        findOneOkSmsApp(search: $search, sort: $sort) {
+          ${ smsAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkSmsApp;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -208,12 +244,14 @@ export async function updateByIdSmsApp(
  * 根据 id 查找 短信应用
  */
 export async function findByIdSmsApp(
-  id?: SmsAppId,
+  id: SmsAppId,
   opt?: GqlOpt,
 ): Promise<SmsAppModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdSmsApp?: SmsAppModel;
   } = await query({
@@ -228,8 +266,41 @@ export async function findByIdSmsApp(
       id,
     },
   }, opt);
+  
   const model = data.findByIdSmsApp;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 短信应用, 如果不存在则抛错
+ */
+export async function findByIdOkSmsApp(
+  id: SmsAppId,
+  opt?: GqlOpt,
+): Promise<SmsAppModel> {
+  
+  const data: {
+    findByIdOkSmsApp: SmsAppModel;
+  } = await query({
+    query: `
+      query($id: SmsAppId!) {
+        findByIdOkSmsApp(id: $id) {
+          ${ smsAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkSmsApp;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -240,33 +311,70 @@ export async function findByIdsSmsApp(
   ids: SmsAppId[],
   opt?: GqlOpt,
 ): Promise<SmsAppModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: SmsAppModel[] = [ ];
-  try {
-    const data: {
-      findByIdsSmsApp: SmsAppModel[];
-    } = await query({
-      query: `
-        query($ids: [SmsAppId!]!) {
-          findByIdsSmsApp(ids: $ids) {
-            ${ smsAppQueryField }
-          }
+  
+  const data: {
+    findByIdsSmsApp: SmsAppModel[];
+  } = await query({
+    query: `
+      query($ids: [SmsAppId!]!) {
+        findByIdsSmsApp(ids: $ids) {
+          ${ smsAppQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsSmsApp;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsSmsApp;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 短信应用, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkSmsApp(
+  ids: SmsAppId[],
+  opt?: GqlOpt,
+): Promise<SmsAppModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkSmsApp: SmsAppModel[];
+  } = await query({
+    query: `
+      query($ids: [SmsAppId!]!) {
+        findByIdsOkSmsApp(ids: $ids) {
+          ${ smsAppQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkSmsApp;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

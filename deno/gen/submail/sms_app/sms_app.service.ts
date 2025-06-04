@@ -73,13 +73,42 @@ export async function findOneSmsApp(
 }
 
 /**
+ * 根据条件查找第一个短信应用, 如果不存在则抛错
+ */
+export async function findOneOkSmsApp(
+  search?: SmsAppSearch,
+  sort?: SortInput[],
+): Promise<SmsAppModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const sms_app_model = await sms_appDao.findOneOkSmsApp(search, sort);
+  
+  return sms_app_model;
+}
+
+/**
  * 根据 id 查找短信应用
  */
 export async function findByIdSmsApp(
-  sms_app_id?: SmsAppId | null,
+  sms_app_id: SmsAppId,
 ): Promise<SmsAppModel | undefined> {
   
   const sms_app_model = await sms_appDao.findByIdSmsApp(sms_app_id);
+  
+  return sms_app_model;
+}
+
+/**
+ * 根据 id 查找短信应用, 如果不存在则抛错
+ */
+export async function findByIdOkSmsApp(
+  sms_app_id: SmsAppId,
+): Promise<SmsAppModel> {
+  
+  const sms_app_model = await sms_appDao.findByIdOkSmsApp(sms_app_id);
   
   return sms_app_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsSmsApp(
 ): Promise<SmsAppModel[]> {
   
   const sms_app_models = await sms_appDao.findByIdsSmsApp(sms_app_ids);
+  
+  return sms_app_models;
+}
+
+/**
+ * 根据 ids 查找短信应用, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkSmsApp(
+  sms_app_ids: SmsAppId[],
+): Promise<SmsAppModel[]> {
+  
+  const sms_app_models = await sms_appDao.findByIdsOkSmsApp(sms_app_ids);
   
   return sms_app_models;
 }
