@@ -73,13 +73,42 @@ export async function findOneOptbiz(
 }
 
 /**
+ * 根据条件查找第一个业务选项, 如果不存在则抛错
+ */
+export async function findOneOkOptbiz(
+  search?: OptbizSearch,
+  sort?: SortInput[],
+): Promise<OptbizModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const optbiz_model = await optbizDao.findOneOkOptbiz(search, sort);
+  
+  return optbiz_model;
+}
+
+/**
  * 根据 id 查找业务选项
  */
 export async function findByIdOptbiz(
-  optbiz_id?: OptbizId | null,
+  optbiz_id: OptbizId,
 ): Promise<OptbizModel | undefined> {
   
   const optbiz_model = await optbizDao.findByIdOptbiz(optbiz_id);
+  
+  return optbiz_model;
+}
+
+/**
+ * 根据 id 查找业务选项, 如果不存在则抛错
+ */
+export async function findByIdOkOptbiz(
+  optbiz_id: OptbizId,
+): Promise<OptbizModel> {
+  
+  const optbiz_model = await optbizDao.findByIdOkOptbiz(optbiz_id);
   
   return optbiz_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsOptbiz(
 ): Promise<OptbizModel[]> {
   
   const optbiz_models = await optbizDao.findByIdsOptbiz(optbiz_ids);
+  
+  return optbiz_models;
+}
+
+/**
+ * 根据 ids 查找业务选项, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOptbiz(
+  optbiz_ids: OptbizId[],
+): Promise<OptbizModel[]> {
+  
+  const optbiz_models = await optbizDao.findByIdsOkOptbiz(optbiz_ids);
   
   return optbiz_models;
 }

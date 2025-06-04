@@ -913,48 +913,6 @@ export async function checkByUniqueDept(
   return;
 }
 
-// MARK: findOneOkDept
-/** 根据条件查找第一部门 */
-export async function findOneOkDept(
-  search?: Readonly<DeptSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<DeptModel> {
-  
-  const table = "base_dept";
-  const method = "findOneOkDept";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_dept = validateOptionDept(
-    await findOneDept(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_dept;
-}
-
 // MARK: findOneDept
 /** 根据条件查找第一部门 */
 export async function findOneDept(
@@ -986,41 +944,45 @@ export async function findOneDept(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllDept(
+  
+  const dept_models = await findAllDept(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const dept_model = dept_models[0];
+  
+  return dept_model;
 }
 
-// MARK: findByIdOkDept
-/** 根据 id 查找部门 */
-export async function findByIdOkDept(
-  id?: DeptId | null,
+// MARK: findOneOkDept
+/** 根据条件查找第一部门, 如果不存在则抛错 */
+export async function findOneOkDept(
+  search?: Readonly<DeptSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<DeptModel> {
   
   const table = "base_dept";
-  const method = "findByIdOkDept";
+  const method = "findOneOkDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -1030,20 +992,32 @@ export async function findByIdOkDept(
     options.is_debug = false;
   }
   
-  const model_dept = validateOptionDept(
-    await findByIdDept(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const dept_models = await findAllDept(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_dept;
+  const dept_model = dept_models[0];
+  
+  if (!dept_model) {
+    const err_msg = "此 部门 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return dept_model;
 }
 
 // MARK: findByIdDept
 /** 根据 id 查找部门 */
 export async function findByIdDept(
-  id?: DeptId | null,
+  id: DeptId,
   options?: {
     is_debug?: boolean;
   },
@@ -1071,7 +1045,7 @@ export async function findByIdDept(
     return;
   }
   
-  const model = await findOneDept(
+  const dept_model = await findOneDept(
     {
       id,
     },
@@ -1079,7 +1053,47 @@ export async function findByIdDept(
     options,
   );
   
-  return model;
+  return dept_model;
+}
+
+// MARK: findByIdOkDept
+/** 根据 id 查找部门, 如果不存在则抛错 */
+export async function findByIdOkDept(
+  id: DeptId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DeptModel> {
+  
+  const table = "base_dept";
+  const method = "findByIdOkDept";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const dept_model = await findByIdDept(
+    id,
+    options,
+  );
+  
+  if (!dept_model) {
+    const err_msg = "此 部门 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return dept_model;
 }
 
 // MARK: findByIdsDept
@@ -1119,6 +1133,41 @@ export async function findByIdsDept(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkDept
+/** 根据 ids 查找部门, 出现查询不到的 id 则报错 */
+export async function findByIdsOkDept(
+  ids: DeptId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DeptModel[]> {
+  
+  const table = "base_dept";
+  const method = "findByIdsOkDept";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsDept(
+    ids,
     options,
   );
   

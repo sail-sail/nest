@@ -3037,53 +3037,6 @@ export async function findSummary<#=Table_Up#>(
 }
 #>
 
-// MARK: findOneOk<#=Table_Up#>
-/** 根据条件查找第一<#=table_comment#> */
-export async function findOneOk<#=Table_Up#>(
-  search?: Readonly<<#=searchName#>>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;<#
-    if (hasDataPermit() && hasCreateUsrId) {
-    #>
-    hasDataPermit?: boolean,<#
-    }
-    #>
-  },
-): Promise<<#=modelName#>> {
-  
-  const table = "<#=mod#>_<#=table#>";
-  const method = "findOneOk<#=Table_Up#>";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_<#=table#> = validateOption<#=Table_Up#>(
-    await findOne<#=Table_Up#>(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_<#=table#>;
-}
-
 // MARK: findOne<#=Table_Up#>
 /** 根据条件查找第一<#=table_comment#> */
 export async function findOne<#=Table_Up#>(
@@ -3120,27 +3073,28 @@ export async function findOne<#=Table_Up#>(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll<#=Table_Up#>(
+  
+  const <#=table#>_models = await findAll<#=Table_Up#>(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const <#=table#>_model = <#=table#>_models[0];
+  
+  return <#=table#>_model;
 }
 
-// MARK: findByIdOk<#=Table_Up#>
-/** 根据 id 查找<#=table_comment#> */
-export async function findByIdOk<#=Table_Up#>(
-  id?: <#=Table_Up#>Id | null,
+// MARK: findOneOk<#=Table_Up#>
+/** 根据条件查找第一<#=table_comment#>, 如果不存在则抛错 */
+export async function findOneOk<#=Table_Up#>(
+  search?: Readonly<<#=searchName#>>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -3152,14 +3106,17 @@ export async function findByIdOk<#=Table_Up#>(
 ): Promise<<#=modelName#>> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "findByIdOk<#=Table_Up#>";
+  const method = "findOneOk<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -3169,20 +3126,39 @@ export async function findByIdOk<#=Table_Up#>(
     options.is_debug = false;
   }
   
-  const model_<#=table#> = validateOption<#=Table_Up#>(
-    await findById<#=Table_Up#>(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const <#=table#>_models = await findAll<#=Table_Up#>(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_<#=table#>;
+  const <#=table#>_model = <#=table#>_models[0];
+  
+  if (!<#=table#>_model) {<#
+    if (isUseI18n) {
+    #>
+    const err_msg = await ns("此 {0} 已被删除", await ns("<#=table_comment#>"));<#
+    } else {
+    #>
+    const err_msg = "此 <#=table_comment#> 已被删除";<#
+    }
+    #>
+    throw new Error(err_msg);
+  }
+  
+  return <#=table#>_model;
 }
 
 // MARK: findById<#=Table_Up#>
 /** 根据 id 查找<#=table_comment#> */
 export async function findById<#=Table_Up#>(
-  id?: <#=Table_Up#>Id | null,
+  id: <#=Table_Up#>Id,
   options?: {
     is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -3215,7 +3191,7 @@ export async function findById<#=Table_Up#>(
     return;
   }
   
-  const model = await findOne<#=Table_Up#>(
+  const <#=table#>_model = await findOne<#=Table_Up#>(
     {
       id,
     },
@@ -3223,7 +3199,59 @@ export async function findById<#=Table_Up#>(
     options,
   );
   
-  return model;
+  return <#=table#>_model;
+}
+
+// MARK: findByIdOk<#=Table_Up#>
+/** 根据 id 查找<#=table_comment#>, 如果不存在则抛错 */
+export async function findByIdOk<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  options?: {
+    is_debug?: boolean;<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
+  },
+): Promise<<#=modelName#>> {
+  
+  const table = "<#=mod#>_<#=table#>";
+  const method = "findByIdOk<#=Table_Up#>";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const <#=table#>_model = await findById<#=Table_Up#>(
+    id,
+    options,
+  );
+  
+  if (!<#=table#>_model) {<#
+    if (isUseI18n) {
+    #>
+    const err_msg = await ns("此 {0} 已被删除", await ns("<#=table_comment#>"));<#
+    } else {
+    #>
+    const err_msg = "此 <#=table_comment#> 已被删除";<#
+    }
+    #>
+    throw new Error(err_msg);
+  }
+  
+  return <#=table#>_model;
 }
 
 // MARK: findByIds<#=Table_Up#>
@@ -3268,6 +3296,46 @@ export async function findByIds<#=Table_Up#>(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOk<#=Table_Up#>
+/** 根据 ids 查找<#=table_comment#>, 出现查询不到的 id 则报错 */
+export async function findByIdsOk<#=Table_Up#>(
+  ids: <#=Table_Up#>Id[],
+  options?: {
+    is_debug?: boolean;<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
+  },
+): Promise<<#=modelName#>[]> {
+  
+  const table = "<#=mod#>_<#=table#>";
+  const method = "findByIdsOk<#=Table_Up#>";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIds<#=Table_Up#>(
+    ids,
     options,
   );
   

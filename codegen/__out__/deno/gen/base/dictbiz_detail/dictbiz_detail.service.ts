@@ -73,13 +73,42 @@ export async function findOneDictbizDetail(
 }
 
 /**
+ * 根据条件查找第一个业务字典明细, 如果不存在则抛错
+ */
+export async function findOneOkDictbizDetail(
+  search?: DictbizDetailSearch,
+  sort?: SortInput[],
+): Promise<DictbizDetailModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const dictbiz_detail_model = await dictbiz_detailDao.findOneOkDictbizDetail(search, sort);
+  
+  return dictbiz_detail_model;
+}
+
+/**
  * 根据 id 查找业务字典明细
  */
 export async function findByIdDictbizDetail(
-  dictbiz_detail_id?: DictbizDetailId | null,
+  dictbiz_detail_id: DictbizDetailId,
 ): Promise<DictbizDetailModel | undefined> {
   
   const dictbiz_detail_model = await dictbiz_detailDao.findByIdDictbizDetail(dictbiz_detail_id);
+  
+  return dictbiz_detail_model;
+}
+
+/**
+ * 根据 id 查找业务字典明细, 如果不存在则抛错
+ */
+export async function findByIdOkDictbizDetail(
+  dictbiz_detail_id: DictbizDetailId,
+): Promise<DictbizDetailModel> {
+  
+  const dictbiz_detail_model = await dictbiz_detailDao.findByIdOkDictbizDetail(dictbiz_detail_id);
   
   return dictbiz_detail_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsDictbizDetail(
 ): Promise<DictbizDetailModel[]> {
   
   const dictbiz_detail_models = await dictbiz_detailDao.findByIdsDictbizDetail(dictbiz_detail_ids);
+  
+  return dictbiz_detail_models;
+}
+
+/**
+ * 根据 ids 查找业务字典明细, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDictbizDetail(
+  dictbiz_detail_ids: DictbizDetailId[],
+): Promise<DictbizDetailModel[]> {
+  
+  const dictbiz_detail_models = await dictbiz_detailDao.findByIdsOkDictbizDetail(dictbiz_detail_ids);
   
   return dictbiz_detail_models;
 }
