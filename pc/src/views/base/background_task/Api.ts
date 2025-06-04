@@ -90,13 +90,14 @@ export async function findAllBackgroundTask(
 }
 
 /**
- * 根据条件查找第一个后台任务
+ * 根据条件查找第一个 后台任务
  */
 export async function findOneBackgroundTask(
   search?: BackgroundTaskSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneBackgroundTask?: BackgroundTaskModel;
   } = await query({
@@ -112,8 +113,43 @@ export async function findOneBackgroundTask(
       sort,
     },
   }, opt);
+  
   const model = data.findOneBackgroundTask;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 后台任务, 如果不存在则抛错
+ */
+export async function findOneOkBackgroundTask(
+  search?: BackgroundTaskSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkBackgroundTask?: BackgroundTaskModel;
+  } = await query({
+    query: `
+      query($search: BackgroundTaskSearch, $sort: [SortInput!]) {
+        findOneOkBackgroundTask(search: $search, sort: $sort) {
+          ${ backgroundTaskQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkBackgroundTask;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -144,12 +180,14 @@ export async function findCountBackgroundTask(
  * 根据 id 查找 后台任务
  */
 export async function findByIdBackgroundTask(
-  id?: BackgroundTaskId,
+  id: BackgroundTaskId,
   opt?: GqlOpt,
 ): Promise<BackgroundTaskModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdBackgroundTask?: BackgroundTaskModel;
   } = await query({
@@ -164,8 +202,41 @@ export async function findByIdBackgroundTask(
       id,
     },
   }, opt);
+  
   const model = data.findByIdBackgroundTask;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 后台任务, 如果不存在则抛错
+ */
+export async function findByIdOkBackgroundTask(
+  id: BackgroundTaskId,
+  opt?: GqlOpt,
+): Promise<BackgroundTaskModel> {
+  
+  const data: {
+    findByIdOkBackgroundTask: BackgroundTaskModel;
+  } = await query({
+    query: `
+      query($id: BackgroundTaskId!) {
+        findByIdOkBackgroundTask(id: $id) {
+          ${ backgroundTaskQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkBackgroundTask;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -176,33 +247,70 @@ export async function findByIdsBackgroundTask(
   ids: BackgroundTaskId[],
   opt?: GqlOpt,
 ): Promise<BackgroundTaskModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: BackgroundTaskModel[] = [ ];
-  try {
-    const data: {
-      findByIdsBackgroundTask: BackgroundTaskModel[];
-    } = await query({
-      query: `
-        query($ids: [BackgroundTaskId!]!) {
-          findByIdsBackgroundTask(ids: $ids) {
-            ${ backgroundTaskQueryField }
-          }
+  
+  const data: {
+    findByIdsBackgroundTask: BackgroundTaskModel[];
+  } = await query({
+    query: `
+      query($ids: [BackgroundTaskId!]!) {
+        findByIdsBackgroundTask(ids: $ids) {
+          ${ backgroundTaskQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsBackgroundTask;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsBackgroundTask;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 后台任务, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkBackgroundTask(
+  ids: BackgroundTaskId[],
+  opt?: GqlOpt,
+): Promise<BackgroundTaskModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkBackgroundTask: BackgroundTaskModel[];
+  } = await query({
+    query: `
+      query($ids: [BackgroundTaskId!]!) {
+        findByIdsOkBackgroundTask(ids: $ids) {
+          ${ backgroundTaskQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkBackgroundTask;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
