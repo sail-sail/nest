@@ -94,13 +94,14 @@ export async function findAllWxPay(
 }
 
 /**
- * 根据条件查找第一个微信支付设置
+ * 根据条件查找第一个 微信支付设置
  */
 export async function findOneWxPay(
   search?: WxPaySearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneWxPay?: WxPayModel;
   } = await query({
@@ -116,8 +117,43 @@ export async function findOneWxPay(
       sort,
     },
   }, opt);
+  
   const model = data.findOneWxPay;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 微信支付设置, 如果不存在则抛错
+ */
+export async function findOneOkWxPay(
+  search?: WxPaySearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkWxPay?: WxPayModel;
+  } = await query({
+    query: `
+      query($search: WxPaySearch, $sort: [SortInput!]) {
+        findOneOkWxPay(search: $search, sort: $sort) {
+          ${ wxPayQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkWxPay;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -217,12 +253,14 @@ export async function updateByIdWxPay(
  * 根据 id 查找 微信支付设置
  */
 export async function findByIdWxPay(
-  id?: WxPayId,
+  id: WxPayId,
   opt?: GqlOpt,
 ): Promise<WxPayModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdWxPay?: WxPayModel;
   } = await query({
@@ -237,8 +275,41 @@ export async function findByIdWxPay(
       id,
     },
   }, opt);
+  
   const model = data.findByIdWxPay;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 微信支付设置, 如果不存在则抛错
+ */
+export async function findByIdOkWxPay(
+  id: WxPayId,
+  opt?: GqlOpt,
+): Promise<WxPayModel> {
+  
+  const data: {
+    findByIdOkWxPay: WxPayModel;
+  } = await query({
+    query: `
+      query($id: WxPayId!) {
+        findByIdOkWxPay(id: $id) {
+          ${ wxPayQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkWxPay;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -249,33 +320,70 @@ export async function findByIdsWxPay(
   ids: WxPayId[],
   opt?: GqlOpt,
 ): Promise<WxPayModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: WxPayModel[] = [ ];
-  try {
-    const data: {
-      findByIdsWxPay: WxPayModel[];
-    } = await query({
-      query: `
-        query($ids: [WxPayId!]!) {
-          findByIdsWxPay(ids: $ids) {
-            ${ wxPayQueryField }
-          }
+  
+  const data: {
+    findByIdsWxPay: WxPayModel[];
+  } = await query({
+    query: `
+      query($ids: [WxPayId!]!) {
+        findByIdsWxPay(ids: $ids) {
+          ${ wxPayQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsWxPay;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsWxPay;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 微信支付设置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxPay(
+  ids: WxPayId[],
+  opt?: GqlOpt,
+): Promise<WxPayModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkWxPay: WxPayModel[];
+  } = await query({
+    query: `
+      query($ids: [WxPayId!]!) {
+        findByIdsOkWxPay(ids: $ids) {
+          ${ wxPayQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkWxPay;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

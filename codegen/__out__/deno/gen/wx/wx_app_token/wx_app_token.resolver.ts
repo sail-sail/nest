@@ -91,6 +91,25 @@ export async function findOneWxAppToken(
 }
 
 /**
+ * 根据条件查找第一个小程序接口凭据, 如果不存在则抛错
+ */
+export async function findOneOkWxAppToken(
+  search?: WxAppTokenSearch,
+  sort?: SortInput[],
+): Promise<WxAppTokenModel> {
+  
+  const {
+    findOneOkWxAppToken,
+  } = await import("./wx_app_token.service.ts");
+  
+  checkSortWxAppToken(sort);
+  
+  const model = await findOneOkWxAppToken(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找小程序接口凭据
  */
 export async function findByIdWxAppToken(
@@ -107,6 +126,22 @@ export async function findByIdWxAppToken(
 }
 
 /**
+ * 根据 id 查找小程序接口凭据, 如果不存在则抛错
+ */
+export async function findByIdOkWxAppToken(
+  id: WxAppTokenId,
+): Promise<WxAppTokenModel | undefined> {
+  
+  const {
+    findByIdOkWxAppToken,
+  } = await import("./wx_app_token.service.ts");
+  
+  const model = await findByIdOkWxAppToken(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找小程序接口凭据
  */
 export async function findByIdsWxAppToken(
@@ -118,6 +153,25 @@ export async function findByIdsWxAppToken(
   } = await import("./wx_app_token.service.ts");
   
   const models = await findByIdsWxAppToken(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找小程序接口凭据, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxAppToken(
+  ids: WxAppTokenId[],
+): Promise<WxAppTokenModel[]> {
+  
+  const {
+    findByIdsOkWxAppToken,
+  } = await import("./wx_app_token.service.ts");
+  
+  const models = await findByIdsOkWxAppToken(ids);
   
   for (const model of models) {
   }

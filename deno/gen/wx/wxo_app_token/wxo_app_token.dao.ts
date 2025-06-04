@@ -650,48 +650,6 @@ export async function checkByUniqueWxoAppToken(
   return;
 }
 
-// MARK: findOneOkWxoAppToken
-/** 根据条件查找第一小程序接口凭据 */
-export async function findOneOkWxoAppToken(
-  search?: Readonly<WxoAppTokenSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<WxoAppTokenModel> {
-  
-  const table = "wx_wxo_app_token";
-  const method = "findOneOkWxoAppToken";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_wxo_app_token = validateOptionWxoAppToken(
-    await findOneWxoAppToken(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_wxo_app_token;
-}
-
 // MARK: findOneWxoAppToken
 /** 根据条件查找第一小程序接口凭据 */
 export async function findOneWxoAppToken(
@@ -723,41 +681,45 @@ export async function findOneWxoAppToken(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllWxoAppToken(
+  
+  const wxo_app_token_models = await findAllWxoAppToken(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const wxo_app_token_model = wxo_app_token_models[0];
+  
+  return wxo_app_token_model;
 }
 
-// MARK: findByIdOkWxoAppToken
-/** 根据 id 查找小程序接口凭据 */
-export async function findByIdOkWxoAppToken(
-  id?: WxoAppTokenId | null,
+// MARK: findOneOkWxoAppToken
+/** 根据条件查找第一小程序接口凭据, 如果不存在则抛错 */
+export async function findOneOkWxoAppToken(
+  search?: Readonly<WxoAppTokenSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<WxoAppTokenModel> {
   
   const table = "wx_wxo_app_token";
-  const method = "findByIdOkWxoAppToken";
+  const method = "findOneOkWxoAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -767,20 +729,32 @@ export async function findByIdOkWxoAppToken(
     options.is_debug = false;
   }
   
-  const model_wxo_app_token = validateOptionWxoAppToken(
-    await findByIdWxoAppToken(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const wxo_app_token_models = await findAllWxoAppToken(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_wxo_app_token;
+  const wxo_app_token_model = wxo_app_token_models[0];
+  
+  if (!wxo_app_token_model) {
+    const err_msg = "此 小程序接口凭据 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxo_app_token_model;
 }
 
 // MARK: findByIdWxoAppToken
 /** 根据 id 查找小程序接口凭据 */
 export async function findByIdWxoAppToken(
-  id?: WxoAppTokenId | null,
+  id: WxoAppTokenId,
   options?: {
     is_debug?: boolean;
   },
@@ -808,7 +782,7 @@ export async function findByIdWxoAppToken(
     return;
   }
   
-  const model = await findOneWxoAppToken(
+  const wxo_app_token_model = await findOneWxoAppToken(
     {
       id,
     },
@@ -816,7 +790,47 @@ export async function findByIdWxoAppToken(
     options,
   );
   
-  return model;
+  return wxo_app_token_model;
+}
+
+// MARK: findByIdOkWxoAppToken
+/** 根据 id 查找小程序接口凭据, 如果不存在则抛错 */
+export async function findByIdOkWxoAppToken(
+  id: WxoAppTokenId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoAppTokenModel> {
+  
+  const table = "wx_wxo_app_token";
+  const method = "findByIdOkWxoAppToken";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const wxo_app_token_model = await findByIdWxoAppToken(
+    id,
+    options,
+  );
+  
+  if (!wxo_app_token_model) {
+    const err_msg = "此 小程序接口凭据 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxo_app_token_model;
 }
 
 // MARK: findByIdsWxoAppToken
@@ -856,6 +870,41 @@ export async function findByIdsWxoAppToken(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkWxoAppToken
+/** 根据 ids 查找小程序接口凭据, 出现查询不到的 id 则报错 */
+export async function findByIdsOkWxoAppToken(
+  ids: WxoAppTokenId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoAppTokenModel[]> {
+  
+  const table = "wx_wxo_app_token";
+  const method = "findByIdsOkWxoAppToken";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsWxoAppToken(
+    ids,
     options,
   );
   

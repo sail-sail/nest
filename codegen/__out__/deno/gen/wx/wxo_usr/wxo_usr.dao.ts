@@ -726,48 +726,6 @@ export async function checkByUniqueWxoUsr(
   return;
 }
 
-// MARK: findOneOkWxoUsr
-/** 根据条件查找第一公众号用户 */
-export async function findOneOkWxoUsr(
-  search?: Readonly<WxoUsrSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<WxoUsrModel> {
-  
-  const table = "wx_wxo_usr";
-  const method = "findOneOkWxoUsr";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_wxo_usr = validateOptionWxoUsr(
-    await findOneWxoUsr(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_wxo_usr;
-}
-
 // MARK: findOneWxoUsr
 /** 根据条件查找第一公众号用户 */
 export async function findOneWxoUsr(
@@ -799,41 +757,45 @@ export async function findOneWxoUsr(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllWxoUsr(
+  
+  const wxo_usr_models = await findAllWxoUsr(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const wxo_usr_model = wxo_usr_models[0];
+  
+  return wxo_usr_model;
 }
 
-// MARK: findByIdOkWxoUsr
-/** 根据 id 查找公众号用户 */
-export async function findByIdOkWxoUsr(
-  id?: WxoUsrId | null,
+// MARK: findOneOkWxoUsr
+/** 根据条件查找第一公众号用户, 如果不存在则抛错 */
+export async function findOneOkWxoUsr(
+  search?: Readonly<WxoUsrSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<WxoUsrModel> {
   
   const table = "wx_wxo_usr";
-  const method = "findByIdOkWxoUsr";
+  const method = "findOneOkWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -843,20 +805,32 @@ export async function findByIdOkWxoUsr(
     options.is_debug = false;
   }
   
-  const model_wxo_usr = validateOptionWxoUsr(
-    await findByIdWxoUsr(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const wxo_usr_models = await findAllWxoUsr(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_wxo_usr;
+  const wxo_usr_model = wxo_usr_models[0];
+  
+  if (!wxo_usr_model) {
+    const err_msg = "此 公众号用户 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxo_usr_model;
 }
 
 // MARK: findByIdWxoUsr
 /** 根据 id 查找公众号用户 */
 export async function findByIdWxoUsr(
-  id?: WxoUsrId | null,
+  id: WxoUsrId,
   options?: {
     is_debug?: boolean;
   },
@@ -884,7 +858,7 @@ export async function findByIdWxoUsr(
     return;
   }
   
-  const model = await findOneWxoUsr(
+  const wxo_usr_model = await findOneWxoUsr(
     {
       id,
     },
@@ -892,7 +866,47 @@ export async function findByIdWxoUsr(
     options,
   );
   
-  return model;
+  return wxo_usr_model;
+}
+
+// MARK: findByIdOkWxoUsr
+/** 根据 id 查找公众号用户, 如果不存在则抛错 */
+export async function findByIdOkWxoUsr(
+  id: WxoUsrId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoUsrModel> {
+  
+  const table = "wx_wxo_usr";
+  const method = "findByIdOkWxoUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const wxo_usr_model = await findByIdWxoUsr(
+    id,
+    options,
+  );
+  
+  if (!wxo_usr_model) {
+    const err_msg = "此 公众号用户 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxo_usr_model;
 }
 
 // MARK: findByIdsWxoUsr
@@ -932,6 +946,41 @@ export async function findByIdsWxoUsr(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkWxoUsr
+/** 根据 ids 查找公众号用户, 出现查询不到的 id 则报错 */
+export async function findByIdsOkWxoUsr(
+  ids: WxoUsrId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoUsrModel[]> {
+  
+  const table = "wx_wxo_usr";
+  const method = "findByIdsOkWxoUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsWxoUsr(
+    ids,
     options,
   );
   
