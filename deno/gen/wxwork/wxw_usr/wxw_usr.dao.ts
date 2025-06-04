@@ -704,48 +704,6 @@ export async function checkByUniqueWxwUsr(
   return;
 }
 
-// MARK: findOneOkWxwUsr
-/** 根据条件查找第一企微用户 */
-export async function findOneOkWxwUsr(
-  search?: Readonly<WxwUsrSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<WxwUsrModel> {
-  
-  const table = "wxwork_wxw_usr";
-  const method = "findOneOkWxwUsr";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_wxw_usr = validateOptionWxwUsr(
-    await findOneWxwUsr(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_wxw_usr;
-}
-
 // MARK: findOneWxwUsr
 /** 根据条件查找第一企微用户 */
 export async function findOneWxwUsr(
@@ -777,41 +735,45 @@ export async function findOneWxwUsr(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllWxwUsr(
+  
+  const wxw_usr_models = await findAllWxwUsr(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const wxw_usr_model = wxw_usr_models[0];
+  
+  return wxw_usr_model;
 }
 
-// MARK: findByIdOkWxwUsr
-/** 根据 id 查找企微用户 */
-export async function findByIdOkWxwUsr(
-  id?: WxwUsrId | null,
+// MARK: findOneOkWxwUsr
+/** 根据条件查找第一企微用户, 如果不存在则抛错 */
+export async function findOneOkWxwUsr(
+  search?: Readonly<WxwUsrSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<WxwUsrModel> {
   
   const table = "wxwork_wxw_usr";
-  const method = "findByIdOkWxwUsr";
+  const method = "findOneOkWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -821,20 +783,32 @@ export async function findByIdOkWxwUsr(
     options.is_debug = false;
   }
   
-  const model_wxw_usr = validateOptionWxwUsr(
-    await findByIdWxwUsr(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const wxw_usr_models = await findAllWxwUsr(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_wxw_usr;
+  const wxw_usr_model = wxw_usr_models[0];
+  
+  if (!wxw_usr_model) {
+    const err_msg = "此 企微用户 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxw_usr_model;
 }
 
 // MARK: findByIdWxwUsr
 /** 根据 id 查找企微用户 */
 export async function findByIdWxwUsr(
-  id?: WxwUsrId | null,
+  id: WxwUsrId,
   options?: {
     is_debug?: boolean;
   },
@@ -862,7 +836,7 @@ export async function findByIdWxwUsr(
     return;
   }
   
-  const model = await findOneWxwUsr(
+  const wxw_usr_model = await findOneWxwUsr(
     {
       id,
     },
@@ -870,7 +844,47 @@ export async function findByIdWxwUsr(
     options,
   );
   
-  return model;
+  return wxw_usr_model;
+}
+
+// MARK: findByIdOkWxwUsr
+/** 根据 id 查找企微用户, 如果不存在则抛错 */
+export async function findByIdOkWxwUsr(
+  id: WxwUsrId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxwUsrModel> {
+  
+  const table = "wxwork_wxw_usr";
+  const method = "findByIdOkWxwUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const wxw_usr_model = await findByIdWxwUsr(
+    id,
+    options,
+  );
+  
+  if (!wxw_usr_model) {
+    const err_msg = "此 企微用户 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxw_usr_model;
 }
 
 // MARK: findByIdsWxwUsr
@@ -910,6 +924,41 @@ export async function findByIdsWxwUsr(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkWxwUsr
+/** 根据 ids 查找企微用户, 出现查询不到的 id 则报错 */
+export async function findByIdsOkWxwUsr(
+  ids: WxwUsrId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxwUsrModel[]> {
+  
+  const table = "wxwork_wxw_usr";
+  const method = "findByIdsOkWxwUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsWxwUsr(
+    ids,
     options,
   );
   

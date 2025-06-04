@@ -91,6 +91,25 @@ export async function findOneWxwApp(
 }
 
 /**
+ * 根据条件查找第一个企微应用, 如果不存在则抛错
+ */
+export async function findOneOkWxwApp(
+  search?: WxwAppSearch,
+  sort?: SortInput[],
+): Promise<WxwAppModel> {
+  
+  const {
+    findOneOkWxwApp,
+  } = await import("./wxw_app.service.ts");
+  
+  checkSortWxwApp(sort);
+  
+  const model = await findOneOkWxwApp(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找企微应用
  */
 export async function findByIdWxwApp(
@@ -107,6 +126,22 @@ export async function findByIdWxwApp(
 }
 
 /**
+ * 根据 id 查找企微应用, 如果不存在则抛错
+ */
+export async function findByIdOkWxwApp(
+  id: WxwAppId,
+): Promise<WxwAppModel | undefined> {
+  
+  const {
+    findByIdOkWxwApp,
+  } = await import("./wxw_app.service.ts");
+  
+  const model = await findByIdOkWxwApp(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找企微应用
  */
 export async function findByIdsWxwApp(
@@ -118,6 +153,25 @@ export async function findByIdsWxwApp(
   } = await import("./wxw_app.service.ts");
   
   const models = await findByIdsWxwApp(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找企微应用, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxwApp(
+  ids: WxwAppId[],
+): Promise<WxwAppModel[]> {
+  
+  const {
+    findByIdsOkWxwApp,
+  } = await import("./wxw_app.service.ts");
+  
+  const models = await findByIdsOkWxwApp(ids);
   
   for (const model of models) {
   }

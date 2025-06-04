@@ -73,13 +73,42 @@ export async function findOneWxwAppToken(
 }
 
 /**
+ * 根据条件查找第一个企微应用接口凭据, 如果不存在则抛错
+ */
+export async function findOneOkWxwAppToken(
+  search?: WxwAppTokenSearch,
+  sort?: SortInput[],
+): Promise<WxwAppTokenModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const wxw_app_token_model = await wxw_app_tokenDao.findOneOkWxwAppToken(search, sort);
+  
+  return wxw_app_token_model;
+}
+
+/**
  * 根据 id 查找企微应用接口凭据
  */
 export async function findByIdWxwAppToken(
-  wxw_app_token_id?: WxwAppTokenId | null,
+  wxw_app_token_id: WxwAppTokenId,
 ): Promise<WxwAppTokenModel | undefined> {
   
   const wxw_app_token_model = await wxw_app_tokenDao.findByIdWxwAppToken(wxw_app_token_id);
+  
+  return wxw_app_token_model;
+}
+
+/**
+ * 根据 id 查找企微应用接口凭据, 如果不存在则抛错
+ */
+export async function findByIdOkWxwAppToken(
+  wxw_app_token_id: WxwAppTokenId,
+): Promise<WxwAppTokenModel> {
+  
+  const wxw_app_token_model = await wxw_app_tokenDao.findByIdOkWxwAppToken(wxw_app_token_id);
   
   return wxw_app_token_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsWxwAppToken(
 ): Promise<WxwAppTokenModel[]> {
   
   const wxw_app_token_models = await wxw_app_tokenDao.findByIdsWxwAppToken(wxw_app_token_ids);
+  
+  return wxw_app_token_models;
+}
+
+/**
+ * 根据 ids 查找企微应用接口凭据, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxwAppToken(
+  wxw_app_token_ids: WxwAppTokenId[],
+): Promise<WxwAppTokenModel[]> {
+  
+  const wxw_app_token_models = await wxw_app_tokenDao.findByIdsOkWxwAppToken(wxw_app_token_ids);
   
   return wxw_app_token_models;
 }

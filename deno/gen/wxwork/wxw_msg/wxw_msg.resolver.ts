@@ -89,6 +89,25 @@ export async function findOneWxwMsg(
 }
 
 /**
+ * 根据条件查找第一个企微消息, 如果不存在则抛错
+ */
+export async function findOneOkWxwMsg(
+  search?: WxwMsgSearch,
+  sort?: SortInput[],
+): Promise<WxwMsgModel> {
+  
+  const {
+    findOneOkWxwMsg,
+  } = await import("./wxw_msg.service.ts");
+  
+  checkSortWxwMsg(sort);
+  
+  const model = await findOneOkWxwMsg(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找企微消息
  */
 export async function findByIdWxwMsg(
@@ -105,6 +124,22 @@ export async function findByIdWxwMsg(
 }
 
 /**
+ * 根据 id 查找企微消息, 如果不存在则抛错
+ */
+export async function findByIdOkWxwMsg(
+  id: WxwMsgId,
+): Promise<WxwMsgModel | undefined> {
+  
+  const {
+    findByIdOkWxwMsg,
+  } = await import("./wxw_msg.service.ts");
+  
+  const model = await findByIdOkWxwMsg(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找企微消息
  */
 export async function findByIdsWxwMsg(
@@ -116,6 +151,25 @@ export async function findByIdsWxwMsg(
   } = await import("./wxw_msg.service.ts");
   
   const models = await findByIdsWxwMsg(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找企微消息, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxwMsg(
+  ids: WxwMsgId[],
+): Promise<WxwMsgModel[]> {
+  
+  const {
+    findByIdsOkWxwMsg,
+  } = await import("./wxw_msg.service.ts");
+  
+  const models = await findByIdsOkWxwMsg(ids);
   
   for (const model of models) {
   }

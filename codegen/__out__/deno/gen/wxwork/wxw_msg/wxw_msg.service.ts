@@ -73,13 +73,42 @@ export async function findOneWxwMsg(
 }
 
 /**
+ * 根据条件查找第一个企微消息, 如果不存在则抛错
+ */
+export async function findOneOkWxwMsg(
+  search?: WxwMsgSearch,
+  sort?: SortInput[],
+): Promise<WxwMsgModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const wxw_msg_model = await wxw_msgDao.findOneOkWxwMsg(search, sort);
+  
+  return wxw_msg_model;
+}
+
+/**
  * 根据 id 查找企微消息
  */
 export async function findByIdWxwMsg(
-  wxw_msg_id?: WxwMsgId | null,
+  wxw_msg_id: WxwMsgId,
 ): Promise<WxwMsgModel | undefined> {
   
   const wxw_msg_model = await wxw_msgDao.findByIdWxwMsg(wxw_msg_id);
+  
+  return wxw_msg_model;
+}
+
+/**
+ * 根据 id 查找企微消息, 如果不存在则抛错
+ */
+export async function findByIdOkWxwMsg(
+  wxw_msg_id: WxwMsgId,
+): Promise<WxwMsgModel> {
+  
+  const wxw_msg_model = await wxw_msgDao.findByIdOkWxwMsg(wxw_msg_id);
   
   return wxw_msg_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsWxwMsg(
 ): Promise<WxwMsgModel[]> {
   
   const wxw_msg_models = await wxw_msgDao.findByIdsWxwMsg(wxw_msg_ids);
+  
+  return wxw_msg_models;
+}
+
+/**
+ * 根据 ids 查找企微消息, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxwMsg(
+  wxw_msg_ids: WxwMsgId[],
+): Promise<WxwMsgModel[]> {
+  
+  const wxw_msg_models = await wxw_msgDao.findByIdsOkWxwMsg(wxw_msg_ids);
   
   return wxw_msg_models;
 }

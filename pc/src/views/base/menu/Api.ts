@@ -85,13 +85,14 @@ export async function findAllMenu(
 }
 
 /**
- * 根据条件查找第一个菜单
+ * 根据条件查找第一个 菜单
  */
 export async function findOneMenu(
   search?: MenuSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneMenu?: MenuModel;
   } = await query({
@@ -107,8 +108,43 @@ export async function findOneMenu(
       sort,
     },
   }, opt);
+  
   const model = data.findOneMenu;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 菜单, 如果不存在则抛错
+ */
+export async function findOneOkMenu(
+  search?: MenuSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkMenu?: MenuModel;
+  } = await query({
+    query: `
+      query($search: MenuSearch, $sort: [SortInput!]) {
+        findOneOkMenu(search: $search, sort: $sort) {
+          ${ menuQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkMenu;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -230,12 +266,14 @@ export async function updateByIdMenu(
  * 根据 id 查找 菜单
  */
 export async function findByIdMenu(
-  id?: MenuId,
+  id: MenuId,
   opt?: GqlOpt,
 ): Promise<MenuModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdMenu?: MenuModel;
   } = await query({
@@ -250,8 +288,41 @@ export async function findByIdMenu(
       id,
     },
   }, opt);
+  
   const model = data.findByIdMenu;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 菜单, 如果不存在则抛错
+ */
+export async function findByIdOkMenu(
+  id: MenuId,
+  opt?: GqlOpt,
+): Promise<MenuModel> {
+  
+  const data: {
+    findByIdOkMenu: MenuModel;
+  } = await query({
+    query: `
+      query($id: MenuId!) {
+        findByIdOkMenu(id: $id) {
+          ${ menuQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkMenu;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -262,33 +333,70 @@ export async function findByIdsMenu(
   ids: MenuId[],
   opt?: GqlOpt,
 ): Promise<MenuModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: MenuModel[] = [ ];
-  try {
-    const data: {
-      findByIdsMenu: MenuModel[];
-    } = await query({
-      query: `
-        query($ids: [MenuId!]!) {
-          findByIdsMenu(ids: $ids) {
-            ${ menuQueryField }
-          }
+  
+  const data: {
+    findByIdsMenu: MenuModel[];
+  } = await query({
+    query: `
+      query($ids: [MenuId!]!) {
+        findByIdsMenu(ids: $ids) {
+          ${ menuQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsMenu;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsMenu;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 菜单, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkMenu(
+  ids: MenuId[],
+  opt?: GqlOpt,
+): Promise<MenuModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkMenu: MenuModel[];
+  } = await query({
+    query: `
+      query($ids: [MenuId!]!) {
+        findByIdsOkMenu(ids: $ids) {
+          ${ menuQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkMenu;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
