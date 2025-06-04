@@ -293,6 +293,37 @@ pub async fn find_one_<#=table#>(
   Ok(<#=table#>_model)
 }
 
+/// 根据条件查找第一个<#=table_comment#>, 如果不存在则抛错
+pub async fn find_one_ok_<#=table#>(
+  search: Option<<#=tableUP#>Search>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<<#=tableUP#>Model> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true);
+  let options = Some(options);<#
+  }
+  #>
+  
+  let <#=table#>_model = <#=table#>_dao::find_one_ok_<#=table#>(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(<#=table#>_model)
+}
+
 /// 根据 id 查找<#=table_comment#>
 pub async fn find_by_id_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
@@ -315,7 +346,29 @@ pub async fn find_by_id_<#=table#>(
   Ok(<#=table#>_model)
 }
 
-/// 根据 <#=table#>_ids 查找<#=table_comment#>
+/// 根据 id 查找<#=table_comment#>, 如果不存在则抛错
+pub async fn find_by_id_ok_<#=table#>(
+  <#=table#>_id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<<#=tableUP#>Model> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true);
+  let options = Some(options);<#
+  }
+  #>
+  
+  let <#=table#>_model = <#=table#>_dao::find_by_id_ok_<#=table#>(
+    <#=table#>_id,
+    options,
+  ).await?;
+  
+  Ok(<#=table#>_model)
+}
+
+/// 根据 ids 查找<#=table_comment#>
 pub async fn find_by_ids_<#=table#>(
   <#=table#>_ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
@@ -330,6 +383,28 @@ pub async fn find_by_ids_<#=table#>(
   #>
   
   let <#=table#>_models = <#=table#>_dao::find_by_ids_<#=table#>(
+    <#=table#>_ids,
+    options,
+  ).await?;
+  
+  Ok(<#=table#>_models)
+}
+
+/// 根据 ids 查找<#=table_comment#>, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_<#=table#>(
+  <#=table#>_ids: Vec<<#=Table_Up#>Id>,
+  options: Option<Options>,
+) -> Result<Vec<<#=tableUP#>Model>> {<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true);
+  let options = Some(options);<#
+  }
+  #>
+  
+  let <#=table#>_models = <#=table#>_dao::find_by_ids_ok_<#=table#>(
     <#=table#>_ids,
     options,
   ).await?;
