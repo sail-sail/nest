@@ -306,6 +306,55 @@ export async function findOne<#=Table_Up2#>(
 }
 
 /**
+ * 根据条件查找第一个<#=table_comment#>, 如果不存在则抛错
+ */
+export async function findOneOk<#=Table_Up2#>(
+  search?: <#=searchName#>,
+  sort?: SortInput[],
+): Promise<<#=modelName#>> {
+  
+  const {
+    findOneOk<#=Table_Up2#>,
+  } = await import("./<#=table#>.service.ts");<#
+  if (hasIsHidden) {
+  #>
+  
+  search = search || { };
+  search.is_hidden = [ 0 ];<#
+  }
+  #>
+  
+  checkSort<#=Table_Up2#>(sort);
+  
+  const model = await findOneOk<#=Table_Up2#>(search, sort);<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isPassword = column.isPassword;
+  #><#
+    if (isPassword) {
+  #>
+  
+  // <#=column_comment#>
+  model.<#=column_name#> = "";<#
+    }
+  #><#
+  }
+  #><#
+  if (tableFieldPermit) {
+  #>
+  
+  await fieldPermitModel<#=Table_Up2#>([ model ]);<#
+  }
+  #>
+  
+  return model;
+}
+
+/**
  * 根据 id 查找<#=table_comment#>
  */
 export async function findById<#=Table_Up2#>(
@@ -325,14 +374,53 @@ export async function findById<#=Table_Up2#>(
     const column_comment = column.COLUMN_COMMENT || "";
     const isPassword = column.isPassword;
   #><#
-    if (isPassword) {
+  if (isPassword) {
   #>
   
   if (model) {
     // <#=column_comment#>
     model.<#=column_name#> = "";
   }<#
-    }
+  }
+  #><#
+  }
+  #><#
+  if (tableFieldPermit) {
+  #>
+  
+  await fieldPermitModel<#=Table_Up2#>([ model ]);<#
+  }
+  #>
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找<#=table_comment#>, 如果不存在则抛错
+ */
+export async function findByIdOk<#=Table_Up2#>(
+  id: <#=Table_Up#>Id,
+): Promise<<#=modelName#> | undefined> {
+  
+  const {
+    findByIdOk<#=Table_Up2#>,
+  } = await import("./<#=table#>.service.ts");
+  
+  const model = await findByIdOk<#=Table_Up2#>(id);<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isPassword = column.isPassword;
+  #><#
+  if (isPassword) {
+  #>
+  
+  // <#=column_comment#>
+  model.<#=column_name#> = "";<#
+  }
   #><#
   }
   #><#
@@ -368,7 +456,48 @@ export async function findByIds<#=Table_Up2#>(
       const column_comment = column.COLUMN_COMMENT || "";
       const isPassword = column.isPassword;
     #><#
-      if (isPassword) {
+    if (isPassword) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name#> = "";<#
+    }
+    #><#
+    }
+    #>
+  }<#
+  if (tableFieldPermit) {
+  #>
+  
+  await fieldPermitModel<#=Table_Up2#>(models);<#
+  }
+  #>
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找<#=table_comment#>, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOk<#=Table_Up2#>(
+  ids: <#=Table_Up#>Id[],
+): Promise<<#=modelName#>[]> {
+  
+  const {
+    findByIdsOk<#=Table_Up2#>,
+  } = await import("./<#=table#>.service.ts");
+  
+  const models = await findByIdsOk<#=Table_Up2#>(ids);
+  
+  for (const model of models) {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const isPassword = column.isPassword;
+    #><#
+    if (isPassword) {
     #>
     // <#=column_comment#>
     model.<#=column_name#> = "";<#

@@ -110,6 +110,31 @@ export async function findOneUsr(
 }
 
 /**
+ * 根据条件查找第一个用户, 如果不存在则抛错
+ */
+export async function findOneOkUsr(
+  search?: UsrSearch,
+  sort?: SortInput[],
+): Promise<UsrModel> {
+  
+  const {
+    findOneOkUsr,
+  } = await import("./usr.service.ts");
+  
+  search = search || { };
+  search.is_hidden = [ 0 ];
+  
+  checkSortUsr(sort);
+  
+  const model = await findOneOkUsr(search, sort);
+  
+  // 密码
+  model.password = "";
+  
+  return model;
+}
+
+/**
  * 根据 id 查找用户
  */
 export async function findByIdUsr(
@@ -131,6 +156,25 @@ export async function findByIdUsr(
 }
 
 /**
+ * 根据 id 查找用户, 如果不存在则抛错
+ */
+export async function findByIdOkUsr(
+  id: UsrId,
+): Promise<UsrModel | undefined> {
+  
+  const {
+    findByIdOkUsr,
+  } = await import("./usr.service.ts");
+  
+  const model = await findByIdOkUsr(id);
+  
+  // 密码
+  model.password = "";
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找用户
  */
 export async function findByIdsUsr(
@@ -142,6 +186,27 @@ export async function findByIdsUsr(
   } = await import("./usr.service.ts");
   
   const models = await findByIdsUsr(ids);
+  
+  for (const model of models) {
+    // 密码
+    model.password = "";
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找用户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkUsr(
+  ids: UsrId[],
+): Promise<UsrModel[]> {
+  
+  const {
+    findByIdsOkUsr,
+  } = await import("./usr.service.ts");
+  
+  const models = await findByIdsOkUsr(ids);
   
   for (const model of models) {
     // 密码

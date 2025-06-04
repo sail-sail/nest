@@ -734,48 +734,6 @@ export async function checkByUniqueDataPermit(
   return;
 }
 
-// MARK: findOneOkDataPermit
-/** 根据条件查找第一数据权限 */
-export async function findOneOkDataPermit(
-  search?: Readonly<DataPermitSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<DataPermitModel> {
-  
-  const table = "base_data_permit";
-  const method = "findOneOkDataPermit";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_data_permit = validateOptionDataPermit(
-    await findOneDataPermit(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_data_permit;
-}
-
 // MARK: findOneDataPermit
 /** 根据条件查找第一数据权限 */
 export async function findOneDataPermit(
@@ -807,41 +765,45 @@ export async function findOneDataPermit(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllDataPermit(
+  
+  const data_permit_models = await findAllDataPermit(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const data_permit_model = data_permit_models[0];
+  
+  return data_permit_model;
 }
 
-// MARK: findByIdOkDataPermit
-/** 根据 id 查找数据权限 */
-export async function findByIdOkDataPermit(
-  id?: DataPermitId | null,
+// MARK: findOneOkDataPermit
+/** 根据条件查找第一数据权限, 如果不存在则抛错 */
+export async function findOneOkDataPermit(
+  search?: Readonly<DataPermitSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<DataPermitModel> {
   
   const table = "base_data_permit";
-  const method = "findByIdOkDataPermit";
+  const method = "findOneOkDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -851,20 +813,32 @@ export async function findByIdOkDataPermit(
     options.is_debug = false;
   }
   
-  const model_data_permit = validateOptionDataPermit(
-    await findByIdDataPermit(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const data_permit_models = await findAllDataPermit(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_data_permit;
+  const data_permit_model = data_permit_models[0];
+  
+  if (!data_permit_model) {
+    const err_msg = "此 数据权限 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return data_permit_model;
 }
 
 // MARK: findByIdDataPermit
 /** 根据 id 查找数据权限 */
 export async function findByIdDataPermit(
-  id?: DataPermitId | null,
+  id: DataPermitId,
   options?: {
     is_debug?: boolean;
   },
@@ -892,7 +866,7 @@ export async function findByIdDataPermit(
     return;
   }
   
-  const model = await findOneDataPermit(
+  const data_permit_model = await findOneDataPermit(
     {
       id,
     },
@@ -900,7 +874,47 @@ export async function findByIdDataPermit(
     options,
   );
   
-  return model;
+  return data_permit_model;
+}
+
+// MARK: findByIdOkDataPermit
+/** 根据 id 查找数据权限, 如果不存在则抛错 */
+export async function findByIdOkDataPermit(
+  id: DataPermitId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DataPermitModel> {
+  
+  const table = "base_data_permit";
+  const method = "findByIdOkDataPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const data_permit_model = await findByIdDataPermit(
+    id,
+    options,
+  );
+  
+  if (!data_permit_model) {
+    const err_msg = "此 数据权限 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return data_permit_model;
 }
 
 // MARK: findByIdsDataPermit
@@ -940,6 +954,41 @@ export async function findByIdsDataPermit(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkDataPermit
+/** 根据 ids 查找数据权限, 出现查询不到的 id 则报错 */
+export async function findByIdsOkDataPermit(
+  ids: DataPermitId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DataPermitModel[]> {
+  
+  const table = "base_data_permit";
+  const method = "findByIdsOkDataPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsDataPermit(
+    ids,
     options,
   );
   

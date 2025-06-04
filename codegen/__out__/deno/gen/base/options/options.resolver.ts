@@ -91,6 +91,25 @@ export async function findOneOptions(
 }
 
 /**
+ * 根据条件查找第一个系统选项, 如果不存在则抛错
+ */
+export async function findOneOkOptions(
+  search?: OptionsSearch,
+  sort?: SortInput[],
+): Promise<OptionsModel> {
+  
+  const {
+    findOneOkOptions,
+  } = await import("./options.service.ts");
+  
+  checkSortOptions(sort);
+  
+  const model = await findOneOkOptions(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找系统选项
  */
 export async function findByIdOptions(
@@ -107,6 +126,22 @@ export async function findByIdOptions(
 }
 
 /**
+ * 根据 id 查找系统选项, 如果不存在则抛错
+ */
+export async function findByIdOkOptions(
+  id: OptionsId,
+): Promise<OptionsModel | undefined> {
+  
+  const {
+    findByIdOkOptions,
+  } = await import("./options.service.ts");
+  
+  const model = await findByIdOkOptions(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找系统选项
  */
 export async function findByIdsOptions(
@@ -118,6 +153,25 @@ export async function findByIdsOptions(
   } = await import("./options.service.ts");
   
   const models = await findByIdsOptions(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找系统选项, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOptions(
+  ids: OptionsId[],
+): Promise<OptionsModel[]> {
+  
+  const {
+    findByIdsOkOptions,
+  } = await import("./options.service.ts");
+  
+  const models = await findByIdsOkOptions(ids);
   
   for (const model of models) {
   }
