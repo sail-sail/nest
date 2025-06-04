@@ -19,7 +19,7 @@ import {
 /** 获取当前角色的首页轮播图路由 */
 export async function getHomeUrls() {
   
-  const usr_id = await get_usr_id();
+  const usr_id = await get_usr_id(false);
   
   const usr_model = await validateOptionUsr(
     await findByIdUsr(

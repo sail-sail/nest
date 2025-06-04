@@ -73,13 +73,42 @@ export async function findOneDict(
 }
 
 /**
+ * 根据条件查找第一个系统字典, 如果不存在则抛错
+ */
+export async function findOneOkDict(
+  search?: DictSearch,
+  sort?: SortInput[],
+): Promise<DictModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const dict_model = await dictDao.findOneOkDict(search, sort);
+  
+  return dict_model;
+}
+
+/**
  * 根据 id 查找系统字典
  */
 export async function findByIdDict(
-  dict_id?: DictId | null,
+  dict_id: DictId,
 ): Promise<DictModel | undefined> {
   
   const dict_model = await dictDao.findByIdDict(dict_id);
+  
+  return dict_model;
+}
+
+/**
+ * 根据 id 查找系统字典, 如果不存在则抛错
+ */
+export async function findByIdOkDict(
+  dict_id: DictId,
+): Promise<DictModel> {
+  
+  const dict_model = await dictDao.findByIdOkDict(dict_id);
   
   return dict_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsDict(
 ): Promise<DictModel[]> {
   
   const dict_models = await dictDao.findByIdsDict(dict_ids);
+  
+  return dict_models;
+}
+
+/**
+ * 根据 ids 查找系统字典, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDict(
+  dict_ids: DictId[],
+): Promise<DictModel[]> {
+  
+  const dict_models = await dictDao.findByIdsOkDict(dict_ids);
   
   return dict_models;
 }
