@@ -80,6 +80,25 @@ impl MenuGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个菜单, 如果不存在则抛错
+  async fn find_one_ok_menu(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<MenuSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<MenuModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        menu_resolver::find_one_ok_menu(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找菜单
   async fn find_by_id_menu(
     &self,
@@ -97,6 +116,23 @@ impl MenuGenQuery {
       }).await
   }
   
+  /// 根据 id 查找菜单, 如果不存在则抛错
+  async fn find_by_id_ok_menu(
+    &self,
+    ctx: &Context<'_>,
+    id: MenuId,
+  ) -> Result<MenuModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        menu_resolver::find_by_id_ok_menu(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找菜单
   async fn find_by_ids_menu(
     &self,
@@ -108,6 +144,23 @@ impl MenuGenQuery {
       .build()
       .scope({
         menu_resolver::find_by_ids_menu(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找菜单
+  async fn find_by_ids_ok_menu(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<MenuId>,
+  ) -> Result<Vec<MenuModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        menu_resolver::find_by_ids_ok_menu(
           ids,
           None,
         )

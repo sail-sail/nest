@@ -94,6 +94,29 @@ pub async fn find_one_wxw_msg(
   Ok(wxw_msg_model)
 }
 
+/// 根据条件查找第一个企微消息, 如果不存在则抛错
+pub async fn find_one_ok_wxw_msg(
+  search: Option<WxwMsgSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxwMsgModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let wxw_msg_model = wxw_msg_dao::find_one_ok_wxw_msg(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(wxw_msg_model)
+}
+
 /// 根据 id 查找企微消息
 pub async fn find_by_id_wxw_msg(
   wxw_msg_id: WxwMsgId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_wxw_msg(
   Ok(wxw_msg_model)
 }
 
-/// 根据 wxw_msg_ids 查找企微消息
+/// 根据 id 查找企微消息, 如果不存在则抛错
+pub async fn find_by_id_ok_wxw_msg(
+  wxw_msg_id: WxwMsgId,
+  options: Option<Options>,
+) -> Result<WxwMsgModel> {
+  
+  let wxw_msg_model = wxw_msg_dao::find_by_id_ok_wxw_msg(
+    wxw_msg_id,
+    options,
+  ).await?;
+  
+  Ok(wxw_msg_model)
+}
+
+/// 根据 ids 查找企微消息
 pub async fn find_by_ids_wxw_msg(
   wxw_msg_ids: Vec<WxwMsgId>,
   options: Option<Options>,
 ) -> Result<Vec<WxwMsgModel>> {
   
   let wxw_msg_models = wxw_msg_dao::find_by_ids_wxw_msg(
+    wxw_msg_ids,
+    options,
+  ).await?;
+  
+  Ok(wxw_msg_models)
+}
+
+/// 根据 ids 查找企微消息, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_wxw_msg(
+  wxw_msg_ids: Vec<WxwMsgId>,
+  options: Option<Options>,
+) -> Result<Vec<WxwMsgModel>> {
+  
+  let wxw_msg_models = wxw_msg_dao::find_by_ids_ok_wxw_msg(
     wxw_msg_ids,
     options,
   ).await?;

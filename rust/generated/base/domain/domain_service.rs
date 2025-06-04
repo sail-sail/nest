@@ -92,6 +92,29 @@ pub async fn find_one_domain(
   Ok(domain_model)
 }
 
+/// 根据条件查找第一个域名, 如果不存在则抛错
+pub async fn find_one_ok_domain(
+  search: Option<DomainSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<DomainModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let domain_model = domain_dao::find_one_ok_domain(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(domain_model)
+}
+
 /// 根据 id 查找域名
 pub async fn find_by_id_domain(
   domain_id: DomainId,
@@ -106,13 +129,41 @@ pub async fn find_by_id_domain(
   Ok(domain_model)
 }
 
-/// 根据 domain_ids 查找域名
+/// 根据 id 查找域名, 如果不存在则抛错
+pub async fn find_by_id_ok_domain(
+  domain_id: DomainId,
+  options: Option<Options>,
+) -> Result<DomainModel> {
+  
+  let domain_model = domain_dao::find_by_id_ok_domain(
+    domain_id,
+    options,
+  ).await?;
+  
+  Ok(domain_model)
+}
+
+/// 根据 ids 查找域名
 pub async fn find_by_ids_domain(
   domain_ids: Vec<DomainId>,
   options: Option<Options>,
 ) -> Result<Vec<DomainModel>> {
   
   let domain_models = domain_dao::find_by_ids_domain(
+    domain_ids,
+    options,
+  ).await?;
+  
+  Ok(domain_models)
+}
+
+/// 根据 ids 查找域名, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_domain(
+  domain_ids: Vec<DomainId>,
+  options: Option<Options>,
+) -> Result<Vec<DomainModel>> {
+  
+  let domain_models = domain_dao::find_by_ids_ok_domain(
     domain_ids,
     options,
   ).await?;

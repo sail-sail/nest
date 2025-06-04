@@ -82,6 +82,25 @@ impl WxwMsgGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个企微消息, 如果不存在则抛错
+  async fn find_one_ok_wxw_msg(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<WxwMsgSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<WxwMsgModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_msg_resolver::find_one_ok_wxw_msg(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找企微消息
   async fn find_by_id_wxw_msg(
     &self,
@@ -99,6 +118,23 @@ impl WxwMsgGenQuery {
       }).await
   }
   
+  /// 根据 id 查找企微消息, 如果不存在则抛错
+  async fn find_by_id_ok_wxw_msg(
+    &self,
+    ctx: &Context<'_>,
+    id: WxwMsgId,
+  ) -> Result<WxwMsgModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_msg_resolver::find_by_id_ok_wxw_msg(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找企微消息
   async fn find_by_ids_wxw_msg(
     &self,
@@ -110,6 +146,23 @@ impl WxwMsgGenQuery {
       .build()
       .scope({
         wxw_msg_resolver::find_by_ids_wxw_msg(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找企微消息
+  async fn find_by_ids_ok_wxw_msg(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<WxwMsgId>,
+  ) -> Result<Vec<WxwMsgModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_msg_resolver::find_by_ids_ok_wxw_msg(
           ids,
           None,
         )

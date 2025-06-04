@@ -89,6 +89,31 @@ pub async fn find_one_field_permit(
   Ok(model)
 }
 
+/// 根据条件查找第一个字段权限, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_field_permit(
+  search: Option<FieldPermitSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<FieldPermitModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_field_permit(sort.as_deref())?;
+  
+  let model = field_permit_service::find_one_ok_field_permit(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找字段权限
 #[function_name::named]
 pub async fn find_by_id_field_permit(
@@ -110,6 +135,27 @@ pub async fn find_by_id_field_permit(
   Ok(model)
 }
 
+/// 根据 id 查找字段权限, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_field_permit(
+  id: FieldPermitId,
+  options: Option<Options>,
+) -> Result<FieldPermitModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = field_permit_service::find_by_id_ok_field_permit(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找字段权限
 #[function_name::named]
 pub async fn find_by_ids_field_permit(
@@ -124,6 +170,27 @@ pub async fn find_by_ids_field_permit(
   );
   
   let models = field_permit_service::find_by_ids_field_permit(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找字段权限, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_field_permit(
+  ids: Vec<FieldPermitId>,
+  options: Option<Options>,
+) -> Result<Vec<FieldPermitModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = field_permit_service::find_by_ids_ok_field_permit(
     ids,
     options,
   ).await?;

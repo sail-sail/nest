@@ -913,7 +913,7 @@ pub async fn get_field_comments_wxw_usr(
 }
 
 // MARK: find_one_ok_wxw_usr
-/// 根据条件查找第一个企微用户
+/// 根据条件查找第一个企微用户, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_wxw_usr(
   search: Option<WxwUsrSearch>,
@@ -947,13 +947,16 @@ pub async fn find_one_ok_wxw_usr(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let wxw_usr_model = validate_option_wxw_usr(
-    find_one_wxw_usr(
-      search,
-      sort,
-      options,
-    ).await?,
+  let wxw_usr_model = find_one_wxw_usr(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(wxw_usr_model) = wxw_usr_model else {
+    let err_msg = "此 企微用户 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(wxw_usr_model)
 }
@@ -1017,7 +1020,7 @@ pub async fn find_one_wxw_usr(
 }
 
 // MARK: find_by_id_ok_wxw_usr
-/// 根据 id 查找企微用户
+/// 根据 id 查找企微用户, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_wxw_usr(
   id: WxwUsrId,
@@ -1045,12 +1048,15 @@ pub async fn find_by_id_ok_wxw_usr(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let wxw_usr_model = validate_option_wxw_usr(
-    find_by_id_wxw_usr(
-      id,
-      options,
-    ).await?,
+  let wxw_usr_model = find_by_id_wxw_usr(
+    id,
+    options,
   ).await?;
+  
+  let Some(wxw_usr_model) = wxw_usr_model else {
+    let err_msg = "此 企微用户 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(wxw_usr_model)
 }
@@ -1101,6 +1107,78 @@ pub async fn find_by_id_wxw_usr(
   Ok(wxw_usr_model)
 }
 
+// MARK: find_by_ids_ok_wxw_usr
+/// 根据 ids 查找企微用户, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_wxw_usr(
+  ids: Vec<WxwUsrId>,
+  options: Option<Options>,
+) -> Result<Vec<WxwUsrModel>> {
+  
+  let table = "wxwork_wxw_usr";
+  let method = "find_by_ids_ok_wxw_usr";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let wxw_usr_models = find_by_ids_wxw_usr(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if wxw_usr_models.len() != len {
+    let err_msg = "此 企微用户 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let wxw_usr_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = wxw_usr_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 企微用户 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<WxwUsrModel>>>()?;
+  
+  Ok(wxw_usr_models)
+}
+
 // MARK: find_by_ids_wxw_usr
 /// 根据 ids 查找企微用户
 #[allow(dead_code)]
@@ -1137,7 +1215,13 @@ pub async fn find_by_ids_wxw_usr(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = WxwUsrSearch {
@@ -1145,33 +1229,14 @@ pub async fn find_by_ids_wxw_usr(
     ..Default::default()
   }.into();
   
-  let models = find_all_wxw_usr(
+  let wxw_usr_models = find_all_wxw_usr(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 企微用户 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
-    .into_iter()
-    .map(|id| {
-      let model = models
-        .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 企微用户 已经被删除";
-      Err(eyre!(err_msg))
-    })
-    .collect::<Result<Vec<WxwUsrModel>>>()?;
-  
-  Ok(models)
+  Ok(wxw_usr_models)
 }
 
 // MARK: exists_wxw_usr
@@ -2021,7 +2086,6 @@ pub async fn create_return_wxw_usr(
     let err_msg = "create_return_wxw_usr: model_wxw_usr.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -2767,10 +2831,9 @@ pub async fn validate_option_wxw_usr(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

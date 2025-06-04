@@ -94,6 +94,29 @@ pub async fn find_one_operation_record(
   Ok(operation_record_model)
 }
 
+/// 根据条件查找第一个操作记录, 如果不存在则抛错
+pub async fn find_one_ok_operation_record(
+  search: Option<OperationRecordSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<OperationRecordModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let operation_record_model = operation_record_dao::find_one_ok_operation_record(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(operation_record_model)
+}
+
 /// 根据 id 查找操作记录
 pub async fn find_by_id_operation_record(
   operation_record_id: OperationRecordId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_operation_record(
   Ok(operation_record_model)
 }
 
-/// 根据 operation_record_ids 查找操作记录
+/// 根据 id 查找操作记录, 如果不存在则抛错
+pub async fn find_by_id_ok_operation_record(
+  operation_record_id: OperationRecordId,
+  options: Option<Options>,
+) -> Result<OperationRecordModel> {
+  
+  let operation_record_model = operation_record_dao::find_by_id_ok_operation_record(
+    operation_record_id,
+    options,
+  ).await?;
+  
+  Ok(operation_record_model)
+}
+
+/// 根据 ids 查找操作记录
 pub async fn find_by_ids_operation_record(
   operation_record_ids: Vec<OperationRecordId>,
   options: Option<Options>,
 ) -> Result<Vec<OperationRecordModel>> {
   
   let operation_record_models = operation_record_dao::find_by_ids_operation_record(
+    operation_record_ids,
+    options,
+  ).await?;
+  
+  Ok(operation_record_models)
+}
+
+/// 根据 ids 查找操作记录, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_operation_record(
+  operation_record_ids: Vec<OperationRecordId>,
+  options: Option<Options>,
+) -> Result<Vec<OperationRecordModel>> {
+  
+  let operation_record_models = operation_record_dao::find_by_ids_ok_operation_record(
     operation_record_ids,
     options,
   ).await?;

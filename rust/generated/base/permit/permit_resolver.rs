@@ -89,6 +89,31 @@ pub async fn find_one_permit(
   Ok(model)
 }
 
+/// 根据条件查找第一个按钮权限, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_permit(
+  search: Option<PermitSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<PermitModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_permit(sort.as_deref())?;
+  
+  let model = permit_service::find_one_ok_permit(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找按钮权限
 #[function_name::named]
 pub async fn find_by_id_permit(
@@ -110,6 +135,27 @@ pub async fn find_by_id_permit(
   Ok(model)
 }
 
+/// 根据 id 查找按钮权限, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_permit(
+  id: PermitId,
+  options: Option<Options>,
+) -> Result<PermitModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = permit_service::find_by_id_ok_permit(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找按钮权限
 #[function_name::named]
 pub async fn find_by_ids_permit(
@@ -124,6 +170,27 @@ pub async fn find_by_ids_permit(
   );
   
   let models = permit_service::find_by_ids_permit(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找按钮权限, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_permit(
+  ids: Vec<PermitId>,
+  options: Option<Options>,
+) -> Result<Vec<PermitModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = permit_service::find_by_ids_ok_permit(
     ids,
     options,
   ).await?;

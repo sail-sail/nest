@@ -82,6 +82,25 @@ impl WxwUsrGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个企微用户, 如果不存在则抛错
+  async fn find_one_ok_wxw_usr(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<WxwUsrSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<WxwUsrModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_usr_resolver::find_one_ok_wxw_usr(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找企微用户
   async fn find_by_id_wxw_usr(
     &self,
@@ -99,6 +118,23 @@ impl WxwUsrGenQuery {
       }).await
   }
   
+  /// 根据 id 查找企微用户, 如果不存在则抛错
+  async fn find_by_id_ok_wxw_usr(
+    &self,
+    ctx: &Context<'_>,
+    id: WxwUsrId,
+  ) -> Result<WxwUsrModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_usr_resolver::find_by_id_ok_wxw_usr(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找企微用户
   async fn find_by_ids_wxw_usr(
     &self,
@@ -110,6 +146,23 @@ impl WxwUsrGenQuery {
       .build()
       .scope({
         wxw_usr_resolver::find_by_ids_wxw_usr(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找企微用户
+  async fn find_by_ids_ok_wxw_usr(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<WxwUsrId>,
+  ) -> Result<Vec<WxwUsrModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_usr_resolver::find_by_ids_ok_wxw_usr(
           ids,
           None,
         )
