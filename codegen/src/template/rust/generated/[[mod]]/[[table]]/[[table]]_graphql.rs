@@ -170,6 +170,30 @@ impl <#=tableUP#>GenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个<#=table_comment#>, 如果不存在则抛错<#
+  if (table === "i18n") {
+  #>
+  #[graphql(name = "findOneOkI18n")]<#
+  }
+  #>
+  async fn find_one_ok_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<<#=tableUP#>Search>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<<#=tableUP#>Model> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        <#=table#>_resolver::find_one_ok_<#=table#>(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找<#=table_comment#><#
   if (table === "i18n") {
   #>
@@ -192,6 +216,28 @@ impl <#=tableUP#>GenQuery {
       }).await
   }
   
+  /// 根据 id 查找<#=table_comment#>, 如果不存在则抛错<#
+  if (table === "i18n") {
+  #>
+  #[graphql(name = "findByIdOkI18n")]<#
+  }
+  #>
+  async fn find_by_id_ok_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    id: <#=Table_Up#>Id,
+  ) -> Result<<#=tableUP#>Model> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        <#=table#>_resolver::find_by_id_ok_<#=table#>(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找<#=table_comment#><#
   if (table === "i18n") {
   #>
@@ -208,6 +254,28 @@ impl <#=tableUP#>GenQuery {
       .build()
       .scope({
         <#=table#>_resolver::find_by_ids_<#=table#>(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找<#=table_comment#><#
+  if (table === "i18n") {
+  #>
+  #[graphql(name = "findByIdsOkI18n")]<#
+  }
+  #>
+  async fn find_by_ids_ok_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<<#=Table_Up#>Id>,
+  ) -> Result<Vec<<#=tableUP#>Model>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        <#=table#>_resolver::find_by_ids_ok_<#=table#>(
           ids,
           None,
         )
