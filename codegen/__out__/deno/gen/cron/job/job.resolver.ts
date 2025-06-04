@@ -91,6 +91,25 @@ export async function findOneJob(
 }
 
 /**
+ * 根据条件查找第一个任务, 如果不存在则抛错
+ */
+export async function findOneOkJob(
+  search?: JobSearch,
+  sort?: SortInput[],
+): Promise<JobModel> {
+  
+  const {
+    findOneOkJob,
+  } = await import("./job.service.ts");
+  
+  checkSortJob(sort);
+  
+  const model = await findOneOkJob(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找任务
  */
 export async function findByIdJob(
@@ -107,6 +126,22 @@ export async function findByIdJob(
 }
 
 /**
+ * 根据 id 查找任务, 如果不存在则抛错
+ */
+export async function findByIdOkJob(
+  id: JobId,
+): Promise<JobModel | undefined> {
+  
+  const {
+    findByIdOkJob,
+  } = await import("./job.service.ts");
+  
+  const model = await findByIdOkJob(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找任务
  */
 export async function findByIdsJob(
@@ -118,6 +153,25 @@ export async function findByIdsJob(
   } = await import("./job.service.ts");
   
   const models = await findByIdsJob(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找任务, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkJob(
+  ids: JobId[],
+): Promise<JobModel[]> {
+  
+  const {
+    findByIdsOkJob,
+  } = await import("./job.service.ts");
+  
+  const models = await findByIdsOkJob(ids);
   
   for (const model of models) {
   }

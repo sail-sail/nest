@@ -93,6 +93,25 @@ export async function findOneCronJob(
 }
 
 /**
+ * 根据条件查找第一个定时任务, 如果不存在则抛错
+ */
+export async function findOneOkCronJob(
+  search?: CronJobSearch,
+  sort?: SortInput[],
+): Promise<CronJobModel> {
+  
+  const {
+    findOneOkCronJob,
+  } = await import("./cron_job.service.ts");
+  
+  checkSortCronJob(sort);
+  
+  const model = await findOneOkCronJob(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找定时任务
  */
 export async function findByIdCronJob(
@@ -109,6 +128,22 @@ export async function findByIdCronJob(
 }
 
 /**
+ * 根据 id 查找定时任务, 如果不存在则抛错
+ */
+export async function findByIdOkCronJob(
+  id: CronJobId,
+): Promise<CronJobModel | undefined> {
+  
+  const {
+    findByIdOkCronJob,
+  } = await import("./cron_job.service.ts");
+  
+  const model = await findByIdOkCronJob(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找定时任务
  */
 export async function findByIdsCronJob(
@@ -120,6 +155,25 @@ export async function findByIdsCronJob(
   } = await import("./cron_job.service.ts");
   
   const models = await findByIdsCronJob(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找定时任务, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCronJob(
+  ids: CronJobId[],
+): Promise<CronJobModel[]> {
+  
+  const {
+    findByIdsOkCronJob,
+  } = await import("./cron_job.service.ts");
+  
+  const models = await findByIdsOkCronJob(ids);
   
   for (const model of models) {
   }

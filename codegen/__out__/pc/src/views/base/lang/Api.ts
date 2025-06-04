@@ -77,13 +77,14 @@ export async function findAllLang(
 }
 
 /**
- * 根据条件查找第一个语言
+ * 根据条件查找第一个 语言
  */
 export async function findOneLang(
   search?: LangSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneLang?: LangModel;
   } = await query({
@@ -99,8 +100,43 @@ export async function findOneLang(
       sort,
     },
   }, opt);
+  
   const model = data.findOneLang;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 语言, 如果不存在则抛错
+ */
+export async function findOneOkLang(
+  search?: LangSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkLang?: LangModel;
+  } = await query({
+    query: `
+      query($search: LangSearch, $sort: [SortInput!]) {
+        findOneOkLang(search: $search, sort: $sort) {
+          ${ langQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkLang;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -200,12 +236,14 @@ export async function updateByIdLang(
  * 根据 id 查找 语言
  */
 export async function findByIdLang(
-  id?: LangId,
+  id: LangId,
   opt?: GqlOpt,
 ): Promise<LangModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdLang?: LangModel;
   } = await query({
@@ -220,8 +258,41 @@ export async function findByIdLang(
       id,
     },
   }, opt);
+  
   const model = data.findByIdLang;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 语言, 如果不存在则抛错
+ */
+export async function findByIdOkLang(
+  id: LangId,
+  opt?: GqlOpt,
+): Promise<LangModel> {
+  
+  const data: {
+    findByIdOkLang: LangModel;
+  } = await query({
+    query: `
+      query($id: LangId!) {
+        findByIdOkLang(id: $id) {
+          ${ langQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkLang;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -232,33 +303,70 @@ export async function findByIdsLang(
   ids: LangId[],
   opt?: GqlOpt,
 ): Promise<LangModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: LangModel[] = [ ];
-  try {
-    const data: {
-      findByIdsLang: LangModel[];
-    } = await query({
-      query: `
-        query($ids: [LangId!]!) {
-          findByIdsLang(ids: $ids) {
-            ${ langQueryField }
-          }
+  
+  const data: {
+    findByIdsLang: LangModel[];
+  } = await query({
+    query: `
+      query($ids: [LangId!]!) {
+        findByIdsLang(ids: $ids) {
+          ${ langQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsLang;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsLang;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 语言, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkLang(
+  ids: LangId[],
+  opt?: GqlOpt,
+): Promise<LangModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkLang: LangModel[];
+  } = await query({
+    query: `
+      query($ids: [LangId!]!) {
+        findByIdsOkLang(ids: $ids) {
+          ${ langQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkLang;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

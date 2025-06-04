@@ -89,6 +89,25 @@ export async function findOneCronJobLogDetail(
 }
 
 /**
+ * 根据条件查找第一个定时任务日志明细, 如果不存在则抛错
+ */
+export async function findOneOkCronJobLogDetail(
+  search?: CronJobLogDetailSearch,
+  sort?: SortInput[],
+): Promise<CronJobLogDetailModel> {
+  
+  const {
+    findOneOkCronJobLogDetail,
+  } = await import("./cron_job_log_detail.service.ts");
+  
+  checkSortCronJobLogDetail(sort);
+  
+  const model = await findOneOkCronJobLogDetail(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找定时任务日志明细
  */
 export async function findByIdCronJobLogDetail(
@@ -105,6 +124,22 @@ export async function findByIdCronJobLogDetail(
 }
 
 /**
+ * 根据 id 查找定时任务日志明细, 如果不存在则抛错
+ */
+export async function findByIdOkCronJobLogDetail(
+  id: CronJobLogDetailId,
+): Promise<CronJobLogDetailModel | undefined> {
+  
+  const {
+    findByIdOkCronJobLogDetail,
+  } = await import("./cron_job_log_detail.service.ts");
+  
+  const model = await findByIdOkCronJobLogDetail(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找定时任务日志明细
  */
 export async function findByIdsCronJobLogDetail(
@@ -116,6 +151,25 @@ export async function findByIdsCronJobLogDetail(
   } = await import("./cron_job_log_detail.service.ts");
   
   const models = await findByIdsCronJobLogDetail(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找定时任务日志明细, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCronJobLogDetail(
+  ids: CronJobLogDetailId[],
+): Promise<CronJobLogDetailModel[]> {
+  
+  const {
+    findByIdsOkCronJobLogDetail,
+  } = await import("./cron_job_log_detail.service.ts");
+  
+  const models = await findByIdsOkCronJobLogDetail(ids);
   
   for (const model of models) {
   }

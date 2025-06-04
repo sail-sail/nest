@@ -527,48 +527,6 @@ export async function checkByUniqueCronJobLogDetail(
   return;
 }
 
-// MARK: findOneOkCronJobLogDetail
-/** 根据条件查找第一定时任务日志明细 */
-export async function findOneOkCronJobLogDetail(
-  search?: Readonly<CronJobLogDetailSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<CronJobLogDetailModel> {
-  
-  const table = "cron_cron_job_log_detail";
-  const method = "findOneOkCronJobLogDetail";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_cron_job_log_detail = validateOptionCronJobLogDetail(
-    await findOneCronJobLogDetail(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_cron_job_log_detail;
-}
-
 // MARK: findOneCronJobLogDetail
 /** 根据条件查找第一定时任务日志明细 */
 export async function findOneCronJobLogDetail(
@@ -600,41 +558,45 @@ export async function findOneCronJobLogDetail(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllCronJobLogDetail(
+  
+  const cron_job_log_detail_models = await findAllCronJobLogDetail(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const cron_job_log_detail_model = cron_job_log_detail_models[0];
+  
+  return cron_job_log_detail_model;
 }
 
-// MARK: findByIdOkCronJobLogDetail
-/** 根据 id 查找定时任务日志明细 */
-export async function findByIdOkCronJobLogDetail(
-  id?: CronJobLogDetailId | null,
+// MARK: findOneOkCronJobLogDetail
+/** 根据条件查找第一定时任务日志明细, 如果不存在则抛错 */
+export async function findOneOkCronJobLogDetail(
+  search?: Readonly<CronJobLogDetailSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<CronJobLogDetailModel> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "findByIdOkCronJobLogDetail";
+  const method = "findOneOkCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -644,20 +606,32 @@ export async function findByIdOkCronJobLogDetail(
     options.is_debug = false;
   }
   
-  const model_cron_job_log_detail = validateOptionCronJobLogDetail(
-    await findByIdCronJobLogDetail(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const cron_job_log_detail_models = await findAllCronJobLogDetail(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_cron_job_log_detail;
+  const cron_job_log_detail_model = cron_job_log_detail_models[0];
+  
+  if (!cron_job_log_detail_model) {
+    const err_msg = "此 定时任务日志明细 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return cron_job_log_detail_model;
 }
 
 // MARK: findByIdCronJobLogDetail
 /** 根据 id 查找定时任务日志明细 */
 export async function findByIdCronJobLogDetail(
-  id?: CronJobLogDetailId | null,
+  id: CronJobLogDetailId,
   options?: {
     is_debug?: boolean;
   },
@@ -685,7 +659,7 @@ export async function findByIdCronJobLogDetail(
     return;
   }
   
-  const model = await findOneCronJobLogDetail(
+  const cron_job_log_detail_model = await findOneCronJobLogDetail(
     {
       id,
     },
@@ -693,7 +667,47 @@ export async function findByIdCronJobLogDetail(
     options,
   );
   
-  return model;
+  return cron_job_log_detail_model;
+}
+
+// MARK: findByIdOkCronJobLogDetail
+/** 根据 id 查找定时任务日志明细, 如果不存在则抛错 */
+export async function findByIdOkCronJobLogDetail(
+  id: CronJobLogDetailId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CronJobLogDetailModel> {
+  
+  const table = "cron_cron_job_log_detail";
+  const method = "findByIdOkCronJobLogDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const cron_job_log_detail_model = await findByIdCronJobLogDetail(
+    id,
+    options,
+  );
+  
+  if (!cron_job_log_detail_model) {
+    const err_msg = "此 定时任务日志明细 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return cron_job_log_detail_model;
 }
 
 // MARK: findByIdsCronJobLogDetail
@@ -733,6 +747,41 @@ export async function findByIdsCronJobLogDetail(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkCronJobLogDetail
+/** 根据 ids 查找定时任务日志明细, 出现查询不到的 id 则报错 */
+export async function findByIdsOkCronJobLogDetail(
+  ids: CronJobLogDetailId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CronJobLogDetailModel[]> {
+  
+  const table = "cron_cron_job_log_detail";
+  const method = "findByIdsOkCronJobLogDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsCronJobLogDetail(
+    ids,
     options,
   );
   
