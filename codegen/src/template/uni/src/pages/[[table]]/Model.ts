@@ -59,7 +59,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 
 import {
   <#=table_Up#>Fields,
-} from "@/views/<#=mod#>/<#=table#>/Model.ts";<#
+} from "@/pages/<#=table#>/Model.ts";<#
 }
 #><#
 for (let i = 0; i < columns.length; i++) {
@@ -96,7 +96,7 @@ for (let i = 0; i < columns.length; i++) {
 
 import {
   <#=table_Up#>Fields,
-} from "@/views/<#=mod#>/<#=table#>/Model";<#
+} from "@/pages/<#=table#>/Model.ts";<#
 }
 #>
 
