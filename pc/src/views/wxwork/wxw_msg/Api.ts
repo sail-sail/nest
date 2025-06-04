@@ -79,13 +79,14 @@ export async function findAllWxwMsg(
 }
 
 /**
- * 根据条件查找第一个企微消息
+ * 根据条件查找第一个 企微消息
  */
 export async function findOneWxwMsg(
   search?: WxwMsgSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneWxwMsg?: WxwMsgModel;
   } = await query({
@@ -101,8 +102,43 @@ export async function findOneWxwMsg(
       sort,
     },
   }, opt);
+  
   const model = data.findOneWxwMsg;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 企微消息, 如果不存在则抛错
+ */
+export async function findOneOkWxwMsg(
+  search?: WxwMsgSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkWxwMsg?: WxwMsgModel;
+  } = await query({
+    query: `
+      query($search: WxwMsgSearch, $sort: [SortInput!]) {
+        findOneOkWxwMsg(search: $search, sort: $sort) {
+          ${ wxwMsgQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkWxwMsg;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -133,12 +169,14 @@ export async function findCountWxwMsg(
  * 根据 id 查找 企微消息
  */
 export async function findByIdWxwMsg(
-  id?: WxwMsgId,
+  id: WxwMsgId,
   opt?: GqlOpt,
 ): Promise<WxwMsgModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdWxwMsg?: WxwMsgModel;
   } = await query({
@@ -153,8 +191,41 @@ export async function findByIdWxwMsg(
       id,
     },
   }, opt);
+  
   const model = data.findByIdWxwMsg;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 企微消息, 如果不存在则抛错
+ */
+export async function findByIdOkWxwMsg(
+  id: WxwMsgId,
+  opt?: GqlOpt,
+): Promise<WxwMsgModel> {
+  
+  const data: {
+    findByIdOkWxwMsg: WxwMsgModel;
+  } = await query({
+    query: `
+      query($id: WxwMsgId!) {
+        findByIdOkWxwMsg(id: $id) {
+          ${ wxwMsgQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkWxwMsg;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -165,33 +236,70 @@ export async function findByIdsWxwMsg(
   ids: WxwMsgId[],
   opt?: GqlOpt,
 ): Promise<WxwMsgModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: WxwMsgModel[] = [ ];
-  try {
-    const data: {
-      findByIdsWxwMsg: WxwMsgModel[];
-    } = await query({
-      query: `
-        query($ids: [WxwMsgId!]!) {
-          findByIdsWxwMsg(ids: $ids) {
-            ${ wxwMsgQueryField }
-          }
+  
+  const data: {
+    findByIdsWxwMsg: WxwMsgModel[];
+  } = await query({
+    query: `
+      query($ids: [WxwMsgId!]!) {
+        findByIdsWxwMsg(ids: $ids) {
+          ${ wxwMsgQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsWxwMsg;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsWxwMsg;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 企微消息, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxwMsg(
+  ids: WxwMsgId[],
+  opt?: GqlOpt,
+): Promise<WxwMsgModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkWxwMsg: WxwMsgModel[];
+  } = await query({
+    query: `
+      query($ids: [WxwMsgId!]!) {
+        findByIdsOkWxwMsg(ids: $ids) {
+          ${ wxwMsgQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkWxwMsg;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

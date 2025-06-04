@@ -86,13 +86,14 @@ export async function findAllDataPermit(
 }
 
 /**
- * 根据条件查找第一个数据权限
+ * 根据条件查找第一个 数据权限
  */
 export async function findOneDataPermit(
   search?: DataPermitSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneDataPermit?: DataPermitModel;
   } = await query({
@@ -108,8 +109,43 @@ export async function findOneDataPermit(
       sort,
     },
   }, opt);
+  
   const model = data.findOneDataPermit;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 数据权限, 如果不存在则抛错
+ */
+export async function findOneOkDataPermit(
+  search?: DataPermitSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkDataPermit?: DataPermitModel;
+  } = await query({
+    query: `
+      query($search: DataPermitSearch, $sort: [SortInput!]) {
+        findOneOkDataPermit(search: $search, sort: $sort) {
+          ${ dataPermitQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkDataPermit;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -209,12 +245,14 @@ export async function updateByIdDataPermit(
  * 根据 id 查找 数据权限
  */
 export async function findByIdDataPermit(
-  id?: DataPermitId,
+  id: DataPermitId,
   opt?: GqlOpt,
 ): Promise<DataPermitModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdDataPermit?: DataPermitModel;
   } = await query({
@@ -229,8 +267,41 @@ export async function findByIdDataPermit(
       id,
     },
   }, opt);
+  
   const model = data.findByIdDataPermit;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 数据权限, 如果不存在则抛错
+ */
+export async function findByIdOkDataPermit(
+  id: DataPermitId,
+  opt?: GqlOpt,
+): Promise<DataPermitModel> {
+  
+  const data: {
+    findByIdOkDataPermit: DataPermitModel;
+  } = await query({
+    query: `
+      query($id: DataPermitId!) {
+        findByIdOkDataPermit(id: $id) {
+          ${ dataPermitQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkDataPermit;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -241,33 +312,70 @@ export async function findByIdsDataPermit(
   ids: DataPermitId[],
   opt?: GqlOpt,
 ): Promise<DataPermitModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: DataPermitModel[] = [ ];
-  try {
-    const data: {
-      findByIdsDataPermit: DataPermitModel[];
-    } = await query({
-      query: `
-        query($ids: [DataPermitId!]!) {
-          findByIdsDataPermit(ids: $ids) {
-            ${ dataPermitQueryField }
-          }
+  
+  const data: {
+    findByIdsDataPermit: DataPermitModel[];
+  } = await query({
+    query: `
+      query($ids: [DataPermitId!]!) {
+        findByIdsDataPermit(ids: $ids) {
+          ${ dataPermitQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsDataPermit;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsDataPermit;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 数据权限, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDataPermit(
+  ids: DataPermitId[],
+  opt?: GqlOpt,
+): Promise<DataPermitModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkDataPermit: DataPermitModel[];
+  } = await query({
+    query: `
+      query($ids: [DataPermitId!]!) {
+        findByIdsOkDataPermit(ids: $ids) {
+          ${ dataPermitQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkDataPermit;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

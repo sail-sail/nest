@@ -91,6 +91,25 @@ export async function findOneWxwUsr(
 }
 
 /**
+ * 根据条件查找第一个企微用户, 如果不存在则抛错
+ */
+export async function findOneOkWxwUsr(
+  search?: WxwUsrSearch,
+  sort?: SortInput[],
+): Promise<WxwUsrModel> {
+  
+  const {
+    findOneOkWxwUsr,
+  } = await import("./wxw_usr.service.ts");
+  
+  checkSortWxwUsr(sort);
+  
+  const model = await findOneOkWxwUsr(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找企微用户
  */
 export async function findByIdWxwUsr(
@@ -107,6 +126,22 @@ export async function findByIdWxwUsr(
 }
 
 /**
+ * 根据 id 查找企微用户, 如果不存在则抛错
+ */
+export async function findByIdOkWxwUsr(
+  id: WxwUsrId,
+): Promise<WxwUsrModel | undefined> {
+  
+  const {
+    findByIdOkWxwUsr,
+  } = await import("./wxw_usr.service.ts");
+  
+  const model = await findByIdOkWxwUsr(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找企微用户
  */
 export async function findByIdsWxwUsr(
@@ -118,6 +153,25 @@ export async function findByIdsWxwUsr(
   } = await import("./wxw_usr.service.ts");
   
   const models = await findByIdsWxwUsr(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找企微用户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxwUsr(
+  ids: WxwUsrId[],
+): Promise<WxwUsrModel[]> {
+  
+  const {
+    findByIdsOkWxwUsr,
+  } = await import("./wxw_usr.service.ts");
+  
+  const models = await findByIdsOkWxwUsr(ids);
   
   for (const model of models) {
   }

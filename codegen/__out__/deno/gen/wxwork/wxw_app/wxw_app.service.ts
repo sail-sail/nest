@@ -73,13 +73,42 @@ export async function findOneWxwApp(
 }
 
 /**
+ * 根据条件查找第一个企微应用, 如果不存在则抛错
+ */
+export async function findOneOkWxwApp(
+  search?: WxwAppSearch,
+  sort?: SortInput[],
+): Promise<WxwAppModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const wxw_app_model = await wxw_appDao.findOneOkWxwApp(search, sort);
+  
+  return wxw_app_model;
+}
+
+/**
  * 根据 id 查找企微应用
  */
 export async function findByIdWxwApp(
-  wxw_app_id?: WxwAppId | null,
+  wxw_app_id: WxwAppId,
 ): Promise<WxwAppModel | undefined> {
   
   const wxw_app_model = await wxw_appDao.findByIdWxwApp(wxw_app_id);
+  
+  return wxw_app_model;
+}
+
+/**
+ * 根据 id 查找企微应用, 如果不存在则抛错
+ */
+export async function findByIdOkWxwApp(
+  wxw_app_id: WxwAppId,
+): Promise<WxwAppModel> {
+  
+  const wxw_app_model = await wxw_appDao.findByIdOkWxwApp(wxw_app_id);
   
   return wxw_app_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsWxwApp(
 ): Promise<WxwAppModel[]> {
   
   const wxw_app_models = await wxw_appDao.findByIdsWxwApp(wxw_app_ids);
+  
+  return wxw_app_models;
+}
+
+/**
+ * 根据 ids 查找企微应用, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxwApp(
+  wxw_app_ids: WxwAppId[],
+): Promise<WxwAppModel[]> {
+  
+  const wxw_app_models = await wxw_appDao.findByIdsOkWxwApp(wxw_app_ids);
   
   return wxw_app_models;
 }

@@ -807,48 +807,6 @@ export async function checkByUniqueWxwApp(
   return;
 }
 
-// MARK: findOneOkWxwApp
-/** 根据条件查找第一企微应用 */
-export async function findOneOkWxwApp(
-  search?: Readonly<WxwAppSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<WxwAppModel> {
-  
-  const table = "wxwork_wxw_app";
-  const method = "findOneOkWxwApp";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_wxw_app = validateOptionWxwApp(
-    await findOneWxwApp(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_wxw_app;
-}
-
 // MARK: findOneWxwApp
 /** 根据条件查找第一企微应用 */
 export async function findOneWxwApp(
@@ -880,41 +838,45 @@ export async function findOneWxwApp(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllWxwApp(
+  
+  const wxw_app_models = await findAllWxwApp(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const wxw_app_model = wxw_app_models[0];
+  
+  return wxw_app_model;
 }
 
-// MARK: findByIdOkWxwApp
-/** 根据 id 查找企微应用 */
-export async function findByIdOkWxwApp(
-  id?: WxwAppId | null,
+// MARK: findOneOkWxwApp
+/** 根据条件查找第一企微应用, 如果不存在则抛错 */
+export async function findOneOkWxwApp(
+  search?: Readonly<WxwAppSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<WxwAppModel> {
   
   const table = "wxwork_wxw_app";
-  const method = "findByIdOkWxwApp";
+  const method = "findOneOkWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -924,20 +886,32 @@ export async function findByIdOkWxwApp(
     options.is_debug = false;
   }
   
-  const model_wxw_app = validateOptionWxwApp(
-    await findByIdWxwApp(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const wxw_app_models = await findAllWxwApp(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_wxw_app;
+  const wxw_app_model = wxw_app_models[0];
+  
+  if (!wxw_app_model) {
+    const err_msg = "此 企微应用 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxw_app_model;
 }
 
 // MARK: findByIdWxwApp
 /** 根据 id 查找企微应用 */
 export async function findByIdWxwApp(
-  id?: WxwAppId | null,
+  id: WxwAppId,
   options?: {
     is_debug?: boolean;
   },
@@ -965,7 +939,7 @@ export async function findByIdWxwApp(
     return;
   }
   
-  const model = await findOneWxwApp(
+  const wxw_app_model = await findOneWxwApp(
     {
       id,
     },
@@ -973,7 +947,47 @@ export async function findByIdWxwApp(
     options,
   );
   
-  return model;
+  return wxw_app_model;
+}
+
+// MARK: findByIdOkWxwApp
+/** 根据 id 查找企微应用, 如果不存在则抛错 */
+export async function findByIdOkWxwApp(
+  id: WxwAppId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxwAppModel> {
+  
+  const table = "wxwork_wxw_app";
+  const method = "findByIdOkWxwApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const wxw_app_model = await findByIdWxwApp(
+    id,
+    options,
+  );
+  
+  if (!wxw_app_model) {
+    const err_msg = "此 企微应用 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxw_app_model;
 }
 
 // MARK: findByIdsWxwApp
@@ -1013,6 +1027,41 @@ export async function findByIdsWxwApp(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkWxwApp
+/** 根据 ids 查找企微应用, 出现查询不到的 id 则报错 */
+export async function findByIdsOkWxwApp(
+  ids: WxwAppId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxwAppModel[]> {
+  
+  const table = "wxwork_wxw_app";
+  const method = "findByIdsOkWxwApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsWxwApp(
+    ids,
     options,
   );
   

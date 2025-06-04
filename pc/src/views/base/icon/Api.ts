@@ -89,13 +89,14 @@ export async function findAllIcon(
 }
 
 /**
- * 根据条件查找第一个图标库
+ * 根据条件查找第一个 图标库
  */
 export async function findOneIcon(
   search?: IconSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneIcon?: IconModel;
   } = await query({
@@ -111,8 +112,43 @@ export async function findOneIcon(
       sort,
     },
   }, opt);
+  
   const model = data.findOneIcon;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 图标库, 如果不存在则抛错
+ */
+export async function findOneOkIcon(
+  search?: IconSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkIcon?: IconModel;
+  } = await query({
+    query: `
+      query($search: IconSearch, $sort: [SortInput!]) {
+        findOneOkIcon(search: $search, sort: $sort) {
+          ${ iconQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkIcon;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -212,12 +248,14 @@ export async function updateByIdIcon(
  * 根据 id 查找 图标库
  */
 export async function findByIdIcon(
-  id?: IconId,
+  id: IconId,
   opt?: GqlOpt,
 ): Promise<IconModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdIcon?: IconModel;
   } = await query({
@@ -232,8 +270,41 @@ export async function findByIdIcon(
       id,
     },
   }, opt);
+  
   const model = data.findByIdIcon;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 图标库, 如果不存在则抛错
+ */
+export async function findByIdOkIcon(
+  id: IconId,
+  opt?: GqlOpt,
+): Promise<IconModel> {
+  
+  const data: {
+    findByIdOkIcon: IconModel;
+  } = await query({
+    query: `
+      query($id: IconId!) {
+        findByIdOkIcon(id: $id) {
+          ${ iconQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkIcon;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -244,33 +315,70 @@ export async function findByIdsIcon(
   ids: IconId[],
   opt?: GqlOpt,
 ): Promise<IconModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: IconModel[] = [ ];
-  try {
-    const data: {
-      findByIdsIcon: IconModel[];
-    } = await query({
-      query: `
-        query($ids: [IconId!]!) {
-          findByIdsIcon(ids: $ids) {
-            ${ iconQueryField }
-          }
+  
+  const data: {
+    findByIdsIcon: IconModel[];
+  } = await query({
+    query: `
+      query($ids: [IconId!]!) {
+        findByIdsIcon(ids: $ids) {
+          ${ iconQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsIcon;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsIcon;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 图标库, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkIcon(
+  ids: IconId[],
+  opt?: GqlOpt,
+): Promise<IconModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkIcon: IconModel[];
+  } = await query({
+    query: `
+      query($ids: [IconId!]!) {
+        findByIdsOkIcon(ids: $ids) {
+          ${ iconQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkIcon;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
