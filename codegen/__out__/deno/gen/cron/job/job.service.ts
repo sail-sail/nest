@@ -73,13 +73,42 @@ export async function findOneJob(
 }
 
 /**
+ * 根据条件查找第一个任务, 如果不存在则抛错
+ */
+export async function findOneOkJob(
+  search?: JobSearch,
+  sort?: SortInput[],
+): Promise<JobModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const job_model = await jobDao.findOneOkJob(search, sort);
+  
+  return job_model;
+}
+
+/**
  * 根据 id 查找任务
  */
 export async function findByIdJob(
-  job_id?: JobId | null,
+  job_id: JobId,
 ): Promise<JobModel | undefined> {
   
   const job_model = await jobDao.findByIdJob(job_id);
+  
+  return job_model;
+}
+
+/**
+ * 根据 id 查找任务, 如果不存在则抛错
+ */
+export async function findByIdOkJob(
+  job_id: JobId,
+): Promise<JobModel> {
+  
+  const job_model = await jobDao.findByIdOkJob(job_id);
   
   return job_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsJob(
 ): Promise<JobModel[]> {
   
   const job_models = await jobDao.findByIdsJob(job_ids);
+  
+  return job_models;
+}
+
+/**
+ * 根据 ids 查找任务, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkJob(
+  job_ids: JobId[],
+): Promise<JobModel[]> {
+  
+  const job_models = await jobDao.findByIdsOkJob(job_ids);
   
   return job_models;
 }

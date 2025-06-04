@@ -115,13 +115,14 @@ export async function findAllUsr(
 }
 
 /**
- * 根据条件查找第一个用户
+ * 根据条件查找第一个 用户
  */
 export async function findOneUsr(
   search?: UsrSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneUsr?: UsrModel;
   } = await query({
@@ -137,8 +138,43 @@ export async function findOneUsr(
       sort,
     },
   }, opt);
+  
   const model = data.findOneUsr;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 用户, 如果不存在则抛错
+ */
+export async function findOneOkUsr(
+  search?: UsrSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkUsr?: UsrModel;
+  } = await query({
+    query: `
+      query($search: UsrSearch, $sort: [SortInput!]) {
+        findOneOkUsr(search: $search, sort: $sort) {
+          ${ usrQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkUsr;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -238,12 +274,14 @@ export async function updateByIdUsr(
  * 根据 id 查找 用户
  */
 export async function findByIdUsr(
-  id?: UsrId,
+  id: UsrId,
   opt?: GqlOpt,
 ): Promise<UsrModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdUsr?: UsrModel;
   } = await query({
@@ -258,8 +296,41 @@ export async function findByIdUsr(
       id,
     },
   }, opt);
+  
   const model = data.findByIdUsr;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 用户, 如果不存在则抛错
+ */
+export async function findByIdOkUsr(
+  id: UsrId,
+  opt?: GqlOpt,
+): Promise<UsrModel> {
+  
+  const data: {
+    findByIdOkUsr: UsrModel;
+  } = await query({
+    query: `
+      query($id: UsrId!) {
+        findByIdOkUsr(id: $id) {
+          ${ usrQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkUsr;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -270,33 +341,70 @@ export async function findByIdsUsr(
   ids: UsrId[],
   opt?: GqlOpt,
 ): Promise<UsrModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: UsrModel[] = [ ];
-  try {
-    const data: {
-      findByIdsUsr: UsrModel[];
-    } = await query({
-      query: `
-        query($ids: [UsrId!]!) {
-          findByIdsUsr(ids: $ids) {
-            ${ usrQueryField }
-          }
+  
+  const data: {
+    findByIdsUsr: UsrModel[];
+  } = await query({
+    query: `
+      query($ids: [UsrId!]!) {
+        findByIdsUsr(ids: $ids) {
+          ${ usrQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsUsr;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsUsr;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 用户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkUsr(
+  ids: UsrId[],
+  opt?: GqlOpt,
+): Promise<UsrModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkUsr: UsrModel[];
+  } = await query({
+    query: `
+      query($ids: [UsrId!]!) {
+        findByIdsOkUsr(ids: $ids) {
+          ${ usrQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkUsr;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

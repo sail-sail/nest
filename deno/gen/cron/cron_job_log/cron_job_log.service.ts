@@ -73,13 +73,42 @@ export async function findOneCronJobLog(
 }
 
 /**
+ * 根据条件查找第一个定时任务日志, 如果不存在则抛错
+ */
+export async function findOneOkCronJobLog(
+  search?: CronJobLogSearch,
+  sort?: SortInput[],
+): Promise<CronJobLogModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const cron_job_log_model = await cron_job_logDao.findOneOkCronJobLog(search, sort);
+  
+  return cron_job_log_model;
+}
+
+/**
  * 根据 id 查找定时任务日志
  */
 export async function findByIdCronJobLog(
-  cron_job_log_id?: CronJobLogId | null,
+  cron_job_log_id: CronJobLogId,
 ): Promise<CronJobLogModel | undefined> {
   
   const cron_job_log_model = await cron_job_logDao.findByIdCronJobLog(cron_job_log_id);
+  
+  return cron_job_log_model;
+}
+
+/**
+ * 根据 id 查找定时任务日志, 如果不存在则抛错
+ */
+export async function findByIdOkCronJobLog(
+  cron_job_log_id: CronJobLogId,
+): Promise<CronJobLogModel> {
+  
+  const cron_job_log_model = await cron_job_logDao.findByIdOkCronJobLog(cron_job_log_id);
   
   return cron_job_log_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsCronJobLog(
 ): Promise<CronJobLogModel[]> {
   
   const cron_job_log_models = await cron_job_logDao.findByIdsCronJobLog(cron_job_log_ids);
+  
+  return cron_job_log_models;
+}
+
+/**
+ * 根据 ids 查找定时任务日志, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCronJobLog(
+  cron_job_log_ids: CronJobLogId[],
+): Promise<CronJobLogModel[]> {
+  
+  const cron_job_log_models = await cron_job_logDao.findByIdsOkCronJobLog(cron_job_log_ids);
   
   return cron_job_log_models;
 }

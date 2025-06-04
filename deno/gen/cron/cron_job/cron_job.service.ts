@@ -73,13 +73,42 @@ export async function findOneCronJob(
 }
 
 /**
+ * 根据条件查找第一个定时任务, 如果不存在则抛错
+ */
+export async function findOneOkCronJob(
+  search?: CronJobSearch,
+  sort?: SortInput[],
+): Promise<CronJobModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const cron_job_model = await cron_jobDao.findOneOkCronJob(search, sort);
+  
+  return cron_job_model;
+}
+
+/**
  * 根据 id 查找定时任务
  */
 export async function findByIdCronJob(
-  cron_job_id?: CronJobId | null,
+  cron_job_id: CronJobId,
 ): Promise<CronJobModel | undefined> {
   
   const cron_job_model = await cron_jobDao.findByIdCronJob(cron_job_id);
+  
+  return cron_job_model;
+}
+
+/**
+ * 根据 id 查找定时任务, 如果不存在则抛错
+ */
+export async function findByIdOkCronJob(
+  cron_job_id: CronJobId,
+): Promise<CronJobModel> {
+  
+  const cron_job_model = await cron_jobDao.findByIdOkCronJob(cron_job_id);
   
   return cron_job_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsCronJob(
 ): Promise<CronJobModel[]> {
   
   const cron_job_models = await cron_jobDao.findByIdsCronJob(cron_job_ids);
+  
+  return cron_job_models;
+}
+
+/**
+ * 根据 ids 查找定时任务, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCronJob(
+  cron_job_ids: CronJobId[],
+): Promise<CronJobModel[]> {
+  
+  const cron_job_models = await cron_jobDao.findByIdsOkCronJob(cron_job_ids);
   
   return cron_job_models;
 }

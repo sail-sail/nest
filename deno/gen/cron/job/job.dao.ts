@@ -695,48 +695,6 @@ export async function checkByUniqueJob(
   return;
 }
 
-// MARK: findOneOkJob
-/** 根据条件查找第一任务 */
-export async function findOneOkJob(
-  search?: Readonly<JobSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<JobModel> {
-  
-  const table = "cron_job";
-  const method = "findOneOkJob";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_job = validateOptionJob(
-    await findOneJob(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_job;
-}
-
 // MARK: findOneJob
 /** 根据条件查找第一任务 */
 export async function findOneJob(
@@ -768,41 +726,45 @@ export async function findOneJob(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllJob(
+  
+  const job_models = await findAllJob(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const job_model = job_models[0];
+  
+  return job_model;
 }
 
-// MARK: findByIdOkJob
-/** 根据 id 查找任务 */
-export async function findByIdOkJob(
-  id?: JobId | null,
+// MARK: findOneOkJob
+/** 根据条件查找第一任务, 如果不存在则抛错 */
+export async function findOneOkJob(
+  search?: Readonly<JobSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<JobModel> {
   
   const table = "cron_job";
-  const method = "findByIdOkJob";
+  const method = "findOneOkJob";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -812,20 +774,32 @@ export async function findByIdOkJob(
     options.is_debug = false;
   }
   
-  const model_job = validateOptionJob(
-    await findByIdJob(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const job_models = await findAllJob(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_job;
+  const job_model = job_models[0];
+  
+  if (!job_model) {
+    const err_msg = "此 任务 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return job_model;
 }
 
 // MARK: findByIdJob
 /** 根据 id 查找任务 */
 export async function findByIdJob(
-  id?: JobId | null,
+  id: JobId,
   options?: {
     is_debug?: boolean;
   },
@@ -853,7 +827,7 @@ export async function findByIdJob(
     return;
   }
   
-  const model = await findOneJob(
+  const job_model = await findOneJob(
     {
       id,
     },
@@ -861,7 +835,47 @@ export async function findByIdJob(
     options,
   );
   
-  return model;
+  return job_model;
+}
+
+// MARK: findByIdOkJob
+/** 根据 id 查找任务, 如果不存在则抛错 */
+export async function findByIdOkJob(
+  id: JobId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<JobModel> {
+  
+  const table = "cron_job";
+  const method = "findByIdOkJob";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const job_model = await findByIdJob(
+    id,
+    options,
+  );
+  
+  if (!job_model) {
+    const err_msg = "此 任务 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return job_model;
 }
 
 // MARK: findByIdsJob
@@ -901,6 +915,41 @@ export async function findByIdsJob(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkJob
+/** 根据 ids 查找任务, 出现查询不到的 id 则报错 */
+export async function findByIdsOkJob(
+  ids: JobId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<JobModel[]> {
+  
+  const table = "cron_job";
+  const method = "findByIdsOkJob";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsJob(
+    ids,
     options,
   );
   

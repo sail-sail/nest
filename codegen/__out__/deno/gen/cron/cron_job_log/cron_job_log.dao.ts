@@ -729,48 +729,6 @@ export async function checkByUniqueCronJobLog(
   return;
 }
 
-// MARK: findOneOkCronJobLog
-/** 根据条件查找第一定时任务日志 */
-export async function findOneOkCronJobLog(
-  search?: Readonly<CronJobLogSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<CronJobLogModel> {
-  
-  const table = "cron_cron_job_log";
-  const method = "findOneOkCronJobLog";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_cron_job_log = validateOptionCronJobLog(
-    await findOneCronJobLog(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_cron_job_log;
-}
-
 // MARK: findOneCronJobLog
 /** 根据条件查找第一定时任务日志 */
 export async function findOneCronJobLog(
@@ -802,41 +760,45 @@ export async function findOneCronJobLog(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllCronJobLog(
+  
+  const cron_job_log_models = await findAllCronJobLog(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const cron_job_log_model = cron_job_log_models[0];
+  
+  return cron_job_log_model;
 }
 
-// MARK: findByIdOkCronJobLog
-/** 根据 id 查找定时任务日志 */
-export async function findByIdOkCronJobLog(
-  id?: CronJobLogId | null,
+// MARK: findOneOkCronJobLog
+/** 根据条件查找第一定时任务日志, 如果不存在则抛错 */
+export async function findOneOkCronJobLog(
+  search?: Readonly<CronJobLogSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<CronJobLogModel> {
   
   const table = "cron_cron_job_log";
-  const method = "findByIdOkCronJobLog";
+  const method = "findOneOkCronJobLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -846,20 +808,32 @@ export async function findByIdOkCronJobLog(
     options.is_debug = false;
   }
   
-  const model_cron_job_log = validateOptionCronJobLog(
-    await findByIdCronJobLog(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const cron_job_log_models = await findAllCronJobLog(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_cron_job_log;
+  const cron_job_log_model = cron_job_log_models[0];
+  
+  if (!cron_job_log_model) {
+    const err_msg = "此 定时任务日志 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return cron_job_log_model;
 }
 
 // MARK: findByIdCronJobLog
 /** 根据 id 查找定时任务日志 */
 export async function findByIdCronJobLog(
-  id?: CronJobLogId | null,
+  id: CronJobLogId,
   options?: {
     is_debug?: boolean;
   },
@@ -887,7 +861,7 @@ export async function findByIdCronJobLog(
     return;
   }
   
-  const model = await findOneCronJobLog(
+  const cron_job_log_model = await findOneCronJobLog(
     {
       id,
     },
@@ -895,7 +869,47 @@ export async function findByIdCronJobLog(
     options,
   );
   
-  return model;
+  return cron_job_log_model;
+}
+
+// MARK: findByIdOkCronJobLog
+/** 根据 id 查找定时任务日志, 如果不存在则抛错 */
+export async function findByIdOkCronJobLog(
+  id: CronJobLogId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CronJobLogModel> {
+  
+  const table = "cron_cron_job_log";
+  const method = "findByIdOkCronJobLog";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const cron_job_log_model = await findByIdCronJobLog(
+    id,
+    options,
+  );
+  
+  if (!cron_job_log_model) {
+    const err_msg = "此 定时任务日志 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return cron_job_log_model;
 }
 
 // MARK: findByIdsCronJobLog
@@ -935,6 +949,41 @@ export async function findByIdsCronJobLog(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkCronJobLog
+/** 根据 ids 查找定时任务日志, 出现查询不到的 id 则报错 */
+export async function findByIdsOkCronJobLog(
+  ids: CronJobLogId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CronJobLogModel[]> {
+  
+  const table = "cron_cron_job_log";
+  const method = "findByIdsOkCronJobLog";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsCronJobLog(
+    ids,
     options,
   );
   

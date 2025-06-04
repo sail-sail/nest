@@ -86,13 +86,14 @@ export async function findAllCronJob(
 }
 
 /**
- * 根据条件查找第一个定时任务
+ * 根据条件查找第一个 定时任务
  */
 export async function findOneCronJob(
   search?: CronJobSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneCronJob?: CronJobModel;
   } = await query({
@@ -108,8 +109,43 @@ export async function findOneCronJob(
       sort,
     },
   }, opt);
+  
   const model = data.findOneCronJob;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 定时任务, 如果不存在则抛错
+ */
+export async function findOneOkCronJob(
+  search?: CronJobSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkCronJob?: CronJobModel;
+  } = await query({
+    query: `
+      query($search: CronJobSearch, $sort: [SortInput!]) {
+        findOneOkCronJob(search: $search, sort: $sort) {
+          ${ cronJobQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkCronJob;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -209,12 +245,14 @@ export async function updateByIdCronJob(
  * 根据 id 查找 定时任务
  */
 export async function findByIdCronJob(
-  id?: CronJobId,
+  id: CronJobId,
   opt?: GqlOpt,
 ): Promise<CronJobModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdCronJob?: CronJobModel;
   } = await query({
@@ -229,8 +267,41 @@ export async function findByIdCronJob(
       id,
     },
   }, opt);
+  
   const model = data.findByIdCronJob;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 定时任务, 如果不存在则抛错
+ */
+export async function findByIdOkCronJob(
+  id: CronJobId,
+  opt?: GqlOpt,
+): Promise<CronJobModel> {
+  
+  const data: {
+    findByIdOkCronJob: CronJobModel;
+  } = await query({
+    query: `
+      query($id: CronJobId!) {
+        findByIdOkCronJob(id: $id) {
+          ${ cronJobQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkCronJob;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -241,33 +312,70 @@ export async function findByIdsCronJob(
   ids: CronJobId[],
   opt?: GqlOpt,
 ): Promise<CronJobModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: CronJobModel[] = [ ];
-  try {
-    const data: {
-      findByIdsCronJob: CronJobModel[];
-    } = await query({
-      query: `
-        query($ids: [CronJobId!]!) {
-          findByIdsCronJob(ids: $ids) {
-            ${ cronJobQueryField }
-          }
+  
+  const data: {
+    findByIdsCronJob: CronJobModel[];
+  } = await query({
+    query: `
+      query($ids: [CronJobId!]!) {
+        findByIdsCronJob(ids: $ids) {
+          ${ cronJobQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsCronJob;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsCronJob;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 定时任务, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCronJob(
+  ids: CronJobId[],
+  opt?: GqlOpt,
+): Promise<CronJobModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkCronJob: CronJobModel[];
+  } = await query({
+    query: `
+      query($ids: [CronJobId!]!) {
+        findByIdsOkCronJob(ids: $ids) {
+          ${ cronJobQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkCronJob;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

@@ -67,13 +67,14 @@ export async function findAllCronJobLogDetail(
 }
 
 /**
- * 根据条件查找第一个定时任务日志明细
+ * 根据条件查找第一个 定时任务日志明细
  */
 export async function findOneCronJobLogDetail(
   search?: CronJobLogDetailSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneCronJobLogDetail?: CronJobLogDetailModel;
   } = await query({
@@ -89,8 +90,43 @@ export async function findOneCronJobLogDetail(
       sort,
     },
   }, opt);
+  
   const model = data.findOneCronJobLogDetail;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 定时任务日志明细, 如果不存在则抛错
+ */
+export async function findOneOkCronJobLogDetail(
+  search?: CronJobLogDetailSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkCronJobLogDetail?: CronJobLogDetailModel;
+  } = await query({
+    query: `
+      query($search: CronJobLogDetailSearch, $sort: [SortInput!]) {
+        findOneOkCronJobLogDetail(search: $search, sort: $sort) {
+          ${ cronJobLogDetailQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkCronJobLogDetail;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -121,12 +157,14 @@ export async function findCountCronJobLogDetail(
  * 根据 id 查找 定时任务日志明细
  */
 export async function findByIdCronJobLogDetail(
-  id?: CronJobLogDetailId,
+  id: CronJobLogDetailId,
   opt?: GqlOpt,
 ): Promise<CronJobLogDetailModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdCronJobLogDetail?: CronJobLogDetailModel;
   } = await query({
@@ -141,8 +179,41 @@ export async function findByIdCronJobLogDetail(
       id,
     },
   }, opt);
+  
   const model = data.findByIdCronJobLogDetail;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 定时任务日志明细, 如果不存在则抛错
+ */
+export async function findByIdOkCronJobLogDetail(
+  id: CronJobLogDetailId,
+  opt?: GqlOpt,
+): Promise<CronJobLogDetailModel> {
+  
+  const data: {
+    findByIdOkCronJobLogDetail: CronJobLogDetailModel;
+  } = await query({
+    query: `
+      query($id: CronJobLogDetailId!) {
+        findByIdOkCronJobLogDetail(id: $id) {
+          ${ cronJobLogDetailQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkCronJobLogDetail;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -153,33 +224,70 @@ export async function findByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
   opt?: GqlOpt,
 ): Promise<CronJobLogDetailModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: CronJobLogDetailModel[] = [ ];
-  try {
-    const data: {
-      findByIdsCronJobLogDetail: CronJobLogDetailModel[];
-    } = await query({
-      query: `
-        query($ids: [CronJobLogDetailId!]!) {
-          findByIdsCronJobLogDetail(ids: $ids) {
-            ${ cronJobLogDetailQueryField }
-          }
+  
+  const data: {
+    findByIdsCronJobLogDetail: CronJobLogDetailModel[];
+  } = await query({
+    query: `
+      query($ids: [CronJobLogDetailId!]!) {
+        findByIdsCronJobLogDetail(ids: $ids) {
+          ${ cronJobLogDetailQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsCronJobLogDetail;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsCronJobLogDetail;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 定时任务日志明细, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCronJobLogDetail(
+  ids: CronJobLogDetailId[],
+  opt?: GqlOpt,
+): Promise<CronJobLogDetailModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkCronJobLogDetail: CronJobLogDetailModel[];
+  } = await query({
+    query: `
+      query($ids: [CronJobLogDetailId!]!) {
+        findByIdsOkCronJobLogDetail(ids: $ids) {
+          ${ cronJobLogDetailQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkCronJobLogDetail;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

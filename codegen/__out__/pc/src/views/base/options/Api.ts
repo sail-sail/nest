@@ -83,13 +83,14 @@ export async function findAllOptions(
 }
 
 /**
- * 根据条件查找第一个系统选项
+ * 根据条件查找第一个 系统选项
  */
 export async function findOneOptions(
   search?: OptionsSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneOptions?: OptionsModel;
   } = await query({
@@ -105,8 +106,43 @@ export async function findOneOptions(
       sort,
     },
   }, opt);
+  
   const model = data.findOneOptions;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 系统选项, 如果不存在则抛错
+ */
+export async function findOneOkOptions(
+  search?: OptionsSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkOptions?: OptionsModel;
+  } = await query({
+    query: `
+      query($search: OptionsSearch, $sort: [SortInput!]) {
+        findOneOkOptions(search: $search, sort: $sort) {
+          ${ optionsQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkOptions;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -206,12 +242,14 @@ export async function updateByIdOptions(
  * 根据 id 查找 系统选项
  */
 export async function findByIdOptions(
-  id?: OptionsId,
+  id: OptionsId,
   opt?: GqlOpt,
 ): Promise<OptionsModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdOptions?: OptionsModel;
   } = await query({
@@ -226,8 +264,41 @@ export async function findByIdOptions(
       id,
     },
   }, opt);
+  
   const model = data.findByIdOptions;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 系统选项, 如果不存在则抛错
+ */
+export async function findByIdOkOptions(
+  id: OptionsId,
+  opt?: GqlOpt,
+): Promise<OptionsModel> {
+  
+  const data: {
+    findByIdOkOptions: OptionsModel;
+  } = await query({
+    query: `
+      query($id: OptionsId!) {
+        findByIdOkOptions(id: $id) {
+          ${ optionsQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkOptions;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -238,33 +309,70 @@ export async function findByIdsOptions(
   ids: OptionsId[],
   opt?: GqlOpt,
 ): Promise<OptionsModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: OptionsModel[] = [ ];
-  try {
-    const data: {
-      findByIdsOptions: OptionsModel[];
-    } = await query({
-      query: `
-        query($ids: [OptionsId!]!) {
-          findByIdsOptions(ids: $ids) {
-            ${ optionsQueryField }
-          }
+  
+  const data: {
+    findByIdsOptions: OptionsModel[];
+  } = await query({
+    query: `
+      query($ids: [OptionsId!]!) {
+        findByIdsOptions(ids: $ids) {
+          ${ optionsQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsOptions;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOptions;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 系统选项, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOptions(
+  ids: OptionsId[],
+  opt?: GqlOpt,
+): Promise<OptionsModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkOptions: OptionsModel[];
+  } = await query({
+    query: `
+      query($ids: [OptionsId!]!) {
+        findByIdsOkOptions(ids: $ids) {
+          ${ optionsQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkOptions;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
