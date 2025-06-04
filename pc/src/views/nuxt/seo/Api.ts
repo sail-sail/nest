@@ -96,13 +96,14 @@ export async function findAllSeo(
 }
 
 /**
- * 根据条件查找第一个SEO优化
+ * 根据条件查找第一个 SEO优化
  */
 export async function findOneSeo(
   search?: SeoSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneSeo?: SeoModel;
   } = await query({
@@ -118,8 +119,43 @@ export async function findOneSeo(
       sort,
     },
   }, opt);
+  
   const model = data.findOneSeo;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 SEO优化, 如果不存在则抛错
+ */
+export async function findOneOkSeo(
+  search?: SeoSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkSeo?: SeoModel;
+  } = await query({
+    query: `
+      query($search: SeoSearch, $sort: [SortInput!]) {
+        findOneOkSeo(search: $search, sort: $sort) {
+          ${ seoQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkSeo;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -219,12 +255,14 @@ export async function updateByIdSeo(
  * 根据 id 查找 SEO优化
  */
 export async function findByIdSeo(
-  id?: SeoId,
+  id: SeoId,
   opt?: GqlOpt,
 ): Promise<SeoModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdSeo?: SeoModel;
   } = await query({
@@ -239,8 +277,41 @@ export async function findByIdSeo(
       id,
     },
   }, opt);
+  
   const model = data.findByIdSeo;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 SEO优化, 如果不存在则抛错
+ */
+export async function findByIdOkSeo(
+  id: SeoId,
+  opt?: GqlOpt,
+): Promise<SeoModel> {
+  
+  const data: {
+    findByIdOkSeo: SeoModel;
+  } = await query({
+    query: `
+      query($id: SeoId!) {
+        findByIdOkSeo(id: $id) {
+          ${ seoQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkSeo;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -251,33 +322,70 @@ export async function findByIdsSeo(
   ids: SeoId[],
   opt?: GqlOpt,
 ): Promise<SeoModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: SeoModel[] = [ ];
-  try {
-    const data: {
-      findByIdsSeo: SeoModel[];
-    } = await query({
-      query: `
-        query($ids: [SeoId!]!) {
-          findByIdsSeo(ids: $ids) {
-            ${ seoQueryField }
-          }
+  
+  const data: {
+    findByIdsSeo: SeoModel[];
+  } = await query({
+    query: `
+      query($ids: [SeoId!]!) {
+        findByIdsSeo(ids: $ids) {
+          ${ seoQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsSeo;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsSeo;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 SEO优化, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkSeo(
+  ids: SeoId[],
+  opt?: GqlOpt,
+): Promise<SeoModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkSeo: SeoModel[];
+  } = await query({
+    query: `
+      query($ids: [SeoId!]!) {
+        findByIdsOkSeo(ids: $ids) {
+          ${ seoQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkSeo;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

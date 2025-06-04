@@ -81,13 +81,14 @@ export async function findAllPermit(
 }
 
 /**
- * 根据条件查找第一个按钮权限
+ * 根据条件查找第一个 按钮权限
  */
 export async function findOnePermit(
   search?: PermitSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOnePermit?: PermitModel;
   } = await query({
@@ -103,8 +104,43 @@ export async function findOnePermit(
       sort,
     },
   }, opt);
+  
   const model = data.findOnePermit;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 按钮权限, 如果不存在则抛错
+ */
+export async function findOneOkPermit(
+  search?: PermitSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkPermit?: PermitModel;
+  } = await query({
+    query: `
+      query($search: PermitSearch, $sort: [SortInput!]) {
+        findOneOkPermit(search: $search, sort: $sort) {
+          ${ permitQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkPermit;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -161,12 +197,14 @@ export async function updateByIdPermit(
  * 根据 id 查找 按钮权限
  */
 export async function findByIdPermit(
-  id?: PermitId,
+  id: PermitId,
   opt?: GqlOpt,
 ): Promise<PermitModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdPermit?: PermitModel;
   } = await query({
@@ -181,8 +219,41 @@ export async function findByIdPermit(
       id,
     },
   }, opt);
+  
   const model = data.findByIdPermit;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 按钮权限, 如果不存在则抛错
+ */
+export async function findByIdOkPermit(
+  id: PermitId,
+  opt?: GqlOpt,
+): Promise<PermitModel> {
+  
+  const data: {
+    findByIdOkPermit: PermitModel;
+  } = await query({
+    query: `
+      query($id: PermitId!) {
+        findByIdOkPermit(id: $id) {
+          ${ permitQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkPermit;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -193,33 +264,70 @@ export async function findByIdsPermit(
   ids: PermitId[],
   opt?: GqlOpt,
 ): Promise<PermitModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: PermitModel[] = [ ];
-  try {
-    const data: {
-      findByIdsPermit: PermitModel[];
-    } = await query({
-      query: `
-        query($ids: [PermitId!]!) {
-          findByIdsPermit(ids: $ids) {
-            ${ permitQueryField }
-          }
+  
+  const data: {
+    findByIdsPermit: PermitModel[];
+  } = await query({
+    query: `
+      query($ids: [PermitId!]!) {
+        findByIdsPermit(ids: $ids) {
+          ${ permitQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsPermit;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsPermit;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 按钮权限, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkPermit(
+  ids: PermitId[],
+  opt?: GqlOpt,
+): Promise<PermitModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkPermit: PermitModel[];
+  } = await query({
+    query: `
+      query($ids: [PermitId!]!) {
+        findByIdsOkPermit(ids: $ids) {
+          ${ permitQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkPermit;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

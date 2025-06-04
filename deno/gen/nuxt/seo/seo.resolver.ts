@@ -91,6 +91,25 @@ export async function findOneSeo(
 }
 
 /**
+ * 根据条件查找第一个SEO优化, 如果不存在则抛错
+ */
+export async function findOneOkSeo(
+  search?: SeoSearch,
+  sort?: SortInput[],
+): Promise<SeoModel> {
+  
+  const {
+    findOneOkSeo,
+  } = await import("./seo.service.ts");
+  
+  checkSortSeo(sort);
+  
+  const model = await findOneOkSeo(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找SEO优化
  */
 export async function findByIdSeo(
@@ -107,6 +126,22 @@ export async function findByIdSeo(
 }
 
 /**
+ * 根据 id 查找SEO优化, 如果不存在则抛错
+ */
+export async function findByIdOkSeo(
+  id: SeoId,
+): Promise<SeoModel | undefined> {
+  
+  const {
+    findByIdOkSeo,
+  } = await import("./seo.service.ts");
+  
+  const model = await findByIdOkSeo(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找SEO优化
  */
 export async function findByIdsSeo(
@@ -118,6 +153,25 @@ export async function findByIdsSeo(
   } = await import("./seo.service.ts");
   
   const models = await findByIdsSeo(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找SEO优化, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkSeo(
+  ids: SeoId[],
+): Promise<SeoModel[]> {
+  
+  const {
+    findByIdsOkSeo,
+  } = await import("./seo.service.ts");
+  
+  const models = await findByIdsOkSeo(ids);
   
   for (const model of models) {
   }

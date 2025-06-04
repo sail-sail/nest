@@ -683,48 +683,6 @@ export async function checkByUniqueSeo(
   return;
 }
 
-// MARK: findOneOkSeo
-/** 根据条件查找第一SEO优化 */
-export async function findOneOkSeo(
-  search?: Readonly<SeoSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<SeoModel> {
-  
-  const table = "nuxt_seo";
-  const method = "findOneOkSeo";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_seo = validateOptionSeo(
-    await findOneSeo(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_seo;
-}
-
 // MARK: findOneSeo
 /** 根据条件查找第一SEO优化 */
 export async function findOneSeo(
@@ -756,41 +714,45 @@ export async function findOneSeo(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllSeo(
+  
+  const seo_models = await findAllSeo(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const seo_model = seo_models[0];
+  
+  return seo_model;
 }
 
-// MARK: findByIdOkSeo
-/** 根据 id 查找SEO优化 */
-export async function findByIdOkSeo(
-  id?: SeoId | null,
+// MARK: findOneOkSeo
+/** 根据条件查找第一SEO优化, 如果不存在则抛错 */
+export async function findOneOkSeo(
+  search?: Readonly<SeoSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<SeoModel> {
   
   const table = "nuxt_seo";
-  const method = "findByIdOkSeo";
+  const method = "findOneOkSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -800,20 +762,32 @@ export async function findByIdOkSeo(
     options.is_debug = false;
   }
   
-  const model_seo = validateOptionSeo(
-    await findByIdSeo(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const seo_models = await findAllSeo(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_seo;
+  const seo_model = seo_models[0];
+  
+  if (!seo_model) {
+    const err_msg = "此 SEO优化 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return seo_model;
 }
 
 // MARK: findByIdSeo
 /** 根据 id 查找SEO优化 */
 export async function findByIdSeo(
-  id?: SeoId | null,
+  id: SeoId,
   options?: {
     is_debug?: boolean;
   },
@@ -841,7 +815,7 @@ export async function findByIdSeo(
     return;
   }
   
-  const model = await findOneSeo(
+  const seo_model = await findOneSeo(
     {
       id,
     },
@@ -849,7 +823,47 @@ export async function findByIdSeo(
     options,
   );
   
-  return model;
+  return seo_model;
+}
+
+// MARK: findByIdOkSeo
+/** 根据 id 查找SEO优化, 如果不存在则抛错 */
+export async function findByIdOkSeo(
+  id: SeoId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<SeoModel> {
+  
+  const table = "nuxt_seo";
+  const method = "findByIdOkSeo";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const seo_model = await findByIdSeo(
+    id,
+    options,
+  );
+  
+  if (!seo_model) {
+    const err_msg = "此 SEO优化 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return seo_model;
 }
 
 // MARK: findByIdsSeo
@@ -889,6 +903,41 @@ export async function findByIdsSeo(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  return models;
+}
+
+// MARK: findByIdsOkSeo
+/** 根据 ids 查找SEO优化, 出现查询不到的 id 则报错 */
+export async function findByIdsOkSeo(
+  ids: SeoId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<SeoModel[]> {
+  
+  const table = "nuxt_seo";
+  const method = "findByIdsOkSeo";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsSeo(
+    ids,
     options,
   );
   
