@@ -92,13 +92,14 @@ export async function findAllDict(
 }
 
 /**
- * 根据条件查找第一个系统字典
+ * 根据条件查找第一个 系统字典
  */
 export async function findOneDict(
   search?: DictSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneDict?: DictModel;
   } = await query({
@@ -114,8 +115,43 @@ export async function findOneDict(
       sort,
     },
   }, opt);
+  
   const model = data.findOneDict;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 系统字典, 如果不存在则抛错
+ */
+export async function findOneOkDict(
+  search?: DictSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkDict?: DictModel;
+  } = await query({
+    query: `
+      query($search: DictSearch, $sort: [SortInput!]) {
+        findOneOkDict(search: $search, sort: $sort) {
+          ${ dictQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkDict;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -215,12 +251,14 @@ export async function updateByIdDict(
  * 根据 id 查找 系统字典
  */
 export async function findByIdDict(
-  id?: DictId,
+  id: DictId,
   opt?: GqlOpt,
 ): Promise<DictModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdDict?: DictModel;
   } = await query({
@@ -235,8 +273,41 @@ export async function findByIdDict(
       id,
     },
   }, opt);
+  
   const model = data.findByIdDict;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 系统字典, 如果不存在则抛错
+ */
+export async function findByIdOkDict(
+  id: DictId,
+  opt?: GqlOpt,
+): Promise<DictModel> {
+  
+  const data: {
+    findByIdOkDict: DictModel;
+  } = await query({
+    query: `
+      query($id: DictId!) {
+        findByIdOkDict(id: $id) {
+          ${ dictQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkDict;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -247,33 +318,70 @@ export async function findByIdsDict(
   ids: DictId[],
   opt?: GqlOpt,
 ): Promise<DictModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: DictModel[] = [ ];
-  try {
-    const data: {
-      findByIdsDict: DictModel[];
-    } = await query({
-      query: `
-        query($ids: [DictId!]!) {
-          findByIdsDict(ids: $ids) {
-            ${ dictQueryField }
-          }
+  
+  const data: {
+    findByIdsDict: DictModel[];
+  } = await query({
+    query: `
+      query($ids: [DictId!]!) {
+        findByIdsDict(ids: $ids) {
+          ${ dictQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsDict;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsDict;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 系统字典, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDict(
+  ids: DictId[],
+  opt?: GqlOpt,
+): Promise<DictModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkDict: DictModel[];
+  } = await query({
+    query: `
+      query($ids: [DictId!]!) {
+        findByIdsOkDict(ids: $ids) {
+          ${ dictQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkDict;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
