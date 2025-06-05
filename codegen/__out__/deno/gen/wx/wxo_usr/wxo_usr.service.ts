@@ -73,13 +73,42 @@ export async function findOneWxoUsr(
 }
 
 /**
+ * 根据条件查找第一个公众号用户, 如果不存在则抛错
+ */
+export async function findOneOkWxoUsr(
+  search?: WxoUsrSearch,
+  sort?: SortInput[],
+): Promise<WxoUsrModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const wxo_usr_model = await wxo_usrDao.findOneOkWxoUsr(search, sort);
+  
+  return wxo_usr_model;
+}
+
+/**
  * 根据 id 查找公众号用户
  */
 export async function findByIdWxoUsr(
-  wxo_usr_id?: WxoUsrId | null,
+  wxo_usr_id: WxoUsrId,
 ): Promise<WxoUsrModel | undefined> {
   
   const wxo_usr_model = await wxo_usrDao.findByIdWxoUsr(wxo_usr_id);
+  
+  return wxo_usr_model;
+}
+
+/**
+ * 根据 id 查找公众号用户, 如果不存在则抛错
+ */
+export async function findByIdOkWxoUsr(
+  wxo_usr_id: WxoUsrId,
+): Promise<WxoUsrModel> {
+  
+  const wxo_usr_model = await wxo_usrDao.findByIdOkWxoUsr(wxo_usr_id);
   
   return wxo_usr_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsWxoUsr(
 ): Promise<WxoUsrModel[]> {
   
   const wxo_usr_models = await wxo_usrDao.findByIdsWxoUsr(wxo_usr_ids);
+  
+  return wxo_usr_models;
+}
+
+/**
+ * 根据 ids 查找公众号用户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxoUsr(
+  wxo_usr_ids: WxoUsrId[],
+): Promise<WxoUsrModel[]> {
+  
+  const wxo_usr_models = await wxo_usrDao.findByIdsOkWxoUsr(wxo_usr_ids);
   
   return wxo_usr_models;
 }

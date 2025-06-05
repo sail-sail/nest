@@ -91,6 +91,25 @@ export async function findOneWxApp(
 }
 
 /**
+ * 根据条件查找第一个小程序设置, 如果不存在则抛错
+ */
+export async function findOneOkWxApp(
+  search?: WxAppSearch,
+  sort?: SortInput[],
+): Promise<WxAppModel> {
+  
+  const {
+    findOneOkWxApp,
+  } = await import("./wx_app.service.ts");
+  
+  checkSortWxApp(sort);
+  
+  const model = await findOneOkWxApp(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找小程序设置
  */
 export async function findByIdWxApp(
@@ -107,6 +126,22 @@ export async function findByIdWxApp(
 }
 
 /**
+ * 根据 id 查找小程序设置, 如果不存在则抛错
+ */
+export async function findByIdOkWxApp(
+  id: WxAppId,
+): Promise<WxAppModel | undefined> {
+  
+  const {
+    findByIdOkWxApp,
+  } = await import("./wx_app.service.ts");
+  
+  const model = await findByIdOkWxApp(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找小程序设置
  */
 export async function findByIdsWxApp(
@@ -118,6 +153,25 @@ export async function findByIdsWxApp(
   } = await import("./wx_app.service.ts");
   
   const models = await findByIdsWxApp(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找小程序设置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxApp(
+  ids: WxAppId[],
+): Promise<WxAppModel[]> {
+  
+  const {
+    findByIdsOkWxApp,
+  } = await import("./wx_app.service.ts");
+  
+  const models = await findByIdsOkWxApp(ids);
   
   for (const model of models) {
   }

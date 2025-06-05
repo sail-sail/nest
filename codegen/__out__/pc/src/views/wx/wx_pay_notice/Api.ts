@@ -110,13 +110,14 @@ export async function findAllWxPayNotice(
 }
 
 /**
- * 根据条件查找第一个微信支付通知
+ * 根据条件查找第一个 微信支付通知
  */
 export async function findOneWxPayNotice(
   search?: WxPayNoticeSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneWxPayNotice?: WxPayNoticeModel;
   } = await query({
@@ -132,8 +133,43 @@ export async function findOneWxPayNotice(
       sort,
     },
   }, opt);
+  
   const model = data.findOneWxPayNotice;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 微信支付通知, 如果不存在则抛错
+ */
+export async function findOneOkWxPayNotice(
+  search?: WxPayNoticeSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkWxPayNotice?: WxPayNoticeModel;
+  } = await query({
+    query: `
+      query($search: WxPayNoticeSearch, $sort: [SortInput!]) {
+        findOneOkWxPayNotice(search: $search, sort: $sort) {
+          ${ wxPayNoticeQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkWxPayNotice;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -164,12 +200,14 @@ export async function findCountWxPayNotice(
  * 根据 id 查找 微信支付通知
  */
 export async function findByIdWxPayNotice(
-  id?: WxPayNoticeId,
+  id: WxPayNoticeId,
   opt?: GqlOpt,
 ): Promise<WxPayNoticeModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdWxPayNotice?: WxPayNoticeModel;
   } = await query({
@@ -184,8 +222,41 @@ export async function findByIdWxPayNotice(
       id,
     },
   }, opt);
+  
   const model = data.findByIdWxPayNotice;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 微信支付通知, 如果不存在则抛错
+ */
+export async function findByIdOkWxPayNotice(
+  id: WxPayNoticeId,
+  opt?: GqlOpt,
+): Promise<WxPayNoticeModel> {
+  
+  const data: {
+    findByIdOkWxPayNotice: WxPayNoticeModel;
+  } = await query({
+    query: `
+      query($id: WxPayNoticeId!) {
+        findByIdOkWxPayNotice(id: $id) {
+          ${ wxPayNoticeQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkWxPayNotice;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -196,33 +267,70 @@ export async function findByIdsWxPayNotice(
   ids: WxPayNoticeId[],
   opt?: GqlOpt,
 ): Promise<WxPayNoticeModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: WxPayNoticeModel[] = [ ];
-  try {
-    const data: {
-      findByIdsWxPayNotice: WxPayNoticeModel[];
-    } = await query({
-      query: `
-        query($ids: [WxPayNoticeId!]!) {
-          findByIdsWxPayNotice(ids: $ids) {
-            ${ wxPayNoticeQueryField }
-          }
+  
+  const data: {
+    findByIdsWxPayNotice: WxPayNoticeModel[];
+  } = await query({
+    query: `
+      query($ids: [WxPayNoticeId!]!) {
+        findByIdsWxPayNotice(ids: $ids) {
+          ${ wxPayNoticeQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsWxPayNotice;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsWxPayNotice;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 微信支付通知, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxPayNotice(
+  ids: WxPayNoticeId[],
+  opt?: GqlOpt,
+): Promise<WxPayNoticeModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkWxPayNotice: WxPayNoticeModel[];
+  } = await query({
+    query: `
+      query($ids: [WxPayNoticeId!]!) {
+        findByIdsOkWxPayNotice(ids: $ids) {
+          ${ wxPayNoticeQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkWxPayNotice;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

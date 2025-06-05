@@ -920,48 +920,6 @@ export async function checkByUniqueWxoApp(
   return;
 }
 
-// MARK: findOneOkWxoApp
-/** 根据条件查找第一公众号设置 */
-export async function findOneOkWxoApp(
-  search?: Readonly<WxoAppSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<WxoAppModel> {
-  
-  const table = "wx_wxo_app";
-  const method = "findOneOkWxoApp";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_wxo_app = validateOptionWxoApp(
-    await findOneWxoApp(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_wxo_app;
-}
-
 // MARK: findOneWxoApp
 /** 根据条件查找第一公众号设置 */
 export async function findOneWxoApp(
@@ -993,41 +951,45 @@ export async function findOneWxoApp(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllWxoApp(
+  
+  const wxo_app_models = await findAllWxoApp(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const wxo_app_model = wxo_app_models[0];
+  
+  return wxo_app_model;
 }
 
-// MARK: findByIdOkWxoApp
-/** 根据 id 查找公众号设置 */
-export async function findByIdOkWxoApp(
-  id?: WxoAppId | null,
+// MARK: findOneOkWxoApp
+/** 根据条件查找第一公众号设置, 如果不存在则抛错 */
+export async function findOneOkWxoApp(
+  search?: Readonly<WxoAppSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<WxoAppModel> {
   
   const table = "wx_wxo_app";
-  const method = "findByIdOkWxoApp";
+  const method = "findOneOkWxoApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -1037,20 +999,32 @@ export async function findByIdOkWxoApp(
     options.is_debug = false;
   }
   
-  const model_wxo_app = validateOptionWxoApp(
-    await findByIdWxoApp(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const wxo_app_models = await findAllWxoApp(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_wxo_app;
+  const wxo_app_model = wxo_app_models[0];
+  
+  if (!wxo_app_model) {
+    const err_msg = "此 公众号设置 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxo_app_model;
 }
 
 // MARK: findByIdWxoApp
 /** 根据 id 查找公众号设置 */
 export async function findByIdWxoApp(
-  id?: WxoAppId | null,
+  id: WxoAppId,
   options?: {
     is_debug?: boolean;
   },
@@ -1078,7 +1052,7 @@ export async function findByIdWxoApp(
     return;
   }
   
-  const model = await findOneWxoApp(
+  const wxo_app_model = await findOneWxoApp(
     {
       id,
     },
@@ -1086,7 +1060,47 @@ export async function findByIdWxoApp(
     options,
   );
   
-  return model;
+  return wxo_app_model;
+}
+
+// MARK: findByIdOkWxoApp
+/** 根据 id 查找公众号设置, 如果不存在则抛错 */
+export async function findByIdOkWxoApp(
+  id: WxoAppId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoAppModel> {
+  
+  const table = "wx_wxo_app";
+  const method = "findByIdOkWxoApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const wxo_app_model = await findByIdWxoApp(
+    id,
+    options,
+  );
+  
+  if (!wxo_app_model) {
+    const err_msg = "此 公众号设置 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxo_app_model;
 }
 
 // MARK: findByIdsWxoApp
@@ -1126,6 +1140,45 @@ export async function findByIdsWxoApp(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkWxoApp
+/** 根据 ids 查找公众号设置, 出现查询不到的 id 则报错 */
+export async function findByIdsOkWxoApp(
+  ids: WxoAppId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoAppModel[]> {
+  
+  const table = "wx_wxo_app";
+  const method = "findByIdsOkWxoApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsWxoApp(
+    ids,
     options,
   );
   
