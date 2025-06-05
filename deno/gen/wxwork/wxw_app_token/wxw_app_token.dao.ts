@@ -1056,7 +1056,11 @@ export async function findByIdsWxwAppToken(
     options,
   );
   
-  return models;
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
 }
 
 // MARK: findByIdsOkWxwAppToken
