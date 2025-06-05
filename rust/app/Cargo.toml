@@ -73,6 +73,8 @@ rsa.workspace = true
 aes-gcm.workspace = true
 pkcs8.workspace = true
 serde_with.workspace = true
+csv.workspace = true
+rust_xlsxwriter.workspace = true
 
 generated = { path = "../generated" }
 
