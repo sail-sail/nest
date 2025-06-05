@@ -2926,6 +2926,16 @@ pub async fn find_by_ids_<#=table#>(
     options,
   ).await?;
   
+  let <#=table#>_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      <#=table#>_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<<#=Table_Up#>Model>>();
+  
   Ok(<#=table#>_models)
 }
 

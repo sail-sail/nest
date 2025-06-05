@@ -779,6 +779,16 @@ pub async fn find_by_ids_field_permit(
     options,
   ).await?;
   
+  let field_permit_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      field_permit_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<FieldPermitModel>>();
+  
   Ok(field_permit_models)
 }
 

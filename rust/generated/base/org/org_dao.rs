@@ -1085,6 +1085,16 @@ pub async fn find_by_ids_org(
     options,
   ).await?;
   
+  let org_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      org_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<OrgModel>>();
+  
   Ok(org_models)
 }
 

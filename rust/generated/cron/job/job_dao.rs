@@ -1105,6 +1105,16 @@ pub async fn find_by_ids_job(
     options,
   ).await?;
   
+  let job_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      job_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<JobModel>>();
+  
   Ok(job_models)
 }
 
