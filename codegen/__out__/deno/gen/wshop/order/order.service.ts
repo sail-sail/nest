@@ -104,13 +104,42 @@ export async function findOneOrder(
 }
 
 /**
+ * 根据条件查找第一个订单, 如果不存在则抛错
+ */
+export async function findOneOkOrder(
+  search?: OrderSearch,
+  sort?: SortInput[],
+): Promise<OrderModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const order_model = await orderDao.findOneOkOrder(search, sort);
+  
+  return order_model;
+}
+
+/**
  * 根据 id 查找订单
  */
 export async function findByIdOrder(
-  order_id?: OrderId | null,
+  order_id: OrderId,
 ): Promise<OrderModel | undefined> {
   
   const order_model = await orderDao.findByIdOrder(order_id);
+  
+  return order_model;
+}
+
+/**
+ * 根据 id 查找订单, 如果不存在则抛错
+ */
+export async function findByIdOkOrder(
+  order_id: OrderId,
+): Promise<OrderModel> {
+  
+  const order_model = await orderDao.findByIdOkOrder(order_id);
   
   return order_model;
 }
@@ -123,6 +152,18 @@ export async function findByIdsOrder(
 ): Promise<OrderModel[]> {
   
   const order_models = await orderDao.findByIdsOrder(order_ids);
+  
+  return order_models;
+}
+
+/**
+ * 根据 ids 查找订单, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOrder(
+  order_ids: OrderId[],
+): Promise<OrderModel[]> {
+  
+  const order_models = await orderDao.findByIdsOkOrder(order_ids);
   
   return order_models;
 }

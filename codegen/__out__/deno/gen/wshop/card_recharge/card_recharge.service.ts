@@ -104,13 +104,42 @@ export async function findOneCardRecharge(
 }
 
 /**
+ * 根据条件查找第一个会员卡充值记录, 如果不存在则抛错
+ */
+export async function findOneOkCardRecharge(
+  search?: CardRechargeSearch,
+  sort?: SortInput[],
+): Promise<CardRechargeModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const card_recharge_model = await card_rechargeDao.findOneOkCardRecharge(search, sort);
+  
+  return card_recharge_model;
+}
+
+/**
  * 根据 id 查找会员卡充值记录
  */
 export async function findByIdCardRecharge(
-  card_recharge_id?: CardRechargeId | null,
+  card_recharge_id: CardRechargeId,
 ): Promise<CardRechargeModel | undefined> {
   
   const card_recharge_model = await card_rechargeDao.findByIdCardRecharge(card_recharge_id);
+  
+  return card_recharge_model;
+}
+
+/**
+ * 根据 id 查找会员卡充值记录, 如果不存在则抛错
+ */
+export async function findByIdOkCardRecharge(
+  card_recharge_id: CardRechargeId,
+): Promise<CardRechargeModel> {
+  
+  const card_recharge_model = await card_rechargeDao.findByIdOkCardRecharge(card_recharge_id);
   
   return card_recharge_model;
 }
@@ -123,6 +152,18 @@ export async function findByIdsCardRecharge(
 ): Promise<CardRechargeModel[]> {
   
   const card_recharge_models = await card_rechargeDao.findByIdsCardRecharge(card_recharge_ids);
+  
+  return card_recharge_models;
+}
+
+/**
+ * 根据 ids 查找会员卡充值记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCardRecharge(
+  card_recharge_ids: CardRechargeId[],
+): Promise<CardRechargeModel[]> {
+  
+  const card_recharge_models = await card_rechargeDao.findByIdsOkCardRecharge(card_recharge_ids);
   
   return card_recharge_models;
 }

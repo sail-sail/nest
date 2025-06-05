@@ -780,48 +780,6 @@ export async function checkByUniqueCardRecharge(
   return;
 }
 
-// MARK: findOneOkCardRecharge
-/** 根据条件查找第一会员卡充值记录 */
-export async function findOneOkCardRecharge(
-  search?: Readonly<CardRechargeSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<CardRechargeModel> {
-  
-  const table = "wshop_card_recharge";
-  const method = "findOneOkCardRecharge";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_card_recharge = validateOptionCardRecharge(
-    await findOneCardRecharge(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_card_recharge;
-}
-
 // MARK: findOneCardRecharge
 /** 根据条件查找第一会员卡充值记录 */
 export async function findOneCardRecharge(
@@ -853,41 +811,45 @@ export async function findOneCardRecharge(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllCardRecharge(
+  
+  const card_recharge_models = await findAllCardRecharge(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const card_recharge_model = card_recharge_models[0];
+  
+  return card_recharge_model;
 }
 
-// MARK: findByIdOkCardRecharge
-/** 根据 id 查找会员卡充值记录 */
-export async function findByIdOkCardRecharge(
-  id?: CardRechargeId | null,
+// MARK: findOneOkCardRecharge
+/** 根据条件查找第一会员卡充值记录, 如果不存在则抛错 */
+export async function findOneOkCardRecharge(
+  search?: Readonly<CardRechargeSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<CardRechargeModel> {
   
   const table = "wshop_card_recharge";
-  const method = "findByIdOkCardRecharge";
+  const method = "findOneOkCardRecharge";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -897,20 +859,32 @@ export async function findByIdOkCardRecharge(
     options.is_debug = false;
   }
   
-  const model_card_recharge = validateOptionCardRecharge(
-    await findByIdCardRecharge(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const card_recharge_models = await findAllCardRecharge(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_card_recharge;
+  const card_recharge_model = card_recharge_models[0];
+  
+  if (!card_recharge_model) {
+    const err_msg = "此 会员卡充值记录 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return card_recharge_model;
 }
 
 // MARK: findByIdCardRecharge
 /** 根据 id 查找会员卡充值记录 */
 export async function findByIdCardRecharge(
-  id?: CardRechargeId | null,
+  id: CardRechargeId,
   options?: {
     is_debug?: boolean;
   },
@@ -938,7 +912,7 @@ export async function findByIdCardRecharge(
     return;
   }
   
-  const model = await findOneCardRecharge(
+  const card_recharge_model = await findOneCardRecharge(
     {
       id,
     },
@@ -946,7 +920,47 @@ export async function findByIdCardRecharge(
     options,
   );
   
-  return model;
+  return card_recharge_model;
+}
+
+// MARK: findByIdOkCardRecharge
+/** 根据 id 查找会员卡充值记录, 如果不存在则抛错 */
+export async function findByIdOkCardRecharge(
+  id: CardRechargeId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CardRechargeModel> {
+  
+  const table = "wshop_card_recharge";
+  const method = "findByIdOkCardRecharge";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const card_recharge_model = await findByIdCardRecharge(
+    id,
+    options,
+  );
+  
+  if (!card_recharge_model) {
+    const err_msg = "此 会员卡充值记录 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return card_recharge_model;
 }
 
 // MARK: findByIdsCardRecharge
@@ -986,6 +1000,45 @@ export async function findByIdsCardRecharge(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkCardRecharge
+/** 根据 ids 查找会员卡充值记录, 出现查询不到的 id 则报错 */
+export async function findByIdsOkCardRecharge(
+  ids: CardRechargeId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CardRechargeModel[]> {
+  
+  const table = "wshop_card_recharge";
+  const method = "findByIdsOkCardRecharge";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsCardRecharge(
+    ids,
     options,
   );
   

@@ -91,6 +91,25 @@ export async function findOneCardRecharge(
 }
 
 /**
+ * 根据条件查找第一个会员卡充值记录, 如果不存在则抛错
+ */
+export async function findOneOkCardRecharge(
+  search?: CardRechargeSearch,
+  sort?: SortInput[],
+): Promise<CardRechargeModel> {
+  
+  const {
+    findOneOkCardRecharge,
+  } = await import("./card_recharge.service.ts");
+  
+  checkSortCardRecharge(sort);
+  
+  const model = await findOneOkCardRecharge(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找会员卡充值记录
  */
 export async function findByIdCardRecharge(
@@ -107,6 +126,22 @@ export async function findByIdCardRecharge(
 }
 
 /**
+ * 根据 id 查找会员卡充值记录, 如果不存在则抛错
+ */
+export async function findByIdOkCardRecharge(
+  id: CardRechargeId,
+): Promise<CardRechargeModel | undefined> {
+  
+  const {
+    findByIdOkCardRecharge,
+  } = await import("./card_recharge.service.ts");
+  
+  const model = await findByIdOkCardRecharge(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找会员卡充值记录
  */
 export async function findByIdsCardRecharge(
@@ -118,6 +153,25 @@ export async function findByIdsCardRecharge(
   } = await import("./card_recharge.service.ts");
   
   const models = await findByIdsCardRecharge(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找会员卡充值记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCardRecharge(
+  ids: CardRechargeId[],
+): Promise<CardRechargeModel[]> {
+  
+  const {
+    findByIdsOkCardRecharge,
+  } = await import("./card_recharge.service.ts");
+  
+  const models = await findByIdsOkCardRecharge(ids);
   
   for (const model of models) {
   }

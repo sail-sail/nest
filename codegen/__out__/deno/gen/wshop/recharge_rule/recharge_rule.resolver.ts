@@ -93,6 +93,25 @@ export async function findOneRechargeRule(
 }
 
 /**
+ * 根据条件查找第一个充值赠送规则, 如果不存在则抛错
+ */
+export async function findOneOkRechargeRule(
+  search?: RechargeRuleSearch,
+  sort?: SortInput[],
+): Promise<RechargeRuleModel> {
+  
+  const {
+    findOneOkRechargeRule,
+  } = await import("./recharge_rule.service.ts");
+  
+  checkSortRechargeRule(sort);
+  
+  const model = await findOneOkRechargeRule(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找充值赠送规则
  */
 export async function findByIdRechargeRule(
@@ -109,6 +128,22 @@ export async function findByIdRechargeRule(
 }
 
 /**
+ * 根据 id 查找充值赠送规则, 如果不存在则抛错
+ */
+export async function findByIdOkRechargeRule(
+  id: RechargeRuleId,
+): Promise<RechargeRuleModel | undefined> {
+  
+  const {
+    findByIdOkRechargeRule,
+  } = await import("./recharge_rule.service.ts");
+  
+  const model = await findByIdOkRechargeRule(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找充值赠送规则
  */
 export async function findByIdsRechargeRule(
@@ -120,6 +155,25 @@ export async function findByIdsRechargeRule(
   } = await import("./recharge_rule.service.ts");
   
   const models = await findByIdsRechargeRule(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找充值赠送规则, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkRechargeRule(
+  ids: RechargeRuleId[],
+): Promise<RechargeRuleModel[]> {
+  
+  const {
+    findByIdsOkRechargeRule,
+  } = await import("./recharge_rule.service.ts");
+  
+  const models = await findByIdsOkRechargeRule(ids);
   
   for (const model of models) {
   }

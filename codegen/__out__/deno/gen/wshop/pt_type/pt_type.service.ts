@@ -104,13 +104,42 @@ export async function findOnePtType(
 }
 
 /**
+ * 根据条件查找第一个产品类别, 如果不存在则抛错
+ */
+export async function findOneOkPtType(
+  search?: PtTypeSearch,
+  sort?: SortInput[],
+): Promise<PtTypeModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const pt_type_model = await pt_typeDao.findOneOkPtType(search, sort);
+  
+  return pt_type_model;
+}
+
+/**
  * 根据 id 查找产品类别
  */
 export async function findByIdPtType(
-  pt_type_id?: PtTypeId | null,
+  pt_type_id: PtTypeId,
 ): Promise<PtTypeModel | undefined> {
   
   const pt_type_model = await pt_typeDao.findByIdPtType(pt_type_id);
+  
+  return pt_type_model;
+}
+
+/**
+ * 根据 id 查找产品类别, 如果不存在则抛错
+ */
+export async function findByIdOkPtType(
+  pt_type_id: PtTypeId,
+): Promise<PtTypeModel> {
+  
+  const pt_type_model = await pt_typeDao.findByIdOkPtType(pt_type_id);
   
   return pt_type_model;
 }
@@ -123,6 +152,18 @@ export async function findByIdsPtType(
 ): Promise<PtTypeModel[]> {
   
   const pt_type_models = await pt_typeDao.findByIdsPtType(pt_type_ids);
+  
+  return pt_type_models;
+}
+
+/**
+ * 根据 ids 查找产品类别, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkPtType(
+  pt_type_ids: PtTypeId[],
+): Promise<PtTypeModel[]> {
+  
+  const pt_type_models = await pt_typeDao.findByIdsOkPtType(pt_type_ids);
   
   return pt_type_models;
 }

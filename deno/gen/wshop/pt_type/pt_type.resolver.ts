@@ -91,6 +91,25 @@ export async function findOnePtType(
 }
 
 /**
+ * 根据条件查找第一个产品类别, 如果不存在则抛错
+ */
+export async function findOneOkPtType(
+  search?: PtTypeSearch,
+  sort?: SortInput[],
+): Promise<PtTypeModel> {
+  
+  const {
+    findOneOkPtType,
+  } = await import("./pt_type.service.ts");
+  
+  checkSortPtType(sort);
+  
+  const model = await findOneOkPtType(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找产品类别
  */
 export async function findByIdPtType(
@@ -107,6 +126,22 @@ export async function findByIdPtType(
 }
 
 /**
+ * 根据 id 查找产品类别, 如果不存在则抛错
+ */
+export async function findByIdOkPtType(
+  id: PtTypeId,
+): Promise<PtTypeModel | undefined> {
+  
+  const {
+    findByIdOkPtType,
+  } = await import("./pt_type.service.ts");
+  
+  const model = await findByIdOkPtType(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找产品类别
  */
 export async function findByIdsPtType(
@@ -118,6 +153,25 @@ export async function findByIdsPtType(
   } = await import("./pt_type.service.ts");
   
   const models = await findByIdsPtType(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找产品类别, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkPtType(
+  ids: PtTypeId[],
+): Promise<PtTypeModel[]> {
+  
+  const {
+    findByIdsOkPtType,
+  } = await import("./pt_type.service.ts");
+  
+  const models = await findByIdsOkPtType(ids);
   
   for (const model of models) {
   }

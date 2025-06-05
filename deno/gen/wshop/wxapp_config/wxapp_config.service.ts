@@ -104,13 +104,42 @@ export async function findOneWxappConfig(
 }
 
 /**
+ * 根据条件查找第一个小程序配置, 如果不存在则抛错
+ */
+export async function findOneOkWxappConfig(
+  search?: WxappConfigSearch,
+  sort?: SortInput[],
+): Promise<WxappConfigModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const wxapp_config_model = await wxapp_configDao.findOneOkWxappConfig(search, sort);
+  
+  return wxapp_config_model;
+}
+
+/**
  * 根据 id 查找小程序配置
  */
 export async function findByIdWxappConfig(
-  wxapp_config_id?: WxappConfigId | null,
+  wxapp_config_id: WxappConfigId,
 ): Promise<WxappConfigModel | undefined> {
   
   const wxapp_config_model = await wxapp_configDao.findByIdWxappConfig(wxapp_config_id);
+  
+  return wxapp_config_model;
+}
+
+/**
+ * 根据 id 查找小程序配置, 如果不存在则抛错
+ */
+export async function findByIdOkWxappConfig(
+  wxapp_config_id: WxappConfigId,
+): Promise<WxappConfigModel> {
+  
+  const wxapp_config_model = await wxapp_configDao.findByIdOkWxappConfig(wxapp_config_id);
   
   return wxapp_config_model;
 }
@@ -123,6 +152,18 @@ export async function findByIdsWxappConfig(
 ): Promise<WxappConfigModel[]> {
   
   const wxapp_config_models = await wxapp_configDao.findByIdsWxappConfig(wxapp_config_ids);
+  
+  return wxapp_config_models;
+}
+
+/**
+ * 根据 ids 查找小程序配置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxappConfig(
+  wxapp_config_ids: WxappConfigId[],
+): Promise<WxappConfigModel[]> {
+  
+  const wxapp_config_models = await wxapp_configDao.findByIdsOkWxappConfig(wxapp_config_ids);
   
   return wxapp_config_models;
 }

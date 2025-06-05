@@ -964,48 +964,6 @@ export async function checkByUniquePt(
   return;
 }
 
-// MARK: findOneOkPt
-/** 根据条件查找第一产品 */
-export async function findOneOkPt(
-  search?: Readonly<PtSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<PtModel> {
-  
-  const table = "wshop_pt";
-  const method = "findOneOkPt";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_pt = validateOptionPt(
-    await findOnePt(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_pt;
-}
-
 // MARK: findOnePt
 /** 根据条件查找第一产品 */
 export async function findOnePt(
@@ -1037,41 +995,45 @@ export async function findOnePt(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllPt(
+  
+  const pt_models = await findAllPt(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const pt_model = pt_models[0];
+  
+  return pt_model;
 }
 
-// MARK: findByIdOkPt
-/** 根据 id 查找产品 */
-export async function findByIdOkPt(
-  id?: PtId | null,
+// MARK: findOneOkPt
+/** 根据条件查找第一产品, 如果不存在则抛错 */
+export async function findOneOkPt(
+  search?: Readonly<PtSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<PtModel> {
   
   const table = "wshop_pt";
-  const method = "findByIdOkPt";
+  const method = "findOneOkPt";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -1081,20 +1043,32 @@ export async function findByIdOkPt(
     options.is_debug = false;
   }
   
-  const model_pt = validateOptionPt(
-    await findByIdPt(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const pt_models = await findAllPt(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_pt;
+  const pt_model = pt_models[0];
+  
+  if (!pt_model) {
+    const err_msg = "此 产品 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return pt_model;
 }
 
 // MARK: findByIdPt
 /** 根据 id 查找产品 */
 export async function findByIdPt(
-  id?: PtId | null,
+  id: PtId,
   options?: {
     is_debug?: boolean;
   },
@@ -1122,7 +1096,7 @@ export async function findByIdPt(
     return;
   }
   
-  const model = await findOnePt(
+  const pt_model = await findOnePt(
     {
       id,
     },
@@ -1130,7 +1104,47 @@ export async function findByIdPt(
     options,
   );
   
-  return model;
+  return pt_model;
+}
+
+// MARK: findByIdOkPt
+/** 根据 id 查找产品, 如果不存在则抛错 */
+export async function findByIdOkPt(
+  id: PtId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PtModel> {
+  
+  const table = "wshop_pt";
+  const method = "findByIdOkPt";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const pt_model = await findByIdPt(
+    id,
+    options,
+  );
+  
+  if (!pt_model) {
+    const err_msg = "此 产品 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return pt_model;
 }
 
 // MARK: findByIdsPt
@@ -1170,6 +1184,45 @@ export async function findByIdsPt(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkPt
+/** 根据 ids 查找产品, 出现查询不到的 id 则报错 */
+export async function findByIdsOkPt(
+  ids: PtId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PtModel[]> {
+  
+  const table = "wshop_pt";
+  const method = "findByIdsOkPt";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsPt(
+    ids,
     options,
   );
   

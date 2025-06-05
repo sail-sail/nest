@@ -140,13 +140,14 @@ export async function findAllCard(
 }
 
 /**
- * 根据条件查找第一个会员卡
+ * 根据条件查找第一个 会员卡
  */
 export async function findOneCard(
   search?: CardSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneCard?: CardModel;
   } = await query({
@@ -162,8 +163,43 @@ export async function findOneCard(
       sort,
     },
   }, opt);
+  
   const model = data.findOneCard;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 会员卡, 如果不存在则抛错
+ */
+export async function findOneOkCard(
+  search?: CardSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkCard?: CardModel;
+  } = await query({
+    query: `
+      query($search: CardSearch, $sort: [SortInput!]) {
+        findOneOkCard(search: $search, sort: $sort) {
+          ${ cardQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkCard;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -263,12 +299,14 @@ export async function updateByIdCard(
  * 根据 id 查找 会员卡
  */
 export async function findByIdCard(
-  id?: CardId,
+  id: CardId,
   opt?: GqlOpt,
 ): Promise<CardModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdCard?: CardModel;
   } = await query({
@@ -283,8 +321,41 @@ export async function findByIdCard(
       id,
     },
   }, opt);
+  
   const model = data.findByIdCard;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 会员卡, 如果不存在则抛错
+ */
+export async function findByIdOkCard(
+  id: CardId,
+  opt?: GqlOpt,
+): Promise<CardModel> {
+  
+  const data: {
+    findByIdOkCard: CardModel;
+  } = await query({
+    query: `
+      query($id: CardId!) {
+        findByIdOkCard(id: $id) {
+          ${ cardQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkCard;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -295,33 +366,70 @@ export async function findByIdsCard(
   ids: CardId[],
   opt?: GqlOpt,
 ): Promise<CardModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: CardModel[] = [ ];
-  try {
-    const data: {
-      findByIdsCard: CardModel[];
-    } = await query({
-      query: `
-        query($ids: [CardId!]!) {
-          findByIdsCard(ids: $ids) {
-            ${ cardQueryField }
-          }
+  
+  const data: {
+    findByIdsCard: CardModel[];
+  } = await query({
+    query: `
+      query($ids: [CardId!]!) {
+        findByIdsCard(ids: $ids) {
+          ${ cardQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsCard;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsCard;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 会员卡, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCard(
+  ids: CardId[],
+  opt?: GqlOpt,
+): Promise<CardModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkCard: CardModel[];
+  } = await query({
+    query: `
+      query($ids: [CardId!]!) {
+        findByIdsOkCard(ids: $ids) {
+          ${ cardQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkCard;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
