@@ -1596,6 +1596,16 @@ pub async fn find_by_ids_usr(
     options,
   ).await?;
   
+  let usr_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      usr_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<UsrModel>>();
+  
   Ok(usr_models)
 }
 

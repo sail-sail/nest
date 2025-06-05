@@ -1045,6 +1045,16 @@ pub async fn find_by_ids_login_log(
     options,
   ).await?;
   
+  let login_log_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      login_log_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<LoginLogModel>>();
+  
   Ok(login_log_models)
 }
 

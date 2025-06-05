@@ -947,6 +947,16 @@ pub async fn find_by_ids_cron_job_log_detail(
     options,
   ).await?;
   
+  let cron_job_log_detail_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      cron_job_log_detail_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<CronJobLogDetailModel>>();
+  
   Ok(cron_job_log_detail_models)
 }
 
