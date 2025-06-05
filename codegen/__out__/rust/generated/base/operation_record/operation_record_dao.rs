@@ -1018,6 +1018,16 @@ pub async fn find_by_ids_operation_record(
     options,
   ).await?;
   
+  let operation_record_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      operation_record_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<OperationRecordModel>>();
+  
   Ok(operation_record_models)
 }
 

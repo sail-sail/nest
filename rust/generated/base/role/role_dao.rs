@@ -1464,6 +1464,16 @@ pub async fn find_by_ids_role(
     options,
   ).await?;
   
+  let role_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      role_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<RoleModel>>();
+  
   Ok(role_models)
 }
 

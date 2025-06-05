@@ -1379,6 +1379,16 @@ pub async fn find_by_ids_dept(
     options,
   ).await?;
   
+  let dept_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      dept_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<DeptModel>>();
+  
   Ok(dept_models)
 }
 

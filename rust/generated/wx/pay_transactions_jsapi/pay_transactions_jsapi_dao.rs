@@ -1325,6 +1325,16 @@ pub async fn find_by_ids_pay_transactions_jsapi(
     options,
   ).await?;
   
+  let pay_transactions_jsapi_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      pay_transactions_jsapi_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<PayTransactionsJsapiModel>>();
+  
   Ok(pay_transactions_jsapi_models)
 }
 
