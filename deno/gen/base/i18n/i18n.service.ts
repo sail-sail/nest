@@ -77,13 +77,42 @@ export async function findOneI18n(
 }
 
 /**
+ * 根据条件查找第一个国际化, 如果不存在则抛错
+ */
+export async function findOneOkI18n(
+  search?: I18nSearch,
+  sort?: SortInput[],
+): Promise<I18nModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const i18n_model = await i18nDao.findOneOkI18n(search, sort);
+  
+  return i18n_model;
+}
+
+/**
  * 根据 id 查找国际化
  */
 export async function findByIdI18n(
-  i18n_id?: I18nId | null,
+  i18n_id: I18nId,
 ): Promise<I18nModel | undefined> {
   
   const i18n_model = await i18nDao.findByIdI18n(i18n_id);
+  
+  return i18n_model;
+}
+
+/**
+ * 根据 id 查找国际化, 如果不存在则抛错
+ */
+export async function findByIdOkI18n(
+  i18n_id: I18nId,
+): Promise<I18nModel> {
+  
+  const i18n_model = await i18nDao.findByIdOkI18n(i18n_id);
   
   return i18n_model;
 }
@@ -96,6 +125,18 @@ export async function findByIdsI18n(
 ): Promise<I18nModel[]> {
   
   const i18n_models = await i18nDao.findByIdsI18n(i18n_ids);
+  
+  return i18n_models;
+}
+
+/**
+ * 根据 ids 查找国际化, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkI18n(
+  i18n_ids: I18nId[],
+): Promise<I18nModel[]> {
+  
+  const i18n_models = await i18nDao.findByIdsOkI18n(i18n_ids);
   
   return i18n_models;
 }

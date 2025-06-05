@@ -688,48 +688,6 @@ export async function checkByUniqueOptbiz(
   return;
 }
 
-// MARK: findOneOkOptbiz
-/** 根据条件查找第一业务选项 */
-export async function findOneOkOptbiz(
-  search?: Readonly<OptbizSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<OptbizModel> {
-  
-  const table = "base_optbiz";
-  const method = "findOneOkOptbiz";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_optbiz = validateOptionOptbiz(
-    await findOneOptbiz(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_optbiz;
-}
-
 // MARK: findOneOptbiz
 /** 根据条件查找第一业务选项 */
 export async function findOneOptbiz(
@@ -761,41 +719,45 @@ export async function findOneOptbiz(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllOptbiz(
+  
+  const optbiz_models = await findAllOptbiz(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const optbiz_model = optbiz_models[0];
+  
+  return optbiz_model;
 }
 
-// MARK: findByIdOkOptbiz
-/** 根据 id 查找业务选项 */
-export async function findByIdOkOptbiz(
-  id?: OptbizId | null,
+// MARK: findOneOkOptbiz
+/** 根据条件查找第一业务选项, 如果不存在则抛错 */
+export async function findOneOkOptbiz(
+  search?: Readonly<OptbizSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<OptbizModel> {
   
   const table = "base_optbiz";
-  const method = "findByIdOkOptbiz";
+  const method = "findOneOkOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -805,20 +767,32 @@ export async function findByIdOkOptbiz(
     options.is_debug = false;
   }
   
-  const model_optbiz = validateOptionOptbiz(
-    await findByIdOptbiz(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const optbiz_models = await findAllOptbiz(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_optbiz;
+  const optbiz_model = optbiz_models[0];
+  
+  if (!optbiz_model) {
+    const err_msg = "此 业务选项 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return optbiz_model;
 }
 
 // MARK: findByIdOptbiz
 /** 根据 id 查找业务选项 */
 export async function findByIdOptbiz(
-  id?: OptbizId | null,
+  id: OptbizId,
   options?: {
     is_debug?: boolean;
   },
@@ -846,7 +820,7 @@ export async function findByIdOptbiz(
     return;
   }
   
-  const model = await findOneOptbiz(
+  const optbiz_model = await findOneOptbiz(
     {
       id,
     },
@@ -854,7 +828,47 @@ export async function findByIdOptbiz(
     options,
   );
   
-  return model;
+  return optbiz_model;
+}
+
+// MARK: findByIdOkOptbiz
+/** 根据 id 查找业务选项, 如果不存在则抛错 */
+export async function findByIdOkOptbiz(
+  id: OptbizId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OptbizModel> {
+  
+  const table = "base_optbiz";
+  const method = "findByIdOkOptbiz";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const optbiz_model = await findByIdOptbiz(
+    id,
+    options,
+  );
+  
+  if (!optbiz_model) {
+    const err_msg = "此 业务选项 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return optbiz_model;
 }
 
 // MARK: findByIdsOptbiz
@@ -894,6 +908,45 @@ export async function findByIdsOptbiz(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkOptbiz
+/** 根据 ids 查找业务选项, 出现查询不到的 id 则报错 */
+export async function findByIdsOkOptbiz(
+  ids: OptbizId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OptbizModel[]> {
+  
+  const table = "base_optbiz";
+  const method = "findByIdsOkOptbiz";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsOptbiz(
+    ids,
     options,
   );
   

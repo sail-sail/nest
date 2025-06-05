@@ -89,6 +89,25 @@ export async function findOneLoginLog(
 }
 
 /**
+ * 根据条件查找第一个登录日志, 如果不存在则抛错
+ */
+export async function findOneOkLoginLog(
+  search?: LoginLogSearch,
+  sort?: SortInput[],
+): Promise<LoginLogModel> {
+  
+  const {
+    findOneOkLoginLog,
+  } = await import("./login_log.service.ts");
+  
+  checkSortLoginLog(sort);
+  
+  const model = await findOneOkLoginLog(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找登录日志
  */
 export async function findByIdLoginLog(
@@ -105,6 +124,22 @@ export async function findByIdLoginLog(
 }
 
 /**
+ * 根据 id 查找登录日志, 如果不存在则抛错
+ */
+export async function findByIdOkLoginLog(
+  id: LoginLogId,
+): Promise<LoginLogModel | undefined> {
+  
+  const {
+    findByIdOkLoginLog,
+  } = await import("./login_log.service.ts");
+  
+  const model = await findByIdOkLoginLog(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找登录日志
  */
 export async function findByIdsLoginLog(
@@ -116,6 +151,25 @@ export async function findByIdsLoginLog(
   } = await import("./login_log.service.ts");
   
   const models = await findByIdsLoginLog(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找登录日志, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkLoginLog(
+  ids: LoginLogId[],
+): Promise<LoginLogModel[]> {
+  
+  const {
+    findByIdsOkLoginLog,
+  } = await import("./login_log.service.ts");
+  
+  const models = await findByIdsOkLoginLog(ids);
   
   for (const model of models) {
   }

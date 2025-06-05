@@ -83,13 +83,14 @@ export async function findAllOptbiz(
 }
 
 /**
- * 根据条件查找第一个业务选项
+ * 根据条件查找第一个 业务选项
  */
 export async function findOneOptbiz(
   search?: OptbizSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneOptbiz?: OptbizModel;
   } = await query({
@@ -105,8 +106,43 @@ export async function findOneOptbiz(
       sort,
     },
   }, opt);
+  
   const model = data.findOneOptbiz;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 业务选项, 如果不存在则抛错
+ */
+export async function findOneOkOptbiz(
+  search?: OptbizSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkOptbiz?: OptbizModel;
+  } = await query({
+    query: `
+      query($search: OptbizSearch, $sort: [SortInput!]) {
+        findOneOkOptbiz(search: $search, sort: $sort) {
+          ${ optbizQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkOptbiz;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -206,12 +242,14 @@ export async function updateByIdOptbiz(
  * 根据 id 查找 业务选项
  */
 export async function findByIdOptbiz(
-  id?: OptbizId,
+  id: OptbizId,
   opt?: GqlOpt,
 ): Promise<OptbizModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdOptbiz?: OptbizModel;
   } = await query({
@@ -226,8 +264,41 @@ export async function findByIdOptbiz(
       id,
     },
   }, opt);
+  
   const model = data.findByIdOptbiz;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 业务选项, 如果不存在则抛错
+ */
+export async function findByIdOkOptbiz(
+  id: OptbizId,
+  opt?: GqlOpt,
+): Promise<OptbizModel> {
+  
+  const data: {
+    findByIdOkOptbiz: OptbizModel;
+  } = await query({
+    query: `
+      query($id: OptbizId!) {
+        findByIdOkOptbiz(id: $id) {
+          ${ optbizQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkOptbiz;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -238,33 +309,70 @@ export async function findByIdsOptbiz(
   ids: OptbizId[],
   opt?: GqlOpt,
 ): Promise<OptbizModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: OptbizModel[] = [ ];
-  try {
-    const data: {
-      findByIdsOptbiz: OptbizModel[];
-    } = await query({
-      query: `
-        query($ids: [OptbizId!]!) {
-          findByIdsOptbiz(ids: $ids) {
-            ${ optbizQueryField }
-          }
+  
+  const data: {
+    findByIdsOptbiz: OptbizModel[];
+  } = await query({
+    query: `
+      query($ids: [OptbizId!]!) {
+        findByIdsOptbiz(ids: $ids) {
+          ${ optbizQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsOptbiz;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOptbiz;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 业务选项, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOptbiz(
+  ids: OptbizId[],
+  opt?: GqlOpt,
+): Promise<OptbizModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkOptbiz: OptbizModel[];
+  } = await query({
+    query: `
+      query($ids: [OptbizId!]!) {
+        findByIdsOkOptbiz(ids: $ids) {
+          ${ optbizQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkOptbiz;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

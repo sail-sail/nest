@@ -100,6 +100,28 @@ export async function findOneMenu(
 }
 
 /**
+ * 根据条件查找第一个菜单, 如果不存在则抛错
+ */
+export async function findOneOkMenu(
+  search?: MenuSearch,
+  sort?: SortInput[],
+): Promise<MenuModel> {
+  
+  const {
+    findOneOkMenu,
+  } = await import("./menu.service.ts");
+  
+  search = search || { };
+  search.is_hidden = [ 0 ];
+  
+  checkSortMenu(sort);
+  
+  const model = await findOneOkMenu(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找菜单
  */
 export async function findByIdMenu(
@@ -116,6 +138,22 @@ export async function findByIdMenu(
 }
 
 /**
+ * 根据 id 查找菜单, 如果不存在则抛错
+ */
+export async function findByIdOkMenu(
+  id: MenuId,
+): Promise<MenuModel | undefined> {
+  
+  const {
+    findByIdOkMenu,
+  } = await import("./menu.service.ts");
+  
+  const model = await findByIdOkMenu(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找菜单
  */
 export async function findByIdsMenu(
@@ -127,6 +165,25 @@ export async function findByIdsMenu(
   } = await import("./menu.service.ts");
   
   const models = await findByIdsMenu(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找菜单, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkMenu(
+  ids: MenuId[],
+): Promise<MenuModel[]> {
+  
+  const {
+    findByIdsOkMenu,
+  } = await import("./menu.service.ts");
+  
+  const models = await findByIdsOkMenu(ids);
   
   for (const model of models) {
   }

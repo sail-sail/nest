@@ -73,13 +73,42 @@ export async function findOnePermit(
 }
 
 /**
+ * 根据条件查找第一个按钮权限, 如果不存在则抛错
+ */
+export async function findOneOkPermit(
+  search?: PermitSearch,
+  sort?: SortInput[],
+): Promise<PermitModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const permit_model = await permitDao.findOneOkPermit(search, sort);
+  
+  return permit_model;
+}
+
+/**
  * 根据 id 查找按钮权限
  */
 export async function findByIdPermit(
-  permit_id?: PermitId | null,
+  permit_id: PermitId,
 ): Promise<PermitModel | undefined> {
   
   const permit_model = await permitDao.findByIdPermit(permit_id);
+  
+  return permit_model;
+}
+
+/**
+ * 根据 id 查找按钮权限, 如果不存在则抛错
+ */
+export async function findByIdOkPermit(
+  permit_id: PermitId,
+): Promise<PermitModel> {
+  
+  const permit_model = await permitDao.findByIdOkPermit(permit_id);
   
   return permit_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsPermit(
 ): Promise<PermitModel[]> {
   
   const permit_models = await permitDao.findByIdsPermit(permit_ids);
+  
+  return permit_models;
+}
+
+/**
+ * 根据 ids 查找按钮权限, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkPermit(
+  permit_ids: PermitId[],
+): Promise<PermitModel[]> {
+  
+  const permit_models = await permitDao.findByIdsOkPermit(permit_ids);
   
   return permit_models;
 }

@@ -1053,48 +1053,6 @@ export async function checkByUniqueRole(
   return;
 }
 
-// MARK: findOneOkRole
-/** 根据条件查找第一角色 */
-export async function findOneOkRole(
-  search?: Readonly<RoleSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<RoleModel> {
-  
-  const table = "base_role";
-  const method = "findOneOkRole";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_role = validateOptionRole(
-    await findOneRole(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_role;
-}
-
 // MARK: findOneRole
 /** 根据条件查找第一角色 */
 export async function findOneRole(
@@ -1126,41 +1084,45 @@ export async function findOneRole(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllRole(
+  
+  const role_models = await findAllRole(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const role_model = role_models[0];
+  
+  return role_model;
 }
 
-// MARK: findByIdOkRole
-/** 根据 id 查找角色 */
-export async function findByIdOkRole(
-  id?: RoleId | null,
+// MARK: findOneOkRole
+/** 根据条件查找第一角色, 如果不存在则抛错 */
+export async function findOneOkRole(
+  search?: Readonly<RoleSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<RoleModel> {
   
   const table = "base_role";
-  const method = "findByIdOkRole";
+  const method = "findOneOkRole";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -1170,20 +1132,32 @@ export async function findByIdOkRole(
     options.is_debug = false;
   }
   
-  const model_role = validateOptionRole(
-    await findByIdRole(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const role_models = await findAllRole(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_role;
+  const role_model = role_models[0];
+  
+  if (!role_model) {
+    const err_msg = "此 角色 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return role_model;
 }
 
 // MARK: findByIdRole
 /** 根据 id 查找角色 */
 export async function findByIdRole(
-  id?: RoleId | null,
+  id: RoleId,
   options?: {
     is_debug?: boolean;
   },
@@ -1211,7 +1185,7 @@ export async function findByIdRole(
     return;
   }
   
-  const model = await findOneRole(
+  const role_model = await findOneRole(
     {
       id,
     },
@@ -1219,7 +1193,47 @@ export async function findByIdRole(
     options,
   );
   
-  return model;
+  return role_model;
+}
+
+// MARK: findByIdOkRole
+/** 根据 id 查找角色, 如果不存在则抛错 */
+export async function findByIdOkRole(
+  id: RoleId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<RoleModel> {
+  
+  const table = "base_role";
+  const method = "findByIdOkRole";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const role_model = await findByIdRole(
+    id,
+    options,
+  );
+  
+  if (!role_model) {
+    const err_msg = "此 角色 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return role_model;
 }
 
 // MARK: findByIdsRole
@@ -1259,6 +1273,45 @@ export async function findByIdsRole(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkRole
+/** 根据 ids 查找角色, 出现查询不到的 id 则报错 */
+export async function findByIdsOkRole(
+  ids: RoleId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<RoleModel[]> {
+  
+  const table = "base_role";
+  const method = "findByIdsOkRole";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsRole(
+    ids,
     options,
   );
   

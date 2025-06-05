@@ -73,13 +73,42 @@ export async function findOneLang(
 }
 
 /**
+ * 根据条件查找第一个语言, 如果不存在则抛错
+ */
+export async function findOneOkLang(
+  search?: LangSearch,
+  sort?: SortInput[],
+): Promise<LangModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const lang_model = await langDao.findOneOkLang(search, sort);
+  
+  return lang_model;
+}
+
+/**
  * 根据 id 查找语言
  */
 export async function findByIdLang(
-  lang_id?: LangId | null,
+  lang_id: LangId,
 ): Promise<LangModel | undefined> {
   
   const lang_model = await langDao.findByIdLang(lang_id);
+  
+  return lang_model;
+}
+
+/**
+ * 根据 id 查找语言, 如果不存在则抛错
+ */
+export async function findByIdOkLang(
+  lang_id: LangId,
+): Promise<LangModel> {
+  
+  const lang_model = await langDao.findByIdOkLang(lang_id);
   
   return lang_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsLang(
 ): Promise<LangModel[]> {
   
   const lang_models = await langDao.findByIdsLang(lang_ids);
+  
+  return lang_models;
+}
+
+/**
+ * 根据 ids 查找语言, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkLang(
+  lang_ids: LangId[],
+): Promise<LangModel[]> {
+  
+  const lang_models = await langDao.findByIdsOkLang(lang_ids);
   
   return lang_models;
 }
