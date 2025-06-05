@@ -68,12 +68,12 @@ export async function getAuthRoleIds() {
 export async function getRoleIds(
   usr_id?: UsrId,
 ) {
-  const usr_model = await findByIdUsr(
+  const usr_model = usr_id ? await findByIdUsr(
     usr_id,
     {
       is_debug: false,
     },
-  );
+  ) : undefined;
   if (!usr_model || !usr_model.is_enabled) {
     return [ ];
   }
