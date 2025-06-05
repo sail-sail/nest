@@ -91,6 +91,25 @@ export async function findOneWxPay(
 }
 
 /**
+ * 根据条件查找第一个微信支付设置, 如果不存在则抛错
+ */
+export async function findOneOkWxPay(
+  search?: WxPaySearch,
+  sort?: SortInput[],
+): Promise<WxPayModel> {
+  
+  const {
+    findOneOkWxPay,
+  } = await import("./wx_pay.service.ts");
+  
+  checkSortWxPay(sort);
+  
+  const model = await findOneOkWxPay(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找微信支付设置
  */
 export async function findByIdWxPay(
@@ -107,6 +126,22 @@ export async function findByIdWxPay(
 }
 
 /**
+ * 根据 id 查找微信支付设置, 如果不存在则抛错
+ */
+export async function findByIdOkWxPay(
+  id: WxPayId,
+): Promise<WxPayModel | undefined> {
+  
+  const {
+    findByIdOkWxPay,
+  } = await import("./wx_pay.service.ts");
+  
+  const model = await findByIdOkWxPay(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找微信支付设置
  */
 export async function findByIdsWxPay(
@@ -118,6 +153,25 @@ export async function findByIdsWxPay(
   } = await import("./wx_pay.service.ts");
   
   const models = await findByIdsWxPay(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找微信支付设置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxPay(
+  ids: WxPayId[],
+): Promise<WxPayModel[]> {
+  
+  const {
+    findByIdsOkWxPay,
+  } = await import("./wx_pay.service.ts");
+  
+  const models = await findByIdsOkWxPay(ids);
   
   for (const model of models) {
   }

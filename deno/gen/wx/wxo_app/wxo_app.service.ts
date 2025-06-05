@@ -73,13 +73,42 @@ export async function findOneWxoApp(
 }
 
 /**
+ * 根据条件查找第一个公众号设置, 如果不存在则抛错
+ */
+export async function findOneOkWxoApp(
+  search?: WxoAppSearch,
+  sort?: SortInput[],
+): Promise<WxoAppModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const wxo_app_model = await wxo_appDao.findOneOkWxoApp(search, sort);
+  
+  return wxo_app_model;
+}
+
+/**
  * 根据 id 查找公众号设置
  */
 export async function findByIdWxoApp(
-  wxo_app_id?: WxoAppId | null,
+  wxo_app_id: WxoAppId,
 ): Promise<WxoAppModel | undefined> {
   
   const wxo_app_model = await wxo_appDao.findByIdWxoApp(wxo_app_id);
+  
+  return wxo_app_model;
+}
+
+/**
+ * 根据 id 查找公众号设置, 如果不存在则抛错
+ */
+export async function findByIdOkWxoApp(
+  wxo_app_id: WxoAppId,
+): Promise<WxoAppModel> {
+  
+  const wxo_app_model = await wxo_appDao.findByIdOkWxoApp(wxo_app_id);
   
   return wxo_app_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsWxoApp(
 ): Promise<WxoAppModel[]> {
   
   const wxo_app_models = await wxo_appDao.findByIdsWxoApp(wxo_app_ids);
+  
+  return wxo_app_models;
+}
+
+/**
+ * 根据 ids 查找公众号设置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxoApp(
+  wxo_app_ids: WxoAppId[],
+): Promise<WxoAppModel[]> {
+  
+  const wxo_app_models = await wxo_appDao.findByIdsOkWxoApp(wxo_app_ids);
   
   return wxo_app_models;
 }

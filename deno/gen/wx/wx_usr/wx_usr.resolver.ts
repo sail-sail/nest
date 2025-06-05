@@ -91,6 +91,25 @@ export async function findOneWxUsr(
 }
 
 /**
+ * 根据条件查找第一个小程序用户, 如果不存在则抛错
+ */
+export async function findOneOkWxUsr(
+  search?: WxUsrSearch,
+  sort?: SortInput[],
+): Promise<WxUsrModel> {
+  
+  const {
+    findOneOkWxUsr,
+  } = await import("./wx_usr.service.ts");
+  
+  checkSortWxUsr(sort);
+  
+  const model = await findOneOkWxUsr(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找小程序用户
  */
 export async function findByIdWxUsr(
@@ -107,6 +126,22 @@ export async function findByIdWxUsr(
 }
 
 /**
+ * 根据 id 查找小程序用户, 如果不存在则抛错
+ */
+export async function findByIdOkWxUsr(
+  id: WxUsrId,
+): Promise<WxUsrModel | undefined> {
+  
+  const {
+    findByIdOkWxUsr,
+  } = await import("./wx_usr.service.ts");
+  
+  const model = await findByIdOkWxUsr(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找小程序用户
  */
 export async function findByIdsWxUsr(
@@ -118,6 +153,25 @@ export async function findByIdsWxUsr(
   } = await import("./wx_usr.service.ts");
   
   const models = await findByIdsWxUsr(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找小程序用户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxUsr(
+  ids: WxUsrId[],
+): Promise<WxUsrModel[]> {
+  
+  const {
+    findByIdsOkWxUsr,
+  } = await import("./wx_usr.service.ts");
+  
+  const models = await findByIdsOkWxUsr(ids);
   
   for (const model of models) {
   }

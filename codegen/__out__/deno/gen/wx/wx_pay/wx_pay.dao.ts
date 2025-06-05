@@ -744,48 +744,6 @@ export async function checkByUniqueWxPay(
   return;
 }
 
-// MARK: findOneOkWxPay
-/** 根据条件查找第一微信支付设置 */
-export async function findOneOkWxPay(
-  search?: Readonly<WxPaySearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<WxPayModel> {
-  
-  const table = "wx_wx_pay";
-  const method = "findOneOkWxPay";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_wx_pay = validateOptionWxPay(
-    await findOneWxPay(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_wx_pay;
-}
-
 // MARK: findOneWxPay
 /** 根据条件查找第一微信支付设置 */
 export async function findOneWxPay(
@@ -817,41 +775,45 @@ export async function findOneWxPay(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllWxPay(
+  
+  const wx_pay_models = await findAllWxPay(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const wx_pay_model = wx_pay_models[0];
+  
+  return wx_pay_model;
 }
 
-// MARK: findByIdOkWxPay
-/** 根据 id 查找微信支付设置 */
-export async function findByIdOkWxPay(
-  id?: WxPayId | null,
+// MARK: findOneOkWxPay
+/** 根据条件查找第一微信支付设置, 如果不存在则抛错 */
+export async function findOneOkWxPay(
+  search?: Readonly<WxPaySearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<WxPayModel> {
   
   const table = "wx_wx_pay";
-  const method = "findByIdOkWxPay";
+  const method = "findOneOkWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -861,20 +823,32 @@ export async function findByIdOkWxPay(
     options.is_debug = false;
   }
   
-  const model_wx_pay = validateOptionWxPay(
-    await findByIdWxPay(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const wx_pay_models = await findAllWxPay(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_wx_pay;
+  const wx_pay_model = wx_pay_models[0];
+  
+  if (!wx_pay_model) {
+    const err_msg = "此 微信支付设置 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wx_pay_model;
 }
 
 // MARK: findByIdWxPay
 /** 根据 id 查找微信支付设置 */
 export async function findByIdWxPay(
-  id?: WxPayId | null,
+  id: WxPayId,
   options?: {
     is_debug?: boolean;
   },
@@ -902,7 +876,7 @@ export async function findByIdWxPay(
     return;
   }
   
-  const model = await findOneWxPay(
+  const wx_pay_model = await findOneWxPay(
     {
       id,
     },
@@ -910,7 +884,47 @@ export async function findByIdWxPay(
     options,
   );
   
-  return model;
+  return wx_pay_model;
+}
+
+// MARK: findByIdOkWxPay
+/** 根据 id 查找微信支付设置, 如果不存在则抛错 */
+export async function findByIdOkWxPay(
+  id: WxPayId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxPayModel> {
+  
+  const table = "wx_wx_pay";
+  const method = "findByIdOkWxPay";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const wx_pay_model = await findByIdWxPay(
+    id,
+    options,
+  );
+  
+  if (!wx_pay_model) {
+    const err_msg = "此 微信支付设置 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wx_pay_model;
 }
 
 // MARK: findByIdsWxPay
@@ -950,6 +964,45 @@ export async function findByIdsWxPay(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkWxPay
+/** 根据 ids 查找微信支付设置, 出现查询不到的 id 则报错 */
+export async function findByIdsOkWxPay(
+  ids: WxPayId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxPayModel[]> {
+  
+  const table = "wx_wx_pay";
+  const method = "findByIdsOkWxPay";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsWxPay(
+    ids,
     options,
   );
   

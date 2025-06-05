@@ -102,13 +102,14 @@ export async function findAllPayTransactionsJsapi(
 }
 
 /**
- * 根据条件查找第一个微信JSAPI下单
+ * 根据条件查找第一个 微信JSAPI下单
  */
 export async function findOnePayTransactionsJsapi(
   search?: PayTransactionsJsapiSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOnePayTransactionsJsapi?: PayTransactionsJsapiModel;
   } = await query({
@@ -124,8 +125,43 @@ export async function findOnePayTransactionsJsapi(
       sort,
     },
   }, opt);
+  
   const model = data.findOnePayTransactionsJsapi;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 微信JSAPI下单, 如果不存在则抛错
+ */
+export async function findOneOkPayTransactionsJsapi(
+  search?: PayTransactionsJsapiSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkPayTransactionsJsapi?: PayTransactionsJsapiModel;
+  } = await query({
+    query: `
+      query($search: PayTransactionsJsapiSearch, $sort: [SortInput!]) {
+        findOneOkPayTransactionsJsapi(search: $search, sort: $sort) {
+          ${ payTransactionsJsapiQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkPayTransactionsJsapi;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -156,12 +192,14 @@ export async function findCountPayTransactionsJsapi(
  * 根据 id 查找 微信JSAPI下单
  */
 export async function findByIdPayTransactionsJsapi(
-  id?: PayTransactionsJsapiId,
+  id: PayTransactionsJsapiId,
   opt?: GqlOpt,
 ): Promise<PayTransactionsJsapiModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdPayTransactionsJsapi?: PayTransactionsJsapiModel;
   } = await query({
@@ -176,8 +214,41 @@ export async function findByIdPayTransactionsJsapi(
       id,
     },
   }, opt);
+  
   const model = data.findByIdPayTransactionsJsapi;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 微信JSAPI下单, 如果不存在则抛错
+ */
+export async function findByIdOkPayTransactionsJsapi(
+  id: PayTransactionsJsapiId,
+  opt?: GqlOpt,
+): Promise<PayTransactionsJsapiModel> {
+  
+  const data: {
+    findByIdOkPayTransactionsJsapi: PayTransactionsJsapiModel;
+  } = await query({
+    query: `
+      query($id: PayTransactionsJsapiId!) {
+        findByIdOkPayTransactionsJsapi(id: $id) {
+          ${ payTransactionsJsapiQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkPayTransactionsJsapi;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -188,33 +259,70 @@ export async function findByIdsPayTransactionsJsapi(
   ids: PayTransactionsJsapiId[],
   opt?: GqlOpt,
 ): Promise<PayTransactionsJsapiModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: PayTransactionsJsapiModel[] = [ ];
-  try {
-    const data: {
-      findByIdsPayTransactionsJsapi: PayTransactionsJsapiModel[];
-    } = await query({
-      query: `
-        query($ids: [PayTransactionsJsapiId!]!) {
-          findByIdsPayTransactionsJsapi(ids: $ids) {
-            ${ payTransactionsJsapiQueryField }
-          }
+  
+  const data: {
+    findByIdsPayTransactionsJsapi: PayTransactionsJsapiModel[];
+  } = await query({
+    query: `
+      query($ids: [PayTransactionsJsapiId!]!) {
+        findByIdsPayTransactionsJsapi(ids: $ids) {
+          ${ payTransactionsJsapiQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsPayTransactionsJsapi;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsPayTransactionsJsapi;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 微信JSAPI下单, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkPayTransactionsJsapi(
+  ids: PayTransactionsJsapiId[],
+  opt?: GqlOpt,
+): Promise<PayTransactionsJsapiModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkPayTransactionsJsapi: PayTransactionsJsapiModel[];
+  } = await query({
+    query: `
+      query($ids: [PayTransactionsJsapiId!]!) {
+        findByIdsOkPayTransactionsJsapi(ids: $ids) {
+          ${ payTransactionsJsapiQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkPayTransactionsJsapi;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

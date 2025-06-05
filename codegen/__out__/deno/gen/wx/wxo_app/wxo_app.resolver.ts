@@ -91,6 +91,25 @@ export async function findOneWxoApp(
 }
 
 /**
+ * 根据条件查找第一个公众号设置, 如果不存在则抛错
+ */
+export async function findOneOkWxoApp(
+  search?: WxoAppSearch,
+  sort?: SortInput[],
+): Promise<WxoAppModel> {
+  
+  const {
+    findOneOkWxoApp,
+  } = await import("./wxo_app.service.ts");
+  
+  checkSortWxoApp(sort);
+  
+  const model = await findOneOkWxoApp(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找公众号设置
  */
 export async function findByIdWxoApp(
@@ -107,6 +126,22 @@ export async function findByIdWxoApp(
 }
 
 /**
+ * 根据 id 查找公众号设置, 如果不存在则抛错
+ */
+export async function findByIdOkWxoApp(
+  id: WxoAppId,
+): Promise<WxoAppModel | undefined> {
+  
+  const {
+    findByIdOkWxoApp,
+  } = await import("./wxo_app.service.ts");
+  
+  const model = await findByIdOkWxoApp(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找公众号设置
  */
 export async function findByIdsWxoApp(
@@ -118,6 +153,25 @@ export async function findByIdsWxoApp(
   } = await import("./wxo_app.service.ts");
   
   const models = await findByIdsWxoApp(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找公众号设置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxoApp(
+  ids: WxoAppId[],
+): Promise<WxoAppModel[]> {
+  
+  const {
+    findByIdsOkWxoApp,
+  } = await import("./wxo_app.service.ts");
+  
+  const models = await findByIdsOkWxoApp(ids);
   
   for (const model of models) {
   }
