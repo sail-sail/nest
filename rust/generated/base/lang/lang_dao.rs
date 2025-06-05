@@ -1015,6 +1015,16 @@ pub async fn find_by_ids_lang(
     options,
   ).await?;
   
+  let lang_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      lang_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<LangModel>>();
+  
   Ok(lang_models)
 }
 

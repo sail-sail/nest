@@ -1104,6 +1104,16 @@ pub async fn find_by_ids_options(
     options,
   ).await?;
   
+  let options_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      options_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<OptionsModel>>();
+  
   Ok(options_models)
 }
 

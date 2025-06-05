@@ -1136,6 +1136,16 @@ pub async fn find_by_ids_background_task(
     options,
   ).await?;
   
+  let background_task_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      background_task_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<BackgroundTaskModel>>();
+  
   Ok(background_task_models)
 }
 

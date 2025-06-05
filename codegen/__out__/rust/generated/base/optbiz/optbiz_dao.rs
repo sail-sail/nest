@@ -1125,6 +1125,16 @@ pub async fn find_by_ids_optbiz(
     options,
   ).await?;
   
+  let optbiz_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      optbiz_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<OptbizModel>>();
+  
   Ok(optbiz_models)
 }
 

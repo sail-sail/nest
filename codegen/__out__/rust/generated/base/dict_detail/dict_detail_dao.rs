@@ -1118,6 +1118,16 @@ pub async fn find_by_ids_dict_detail(
     options,
   ).await?;
   
+  let dict_detail_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      dict_detail_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<DictDetailModel>>();
+  
   Ok(dict_detail_models)
 }
 

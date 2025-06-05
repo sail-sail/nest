@@ -1412,6 +1412,16 @@ pub async fn find_by_ids_tenant(
     options,
   ).await?;
   
+  let tenant_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      tenant_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<TenantModel>>();
+  
   Ok(tenant_models)
 }
 

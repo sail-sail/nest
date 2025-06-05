@@ -1153,6 +1153,16 @@ pub async fn find_by_ids_domain(
     options,
   ).await?;
   
+  let domain_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      domain_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<DomainModel>>();
+  
   Ok(domain_models)
 }
 
