@@ -724,48 +724,6 @@ export async function checkByUniqueDictbiz(
   return;
 }
 
-// MARK: findOneOkDictbiz
-/** 根据条件查找第一业务字典 */
-export async function findOneOkDictbiz(
-  search?: Readonly<DictbizSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<DictbizModel> {
-  
-  const table = "base_dictbiz";
-  const method = "findOneOkDictbiz";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_dictbiz = validateOptionDictbiz(
-    await findOneDictbiz(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_dictbiz;
-}
-
 // MARK: findOneDictbiz
 /** 根据条件查找第一业务字典 */
 export async function findOneDictbiz(
@@ -797,41 +755,45 @@ export async function findOneDictbiz(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllDictbiz(
+  
+  const dictbiz_models = await findAllDictbiz(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const dictbiz_model = dictbiz_models[0];
+  
+  return dictbiz_model;
 }
 
-// MARK: findByIdOkDictbiz
-/** 根据 id 查找业务字典 */
-export async function findByIdOkDictbiz(
-  id?: DictbizId | null,
+// MARK: findOneOkDictbiz
+/** 根据条件查找第一业务字典, 如果不存在则抛错 */
+export async function findOneOkDictbiz(
+  search?: Readonly<DictbizSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<DictbizModel> {
   
   const table = "base_dictbiz";
-  const method = "findByIdOkDictbiz";
+  const method = "findOneOkDictbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -841,20 +803,32 @@ export async function findByIdOkDictbiz(
     options.is_debug = false;
   }
   
-  const model_dictbiz = validateOptionDictbiz(
-    await findByIdDictbiz(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const dictbiz_models = await findAllDictbiz(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_dictbiz;
+  const dictbiz_model = dictbiz_models[0];
+  
+  if (!dictbiz_model) {
+    const err_msg = "此 业务字典 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return dictbiz_model;
 }
 
 // MARK: findByIdDictbiz
 /** 根据 id 查找业务字典 */
 export async function findByIdDictbiz(
-  id?: DictbizId | null,
+  id: DictbizId,
   options?: {
     is_debug?: boolean;
   },
@@ -882,7 +856,7 @@ export async function findByIdDictbiz(
     return;
   }
   
-  const model = await findOneDictbiz(
+  const dictbiz_model = await findOneDictbiz(
     {
       id,
     },
@@ -890,7 +864,47 @@ export async function findByIdDictbiz(
     options,
   );
   
-  return model;
+  return dictbiz_model;
+}
+
+// MARK: findByIdOkDictbiz
+/** 根据 id 查找业务字典, 如果不存在则抛错 */
+export async function findByIdOkDictbiz(
+  id: DictbizId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictbizModel> {
+  
+  const table = "base_dictbiz";
+  const method = "findByIdOkDictbiz";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const dictbiz_model = await findByIdDictbiz(
+    id,
+    options,
+  );
+  
+  if (!dictbiz_model) {
+    const err_msg = "此 业务字典 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return dictbiz_model;
 }
 
 // MARK: findByIdsDictbiz
@@ -930,6 +944,45 @@ export async function findByIdsDictbiz(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkDictbiz
+/** 根据 ids 查找业务字典, 出现查询不到的 id 则报错 */
+export async function findByIdsOkDictbiz(
+  ids: DictbizId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictbizModel[]> {
+  
+  const table = "base_dictbiz";
+  const method = "findByIdsOkDictbiz";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsDictbiz(
+    ids,
     options,
   );
   

@@ -710,48 +710,6 @@ export async function checkByUniqueDomain(
   return;
 }
 
-// MARK: findOneOkDomain
-/** 根据条件查找第一域名 */
-export async function findOneOkDomain(
-  search?: Readonly<DomainSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<DomainModel> {
-  
-  const table = "base_domain";
-  const method = "findOneOkDomain";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_domain = validateOptionDomain(
-    await findOneDomain(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_domain;
-}
-
 // MARK: findOneDomain
 /** 根据条件查找第一域名 */
 export async function findOneDomain(
@@ -783,41 +741,45 @@ export async function findOneDomain(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllDomain(
+  
+  const domain_models = await findAllDomain(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const domain_model = domain_models[0];
+  
+  return domain_model;
 }
 
-// MARK: findByIdOkDomain
-/** 根据 id 查找域名 */
-export async function findByIdOkDomain(
-  id?: DomainId | null,
+// MARK: findOneOkDomain
+/** 根据条件查找第一域名, 如果不存在则抛错 */
+export async function findOneOkDomain(
+  search?: Readonly<DomainSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<DomainModel> {
   
   const table = "base_domain";
-  const method = "findByIdOkDomain";
+  const method = "findOneOkDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -827,20 +789,32 @@ export async function findByIdOkDomain(
     options.is_debug = false;
   }
   
-  const model_domain = validateOptionDomain(
-    await findByIdDomain(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const domain_models = await findAllDomain(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_domain;
+  const domain_model = domain_models[0];
+  
+  if (!domain_model) {
+    const err_msg = "此 域名 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return domain_model;
 }
 
 // MARK: findByIdDomain
 /** 根据 id 查找域名 */
 export async function findByIdDomain(
-  id?: DomainId | null,
+  id: DomainId,
   options?: {
     is_debug?: boolean;
   },
@@ -868,7 +842,7 @@ export async function findByIdDomain(
     return;
   }
   
-  const model = await findOneDomain(
+  const domain_model = await findOneDomain(
     {
       id,
     },
@@ -876,7 +850,47 @@ export async function findByIdDomain(
     options,
   );
   
-  return model;
+  return domain_model;
+}
+
+// MARK: findByIdOkDomain
+/** 根据 id 查找域名, 如果不存在则抛错 */
+export async function findByIdOkDomain(
+  id: DomainId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DomainModel> {
+  
+  const table = "base_domain";
+  const method = "findByIdOkDomain";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const domain_model = await findByIdDomain(
+    id,
+    options,
+  );
+  
+  if (!domain_model) {
+    const err_msg = "此 域名 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return domain_model;
 }
 
 // MARK: findByIdsDomain
@@ -916,6 +930,45 @@ export async function findByIdsDomain(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkDomain
+/** 根据 ids 查找域名, 出现查询不到的 id 则报错 */
+export async function findByIdsOkDomain(
+  ids: DomainId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DomainModel[]> {
+  
+  const table = "base_domain";
+  const method = "findByIdsOkDomain";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsDomain(
+    ids,
     options,
   );
   

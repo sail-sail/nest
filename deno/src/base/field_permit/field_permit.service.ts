@@ -20,7 +20,7 @@ import {
   findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
 
-// 字段权限
+/** 字段权限 */
 export async function getFieldPermit(
   route_path: string,
 ): Promise<string[] | null> {
@@ -33,7 +33,7 @@ export async function getFieldPermit(
     is_debug: false,
   };
   
-  const usr_id = await get_usr_id();
+  const usr_id = await get_usr_id(false);
   
   const usr_model = await validateOptionUsr(
     await findByIdUsr(

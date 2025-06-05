@@ -91,6 +91,25 @@ export async function findOneIcon(
 }
 
 /**
+ * 根据条件查找第一个图标库, 如果不存在则抛错
+ */
+export async function findOneOkIcon(
+  search?: IconSearch,
+  sort?: SortInput[],
+): Promise<IconModel> {
+  
+  const {
+    findOneOkIcon,
+  } = await import("./icon.service.ts");
+  
+  checkSortIcon(sort);
+  
+  const model = await findOneOkIcon(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找图标库
  */
 export async function findByIdIcon(
@@ -107,6 +126,22 @@ export async function findByIdIcon(
 }
 
 /**
+ * 根据 id 查找图标库, 如果不存在则抛错
+ */
+export async function findByIdOkIcon(
+  id: IconId,
+): Promise<IconModel | undefined> {
+  
+  const {
+    findByIdOkIcon,
+  } = await import("./icon.service.ts");
+  
+  const model = await findByIdOkIcon(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找图标库
  */
 export async function findByIdsIcon(
@@ -118,6 +153,25 @@ export async function findByIdsIcon(
   } = await import("./icon.service.ts");
   
   const models = await findByIdsIcon(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找图标库, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkIcon(
+  ids: IconId[],
+): Promise<IconModel[]> {
+  
+  const {
+    findByIdsOkIcon,
+  } = await import("./icon.service.ts");
+  
+  const models = await findByIdsOkIcon(ids);
   
   for (const model of models) {
   }

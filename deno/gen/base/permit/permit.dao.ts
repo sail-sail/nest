@@ -495,48 +495,6 @@ export async function checkByUniquePermit(
   return;
 }
 
-// MARK: findOneOkPermit
-/** 根据条件查找第一按钮权限 */
-export async function findOneOkPermit(
-  search?: Readonly<PermitSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<PermitModel> {
-  
-  const table = "base_permit";
-  const method = "findOneOkPermit";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_permit = validateOptionPermit(
-    await findOnePermit(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_permit;
-}
-
 // MARK: findOnePermit
 /** 根据条件查找第一按钮权限 */
 export async function findOnePermit(
@@ -568,41 +526,45 @@ export async function findOnePermit(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllPermit(
+  
+  const permit_models = await findAllPermit(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const permit_model = permit_models[0];
+  
+  return permit_model;
 }
 
-// MARK: findByIdOkPermit
-/** 根据 id 查找按钮权限 */
-export async function findByIdOkPermit(
-  id?: PermitId | null,
+// MARK: findOneOkPermit
+/** 根据条件查找第一按钮权限, 如果不存在则抛错 */
+export async function findOneOkPermit(
+  search?: Readonly<PermitSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<PermitModel> {
   
   const table = "base_permit";
-  const method = "findByIdOkPermit";
+  const method = "findOneOkPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -612,20 +574,32 @@ export async function findByIdOkPermit(
     options.is_debug = false;
   }
   
-  const model_permit = validateOptionPermit(
-    await findByIdPermit(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const permit_models = await findAllPermit(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_permit;
+  const permit_model = permit_models[0];
+  
+  if (!permit_model) {
+    const err_msg = "此 按钮权限 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return permit_model;
 }
 
 // MARK: findByIdPermit
 /** 根据 id 查找按钮权限 */
 export async function findByIdPermit(
-  id?: PermitId | null,
+  id: PermitId,
   options?: {
     is_debug?: boolean;
   },
@@ -653,7 +627,7 @@ export async function findByIdPermit(
     return;
   }
   
-  const model = await findOnePermit(
+  const permit_model = await findOnePermit(
     {
       id,
     },
@@ -661,7 +635,47 @@ export async function findByIdPermit(
     options,
   );
   
-  return model;
+  return permit_model;
+}
+
+// MARK: findByIdOkPermit
+/** 根据 id 查找按钮权限, 如果不存在则抛错 */
+export async function findByIdOkPermit(
+  id: PermitId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PermitModel> {
+  
+  const table = "base_permit";
+  const method = "findByIdOkPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const permit_model = await findByIdPermit(
+    id,
+    options,
+  );
+  
+  if (!permit_model) {
+    const err_msg = "此 按钮权限 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return permit_model;
 }
 
 // MARK: findByIdsPermit
@@ -701,6 +715,45 @@ export async function findByIdsPermit(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkPermit
+/** 根据 ids 查找按钮权限, 出现查询不到的 id 则报错 */
+export async function findByIdsOkPermit(
+  ids: PermitId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PermitModel[]> {
+  
+  const table = "base_permit";
+  const method = "findByIdsOkPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsPermit(
+    ids,
     options,
   );
   

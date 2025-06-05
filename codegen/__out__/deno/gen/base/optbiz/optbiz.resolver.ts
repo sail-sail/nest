@@ -91,6 +91,25 @@ export async function findOneOptbiz(
 }
 
 /**
+ * 根据条件查找第一个业务选项, 如果不存在则抛错
+ */
+export async function findOneOkOptbiz(
+  search?: OptbizSearch,
+  sort?: SortInput[],
+): Promise<OptbizModel> {
+  
+  const {
+    findOneOkOptbiz,
+  } = await import("./optbiz.service.ts");
+  
+  checkSortOptbiz(sort);
+  
+  const model = await findOneOkOptbiz(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找业务选项
  */
 export async function findByIdOptbiz(
@@ -107,6 +126,22 @@ export async function findByIdOptbiz(
 }
 
 /**
+ * 根据 id 查找业务选项, 如果不存在则抛错
+ */
+export async function findByIdOkOptbiz(
+  id: OptbizId,
+): Promise<OptbizModel | undefined> {
+  
+  const {
+    findByIdOkOptbiz,
+  } = await import("./optbiz.service.ts");
+  
+  const model = await findByIdOkOptbiz(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找业务选项
  */
 export async function findByIdsOptbiz(
@@ -118,6 +153,25 @@ export async function findByIdsOptbiz(
   } = await import("./optbiz.service.ts");
   
   const models = await findByIdsOptbiz(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找业务选项, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOptbiz(
+  ids: OptbizId[],
+): Promise<OptbizModel[]> {
+  
+  const {
+    findByIdsOkOptbiz,
+  } = await import("./optbiz.service.ts");
+  
+  const models = await findByIdsOkOptbiz(ids);
   
   for (const model of models) {
   }
