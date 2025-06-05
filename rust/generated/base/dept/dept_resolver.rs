@@ -91,6 +91,31 @@ pub async fn find_one_dept(
   Ok(model)
 }
 
+/// 根据条件查找第一个部门, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_dept(
+  search: Option<DeptSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<DeptModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_dept(sort.as_deref())?;
+  
+  let model = dept_service::find_one_ok_dept(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找部门
 #[function_name::named]
 pub async fn find_by_id_dept(
@@ -112,6 +137,27 @@ pub async fn find_by_id_dept(
   Ok(model)
 }
 
+/// 根据 id 查找部门, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_dept(
+  id: DeptId,
+  options: Option<Options>,
+) -> Result<DeptModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = dept_service::find_by_id_ok_dept(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找部门
 #[function_name::named]
 pub async fn find_by_ids_dept(
@@ -126,6 +172,27 @@ pub async fn find_by_ids_dept(
   );
   
   let models = dept_service::find_by_ids_dept(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找部门, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_dept(
+  ids: Vec<DeptId>,
+  options: Option<Options>,
+) -> Result<Vec<DeptModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = dept_service::find_by_ids_ok_dept(
     ids,
     options,
   ).await?;

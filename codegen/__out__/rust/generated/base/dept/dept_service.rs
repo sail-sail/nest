@@ -124,6 +124,29 @@ pub async fn find_one_dept(
   Ok(dept_model)
 }
 
+/// 根据条件查找第一个部门, 如果不存在则抛错
+pub async fn find_one_ok_dept(
+  search: Option<DeptSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<DeptModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let dept_model = dept_dao::find_one_ok_dept(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(dept_model)
+}
+
 /// 根据 id 查找部门
 pub async fn find_by_id_dept(
   dept_id: DeptId,
@@ -138,13 +161,41 @@ pub async fn find_by_id_dept(
   Ok(dept_model)
 }
 
-/// 根据 dept_ids 查找部门
+/// 根据 id 查找部门, 如果不存在则抛错
+pub async fn find_by_id_ok_dept(
+  dept_id: DeptId,
+  options: Option<Options>,
+) -> Result<DeptModel> {
+  
+  let dept_model = dept_dao::find_by_id_ok_dept(
+    dept_id,
+    options,
+  ).await?;
+  
+  Ok(dept_model)
+}
+
+/// 根据 ids 查找部门
 pub async fn find_by_ids_dept(
   dept_ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
   
   let dept_models = dept_dao::find_by_ids_dept(
+    dept_ids,
+    options,
+  ).await?;
+  
+  Ok(dept_models)
+}
+
+/// 根据 ids 查找部门, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_dept(
+  dept_ids: Vec<DeptId>,
+  options: Option<Options>,
+) -> Result<Vec<DeptModel>> {
+  
+  let dept_models = dept_dao::find_by_ids_ok_dept(
     dept_ids,
     options,
   ).await?;

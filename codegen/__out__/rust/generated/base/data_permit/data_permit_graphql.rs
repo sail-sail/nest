@@ -82,6 +82,25 @@ impl DataPermitGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个数据权限, 如果不存在则抛错
+  async fn find_one_ok_data_permit(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<DataPermitSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<DataPermitModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        data_permit_resolver::find_one_ok_data_permit(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找数据权限
   async fn find_by_id_data_permit(
     &self,
@@ -99,6 +118,23 @@ impl DataPermitGenQuery {
       }).await
   }
   
+  /// 根据 id 查找数据权限, 如果不存在则抛错
+  async fn find_by_id_ok_data_permit(
+    &self,
+    ctx: &Context<'_>,
+    id: DataPermitId,
+  ) -> Result<DataPermitModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        data_permit_resolver::find_by_id_ok_data_permit(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找数据权限
   async fn find_by_ids_data_permit(
     &self,
@@ -110,6 +146,23 @@ impl DataPermitGenQuery {
       .build()
       .scope({
         data_permit_resolver::find_by_ids_data_permit(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找数据权限
+  async fn find_by_ids_ok_data_permit(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DataPermitId>,
+  ) -> Result<Vec<DataPermitModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        data_permit_resolver::find_by_ids_ok_data_permit(
           ids,
           None,
         )

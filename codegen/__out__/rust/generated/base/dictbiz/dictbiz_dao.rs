@@ -845,7 +845,7 @@ pub async fn get_field_comments_dictbiz(
 }
 
 // MARK: find_one_ok_dictbiz
-/// 根据条件查找第一个业务字典
+/// 根据条件查找第一个业务字典, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_dictbiz(
   search: Option<DictbizSearch>,
@@ -879,13 +879,16 @@ pub async fn find_one_ok_dictbiz(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let dictbiz_model = validate_option_dictbiz(
-    find_one_dictbiz(
-      search,
-      sort,
-      options,
-    ).await?,
+  let dictbiz_model = find_one_dictbiz(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(dictbiz_model) = dictbiz_model else {
+    let err_msg = "此 业务字典 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(dictbiz_model)
 }
@@ -949,7 +952,7 @@ pub async fn find_one_dictbiz(
 }
 
 // MARK: find_by_id_ok_dictbiz
-/// 根据 id 查找业务字典
+/// 根据 id 查找业务字典, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_dictbiz(
   id: DictbizId,
@@ -977,12 +980,15 @@ pub async fn find_by_id_ok_dictbiz(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let dictbiz_model = validate_option_dictbiz(
-    find_by_id_dictbiz(
-      id,
-      options,
-    ).await?,
+  let dictbiz_model = find_by_id_dictbiz(
+    id,
+    options,
   ).await?;
+  
+  let Some(dictbiz_model) = dictbiz_model else {
+    let err_msg = "此 业务字典 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(dictbiz_model)
 }
@@ -1033,6 +1039,78 @@ pub async fn find_by_id_dictbiz(
   Ok(dictbiz_model)
 }
 
+// MARK: find_by_ids_ok_dictbiz
+/// 根据 ids 查找业务字典, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_dictbiz(
+  ids: Vec<DictbizId>,
+  options: Option<Options>,
+) -> Result<Vec<DictbizModel>> {
+  
+  let table = "base_dictbiz";
+  let method = "find_by_ids_ok_dictbiz";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let dictbiz_models = find_by_ids_dictbiz(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if dictbiz_models.len() != len {
+    let err_msg = "此 业务字典 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let dictbiz_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = dictbiz_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 业务字典 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<DictbizModel>>>()?;
+  
+  Ok(dictbiz_models)
+}
+
 // MARK: find_by_ids_dictbiz
 /// 根据 ids 查找业务字典
 #[allow(dead_code)]
@@ -1069,7 +1147,13 @@ pub async fn find_by_ids_dictbiz(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = DictbizSearch {
@@ -1077,33 +1161,24 @@ pub async fn find_by_ids_dictbiz(
     ..Default::default()
   }.into();
   
-  let models = find_all_dictbiz(
+  let dictbiz_models = find_all_dictbiz(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 业务字典 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
+  let dictbiz_models = ids
     .into_iter()
-    .map(|id| {
-      let model = models
+    .filter_map(|id| {
+      dictbiz_models
         .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 业务字典 已经被删除";
-      Err(eyre!(err_msg))
+        .find(|item| item.id == id)
+        .cloned()
     })
-    .collect::<Result<Vec<DictbizModel>>>()?;
+    .collect::<Vec<DictbizModel>>();
   
-  Ok(models)
+  Ok(dictbiz_models)
 }
 
 // MARK: exists_dictbiz
@@ -1967,7 +2042,6 @@ pub async fn create_return_dictbiz(
     let err_msg = "create_return_dictbiz: model_dictbiz.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -2948,10 +3022,9 @@ pub async fn validate_option_dictbiz(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

@@ -82,6 +82,25 @@ impl UsrGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个用户, 如果不存在则抛错
+  async fn find_one_ok_usr(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<UsrSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<UsrModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        usr_resolver::find_one_ok_usr(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找用户
   async fn find_by_id_usr(
     &self,
@@ -99,6 +118,23 @@ impl UsrGenQuery {
       }).await
   }
   
+  /// 根据 id 查找用户, 如果不存在则抛错
+  async fn find_by_id_ok_usr(
+    &self,
+    ctx: &Context<'_>,
+    id: UsrId,
+  ) -> Result<UsrModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        usr_resolver::find_by_id_ok_usr(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找用户
   async fn find_by_ids_usr(
     &self,
@@ -110,6 +146,23 @@ impl UsrGenQuery {
       .build()
       .scope({
         usr_resolver::find_by_ids_usr(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找用户
+  async fn find_by_ids_ok_usr(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<UsrId>,
+  ) -> Result<Vec<UsrModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        usr_resolver::find_by_ids_ok_usr(
           ids,
           None,
         )

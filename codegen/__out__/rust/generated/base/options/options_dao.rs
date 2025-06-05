@@ -781,7 +781,7 @@ pub async fn get_field_comments_options(
 }
 
 // MARK: find_one_ok_options
-/// 根据条件查找第一个系统选项
+/// 根据条件查找第一个系统选项, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_options(
   search: Option<OptionsSearch>,
@@ -815,13 +815,16 @@ pub async fn find_one_ok_options(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let options_model = validate_option_options(
-    find_one_options(
-      search,
-      sort,
-      options,
-    ).await?,
+  let options_model = find_one_options(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(options_model) = options_model else {
+    let err_msg = "此 系统选项 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(options_model)
 }
@@ -885,7 +888,7 @@ pub async fn find_one_options(
 }
 
 // MARK: find_by_id_ok_options
-/// 根据 id 查找系统选项
+/// 根据 id 查找系统选项, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_options(
   id: OptionsId,
@@ -913,12 +916,15 @@ pub async fn find_by_id_ok_options(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let options_model = validate_option_options(
-    find_by_id_options(
-      id,
-      options,
-    ).await?,
+  let options_model = find_by_id_options(
+    id,
+    options,
   ).await?;
+  
+  let Some(options_model) = options_model else {
+    let err_msg = "此 系统选项 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(options_model)
 }
@@ -969,6 +975,78 @@ pub async fn find_by_id_options(
   Ok(options_model)
 }
 
+// MARK: find_by_ids_ok_options
+/// 根据 ids 查找系统选项, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_options(
+  ids: Vec<OptionsId>,
+  options: Option<Options>,
+) -> Result<Vec<OptionsModel>> {
+  
+  let table = "base_options";
+  let method = "find_by_ids_ok_options";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let options_models = find_by_ids_options(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if options_models.len() != len {
+    let err_msg = "此 系统选项 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let options_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = options_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 系统选项 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<OptionsModel>>>()?;
+  
+  Ok(options_models)
+}
+
 // MARK: find_by_ids_options
 /// 根据 ids 查找系统选项
 #[allow(dead_code)]
@@ -1005,7 +1083,13 @@ pub async fn find_by_ids_options(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = OptionsSearch {
@@ -1013,33 +1097,24 @@ pub async fn find_by_ids_options(
     ..Default::default()
   }.into();
   
-  let models = find_all_options(
+  let options_models = find_all_options(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 系统选项 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
+  let options_models = ids
     .into_iter()
-    .map(|id| {
-      let model = models
+    .filter_map(|id| {
+      options_models
         .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 系统选项 已经被删除";
-      Err(eyre!(err_msg))
+        .find(|item| item.id == id)
+        .cloned()
     })
-    .collect::<Result<Vec<OptionsModel>>>()?;
+    .collect::<Vec<OptionsModel>>();
   
-  Ok(models)
+  Ok(options_models)
 }
 
 // MARK: exists_options
@@ -1850,7 +1925,6 @@ pub async fn create_return_options(
     let err_msg = "create_return_options: model_options.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -2781,10 +2855,9 @@ pub async fn validate_option_options(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

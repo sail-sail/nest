@@ -1313,7 +1313,7 @@ pub async fn get_field_comments_usr(
 }
 
 // MARK: find_one_ok_usr
-/// 根据条件查找第一个用户
+/// 根据条件查找第一个用户, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_one_ok_usr(
   search: Option<UsrSearch>,
@@ -1347,13 +1347,16 @@ pub async fn find_one_ok_usr(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let usr_model = validate_option_usr(
-    find_one_usr(
-      search,
-      sort,
-      options,
-    ).await?,
+  let usr_model = find_one_usr(
+    search,
+    sort,
+    options,
   ).await?;
+  
+  let Some(usr_model) = usr_model else {
+    let err_msg = "此 用户 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(usr_model)
 }
@@ -1417,7 +1420,7 @@ pub async fn find_one_usr(
 }
 
 // MARK: find_by_id_ok_usr
-/// 根据 id 查找用户
+/// 根据 id 查找用户, 如果不存在则抛错
 #[allow(dead_code)]
 pub async fn find_by_id_ok_usr(
   id: UsrId,
@@ -1445,12 +1448,15 @@ pub async fn find_by_id_ok_usr(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let usr_model = validate_option_usr(
-    find_by_id_usr(
-      id,
-      options,
-    ).await?,
+  let usr_model = find_by_id_usr(
+    id,
+    options,
   ).await?;
+  
+  let Some(usr_model) = usr_model else {
+    let err_msg = "此 用户 已被删除";
+    return Err(eyre!(err_msg));
+  };
   
   Ok(usr_model)
 }
@@ -1501,6 +1507,78 @@ pub async fn find_by_id_usr(
   Ok(usr_model)
 }
 
+// MARK: find_by_ids_ok_usr
+/// 根据 ids 查找用户, 出现查询不到的 id 则报错
+#[allow(dead_code)]
+pub async fn find_by_ids_ok_usr(
+  ids: Vec<UsrId>,
+  options: Option<Options>,
+) -> Result<Vec<UsrModel>> {
+  
+  let table = "base_usr";
+  let method = "find_by_ids_ok_usr";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(vec![]);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
+  
+  let usr_models = find_by_ids_usr(
+    ids.clone(),
+    options,
+  ).await?;
+  
+  if usr_models.len() != len {
+    let err_msg = "此 用户 已被删除";
+    return Err(eyre!(err_msg));
+  }
+  
+  let usr_models = ids
+    .into_iter()
+    .map(|id| {
+      let model = usr_models
+        .iter()
+        .find(|item| item.id == id);
+      if let Some(model) = model {
+        return Ok(model.clone());
+      }
+      let err_msg = "此 用户 已经被删除";
+      Err(eyre!(err_msg))
+    })
+    .collect::<Result<Vec<UsrModel>>>()?;
+  
+  Ok(usr_models)
+}
+
 // MARK: find_by_ids_usr
 /// 根据 ids 查找用户
 #[allow(dead_code)]
@@ -1537,7 +1615,13 @@ pub async fn find_by_ids_usr(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!(
+      ServiceException {
+        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   let search = UsrSearch {
@@ -1545,33 +1629,24 @@ pub async fn find_by_ids_usr(
     ..Default::default()
   }.into();
   
-  let models = find_all_usr(
+  let usr_models = find_all_usr(
     search,
     None,
     None,
     options,
   ).await?;
   
-  if models.len() != len {
-    let err_msg = "此 用户 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  
-  let models = ids
+  let usr_models = ids
     .into_iter()
-    .map(|id| {
-      let model = models
+    .filter_map(|id| {
+      usr_models
         .iter()
-        .find(|item| item.id == id);
-      if let Some(model) = model {
-        return Ok(model.clone());
-      }
-      let err_msg = "此 用户 已经被删除";
-      Err(eyre!(err_msg))
+        .find(|item| item.id == id)
+        .cloned()
     })
-    .collect::<Result<Vec<UsrModel>>>()?;
+    .collect::<Vec<UsrModel>>();
   
-  Ok(models)
+  Ok(usr_models)
 }
 
 // MARK: exists_usr
@@ -2789,7 +2864,6 @@ pub async fn create_return_usr(
     let err_msg = "create_return_usr: model_usr.is_none()";
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
         trace: true,
         ..Default::default()
@@ -4125,10 +4199,9 @@ pub async fn validate_option_usr(
     );
     return Err(eyre!(
       ServiceException {
-        code: String::new(),
         message: err_msg.to_owned(),
-        rollback: true,
         trace: true,
+        ..Default::default()
       },
     ));
   }

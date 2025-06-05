@@ -80,6 +80,25 @@ impl DictDetailGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个系统字典明细, 如果不存在则抛错
+  async fn find_one_ok_dict_detail(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<DictDetailSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<DictDetailModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_detail_resolver::find_one_ok_dict_detail(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统字典明细
   async fn find_by_id_dict_detail(
     &self,
@@ -97,6 +116,23 @@ impl DictDetailGenQuery {
       }).await
   }
   
+  /// 根据 id 查找系统字典明细, 如果不存在则抛错
+  async fn find_by_id_ok_dict_detail(
+    &self,
+    ctx: &Context<'_>,
+    id: DictDetailId,
+  ) -> Result<DictDetailModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_detail_resolver::find_by_id_ok_dict_detail(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统字典明细
   async fn find_by_ids_dict_detail(
     &self,
@@ -108,6 +144,23 @@ impl DictDetailGenQuery {
       .build()
       .scope({
         dict_detail_resolver::find_by_ids_dict_detail(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找系统字典明细
+  async fn find_by_ids_ok_dict_detail(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DictDetailId>,
+  ) -> Result<Vec<DictDetailModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_detail_resolver::find_by_ids_ok_dict_detail(
           ids,
           None,
         )

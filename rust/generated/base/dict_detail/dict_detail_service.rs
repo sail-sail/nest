@@ -92,6 +92,29 @@ pub async fn find_one_dict_detail(
   Ok(dict_detail_model)
 }
 
+/// 根据条件查找第一个系统字典明细, 如果不存在则抛错
+pub async fn find_one_ok_dict_detail(
+  search: Option<DictDetailSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<DictDetailModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let dict_detail_model = dict_detail_dao::find_one_ok_dict_detail(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(dict_detail_model)
+}
+
 /// 根据 id 查找系统字典明细
 pub async fn find_by_id_dict_detail(
   dict_detail_id: DictDetailId,
@@ -106,13 +129,41 @@ pub async fn find_by_id_dict_detail(
   Ok(dict_detail_model)
 }
 
-/// 根据 dict_detail_ids 查找系统字典明细
+/// 根据 id 查找系统字典明细, 如果不存在则抛错
+pub async fn find_by_id_ok_dict_detail(
+  dict_detail_id: DictDetailId,
+  options: Option<Options>,
+) -> Result<DictDetailModel> {
+  
+  let dict_detail_model = dict_detail_dao::find_by_id_ok_dict_detail(
+    dict_detail_id,
+    options,
+  ).await?;
+  
+  Ok(dict_detail_model)
+}
+
+/// 根据 ids 查找系统字典明细
 pub async fn find_by_ids_dict_detail(
   dict_detail_ids: Vec<DictDetailId>,
   options: Option<Options>,
 ) -> Result<Vec<DictDetailModel>> {
   
   let dict_detail_models = dict_detail_dao::find_by_ids_dict_detail(
+    dict_detail_ids,
+    options,
+  ).await?;
+  
+  Ok(dict_detail_models)
+}
+
+/// 根据 ids 查找系统字典明细, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_dict_detail(
+  dict_detail_ids: Vec<DictDetailId>,
+  options: Option<Options>,
+) -> Result<Vec<DictDetailModel>> {
+  
+  let dict_detail_models = dict_detail_dao::find_by_ids_ok_dict_detail(
     dict_detail_ids,
     options,
   ).await?;
