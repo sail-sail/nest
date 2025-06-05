@@ -89,6 +89,25 @@ export async function findOneFieldPermit(
 }
 
 /**
+ * 根据条件查找第一个字段权限, 如果不存在则抛错
+ */
+export async function findOneOkFieldPermit(
+  search?: FieldPermitSearch,
+  sort?: SortInput[],
+): Promise<FieldPermitModel> {
+  
+  const {
+    findOneOkFieldPermit,
+  } = await import("./field_permit.service.ts");
+  
+  checkSortFieldPermit(sort);
+  
+  const model = await findOneOkFieldPermit(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找字段权限
  */
 export async function findByIdFieldPermit(
@@ -105,6 +124,22 @@ export async function findByIdFieldPermit(
 }
 
 /**
+ * 根据 id 查找字段权限, 如果不存在则抛错
+ */
+export async function findByIdOkFieldPermit(
+  id: FieldPermitId,
+): Promise<FieldPermitModel | undefined> {
+  
+  const {
+    findByIdOkFieldPermit,
+  } = await import("./field_permit.service.ts");
+  
+  const model = await findByIdOkFieldPermit(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找字段权限
  */
 export async function findByIdsFieldPermit(
@@ -116,6 +151,25 @@ export async function findByIdsFieldPermit(
   } = await import("./field_permit.service.ts");
   
   const models = await findByIdsFieldPermit(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找字段权限, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkFieldPermit(
+  ids: FieldPermitId[],
+): Promise<FieldPermitModel[]> {
+  
+  const {
+    findByIdsOkFieldPermit,
+  } = await import("./field_permit.service.ts");
+  
+  const models = await findByIdsOkFieldPermit(ids);
   
   for (const model of models) {
   }

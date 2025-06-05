@@ -73,13 +73,42 @@ export async function findOneOptions(
 }
 
 /**
+ * 根据条件查找第一个系统选项, 如果不存在则抛错
+ */
+export async function findOneOkOptions(
+  search?: OptionsSearch,
+  sort?: SortInput[],
+): Promise<OptionsModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const options_model = await optionsDao.findOneOkOptions(search, sort);
+  
+  return options_model;
+}
+
+/**
  * 根据 id 查找系统选项
  */
 export async function findByIdOptions(
-  options_id?: OptionsId | null,
+  options_id: OptionsId,
 ): Promise<OptionsModel | undefined> {
   
   const options_model = await optionsDao.findByIdOptions(options_id);
+  
+  return options_model;
+}
+
+/**
+ * 根据 id 查找系统选项, 如果不存在则抛错
+ */
+export async function findByIdOkOptions(
+  options_id: OptionsId,
+): Promise<OptionsModel> {
+  
+  const options_model = await optionsDao.findByIdOkOptions(options_id);
   
   return options_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsOptions(
 ): Promise<OptionsModel[]> {
   
   const options_models = await optionsDao.findByIdsOptions(options_ids);
+  
+  return options_models;
+}
+
+/**
+ * 根据 ids 查找系统选项, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOptions(
+  options_ids: OptionsId[],
+): Promise<OptionsModel[]> {
+  
+  const options_models = await optionsDao.findByIdsOkOptions(options_ids);
   
   return options_models;
 }

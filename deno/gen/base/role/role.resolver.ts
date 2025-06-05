@@ -91,6 +91,25 @@ export async function findOneRole(
 }
 
 /**
+ * 根据条件查找第一个角色, 如果不存在则抛错
+ */
+export async function findOneOkRole(
+  search?: RoleSearch,
+  sort?: SortInput[],
+): Promise<RoleModel> {
+  
+  const {
+    findOneOkRole,
+  } = await import("./role.service.ts");
+  
+  checkSortRole(sort);
+  
+  const model = await findOneOkRole(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找角色
  */
 export async function findByIdRole(
@@ -107,6 +126,22 @@ export async function findByIdRole(
 }
 
 /**
+ * 根据 id 查找角色, 如果不存在则抛错
+ */
+export async function findByIdOkRole(
+  id: RoleId,
+): Promise<RoleModel | undefined> {
+  
+  const {
+    findByIdOkRole,
+  } = await import("./role.service.ts");
+  
+  const model = await findByIdOkRole(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找角色
  */
 export async function findByIdsRole(
@@ -118,6 +153,25 @@ export async function findByIdsRole(
   } = await import("./role.service.ts");
   
   const models = await findByIdsRole(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找角色, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkRole(
+  ids: RoleId[],
+): Promise<RoleModel[]> {
+  
+  const {
+    findByIdsOkRole,
+  } = await import("./role.service.ts");
+  
+  const models = await findByIdsOkRole(ids);
   
   for (const model of models) {
   }

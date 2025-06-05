@@ -626,48 +626,6 @@ export async function checkByUniqueLang(
   return;
 }
 
-// MARK: findOneOkLang
-/** 根据条件查找第一语言 */
-export async function findOneOkLang(
-  search?: Readonly<LangSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<LangModel> {
-  
-  const table = "base_lang";
-  const method = "findOneOkLang";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_lang = validateOptionLang(
-    await findOneLang(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_lang;
-}
-
 // MARK: findOneLang
 /** 根据条件查找第一语言 */
 export async function findOneLang(
@@ -699,41 +657,45 @@ export async function findOneLang(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllLang(
+  
+  const lang_models = await findAllLang(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const lang_model = lang_models[0];
+  
+  return lang_model;
 }
 
-// MARK: findByIdOkLang
-/** 根据 id 查找语言 */
-export async function findByIdOkLang(
-  id?: LangId | null,
+// MARK: findOneOkLang
+/** 根据条件查找第一语言, 如果不存在则抛错 */
+export async function findOneOkLang(
+  search?: Readonly<LangSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<LangModel> {
   
   const table = "base_lang";
-  const method = "findByIdOkLang";
+  const method = "findOneOkLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -743,20 +705,32 @@ export async function findByIdOkLang(
     options.is_debug = false;
   }
   
-  const model_lang = validateOptionLang(
-    await findByIdLang(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const lang_models = await findAllLang(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_lang;
+  const lang_model = lang_models[0];
+  
+  if (!lang_model) {
+    const err_msg = "此 语言 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return lang_model;
 }
 
 // MARK: findByIdLang
 /** 根据 id 查找语言 */
 export async function findByIdLang(
-  id?: LangId | null,
+  id: LangId,
   options?: {
     is_debug?: boolean;
   },
@@ -784,7 +758,7 @@ export async function findByIdLang(
     return;
   }
   
-  const model = await findOneLang(
+  const lang_model = await findOneLang(
     {
       id,
     },
@@ -792,7 +766,47 @@ export async function findByIdLang(
     options,
   );
   
-  return model;
+  return lang_model;
+}
+
+// MARK: findByIdOkLang
+/** 根据 id 查找语言, 如果不存在则抛错 */
+export async function findByIdOkLang(
+  id: LangId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<LangModel> {
+  
+  const table = "base_lang";
+  const method = "findByIdOkLang";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const lang_model = await findByIdLang(
+    id,
+    options,
+  );
+  
+  if (!lang_model) {
+    const err_msg = "此 语言 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return lang_model;
 }
 
 // MARK: findByIdsLang
@@ -832,6 +846,45 @@ export async function findByIdsLang(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkLang
+/** 根据 ids 查找语言, 出现查询不到的 id 则报错 */
+export async function findByIdsOkLang(
+  ids: LangId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<LangModel[]> {
+  
+  const table = "base_lang";
+  const method = "findByIdsOkLang";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsLang(
+    ids,
     options,
   );
   

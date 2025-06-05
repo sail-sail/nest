@@ -91,6 +91,25 @@ export async function findOneDict(
 }
 
 /**
+ * 根据条件查找第一个系统字典, 如果不存在则抛错
+ */
+export async function findOneOkDict(
+  search?: DictSearch,
+  sort?: SortInput[],
+): Promise<DictModel> {
+  
+  const {
+    findOneOkDict,
+  } = await import("./dict.service.ts");
+  
+  checkSortDict(sort);
+  
+  const model = await findOneOkDict(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找系统字典
  */
 export async function findByIdDict(
@@ -107,6 +126,22 @@ export async function findByIdDict(
 }
 
 /**
+ * 根据 id 查找系统字典, 如果不存在则抛错
+ */
+export async function findByIdOkDict(
+  id: DictId,
+): Promise<DictModel | undefined> {
+  
+  const {
+    findByIdOkDict,
+  } = await import("./dict.service.ts");
+  
+  const model = await findByIdOkDict(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找系统字典
  */
 export async function findByIdsDict(
@@ -118,6 +153,25 @@ export async function findByIdsDict(
   } = await import("./dict.service.ts");
   
   const models = await findByIdsDict(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找系统字典, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDict(
+  ids: DictId[],
+): Promise<DictModel[]> {
+  
+  const {
+    findByIdsOkDict,
+  } = await import("./dict.service.ts");
+  
+  const models = await findByIdsOkDict(ids);
   
   for (const model of models) {
   }

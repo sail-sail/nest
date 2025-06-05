@@ -91,6 +91,25 @@ export async function findOneTenant(
 }
 
 /**
+ * 根据条件查找第一个租户, 如果不存在则抛错
+ */
+export async function findOneOkTenant(
+  search?: TenantSearch,
+  sort?: SortInput[],
+): Promise<TenantModel> {
+  
+  const {
+    findOneOkTenant,
+  } = await import("./tenant.service.ts");
+  
+  checkSortTenant(sort);
+  
+  const model = await findOneOkTenant(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找租户
  */
 export async function findByIdTenant(
@@ -107,6 +126,22 @@ export async function findByIdTenant(
 }
 
 /**
+ * 根据 id 查找租户, 如果不存在则抛错
+ */
+export async function findByIdOkTenant(
+  id: TenantId,
+): Promise<TenantModel | undefined> {
+  
+  const {
+    findByIdOkTenant,
+  } = await import("./tenant.service.ts");
+  
+  const model = await findByIdOkTenant(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找租户
  */
 export async function findByIdsTenant(
@@ -118,6 +153,25 @@ export async function findByIdsTenant(
   } = await import("./tenant.service.ts");
   
   const models = await findByIdsTenant(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找租户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkTenant(
+  ids: TenantId[],
+): Promise<TenantModel[]> {
+  
+  const {
+    findByIdsOkTenant,
+  } = await import("./tenant.service.ts");
+  
+  const models = await findByIdsOkTenant(ids);
   
   for (const model of models) {
   }

@@ -97,13 +97,14 @@ export async function findAllTenant(
 }
 
 /**
- * 根据条件查找第一个租户
+ * 根据条件查找第一个 租户
  */
 export async function findOneTenant(
   search?: TenantSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneTenant?: TenantModel;
   } = await query({
@@ -119,8 +120,43 @@ export async function findOneTenant(
       sort,
     },
   }, opt);
+  
   const model = data.findOneTenant;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 租户, 如果不存在则抛错
+ */
+export async function findOneOkTenant(
+  search?: TenantSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkTenant?: TenantModel;
+  } = await query({
+    query: `
+      query($search: TenantSearch, $sort: [SortInput!]) {
+        findOneOkTenant(search: $search, sort: $sort) {
+          ${ tenantQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkTenant;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -220,12 +256,14 @@ export async function updateByIdTenant(
  * 根据 id 查找 租户
  */
 export async function findByIdTenant(
-  id?: TenantId,
+  id: TenantId,
   opt?: GqlOpt,
 ): Promise<TenantModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdTenant?: TenantModel;
   } = await query({
@@ -240,8 +278,41 @@ export async function findByIdTenant(
       id,
     },
   }, opt);
+  
   const model = data.findByIdTenant;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 租户, 如果不存在则抛错
+ */
+export async function findByIdOkTenant(
+  id: TenantId,
+  opt?: GqlOpt,
+): Promise<TenantModel> {
+  
+  const data: {
+    findByIdOkTenant: TenantModel;
+  } = await query({
+    query: `
+      query($id: TenantId!) {
+        findByIdOkTenant(id: $id) {
+          ${ tenantQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkTenant;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -252,33 +323,70 @@ export async function findByIdsTenant(
   ids: TenantId[],
   opt?: GqlOpt,
 ): Promise<TenantModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: TenantModel[] = [ ];
-  try {
-    const data: {
-      findByIdsTenant: TenantModel[];
-    } = await query({
-      query: `
-        query($ids: [TenantId!]!) {
-          findByIdsTenant(ids: $ids) {
-            ${ tenantQueryField }
-          }
+  
+  const data: {
+    findByIdsTenant: TenantModel[];
+  } = await query({
+    query: `
+      query($ids: [TenantId!]!) {
+        findByIdsTenant(ids: $ids) {
+          ${ tenantQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsTenant;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsTenant;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 租户, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkTenant(
+  ids: TenantId[],
+  opt?: GqlOpt,
+): Promise<TenantModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkTenant: TenantModel[];
+  } = await query({
+    query: `
+      query($ids: [TenantId!]!) {
+        findByIdsOkTenant(ids: $ids) {
+          ${ tenantQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkTenant;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 
