@@ -72,11 +72,5 @@
   "terminal.integrated.env.windows": {
     "VUE_EDITOR": "code"
   },
-  "files.eol": "\n",
-  "pair-diff.patterns": [
-    {
-      "source": "./gen/**/*/*.ts",
-      "target": "../codegen/template/<basename>"
-    },
-  ]
+  "files.eol": "\n"
 }

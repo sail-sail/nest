@@ -33,12 +33,12 @@ export async function getAuthDeptIds() {
 export async function getDeptIds(
   usr_id?: UsrId,
 ) {
-  const usrModel = await findByIdUsr(
+  const usrModel = usr_id ? await findByIdUsr(
     usr_id,
     {
       is_debug: false,
     },
-  );
+  ) : undefined;
   if (!usrModel || !usrModel.is_enabled) {
     return [ ];
   }
