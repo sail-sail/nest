@@ -719,8 +719,8 @@ export async function findByIdsPermit(
   );
   
   const models2 = ids
-    .map((id) => models.find((item) = > item.id === id))
-    .filter((item) => item);
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
   
   return models2;
 }
