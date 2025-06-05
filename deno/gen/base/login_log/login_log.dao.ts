@@ -616,48 +616,6 @@ export async function checkByUniqueLoginLog(
   return;
 }
 
-// MARK: findOneOkLoginLog
-/** 根据条件查找第一登录日志 */
-export async function findOneOkLoginLog(
-  search?: Readonly<LoginLogSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<LoginLogModel> {
-  
-  const table = "base_login_log";
-  const method = "findOneOkLoginLog";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_login_log = validateOptionLoginLog(
-    await findOneLoginLog(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_login_log;
-}
-
 // MARK: findOneLoginLog
 /** 根据条件查找第一登录日志 */
 export async function findOneLoginLog(
@@ -689,41 +647,45 @@ export async function findOneLoginLog(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllLoginLog(
+  
+  const login_log_models = await findAllLoginLog(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const login_log_model = login_log_models[0];
+  
+  return login_log_model;
 }
 
-// MARK: findByIdOkLoginLog
-/** 根据 id 查找登录日志 */
-export async function findByIdOkLoginLog(
-  id?: LoginLogId | null,
+// MARK: findOneOkLoginLog
+/** 根据条件查找第一登录日志, 如果不存在则抛错 */
+export async function findOneOkLoginLog(
+  search?: Readonly<LoginLogSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<LoginLogModel> {
   
   const table = "base_login_log";
-  const method = "findByIdOkLoginLog";
+  const method = "findOneOkLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -733,20 +695,32 @@ export async function findByIdOkLoginLog(
     options.is_debug = false;
   }
   
-  const model_login_log = validateOptionLoginLog(
-    await findByIdLoginLog(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const login_log_models = await findAllLoginLog(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_login_log;
+  const login_log_model = login_log_models[0];
+  
+  if (!login_log_model) {
+    const err_msg = "此 登录日志 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return login_log_model;
 }
 
 // MARK: findByIdLoginLog
 /** 根据 id 查找登录日志 */
 export async function findByIdLoginLog(
-  id?: LoginLogId | null,
+  id: LoginLogId,
   options?: {
     is_debug?: boolean;
   },
@@ -774,7 +748,7 @@ export async function findByIdLoginLog(
     return;
   }
   
-  const model = await findOneLoginLog(
+  const login_log_model = await findOneLoginLog(
     {
       id,
     },
@@ -782,7 +756,47 @@ export async function findByIdLoginLog(
     options,
   );
   
-  return model;
+  return login_log_model;
+}
+
+// MARK: findByIdOkLoginLog
+/** 根据 id 查找登录日志, 如果不存在则抛错 */
+export async function findByIdOkLoginLog(
+  id: LoginLogId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<LoginLogModel> {
+  
+  const table = "base_login_log";
+  const method = "findByIdOkLoginLog";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const login_log_model = await findByIdLoginLog(
+    id,
+    options,
+  );
+  
+  if (!login_log_model) {
+    const err_msg = "此 登录日志 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return login_log_model;
 }
 
 // MARK: findByIdsLoginLog
@@ -822,6 +836,45 @@ export async function findByIdsLoginLog(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkLoginLog
+/** 根据 ids 查找登录日志, 出现查询不到的 id 则报错 */
+export async function findByIdsOkLoginLog(
+  ids: LoginLogId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<LoginLogModel[]> {
+  
+  const table = "base_login_log";
+  const method = "findByIdsOkLoginLog";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsLoginLog(
+    ids,
     options,
   );
   

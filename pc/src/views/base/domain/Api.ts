@@ -83,13 +83,14 @@ export async function findAllDomain(
 }
 
 /**
- * 根据条件查找第一个域名
+ * 根据条件查找第一个 域名
  */
 export async function findOneDomain(
   search?: DomainSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneDomain?: DomainModel;
   } = await query({
@@ -105,8 +106,43 @@ export async function findOneDomain(
       sort,
     },
   }, opt);
+  
   const model = data.findOneDomain;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 域名, 如果不存在则抛错
+ */
+export async function findOneOkDomain(
+  search?: DomainSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkDomain?: DomainModel;
+  } = await query({
+    query: `
+      query($search: DomainSearch, $sort: [SortInput!]) {
+        findOneOkDomain(search: $search, sort: $sort) {
+          ${ domainQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkDomain;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -206,12 +242,14 @@ export async function updateByIdDomain(
  * 根据 id 查找 域名
  */
 export async function findByIdDomain(
-  id?: DomainId,
+  id: DomainId,
   opt?: GqlOpt,
 ): Promise<DomainModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdDomain?: DomainModel;
   } = await query({
@@ -226,8 +264,41 @@ export async function findByIdDomain(
       id,
     },
   }, opt);
+  
   const model = data.findByIdDomain;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 域名, 如果不存在则抛错
+ */
+export async function findByIdOkDomain(
+  id: DomainId,
+  opt?: GqlOpt,
+): Promise<DomainModel> {
+  
+  const data: {
+    findByIdOkDomain: DomainModel;
+  } = await query({
+    query: `
+      query($id: DomainId!) {
+        findByIdOkDomain(id: $id) {
+          ${ domainQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkDomain;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -238,33 +309,70 @@ export async function findByIdsDomain(
   ids: DomainId[],
   opt?: GqlOpt,
 ): Promise<DomainModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: DomainModel[] = [ ];
-  try {
-    const data: {
-      findByIdsDomain: DomainModel[];
-    } = await query({
-      query: `
-        query($ids: [DomainId!]!) {
-          findByIdsDomain(ids: $ids) {
-            ${ domainQueryField }
-          }
+  
+  const data: {
+    findByIdsDomain: DomainModel[];
+  } = await query({
+    query: `
+      query($ids: [DomainId!]!) {
+        findByIdsDomain(ids: $ids) {
+          ${ domainQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsDomain;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsDomain;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 域名, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDomain(
+  ids: DomainId[],
+  opt?: GqlOpt,
+): Promise<DomainModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkDomain: DomainModel[];
+  } = await query({
+    query: `
+      query($ids: [DomainId!]!) {
+        findByIdsOkDomain(ids: $ids) {
+          ${ domainQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkDomain;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

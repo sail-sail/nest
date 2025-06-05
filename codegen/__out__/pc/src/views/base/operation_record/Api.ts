@@ -79,13 +79,14 @@ export async function findAllOperationRecord(
 }
 
 /**
- * 根据条件查找第一个操作记录
+ * 根据条件查找第一个 操作记录
  */
 export async function findOneOperationRecord(
   search?: OperationRecordSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneOperationRecord?: OperationRecordModel;
   } = await query({
@@ -101,8 +102,43 @@ export async function findOneOperationRecord(
       sort,
     },
   }, opt);
+  
   const model = data.findOneOperationRecord;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 操作记录, 如果不存在则抛错
+ */
+export async function findOneOkOperationRecord(
+  search?: OperationRecordSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkOperationRecord?: OperationRecordModel;
+  } = await query({
+    query: `
+      query($search: OperationRecordSearch, $sort: [SortInput!]) {
+        findOneOkOperationRecord(search: $search, sort: $sort) {
+          ${ operationRecordQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkOperationRecord;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -133,12 +169,14 @@ export async function findCountOperationRecord(
  * 根据 id 查找 操作记录
  */
 export async function findByIdOperationRecord(
-  id?: OperationRecordId,
+  id: OperationRecordId,
   opt?: GqlOpt,
 ): Promise<OperationRecordModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdOperationRecord?: OperationRecordModel;
   } = await query({
@@ -153,8 +191,41 @@ export async function findByIdOperationRecord(
       id,
     },
   }, opt);
+  
   const model = data.findByIdOperationRecord;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 操作记录, 如果不存在则抛错
+ */
+export async function findByIdOkOperationRecord(
+  id: OperationRecordId,
+  opt?: GqlOpt,
+): Promise<OperationRecordModel> {
+  
+  const data: {
+    findByIdOkOperationRecord: OperationRecordModel;
+  } = await query({
+    query: `
+      query($id: OperationRecordId!) {
+        findByIdOkOperationRecord(id: $id) {
+          ${ operationRecordQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkOperationRecord;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -165,33 +236,70 @@ export async function findByIdsOperationRecord(
   ids: OperationRecordId[],
   opt?: GqlOpt,
 ): Promise<OperationRecordModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: OperationRecordModel[] = [ ];
-  try {
-    const data: {
-      findByIdsOperationRecord: OperationRecordModel[];
-    } = await query({
-      query: `
-        query($ids: [OperationRecordId!]!) {
-          findByIdsOperationRecord(ids: $ids) {
-            ${ operationRecordQueryField }
-          }
+  
+  const data: {
+    findByIdsOperationRecord: OperationRecordModel[];
+  } = await query({
+    query: `
+      query($ids: [OperationRecordId!]!) {
+        findByIdsOperationRecord(ids: $ids) {
+          ${ operationRecordQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsOperationRecord;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOperationRecord;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 操作记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOperationRecord(
+  ids: OperationRecordId[],
+  opt?: GqlOpt,
+): Promise<OperationRecordModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkOperationRecord: OperationRecordModel[];
+  } = await query({
+    query: `
+      query($ids: [OperationRecordId!]!) {
+        findByIdsOkOperationRecord(ids: $ids) {
+          ${ operationRecordQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkOperationRecord;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

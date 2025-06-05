@@ -334,13 +334,62 @@ export async function findOne<#=Table_Up#>(
 }
 
 /**
+ * 根据条件查找第一个<#=table_comment#>, 如果不存在则抛错
+ */
+export async function findOneOk<#=Table_Up#>(
+  search?: <#=searchName#>,
+  sort?: SortInput[],
+): Promise<<#=modelName#>> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const <#=table#>_model = await <#=table#>Dao.findOneOk<#=Table_Up#>(search, sort<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
+  
+  return <#=table#>_model;
+}
+
+/**
  * 根据 id 查找<#=table_comment#>
  */
 export async function findById<#=Table_Up#>(
-  <#=table#>_id?: <#=Table_Up#>Id | null,
+  <#=table#>_id: <#=Table_Up#>Id,
 ): Promise<<#=modelName#> | undefined> {
   
   const <#=table#>_model = await <#=table#>Dao.findById<#=Table_Up#>(<#=table#>_id<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
+  
+  return <#=table#>_model;
+}
+
+/**
+ * 根据 id 查找<#=table_comment#>, 如果不存在则抛错
+ */
+export async function findByIdOk<#=Table_Up#>(
+  <#=table#>_id: <#=Table_Up#>Id,
+): Promise<<#=modelName#>> {
+  
+  const <#=table#>_model = await <#=table#>Dao.findByIdOk<#=Table_Up#>(<#=table#>_id<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -363,6 +412,28 @@ export async function findByIds<#=Table_Up#>(
 ): Promise<<#=modelName#>[]> {
   
   const <#=table#>_models = await <#=table#>Dao.findByIds<#=Table_Up#>(<#=table#>_ids<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
+  
+  return <#=table#>_models;
+}
+
+/**
+ * 根据 ids 查找<#=table_comment#>, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOk<#=Table_Up#>(
+  <#=table#>_ids: <#=Table_Up#>Id[],
+): Promise<<#=modelName#>[]> {
+  
+  const <#=table#>_models = await <#=table#>Dao.findByIdsOk<#=Table_Up#>(<#=table#>_ids<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {

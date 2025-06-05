@@ -960,48 +960,6 @@ export async function checkByUniqueTenant(
   return;
 }
 
-// MARK: findOneOkTenant
-/** 根据条件查找第一租户 */
-export async function findOneOkTenant(
-  search?: Readonly<TenantSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<TenantModel> {
-  
-  const table = "base_tenant";
-  const method = "findOneOkTenant";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_tenant = validateOptionTenant(
-    await findOneTenant(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_tenant;
-}
-
 // MARK: findOneTenant
 /** 根据条件查找第一租户 */
 export async function findOneTenant(
@@ -1033,41 +991,45 @@ export async function findOneTenant(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllTenant(
+  
+  const tenant_models = await findAllTenant(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const tenant_model = tenant_models[0];
+  
+  return tenant_model;
 }
 
-// MARK: findByIdOkTenant
-/** 根据 id 查找租户 */
-export async function findByIdOkTenant(
-  id?: TenantId | null,
+// MARK: findOneOkTenant
+/** 根据条件查找第一租户, 如果不存在则抛错 */
+export async function findOneOkTenant(
+  search?: Readonly<TenantSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<TenantModel> {
   
   const table = "base_tenant";
-  const method = "findByIdOkTenant";
+  const method = "findOneOkTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -1077,20 +1039,32 @@ export async function findByIdOkTenant(
     options.is_debug = false;
   }
   
-  const model_tenant = validateOptionTenant(
-    await findByIdTenant(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const tenant_models = await findAllTenant(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_tenant;
+  const tenant_model = tenant_models[0];
+  
+  if (!tenant_model) {
+    const err_msg = "此 租户 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return tenant_model;
 }
 
 // MARK: findByIdTenant
 /** 根据 id 查找租户 */
 export async function findByIdTenant(
-  id?: TenantId | null,
+  id: TenantId,
   options?: {
     is_debug?: boolean;
   },
@@ -1118,7 +1092,7 @@ export async function findByIdTenant(
     return;
   }
   
-  const model = await findOneTenant(
+  const tenant_model = await findOneTenant(
     {
       id,
     },
@@ -1126,7 +1100,47 @@ export async function findByIdTenant(
     options,
   );
   
-  return model;
+  return tenant_model;
+}
+
+// MARK: findByIdOkTenant
+/** 根据 id 查找租户, 如果不存在则抛错 */
+export async function findByIdOkTenant(
+  id: TenantId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<TenantModel> {
+  
+  const table = "base_tenant";
+  const method = "findByIdOkTenant";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const tenant_model = await findByIdTenant(
+    id,
+    options,
+  );
+  
+  if (!tenant_model) {
+    const err_msg = "此 租户 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return tenant_model;
 }
 
 // MARK: findByIdsTenant
@@ -1166,6 +1180,45 @@ export async function findByIdsTenant(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkTenant
+/** 根据 ids 查找租户, 出现查询不到的 id 则报错 */
+export async function findByIdsOkTenant(
+  ids: TenantId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<TenantModel[]> {
+  
+  const table = "base_tenant";
+  const method = "findByIdsOkTenant";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsTenant(
+    ids,
     options,
   );
   

@@ -671,48 +671,6 @@ export async function checkByUniqueOptions(
   return;
 }
 
-// MARK: findOneOkOptions
-/** 根据条件查找第一系统选项 */
-export async function findOneOkOptions(
-  search?: Readonly<OptionsSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<OptionsModel> {
-  
-  const table = "base_options";
-  const method = "findOneOkOptions";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_options = validateOptionOptions(
-    await findOneOptions(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_options;
-}
-
 // MARK: findOneOptions
 /** 根据条件查找第一系统选项 */
 export async function findOneOptions(
@@ -744,41 +702,45 @@ export async function findOneOptions(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllOptions(
+  
+  const options_models = await findAllOptions(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const options_model = options_models[0];
+  
+  return options_model;
 }
 
-// MARK: findByIdOkOptions
-/** 根据 id 查找系统选项 */
-export async function findByIdOkOptions(
-  id?: OptionsId | null,
+// MARK: findOneOkOptions
+/** 根据条件查找第一系统选项, 如果不存在则抛错 */
+export async function findOneOkOptions(
+  search?: Readonly<OptionsSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<OptionsModel> {
   
   const table = "base_options";
-  const method = "findByIdOkOptions";
+  const method = "findOneOkOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -788,20 +750,32 @@ export async function findByIdOkOptions(
     options.is_debug = false;
   }
   
-  const model_options = validateOptionOptions(
-    await findByIdOptions(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const options_models = await findAllOptions(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_options;
+  const options_model = options_models[0];
+  
+  if (!options_model) {
+    const err_msg = "此 系统选项 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return options_model;
 }
 
 // MARK: findByIdOptions
 /** 根据 id 查找系统选项 */
 export async function findByIdOptions(
-  id?: OptionsId | null,
+  id: OptionsId,
   options?: {
     is_debug?: boolean;
   },
@@ -829,7 +803,7 @@ export async function findByIdOptions(
     return;
   }
   
-  const model = await findOneOptions(
+  const options_model = await findOneOptions(
     {
       id,
     },
@@ -837,7 +811,47 @@ export async function findByIdOptions(
     options,
   );
   
-  return model;
+  return options_model;
+}
+
+// MARK: findByIdOkOptions
+/** 根据 id 查找系统选项, 如果不存在则抛错 */
+export async function findByIdOkOptions(
+  id: OptionsId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OptionsModel> {
+  
+  const table = "base_options";
+  const method = "findByIdOkOptions";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const options_model = await findByIdOptions(
+    id,
+    options,
+  );
+  
+  if (!options_model) {
+    const err_msg = "此 系统选项 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return options_model;
 }
 
 // MARK: findByIdsOptions
@@ -877,6 +891,45 @@ export async function findByIdsOptions(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkOptions
+/** 根据 ids 查找系统选项, 出现查询不到的 id 则报错 */
+export async function findByIdsOkOptions(
+  ids: OptionsId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OptionsModel[]> {
+  
+  const table = "base_options";
+  const method = "findByIdsOkOptions";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsOptions(
+    ids,
     options,
   );
   
