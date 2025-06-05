@@ -1262,6 +1262,16 @@ pub async fn find_by_ids_menu(
     options,
   ).await?;
   
+  let menu_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      menu_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<MenuModel>>();
+  
   Ok(menu_models)
 }
 
