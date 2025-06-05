@@ -92,6 +92,29 @@ pub async fn find_one_lang(
   Ok(lang_model)
 }
 
+/// 根据条件查找第一个语言, 如果不存在则抛错
+pub async fn find_one_ok_lang(
+  search: Option<LangSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<LangModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let lang_model = lang_dao::find_one_ok_lang(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(lang_model)
+}
+
 /// 根据 id 查找语言
 pub async fn find_by_id_lang(
   lang_id: LangId,
@@ -106,13 +129,41 @@ pub async fn find_by_id_lang(
   Ok(lang_model)
 }
 
-/// 根据 lang_ids 查找语言
+/// 根据 id 查找语言, 如果不存在则抛错
+pub async fn find_by_id_ok_lang(
+  lang_id: LangId,
+  options: Option<Options>,
+) -> Result<LangModel> {
+  
+  let lang_model = lang_dao::find_by_id_ok_lang(
+    lang_id,
+    options,
+  ).await?;
+  
+  Ok(lang_model)
+}
+
+/// 根据 ids 查找语言
 pub async fn find_by_ids_lang(
   lang_ids: Vec<LangId>,
   options: Option<Options>,
 ) -> Result<Vec<LangModel>> {
   
   let lang_models = lang_dao::find_by_ids_lang(
+    lang_ids,
+    options,
+  ).await?;
+  
+  Ok(lang_models)
+}
+
+/// 根据 ids 查找语言, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_lang(
+  lang_ids: Vec<LangId>,
+  options: Option<Options>,
+) -> Result<Vec<LangModel>> {
+  
+  let lang_models = lang_dao::find_by_ids_ok_lang(
     lang_ids,
     options,
   ).await?;

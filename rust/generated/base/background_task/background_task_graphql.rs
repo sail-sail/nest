@@ -82,6 +82,25 @@ impl BackgroundTaskGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个后台任务, 如果不存在则抛错
+  async fn find_one_ok_background_task(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<BackgroundTaskSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<BackgroundTaskModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        background_task_resolver::find_one_ok_background_task(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找后台任务
   async fn find_by_id_background_task(
     &self,
@@ -99,6 +118,23 @@ impl BackgroundTaskGenQuery {
       }).await
   }
   
+  /// 根据 id 查找后台任务, 如果不存在则抛错
+  async fn find_by_id_ok_background_task(
+    &self,
+    ctx: &Context<'_>,
+    id: BackgroundTaskId,
+  ) -> Result<BackgroundTaskModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        background_task_resolver::find_by_id_ok_background_task(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找后台任务
   async fn find_by_ids_background_task(
     &self,
@@ -110,6 +146,23 @@ impl BackgroundTaskGenQuery {
       .build()
       .scope({
         background_task_resolver::find_by_ids_background_task(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找后台任务
+  async fn find_by_ids_ok_background_task(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<BackgroundTaskId>,
+  ) -> Result<Vec<BackgroundTaskModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        background_task_resolver::find_by_ids_ok_background_task(
           ids,
           None,
         )

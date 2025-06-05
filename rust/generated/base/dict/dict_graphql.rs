@@ -80,6 +80,25 @@ impl DictGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个系统字典, 如果不存在则抛错
+  async fn find_one_ok_dict(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<DictSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<DictModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_resolver::find_one_ok_dict(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统字典
   async fn find_by_id_dict(
     &self,
@@ -97,6 +116,23 @@ impl DictGenQuery {
       }).await
   }
   
+  /// 根据 id 查找系统字典, 如果不存在则抛错
+  async fn find_by_id_ok_dict(
+    &self,
+    ctx: &Context<'_>,
+    id: DictId,
+  ) -> Result<DictModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_resolver::find_by_id_ok_dict(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统字典
   async fn find_by_ids_dict(
     &self,
@@ -108,6 +144,23 @@ impl DictGenQuery {
       .build()
       .scope({
         dict_resolver::find_by_ids_dict(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找系统字典
+  async fn find_by_ids_ok_dict(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DictId>,
+  ) -> Result<Vec<DictModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_resolver::find_by_ids_ok_dict(
           ids,
           None,
         )

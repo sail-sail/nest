@@ -80,6 +80,25 @@ impl TenantGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个租户, 如果不存在则抛错
+  async fn find_one_ok_tenant(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<TenantSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<TenantModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        tenant_resolver::find_one_ok_tenant(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找租户
   async fn find_by_id_tenant(
     &self,
@@ -97,6 +116,23 @@ impl TenantGenQuery {
       }).await
   }
   
+  /// 根据 id 查找租户, 如果不存在则抛错
+  async fn find_by_id_ok_tenant(
+    &self,
+    ctx: &Context<'_>,
+    id: TenantId,
+  ) -> Result<TenantModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        tenant_resolver::find_by_id_ok_tenant(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找租户
   async fn find_by_ids_tenant(
     &self,
@@ -108,6 +144,23 @@ impl TenantGenQuery {
       .build()
       .scope({
         tenant_resolver::find_by_ids_tenant(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找租户
+  async fn find_by_ids_ok_tenant(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<TenantId>,
+  ) -> Result<Vec<TenantModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        tenant_resolver::find_by_ids_ok_tenant(
           ids,
           None,
         )

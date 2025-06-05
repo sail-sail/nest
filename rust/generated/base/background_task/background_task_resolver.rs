@@ -91,6 +91,31 @@ pub async fn find_one_background_task(
   Ok(model)
 }
 
+/// 根据条件查找第一个后台任务, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_one_ok_background_task(
+  search: Option<BackgroundTaskSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<BackgroundTaskModel> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  check_sort_background_task(sort.as_deref())?;
+  
+  let model = background_task_service::find_one_ok_background_task(
+    search,
+    sort,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 id 查找后台任务
 #[function_name::named]
 pub async fn find_by_id_background_task(
@@ -112,6 +137,27 @@ pub async fn find_by_id_background_task(
   Ok(model)
 }
 
+/// 根据 id 查找后台任务, 如果不存在则抛错
+#[function_name::named]
+pub async fn find_by_id_ok_background_task(
+  id: BackgroundTaskId,
+  options: Option<Options>,
+) -> Result<BackgroundTaskModel> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let model = background_task_service::find_by_id_ok_background_task(
+    id,
+    options,
+  ).await?;
+  
+  Ok(model)
+}
+
 /// 根据 ids 查找后台任务
 #[function_name::named]
 pub async fn find_by_ids_background_task(
@@ -126,6 +172,27 @@ pub async fn find_by_ids_background_task(
   );
   
   let models = background_task_service::find_by_ids_background_task(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
+/// 根据 ids 查找后台任务, 出现查询不到的 id 则报错
+#[function_name::named]
+pub async fn find_by_ids_ok_background_task(
+  ids: Vec<BackgroundTaskId>,
+  options: Option<Options>,
+) -> Result<Vec<BackgroundTaskModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = background_task_service::find_by_ids_ok_background_task(
     ids,
     options,
   ).await?;

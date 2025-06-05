@@ -92,6 +92,29 @@ pub async fn find_one_dict(
   Ok(dict_model)
 }
 
+/// 根据条件查找第一个系统字典, 如果不存在则抛错
+pub async fn find_one_ok_dict(
+  search: Option<DictSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<DictModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let dict_model = dict_dao::find_one_ok_dict(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(dict_model)
+}
+
 /// 根据 id 查找系统字典
 pub async fn find_by_id_dict(
   dict_id: DictId,
@@ -106,13 +129,41 @@ pub async fn find_by_id_dict(
   Ok(dict_model)
 }
 
-/// 根据 dict_ids 查找系统字典
+/// 根据 id 查找系统字典, 如果不存在则抛错
+pub async fn find_by_id_ok_dict(
+  dict_id: DictId,
+  options: Option<Options>,
+) -> Result<DictModel> {
+  
+  let dict_model = dict_dao::find_by_id_ok_dict(
+    dict_id,
+    options,
+  ).await?;
+  
+  Ok(dict_model)
+}
+
+/// 根据 ids 查找系统字典
 pub async fn find_by_ids_dict(
   dict_ids: Vec<DictId>,
   options: Option<Options>,
 ) -> Result<Vec<DictModel>> {
   
   let dict_models = dict_dao::find_by_ids_dict(
+    dict_ids,
+    options,
+  ).await?;
+  
+  Ok(dict_models)
+}
+
+/// 根据 ids 查找系统字典, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_dict(
+  dict_ids: Vec<DictId>,
+  options: Option<Options>,
+) -> Result<Vec<DictModel>> {
+  
+  let dict_models = dict_dao::find_by_ids_ok_dict(
     dict_ids,
     options,
   ).await?;

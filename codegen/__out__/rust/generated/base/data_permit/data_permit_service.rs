@@ -94,6 +94,29 @@ pub async fn find_one_data_permit(
   Ok(data_permit_model)
 }
 
+/// 根据条件查找第一个数据权限, 如果不存在则抛错
+pub async fn find_one_ok_data_permit(
+  search: Option<DataPermitSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<DataPermitModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let data_permit_model = data_permit_dao::find_one_ok_data_permit(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(data_permit_model)
+}
+
 /// 根据 id 查找数据权限
 pub async fn find_by_id_data_permit(
   data_permit_id: DataPermitId,
@@ -108,13 +131,41 @@ pub async fn find_by_id_data_permit(
   Ok(data_permit_model)
 }
 
-/// 根据 data_permit_ids 查找数据权限
+/// 根据 id 查找数据权限, 如果不存在则抛错
+pub async fn find_by_id_ok_data_permit(
+  data_permit_id: DataPermitId,
+  options: Option<Options>,
+) -> Result<DataPermitModel> {
+  
+  let data_permit_model = data_permit_dao::find_by_id_ok_data_permit(
+    data_permit_id,
+    options,
+  ).await?;
+  
+  Ok(data_permit_model)
+}
+
+/// 根据 ids 查找数据权限
 pub async fn find_by_ids_data_permit(
   data_permit_ids: Vec<DataPermitId>,
   options: Option<Options>,
 ) -> Result<Vec<DataPermitModel>> {
   
   let data_permit_models = data_permit_dao::find_by_ids_data_permit(
+    data_permit_ids,
+    options,
+  ).await?;
+  
+  Ok(data_permit_models)
+}
+
+/// 根据 ids 查找数据权限, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_data_permit(
+  data_permit_ids: Vec<DataPermitId>,
+  options: Option<Options>,
+) -> Result<Vec<DataPermitModel>> {
+  
+  let data_permit_models = data_permit_dao::find_by_ids_ok_data_permit(
     data_permit_ids,
     options,
   ).await?;

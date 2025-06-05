@@ -92,6 +92,29 @@ pub async fn find_one_field_permit(
   Ok(field_permit_model)
 }
 
+/// 根据条件查找第一个字段权限, 如果不存在则抛错
+pub async fn find_one_ok_field_permit(
+  search: Option<FieldPermitSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<FieldPermitModel> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
+  
+  let field_permit_model = field_permit_dao::find_one_ok_field_permit(
+    Some(search),
+    sort,
+    options,
+  ).await?;
+  
+  Ok(field_permit_model)
+}
+
 /// 根据 id 查找字段权限
 pub async fn find_by_id_field_permit(
   field_permit_id: FieldPermitId,
@@ -106,13 +129,41 @@ pub async fn find_by_id_field_permit(
   Ok(field_permit_model)
 }
 
-/// 根据 field_permit_ids 查找字段权限
+/// 根据 id 查找字段权限, 如果不存在则抛错
+pub async fn find_by_id_ok_field_permit(
+  field_permit_id: FieldPermitId,
+  options: Option<Options>,
+) -> Result<FieldPermitModel> {
+  
+  let field_permit_model = field_permit_dao::find_by_id_ok_field_permit(
+    field_permit_id,
+    options,
+  ).await?;
+  
+  Ok(field_permit_model)
+}
+
+/// 根据 ids 查找字段权限
 pub async fn find_by_ids_field_permit(
   field_permit_ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitModel>> {
   
   let field_permit_models = field_permit_dao::find_by_ids_field_permit(
+    field_permit_ids,
+    options,
+  ).await?;
+  
+  Ok(field_permit_models)
+}
+
+/// 根据 ids 查找字段权限, 出现查询不到的 id 则报错
+pub async fn find_by_ids_ok_field_permit(
+  field_permit_ids: Vec<FieldPermitId>,
+  options: Option<Options>,
+) -> Result<Vec<FieldPermitModel>> {
+  
+  let field_permit_models = field_permit_dao::find_by_ids_ok_field_permit(
     field_permit_ids,
     options,
   ).await?;

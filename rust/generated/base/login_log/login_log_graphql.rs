@@ -82,6 +82,25 @@ impl LoginLogGenQuery {
       }).await
   }
   
+  /// 根据条件查找第一个登录日志, 如果不存在则抛错
+  async fn find_one_ok_login_log(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<LoginLogSearch>,
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<LoginLogModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        login_log_resolver::find_one_ok_login_log(
+          search,
+          sort,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找登录日志
   async fn find_by_id_login_log(
     &self,
@@ -99,6 +118,23 @@ impl LoginLogGenQuery {
       }).await
   }
   
+  /// 根据 id 查找登录日志, 如果不存在则抛错
+  async fn find_by_id_ok_login_log(
+    &self,
+    ctx: &Context<'_>,
+    id: LoginLogId,
+  ) -> Result<LoginLogModel> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        login_log_resolver::find_by_id_ok_login_log(
+          id,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找登录日志
   async fn find_by_ids_login_log(
     &self,
@@ -110,6 +146,23 @@ impl LoginLogGenQuery {
       .build()
       .scope({
         login_log_resolver::find_by_ids_login_log(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
+  /// 根据 id 查找登录日志
+  async fn find_by_ids_ok_login_log(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<LoginLogId>,
+  ) -> Result<Vec<LoginLogModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        login_log_resolver::find_by_ids_ok_login_log(
           ids,
           None,
         )
