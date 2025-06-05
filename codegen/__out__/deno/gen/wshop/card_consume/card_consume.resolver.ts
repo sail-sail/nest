@@ -91,6 +91,25 @@ export async function findOneCardConsume(
 }
 
 /**
+ * 根据条件查找第一个会员卡消费记录, 如果不存在则抛错
+ */
+export async function findOneOkCardConsume(
+  search?: CardConsumeSearch,
+  sort?: SortInput[],
+): Promise<CardConsumeModel> {
+  
+  const {
+    findOneOkCardConsume,
+  } = await import("./card_consume.service.ts");
+  
+  checkSortCardConsume(sort);
+  
+  const model = await findOneOkCardConsume(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找会员卡消费记录
  */
 export async function findByIdCardConsume(
@@ -107,6 +126,22 @@ export async function findByIdCardConsume(
 }
 
 /**
+ * 根据 id 查找会员卡消费记录, 如果不存在则抛错
+ */
+export async function findByIdOkCardConsume(
+  id: CardConsumeId,
+): Promise<CardConsumeModel | undefined> {
+  
+  const {
+    findByIdOkCardConsume,
+  } = await import("./card_consume.service.ts");
+  
+  const model = await findByIdOkCardConsume(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找会员卡消费记录
  */
 export async function findByIdsCardConsume(
@@ -118,6 +153,25 @@ export async function findByIdsCardConsume(
   } = await import("./card_consume.service.ts");
   
   const models = await findByIdsCardConsume(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找会员卡消费记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCardConsume(
+  ids: CardConsumeId[],
+): Promise<CardConsumeModel[]> {
+  
+  const {
+    findByIdsOkCardConsume,
+  } = await import("./card_consume.service.ts");
+  
+  const models = await findByIdsOkCardConsume(ids);
   
   for (const model of models) {
   }

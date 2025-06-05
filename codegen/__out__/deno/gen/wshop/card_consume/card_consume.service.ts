@@ -104,13 +104,42 @@ export async function findOneCardConsume(
 }
 
 /**
+ * 根据条件查找第一个会员卡消费记录, 如果不存在则抛错
+ */
+export async function findOneOkCardConsume(
+  search?: CardConsumeSearch,
+  sort?: SortInput[],
+): Promise<CardConsumeModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const card_consume_model = await card_consumeDao.findOneOkCardConsume(search, sort);
+  
+  return card_consume_model;
+}
+
+/**
  * 根据 id 查找会员卡消费记录
  */
 export async function findByIdCardConsume(
-  card_consume_id?: CardConsumeId | null,
+  card_consume_id: CardConsumeId,
 ): Promise<CardConsumeModel | undefined> {
   
   const card_consume_model = await card_consumeDao.findByIdCardConsume(card_consume_id);
+  
+  return card_consume_model;
+}
+
+/**
+ * 根据 id 查找会员卡消费记录, 如果不存在则抛错
+ */
+export async function findByIdOkCardConsume(
+  card_consume_id: CardConsumeId,
+): Promise<CardConsumeModel> {
+  
+  const card_consume_model = await card_consumeDao.findByIdOkCardConsume(card_consume_id);
   
   return card_consume_model;
 }
@@ -123,6 +152,18 @@ export async function findByIdsCardConsume(
 ): Promise<CardConsumeModel[]> {
   
   const card_consume_models = await card_consumeDao.findByIdsCardConsume(card_consume_ids);
+  
+  return card_consume_models;
+}
+
+/**
+ * 根据 ids 查找会员卡消费记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCardConsume(
+  card_consume_ids: CardConsumeId[],
+): Promise<CardConsumeModel[]> {
+  
+  const card_consume_models = await card_consumeDao.findByIdsOkCardConsume(card_consume_ids);
   
   return card_consume_models;
 }

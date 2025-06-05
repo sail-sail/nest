@@ -93,6 +93,25 @@ export async function findOneOrder(
 }
 
 /**
+ * 根据条件查找第一个订单, 如果不存在则抛错
+ */
+export async function findOneOkOrder(
+  search?: OrderSearch,
+  sort?: SortInput[],
+): Promise<OrderModel> {
+  
+  const {
+    findOneOkOrder,
+  } = await import("./order.service.ts");
+  
+  checkSortOrder(sort);
+  
+  const model = await findOneOkOrder(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找订单
  */
 export async function findByIdOrder(
@@ -109,6 +128,22 @@ export async function findByIdOrder(
 }
 
 /**
+ * 根据 id 查找订单, 如果不存在则抛错
+ */
+export async function findByIdOkOrder(
+  id: OrderId,
+): Promise<OrderModel | undefined> {
+  
+  const {
+    findByIdOkOrder,
+  } = await import("./order.service.ts");
+  
+  const model = await findByIdOkOrder(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找订单
  */
 export async function findByIdsOrder(
@@ -120,6 +155,25 @@ export async function findByIdsOrder(
   } = await import("./order.service.ts");
   
   const models = await findByIdsOrder(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找订单, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOrder(
+  ids: OrderId[],
+): Promise<OrderModel[]> {
+  
+  const {
+    findByIdsOkOrder,
+  } = await import("./order.service.ts");
+  
+  const models = await findByIdsOkOrder(ids);
   
   for (const model of models) {
   }

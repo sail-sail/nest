@@ -93,6 +93,25 @@ export async function findOnePt(
 }
 
 /**
+ * 根据条件查找第一个产品, 如果不存在则抛错
+ */
+export async function findOneOkPt(
+  search?: PtSearch,
+  sort?: SortInput[],
+): Promise<PtModel> {
+  
+  const {
+    findOneOkPt,
+  } = await import("./pt.service.ts");
+  
+  checkSortPt(sort);
+  
+  const model = await findOneOkPt(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找产品
  */
 export async function findByIdPt(
@@ -109,6 +128,22 @@ export async function findByIdPt(
 }
 
 /**
+ * 根据 id 查找产品, 如果不存在则抛错
+ */
+export async function findByIdOkPt(
+  id: PtId,
+): Promise<PtModel | undefined> {
+  
+  const {
+    findByIdOkPt,
+  } = await import("./pt.service.ts");
+  
+  const model = await findByIdOkPt(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找产品
  */
 export async function findByIdsPt(
@@ -120,6 +155,25 @@ export async function findByIdsPt(
   } = await import("./pt.service.ts");
   
   const models = await findByIdsPt(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找产品, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkPt(
+  ids: PtId[],
+): Promise<PtModel[]> {
+  
+  const {
+    findByIdsOkPt,
+  } = await import("./pt.service.ts");
+  
+  const models = await findByIdsOkPt(ids);
   
   for (const model of models) {
   }

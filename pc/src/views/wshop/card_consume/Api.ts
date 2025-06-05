@@ -133,13 +133,14 @@ export async function findAllCardConsume(
 }
 
 /**
- * 根据条件查找第一个会员卡消费记录
+ * 根据条件查找第一个 会员卡消费记录
  */
 export async function findOneCardConsume(
   search?: CardConsumeSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneCardConsume?: CardConsumeModel;
   } = await query({
@@ -155,8 +156,43 @@ export async function findOneCardConsume(
       sort,
     },
   }, opt);
+  
   const model = data.findOneCardConsume;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 会员卡消费记录, 如果不存在则抛错
+ */
+export async function findOneOkCardConsume(
+  search?: CardConsumeSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkCardConsume?: CardConsumeModel;
+  } = await query({
+    query: `
+      query($search: CardConsumeSearch, $sort: [SortInput!]) {
+        findOneOkCardConsume(search: $search, sort: $sort) {
+          ${ cardConsumeQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkCardConsume;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -187,12 +223,14 @@ export async function findCountCardConsume(
  * 根据 id 查找 会员卡消费记录
  */
 export async function findByIdCardConsume(
-  id?: CardConsumeId,
+  id: CardConsumeId,
   opt?: GqlOpt,
 ): Promise<CardConsumeModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdCardConsume?: CardConsumeModel;
   } = await query({
@@ -207,8 +245,41 @@ export async function findByIdCardConsume(
       id,
     },
   }, opt);
+  
   const model = data.findByIdCardConsume;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 会员卡消费记录, 如果不存在则抛错
+ */
+export async function findByIdOkCardConsume(
+  id: CardConsumeId,
+  opt?: GqlOpt,
+): Promise<CardConsumeModel> {
+  
+  const data: {
+    findByIdOkCardConsume: CardConsumeModel;
+  } = await query({
+    query: `
+      query($id: CardConsumeId!) {
+        findByIdOkCardConsume(id: $id) {
+          ${ cardConsumeQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkCardConsume;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -219,33 +290,70 @@ export async function findByIdsCardConsume(
   ids: CardConsumeId[],
   opt?: GqlOpt,
 ): Promise<CardConsumeModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: CardConsumeModel[] = [ ];
-  try {
-    const data: {
-      findByIdsCardConsume: CardConsumeModel[];
-    } = await query({
-      query: `
-        query($ids: [CardConsumeId!]!) {
-          findByIdsCardConsume(ids: $ids) {
-            ${ cardConsumeQueryField }
-          }
+  
+  const data: {
+    findByIdsCardConsume: CardConsumeModel[];
+  } = await query({
+    query: `
+      query($ids: [CardConsumeId!]!) {
+        findByIdsCardConsume(ids: $ids) {
+          ${ cardConsumeQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsCardConsume;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsCardConsume;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 会员卡消费记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCardConsume(
+  ids: CardConsumeId[],
+  opt?: GqlOpt,
+): Promise<CardConsumeModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkCardConsume: CardConsumeModel[];
+  } = await query({
+    query: `
+      query($ids: [CardConsumeId!]!) {
+        findByIdsOkCardConsume(ids: $ids) {
+          ${ cardConsumeQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkCardConsume;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

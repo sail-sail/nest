@@ -94,13 +94,14 @@ export async function findAllPtType(
 }
 
 /**
- * 根据条件查找第一个产品类别
+ * 根据条件查找第一个 产品类别
  */
 export async function findOnePtType(
   search?: PtTypeSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOnePtType?: PtTypeModel;
   } = await query({
@@ -116,8 +117,43 @@ export async function findOnePtType(
       sort,
     },
   }, opt);
+  
   const model = data.findOnePtType;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 产品类别, 如果不存在则抛错
+ */
+export async function findOneOkPtType(
+  search?: PtTypeSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkPtType?: PtTypeModel;
+  } = await query({
+    query: `
+      query($search: PtTypeSearch, $sort: [SortInput!]) {
+        findOneOkPtType(search: $search, sort: $sort) {
+          ${ ptTypeQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkPtType;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -217,12 +253,14 @@ export async function updateByIdPtType(
  * 根据 id 查找 产品类别
  */
 export async function findByIdPtType(
-  id?: PtTypeId,
+  id: PtTypeId,
   opt?: GqlOpt,
 ): Promise<PtTypeModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdPtType?: PtTypeModel;
   } = await query({
@@ -237,8 +275,41 @@ export async function findByIdPtType(
       id,
     },
   }, opt);
+  
   const model = data.findByIdPtType;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 产品类别, 如果不存在则抛错
+ */
+export async function findByIdOkPtType(
+  id: PtTypeId,
+  opt?: GqlOpt,
+): Promise<PtTypeModel> {
+  
+  const data: {
+    findByIdOkPtType: PtTypeModel;
+  } = await query({
+    query: `
+      query($id: PtTypeId!) {
+        findByIdOkPtType(id: $id) {
+          ${ ptTypeQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkPtType;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -249,33 +320,70 @@ export async function findByIdsPtType(
   ids: PtTypeId[],
   opt?: GqlOpt,
 ): Promise<PtTypeModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: PtTypeModel[] = [ ];
-  try {
-    const data: {
-      findByIdsPtType: PtTypeModel[];
-    } = await query({
-      query: `
-        query($ids: [PtTypeId!]!) {
-          findByIdsPtType(ids: $ids) {
-            ${ ptTypeQueryField }
-          }
+  
+  const data: {
+    findByIdsPtType: PtTypeModel[];
+  } = await query({
+    query: `
+      query($ids: [PtTypeId!]!) {
+        findByIdsPtType(ids: $ids) {
+          ${ ptTypeQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsPtType;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsPtType;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 产品类别, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkPtType(
+  ids: PtTypeId[],
+  opt?: GqlOpt,
+): Promise<PtTypeModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkPtType: PtTypeModel[];
+  } = await query({
+    query: `
+      query($ids: [PtTypeId!]!) {
+        findByIdsOkPtType(ids: $ids) {
+          ${ ptTypeQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkPtType;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

@@ -106,13 +106,14 @@ export async function findAllRechargeRule(
 }
 
 /**
- * 根据条件查找第一个充值赠送规则
+ * 根据条件查找第一个 充值赠送规则
  */
 export async function findOneRechargeRule(
   search?: RechargeRuleSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneRechargeRule?: RechargeRuleModel;
   } = await query({
@@ -128,8 +129,43 @@ export async function findOneRechargeRule(
       sort,
     },
   }, opt);
+  
   const model = data.findOneRechargeRule;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 充值赠送规则, 如果不存在则抛错
+ */
+export async function findOneOkRechargeRule(
+  search?: RechargeRuleSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkRechargeRule?: RechargeRuleModel;
+  } = await query({
+    query: `
+      query($search: RechargeRuleSearch, $sort: [SortInput!]) {
+        findOneOkRechargeRule(search: $search, sort: $sort) {
+          ${ rechargeRuleQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkRechargeRule;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -229,12 +265,14 @@ export async function updateByIdRechargeRule(
  * 根据 id 查找 充值赠送规则
  */
 export async function findByIdRechargeRule(
-  id?: RechargeRuleId,
+  id: RechargeRuleId,
   opt?: GqlOpt,
 ): Promise<RechargeRuleModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdRechargeRule?: RechargeRuleModel;
   } = await query({
@@ -249,8 +287,41 @@ export async function findByIdRechargeRule(
       id,
     },
   }, opt);
+  
   const model = data.findByIdRechargeRule;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 充值赠送规则, 如果不存在则抛错
+ */
+export async function findByIdOkRechargeRule(
+  id: RechargeRuleId,
+  opt?: GqlOpt,
+): Promise<RechargeRuleModel> {
+  
+  const data: {
+    findByIdOkRechargeRule: RechargeRuleModel;
+  } = await query({
+    query: `
+      query($id: RechargeRuleId!) {
+        findByIdOkRechargeRule(id: $id) {
+          ${ rechargeRuleQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkRechargeRule;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -261,33 +332,70 @@ export async function findByIdsRechargeRule(
   ids: RechargeRuleId[],
   opt?: GqlOpt,
 ): Promise<RechargeRuleModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: RechargeRuleModel[] = [ ];
-  try {
-    const data: {
-      findByIdsRechargeRule: RechargeRuleModel[];
-    } = await query({
-      query: `
-        query($ids: [RechargeRuleId!]!) {
-          findByIdsRechargeRule(ids: $ids) {
-            ${ rechargeRuleQueryField }
-          }
+  
+  const data: {
+    findByIdsRechargeRule: RechargeRuleModel[];
+  } = await query({
+    query: `
+      query($ids: [RechargeRuleId!]!) {
+        findByIdsRechargeRule(ids: $ids) {
+          ${ rechargeRuleQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsRechargeRule;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsRechargeRule;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 充值赠送规则, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkRechargeRule(
+  ids: RechargeRuleId[],
+  opt?: GqlOpt,
+): Promise<RechargeRuleModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkRechargeRule: RechargeRuleModel[];
+  } = await query({
+    query: `
+      query($ids: [RechargeRuleId!]!) {
+        findByIdsOkRechargeRule(ids: $ids) {
+          ${ rechargeRuleQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkRechargeRule;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

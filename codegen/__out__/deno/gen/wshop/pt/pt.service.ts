@@ -104,13 +104,42 @@ export async function findOnePt(
 }
 
 /**
+ * 根据条件查找第一个产品, 如果不存在则抛错
+ */
+export async function findOneOkPt(
+  search?: PtSearch,
+  sort?: SortInput[],
+): Promise<PtModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const pt_model = await ptDao.findOneOkPt(search, sort);
+  
+  return pt_model;
+}
+
+/**
  * 根据 id 查找产品
  */
 export async function findByIdPt(
-  pt_id?: PtId | null,
+  pt_id: PtId,
 ): Promise<PtModel | undefined> {
   
   const pt_model = await ptDao.findByIdPt(pt_id);
+  
+  return pt_model;
+}
+
+/**
+ * 根据 id 查找产品, 如果不存在则抛错
+ */
+export async function findByIdOkPt(
+  pt_id: PtId,
+): Promise<PtModel> {
+  
+  const pt_model = await ptDao.findByIdOkPt(pt_id);
   
   return pt_model;
 }
@@ -123,6 +152,18 @@ export async function findByIdsPt(
 ): Promise<PtModel[]> {
   
   const pt_models = await ptDao.findByIdsPt(pt_ids);
+  
+  return pt_models;
+}
+
+/**
+ * 根据 ids 查找产品, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkPt(
+  pt_ids: PtId[],
+): Promise<PtModel[]> {
+  
+  const pt_models = await ptDao.findByIdsOkPt(pt_ids);
   
   return pt_models;
 }

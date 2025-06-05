@@ -760,48 +760,6 @@ export async function checkByUniqueRechargeRule(
   return;
 }
 
-// MARK: findOneOkRechargeRule
-/** 根据条件查找第一充值赠送规则 */
-export async function findOneOkRechargeRule(
-  search?: Readonly<RechargeRuleSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<RechargeRuleModel> {
-  
-  const table = "wshop_recharge_rule";
-  const method = "findOneOkRechargeRule";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_recharge_rule = validateOptionRechargeRule(
-    await findOneRechargeRule(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_recharge_rule;
-}
-
 // MARK: findOneRechargeRule
 /** 根据条件查找第一充值赠送规则 */
 export async function findOneRechargeRule(
@@ -833,41 +791,45 @@ export async function findOneRechargeRule(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllRechargeRule(
+  
+  const recharge_rule_models = await findAllRechargeRule(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const recharge_rule_model = recharge_rule_models[0];
+  
+  return recharge_rule_model;
 }
 
-// MARK: findByIdOkRechargeRule
-/** 根据 id 查找充值赠送规则 */
-export async function findByIdOkRechargeRule(
-  id?: RechargeRuleId | null,
+// MARK: findOneOkRechargeRule
+/** 根据条件查找第一充值赠送规则, 如果不存在则抛错 */
+export async function findOneOkRechargeRule(
+  search?: Readonly<RechargeRuleSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<RechargeRuleModel> {
   
   const table = "wshop_recharge_rule";
-  const method = "findByIdOkRechargeRule";
+  const method = "findOneOkRechargeRule";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -877,20 +839,32 @@ export async function findByIdOkRechargeRule(
     options.is_debug = false;
   }
   
-  const model_recharge_rule = validateOptionRechargeRule(
-    await findByIdRechargeRule(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const recharge_rule_models = await findAllRechargeRule(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_recharge_rule;
+  const recharge_rule_model = recharge_rule_models[0];
+  
+  if (!recharge_rule_model) {
+    const err_msg = "此 充值赠送规则 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return recharge_rule_model;
 }
 
 // MARK: findByIdRechargeRule
 /** 根据 id 查找充值赠送规则 */
 export async function findByIdRechargeRule(
-  id?: RechargeRuleId | null,
+  id: RechargeRuleId,
   options?: {
     is_debug?: boolean;
   },
@@ -918,7 +892,7 @@ export async function findByIdRechargeRule(
     return;
   }
   
-  const model = await findOneRechargeRule(
+  const recharge_rule_model = await findOneRechargeRule(
     {
       id,
     },
@@ -926,7 +900,47 @@ export async function findByIdRechargeRule(
     options,
   );
   
-  return model;
+  return recharge_rule_model;
+}
+
+// MARK: findByIdOkRechargeRule
+/** 根据 id 查找充值赠送规则, 如果不存在则抛错 */
+export async function findByIdOkRechargeRule(
+  id: RechargeRuleId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<RechargeRuleModel> {
+  
+  const table = "wshop_recharge_rule";
+  const method = "findByIdOkRechargeRule";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const recharge_rule_model = await findByIdRechargeRule(
+    id,
+    options,
+  );
+  
+  if (!recharge_rule_model) {
+    const err_msg = "此 充值赠送规则 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return recharge_rule_model;
 }
 
 // MARK: findByIdsRechargeRule
@@ -966,6 +980,45 @@ export async function findByIdsRechargeRule(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkRechargeRule
+/** 根据 ids 查找充值赠送规则, 出现查询不到的 id 则报错 */
+export async function findByIdsOkRechargeRule(
+  ids: RechargeRuleId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<RechargeRuleModel[]> {
+  
+  const table = "wshop_recharge_rule";
+  const method = "findByIdsOkRechargeRule";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsRechargeRule(
+    ids,
     options,
   );
   

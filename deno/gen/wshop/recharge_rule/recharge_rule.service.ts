@@ -104,13 +104,42 @@ export async function findOneRechargeRule(
 }
 
 /**
+ * 根据条件查找第一个充值赠送规则, 如果不存在则抛错
+ */
+export async function findOneOkRechargeRule(
+  search?: RechargeRuleSearch,
+  sort?: SortInput[],
+): Promise<RechargeRuleModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const recharge_rule_model = await recharge_ruleDao.findOneOkRechargeRule(search, sort);
+  
+  return recharge_rule_model;
+}
+
+/**
  * 根据 id 查找充值赠送规则
  */
 export async function findByIdRechargeRule(
-  recharge_rule_id?: RechargeRuleId | null,
+  recharge_rule_id: RechargeRuleId,
 ): Promise<RechargeRuleModel | undefined> {
   
   const recharge_rule_model = await recharge_ruleDao.findByIdRechargeRule(recharge_rule_id);
+  
+  return recharge_rule_model;
+}
+
+/**
+ * 根据 id 查找充值赠送规则, 如果不存在则抛错
+ */
+export async function findByIdOkRechargeRule(
+  recharge_rule_id: RechargeRuleId,
+): Promise<RechargeRuleModel> {
+  
+  const recharge_rule_model = await recharge_ruleDao.findByIdOkRechargeRule(recharge_rule_id);
   
   return recharge_rule_model;
 }
@@ -123,6 +152,18 @@ export async function findByIdsRechargeRule(
 ): Promise<RechargeRuleModel[]> {
   
   const recharge_rule_models = await recharge_ruleDao.findByIdsRechargeRule(recharge_rule_ids);
+  
+  return recharge_rule_models;
+}
+
+/**
+ * 根据 ids 查找充值赠送规则, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkRechargeRule(
+  recharge_rule_ids: RechargeRuleId[],
+): Promise<RechargeRuleModel[]> {
+  
+  const recharge_rule_models = await recharge_ruleDao.findByIdsOkRechargeRule(recharge_rule_ids);
   
   return recharge_rule_models;
 }

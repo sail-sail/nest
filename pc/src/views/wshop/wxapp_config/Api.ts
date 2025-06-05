@@ -88,13 +88,14 @@ export async function findAllWxappConfig(
 }
 
 /**
- * 根据条件查找第一个小程序配置
+ * 根据条件查找第一个 小程序配置
  */
 export async function findOneWxappConfig(
   search?: WxappConfigSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneWxappConfig?: WxappConfigModel;
   } = await query({
@@ -110,8 +111,43 @@ export async function findOneWxappConfig(
       sort,
     },
   }, opt);
+  
   const model = data.findOneWxappConfig;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 小程序配置, 如果不存在则抛错
+ */
+export async function findOneOkWxappConfig(
+  search?: WxappConfigSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkWxappConfig?: WxappConfigModel;
+  } = await query({
+    query: `
+      query($search: WxappConfigSearch, $sort: [SortInput!]) {
+        findOneOkWxappConfig(search: $search, sort: $sort) {
+          ${ wxappConfigQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkWxappConfig;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -211,12 +247,14 @@ export async function updateByIdWxappConfig(
  * 根据 id 查找 小程序配置
  */
 export async function findByIdWxappConfig(
-  id?: WxappConfigId,
+  id: WxappConfigId,
   opt?: GqlOpt,
 ): Promise<WxappConfigModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdWxappConfig?: WxappConfigModel;
   } = await query({
@@ -231,8 +269,41 @@ export async function findByIdWxappConfig(
       id,
     },
   }, opt);
+  
   const model = data.findByIdWxappConfig;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 小程序配置, 如果不存在则抛错
+ */
+export async function findByIdOkWxappConfig(
+  id: WxappConfigId,
+  opt?: GqlOpt,
+): Promise<WxappConfigModel> {
+  
+  const data: {
+    findByIdOkWxappConfig: WxappConfigModel;
+  } = await query({
+    query: `
+      query($id: WxappConfigId!) {
+        findByIdOkWxappConfig(id: $id) {
+          ${ wxappConfigQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkWxappConfig;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -243,33 +314,70 @@ export async function findByIdsWxappConfig(
   ids: WxappConfigId[],
   opt?: GqlOpt,
 ): Promise<WxappConfigModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: WxappConfigModel[] = [ ];
-  try {
-    const data: {
-      findByIdsWxappConfig: WxappConfigModel[];
-    } = await query({
-      query: `
-        query($ids: [WxappConfigId!]!) {
-          findByIdsWxappConfig(ids: $ids) {
-            ${ wxappConfigQueryField }
-          }
+  
+  const data: {
+    findByIdsWxappConfig: WxappConfigModel[];
+  } = await query({
+    query: `
+      query($ids: [WxappConfigId!]!) {
+        findByIdsWxappConfig(ids: $ids) {
+          ${ wxappConfigQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsWxappConfig;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsWxappConfig;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 小程序配置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxappConfig(
+  ids: WxappConfigId[],
+  opt?: GqlOpt,
+): Promise<WxappConfigModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkWxappConfig: WxappConfigModel[];
+  } = await query({
+    query: `
+      query($ids: [WxappConfigId!]!) {
+        findByIdsOkWxappConfig(ids: $ids) {
+          ${ wxappConfigQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkWxappConfig;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

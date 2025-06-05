@@ -91,6 +91,25 @@ export async function findOneWxappConfig(
 }
 
 /**
+ * 根据条件查找第一个小程序配置, 如果不存在则抛错
+ */
+export async function findOneOkWxappConfig(
+  search?: WxappConfigSearch,
+  sort?: SortInput[],
+): Promise<WxappConfigModel> {
+  
+  const {
+    findOneOkWxappConfig,
+  } = await import("./wxapp_config.service.ts");
+  
+  checkSortWxappConfig(sort);
+  
+  const model = await findOneOkWxappConfig(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找小程序配置
  */
 export async function findByIdWxappConfig(
@@ -107,6 +126,22 @@ export async function findByIdWxappConfig(
 }
 
 /**
+ * 根据 id 查找小程序配置, 如果不存在则抛错
+ */
+export async function findByIdOkWxappConfig(
+  id: WxappConfigId,
+): Promise<WxappConfigModel | undefined> {
+  
+  const {
+    findByIdOkWxappConfig,
+  } = await import("./wxapp_config.service.ts");
+  
+  const model = await findByIdOkWxappConfig(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找小程序配置
  */
 export async function findByIdsWxappConfig(
@@ -118,6 +153,25 @@ export async function findByIdsWxappConfig(
   } = await import("./wxapp_config.service.ts");
   
   const models = await findByIdsWxappConfig(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找小程序配置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkWxappConfig(
+  ids: WxappConfigId[],
+): Promise<WxappConfigModel[]> {
+  
+  const {
+    findByIdsOkWxappConfig,
+  } = await import("./wxapp_config.service.ts");
+  
+  const models = await findByIdsOkWxappConfig(ids);
   
   for (const model of models) {
   }

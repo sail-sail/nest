@@ -104,13 +104,42 @@ export async function findOneCard(
 }
 
 /**
+ * 根据条件查找第一个会员卡, 如果不存在则抛错
+ */
+export async function findOneOkCard(
+  search?: CardSearch,
+  sort?: SortInput[],
+): Promise<CardModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const card_model = await cardDao.findOneOkCard(search, sort);
+  
+  return card_model;
+}
+
+/**
  * 根据 id 查找会员卡
  */
 export async function findByIdCard(
-  card_id?: CardId | null,
+  card_id: CardId,
 ): Promise<CardModel | undefined> {
   
   const card_model = await cardDao.findByIdCard(card_id);
+  
+  return card_model;
+}
+
+/**
+ * 根据 id 查找会员卡, 如果不存在则抛错
+ */
+export async function findByIdOkCard(
+  card_id: CardId,
+): Promise<CardModel> {
+  
+  const card_model = await cardDao.findByIdOkCard(card_id);
   
   return card_model;
 }
@@ -123,6 +152,18 @@ export async function findByIdsCard(
 ): Promise<CardModel[]> {
   
   const card_models = await cardDao.findByIdsCard(card_ids);
+  
+  return card_models;
+}
+
+/**
+ * 根据 ids 查找会员卡, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCard(
+  card_ids: CardId[],
+): Promise<CardModel[]> {
+  
+  const card_models = await cardDao.findByIdsOkCard(card_ids);
   
   return card_models;
 }

@@ -174,13 +174,14 @@ export async function findAllOrder(
 }
 
 /**
- * 根据条件查找第一个订单
+ * 根据条件查找第一个 订单
  */
 export async function findOneOrder(
   search?: OrderSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneOrder?: OrderModel;
   } = await query({
@@ -196,8 +197,43 @@ export async function findOneOrder(
       sort,
     },
   }, opt);
+  
   const model = data.findOneOrder;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 订单, 如果不存在则抛错
+ */
+export async function findOneOkOrder(
+  search?: OrderSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkOrder?: OrderModel;
+  } = await query({
+    query: `
+      query($search: OrderSearch, $sort: [SortInput!]) {
+        findOneOkOrder(search: $search, sort: $sort) {
+          ${ orderQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkOrder;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -297,12 +333,14 @@ export async function updateByIdOrder(
  * 根据 id 查找 订单
  */
 export async function findByIdOrder(
-  id?: OrderId,
+  id: OrderId,
   opt?: GqlOpt,
 ): Promise<OrderModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdOrder?: OrderModel;
   } = await query({
@@ -317,8 +355,41 @@ export async function findByIdOrder(
       id,
     },
   }, opt);
+  
   const model = data.findByIdOrder;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 订单, 如果不存在则抛错
+ */
+export async function findByIdOkOrder(
+  id: OrderId,
+  opt?: GqlOpt,
+): Promise<OrderModel> {
+  
+  const data: {
+    findByIdOkOrder: OrderModel;
+  } = await query({
+    query: `
+      query($id: OrderId!) {
+        findByIdOkOrder(id: $id) {
+          ${ orderQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkOrder;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -329,33 +400,70 @@ export async function findByIdsOrder(
   ids: OrderId[],
   opt?: GqlOpt,
 ): Promise<OrderModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: OrderModel[] = [ ];
-  try {
-    const data: {
-      findByIdsOrder: OrderModel[];
-    } = await query({
-      query: `
-        query($ids: [OrderId!]!) {
-          findByIdsOrder(ids: $ids) {
-            ${ orderQueryField }
-          }
+  
+  const data: {
+    findByIdsOrder: OrderModel[];
+  } = await query({
+    query: `
+      query($ids: [OrderId!]!) {
+        findByIdsOrder(ids: $ids) {
+          ${ orderQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsOrder;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOrder;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 订单, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkOrder(
+  ids: OrderId[],
+  opt?: GqlOpt,
+): Promise<OrderModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkOrder: OrderModel[];
+  } = await query({
+    query: `
+      query($ids: [OrderId!]!) {
+        findByIdsOkOrder(ids: $ids) {
+          ${ orderQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkOrder;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

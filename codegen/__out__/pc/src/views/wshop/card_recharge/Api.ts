@@ -133,13 +133,14 @@ export async function findAllCardRecharge(
 }
 
 /**
- * 根据条件查找第一个会员卡充值记录
+ * 根据条件查找第一个 会员卡充值记录
  */
 export async function findOneCardRecharge(
   search?: CardRechargeSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneCardRecharge?: CardRechargeModel;
   } = await query({
@@ -155,8 +156,43 @@ export async function findOneCardRecharge(
       sort,
     },
   }, opt);
+  
   const model = data.findOneCardRecharge;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 会员卡充值记录, 如果不存在则抛错
+ */
+export async function findOneOkCardRecharge(
+  search?: CardRechargeSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkCardRecharge?: CardRechargeModel;
+  } = await query({
+    query: `
+      query($search: CardRechargeSearch, $sort: [SortInput!]) {
+        findOneOkCardRecharge(search: $search, sort: $sort) {
+          ${ cardRechargeQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkCardRecharge;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -187,12 +223,14 @@ export async function findCountCardRecharge(
  * 根据 id 查找 会员卡充值记录
  */
 export async function findByIdCardRecharge(
-  id?: CardRechargeId,
+  id: CardRechargeId,
   opt?: GqlOpt,
 ): Promise<CardRechargeModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdCardRecharge?: CardRechargeModel;
   } = await query({
@@ -207,8 +245,41 @@ export async function findByIdCardRecharge(
       id,
     },
   }, opt);
+  
   const model = data.findByIdCardRecharge;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 会员卡充值记录, 如果不存在则抛错
+ */
+export async function findByIdOkCardRecharge(
+  id: CardRechargeId,
+  opt?: GqlOpt,
+): Promise<CardRechargeModel> {
+  
+  const data: {
+    findByIdOkCardRecharge: CardRechargeModel;
+  } = await query({
+    query: `
+      query($id: CardRechargeId!) {
+        findByIdOkCardRecharge(id: $id) {
+          ${ cardRechargeQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkCardRecharge;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -219,33 +290,70 @@ export async function findByIdsCardRecharge(
   ids: CardRechargeId[],
   opt?: GqlOpt,
 ): Promise<CardRechargeModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: CardRechargeModel[] = [ ];
-  try {
-    const data: {
-      findByIdsCardRecharge: CardRechargeModel[];
-    } = await query({
-      query: `
-        query($ids: [CardRechargeId!]!) {
-          findByIdsCardRecharge(ids: $ids) {
-            ${ cardRechargeQueryField }
-          }
+  
+  const data: {
+    findByIdsCardRecharge: CardRechargeModel[];
+  } = await query({
+    query: `
+      query($ids: [CardRechargeId!]!) {
+        findByIdsCardRecharge(ids: $ids) {
+          ${ cardRechargeQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsCardRecharge;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsCardRecharge;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 会员卡充值记录, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCardRecharge(
+  ids: CardRechargeId[],
+  opt?: GqlOpt,
+): Promise<CardRechargeModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkCardRecharge: CardRechargeModel[];
+  } = await query({
+    query: `
+      query($ids: [CardRechargeId!]!) {
+        findByIdsOkCardRecharge(ids: $ids) {
+          ${ cardRechargeQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkCardRecharge;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

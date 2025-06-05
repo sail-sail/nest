@@ -1096,48 +1096,6 @@ export async function checkByUniqueOrder(
   return;
 }
 
-// MARK: findOneOkOrder
-/** 根据条件查找第一订单 */
-export async function findOneOkOrder(
-  search?: Readonly<OrderSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<OrderModel> {
-  
-  const table = "wshop_order";
-  const method = "findOneOkOrder";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_order = validateOptionOrder(
-    await findOneOrder(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_order;
-}
-
 // MARK: findOneOrder
 /** 根据条件查找第一订单 */
 export async function findOneOrder(
@@ -1169,41 +1127,45 @@ export async function findOneOrder(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllOrder(
+  
+  const order_models = await findAllOrder(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const order_model = order_models[0];
+  
+  return order_model;
 }
 
-// MARK: findByIdOkOrder
-/** 根据 id 查找订单 */
-export async function findByIdOkOrder(
-  id?: OrderId | null,
+// MARK: findOneOkOrder
+/** 根据条件查找第一订单, 如果不存在则抛错 */
+export async function findOneOkOrder(
+  search?: Readonly<OrderSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<OrderModel> {
   
   const table = "wshop_order";
-  const method = "findByIdOkOrder";
+  const method = "findOneOkOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -1213,20 +1175,32 @@ export async function findByIdOkOrder(
     options.is_debug = false;
   }
   
-  const model_order = validateOptionOrder(
-    await findByIdOrder(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const order_models = await findAllOrder(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_order;
+  const order_model = order_models[0];
+  
+  if (!order_model) {
+    const err_msg = "此 订单 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return order_model;
 }
 
 // MARK: findByIdOrder
 /** 根据 id 查找订单 */
 export async function findByIdOrder(
-  id?: OrderId | null,
+  id: OrderId,
   options?: {
     is_debug?: boolean;
   },
@@ -1254,7 +1228,7 @@ export async function findByIdOrder(
     return;
   }
   
-  const model = await findOneOrder(
+  const order_model = await findOneOrder(
     {
       id,
     },
@@ -1262,7 +1236,47 @@ export async function findByIdOrder(
     options,
   );
   
-  return model;
+  return order_model;
+}
+
+// MARK: findByIdOkOrder
+/** 根据 id 查找订单, 如果不存在则抛错 */
+export async function findByIdOkOrder(
+  id: OrderId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OrderModel> {
+  
+  const table = "wshop_order";
+  const method = "findByIdOkOrder";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const order_model = await findByIdOrder(
+    id,
+    options,
+  );
+  
+  if (!order_model) {
+    const err_msg = "此 订单 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return order_model;
 }
 
 // MARK: findByIdsOrder
@@ -1302,6 +1316,45 @@ export async function findByIdsOrder(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkOrder
+/** 根据 ids 查找订单, 出现查询不到的 id 则报错 */
+export async function findByIdsOkOrder(
+  ids: OrderId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<OrderModel[]> {
+  
+  const table = "wshop_order";
+  const method = "findByIdsOkOrder";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsOrder(
+    ids,
     options,
   );
   

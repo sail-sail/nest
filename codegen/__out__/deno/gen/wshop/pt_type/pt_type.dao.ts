@@ -854,48 +854,6 @@ export async function checkByUniquePtType(
   return;
 }
 
-// MARK: findOneOkPtType
-/** 根据条件查找第一产品类别 */
-export async function findOneOkPtType(
-  search?: Readonly<PtTypeSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<PtTypeModel> {
-  
-  const table = "wshop_pt_type";
-  const method = "findOneOkPtType";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_pt_type = validateOptionPtType(
-    await findOnePtType(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_pt_type;
-}
-
 // MARK: findOnePtType
 /** 根据条件查找第一产品类别 */
 export async function findOnePtType(
@@ -927,41 +885,45 @@ export async function findOnePtType(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllPtType(
+  
+  const pt_type_models = await findAllPtType(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const pt_type_model = pt_type_models[0];
+  
+  return pt_type_model;
 }
 
-// MARK: findByIdOkPtType
-/** 根据 id 查找产品类别 */
-export async function findByIdOkPtType(
-  id?: PtTypeId | null,
+// MARK: findOneOkPtType
+/** 根据条件查找第一产品类别, 如果不存在则抛错 */
+export async function findOneOkPtType(
+  search?: Readonly<PtTypeSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<PtTypeModel> {
   
   const table = "wshop_pt_type";
-  const method = "findByIdOkPtType";
+  const method = "findOneOkPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -971,20 +933,32 @@ export async function findByIdOkPtType(
     options.is_debug = false;
   }
   
-  const model_pt_type = validateOptionPtType(
-    await findByIdPtType(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const pt_type_models = await findAllPtType(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_pt_type;
+  const pt_type_model = pt_type_models[0];
+  
+  if (!pt_type_model) {
+    const err_msg = "此 产品类别 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return pt_type_model;
 }
 
 // MARK: findByIdPtType
 /** 根据 id 查找产品类别 */
 export async function findByIdPtType(
-  id?: PtTypeId | null,
+  id: PtTypeId,
   options?: {
     is_debug?: boolean;
   },
@@ -1012,7 +986,7 @@ export async function findByIdPtType(
     return;
   }
   
-  const model = await findOnePtType(
+  const pt_type_model = await findOnePtType(
     {
       id,
     },
@@ -1020,7 +994,47 @@ export async function findByIdPtType(
     options,
   );
   
-  return model;
+  return pt_type_model;
+}
+
+// MARK: findByIdOkPtType
+/** 根据 id 查找产品类别, 如果不存在则抛错 */
+export async function findByIdOkPtType(
+  id: PtTypeId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PtTypeModel> {
+  
+  const table = "wshop_pt_type";
+  const method = "findByIdOkPtType";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const pt_type_model = await findByIdPtType(
+    id,
+    options,
+  );
+  
+  if (!pt_type_model) {
+    const err_msg = "此 产品类别 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return pt_type_model;
 }
 
 // MARK: findByIdsPtType
@@ -1060,6 +1074,45 @@ export async function findByIdsPtType(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkPtType
+/** 根据 ids 查找产品类别, 出现查询不到的 id 则报错 */
+export async function findByIdsOkPtType(
+  ids: PtTypeId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PtTypeModel[]> {
+  
+  const table = "wshop_pt_type";
+  const method = "findByIdsOkPtType";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsPtType(
+    ids,
     options,
   );
   

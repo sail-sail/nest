@@ -741,48 +741,6 @@ export async function checkByUniqueWxappConfig(
   return;
 }
 
-// MARK: findOneOkWxappConfig
-/** 根据条件查找第一小程序配置 */
-export async function findOneOkWxappConfig(
-  search?: Readonly<WxappConfigSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<WxappConfigModel> {
-  
-  const table = "wshop_wxapp_config";
-  const method = "findOneOkWxappConfig";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_wxapp_config = validateOptionWxappConfig(
-    await findOneWxappConfig(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_wxapp_config;
-}
-
 // MARK: findOneWxappConfig
 /** 根据条件查找第一小程序配置 */
 export async function findOneWxappConfig(
@@ -814,41 +772,45 @@ export async function findOneWxappConfig(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllWxappConfig(
+  
+  const wxapp_config_models = await findAllWxappConfig(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const wxapp_config_model = wxapp_config_models[0];
+  
+  return wxapp_config_model;
 }
 
-// MARK: findByIdOkWxappConfig
-/** 根据 id 查找小程序配置 */
-export async function findByIdOkWxappConfig(
-  id?: WxappConfigId | null,
+// MARK: findOneOkWxappConfig
+/** 根据条件查找第一小程序配置, 如果不存在则抛错 */
+export async function findOneOkWxappConfig(
+  search?: Readonly<WxappConfigSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<WxappConfigModel> {
   
   const table = "wshop_wxapp_config";
-  const method = "findByIdOkWxappConfig";
+  const method = "findOneOkWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -858,20 +820,32 @@ export async function findByIdOkWxappConfig(
     options.is_debug = false;
   }
   
-  const model_wxapp_config = validateOptionWxappConfig(
-    await findByIdWxappConfig(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const wxapp_config_models = await findAllWxappConfig(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_wxapp_config;
+  const wxapp_config_model = wxapp_config_models[0];
+  
+  if (!wxapp_config_model) {
+    const err_msg = "此 小程序配置 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxapp_config_model;
 }
 
 // MARK: findByIdWxappConfig
 /** 根据 id 查找小程序配置 */
 export async function findByIdWxappConfig(
-  id?: WxappConfigId | null,
+  id: WxappConfigId,
   options?: {
     is_debug?: boolean;
   },
@@ -899,7 +873,7 @@ export async function findByIdWxappConfig(
     return;
   }
   
-  const model = await findOneWxappConfig(
+  const wxapp_config_model = await findOneWxappConfig(
     {
       id,
     },
@@ -907,7 +881,47 @@ export async function findByIdWxappConfig(
     options,
   );
   
-  return model;
+  return wxapp_config_model;
+}
+
+// MARK: findByIdOkWxappConfig
+/** 根据 id 查找小程序配置, 如果不存在则抛错 */
+export async function findByIdOkWxappConfig(
+  id: WxappConfigId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxappConfigModel> {
+  
+  const table = "wshop_wxapp_config";
+  const method = "findByIdOkWxappConfig";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const wxapp_config_model = await findByIdWxappConfig(
+    id,
+    options,
+  );
+  
+  if (!wxapp_config_model) {
+    const err_msg = "此 小程序配置 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return wxapp_config_model;
 }
 
 // MARK: findByIdsWxappConfig
@@ -947,6 +961,45 @@ export async function findByIdsWxappConfig(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkWxappConfig
+/** 根据 ids 查找小程序配置, 出现查询不到的 id 则报错 */
+export async function findByIdsOkWxappConfig(
+  ids: WxappConfigId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxappConfigModel[]> {
+  
+  const table = "wshop_wxapp_config";
+  const method = "findByIdsOkWxappConfig";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsWxappConfig(
+    ids,
     options,
   );
   

@@ -973,48 +973,6 @@ export async function checkByUniqueCard(
   return;
 }
 
-// MARK: findOneOkCard
-/** 根据条件查找第一会员卡 */
-export async function findOneOkCard(
-  search?: Readonly<CardSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<CardModel> {
-  
-  const table = "wshop_card";
-  const method = "findOneOkCard";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_card = validateOptionCard(
-    await findOneCard(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_card;
-}
-
 // MARK: findOneCard
 /** 根据条件查找第一会员卡 */
 export async function findOneCard(
@@ -1046,41 +1004,45 @@ export async function findOneCard(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllCard(
+  
+  const card_models = await findAllCard(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const card_model = card_models[0];
+  
+  return card_model;
 }
 
-// MARK: findByIdOkCard
-/** 根据 id 查找会员卡 */
-export async function findByIdOkCard(
-  id?: CardId | null,
+// MARK: findOneOkCard
+/** 根据条件查找第一会员卡, 如果不存在则抛错 */
+export async function findOneOkCard(
+  search?: Readonly<CardSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<CardModel> {
   
   const table = "wshop_card";
-  const method = "findByIdOkCard";
+  const method = "findOneOkCard";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -1090,20 +1052,32 @@ export async function findByIdOkCard(
     options.is_debug = false;
   }
   
-  const model_card = validateOptionCard(
-    await findByIdCard(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const card_models = await findAllCard(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_card;
+  const card_model = card_models[0];
+  
+  if (!card_model) {
+    const err_msg = "此 会员卡 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return card_model;
 }
 
 // MARK: findByIdCard
 /** 根据 id 查找会员卡 */
 export async function findByIdCard(
-  id?: CardId | null,
+  id: CardId,
   options?: {
     is_debug?: boolean;
   },
@@ -1131,7 +1105,7 @@ export async function findByIdCard(
     return;
   }
   
-  const model = await findOneCard(
+  const card_model = await findOneCard(
     {
       id,
     },
@@ -1139,7 +1113,47 @@ export async function findByIdCard(
     options,
   );
   
-  return model;
+  return card_model;
+}
+
+// MARK: findByIdOkCard
+/** 根据 id 查找会员卡, 如果不存在则抛错 */
+export async function findByIdOkCard(
+  id: CardId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CardModel> {
+  
+  const table = "wshop_card";
+  const method = "findByIdOkCard";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const card_model = await findByIdCard(
+    id,
+    options,
+  );
+  
+  if (!card_model) {
+    const err_msg = "此 会员卡 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return card_model;
 }
 
 // MARK: findByIdsCard
@@ -1179,6 +1193,45 @@ export async function findByIdsCard(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkCard
+/** 根据 ids 查找会员卡, 出现查询不到的 id 则报错 */
+export async function findByIdsOkCard(
+  ids: CardId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CardModel[]> {
+  
+  const table = "wshop_card";
+  const method = "findByIdsOkCard";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsCard(
+    ids,
     options,
   );
   

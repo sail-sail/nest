@@ -93,6 +93,25 @@ export async function findOneCard(
 }
 
 /**
+ * 根据条件查找第一个会员卡, 如果不存在则抛错
+ */
+export async function findOneOkCard(
+  search?: CardSearch,
+  sort?: SortInput[],
+): Promise<CardModel> {
+  
+  const {
+    findOneOkCard,
+  } = await import("./card.service.ts");
+  
+  checkSortCard(sort);
+  
+  const model = await findOneOkCard(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找会员卡
  */
 export async function findByIdCard(
@@ -109,6 +128,22 @@ export async function findByIdCard(
 }
 
 /**
+ * 根据 id 查找会员卡, 如果不存在则抛错
+ */
+export async function findByIdOkCard(
+  id: CardId,
+): Promise<CardModel | undefined> {
+  
+  const {
+    findByIdOkCard,
+  } = await import("./card.service.ts");
+  
+  const model = await findByIdOkCard(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找会员卡
  */
 export async function findByIdsCard(
@@ -120,6 +155,25 @@ export async function findByIdsCard(
   } = await import("./card.service.ts");
   
   const models = await findByIdsCard(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找会员卡, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCard(
+  ids: CardId[],
+): Promise<CardModel[]> {
+  
+  const {
+    findByIdsOkCard,
+  } = await import("./card.service.ts");
+  
+  const models = await findByIdsOkCard(ids);
   
   for (const model of models) {
   }
