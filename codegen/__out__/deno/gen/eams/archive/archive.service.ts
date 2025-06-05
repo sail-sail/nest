@@ -73,13 +73,42 @@ export async function findOneArchive(
 }
 
 /**
+ * 根据条件查找第一个全宗设置, 如果不存在则抛错
+ */
+export async function findOneOkArchive(
+  search?: ArchiveSearch,
+  sort?: SortInput[],
+): Promise<ArchiveModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const archive_model = await archiveDao.findOneOkArchive(search, sort);
+  
+  return archive_model;
+}
+
+/**
  * 根据 id 查找全宗设置
  */
 export async function findByIdArchive(
-  archive_id?: ArchiveId | null,
+  archive_id: ArchiveId,
 ): Promise<ArchiveModel | undefined> {
   
   const archive_model = await archiveDao.findByIdArchive(archive_id);
+  
+  return archive_model;
+}
+
+/**
+ * 根据 id 查找全宗设置, 如果不存在则抛错
+ */
+export async function findByIdOkArchive(
+  archive_id: ArchiveId,
+): Promise<ArchiveModel> {
+  
+  const archive_model = await archiveDao.findByIdOkArchive(archive_id);
   
   return archive_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsArchive(
 ): Promise<ArchiveModel[]> {
   
   const archive_models = await archiveDao.findByIdsArchive(archive_ids);
+  
+  return archive_models;
+}
+
+/**
+ * 根据 ids 查找全宗设置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkArchive(
+  archive_ids: ArchiveId[],
+): Promise<ArchiveModel[]> {
+  
+  const archive_models = await archiveDao.findByIdsOkArchive(archive_ids);
   
   return archive_models;
 }

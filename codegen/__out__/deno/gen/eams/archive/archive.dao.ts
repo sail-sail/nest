@@ -650,48 +650,6 @@ export async function checkByUniqueArchive(
   return;
 }
 
-// MARK: findOneOkArchive
-/** 根据条件查找第一全宗设置 */
-export async function findOneOkArchive(
-  search?: Readonly<ArchiveSearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<ArchiveModel> {
-  
-  const table = "eams_archive";
-  const method = "findOneOkArchive";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_archive = validateOptionArchive(
-    await findOneArchive(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_archive;
-}
-
 // MARK: findOneArchive
 /** 根据条件查找第一全宗设置 */
 export async function findOneArchive(
@@ -723,41 +681,45 @@ export async function findOneArchive(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllArchive(
+  
+  const archive_models = await findAllArchive(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const archive_model = archive_models[0];
+  
+  return archive_model;
 }
 
-// MARK: findByIdOkArchive
-/** 根据 id 查找全宗设置 */
-export async function findByIdOkArchive(
-  id?: ArchiveId | null,
+// MARK: findOneOkArchive
+/** 根据条件查找第一全宗设置, 如果不存在则抛错 */
+export async function findOneOkArchive(
+  search?: Readonly<ArchiveSearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<ArchiveModel> {
   
   const table = "eams_archive";
-  const method = "findByIdOkArchive";
+  const method = "findOneOkArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -767,20 +729,32 @@ export async function findByIdOkArchive(
     options.is_debug = false;
   }
   
-  const model_archive = validateOptionArchive(
-    await findByIdArchive(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const archive_models = await findAllArchive(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_archive;
+  const archive_model = archive_models[0];
+  
+  if (!archive_model) {
+    const err_msg = "此 全宗设置 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return archive_model;
 }
 
 // MARK: findByIdArchive
 /** 根据 id 查找全宗设置 */
 export async function findByIdArchive(
-  id?: ArchiveId | null,
+  id: ArchiveId,
   options?: {
     is_debug?: boolean;
   },
@@ -808,7 +782,7 @@ export async function findByIdArchive(
     return;
   }
   
-  const model = await findOneArchive(
+  const archive_model = await findOneArchive(
     {
       id,
     },
@@ -816,7 +790,47 @@ export async function findByIdArchive(
     options,
   );
   
-  return model;
+  return archive_model;
+}
+
+// MARK: findByIdOkArchive
+/** 根据 id 查找全宗设置, 如果不存在则抛错 */
+export async function findByIdOkArchive(
+  id: ArchiveId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<ArchiveModel> {
+  
+  const table = "eams_archive";
+  const method = "findByIdOkArchive";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const archive_model = await findByIdArchive(
+    id,
+    options,
+  );
+  
+  if (!archive_model) {
+    const err_msg = "此 全宗设置 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return archive_model;
 }
 
 // MARK: findByIdsArchive
@@ -856,6 +870,45 @@ export async function findByIdsArchive(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkArchive
+/** 根据 ids 查找全宗设置, 出现查询不到的 id 则报错 */
+export async function findByIdsOkArchive(
+  ids: ArchiveId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<ArchiveModel[]> {
+  
+  const table = "eams_archive";
+  const method = "findByIdsOkArchive";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsArchive(
+    ids,
     options,
   );
   

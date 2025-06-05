@@ -91,6 +91,25 @@ export async function findOneArchive(
 }
 
 /**
+ * 根据条件查找第一个全宗设置, 如果不存在则抛错
+ */
+export async function findOneOkArchive(
+  search?: ArchiveSearch,
+  sort?: SortInput[],
+): Promise<ArchiveModel> {
+  
+  const {
+    findOneOkArchive,
+  } = await import("./archive.service.ts");
+  
+  checkSortArchive(sort);
+  
+  const model = await findOneOkArchive(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找全宗设置
  */
 export async function findByIdArchive(
@@ -107,6 +126,22 @@ export async function findByIdArchive(
 }
 
 /**
+ * 根据 id 查找全宗设置, 如果不存在则抛错
+ */
+export async function findByIdOkArchive(
+  id: ArchiveId,
+): Promise<ArchiveModel | undefined> {
+  
+  const {
+    findByIdOkArchive,
+  } = await import("./archive.service.ts");
+  
+  const model = await findByIdOkArchive(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找全宗设置
  */
 export async function findByIdsArchive(
@@ -118,6 +153,25 @@ export async function findByIdsArchive(
   } = await import("./archive.service.ts");
   
   const models = await findByIdsArchive(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找全宗设置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkArchive(
+  ids: ArchiveId[],
+): Promise<ArchiveModel[]> {
+  
+  const {
+    findByIdsOkArchive,
+  } = await import("./archive.service.ts");
+  
+  const models = await findByIdsOkArchive(ids);
   
   for (const model of models) {
   }

@@ -80,13 +80,14 @@ export async function findAllCompany(
 }
 
 /**
- * 根据条件查找第一个单位
+ * 根据条件查找第一个 单位
  */
 export async function findOneCompany(
   search?: CompanySearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneCompany?: CompanyModel;
   } = await query({
@@ -102,8 +103,43 @@ export async function findOneCompany(
       sort,
     },
   }, opt);
+  
   const model = data.findOneCompany;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 单位, 如果不存在则抛错
+ */
+export async function findOneOkCompany(
+  search?: CompanySearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkCompany?: CompanyModel;
+  } = await query({
+    query: `
+      query($search: CompanySearch, $sort: [SortInput!]) {
+        findOneOkCompany(search: $search, sort: $sort) {
+          ${ companyQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkCompany;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -203,12 +239,14 @@ export async function updateByIdCompany(
  * 根据 id 查找 单位
  */
 export async function findByIdCompany(
-  id?: CompanyId,
+  id: CompanyId,
   opt?: GqlOpt,
 ): Promise<CompanyModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdCompany?: CompanyModel;
   } = await query({
@@ -223,8 +261,41 @@ export async function findByIdCompany(
       id,
     },
   }, opt);
+  
   const model = data.findByIdCompany;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 单位, 如果不存在则抛错
+ */
+export async function findByIdOkCompany(
+  id: CompanyId,
+  opt?: GqlOpt,
+): Promise<CompanyModel> {
+  
+  const data: {
+    findByIdOkCompany: CompanyModel;
+  } = await query({
+    query: `
+      query($id: CompanyId!) {
+        findByIdOkCompany(id: $id) {
+          ${ companyQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkCompany;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -235,33 +306,70 @@ export async function findByIdsCompany(
   ids: CompanyId[],
   opt?: GqlOpt,
 ): Promise<CompanyModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: CompanyModel[] = [ ];
-  try {
-    const data: {
-      findByIdsCompany: CompanyModel[];
-    } = await query({
-      query: `
-        query($ids: [CompanyId!]!) {
-          findByIdsCompany(ids: $ids) {
-            ${ companyQueryField }
-          }
+  
+  const data: {
+    findByIdsCompany: CompanyModel[];
+  } = await query({
+    query: `
+      query($ids: [CompanyId!]!) {
+        findByIdsCompany(ids: $ids) {
+          ${ companyQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsCompany;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsCompany;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 单位, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCompany(
+  ids: CompanyId[],
+  opt?: GqlOpt,
+): Promise<CompanyModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkCompany: CompanyModel[];
+  } = await query({
+    query: `
+      query($ids: [CompanyId!]!) {
+        findByIdsOkCompany(ids: $ids) {
+          ${ companyQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkCompany;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

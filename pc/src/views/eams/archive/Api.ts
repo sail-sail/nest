@@ -77,13 +77,14 @@ export async function findAllArchive(
 }
 
 /**
- * 根据条件查找第一个全宗设置
+ * 根据条件查找第一个 全宗设置
  */
 export async function findOneArchive(
   search?: ArchiveSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
+  
   const data: {
     findOneArchive?: ArchiveModel;
   } = await query({
@@ -99,8 +100,43 @@ export async function findOneArchive(
       sort,
     },
   }, opt);
+  
   const model = data.findOneArchive;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 全宗设置, 如果不存在则抛错
+ */
+export async function findOneOkArchive(
+  search?: ArchiveSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkArchive?: ArchiveModel;
+  } = await query({
+    query: `
+      query($search: ArchiveSearch, $sort: [SortInput!]) {
+        findOneOkArchive(search: $search, sort: $sort) {
+          ${ archiveQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkArchive;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -200,12 +236,14 @@ export async function updateByIdArchive(
  * 根据 id 查找 全宗设置
  */
 export async function findByIdArchive(
-  id?: ArchiveId,
+  id: ArchiveId,
   opt?: GqlOpt,
 ): Promise<ArchiveModel | undefined> {
+  
   if (!id) {
     return;
   }
+  
   const data: {
     findByIdArchive?: ArchiveModel;
   } = await query({
@@ -220,8 +258,41 @@ export async function findByIdArchive(
       id,
     },
   }, opt);
+  
   const model = data.findByIdArchive;
+  
   await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 全宗设置, 如果不存在则抛错
+ */
+export async function findByIdOkArchive(
+  id: ArchiveId,
+  opt?: GqlOpt,
+): Promise<ArchiveModel> {
+  
+  const data: {
+    findByIdOkArchive: ArchiveModel;
+  } = await query({
+    query: `
+      query($id: ArchiveId!) {
+        findByIdOkArchive(id: $id) {
+          ${ archiveQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkArchive;
+  
+  await setLblById(model);
+  
   return model;
 }
 
@@ -232,33 +303,70 @@ export async function findByIdsArchive(
   ids: ArchiveId[],
   opt?: GqlOpt,
 ): Promise<ArchiveModel[]> {
+  
   if (ids.length === 0) {
     return [ ];
   }
-  opt = opt || { };
-  opt.showErrMsg = false;
-  let models: ArchiveModel[] = [ ];
-  try {
-    const data: {
-      findByIdsArchive: ArchiveModel[];
-    } = await query({
-      query: `
-        query($ids: [ArchiveId!]!) {
-          findByIdsArchive(ids: $ids) {
-            ${ archiveQueryField }
-          }
+  
+  const data: {
+    findByIdsArchive: ArchiveModel[];
+  } = await query({
+    query: `
+      query($ids: [ArchiveId!]!) {
+        findByIdsArchive(ids: $ids) {
+          ${ archiveQueryField }
         }
-      `,
-      variables: {
-        ids,
-      },
-    }, opt);
-    models = data.findByIdsArchive;
-  } catch (_err) { /* empty */ }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsArchive;
+  
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
   }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 全宗设置, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkArchive(
+  ids: ArchiveId[],
+  opt?: GqlOpt,
+): Promise<ArchiveModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkArchive: ArchiveModel[];
+  } = await query({
+    query: `
+      query($ids: [ArchiveId!]!) {
+        findByIdsOkArchive(ids: $ids) {
+          ${ archiveQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkArchive;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
   return models;
 }
 

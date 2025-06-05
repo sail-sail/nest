@@ -695,48 +695,6 @@ export async function checkByUniqueCompany(
   return;
 }
 
-// MARK: findOneOkCompany
-/** 根据条件查找第一单位 */
-export async function findOneOkCompany(
-  search?: Readonly<CompanySearch>,
-  sort?: SortInput[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<CompanyModel> {
-  
-  const table = "eams_company";
-  const method = "findOneOkCompany";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (search) {
-      msg += ` search:${ getDebugSearch(search) }`;
-    }
-    if (sort) {
-      msg += ` sort:${ JSON.stringify(sort) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  const model_company = validateOptionCompany(
-    await findOneCompany(
-      search,
-      sort,
-      options,
-    ),
-  );
-  
-  return model_company;
-}
-
 // MARK: findOneCompany
 /** 根据条件查找第一单位 */
 export async function findOneCompany(
@@ -768,41 +726,45 @@ export async function findOneCompany(
     options.is_debug = false;
   }
   
-  if (search && search.ids && search.ids.length === 0) {
-    return;
-  }
   const page: PageInput = {
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAllCompany(
+  
+  const company_models = await findAllCompany(
     search,
     page,
     sort,
     options,
   );
-  const model = models[0];
-  return model;
+  
+  const company_model = company_models[0];
+  
+  return company_model;
 }
 
-// MARK: findByIdOkCompany
-/** 根据 id 查找单位 */
-export async function findByIdOkCompany(
-  id?: CompanyId | null,
+// MARK: findOneOkCompany
+/** 根据条件查找第一单位, 如果不存在则抛错 */
+export async function findOneOkCompany(
+  search?: Readonly<CompanySearch>,
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
 ): Promise<CompanyModel> {
   
   const table = "eams_company";
-  const method = "findByIdOkCompany";
+  const method = "findOneOkCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (id) {
-      msg += ` id:${ id }`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
     }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -812,20 +774,32 @@ export async function findByIdOkCompany(
     options.is_debug = false;
   }
   
-  const model_company = validateOptionCompany(
-    await findByIdCompany(
-      id,
-      options,
-    ),
+  const page: PageInput = {
+    pgOffset: 0,
+    pgSize: 1,
+  };
+  
+  const company_models = await findAllCompany(
+    search,
+    page,
+    sort,
+    options,
   );
   
-  return model_company;
+  const company_model = company_models[0];
+  
+  if (!company_model) {
+    const err_msg = "此 单位 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return company_model;
 }
 
 // MARK: findByIdCompany
 /** 根据 id 查找单位 */
 export async function findByIdCompany(
-  id?: CompanyId | null,
+  id: CompanyId,
   options?: {
     is_debug?: boolean;
   },
@@ -853,7 +827,7 @@ export async function findByIdCompany(
     return;
   }
   
-  const model = await findOneCompany(
+  const company_model = await findOneCompany(
     {
       id,
     },
@@ -861,7 +835,47 @@ export async function findByIdCompany(
     options,
   );
   
-  return model;
+  return company_model;
+}
+
+// MARK: findByIdOkCompany
+/** 根据 id 查找单位, 如果不存在则抛错 */
+export async function findByIdOkCompany(
+  id: CompanyId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CompanyModel> {
+  
+  const table = "eams_company";
+  const method = "findByIdOkCompany";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const company_model = await findByIdCompany(
+    id,
+    options,
+  );
+  
+  if (!company_model) {
+    const err_msg = "此 单位 已被删除";
+    throw new Error(err_msg);
+  }
+  
+  return company_model;
 }
 
 // MARK: findByIdsCompany
@@ -901,6 +915,45 @@ export async function findByIdsCompany(
     },
     undefined,
     undefined,
+    options,
+  );
+  
+  const models2 = ids
+    .map((id) => models.find((item) => item.id === id))
+    .filter((item) => !!item);
+  
+  return models2;
+}
+
+// MARK: findByIdsOkCompany
+/** 根据 ids 查找单位, 出现查询不到的 id 则报错 */
+export async function findByIdsOkCompany(
+  ids: CompanyId[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CompanyModel[]> {
+  
+  const table = "eams_company";
+  const method = "findByIdsOkCompany";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const models = await findByIdsCompany(
+    ids,
     options,
   );
   

@@ -73,13 +73,42 @@ export async function findOneCompany(
 }
 
 /**
+ * 根据条件查找第一个单位, 如果不存在则抛错
+ */
+export async function findOneOkCompany(
+  search?: CompanySearch,
+  sort?: SortInput[],
+): Promise<CompanyModel> {
+  
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
+  const company_model = await companyDao.findOneOkCompany(search, sort);
+  
+  return company_model;
+}
+
+/**
  * 根据 id 查找单位
  */
 export async function findByIdCompany(
-  company_id?: CompanyId | null,
+  company_id: CompanyId,
 ): Promise<CompanyModel | undefined> {
   
   const company_model = await companyDao.findByIdCompany(company_id);
+  
+  return company_model;
+}
+
+/**
+ * 根据 id 查找单位, 如果不存在则抛错
+ */
+export async function findByIdOkCompany(
+  company_id: CompanyId,
+): Promise<CompanyModel> {
+  
+  const company_model = await companyDao.findByIdOkCompany(company_id);
   
   return company_model;
 }
@@ -92,6 +121,18 @@ export async function findByIdsCompany(
 ): Promise<CompanyModel[]> {
   
   const company_models = await companyDao.findByIdsCompany(company_ids);
+  
+  return company_models;
+}
+
+/**
+ * 根据 ids 查找单位, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCompany(
+  company_ids: CompanyId[],
+): Promise<CompanyModel[]> {
+  
+  const company_models = await companyDao.findByIdsOkCompany(company_ids);
   
   return company_models;
 }
