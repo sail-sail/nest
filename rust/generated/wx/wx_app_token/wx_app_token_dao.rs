@@ -1043,6 +1043,16 @@ pub async fn find_by_ids_wx_app_token(
     options,
   ).await?;
   
+  let wx_app_token_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      wx_app_token_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<WxAppTokenModel>>();
+  
   Ok(wx_app_token_models)
 }
 

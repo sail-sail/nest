@@ -1035,6 +1035,16 @@ pub async fn find_by_ids_icon(
     options,
   ).await?;
   
+  let icon_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      icon_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<IconModel>>();
+  
   Ok(icon_models)
 }
 

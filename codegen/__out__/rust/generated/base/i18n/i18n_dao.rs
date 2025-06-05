@@ -1117,6 +1117,16 @@ pub async fn find_by_ids_i18n(
     options,
   ).await?;
   
+  let i18n_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      i18n_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<I18nModel>>();
+  
   Ok(i18n_models)
 }
 

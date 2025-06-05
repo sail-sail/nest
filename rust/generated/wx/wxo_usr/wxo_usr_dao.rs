@@ -1251,6 +1251,16 @@ pub async fn find_by_ids_wxo_usr(
     options,
   ).await?;
   
+  let wxo_usr_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      wxo_usr_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<WxoUsrModel>>();
+  
   Ok(wxo_usr_models)
 }
 

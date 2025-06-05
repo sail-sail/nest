@@ -1245,6 +1245,16 @@ pub async fn find_by_ids_wx_pay(
     options,
   ).await?;
   
+  let wx_pay_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      wx_pay_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<WxPayModel>>();
+  
   Ok(wx_pay_models)
 }
 

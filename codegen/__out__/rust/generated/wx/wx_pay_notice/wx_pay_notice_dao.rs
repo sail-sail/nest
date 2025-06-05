@@ -1411,6 +1411,16 @@ pub async fn find_by_ids_wx_pay_notice(
     options,
   ).await?;
   
+  let wx_pay_notice_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      wx_pay_notice_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<WxPayNoticeModel>>();
+  
   Ok(wx_pay_notice_models)
 }
 

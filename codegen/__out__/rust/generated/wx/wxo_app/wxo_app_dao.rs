@@ -1426,6 +1426,16 @@ pub async fn find_by_ids_wxo_app(
     options,
   ).await?;
   
+  let wxo_app_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      wxo_app_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<WxoAppModel>>();
+  
   Ok(wxo_app_models)
 }
 

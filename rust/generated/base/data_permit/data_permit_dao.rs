@@ -1142,6 +1142,16 @@ pub async fn find_by_ids_data_permit(
     options,
   ).await?;
   
+  let data_permit_models = ids
+    .into_iter()
+    .filter_map(|id| {
+      data_permit_models
+        .iter()
+        .find(|item| item.id == id)
+        .cloned()
+    })
+    .collect::<Vec<DataPermitModel>>();
+  
   Ok(data_permit_models)
 }
 
