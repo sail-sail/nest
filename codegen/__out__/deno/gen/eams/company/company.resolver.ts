@@ -91,6 +91,25 @@ export async function findOneCompany(
 }
 
 /**
+ * 根据条件查找第一个单位, 如果不存在则抛错
+ */
+export async function findOneOkCompany(
+  search?: CompanySearch,
+  sort?: SortInput[],
+): Promise<CompanyModel> {
+  
+  const {
+    findOneOkCompany,
+  } = await import("./company.service.ts");
+  
+  checkSortCompany(sort);
+  
+  const model = await findOneOkCompany(search, sort);
+  
+  return model;
+}
+
+/**
  * 根据 id 查找单位
  */
 export async function findByIdCompany(
@@ -107,6 +126,22 @@ export async function findByIdCompany(
 }
 
 /**
+ * 根据 id 查找单位, 如果不存在则抛错
+ */
+export async function findByIdOkCompany(
+  id: CompanyId,
+): Promise<CompanyModel | undefined> {
+  
+  const {
+    findByIdOkCompany,
+  } = await import("./company.service.ts");
+  
+  const model = await findByIdOkCompany(id);
+  
+  return model;
+}
+
+/**
  * 根据 ids 查找单位
  */
 export async function findByIdsCompany(
@@ -118,6 +153,25 @@ export async function findByIdsCompany(
   } = await import("./company.service.ts");
   
   const models = await findByIdsCompany(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找单位, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkCompany(
+  ids: CompanyId[],
+): Promise<CompanyModel[]> {
+  
+  const {
+    findByIdsOkCompany,
+  } = await import("./company.service.ts");
+  
+  const models = await findByIdsOkCompany(ids);
   
   for (const model of models) {
   }
