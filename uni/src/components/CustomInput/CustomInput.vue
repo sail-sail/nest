@@ -116,6 +116,9 @@ watch(
   () => {
     modelValue.value = props.modelValue;
   },
+  {
+    immediate: true,
+  },
 );
 
 watch(
@@ -126,6 +129,9 @@ watch(
 );
 
 const shouldShowPlaceholder = $computed<boolean>(() => {
+  if (props.type === "number" || props.type === "digit") {
+    return modelValue.value == null || modelValue.value === "" || modelValue.value == 0 || isNaN(modelValue.value);
+  }
   return modelValue.value == null || modelValue.value === "";
 });
 
