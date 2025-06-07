@@ -252,7 +252,7 @@ export const <#=table_Up#>QueryField = `
     const inline_column_name = inlineForeignTab.column_name;
   #>
   <#=inline_column_name#> {
-    ${ <#=table_Up#>Fields.join(" ") }
+    ${ <#=table_Up#>QueryField }
   }<#
   }
   #><#
