@@ -36,6 +36,8 @@
             type="textarea"
             :height="200"
             :placeholder="props.placeholder"
+            :readonly="props.readonly"
+            :readonly-placeholder="props.readonlyPlaceholder"
           ></CustomInput>
         </view>
         
@@ -78,9 +80,13 @@
 const props = withDefaults(
   defineProps<{
     placeholder?: string;
+    readonly?: boolean;
+    readonlyPlaceholder?: string;
   }>(),
   {
     placeholder: undefined,
+    readonly: false,
+    readonlyPlaceholder: "",
   },
 );
 
