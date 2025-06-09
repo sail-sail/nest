@@ -291,6 +291,10 @@
 </template>
 
 <script lang="ts" setup>
+import type {
+  WatchHandle,
+} from "vue";
+
 type OptionType = {
   label: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -319,7 +323,6 @@ const props = withDefaults(
     optionsMap?: OptionsMap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
-    options4SelectV2?: OptionType[];
     placeholder?: string;
     height?: string;
     initData?: boolean;
@@ -339,7 +342,6 @@ const props = withDefaults(
       };
     },
     modelValue: undefined,
-    options4SelectV2: undefined,
     placeholder: "",
     height: "auto",
     initData: true,
@@ -354,7 +356,7 @@ const props = withDefaults(
 const inited = ref(false);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const data = ref<any[]>([ ]);
-const options4SelectV2 = ref<OptionType[]>(props.options4SelectV2 || [ ]);
+const options4SelectV2 = ref<OptionType[]>([ ]);
 
 const searchStr = ref("");
 
@@ -512,24 +514,33 @@ function onCancel() {
   showPicker.value = false;
 }
 
+let methodWatchHandle: WatchHandle | null = null;
+
 async function onRefresh() {
+  if (methodWatchHandle) {
+    methodWatchHandle();
+    methodWatchHandle = null;
+  }
   const method = props.method;
-  // if (!method) {
-  //   if (!options4SelectV2 || options4SelectV2.value.length === 0) {
-  //     inited.value = false;
-  //   } else {
-  //     inited.value = true;
-  //   }
-  //   return;
-  // }
-  // if (!options4SelectV2 || options4SelectV2.value.length === 0) {
-  //   inited.value = false;
-  // } else {
-  //   inited.value = true;
-  // }
-  data.value = (await method?.()) || [ ];
-  emit("data", data.value);
-  options4SelectV2.value = data.value.map(props.optionsMap);
+  const methodData = (await method?.()) || [ ];
+  if (isRef(methodData)) {
+    methodWatchHandle  = watch(
+      methodData,
+      () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.value = unref(methodData) as any[];
+        emit("data", data.value);
+        options4SelectV2.value = data.value.map(props.optionsMap);
+      },
+      {
+        immediate: true,
+      },
+    );
+  } else {
+    data.value = methodData;
+    emit("data", data.value);
+    options4SelectV2.value = data.value.map(props.optionsMap);
+  }
 }
 
 async function initFrame() {
@@ -544,6 +555,13 @@ if (props.initData) {
 function togglePicker() {
   showPicker.value = !showPicker.value;
 }
+
+onUnmounted(() => {
+  if (methodWatchHandle) {
+    methodWatchHandle();
+    methodWatchHandle = null;
+  }
+});
 
 defineExpose({
   refresh: onRefresh,

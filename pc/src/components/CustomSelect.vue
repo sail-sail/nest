@@ -234,6 +234,10 @@
 
 <script lang="ts" setup>
 import type {
+  WatchHandle,
+} from "vue";
+
+import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
@@ -280,7 +284,6 @@ const props = withDefaults(
     height?: number;
     modelValue?: string | string[] | null;
     modelLabel?: string | null;
-    options4SelectV2?: OptionType[];
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
@@ -305,7 +308,6 @@ const props = withDefaults(
       };
     },
     height: 400,
-    options4SelectV2: () => [ ],
     modelValue: undefined,
     modelLabel: undefined,
     autoWidth: true,
@@ -633,7 +635,7 @@ function onClear() {
   emit("clear");
 }
 
-let options4SelectV2 = $shallowRef<OptionType[]>(props.options4SelectV2);
+let options4SelectV2 = $shallowRef<OptionType[]>([ ]);
 
 // watch(
 //   () => options4SelectV2,
@@ -724,24 +726,32 @@ function handleVisibleChange(visible: boolean) {
   }
 }
 
+let methodWatchHandle: WatchHandle | null = null;
+
 async function onRefresh() {
+  if (methodWatchHandle) {
+    methodWatchHandle();
+    methodWatchHandle = null;
+  }
   const method = props.method;
-  if (!method) {
-    if (!options4SelectV2 || options4SelectV2.length === 0) {
-      inited = false;
-    } else {
-      inited = true;
-    }
-    return;
-  }
-  if (!options4SelectV2 || options4SelectV2.length === 0) {
-    inited = false;
+  const methodData = (await method?.()) || [ ];
+  if (isRef(methodData)) {
+    methodWatchHandle  = watch(
+      methodData,
+      () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data = unref<any[]>(methodData);
+        emit("data", data);
+        options4SelectV2 = data.map(props.optionsMap);
+      },
+      {
+        immediate: true,
+      },
+    );
   } else {
-    inited = true;
+    data = methodData;
+    options4SelectV2 = data.map(props.optionsMap);
   }
-  await nextTick();
-  data = await method();
-  options4SelectV2 = data.map(props.optionsMap);
   inited = true;
   emit("data", data);
 }
@@ -820,6 +830,13 @@ initFrame();
 
 onMounted(() => {
   refreshWrapperHeight();
+});
+
+onUnmounted(() => {
+  if (methodWatchHandle) {
+    methodWatchHandle();
+    methodWatchHandle = null;
+  }
 });
 
 function focus() {
