@@ -6,18 +6,18 @@
   un-cursor="pointer"
   class="custom_date"
   :class="{
-    'custom_date_readonly': props.readonly,
+    'custom_date_readonly': readonly,
     'custom_date_page_inited': props.pageInited,
   }"
-  :disabled="props.readonly"
+  :disabled="readonly"
 >
   <CustomInput
     v-model="modelValue"
     readonly
-    :clearable="props.clearable == null ? (props.readonly ? false : true) : props.clearable"
-    :readonly-placeholder="(props.readonly || !props.pageInited) ? (props.pageInited ? props.readonlyPlaceholder : '') : props.placeholder"
+    :clearable="props.clearable == null ? (readonly ? false : true) : props.clearable"
+    :readonly-placeholder="(readonly || !props.pageInited) ? (props.pageInited ? props.readonlyPlaceholder : '') : props.placeholder"
     :color="props.color"
-    :font-color="props.fontColor ? props.fontColor : (props.readonly ? 'var(--color-readonly)' : 'var(--font-color)')"
+    :font-color="props.fontColor ? props.fontColor : (readonly ? 'var(--color-readonly)' : 'var(--font-color)')"
     type="text"
   ></CustomInput>
 </tm-picker-date>
@@ -47,6 +47,18 @@ const props = withDefaults(
 );
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const modelValue = defineModel<any>();
+
+const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly");
+
+const readonly = $computed(() => {
+  if (props.readonly != null) {
+    return props.readonly;
+  }
+  if (tmFormItemReadonly) {
+    return tmFormItemReadonly.value;
+  }
+  return;
+});
 </script>
 
 <style lang="scss" scoped>

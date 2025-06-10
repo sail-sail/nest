@@ -1,19 +1,19 @@
 <template>
 <tm-input
-  v-if="!props.readonly"
+  v-if="!readonly"
   v-model.lazy="modelValue"
   class="custom_input n-w-full"
   :class="{
-    'custom_input_readonly': props.readonly
+    'custom_input_readonly': readonly
   }"
   :transprent="true"
   :show-bottom-botder="false"
   v-bind="$attrs"
-  :show-clear="props.clearable == null ? (props.readonly ? false : true) : props.clearable"
-  :readonly="props.readonly"
-  :placeholder="(props.readonly || !props.pageInited) ? '' : props.placeholder"
+  :show-clear="props.clearable == null ? (readonly ? false : true) : props.clearable"
+  :readonly="readonly"
+  :placeholder="(readonly || !props.pageInited) ? '' : props.placeholder"
   :color="props.color"
-  :font-color="props.fontColor ? props.fontColor : (props.readonly ? 'var(--color-readonly)' : undefined)"
+  :font-color="props.fontColor ? props.fontColor : (readonly ? 'var(--color-readonly)' : undefined)"
   :type="props.type"
   @blur="onBlur"
   @clear="onClear"
@@ -76,7 +76,7 @@
     ></view>
     
     <view
-      v-if="modelValue && (props.clearable == null ? (props.readonly ? false : true) : props.clearable)"
+      v-if="modelValue && (props.clearable == null ? (readonly ? false : true) : props.clearable)"
       @tap.stop=""
       @click="onClear"
     >
@@ -173,4 +173,16 @@ function onClear() {
   modelValue.value = "";
   emit("clear");
 }
+
+const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly");
+
+const readonly = $computed(() => {
+  if (props.readonly != null) {
+    return props.readonly;
+  }
+  if (tmFormItemReadonly) {
+    return tmFormItemReadonly.value;
+  }
+  return;
+});
 </script>
