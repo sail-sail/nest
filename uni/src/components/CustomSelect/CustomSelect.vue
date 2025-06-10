@@ -281,6 +281,18 @@ const props = withDefaults(
   },
 );
 
+const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
+
+const readonly = $computed(() => {
+  if (props.readonly != null) {
+    return props.readonly;
+  }
+  if (tmFormItemReadonly) {
+    return tmFormItemReadonly.value;
+  }
+  return;
+});
+
 const sysinfo = inject(
   "tmuiSysInfo",
   computed(() => {
@@ -462,18 +474,6 @@ if (props.initData) {
 function togglePicker() {
   showPicker.value = !showPicker.value;
 }
-
-const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly");
-
-const readonly = $computed(() => {
-  if (props.readonly != null) {
-    return props.readonly;
-  }
-  if (tmFormItemReadonly) {
-    return tmFormItemReadonly.value;
-  }
-  return;
-});
 
 onUnmounted(() => {
   if (methodWatchHandle) {

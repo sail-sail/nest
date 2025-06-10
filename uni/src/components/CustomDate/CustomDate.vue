@@ -45,10 +45,8 @@ const props = withDefaults(
     fontColor: undefined,
   },
 );
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const modelValue = defineModel<any>();
 
-const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly");
+const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
 
 const readonly = $computed(() => {
   if (props.readonly != null) {
@@ -59,6 +57,9 @@ const readonly = $computed(() => {
   }
   return;
 });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const modelValue = defineModel<any>();
 </script>
 
 <style lang="scss" scoped>
