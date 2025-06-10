@@ -36,7 +36,7 @@
             type="textarea"
             :height="200"
             :placeholder="props.placeholder"
-            :readonly="props.readonly"
+            :readonly="readonly"
             :readonly-placeholder="props.readonlyPlaceholder"
           ></CustomInput>
         </view>
@@ -122,4 +122,15 @@ function onConfirm() {
   showModal.value = false;
 }
 
+const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly");
+
+const readonly = $computed(() => {
+  if (props.readonly != null) {
+    return props.readonly;
+  }
+  if (tmFormItemReadonly) {
+    return tmFormItemReadonly.value;
+  }
+  return;
+});
 </script>

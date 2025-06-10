@@ -2,10 +2,10 @@
 <view
   class="custom_select"
   :class="{
-    'custom_select_readonly': props.readonly
+    'custom_select_readonly': readonly
   }"
   :style="{
-    cursor: props.readonly ? 'default' : 'pointer',
+    cursor: readonly ? 'default' : 'pointer',
   }"
 >
   <slot name="left"></slot>
@@ -97,7 +97,7 @@
     ></view>
   
     <view
-      v-if="props.clearable && !props.readonly && !modelValueIsEmpty"
+      v-if="props.clearable && !readonly && !modelValueIsEmpty"
       @tap.stop=""
       @click="onClear"
     >
@@ -115,7 +115,7 @@
     <slot name="right"></slot>
     
     <tm-icon
-      v-if="!props.readonly"
+      v-if="!readonly"
       :size="42"
       color="#b1b1b1"
       name="arrow-right-s-line"
@@ -168,7 +168,7 @@
         </view>
         
         <view
-          v-if="props.multiple && props.showSelectAll && !props.readonly && options4SelectV2.length > 0"
+          v-if="props.multiple && props.showSelectAll && !readonly && options4SelectV2.length > 0"
         >
           
           <tm-checkbox
@@ -319,7 +319,7 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    method: () => Promise<any[]>; // 用于获取数据的方法
+    method: () => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]; // 用于获取数据的方法
     optionsMap?: OptionsMap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
@@ -384,9 +384,9 @@ watch(
 );
 
 watch(
-  () => props.readonly,
+  () => readonly,
   () => {
-    if (props.readonly) {
+    if (readonly) {
       showPicker.value = false;
     }
   },
@@ -464,7 +464,7 @@ const modelLabels = computed(() => {
 const scrollIntoViewId = ref("");
 
 function onClick() {
-  if (props.readonly) {
+  if (readonly) {
     showPicker.value = false;
     return;
   }
@@ -555,6 +555,18 @@ if (props.initData) {
 function togglePicker() {
   showPicker.value = !showPicker.value;
 }
+
+const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly");
+
+const readonly = $computed(() => {
+  if (props.readonly != null) {
+    return props.readonly;
+  }
+  if (tmFormItemReadonly) {
+    return tmFormItemReadonly.value;
+  }
+  return;
+});
 
 onUnmounted(() => {
   if (methodWatchHandle) {
