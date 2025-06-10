@@ -9,11 +9,11 @@
   :transprent="true"
   :show-bottom-botder="false"
   v-bind="$attrs"
-  :show-clear="props.showClear == null ? (props.readonly ? false : true) : props.showClear"
+  :show-clear="props.clearable == null ? (props.readonly ? false : true) : props.clearable"
   :readonly="props.readonly"
   :placeholder="(props.readonly || !props.pageInited) ? '' : props.placeholder"
   :color="props.color"
-  :font-color="props.fontColor ? props.fontColor : (props.readonly ? '#888888' : undefined)"
+  :font-color="props.fontColor ? props.fontColor : (props.readonly ? 'var(--color-readonly)' : undefined)"
   :type="props.type"
   @blur="onBlur"
   @clear="onClear"
@@ -55,7 +55,7 @@
       'custom_input_placeholder': shouldShowPlaceholder,
     }"
     :style="{
-      color: props.fontColor ? props.fontColor : undefined,
+      color: props.fontColor ? props.fontColor : 'var(--color-readonly)',
     }"
   >
     <template
@@ -69,6 +69,27 @@
     >
       {{ modelValue || "" }}
     </template>
+    
+    <view
+      un-flex="[1_0_0]"
+      un-overflow-hidden
+    ></view>
+    
+    <view
+      v-if="modelValue && (props.clearable == null ? (props.readonly ? false : true) : props.clearable)"
+      @tap.stop=""
+      @click="onClear"
+    >
+      <tm-icon
+        _style="transition:color 0.24s"
+        :size="30"
+        color="#b1b1b1"
+        name="close-circle-fill"
+        @tap.stop=""
+        @click="onClear"
+      >
+      </tm-icon>
+    </view>
   </view>
   
   <template #right>
@@ -95,7 +116,7 @@ const props = withDefaults(
     type?: "number" | "text" | "textarea" | "idcard" | "digit" | "tel" | "safe-password" | "nickname" | undefined;
     readonly?: boolean;
     pageInited?: boolean;
-    showClear?: boolean;
+    clearable?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
     color?: string;
@@ -106,7 +127,7 @@ const props = withDefaults(
     type: undefined,
     readonly: undefined,
     pageInited: true,
-    showClear: undefined,
+    clearable: undefined,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
     color: "transparent",

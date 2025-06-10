@@ -5,15 +5,19 @@
   format-sync-value
   un-cursor="pointer"
   class="custom_date"
+  :class="{
+    'custom_date_readonly': props.readonly,
+    'custom_date_page_inited': props.pageInited,
+  }"
   :disabled="props.readonly"
 >
   <CustomInput
-    :model-value="modelValue"
+    v-model="modelValue"
     readonly
-    :show-clear="props.showClear == null ? (props.readonly ? false : true) : props.showClear"
-    :placeholder="(props.readonly || !props.pageInited) ? '' : props.placeholder"
+    :clearable="props.clearable == null ? (props.readonly ? false : true) : props.clearable"
+    :readonly-placeholder="(props.readonly || !props.pageInited) ? (props.pageInited ? props.readonlyPlaceholder : '') : props.placeholder"
     :color="props.color"
-    :font-color="props.fontColor ? props.fontColor : (props.readonly ? '#888888' : undefined)"
+    :font-color="props.fontColor ? props.fontColor : (props.readonly ? 'var(--color-readonly)' : 'var(--font-color)')"
     type="text"
   ></CustomInput>
 </tm-picker-date>
@@ -25,7 +29,7 @@ const props = withDefaults(
   defineProps<{
     readonly?: boolean;
     pageInited?: boolean;
-    showClear?: boolean;
+    clearable?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
     color?: string;
@@ -34,7 +38,7 @@ const props = withDefaults(
   {
     readonly: undefined,
     pageInited: true,
-    showClear: undefined,
+    clearable: undefined,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
     color: "transparent",
@@ -44,3 +48,9 @@ const props = withDefaults(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const modelValue = defineModel<any>();
 </script>
+
+<style lang="scss" scoped>
+.custom_date_readonly {
+  cursor: default;
+}
+</style>
