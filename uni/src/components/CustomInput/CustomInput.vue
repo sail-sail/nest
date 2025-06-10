@@ -9,11 +9,11 @@
   :transprent="true"
   :show-bottom-botder="false"
   v-bind="$attrs"
-  :show-clear="props.readonly ? false : props.showClear"
+  :show-clear="props.showClear == null ? (props.readonly ? false : true) : props.showClear"
   :readonly="props.readonly"
   :placeholder="(props.readonly || !props.pageInited) ? '' : props.placeholder"
   :color="props.color"
-  :font-color="props.readonly ? '#888888' : undefined"
+  :font-color="props.fontColor ? props.fontColor : (props.readonly ? '#888888' : undefined)"
   :type="props.type"
   @blur="onBlur"
   @clear="onClear"
@@ -53,6 +53,9 @@
     :class="{
       'items-center': type !== 'textarea',
       'custom_input_placeholder': shouldShowPlaceholder,
+    }"
+    :style="{
+      color: props.fontColor ? props.fontColor : undefined,
     }"
   >
     <template
@@ -96,16 +99,18 @@ const props = withDefaults(
     placeholder?: string;
     readonlyPlaceholder?: string;
     color?: string;
+    fontColor?: string;
   }>(),
   {
     modelValue: undefined,
     type: undefined,
     readonly: undefined,
     pageInited: true,
-    showClear: true,
+    showClear: undefined,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
     color: "transparent",
+    fontColor: undefined,
   },
 );
 
