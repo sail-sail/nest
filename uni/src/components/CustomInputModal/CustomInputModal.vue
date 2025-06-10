@@ -90,6 +90,18 @@ const props = withDefaults(
   },
 );
 
+const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
+
+const readonly = $computed(() => {
+  if (props.readonly != null) {
+    return props.readonly;
+  }
+  if (tmFormItemReadonly) {
+    return tmFormItemReadonly.value;
+  }
+  return;
+});
+
 const modalValue = defineModel<string>({
   default: "",
   type: String,
@@ -121,16 +133,4 @@ function onConfirm() {
   str.value = "";
   showModal.value = false;
 }
-
-const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly");
-
-const readonly = $computed(() => {
-  if (props.readonly != null) {
-    return props.readonly;
-  }
-  if (tmFormItemReadonly) {
-    return tmFormItemReadonly.value;
-  }
-  return;
-});
 </script>
