@@ -331,6 +331,7 @@ const props = withDefaults(
     multiple?: boolean;
     showSelectAll?: boolean;
     readonly?: boolean;
+    searchStr?: string | null;
   }>(),
   {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -350,6 +351,7 @@ const props = withDefaults(
     multiple: false,
     showSelectAll: true,
     readonly: false,
+    searchStr: "",
   },
 );
 
@@ -370,7 +372,7 @@ const inited = ref(false);
 const data = ref<any[]>([ ]);
 const options4SelectV2 = ref<OptionType[]>([ ]);
 
-const searchStr = ref("");
+const searchStr = ref(props.searchStr || "");
 
 const options4SelectV2Computed = computed(() => {
   if (searchStr.value) {

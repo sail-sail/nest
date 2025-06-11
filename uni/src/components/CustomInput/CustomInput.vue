@@ -9,7 +9,7 @@
   :transprent="true"
   :show-bottom-botder="false"
   v-bind="$attrs"
-  :show-clear="props.clearable == null ? (readonly ? false : true) : props.clearable"
+  :show-clear="props.clearable == null ? (modelValue ? !readonly : false) : props.clearable"
   :readonly="readonly"
   :placeholder="(readonly || !props.pageInited) ? '' : props.placeholder"
   :color="props.color"

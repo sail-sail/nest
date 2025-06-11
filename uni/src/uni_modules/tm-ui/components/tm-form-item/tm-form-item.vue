@@ -27,7 +27,7 @@ const props = defineProps({
     name: {
         type: String,
         default: '',
-        required: true
+        required: false,
     },
     /**
      * 必款时的符号，如果为false，或者空则不显示
