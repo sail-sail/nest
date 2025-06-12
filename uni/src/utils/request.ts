@@ -313,6 +313,64 @@ export function getImgUrl(
   return `${ cfg.url }/oss/img?${ params }`;
 }
 
+export function getRequestUrl(
+  config: {
+    url?: string;
+    reqType?: string;
+    notAuthorization?: boolean;
+    data?: any;
+    client_tenant_id?: TenantId | null;
+  },
+): string {
+  
+  let url = "";
+  
+  if (config.reqType !== "graphql") {
+    if (isEmpty(config.url)) {
+      throw new Error("config.url is empty");
+    }
+    url = `${ cfg.url }/${ config.url }`;
+  } else {
+    url = `${ cfg.url }/graphql`;
+  }
+  
+  const params: string[] = [ ];
+  
+  if (config.data) {
+    for (const key in config.data) {
+      if (Object.prototype.hasOwnProperty.call(config.data, key)) {
+        let value = config.data[key];
+        if (value == null) {
+          value = "";
+        }
+        params.push(`${ encodeURIComponent(key) }=${ encodeURIComponent(value) }`);
+      }
+    }
+  }
+  
+  let client_tenant_id = config.client_tenant_id;
+  if (!client_tenant_id) {
+    client_tenant_id = sessionStorage.getItem("client_tenant_id") as TenantId;
+  }
+  if (client_tenant_id) {
+    params.push(`TenantId=${ encodeURIComponent(client_tenant_id) }`);
+  }
+  
+  if (config.notAuthorization !== true) {
+    const usrStore = useUsrStore();
+    const authorization = usrStore.getAuthorization();
+    if (authorization) {
+      params.push(`authorization=${ encodeURIComponent(authorization) }`);
+    }
+  }
+  
+  if (params.length > 0) {
+    url += "?" + params.join("&");
+  }
+  
+  return url;
+}
+
 export async function request<T>(
   config: {
     url?: string;
@@ -321,6 +379,7 @@ export async function request<T>(
     showErrMsg?: boolean;
     header?: { [key: string]: any };
     notLogin?: boolean;
+    notAuthorization?: boolean;
     method?: string;
     data?: any;
   },
@@ -339,10 +398,12 @@ export async function request<T>(
     if (!config.notLoading) {
       indexStore.addLoading();
     }
-    const authorization = usrStore.getAuthorization();
-    if (authorization) {
-      config.header = config.header || { };
-      config.header.authorization = authorization;
+    if (config?.notAuthorization !== true) {
+      const authorization = usrStore.getAuthorization();
+      if (authorization) {
+        config.header = config.header || { };
+        config.header.authorization = authorization;
+      }
     }
     res = await (uni as any).request(config as any) as any;
   } catch(errTmp) {
