@@ -222,20 +222,11 @@ async fn main() -> Result<(), std::io::Error> {
   dotenv().unwrap();
   let server_title = std::env::var_os("server_title").expect("server_title not found in .env");
   let server_title = server_title.to_str().unwrap();
-  let package_name = env!("CARGO_PKG_NAME");
-  // if std::env::var_os("RUST_LOG").is_none() {
-  //   std::env::set_var("RUST_LOG", format!("{}=info", package_name));
-  // }
-  // if std::env::var_os("RUST_BACKTRACE").is_none() {
-  //   std::env::set_var("RUST_BACKTRACE", "1");
-  // }
   let git_hash = std::env::var_os("GIT_HASH");
   if let Some(git_hash) = git_hash {
     let git_hash = git_hash.to_str().unwrap();
     info!("git_hash: {git_hash}");
   }
-  let package_name2: &'static str = Box::leak(format!("{}::", package_name).into_boxed_str());
-  let common_name2: &'static str = Box::leak(format!("{}::common::", package_name).into_boxed_str());
   
   #[cfg(debug_assertions)]
   let _guard = {
@@ -247,7 +238,7 @@ async fn main() -> Result<(), std::io::Error> {
           } else {
             return true;
           };
-          name.starts_with(package_name2) && !name.starts_with(common_name2)
+          name.starts_with("app::") && !name.contains("::_::impl$")
         });
       }))
       .install()
@@ -282,7 +273,7 @@ async fn main() -> Result<(), std::io::Error> {
           } else {
             return true;
           };
-          name.starts_with(package_name2) && !name.starts_with(common_name2)
+          name.starts_with("app::") && !name.contains("::_::impl$")
         });
       }))
       .install()
