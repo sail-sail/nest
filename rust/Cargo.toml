@@ -179,7 +179,7 @@ path = "main.rs"
 
 [profile.release]
 panic = "unwind"
-debug = 1
+debug = 0
 
 [profile.release.package.generated]
 debug = 1
