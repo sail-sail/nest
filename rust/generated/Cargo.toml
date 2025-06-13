@@ -75,6 +75,7 @@ pkcs8.workspace = true
 serde_with.workspace = true
 csv.workspace = true
 rust_xlsxwriter.workspace = true
+chromiumoxide.workspace = true
 
 [lib]
 path = "lib.rs"

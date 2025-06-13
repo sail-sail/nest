@@ -151,8 +151,6 @@ rsa.workspace = true
 aes-gcm.workspace = true
 pkcs8.workspace = true
 serde_with.workspace = true
-csv.workspace = true
-rust_xlsxwriter.workspace = true
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"

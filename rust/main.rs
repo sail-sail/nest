@@ -308,6 +308,9 @@ async fn main() -> Result<(), std::io::Error> {
     if let Err(_err) = tmpfile_dao::init().await {
       // println!("tmpfile_dao::init() error: {}", err);
     }
+    if let Err(err) = generated::common::browser::browser::check_and_kill_existing_browser().await {
+      info!("check_and_kill_existing_browser: {err:#?}");
+    }
   });
   
   let schema: app::QuerySchema = Schema::build(
@@ -475,6 +478,13 @@ async fn main() -> Result<(), std::io::Error> {
       app,
       async {
         let _ = tokio::signal::ctrl_c().await;
+        info!("run_with_graceful_shutdown");
+        let res = generated::common::browser::browser::destroy_browser().await;
+        if let Err(err) = res {
+          error!("destroy_browser error: {err:#?}");
+        } else {
+          info!("Browser instance destroyed successfully.");
+        }
       },
       None,
     ).await

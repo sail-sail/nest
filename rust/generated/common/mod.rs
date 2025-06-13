@@ -2,6 +2,7 @@ pub mod context;
 pub mod validators;
 pub mod gql;
 pub mod auth;
+pub mod browser;
 pub mod oss;
 pub mod permit;
 pub mod role;
