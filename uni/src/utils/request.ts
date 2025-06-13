@@ -350,7 +350,7 @@ export function getRequestUrl(
   
   let client_tenant_id = config.client_tenant_id;
   if (!client_tenant_id) {
-    client_tenant_id = sessionStorage.getItem("client_tenant_id") as TenantId;
+    client_tenant_id = uni.getStorageSync("client_tenant_id") as TenantId | null;
   }
   if (client_tenant_id) {
     params.push(`TenantId=${ encodeURIComponent(client_tenant_id) }`);
