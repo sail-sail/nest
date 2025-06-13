@@ -13,6 +13,9 @@ use chromiumoxide::{
 };
 use chromiumoxide::cdp::browser_protocol::target::CreateTargetParams;
 
+// 添加在browser.rs中
+use std::sync::atomic::{AtomicUsize, Ordering};
+
 pub struct BrowserInstance {
   pub browser: Browser,
   _handler_guard: tokio::task::JoinHandle<()>, // 下划线前缀表示仅用于保持生命周期
@@ -22,6 +25,10 @@ pub struct BrowserInstance {
 static BROWSER: OnceCell<Arc<Mutex<BrowserInstance>>> = OnceCell::const_new();
 
 const BROWSER_PORT: u16 = 62222;
+
+// 限制最大并发页面数
+static CONCURRENT_PAGES: AtomicUsize = AtomicUsize::new(0);
+const MAX_CONCURRENT_PAGES: usize = 50; // 根据系统调整
 
 /// 检查并杀掉已有的浏览器实例
 // 如果是linux或者macOS系统
@@ -98,6 +105,10 @@ pub async fn check_and_kill_existing_browser() -> Result<()> {
 async fn initialize_browser() -> Result<Arc<Mutex<BrowserInstance>>> {
   
   let browser_config = BrowserConfig::builder()
+    .no_sandbox()
+    .arg("--disable-setuid-sandbox")
+    .arg("--disable-dev-shm-usage")
+    .arg("--disable-gpu")
     .port(BROWSER_PORT)
     .build()
     .map_err(|e| eyre!("{:#?}", e))?;
@@ -157,11 +168,30 @@ pub async fn new_page<T: Sync + Send>(
   callback: impl AsyncFnOnce(Arc<Page>) -> Result<T> + Send + 'static,
 ) -> Result<T> {
   
+  // 等待直到并发页面数小于最大值
+  while CONCURRENT_PAGES.load(Ordering::SeqCst) >= MAX_CONCURRENT_PAGES {
+    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+    info!("等待页面槽位, 当前: {}, 最大: {}", 
+          CONCURRENT_PAGES.load(Ordering::SeqCst), MAX_CONCURRENT_PAGES);
+  }
+  
+  // 增加并发页面计数
+  CONCURRENT_PAGES.fetch_add(1, Ordering::SeqCst);
+  info!("正在打开新页面, 当前计数: {}/{}", 
+        CONCURRENT_PAGES.load(Ordering::SeqCst), MAX_CONCURRENT_PAGES);
+  
   let browser_instance = get_browser_instance().await?;
   let browser_instance = browser_instance.lock().await;
   
   // 创建新页面
-  let page = browser_instance.browser.new_page(params).await?;
+  let page = match browser_instance.browser.new_page(params).await {
+    Ok(p) => p,
+    Err(e) => {
+      // 出错时减少计数器
+      CONCURRENT_PAGES.fetch_sub(1, Ordering::SeqCst);
+      return Err(e.into());
+    }
+  };
   
   let page_arc = Arc::new(page);
   
@@ -173,6 +203,11 @@ pub async fn new_page<T: Sync + Send>(
     let page = Arc::try_unwrap(page_arc).expect("Failed to unwrap Arc");
     page.close().await?;
   }
+  
+  // 减少并发页面计数
+  CONCURRENT_PAGES.fetch_sub(1, Ordering::SeqCst);
+  info!("已关闭页面, 当前计数: {}/{}", 
+        CONCURRENT_PAGES.load(Ordering::SeqCst), MAX_CONCURRENT_PAGES);
   
   drop(browser_instance);
   
