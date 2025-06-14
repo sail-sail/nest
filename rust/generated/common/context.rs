@@ -1180,6 +1180,8 @@ pub struct Ctx {
   
   is_resful: bool,
   
+  old_auth_token: Option<String>,
+  
   auth_token: Option<String>,
   
   auth_model: Option<AuthModel>,
@@ -1258,7 +1260,9 @@ impl Ctx {
       let is_success = !status_code.is_server_error();
       let extensions = res.extensions();
       let mut is_rollback = extensions.get::<bool>().copied().unwrap_or(true);
+      
       let exception: Option<&ServiceException> = extensions.get::<ServiceException>();
+      
       if let Some(exception) = exception {
         if !exception.rollback {
           is_rollback = false;
@@ -1266,16 +1270,22 @@ impl Ctx {
         if !exception.trace {
           info!(
             "{} {}",
-            ctx.req_id.as_str(),
+            ctx.req_id,
             exception,
           );
         } else {
           error!(
-            "{} {:?}",
-            ctx.req_id.as_str(),
-            exception,
+            "{} {}",
+            ctx.req_id,
+            exception.to_string(),
           );
         }
+      } else if !is_success {
+        error!(
+          "{} {:#?}",
+          ctx.req_id,
+          res,
+        );
       }
       let is_rollback = is_rollback;
       {
@@ -1306,12 +1316,6 @@ impl Ctx {
             );
             tran.execute("commit").await?;
           }
-        } else if !is_success {
-          error!(
-            "{} {}",
-            ctx.req_id,
-            status_code,
-          );
         }
       }
       Ok(res)
@@ -1839,6 +1843,8 @@ pub struct CtxBuilder<'a> {
   
   is_tran: Option<bool>,
   
+  old_auth_token: Option<String>,
+  
   auth_token: Option<String>,
   
   auth_model: Option<AuthModel>,
@@ -1875,6 +1881,7 @@ impl <'a> CtxBuilder<'a> {
       gql_ctx,
       resful_req: None,
       is_tran: None,
+      old_auth_token: None,
       auth_token: None,
       auth_model: None,
       req_id,
@@ -1956,6 +1963,7 @@ impl <'a> CtxBuilder<'a> {
       return Err(eyre!("token_empty"));
     }
     let auth_token = auth_token.unwrap();
+    self.old_auth_token = Some(auth_token.clone());
     let mut auth_model = match get_auth_model_by_token(auth_token) {
       Ok(item) => item,
       Err(err) => {
@@ -1989,6 +1997,7 @@ impl <'a> CtxBuilder<'a> {
       return Ok(self);
     }
     let auth_token = auth_token.unwrap();
+    self.old_auth_token = Some(auth_token.clone());
     self.auth_model = get_auth_model_by_token(auth_token).ok();
     Ok(self)
   }
@@ -2024,6 +2033,7 @@ impl <'a> CtxBuilder<'a> {
       req_id: Arc::new(self.req_id),
       tran: Arc::new(Mutex::new(None)),
       is_resful: self.resful_req.is_some(),
+      old_auth_token: self.old_auth_token,
       auth_token: self.auth_token,
       auth_model: self.auth_model,
       now: self.now,
@@ -2173,6 +2183,36 @@ pub fn get_is_creating(
   }
   let ctx = CTX.with(|ctx| ctx.clone());
   ctx.is_creating.unwrap_or_default()
+}
+
+#[must_use]
+pub fn get_auth_token() -> Option<String> {
+  let ctx = CTX.with(|ctx| ctx.clone());
+  if let Some(auth_token) = ctx.old_auth_token.as_ref() {
+    return Some(auth_token.clone());
+  }
+  if let Some(auth_token) = ctx.auth_token.as_ref() {
+    return Some(auth_token.clone());
+  }
+  None
+}
+
+#[must_use]
+pub fn get_auth_token_ok() -> Result<String> {
+  let ctx = CTX.with(|ctx| ctx.clone());
+  if let Some(auth_token) = ctx.old_auth_token.as_ref() {
+    return Ok(auth_token.clone());
+  }
+  if let Some(auth_token) = ctx.auth_token.as_ref() {
+    return Ok(auth_token.clone());
+  }
+  Err(eyre!(
+    ServiceException {
+      message: "未登录".to_string(),
+      trace: true,
+      ..Default::default()
+    }
+  ))
 }
 
 #[must_use]

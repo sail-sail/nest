@@ -214,6 +214,17 @@ pub async fn new_page<T: Sync + Send>(
   res
 }
 
+pub async fn wait_for_selector(page: &Page, selector: &str, timeout: std::time::Duration) -> bool {
+  let start = std::time::Instant::now();
+  while start.elapsed() < timeout {
+    if let Ok(_) = page.find_element(selector).await {
+      return true;
+    }
+    tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+  }
+  false
+}
+
 /// 销毁浏览器实例，释放资源
 pub async fn destroy_browser() -> Result<()> {
   if let Some(browser_mutex) = BROWSER.get() {
