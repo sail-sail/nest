@@ -241,9 +241,16 @@ export interface TableCloumn {
     column?: string,
     
     /**
-     * 下拉框是否多选
+     * 下拉框是否多选, 多对多时默认为 true, 否则默认为 false
+     * 如果是多对多, 则 column 一般是 _ids 结尾
+     * 如果是单选, 则 column 一般是 _id 结尾
      */
     multiple?: boolean,
+    
+    /**
+     * 下拉框是否多选时, 是否有设置默认值功能, 默认为 false
+     */
+    multipleSetDefault?: boolean,
     
     /**
      * 下拉框显示字段, 默认为: lbl

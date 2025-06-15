@@ -69,6 +69,7 @@ export default defineConfig({
           ],
           "@/utils/request": [
             "request",
+            "getRequestUrl",
             "uploadFile",
             "getDownloadUrl",
             "getImgUrl",
@@ -93,6 +94,10 @@ export default defineConfig({
           ],
           "@/tmui/components/tm-form/tm-form.vue": [
             [ "default", "TmForm" ],
+          ],
+          "@/utils/WxoUtil": [
+            [ "wxoGetAppid", "wxwGetAppid" ],
+            "initWxoCfg",
           ],
         },
       ],

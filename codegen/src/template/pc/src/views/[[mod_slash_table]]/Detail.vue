@@ -491,6 +491,11 @@ for (let i = 0; i < columns.length; i++) {
               multiple<#
               }
               #><#
+              if (foreignKey.multipleSetDefault) {
+              #>
+              :multiple-set-default="true"<#
+              }
+              #><#
               if (column.readonly) {
               #>
               :readonly="true"<#
@@ -528,6 +533,7 @@ for (let i = 0; i < columns.length; i++) {
             ><#
               if (foreignKey.hasSelectAdd) {
               #>
+              
               <template
                 v-if="<#=foreignSchema.opts.table#>Permit('add')"
                 #footer
@@ -551,6 +557,7 @@ for (let i = 0; i < columns.length; i++) {
                   </el-button>
                 </div>
               </template>
+              
             <#
             }
           #></CustomSelect><#
@@ -1370,6 +1377,11 @@ for (let i = 0; i < columns.length; i++) {
                       multiple<#
                       }
                       #><#
+                      if (foreignKey.multipleSetDefault) {
+                      #>
+                      :multiple-set-default="true"<#
+                      }
+                      #><#
                       if (column.readonly) {
                       #>
                       :readonly="true"<#
@@ -2129,6 +2141,11 @@ for (let i = 0; i < columns.length; i++) {
                     multiple<#
                     }
                     #><#
+                    if (foreignKey.multipleSetDefault) {
+                    #>
+                    :multiple-set-default="true"<#
+                    }
+                    #><#
                     if (column.readonly) {
                     #>
                     :readonly="true"<#
@@ -2855,6 +2872,11 @@ for (let i = 0; i < columns.length; i++) {
                       if (foreignKey.multiple) {
                       #>
                       multiple<#
+                      }
+                      #><#
+                      if (foreignKey.multipleSetDefault) {
+                      #>
+                      :multiple-set-default="true"<#
                       }
                       #><#
                       if (column.readonly) {
