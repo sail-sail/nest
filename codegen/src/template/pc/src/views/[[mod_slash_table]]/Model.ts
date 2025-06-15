@@ -58,7 +58,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 import {
-  <#=table_Up#>Fields,
+  <#=table_Up#>QueryField,
 } from "@/views/<#=mod#>/<#=table#>/Model.ts";<#
 }
 #><#
@@ -95,7 +95,7 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 import {
-  <#=table_Up#>Fields,
+  <#=table_Up#>QueryField,
 } from "@/views/<#=mod#>/<#=table#>/Model";<#
 }
 #>
@@ -252,7 +252,7 @@ export const <#=table_Up#>QueryField = `
     const inline_column_name = inlineForeignTab.column_name;
   #>
   <#=inline_column_name#> {
-    ${ <#=table_Up#>Fields.join(" ") }
+    ${ <#=table_Up#>QueryField }
   }<#
   }
   #><#
@@ -288,7 +288,7 @@ export const <#=table_Up#>QueryField = `
     const inlineMany2manyColumns = inlineMany2manySchema.columns;
   #>
   <#=column_name#>_<#=table#>_models {
-    ${ <#=table_Up#>Fields.join(" ") }
+    ${ <#=table_Up#>QueryField }
   }<#
   }
   #>

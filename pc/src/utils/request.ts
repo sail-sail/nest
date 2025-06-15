@@ -16,6 +16,7 @@ export async function request<T>(
     showErrMsg?: boolean;
     headers?: Headers;
     notLogin?: boolean;
+    notAuthorization?: boolean;
     method?: string;
     data?: any;
     duration?: number;
@@ -43,9 +44,11 @@ export async function request<T>(
     }
     config.headers = config.headers || new Headers();
     
-    const authorization = usrStore.authorization;
-    if (authorization) {
-      config.headers.set("authorization", authorization);
+    if (config.notAuthorization !== true) {
+      const authorization = usrStore.authorization;
+      if (authorization) {
+        config.headers.set("authorization", authorization);
+      }
     }
     
     let client_tenant_id = config.client_tenant_id;
@@ -348,6 +351,67 @@ export function getImgUrl(
     params.set("authorization", usrStore.authorization);
   }
   return `${ baseURL }/api/oss/img?${ params.toString() }`;
+}
+
+export function getRequestUrl(
+  config: {
+    url?: string;
+    reqType?: string;
+    notLogin?: boolean;
+    notAuthorization?: boolean;
+    data?: any;
+    client_tenant_id?: TenantId | null;
+  },
+): string {
+  
+  let url = "";
+  
+  if (config.reqType !== "graphql") {
+    if (isEmpty(config.url)) {
+      throw new Error("config.url is empty");
+    }
+    if (baseURL) {
+      url = `${ baseURL }/${ config.url }`;
+    }
+  } else {
+    url = config.url || "" + "/graphql";
+  }
+  
+  const params: string[] = [ ];
+  
+  if (config.data) {
+    for (const key in config.data) {
+      if (Object.prototype.hasOwnProperty.call(config.data, key)) {
+        let value = config.data[key];
+        if (value == null) {
+          value = "";
+        }
+        params.push(`${ encodeURIComponent(key) }=${ encodeURIComponent(value) }`);
+      }
+    }
+  }
+  
+  let client_tenant_id = config.client_tenant_id;
+  if (!client_tenant_id) {
+    client_tenant_id = sessionStorage.getItem("client_tenant_id") as TenantId;
+  }
+  if (client_tenant_id) {
+    params.push(`TenantId=${ encodeURIComponent(client_tenant_id) }`);
+  }
+  
+  if (config.notAuthorization !== true) {
+    const usrStore = useUsrStore();
+    const authorization = usrStore.authorization;
+    if (authorization) {
+      params.push(`authorization=${ encodeURIComponent(authorization) }`);
+    }
+  }
+  
+  if (params.length > 0) {
+    url += "?" + params.join("&");
+  }
+  
+  return url;
 }
 
 /**
