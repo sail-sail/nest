@@ -13,11 +13,6 @@ import {
   wxwAppQueryField,
 } from "./Model.ts";
 
-// 域名
-import {
-  findOneDomain as findOneDomain0,
-} from "@/views/base/domain/Api.ts";
-
 async function setLblById(
   model?: WxwAppModel | null,
   isExcelExport = false,
@@ -770,10 +765,6 @@ export function getPagePathWxwApp() {
 /** 新增时的默认值 */
 export async function getDefaultInputWxwApp() {
   const defaultInput: WxwAppInput = {
-    domain_id: (await findOneDomain0({
-      is_enabled: [ 1 ],
-      is_default: [ 1 ],
-    }))?.id,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
