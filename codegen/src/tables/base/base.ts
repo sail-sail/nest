@@ -135,6 +135,7 @@ export default defineConfig({
         width: 280,
         foreignKey: {
           hasSelectAdd: true,
+          multipleSetDefault: true,
         },
       },
       {
@@ -207,9 +208,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_locked",
-      },
-      {
-        COLUMN_NAME: "is_default",
       },
       {
         COLUMN_NAME: "is_enabled",
