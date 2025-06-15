@@ -35,9 +35,6 @@ export function intoInputDomain(
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
-    // 默认
-    is_default: model?.is_default,
-    is_default_lbl: model?.is_default_lbl,
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
@@ -403,32 +400,6 @@ export async function deleteByIdsDomain(
 }
 
 /**
- * 根据 id 设置默认 域名
- */
-export async function defaultByIdDomain(
-  id?: DomainId,
-  opt?: GqlOpt,
-) {
-  if (!id) {
-    return 0;
-  }
-  const data: {
-    defaultByIdDomain: Mutation["defaultByIdDomain"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($id: DomainId!) {
-        defaultByIdDomain(id: $id)
-      }
-    `,
-    variables: {
-      id,
-    },
-  }, opt);
-  const res = data.defaultByIdDomain;
-  return res;
-}
-
-/**
  * 根据 ids 启用或禁用 域名
  */
 export async function enableByIdsDomain(
@@ -613,7 +584,6 @@ export function useExportExcelDomain() {
             }
             getDict(codes: [
               "is_locked",
-              "is_default",
               "is_enabled",
             ]) {
               code
