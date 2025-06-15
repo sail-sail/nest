@@ -7,7 +7,7 @@ import type {
 } from "#/types.ts";
 
 import {
-  dictbizDetailFields,
+  dictbizDetailQueryField,
 } from "@/views/base/dictbiz_detail/Model.ts";
 
 declare global {
@@ -71,6 +71,6 @@ export const dictbizFields = [
 export const dictbizQueryField = `
   ${ dictbizFields.join(" ") }
   dictbiz_detail {
-    ${ dictbizDetailFields.join(" ") }
+    ${ dictbizDetailQueryField }
   }
 `;
