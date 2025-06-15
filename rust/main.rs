@@ -222,20 +222,11 @@ async fn main() -> Result<(), std::io::Error> {
   dotenv().unwrap();
   let server_title = std::env::var_os("server_title").expect("server_title not found in .env");
   let server_title = server_title.to_str().unwrap();
-  let package_name = env!("CARGO_PKG_NAME");
-  // if std::env::var_os("RUST_LOG").is_none() {
-  //   std::env::set_var("RUST_LOG", format!("{}=info", package_name));
-  // }
-  // if std::env::var_os("RUST_BACKTRACE").is_none() {
-  //   std::env::set_var("RUST_BACKTRACE", "1");
-  // }
   let git_hash = std::env::var_os("GIT_HASH");
   if let Some(git_hash) = git_hash {
     let git_hash = git_hash.to_str().unwrap();
     info!("git_hash: {git_hash}");
   }
-  let package_name2: &'static str = Box::leak(format!("{}::", package_name).into_boxed_str());
-  let common_name2: &'static str = Box::leak(format!("{}::common::", package_name).into_boxed_str());
   
   #[cfg(debug_assertions)]
   let _guard = {
@@ -247,7 +238,7 @@ async fn main() -> Result<(), std::io::Error> {
           } else {
             return true;
           };
-          name.starts_with(package_name2) && !name.starts_with(common_name2)
+          name.starts_with("app::") && !name.contains("::_::impl$")
         });
       }))
       .install()
@@ -282,7 +273,7 @@ async fn main() -> Result<(), std::io::Error> {
           } else {
             return true;
           };
-          name.starts_with(package_name2) && !name.starts_with(common_name2)
+          name.starts_with("app::") && !name.contains("::_::impl$")
         });
       }))
       .install()
@@ -316,6 +307,9 @@ async fn main() -> Result<(), std::io::Error> {
     }
     if let Err(_err) = tmpfile_dao::init().await {
       // println!("tmpfile_dao::init() error: {}", err);
+    }
+    if let Err(err) = generated::common::browser::browser::check_and_kill_existing_browser().await {
+      info!("check_and_kill_existing_browser: {err:#?}");
     }
   });
   
@@ -496,6 +490,13 @@ async fn main() -> Result<(), std::io::Error> {
       app,
       async {
         let _ = tokio::signal::ctrl_c().await;
+        info!("run_with_graceful_shutdown");
+        let res = generated::common::browser::browser::destroy_browser().await;
+        if let Err(err) = res {
+          error!("destroy_browser error: {err:#?}");
+        } else {
+          info!("Browser instance destroyed successfully.");
+        }
       },
       None,
     ).await

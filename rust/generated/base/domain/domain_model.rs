@@ -63,12 +63,6 @@ pub struct DomainModel {
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
-  /// 默认
-  #[graphql(name = "is_default")]
-  pub is_default: u8,
-  /// 默认
-  #[graphql(name = "is_default_lbl")]
-  pub is_default_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
@@ -112,9 +106,6 @@ impl FromRow<'_, MySqlRow> for DomainModel {
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
-    // 默认
-    let is_default: u8 = row.try_get("is_default")?;
-    let is_default_lbl: String = is_default.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -152,8 +143,6 @@ impl FromRow<'_, MySqlRow> for DomainModel {
       lbl,
       is_locked,
       is_locked_lbl,
-      is_default,
-      is_default_lbl,
       is_enabled,
       is_enabled_lbl,
       order_by,
@@ -191,12 +180,6 @@ pub struct DomainFieldComment {
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
-  /// 默认
-  #[graphql(name = "is_default")]
-  pub is_default: String,
-  /// 默认
-  #[graphql(name = "is_default_lbl")]
-  pub is_default_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: String,
@@ -259,9 +242,6 @@ pub struct DomainSearch {
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
-  /// 默认
-  #[graphql(name = "is_default")]
-  pub is_default: Option<Vec<u8>>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
@@ -338,10 +318,6 @@ impl std::fmt::Debug for DomainSearch {
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
     }
-    // 默认
-    if let Some(ref is_default) = self.is_default {
-      item = item.field("is_default", is_default);
-    }
     // 启用
     if let Some(ref is_enabled) = self.is_enabled {
       item = item.field("is_enabled", is_enabled);
@@ -416,12 +392,6 @@ pub struct DomainInput {
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: Option<String>,
-  /// 默认
-  #[graphql(name = "is_default")]
-  pub is_default: Option<u8>,
-  /// 默认
-  #[graphql(name = "is_default_lbl")]
-  pub is_default_lbl: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
@@ -478,9 +448,6 @@ impl From<DomainModel> for DomainInput {
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
-      // 默认
-      is_default: model.is_default.into(),
-      is_default_lbl: model.is_default_lbl.into(),
       // 启用
       is_enabled: model.is_enabled.into(),
       is_enabled_lbl: model.is_enabled_lbl.into(),
@@ -518,8 +485,6 @@ impl From<DomainInput> for DomainSearch {
       lbl: input.lbl,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
-      // 默认
-      is_default: input.is_default.map(|x| vec![x]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
