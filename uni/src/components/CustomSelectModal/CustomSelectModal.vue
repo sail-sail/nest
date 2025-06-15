@@ -2,10 +2,10 @@
 <view
   class="custom_select"
   :class="{
-    'custom_select_readonly': props.readonly
+    'custom_select_readonly': readonly
   }"
   :style="{
-    cursor: props.readonly ? 'default' : 'pointer',
+    cursor: readonly ? 'default' : 'pointer',
   }"
 >
   <slot name="left"></slot>
@@ -97,7 +97,7 @@
     ></view>
   
     <view
-      v-if="props.clearable && !props.readonly && !modelValueIsEmpty"
+      v-if="props.clearable && !readonly && !modelValueIsEmpty"
       @tap.stop=""
       @click="onClear"
     >
@@ -115,7 +115,7 @@
     <slot name="right"></slot>
     
     <tm-icon
-      v-if="!props.readonly"
+      v-if="!readonly"
       :size="42"
       color="#b1b1b1"
       name="arrow-right-s-line"
@@ -168,7 +168,7 @@
         </view>
         
         <view
-          v-if="props.multiple && props.showSelectAll && !props.readonly && options4SelectV2.length > 0"
+          v-if="props.multiple && props.showSelectAll && !readonly && options4SelectV2.length > 0"
         >
           
           <tm-checkbox
@@ -291,6 +291,10 @@
 </template>
 
 <script lang="ts" setup>
+import type {
+  WatchHandle,
+} from "vue";
+
 type OptionType = {
   label: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -315,11 +319,10 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    method: () => Promise<any[]>; // 用于获取数据的方法
+    method: () => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]; // 用于获取数据的方法
     optionsMap?: OptionsMap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
-    options4SelectV2?: OptionType[];
     placeholder?: string;
     height?: string;
     initData?: boolean;
@@ -328,6 +331,7 @@ const props = withDefaults(
     multiple?: boolean;
     showSelectAll?: boolean;
     readonly?: boolean;
+    searchStr?: string | null;
   }>(),
   {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -339,7 +343,6 @@ const props = withDefaults(
       };
     },
     modelValue: undefined,
-    options4SelectV2: undefined,
     placeholder: "",
     height: "auto",
     initData: true,
@@ -348,15 +351,28 @@ const props = withDefaults(
     multiple: false,
     showSelectAll: true,
     readonly: false,
+    searchStr: "",
   },
 );
+
+const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
+
+const readonly = $computed(() => {
+  if (props.readonly != null) {
+    return props.readonly;
+  }
+  if (tmFormItemReadonly) {
+    return tmFormItemReadonly.value;
+  }
+  return;
+});
 
 const inited = ref(false);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const data = ref<any[]>([ ]);
-const options4SelectV2 = ref<OptionType[]>(props.options4SelectV2 || [ ]);
+const options4SelectV2 = ref<OptionType[]>([ ]);
 
-const searchStr = ref("");
+const searchStr = ref(props.searchStr || "");
 
 const options4SelectV2Computed = computed(() => {
   if (searchStr.value) {
@@ -382,9 +398,9 @@ watch(
 );
 
 watch(
-  () => props.readonly,
+  () => readonly,
   () => {
-    if (props.readonly) {
+    if (readonly) {
       showPicker.value = false;
     }
   },
@@ -462,7 +478,7 @@ const modelLabels = computed(() => {
 const scrollIntoViewId = ref("");
 
 function onClick() {
-  if (props.readonly) {
+  if (readonly) {
     showPicker.value = false;
     return;
   }
@@ -512,24 +528,33 @@ function onCancel() {
   showPicker.value = false;
 }
 
+let methodWatchHandle: WatchHandle | null = null;
+
 async function onRefresh() {
+  if (methodWatchHandle) {
+    methodWatchHandle();
+    methodWatchHandle = null;
+  }
   const method = props.method;
-  // if (!method) {
-  //   if (!options4SelectV2 || options4SelectV2.value.length === 0) {
-  //     inited.value = false;
-  //   } else {
-  //     inited.value = true;
-  //   }
-  //   return;
-  // }
-  // if (!options4SelectV2 || options4SelectV2.value.length === 0) {
-  //   inited.value = false;
-  // } else {
-  //   inited.value = true;
-  // }
-  data.value = (await method?.()) || [ ];
-  emit("data", data.value);
-  options4SelectV2.value = data.value.map(props.optionsMap);
+  const methodData = (await method?.()) || [ ];
+  if (isRef(methodData)) {
+    methodWatchHandle  = watch(
+      methodData,
+      () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.value = unref(methodData) as any[];
+        emit("data", data.value);
+        options4SelectV2.value = data.value.map(props.optionsMap);
+      },
+      {
+        immediate: true,
+      },
+    );
+  } else {
+    data.value = methodData;
+    emit("data", data.value);
+    options4SelectV2.value = data.value.map(props.optionsMap);
+  }
 }
 
 async function initFrame() {
@@ -544,6 +569,13 @@ if (props.initData) {
 function togglePicker() {
   showPicker.value = !showPicker.value;
 }
+
+onUnmounted(() => {
+  if (methodWatchHandle) {
+    methodWatchHandle();
+    methodWatchHandle = null;
+  }
+});
 
 defineExpose({
   refresh: onRefresh,
