@@ -36,7 +36,6 @@ if (import.meta.env.MODE === "development") {
     wsProt = "ws:";
   }
   // #endif
-  domain = "localhost:4000";
 } else if (import.meta.env.MODE === "production") {
   // #ifndef H5
   if (envVersion === "develop") {

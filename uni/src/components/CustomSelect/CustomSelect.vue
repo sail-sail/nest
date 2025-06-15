@@ -2,10 +2,10 @@
 <view
   class="custom_select"
   :class="{
-    'custom_select_readonly': props.readonly,
+    'custom_select_readonly': readonly,
   }"
   :style="{
-    cursor: props.readonly ? 'default' : 'pointer',
+    cursor: readonly ? 'default' : 'pointer',
   }"
 >
   <slot name="left"></slot>
@@ -95,7 +95,7 @@
     ></view>
     
     <view
-      v-if="props.clearable && !props.readonly && !modelValueIsEmpty"
+      v-if="props.clearable && !readonly && !modelValueIsEmpty"
       @tap.stop=""
       @click="onClear"
     >
@@ -113,7 +113,7 @@
     <slot name="right"></slot>
     
     <tm-icon
-      v-if="!props.readonly"
+      v-if="!readonly"
       :size="42"
       color="#b1b1b1"
       name="arrow-right-s-line"
@@ -221,6 +221,10 @@
 </template>
 
 <script lang="ts" setup>
+import type {
+  WatchHandle,
+} from "vue";
+
 type OptionType = {
   label: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -249,7 +253,6 @@ const props = withDefaults(
     optionsMap?: OptionsMap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
-    options4SelectV2?: OptionType[];
     placeholder?: string;
     height?: number;
     initData?: boolean;
@@ -268,7 +271,6 @@ const props = withDefaults(
       };
     },
     modelValue: undefined,
-    options4SelectV2: undefined,
     placeholder: "",
     height: 700,
     initData: true,
@@ -278,6 +280,18 @@ const props = withDefaults(
     readonly: false,
   },
 );
+
+const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
+
+const readonly = $computed(() => {
+  if (props.readonly != null) {
+    return props.readonly;
+  }
+  if (tmFormItemReadonly) {
+    return tmFormItemReadonly.value;
+  }
+  return;
+});
 
 const sysinfo = inject(
   "tmuiSysInfo",
@@ -300,7 +314,7 @@ const dHeight = computed(() => {
 const inited = ref(false);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const data = ref<any[]>([ ]);
-const options4SelectV2 = ref<OptionType[]>(props.options4SelectV2 || [ ]);
+const options4SelectV2 = ref<OptionType[]>([ ]);
 
 const selectedValue = ref(props.modelValue);
   
@@ -380,7 +394,7 @@ const modelLabels = computed(() => {
 });
 
 function onClick() {
-  if (props.readonly) {
+  if (readonly) {
     showPicker.value = false;
     return;
   }
@@ -424,25 +438,33 @@ function onCancel() {
   showPicker.value = false;
 }
 
+let methodWatchHandle: WatchHandle | null = null;
+
 async function onRefresh() {
+  if (methodWatchHandle) {
+    methodWatchHandle();
+    methodWatchHandle = null;
+  }
   const method = props.method;
-  if (!method) {
-    if (!options4SelectV2 || options4SelectV2.value.length === 0) {
-      inited.value = false;
-    } else {
-      inited.value = true;
-    }
-    return;
-  }
-  if (!options4SelectV2 || options4SelectV2.value.length === 0) {
-    inited.value = false;
+  const methodData = (await method?.()) || [ ];
+  if (isRef(methodData)) {
+    methodWatchHandle  = watch(
+      methodData,
+      () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.value = unref(methodData) as any[];
+        emit("data", data.value);
+        options4SelectV2.value = data.value.map(props.optionsMap);
+      },
+      {
+        immediate: true,
+      },
+    );
   } else {
-    inited.value = true;
+    data.value = methodData;
+    emit("data", data.value);
+    options4SelectV2.value = data.value.map(props.optionsMap);
   }
-  data.value = (await method?.()) || [ ];
-  emit("data", data.value);
-  options4SelectV2.value = data.value.map(props.optionsMap);
-  inited.value = true;
 }
 
 if (props.initData) {
@@ -452,6 +474,13 @@ if (props.initData) {
 function togglePicker() {
   showPicker.value = !showPicker.value;
 }
+
+onUnmounted(() => {
+  if (methodWatchHandle) {
+    methodWatchHandle();
+    methodWatchHandle = null;
+  }
+});
 
 defineExpose({
   refresh: onRefresh,
