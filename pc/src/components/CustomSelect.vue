@@ -38,8 +38,15 @@
     @keyup.ctrl.delete.stop="onClear"
     @keyup.ctrl.backspace.stop="onClear"
   >
+    
     <template
-      v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 0"
+      v-if="props.multiple &&
+        props.showSelectAll &&
+        !props.disabled &&
+        !props.readonly &&
+        options4SelectV2.length > 0 &&
+        !$slots.header
+      "
       #header
     >
       <el-checkbox
@@ -54,16 +61,71 @@
         </span>
       </el-checkbox>
     </template>
+    
+    <template
+      v-if="props.multiple &&
+        props.multipleSetDefault &&
+        !$slots.default
+      "
+      #default="{ item }"
+    >
+      
+      <div
+        un-flex="~"
+        un-items="center"
+        un-gap="x-2"
+        un-h="full"
+        un-w="full"
+        class="custom_select_set_default_item"
+      >
+        
+        <span>
+          {{ item.label }}
+        </span>
+        
+        <div
+          un-flex="[1_0_0]"
+          un-overflow="hidden"
+        ></div>
+        
+        <span
+          v-if="modelValueComputed?.[0] === item.value"
+          un-text="3.25"
+          un-text-color="var(--el-text-color-secondary)"
+          un-m="x-1"
+        >
+          (默认)
+        </span>
+        
+        <el-button
+          v-else-if="modelValueComputed?.includes(item.value)"
+          class="custom_select_set_default_button"
+          un-m="x-1"
+          un-text="3"
+          type="info"
+          link
+          @click.stop="onSetMultipleDefault(item.value)"
+        >
+          设为默认
+        </el-button>
+        
+      </div>
+      
+    </template>
+    
     <template
       v-for="(_, name) of $slots"
       :key="name"
       #[name]="slotProps"
     >
+      
       <slot
         :name="name"
         v-bind="slotProps"
       ></slot>
+      
     </template>
+    
   </ElSelectV2>
 </div>
 <template
@@ -234,6 +296,10 @@
 
 <script lang="ts" setup>
 import type {
+  WatchHandle,
+} from "vue";
+
+import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
@@ -273,17 +339,17 @@ let modelValueData = $ref<any[]>([ ]);
 const props = withDefaults(
   defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    method: () => Promise<any[]>; // 用于获取数据的方法
+    method: () => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]; // 用于获取数据的方法
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     findByValues?: (value: any[]) => Promise<any[]>; // 通过value获取数据的方法
     optionsMap?: OptionsMap;
     height?: number;
     modelValue?: string | string[] | null;
     modelLabel?: string | null;
-    options4SelectV2?: OptionType[];
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
+    multipleSetDefault?: boolean; // 多选时是否显示 选为默认
     showSelectAll?: boolean;
     init?: boolean;
     pageInited?: boolean;
@@ -305,12 +371,13 @@ const props = withDefaults(
       };
     },
     height: 400,
-    options4SelectV2: () => [ ],
     modelValue: undefined,
     modelLabel: undefined,
     autoWidth: true,
     maxWidth: 550,
     multiple: false,
+    // 多选时是否显示 选为默认
+    multipleSetDefault: false,
     showSelectAll: true,
     init: true,
     pageInited: undefined,
@@ -507,6 +574,29 @@ const modelValueComputed = $computed(() => {
   }
 });
 
+/** 设为默认 */
+function onSetMultipleDefault(value: string) {
+  if (!props.multiple) {
+    return;
+  }
+  modelValue = modelValue || [ ];
+  if (!Array.isArray(modelValue)) {
+    modelValue = [ modelValue ];
+  }
+  if (modelValue.length === 0) {
+    modelValue = [ value ];
+  } else {
+    const index = modelValue.indexOf(value);
+    if (index === -1) {
+      modelValue.unshift(value);
+    } else {
+      modelValue.splice(index, 1);
+      modelValue.unshift(value);
+    }
+  }
+  emit("update:modelValue", modelValue);
+}
+
 const isShowModelLabel = $computed(() => {
   if (!modelLabel) {
     return false;
@@ -633,7 +723,7 @@ function onClear() {
   emit("clear");
 }
 
-let options4SelectV2 = $shallowRef<OptionType[]>(props.options4SelectV2);
+let options4SelectV2 = $shallowRef<OptionType[]>([ ]);
 
 // watch(
 //   () => options4SelectV2,
@@ -724,24 +814,32 @@ function handleVisibleChange(visible: boolean) {
   }
 }
 
+let methodWatchHandle: WatchHandle | null = null;
+
 async function onRefresh() {
+  if (methodWatchHandle) {
+    methodWatchHandle();
+    methodWatchHandle = null;
+  }
   const method = props.method;
-  if (!method) {
-    if (!options4SelectV2 || options4SelectV2.length === 0) {
-      inited = false;
-    } else {
-      inited = true;
-    }
-    return;
-  }
-  if (!options4SelectV2 || options4SelectV2.length === 0) {
-    inited = false;
+  const methodData = (await method?.()) || [ ];
+  if (isRef(methodData)) {
+    methodWatchHandle  = watch(
+      methodData,
+      () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data = unref<any[]>(methodData);
+        emit("data", data);
+        options4SelectV2 = data.map(props.optionsMap);
+      },
+      {
+        immediate: true,
+      },
+    );
   } else {
-    inited = true;
+    data = methodData;
+    options4SelectV2 = data.map(props.optionsMap);
   }
-  await nextTick();
-  data = await method();
-  options4SelectV2 = data.map(props.optionsMap);
   inited = true;
   emit("data", data);
 }
@@ -822,6 +920,13 @@ onMounted(() => {
   refreshWrapperHeight();
 });
 
+onUnmounted(() => {
+  if (methodWatchHandle) {
+    methodWatchHandle();
+    methodWatchHandle = null;
+  }
+});
+
 function focus() {
   selectRef?.focus();
 }
@@ -898,4 +1003,12 @@ defineExpose({
     }
   }
 }
+// .custom_select_set_default_button {
+//   visibility: hidden;
+// }
+// .custom_select_set_default_item:hover {
+//   .custom_select_set_default_button {
+//     visibility: visible;
+//   }
+// }
 </style>

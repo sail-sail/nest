@@ -102,9 +102,6 @@ async function getWhereQuery(
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
-  if (search?.is_default != null) {
-    whereQuery += ` and t.is_default in (${ args.push(search.is_default) })`;
-  }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
@@ -221,17 +218,6 @@ export async function findCountDomain(
       throw new Error(`search.is_locked.length > ${ ids_limit }`);
     }
   }
-  // 默认
-  if (search && search.is_default != null) {
-    const len = search.is_default.length;
-    if (len === 0) {
-      return 0;
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_default.length > ${ ids_limit }`);
-    }
-  }
   // 启用
   if (search && search.is_enabled != null) {
     const len = search.is_enabled.length;
@@ -339,17 +325,6 @@ export async function findAllDomain(
       throw new Error(`search.is_locked.length > ${ ids_limit }`);
     }
   }
-  // 默认
-  if (search && search.is_default != null) {
-    const len = search.is_default.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_default.length > ${ ids_limit }`);
-    }
-  }
   // 启用
   if (search && search.is_enabled != null) {
     const len = search.is_enabled.length;
@@ -443,11 +418,9 @@ export async function findAllDomain(
   
   const [
     is_lockedDict, // 锁定
-    is_defaultDict, // 默认
     is_enabledDict, // 启用
   ] = await getDict([
     "is_locked",
-    "is_default",
     "is_enabled",
   ]);
   
@@ -463,16 +436,6 @@ export async function findAllDomain(
       }
     }
     model.is_locked_lbl = is_locked_lbl || "";
-    
-    // 默认
-    let is_default_lbl = model.is_default?.toString() || "";
-    if (model.is_default != null) {
-      const dictItem = is_defaultDict.find((dictItem) => dictItem.val === String(model.is_default));
-      if (dictItem) {
-        is_default_lbl = dictItem.lbl;
-      }
-    }
-    model.is_default_lbl = is_default_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -526,11 +489,9 @@ export async function setIdByLblDomain(
   
   const [
     is_lockedDict, // 锁定
-    is_defaultDict, // 默认
     is_enabledDict, // 启用
   ] = await getDict([
     "is_locked",
-    "is_default",
     "is_enabled",
   ]);
   
@@ -543,17 +504,6 @@ export async function setIdByLblDomain(
   } else if (isEmpty(input.is_locked_lbl) && input.is_locked != null) {
     const lbl = is_lockedDict.find((itemTmp) => itemTmp.val === String(input.is_locked))?.lbl || "";
     input.is_locked_lbl = lbl;
-  }
-  
-  // 默认
-  if (isNotEmpty(input.is_default_lbl) && input.is_default == null) {
-    const val = is_defaultDict.find((itemTmp) => itemTmp.lbl === input.is_default_lbl)?.val;
-    if (val != null) {
-      input.is_default = Number(val);
-    }
-  } else if (isEmpty(input.is_default_lbl) && input.is_default != null) {
-    const lbl = is_defaultDict.find((itemTmp) => itemTmp.val === String(input.is_default))?.lbl || "";
-    input.is_default_lbl = lbl;
   }
   
   // 启用
@@ -577,8 +527,6 @@ export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
     lbl: "名称",
     is_locked: "锁定",
     is_locked_lbl: "锁定",
-    is_default: "默认",
-    is_default_lbl: "默认",
     is_enabled: "启用",
     is_enabled_lbl: "启用",
     order_by: "排序",
@@ -1375,7 +1323,7 @@ async function _creates(
   await delCacheDomain();
   
   const args = new QueryArgs();
-  let sql = "insert into base_domain(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,protocol,lbl,is_locked,is_default,is_enabled,order_by,rem)values";
+  let sql = "insert into base_domain(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,protocol,lbl,is_locked,is_enabled,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1472,11 +1420,6 @@ async function _creates(
       }
       if (input.is_locked != null) {
         sql += `,${ args.push(input.is_locked) }`;
-      } else {
-        sql += ",default";
-      }
-      if (input.is_default != null) {
-        sql += `,${ args.push(input.is_default) }`;
       } else {
         sql += ",default";
       }
@@ -1605,12 +1548,6 @@ export async function updateByIdDomain(
   if (input.is_locked != null) {
     if (input.is_locked != oldModel.is_locked) {
       sql += `is_locked=${ args.push(input.is_locked) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.is_default != null) {
-    if (input.is_default != oldModel.is_default) {
-      sql += `is_default=${ args.push(input.is_default) },`;
       updateFldNum++;
     }
   }
@@ -1807,39 +1744,6 @@ export async function deleteByIdsDomain(
   await delCacheDomain();
   
   return affectedRows;
-}
-
-// MARK: defaultByIdDomain
-/** 根据 id 设置默认域名 */
-export async function defaultByIdDomain(
-  id: DomainId,
-  options?: {
-  },
-): Promise<number> {
-  
-  const table = "base_domain";
-  const method = "defaultByIdDomain";
-  
-  if (!id) {
-    throw new Error("defaultByIdDomain: id cannot be empty");
-  }
-  
-  await delCacheDomain();
-  
-  {
-    const args = new QueryArgs();
-    const sql = `update base_domain set is_default=0 where is_default=1 and id!=${ args.push(id) }`;
-    await execute(sql, args);
-  }
-  
-  const args = new QueryArgs();
-  const sql = `update base_domain set is_default=1 where id=${ args.push(id) }`;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCacheDomain();
-  
-  return num;
 }
 
 // MARK: getIsEnabledByIdDomain
