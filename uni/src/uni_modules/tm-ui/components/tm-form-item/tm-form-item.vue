@@ -27,7 +27,7 @@ const props = defineProps({
     name: {
         type: String,
         default: '',
-        required: true
+        required: false,
     },
     /**
      * 必款时的符号，如果为false，或者空则不显示
@@ -35,6 +35,10 @@ const props = defineProps({
     required: {
         type: [String, Boolean],
         default: "*"
+    },
+    readonly: {
+        type: Boolean,
+        default: false
     },
     /**
      * 表单标题
@@ -85,6 +89,7 @@ const props = defineProps({
         default: ""
     },
 })
+provide("tmFormItemReadonly", computed(() => props.readonly))
 const proxy = getCurrentInstance()?.proxy
 let tid = 0;
 const isPass = ref<boolean | null>(null)
@@ -216,7 +221,9 @@ export default {
 
             <view v-if="_showLabel" class="tmFormItemLabel"
                 :style="{ width: _tmFormDirection == 'horizontal' ? _labelWidth : 'auto', fontSize: _tmFormLabelFontSize, color: _tmFormLabelFontColor }">
-                <text class="tmFormRequired" v-if="_required">{{ _required }}</text>
+                <text class="tmFormRequired" v-if="_required" :style="{
+                    color: props.readonly ? 'var(--color-readonly)' : undefined,
+                }">{{ _required }}</text>
                 <slot name="label">
                     {{ _label }}
                 </slot>

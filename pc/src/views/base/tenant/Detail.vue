@@ -120,8 +120,10 @@
               })"
               placeholder="请选择 所属域名"
               multiple
+              :multiple-set-default="true"
               :readonly="isLocked || isReadonly"
             >
+              
               <template
                 v-if="domainPermit('add')"
                 #footer
@@ -138,6 +140,7 @@
                   </el-button>
                 </div>
               </template>
+              
             </CustomSelect>
           </el-form-item>
         </template>

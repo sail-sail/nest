@@ -269,21 +269,6 @@ pub async fn delete_by_ids_domain(
   Ok(num)
 }
 
-/// 根据 domain_id 设置默认域名
-#[allow(dead_code)]
-pub async fn default_by_id_domain(
-  domain_id: DomainId,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = domain_dao::default_by_id_domain(
-    domain_id,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 根据 domain_id 查找域名是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
