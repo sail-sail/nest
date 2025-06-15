@@ -234,16 +234,6 @@ export async function deleteByIdsDomain(
 }
 
 /**
- * 根据 id 设置默认域名
- */
-export async function defaultByIdDomain(
-  id: DomainId,
-): Promise<number> {
-  const domain_num = await domainDao.defaultByIdDomain(id);
-  return domain_num;
-}
-
-/**
  * 根据 ids 启用或者禁用域名
  */
 export async function enableByIdsDomain(

@@ -531,23 +531,6 @@
             </el-table-column>
           </template>
           
-          <!-- 默认 -->
-          <template v-else-if="'is_default_lbl' === col.prop && (showBuildIn || builtInSearch?.is_default == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_default"
-                  :before-change="() => row.is_default == 0"
-                  @change="onIs_default(row.id)"
-                ></CustomSwitch>
-              </template>
-            </el-table-column>
-          </template>
-          
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
@@ -699,7 +682,6 @@ import {
   revertByIdsDomain,
   deleteByIdsDomain,
   forceDeleteByIdsDomain,
-  defaultByIdDomain,
   enableByIdsDomain,
   lockByIdsDomain,
   useExportExcelDomain,
@@ -750,7 +732,6 @@ const props = defineProps<{
   id?: DomainId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  is_default?: string|string[]; // 默认
   is_enabled?: string|string[]; // 启用
 }>();
 
@@ -763,8 +744,6 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  is_default: "number[]",
-  is_default_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   create_usr_id: "string[]",
@@ -1013,15 +992,6 @@ function getTableColumns(): ColumnType[] {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
-      width: 85,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
-      label: "默认",
-      prop: "is_default_lbl",
-      sortBy: "is_default",
       width: 85,
       align: "center",
       headerAlign: "center",
@@ -1430,27 +1400,6 @@ async function onIs_locked(id: DomainId, is_locked: 0 | 1) {
   await lockByIdsDomain(
     [ id ],
     is_locked,
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
-}
-
-/** 默认 */
-async function onIs_default(id: DomainId) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await defaultByIdDomain(
-    id,
     {
       notLoading,
     },
