@@ -29,6 +29,7 @@ use generated::wx::wxo_usr::wxo_usr_dao::{
   validate_option_wxo_usr,
 };
 
+// wx_transactions_jsapi
 use generated::wx::pay_transactions_jsapi::pay_transactions_jsapi_model::{
   PayTransactionsJsapiTradeState,
   PayTransactionsJsapiInput,
@@ -38,7 +39,20 @@ use generated::wx::pay_transactions_jsapi::pay_transactions_jsapi_dao::create_pa
 use super::pay_transactions_jsapi_model::TransactionsJsapiInput;
 
 use generated::common::oss::oss_dao::get_object;
+
+// base_tenant
+use generated::base::tenant::tenant_dao::{
+  find_by_id_tenant,
+  validate_option_tenant,
+  validate_is_enabled_tenant,
+};
 use generated::base::tenant::tenant_model::TenantId;
+
+// base_domain
+use generated::base::domain::domain_dao::{
+  find_by_id_ok_domain,
+  validate_is_enabled_domain,
+};
 
 use generated::common::exceptions::service_exception::ServiceException;
 
@@ -124,6 +138,57 @@ pub async fn transactions_jsapi(
   }
   let tenant_id = tenant_id.unwrap();
   
+  let tenant_model = validate_option_tenant(
+    find_by_id_tenant(
+      tenant_id.clone(),
+      options.clone(),
+    ).await?
+  ).await?;
+  
+  validate_is_enabled_tenant(
+    &tenant_model,
+  ).await?;
+  
+  let domain_ids = tenant_model.domain_ids;
+  
+  let domain_id = if domain_ids.is_empty() {
+    return Err(eyre!(ServiceException {
+      message: "domain_ids 不能为空".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
+  } else {
+    domain_ids[0].clone()
+  };
+  
+  let domain_model = find_by_id_ok_domain(
+    domain_id,
+    options.clone(),
+  ).await?;
+  
+  validate_is_enabled_domain(
+    &domain_model,
+  ).await?;
+  
+  let domain_protocol = domain_model.protocol;
+  let domain_lbl = domain_model.lbl;
+  
+  if domain_protocol.is_empty() {
+    return Err(eyre!(ServiceException {
+      message: "domain_protocol 不能为空".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
+  }
+  
+  if domain_lbl.is_empty() {
+    return Err(eyre!(ServiceException {
+      message: "domain_lbl 不能为空".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
+  }
+  
   // 微信支付设置
   let wx_pay_model = validate_option_wx_pay(
     find_one_wx_pay(
@@ -186,6 +251,8 @@ pub async fn transactions_jsapi(
       ..Default::default()
     }));
   }
+  
+  let notify_url = format!("{domain_protocol}://{domain_lbl}{notify_url}");
   
   let wxpay = WxPay {
     appid: appid.as_str(),
