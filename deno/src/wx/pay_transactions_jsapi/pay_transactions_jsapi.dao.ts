@@ -36,8 +36,7 @@ import {
 } from "/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.dao.ts";
 
 import {
-  findOneDomain,
-  validateOptionDomain,
+  findByIdOkDomain,
 } from "/gen/base/domain/domain.dao.ts";
 
 import type {
@@ -265,15 +264,9 @@ export async function getJsapiObj(
   if (!domain_ids || domain_ids.length === 0) {
     throw `租户 ${ tenantModel.lbl } 未设置默认域名`;
   }
-  const domainModel = await validateOptionDomain(
-    await findOneDomain({
-      ids: domain_ids,
-      is_default: [ 1 ],
-      is_enabled: [ 1 ],
-    }),
-  );
-  const domain_lbl = domainModel.lbl;
-  const protocol = domainModel.protocol || "https";
+  const domain_model = await findByIdOkDomain(domain_ids[0]);
+  const domain_lbl = domain_model.lbl;
+  const protocol = domain_model.protocol || "https";
   
   notify_url = `${ protocol }://${ domain_lbl }${ notify_url }`;
   
