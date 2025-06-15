@@ -17,10 +17,6 @@ type DomainModel {
   is_locked: Int!
   "锁定"
   is_locked_lbl: String!
-  "默认"
-  is_default: Int!
-  "默认"
-  is_default_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
@@ -59,10 +55,6 @@ type DomainFieldComment {
   is_locked: String!
   "锁定"
   is_locked_lbl: String!
-  "默认"
-  is_default: String!
-  "默认"
-  is_default_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -99,10 +91,6 @@ input DomainInput {
   is_locked: Int
   "锁定"
   is_locked_lbl: String
-  "默认"
-  is_default: Int
-  "默认"
-  is_default_lbl: String
   "启用"
   is_enabled: Int
   "启用"
@@ -122,8 +110,6 @@ input DomainSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "默认"
-  is_default: [Int!]
   "启用"
   is_enabled: [Int!]
   "创建人"
@@ -166,8 +152,6 @@ type Mutation {
   updateByIdDomain(id: DomainId!, input: DomainInput!): DomainId!
   "根据 ids 删除域名"
   deleteByIdsDomain(ids: [DomainId!]!): Int!
-  "根据 id 设置默认域名"
-  defaultByIdDomain(id: DomainId!): Int!
   "根据 ids 启用或者禁用域名"
   enableByIdsDomain(ids: [DomainId!]!, is_enabled: Int!): Int!
   "根据 ids 锁定或者解锁域名"

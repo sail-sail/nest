@@ -38,8 +38,15 @@
     @keyup.ctrl.delete.stop="onClear"
     @keyup.ctrl.backspace.stop="onClear"
   >
+    
     <template
-      v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 0"
+      v-if="props.multiple &&
+        props.showSelectAll &&
+        !props.disabled &&
+        !props.readonly &&
+        options4SelectV2.length > 0 &&
+        !$slots.header
+      "
       #header
     >
       <el-checkbox
@@ -54,16 +61,71 @@
         </span>
       </el-checkbox>
     </template>
+    
+    <template
+      v-if="props.multiple &&
+        props.multipleSetDefault &&
+        !$slots.default
+      "
+      #default="{ item }"
+    >
+      
+      <div
+        un-flex="~"
+        un-items="center"
+        un-gap="x-2"
+        un-h="full"
+        un-w="full"
+        class="custom_select_set_default_item"
+      >
+        
+        <span>
+          {{ item.label }}
+        </span>
+        
+        <div
+          un-flex="[1_0_0]"
+          un-overflow="hidden"
+        ></div>
+        
+        <span
+          v-if="modelValueComputed?.[0] === item.value"
+          un-text="3.25"
+          un-text-color="var(--el-text-color-secondary)"
+          un-m="x-1"
+        >
+          (默认)
+        </span>
+        
+        <el-button
+          v-else-if="modelValueComputed?.includes(item.value)"
+          class="custom_select_set_default_button"
+          un-m="x-1"
+          un-text="3"
+          type="info"
+          link
+          @click.stop="onSetMultipleDefault(item.value)"
+        >
+          设为默认
+        </el-button>
+        
+      </div>
+      
+    </template>
+    
     <template
       v-for="(_, name) of $slots"
       :key="name"
       #[name]="slotProps"
     >
+      
       <slot
         :name="name"
         v-bind="slotProps"
       ></slot>
+      
     </template>
+    
   </ElSelectV2>
 </div>
 <template
@@ -287,6 +349,7 @@ const props = withDefaults(
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
+    multipleSetDefault?: boolean; // 多选时是否显示 选为默认
     showSelectAll?: boolean;
     init?: boolean;
     pageInited?: boolean;
@@ -313,6 +376,8 @@ const props = withDefaults(
     autoWidth: true,
     maxWidth: 550,
     multiple: false,
+    // 多选时是否显示 选为默认
+    multipleSetDefault: false,
     showSelectAll: true,
     init: true,
     pageInited: undefined,
@@ -508,6 +573,29 @@ const modelValueComputed = $computed(() => {
     return modelValue;
   }
 });
+
+/** 设为默认 */
+function onSetMultipleDefault(value: string) {
+  if (!props.multiple) {
+    return;
+  }
+  modelValue = modelValue || [ ];
+  if (!Array.isArray(modelValue)) {
+    modelValue = [ modelValue ];
+  }
+  if (modelValue.length === 0) {
+    modelValue = [ value ];
+  } else {
+    const index = modelValue.indexOf(value);
+    if (index === -1) {
+      modelValue.unshift(value);
+    } else {
+      modelValue.splice(index, 1);
+      modelValue.unshift(value);
+    }
+  }
+  emit("update:modelValue", modelValue);
+}
 
 const isShowModelLabel = $computed(() => {
   if (!modelLabel) {
@@ -915,4 +1003,12 @@ defineExpose({
     }
   }
 }
+// .custom_select_set_default_button {
+//   visibility: hidden;
+// }
+// .custom_select_set_default_item:hover {
+//   .custom_select_set_default_button {
+//     visibility: visible;
+//   }
+// }
 </style>
