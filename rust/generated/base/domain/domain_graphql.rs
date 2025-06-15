@@ -303,24 +303,6 @@ impl DomainGenMutation {
       }).await
   }
   
-  /// 根据 id 设置默认域名
-  async fn default_by_id_domain(
-    &self,
-    ctx: &Context<'_>,
-    id: DomainId,
-  ) -> Result<u64> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()
-      .build()
-      .scope({
-        domain_resolver::default_by_id_domain(
-          id,
-          None,
-        )
-      }).await
-  }
-  
   /// 根据 ids 启用或者禁用域名
   async fn enable_by_ids_domain(
     &self,
