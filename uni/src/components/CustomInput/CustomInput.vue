@@ -1,19 +1,19 @@
 <template>
 <tm-input
-  v-if="!props.readonly"
+  v-if="!readonly"
   v-model.lazy="modelValue"
   class="custom_input n-w-full"
   :class="{
-    'custom_input_readonly': props.readonly
+    'custom_input_readonly': readonly
   }"
   :transprent="true"
   :show-bottom-botder="false"
   v-bind="$attrs"
-  :show-clear="props.readonly ? false : props.showClear"
-  :readonly="props.readonly"
-  :placeholder="(props.readonly || !props.pageInited) ? '' : props.placeholder"
+  :show-clear="props.clearable == null ? (modelValue ? !readonly : false) : props.clearable"
+  :readonly="readonly"
+  :placeholder="(readonly || !props.pageInited) ? '' : props.placeholder"
   :color="props.color"
-  :font-color="props.readonly ? '#888888' : undefined"
+  :font-color="props.fontColor ? props.fontColor : (readonly ? 'var(--color-readonly)' : undefined)"
   :type="props.type"
   @blur="onBlur"
   @clear="onClear"
@@ -54,6 +54,9 @@
       'items-center': type !== 'textarea',
       'custom_input_placeholder': shouldShowPlaceholder,
     }"
+    :style="{
+      color: props.fontColor ? props.fontColor : 'var(--color-readonly)',
+    }"
   >
     <template
       v-if="shouldShowPlaceholder"
@@ -66,6 +69,27 @@
     >
       {{ modelValue || "" }}
     </template>
+    
+    <view
+      un-flex="[1_0_0]"
+      un-overflow-hidden
+    ></view>
+    
+    <view
+      v-if="modelValue && (props.clearable == null ? (readonly ? false : true) : props.clearable)"
+      @tap.stop=""
+      @click="onClear"
+    >
+      <tm-icon
+        _style="transition:color 0.24s"
+        :size="30"
+        color="#b1b1b1"
+        name="close-circle-fill"
+        @tap.stop=""
+        @click="onClear"
+      >
+      </tm-icon>
+    </view>
   </view>
   
   <template #right>
@@ -92,22 +116,36 @@ const props = withDefaults(
     type?: "number" | "text" | "textarea" | "idcard" | "digit" | "tel" | "safe-password" | "nickname" | undefined;
     readonly?: boolean;
     pageInited?: boolean;
-    showClear?: boolean;
+    clearable?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
     color?: string;
+    fontColor?: string;
   }>(),
   {
     modelValue: undefined,
     type: undefined,
     readonly: undefined,
     pageInited: true,
-    showClear: true,
+    clearable: undefined,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
     color: "transparent",
+    fontColor: undefined,
   },
 );
+
+const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
+
+const readonly = $computed(() => {
+  if (props.readonly != null) {
+    return props.readonly;
+  }
+  if (tmFormItemReadonly) {
+    return tmFormItemReadonly.value;
+  }
+  return;
+});
 
 const modelValue = ref(props.modelValue);
 
@@ -115,6 +153,9 @@ watch(
   () => props.modelValue,
   () => {
     modelValue.value = props.modelValue;
+  },
+  {
+    immediate: true,
   },
 );
 
@@ -126,6 +167,9 @@ watch(
 );
 
 const shouldShowPlaceholder = $computed<boolean>(() => {
+  if (props.type === "number" || props.type === "digit") {
+    return modelValue.value == null || modelValue.value === "" || modelValue.value == 0 || isNaN(modelValue.value);
+  }
   return modelValue.value == null || modelValue.value === "";
 });
 
