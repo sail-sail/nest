@@ -5,11 +5,12 @@ page,.tmDrawerWrap,.tmModalWrap {
   height: 100%;
   --color-primary: #0163ff;
   --color-readonly: #888888;
+  --font-color: #333333;
   --font-size: 34rpx;
   --page-bg: #fafafa;
-  --readonly_font_color: #909399;
   font-size: var(--font-size);
   background-color: var(--page-bg);
+  --color-gray-200: #E5E7EB;
 }
 
 .tmFormItemLabel {
@@ -22,5 +23,5 @@ page,.tmDrawerWrap,.tmModalWrap {
 }
 
 .custom_input_placeholder {
-  color: var(--readonly_font_color);
+  color: var(--color-readonly) !important;
 }
