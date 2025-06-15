@@ -37,9 +37,6 @@ export const domainFields = [
   // 锁定
   "is_locked",
   "is_locked_lbl",
-  // 默认
-  "is_default",
-  "is_default_lbl",
   // 启用
   "is_enabled",
   "is_enabled_lbl",
