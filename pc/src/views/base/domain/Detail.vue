@@ -432,8 +432,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        is_default: undefined,
-        is_default_lbl: undefined,
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
@@ -646,20 +644,6 @@ async function nextId() {
   );
   return true;
 }
-
-watch(
-  () => [
-    dialogModel.is_default,
-  ],
-  () => {
-    if (!inited) {
-      return;
-    }
-    if (!dialogModel.is_default) {
-      dialogModel.is_default_lbl = "";
-    }
-  },
-);
 
 /** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
