@@ -62,7 +62,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 13 * 2);
+  let mut where_query = String::with_capacity(80 * 12 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -157,30 +157,6 @@ async fn get_where_query(
         }
       };
       where_query.push_str(" and t.is_locked in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
-  // 默认
-  {
-    let is_default: Option<Vec<u8>> = match search {
-      Some(item) => item.is_default.clone(),
-      None => None,
-    };
-    if let Some(is_default) = is_default {
-      let arg = {
-        if is_default.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(is_default.len());
-          for item in is_default {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and t.is_default in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
@@ -488,22 +464,6 @@ pub async fn find_all_domain(
       }
     }
   }
-  // 默认
-  if let Some(search) = &search {
-    if search.is_default.is_some() {
-      let len = search.is_default.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.is_default.length > {ids_limit}"));
-      }
-    }
-  }
   // 启用
   if let Some(search) = &search {
     if search.is_enabled.is_some() {
@@ -602,14 +562,12 @@ pub async fn find_all_domain(
   
   let dict_vec = get_dict(&[
     "is_locked",
-    "is_default",
     "is_enabled",
   ]).await?;
   let [
     is_locked_dict,
-    is_default_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 3] = dict_vec
+  ]: [Vec<_>; 2] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -623,15 +581,6 @@ pub async fn find_all_domain(
         .find(|item| item.val == model.is_locked.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_locked.to_string())
-    };
-    
-    // 默认
-    model.is_default_lbl = {
-      is_default_dict
-        .iter()
-        .find(|item| item.val == model.is_default.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_default.to_string())
     };
     
     // 启用
@@ -695,22 +644,6 @@ pub async fn find_count_domain(
         .unwrap_or(FIND_ALL_IDS_LIMIT);
       if len > ids_limit {
         return Err(eyre!("search.is_locked.length > {ids_limit}"));
-      }
-    }
-  }
-  // 默认
-  if let Some(search) = &search {
-    if search.is_default.is_some() {
-      let len = search.is_default.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.is_default.length > {ids_limit}"));
       }
     }
   }
@@ -811,8 +744,6 @@ pub async fn get_field_comments_domain(
     lbl: "名称".into(),
     is_locked: "锁定".into(),
     is_locked_lbl: "锁定".into(),
-    is_default: "默认".into(),
-    is_default_lbl: "默认".into(),
     is_enabled: "启用".into(),
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
@@ -1217,22 +1148,6 @@ pub async fn exists_domain(
       }
     }
   }
-  // 默认
-  if let Some(search) = &search {
-    if search.is_default.is_some() {
-      let len = search.is_default.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.is_default.length > {ids_limit}"));
-      }
-    }
-  }
   // 启用
   if let Some(search) = &search {
     if search.is_enabled.is_some() {
@@ -1513,7 +1428,6 @@ pub async fn set_id_by_lbl_domain(
   
   let dict_vec = get_dict(&[
     "is_locked",
-    "is_default",
     "is_enabled",
   ]).await?;
   
@@ -1532,24 +1446,9 @@ pub async fn set_id_by_lbl_domain(
     }
   }
   
-  // 默认
-  if input.is_default.is_none() {
-    let is_default_dict = &dict_vec[1];
-    if let Some(is_default_lbl) = input.is_default_lbl.clone() {
-      input.is_default = is_default_dict
-        .iter()
-        .find(|item| {
-          item.lbl == is_default_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        });
-    }
-  }
-  
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[1];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -1587,37 +1486,12 @@ pub async fn set_id_by_lbl_domain(
     input.is_locked_lbl = lbl;
   }
   
-  // 默认
-  if
-    input.is_default_lbl.is_some() && !input.is_default_lbl.as_ref().unwrap().is_empty()
-    && input.is_default.is_none()
-  {
-    let is_default_dict = &dict_vec[1];
-    let dict_model = is_default_dict.iter().find(|item| {
-      item.lbl == input.is_default_lbl.clone().unwrap_or_default()
-    });
-    let val = dict_model.map(|item| item.val.to_string());
-    if let Some(val) = val {
-      input.is_default = val.parse::<u8>()?.into();
-    }
-  } else if
-    (input.is_default_lbl.is_none() || input.is_default_lbl.as_ref().unwrap().is_empty())
-    && input.is_default.is_some()
-  {
-    let is_default_dict = &dict_vec[1];
-    let dict_model = is_default_dict.iter().find(|item| {
-      item.val == input.is_default.unwrap_or_default().to_string()
-    });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
-    input.is_default_lbl = lbl;
-  }
-  
   // 启用
   if
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[1];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
@@ -1629,7 +1503,7 @@ pub async fn set_id_by_lbl_domain(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[1];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
@@ -1775,7 +1649,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 13 + 20);
+  let mut sql_fields = String::with_capacity(80 * 12 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1790,8 +1664,6 @@ async fn _creates(
   sql_fields += ",lbl";
   // 锁定
   sql_fields += ",is_locked";
-  // 默认
-  sql_fields += ",is_default";
   // 启用
   sql_fields += ",is_enabled";
   // 排序
@@ -1800,7 +1672,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 13 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 12 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1934,13 +1806,6 @@ async fn _creates(
     if let Some(is_locked) = input.is_locked {
       sql_values += ",?";
       args.push(is_locked.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 默认
-    if let Some(is_default) = input.is_default {
-      sql_values += ",?";
-      args.push(is_default.into());
     } else {
       sql_values += ",default";
     }
@@ -2157,7 +2022,7 @@ pub async fn update_by_id_domain(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 13 + 20);
+  let mut sql_fields = String::with_capacity(80 * 12 + 20);
   
   let mut field_num: usize = 0;
   // 协议
@@ -2177,12 +2042,6 @@ pub async fn update_by_id_domain(
     field_num += 1;
     sql_fields += "is_locked=?,";
     args.push(is_locked.into());
-  }
-  // 默认
-  if let Some(is_default) = input.is_default {
-    field_num += 1;
-    sql_fields += "is_default=?,";
-    args.push(is_default.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
@@ -2470,74 +2329,6 @@ pub async fn delete_by_ids_domain(
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
-  
-  Ok(num)
-}
-
-// MARK: default_by_id_domain
-/// 根据 id 设置默认域名
-pub async fn default_by_id_domain(
-  id: DomainId,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let table = "base_domain";
-  let method = "default_by_id_domain";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
-    if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  {
-    let mut args = QueryArgs::new();
-    
-    let sql = format!("update {table} set is_default=0 where is_default=1 and id!=?");
-    
-    args.push(id.clone().into());
-    
-    let args: Vec<_> = args.into();
-    
-    let options = options.clone().into();
-    
-    execute(
-      sql,
-      args,
-      options,
-    ).await?;
-  }
-  
-  let mut num = 0;
-  
-  let mut args = QueryArgs::new();
-    
-  let sql = format!("update {table} set is_default=1 where id=?");
-  
-  args.push(id.into());
-  
-  let args: Vec<_> = args.into();
-  
-  let options = options.clone().into();
-  
-  num += execute(
-    sql,
-    args,
-    options,
-  ).await?;
   
   Ok(num)
 }

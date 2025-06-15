@@ -304,33 +304,6 @@ pub async fn delete_by_ids_domain(
   Ok(num)
 }
 
-/// 根据 id 设置默认域名
-#[allow(dead_code)]
-#[function_name::named]
-pub async fn default_by_id_domain(
-  id: DomainId,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  info!(
-    "{req_id} {function_name}: id: {id:?}",
-    req_id = get_req_id(),
-    function_name = function_name!(),
-  );
-  
-  use_permit(
-    get_route_path_domain(),
-    "edit".to_owned(),
-  ).await?;
-  
-  let num = domain_service::default_by_id_domain(
-    id,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 根据 id 查找域名是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
