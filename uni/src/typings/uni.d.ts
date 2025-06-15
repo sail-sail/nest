@@ -8905,7 +8905,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/request/network-file?id=downloadfile](http://uniapp.dcloud.io/api/request/network-file?id=downloadfile)
      */
-    downloadFile(options: UniNamespace.DownloadFileOption): UniNamespace.DownloadTask;
+    downloadFile(options: UniNamespace.DownloadFileOption): Promise<UniNamespace.DownloadSuccessData>;
     /**
      * 导入原生插件
      *
@@ -9107,7 +9107,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/file/file?id=opendocument](http://uniapp.dcloud.io/api/file/file?id=opendocument)
      */
-    openDocument(options: UniNamespace.OpenDocumentOptions): void;
+    openDocument(options: UniNamespace.OpenDocumentOptions): Promise<any>;
     /**
      * 将数据存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个异步接口
      *
