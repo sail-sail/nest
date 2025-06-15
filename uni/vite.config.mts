@@ -69,6 +69,7 @@ export default defineConfig({
           ],
           "@/utils/request": [
             "request",
+            "getRequestUrl",
             "uploadFile",
             "getDownloadUrl",
             "getImgUrl",

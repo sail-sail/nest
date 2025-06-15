@@ -266,28 +266,6 @@ export async function deleteByIdsDomain(
 }
 
 /**
- * 根据 id 设置默认域名
- */
-export async function defaultByIdDomain(
-  id: DomainId,
-): Promise<number> {
-  
-  const {
-    defaultByIdDomain,
-  } = await import("./domain.service.ts");
-  
-  set_is_tran(true);
-  
-  await usePermit(
-    route_path,
-    "edit",
-  );
-  
-  const res = await defaultByIdDomain(id);
-  return res;
-}
-
-/**
  * 根据 ids 启用或者禁用域名
  */
 export async function enableByIdsDomain(
