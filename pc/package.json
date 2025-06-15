@@ -84,6 +84,7 @@
     "unplugin-vue-components": "28.7.0",
     "unplugin-vue-define-options": "3.0.0-beta.14",
     "vite": "6.3.5",
+    "vite-plugin-devtools-json": "0.2.0",
     "vite-plugin-inspect": "11.1.0",
     "vite-plugin-pwa": "1.0.0",
     "vite-plugin-vue-devtools": "7.7.6",

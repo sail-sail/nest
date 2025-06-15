@@ -228,7 +228,7 @@ for (let i = 0; i < columns.length; i++) {
         :title="ns('解锁')"<#
         } else {
         #>
-        title="解锉"<#
+        title="解锁"<#
         }
         #>
       >
