@@ -1,7 +1,9 @@
 use color_eyre::eyre::{Result, eyre};
+use tracing::info;
 
 use generated::common::context::{
   Options,
+  get_req_id,
   get_short_uuid,
   get_auth_model_ok,
 };
@@ -69,6 +71,7 @@ fn get_out_trade_no() -> String {
 
 /// 微信支付 统一下单
 #[allow(dead_code)]
+#[function_name::named]
 pub async fn transactions_jsapi(
   transactions_jsapi_input: TransactionsJsapiInput,
   options: Option<Options>,
@@ -298,7 +301,19 @@ pub async fn transactions_jsapi(
     ..Default::default()
   };
   
+  info!(
+    "{req_id} {function_name}: wxpay.jsapi: {jsapi:#?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
   let wx_pay_data: WxPayData = wxpay.jsapi(&jsapi).await?;
+  
+  info!(
+    "{req_id} {function_name}: wx_pay_data: {wx_pay_data:#?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   let request_payment_options = RequestPaymentOptions {
     out_trade_no: out_trade_no.clone(),
