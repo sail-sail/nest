@@ -251,8 +251,8 @@ for (let i = 0; i < columns.length; i++) {
       un-p="x-8 y-4"
       un-box-border
       un-gap="4"
-      un-justify-start
-      un-items-safe-center
+      un-justify="start"
+      un-items="center-safe"
     >
       <el-form
         ref="formRef"
