@@ -14,13 +14,13 @@ tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 tracing-appender = "0.2.3"
 tracing-attributes = "0.1.28"
 tokio = { version = "1.44.2", features = ["rt-multi-thread", "macros", "net", "fs"] }
-poem = { version = "3.1.9", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
-async-graphql = { version = "7.0.16", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
+poem = { version = "3.1.11", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
+async-graphql = { version = "7.0.17", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
 smol_str = { version = "0.3.2", features = ["serde"] }
 slab = "0.4.9"
 chrono = { version = "0.4.40", features = ["serde"] }
 # anyhow = "1.0.98"
-sqlx = { version = "0.8.5", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
+sqlx = { version = "0.8.6", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15.0"
 rust-s3 = { version = "0.35.1", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
 imstr = { version = "0.2", features = ["serde"] }
@@ -42,9 +42,8 @@ smallvec = { version = "1.15.0", features = ["union", "serde"] }
 # downcast-rs = "2.0.1"
 uuid = { version = "1.16.0", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12.2"
-deadpool-redis = "0.21.0"
-redis = { version = "0.31.0", features = ["tokio-comp"], default-features = false }
-# pin-project = "1.1"
+deadpool-redis = "0.21.1"
+redis = { version = "0.32.0", features = ["tokio-comp"], default-features = false }
 bigdecimal = "0.4.8"
 time = "0.3.41"
 rust_decimal = { version = "1.37.1", features = ["maths"]}
