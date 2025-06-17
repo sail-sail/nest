@@ -35,8 +35,7 @@ use crate::base::role::role_dao::find_by_ids_role;
 
 // 租户
 use crate::base::tenant::tenant_dao::{
-  find_by_id_tenant,
-  validate_option_tenant,
+  find_by_id_ok_tenant,
   validate_is_enabled_tenant,
 };
 
@@ -98,11 +97,9 @@ pub async fn login(
   }
   
   // 获取租户
-  let tenant_model = validate_option_tenant(
-    find_by_id_tenant(
-      tenant_id.clone(),
-      None,
-    ).await?
+  let tenant_model = find_by_id_ok_tenant(
+    tenant_id.clone(),
+    None,
   ).await?;
   
   validate_is_enabled_tenant(
@@ -403,6 +400,7 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
     ).await?
   ).await?;
   
+  let tenant_id = auth_model.tenant_id;
   let role_ids = usr_model.role_ids;
   let org_ids = usr_model.org_ids;
   let org_ids_lbl = usr_model.org_ids_lbl;
@@ -435,6 +433,7 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
     username: usr_model.username,
     role_codes,
     lang: auth_model.lang,
+    tenant_id,
     org_id,
     org_id_models,
   })
