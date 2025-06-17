@@ -183,7 +183,7 @@ debug = 0
 debug = 1
 
 [profile.release.package.app]
-debug = 1
+debug = 2
 
 [profile.dev]
 debug = 1
