@@ -3,7 +3,7 @@ use std::env;
 
 fn main() {
   if std::env::var_os("RUST_MIN_STACK").is_none() {
-    println!("cargo:rustc-env=RUST_MIN_STACK=20971520");
+    println!("cargo:rustc-env=RUST_MIN_STACK=41943040");
   }
   if env::var("PROFILE").unwrap() == "release" {
     let output = Command::new("git")
