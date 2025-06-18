@@ -1,7 +1,9 @@
 use color_eyre::eyre::{Result, eyre};
+use tracing::info;
 
 use generated::common::context::{
   Options,
+  get_req_id,
   get_short_uuid,
   get_auth_model_ok,
 };
@@ -29,6 +31,7 @@ use generated::wx::wxo_usr::wxo_usr_dao::{
   validate_option_wxo_usr,
 };
 
+// wx_transactions_jsapi
 use generated::wx::pay_transactions_jsapi::pay_transactions_jsapi_model::{
   PayTransactionsJsapiTradeState,
   PayTransactionsJsapiInput,
@@ -38,7 +41,20 @@ use generated::wx::pay_transactions_jsapi::pay_transactions_jsapi_dao::create_pa
 use super::pay_transactions_jsapi_model::TransactionsJsapiInput;
 
 use generated::common::oss::oss_dao::get_object;
+
+// base_tenant
+use generated::base::tenant::tenant_dao::{
+  find_by_id_tenant,
+  validate_option_tenant,
+  validate_is_enabled_tenant,
+};
 use generated::base::tenant::tenant_model::TenantId;
+
+// base_domain
+use generated::base::domain::domain_dao::{
+  find_by_id_ok_domain,
+  validate_is_enabled_domain,
+};
 
 use generated::common::exceptions::service_exception::ServiceException;
 
@@ -55,6 +71,7 @@ fn get_out_trade_no() -> String {
 
 /// 微信支付 统一下单
 #[allow(dead_code)]
+#[function_name::named]
 pub async fn transactions_jsapi(
   transactions_jsapi_input: TransactionsJsapiInput,
   options: Option<Options>,
@@ -124,6 +141,57 @@ pub async fn transactions_jsapi(
   }
   let tenant_id = tenant_id.unwrap();
   
+  let tenant_model = validate_option_tenant(
+    find_by_id_tenant(
+      tenant_id.clone(),
+      options.clone(),
+    ).await?
+  ).await?;
+  
+  validate_is_enabled_tenant(
+    &tenant_model,
+  ).await?;
+  
+  let domain_ids = tenant_model.domain_ids;
+  
+  let domain_id = if domain_ids.is_empty() {
+    return Err(eyre!(ServiceException {
+      message: "domain_ids 不能为空".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
+  } else {
+    domain_ids[0].clone()
+  };
+  
+  let domain_model = find_by_id_ok_domain(
+    domain_id,
+    options.clone(),
+  ).await?;
+  
+  validate_is_enabled_domain(
+    &domain_model,
+  ).await?;
+  
+  let domain_protocol = domain_model.protocol;
+  let domain_lbl = domain_model.lbl;
+  
+  if domain_protocol.is_empty() {
+    return Err(eyre!(ServiceException {
+      message: "domain_protocol 不能为空".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
+  }
+  
+  if domain_lbl.is_empty() {
+    return Err(eyre!(ServiceException {
+      message: "domain_lbl 不能为空".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
+  }
+  
   // 微信支付设置
   let wx_pay_model = validate_option_wx_pay(
     find_one_wx_pay(
@@ -187,6 +255,8 @@ pub async fn transactions_jsapi(
     }));
   }
   
+  let notify_url = format!("{domain_protocol}://{domain_lbl}{notify_url}");
+  
   let wxpay = WxPay {
     appid: appid.as_str(),
     mchid: mchid.as_str(),
@@ -231,7 +301,19 @@ pub async fn transactions_jsapi(
     ..Default::default()
   };
   
+  info!(
+    "{req_id} {function_name}: wxpay.jsapi: {jsapi:#?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
   let wx_pay_data: WxPayData = wxpay.jsapi(&jsapi).await?;
+  
+  info!(
+    "{req_id} {function_name}: wx_pay_data: {wx_pay_data:#?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   let request_payment_options = RequestPaymentOptions {
     out_trade_no: out_trade_no.clone(),
