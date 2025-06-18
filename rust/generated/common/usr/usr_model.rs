@@ -54,6 +54,7 @@ pub struct GetLoginInfo {
   pub username: String,
   pub role_codes: Vec<String>,
   pub lang: Option<String>,
+  pub tenant_id: TenantId,
   pub org_id: Option<OrgId>,
   pub org_id_models: Vec<GetLoginInfoorgIdModel>,
 }
