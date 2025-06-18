@@ -35,7 +35,7 @@ const uniDir = projectDir + "/uni";
 async function removeExcelTemplate() {
   console.log("removeExcelTemplate");
   await remove(`${ pcDir }/public/import_template/`);
-  await remove(`${ pcDir }/public/export_template/`);
+  await remove(`${ pcDir }/public/excel_template/`);
 }
 
 async function codegen() {
