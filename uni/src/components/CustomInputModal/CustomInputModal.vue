@@ -80,12 +80,12 @@
 const props = withDefaults(
   defineProps<{
     placeholder?: string;
-    readonly?: boolean;
+    readonly?: boolean | null;
     readonlyPlaceholder?: string;
   }>(),
   {
     placeholder: undefined,
-    readonly: false,
+    readonly: undefined,
     readonlyPlaceholder: "",
   },
 );
