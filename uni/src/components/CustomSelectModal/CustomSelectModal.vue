@@ -330,7 +330,7 @@ const props = withDefaults(
     clearable?: boolean;
     multiple?: boolean;
     showSelectAll?: boolean;
-    readonly?: boolean;
+    readonly?: boolean | null;
     searchStr?: string | null;
   }>(),
   {
@@ -350,7 +350,7 @@ const props = withDefaults(
     clearable: true,
     multiple: false,
     showSelectAll: true,
-    readonly: false,
+    readonly: undefined,
     searchStr: "",
   },
 );

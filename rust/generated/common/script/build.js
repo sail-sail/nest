@@ -35,7 +35,7 @@ const uniDir = projectDir + "/uni";
 async function removeExcelTemplate() {
   console.log("removeExcelTemplate");
   await remove(`${ pcDir }/public/import_template/`);
-  await remove(`${ pcDir }/public/export_template/`);
+  await remove(`${ pcDir }/public/excel_template/`);
 }
 
 async function codegen() {
@@ -104,6 +104,7 @@ async function compile() {
   let cmd = "";
   cmd += `wsl -e bash -lic `;
   cmd += `"`;
+  // cmd += `export HTTPS_PROXY="http://192.168.80.1:7890" && `;
   // cmd += `rustup update`;
   // cmd += ` && rustup target add x86_64-unknown-linux-musl`;
   // cmd += ` && cargo build --release --target=x86_64-unknown-linux-musl`;
