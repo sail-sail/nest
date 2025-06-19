@@ -35,6 +35,8 @@ import TurboConsole from "unplugin-turbo-console/vite";
 
 // import VueDevTools from "vite-plugin-vue-devtools";
 
+import VueDevtoolsJson from "vite-plugin-devtools-json";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   css: {
@@ -56,6 +58,7 @@ export default defineConfig({
       toggleButtonPos: "top-left",
     }),
     // VueDevTools(),
+    VueDevtoolsJson(),
     vue(),
     ReactivityTransform(),
     defineOptions(),
