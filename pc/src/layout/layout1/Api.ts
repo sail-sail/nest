@@ -83,6 +83,7 @@ export async function getLoginInfo(
           username
           role_codes
           lang
+          tenant_id
           org_id
           org_id_models {
             id

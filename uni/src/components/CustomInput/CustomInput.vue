@@ -2,7 +2,7 @@
 <tm-input
   v-if="!readonly"
   v-model.lazy="modelValue"
-  class="custom_input n-w-full"
+  class="custom_input w-full"
   :class="{
     'custom_input_readonly': readonly
   }"
@@ -50,8 +50,8 @@
     un-whitespace-pre-wrap
     un-text="[1em] gray-600"
     class="custom_input_readonly_content"
+    un-items="center-safe"
     :class="{
-      'items-center': type !== 'textarea',
       'custom_input_placeholder': shouldShowPlaceholder,
     }"
     :style="{
