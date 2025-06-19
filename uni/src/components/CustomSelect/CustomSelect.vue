@@ -259,7 +259,7 @@ const props = withDefaults(
     pageInited?: boolean;
     clearable?: boolean;
     multiple?: boolean;
-    readonly?: boolean;
+    readonly?: boolean | null;
   }>(),
   {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -277,7 +277,7 @@ const props = withDefaults(
     pageInited: true,
     clearable: true,
     multiple: false,
-    readonly: false,
+    readonly: undefined,
   },
 );
 

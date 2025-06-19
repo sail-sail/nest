@@ -86,17 +86,5 @@ export default defineConfig({
     ],
     ["pt-safe", { "padding-top": "env(safe-area-inset-top)" }],
     ["pb-safe", { "padding-bottom": "env(safe-area-inset-bottom)" }],
-    [
-      "items-safe-center",
-      {
-        "align-items": "safe center",
-      },
-    ],
-    [
-      "justify-safe-center",
-      {
-        "justify-content": "safe center",
-      },
-    ],
   ],
 })
