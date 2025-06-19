@@ -5,7 +5,7 @@
   un-box-border
   un-rounded
   un-cursor-pointer
-  un-justify-safe-center
+  un-justify="center-safe"
   un-items-center
 >
   <template
