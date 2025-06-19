@@ -155,13 +155,11 @@
     >
       <span
         v-if="isShowModelLabel && props.modelLabel"
-        class="custom_select_readonly"
       >
         {{ props.modelLabel || "" }}
       </span>
       <span
         v-else
-        class="custom_select_placeholder"
       >
         {{ props.readonlyPlaceholder ?? "" }}
       </span>
@@ -171,7 +169,6 @@
     >
       <span
         v-if="isShowModelLabel"
-        class="custom_select_readonly"
       >
         {{ props.modelLabel || "" }}
       </span>
@@ -263,13 +260,11 @@
     >
       <span
         v-if="isShowModelLabel && props.modelLabel"
-        class="custom_select_readonly"
       >
         {{ props.modelLabel || "" }}
       </span>
       <span
         v-else
-        class="custom_select_placeholder"
       >
         {{ props.readonlyPlaceholder ?? "" }}
       </span>
@@ -279,13 +274,11 @@
     >
       <span
         v-if="isShowModelLabel"
-        class="custom_select_readonly"
       >
         {{ props.modelLabel || "" }}
       </span>
       <span
         v-else
-        class="custom_select_readonly"
       >
         {{ modelLabels[0] || "" }}
       </span>
