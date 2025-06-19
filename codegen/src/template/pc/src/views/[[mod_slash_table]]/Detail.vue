@@ -228,7 +228,7 @@ for (let i = 0; i < columns.length; i++) {
         :title="ns('解锁')"<#
         } else {
         #>
-        title="解锉"<#
+        title="解锁"<#
         }
         #>
       >
@@ -251,8 +251,8 @@ for (let i = 0; i < columns.length; i++) {
       un-p="x-8 y-4"
       un-box-border
       un-gap="4"
-      un-justify-start
-      un-items-safe-center
+      un-justify="start"
+      un-items="center-safe"
     >
       <el-form
         ref="formRef"
@@ -491,6 +491,11 @@ for (let i = 0; i < columns.length; i++) {
               multiple<#
               }
               #><#
+              if (foreignKey.multipleSetDefault) {
+              #>
+              :multiple-set-default="true"<#
+              }
+              #><#
               if (column.readonly) {
               #>
               :readonly="true"<#
@@ -528,6 +533,7 @@ for (let i = 0; i < columns.length; i++) {
             ><#
               if (foreignKey.hasSelectAdd) {
               #>
+              
               <template
                 v-if="<#=foreignSchema.opts.table#>Permit('add')"
                 #footer
@@ -551,6 +557,7 @@ for (let i = 0; i < columns.length; i++) {
                   </el-button>
                 </div>
               </template>
+              
             <#
             }
           #></CustomSelect><#
@@ -1370,6 +1377,11 @@ for (let i = 0; i < columns.length; i++) {
                       multiple<#
                       }
                       #><#
+                      if (foreignKey.multipleSetDefault) {
+                      #>
+                      :multiple-set-default="true"<#
+                      }
+                      #><#
                       if (column.readonly) {
                       #>
                       :readonly="true"<#
@@ -2129,6 +2141,11 @@ for (let i = 0; i < columns.length; i++) {
                     multiple<#
                     }
                     #><#
+                    if (foreignKey.multipleSetDefault) {
+                    #>
+                    :multiple-set-default="true"<#
+                    }
+                    #><#
                     if (column.readonly) {
                     #>
                     :readonly="true"<#
@@ -2855,6 +2872,11 @@ for (let i = 0; i < columns.length; i++) {
                       if (foreignKey.multiple) {
                       #>
                       multiple<#
+                      }
+                      #><#
+                      if (foreignKey.multipleSetDefault) {
+                      #>
+                      :multiple-set-default="true"<#
                       }
                       #><#
                       if (column.readonly) {

@@ -511,7 +511,7 @@ export default {
     display: flex;
     flex-direction: column;
     /* background-color: white; */
-    // height: 100%;
+    height: 100%;
     width: 100%;
 
 }

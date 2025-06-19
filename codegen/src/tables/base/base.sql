@@ -36,7 +36,6 @@ CREATE TABLE if not exists `base_domain` (
   `protocol` varchar(10) NOT NULL DEFAULT 'https' COMMENT '协议',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
-  `is_default` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '默认,dict:is_default',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
