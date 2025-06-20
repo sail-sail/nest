@@ -95,6 +95,10 @@ export default defineConfig({
           "@/tmui/components/tm-form/tm-form.vue": [
             [ "default", "TmForm" ],
           ],
+          "@/utils/WxoUtil": [
+            [ "wxoGetAppid", "wxwGetAppid" ],
+            "initWxoCfg",
+          ],
         },
       ],
       dts: "./src/typings/auto-imports.d.ts",
