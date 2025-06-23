@@ -92,7 +92,7 @@ export default defineConfig({
           "decimal.js": [
             [ "default", "Decimal" ],
           ],
-          "@/tmui/components/tm-form/tm-form.vue": [
+          "@/uni_modules/tm-ui/components/tm-form/tm-form.vue": [
             [ "default", "TmForm" ],
           ],
           "@/utils/WxoUtil": [
