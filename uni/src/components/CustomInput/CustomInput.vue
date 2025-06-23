@@ -1,6 +1,7 @@
 <template>
 <tm-input
   v-if="!readonly"
+  ref="inputRef"
   v-model.lazy="modelValue"
   class="custom_input w-full"
   :class="{
@@ -8,6 +9,9 @@
   }"
   :transprent="true"
   :show-bottom-botder="false"
+  :focus="isFocus"
+  :selection-start="selectionStart"
+  :selection-end="selectionEnd"
   v-bind="$attrs"
   :show-clear="props.clearable == null ? (modelValue ? !readonly : false) : props.clearable"
   :readonly="readonly"
@@ -99,6 +103,8 @@
 </template>
 
 <script lang="ts" setup>
+import TmInput from "@/uni_modules/tm-ui/components/tm-input/tm-input.vue";
+
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
@@ -185,4 +191,38 @@ function onClear() {
   modelValue.value = "";
   emit("clear");
 }
+
+const inputRef = ref<InstanceType<typeof TmInput>>();
+
+const isFocus = ref(false);
+
+const selectionStart = ref<number>();
+const selectionEnd = ref<number>();
+
+async function focus() {
+  isFocus.value = false;
+  selectionStart.value = undefined;
+  selectionEnd.value = undefined;
+  await nextTick();
+  const len = modelValue.value?.toString().length || 0;
+  selectionStart.value = len;
+  selectionEnd.value = len;
+  isFocus.value = true;
+}
+
+async function blur() {
+  isFocus.value = true;
+  selectionStart.value = 0;
+  selectionEnd.value = 0;
+  await nextTick();
+  isFocus.value = false;
+  selectionStart.value = undefined;
+  selectionEnd.value = undefined;
+}
+
+defineExpose({
+  inputRef: $$(inputRef),
+  focus,
+  blur,
+});
 </script>
