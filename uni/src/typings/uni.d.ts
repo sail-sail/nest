@@ -9335,7 +9335,9 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/system/clipboard?id=setclipboarddata](http://uniapp.dcloud.io/api/system/clipboard?id=setclipboarddata)
      */
-    setClipboardData(options: UniNamespace.SetClipboardDataOptions): void;
+    setClipboardData(options: UniNamespace.SetClipboardDataOptions): Promise<{
+        errMsg: "setClipboardData:ok" | string;
+    }>;
     /**
      * 获得系统剪贴板的内容
      *
