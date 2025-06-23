@@ -478,12 +478,9 @@ async fn main() -> Result<(), std::io::Error> {
       app,
       async {
         let _ = tokio::signal::ctrl_c().await;
-        info!("run_with_graceful_shutdown");
         let res = generated::common::browser::index::destroy_browser().await;
         if let Err(err) = res {
           error!("destroy_browser error: {err:#?}");
-        } else {
-          info!("Browser instance destroyed successfully.");
         }
       },
       None,
