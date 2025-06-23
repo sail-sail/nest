@@ -217,7 +217,7 @@ pub async fn new_page<T: Sync + Send>(
 pub async fn wait_for_selector(page: &Page, selector: &str, timeout: std::time::Duration) -> bool {
   let start = std::time::Instant::now();
   while start.elapsed() < timeout {
-    if let Ok(_) = page.find_element(selector).await {
+    if (page.find_element(selector).await).is_ok() {
       return true;
     }
     tokio::time::sleep(std::time::Duration::from_millis(200)).await;
