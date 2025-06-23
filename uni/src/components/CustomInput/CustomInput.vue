@@ -103,8 +103,6 @@
 </template>
 
 <script lang="ts" setup>
-import TmInput from "@/uni_modules/tm-ui/components/tm-input/tm-input.vue";
-
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
@@ -192,7 +190,8 @@ function onClear() {
   emit("clear");
 }
 
-const inputRef = ref<InstanceType<typeof TmInput>>();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const inputRef = ref<any>();
 
 const isFocus = ref(false);
 
