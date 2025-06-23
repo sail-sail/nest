@@ -1,5 +1,6 @@
 <template>
 <tm-picker-date
+  v-bind="$attrs"
   v-model="modelValue"
   format="YYYY-MM-DD"
   format-sync-value
