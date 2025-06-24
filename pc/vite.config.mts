@@ -201,6 +201,7 @@ export default defineConfig({
             "getDownloadUrl",
             "downloadById",
             "getImgUrl",
+            "getImgUrlArr",
           ],
           "@/utils/graphql": [
             "query",

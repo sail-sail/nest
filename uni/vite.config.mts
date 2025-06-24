@@ -73,6 +73,7 @@ export default defineConfig({
             "uploadFile",
             "getDownloadUrl",
             "getImgUrl",
+            "getImgUrlArr",
             "getAttUrl",
             "downloadFile",
             "uniLogin",
@@ -105,7 +106,7 @@ export default defineConfig({
     // Components({
     //   dirs: [
     //     "./src/components",
-    //     "./src/uni_modules/tmui/components",
+    //     "./src/uni_modules/tm-ui/components",
     //   ],
     //   dts: "./src/typings/components.d.ts",
     // }),
