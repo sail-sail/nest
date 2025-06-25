@@ -32,7 +32,7 @@ async function exec() {
     // execSync(command, { stdio: "inherit" });
     for (let i = 0; i < parentBranchs.length; i++) {
       const branch = parentBranchs[i];
-      command = `git merge ${ branch }`;
+      command = `git merge ${ branch } --no-edit`;
       console.log(command);
       execSync(command, { stdio: "inherit" });
     }
