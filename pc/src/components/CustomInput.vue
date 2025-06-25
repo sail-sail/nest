@@ -198,6 +198,9 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
+.custom_input_readonly_content {
+  align-items: center;
+}
 .custom_input_readonly_border {
   border-width: 1px;
   border-style: solid;
