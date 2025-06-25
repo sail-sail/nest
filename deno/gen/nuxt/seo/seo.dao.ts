@@ -860,6 +860,7 @@ export async function findByIdOkSeo(
   
   if (!seo_model) {
     const err_msg = "此 SEO优化 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   
