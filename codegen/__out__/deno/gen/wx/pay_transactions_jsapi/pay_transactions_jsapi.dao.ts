@@ -937,6 +937,7 @@ export async function findByIdOkPayTransactionsJsapi(
   
   if (!pay_transactions_jsapi_model) {
     const err_msg = "此 微信JSAPI下单 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

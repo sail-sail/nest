@@ -1097,6 +1097,7 @@ export async function findByIdOkWxoApp(
   
   if (!wxo_app_model) {
     const err_msg = "此 公众号设置 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

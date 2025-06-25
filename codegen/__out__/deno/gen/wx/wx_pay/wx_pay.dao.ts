@@ -921,6 +921,7 @@ export async function findByIdOkWxPay(
   
   if (!wx_pay_model) {
     const err_msg = "此 微信支付设置 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

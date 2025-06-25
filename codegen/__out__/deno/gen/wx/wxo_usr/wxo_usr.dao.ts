@@ -903,6 +903,7 @@ export async function findByIdOkWxoUsr(
   
   if (!wxo_usr_model) {
     const err_msg = "此 公众号用户 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   
