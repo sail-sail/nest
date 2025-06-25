@@ -830,6 +830,7 @@ export async function findByIdOkBaiduAppToken(
   
   if (!baidu_app_token_model) {
     const err_msg = "此 百度接口凭据 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   
