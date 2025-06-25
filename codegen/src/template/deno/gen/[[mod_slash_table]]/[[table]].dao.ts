@@ -3248,6 +3248,7 @@ export async function findByIdOk<#=Table_Up#>(
     const err_msg = "此 <#=table_comment#> 已被删除";<#
     }
     #>
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   
