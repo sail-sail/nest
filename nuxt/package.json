@@ -24,9 +24,9 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "1.4.1",
-    "@nuxt/icon": "1.13.0",
+    "@nuxt/icon": "1.14.0",
     "@types/file-saver": "2.0.7",
-    "@types/node": "24.0.3",
+    "@types/node": "24.0.4",
     "@unocss/nuxt": "66.2.3",
     "@unocss/preset-rem-to-px": "66.2.3",
     "@unocss/transformer-directives": "66.2.3",

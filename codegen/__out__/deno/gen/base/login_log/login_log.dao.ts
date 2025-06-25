@@ -793,6 +793,7 @@ export async function findByIdOkLoginLog(
   
   if (!login_log_model) {
     const err_msg = "此 登录日志 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

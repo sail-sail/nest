@@ -72,6 +72,10 @@ export const defaultValidator = (value: any, rule: TM.FORM_RULE_TYPE) => {
         if (rule.max == -1) return value.length >= rule.min
         return value.length >= rule.min && value.length <= rule.max
     }
+    
+    if (value == null) {
+        return false;
+    }
 
     if (typeof value == 'object') {
         let keys = Object.keys(value)
