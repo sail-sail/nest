@@ -810,6 +810,7 @@ export async function findByIdOkIcon(
   
   if (!icon_model) {
     const err_msg = "此 图标库 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

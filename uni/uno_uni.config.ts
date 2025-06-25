@@ -14,6 +14,7 @@ import {
   presetApplet,
   presetRemRpx,
   transformerAttributify,
+  transformerApplet,
 } from "unocss-applet";
 
 const isApplet = process.env?.UNI_PLATFORM?.startsWith('mp-') ?? false;
@@ -46,7 +47,9 @@ if (isApplet) {
   transformers.push(transformerAttributify({
     prefix: "un-",
     prefixedOnly: true,
+    ignoreAttributes: ['block'],
   }));
+  transformers.push(transformerApplet())
   
   presets.push(presetAttributify({
     prefix: "un-",
