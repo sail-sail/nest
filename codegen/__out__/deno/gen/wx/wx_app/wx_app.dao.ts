@@ -906,6 +906,7 @@ export async function findByIdOkWxApp(
   
   if (!wx_app_model) {
     const err_msg = "此 小程序设置 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

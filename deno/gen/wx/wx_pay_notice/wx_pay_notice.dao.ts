@@ -1034,6 +1034,7 @@ export async function findByIdOkWxPayNotice(
   
   if (!wx_pay_notice_model) {
     const err_msg = "此 微信支付通知 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   
