@@ -844,6 +844,7 @@ export async function findByIdOkWxwMsg(
   
   if (!wxw_msg_model) {
     const err_msg = "此 企微消息 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   
