@@ -799,6 +799,7 @@ export async function findByIdOkSmsSendRecord(
   
   if (!sms_send_record_model) {
     const err_msg = "此 短信发送记录 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   
