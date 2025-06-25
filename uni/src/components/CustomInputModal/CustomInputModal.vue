@@ -18,6 +18,7 @@
     :title="props.placeholder"
     :show-close="false"
     :overlay-click="false"
+    @open="onModalOpen"
   >
     
     <template #default>
@@ -32,6 +33,7 @@
           un-bg="white"
         >
           <CustomInput
+            ref="customInputRef"
             v-model="str"
             type="textarea"
             :height="200"
@@ -76,19 +78,24 @@
 </template>
 
 <script lang="ts" setup>
+import CustomInput from "@/components/CustomInput/CustomInput.vue";
 
 const props = withDefaults(
   defineProps<{
     placeholder?: string;
     readonly?: boolean | null;
     readonlyPlaceholder?: string;
+    isFousToTextarea?: boolean;
   }>(),
   {
     placeholder: undefined,
     readonly: undefined,
     readonlyPlaceholder: "",
+    isFousToTextarea: true,
   },
 );
+
+const customInputRef = ref<InstanceType<typeof CustomInput>>();
 
 const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
 
@@ -121,6 +128,12 @@ const showModal = ref(false);
 function onBeforeOpen() {
   str.value = modalValue.value;
   showModal.value = true;
+}
+
+async function onModalOpen() {
+  if (props.isFousToTextarea && !readonly) {
+    await customInputRef.value?.focus();
+  }
 }
 
 function onCancel() {
