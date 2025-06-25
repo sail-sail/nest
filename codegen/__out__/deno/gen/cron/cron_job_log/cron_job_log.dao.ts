@@ -906,6 +906,7 @@ export async function findByIdOkCronJobLog(
   
   if (!cron_job_log_model) {
     const err_msg = "此 定时任务日志 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   
