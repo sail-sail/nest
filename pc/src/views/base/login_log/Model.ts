@@ -14,7 +14,6 @@ declare global {
   
   /** 登录日志 */
   interface LoginLogInput extends LoginLogInputType {
-    create_time_lbl?: string;
   }
   
   /** 登录日志 */
