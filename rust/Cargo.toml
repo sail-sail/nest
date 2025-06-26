@@ -13,12 +13,12 @@ tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 tracing-appender = "0.2.3"
 tracing-attributes = "0.1.28"
-tokio = { version = "1.44.2", features = ["rt-multi-thread", "macros", "net", "fs"] }
+tokio = { version = "1.45.1", features = ["rt-multi-thread", "macros", "net", "fs"] }
 poem = { version = "3.1.11", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
 async-graphql = { version = "7.0.17", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
 smol_str = { version = "0.3.2", features = ["serde"] }
-slab = "0.4.9"
-chrono = { version = "0.4.40", features = ["serde"] }
+slab = "0.4.10"
+chrono = { version = "0.4.41", features = ["serde"] }
 # anyhow = "1.0.98"
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15.0"
@@ -33,20 +33,20 @@ hex-literal = "1.0.0"
 hex = "0.4.3"
 base64 = "0.22.1"
 utf8_slice = "1.0.0"
-reqwest = { version = "0.12.15", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
+reqwest = { version = "0.12.20", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
 encoding_rs = "0.8.35"
 urlencoding = "2.1.3"
 url = "2.5.4"
 # sqlformat = "0.3.5"
-smallvec = { version = "1.15.0", features = ["union", "serde"] }
+smallvec = { version = "1.15.1", features = ["union", "serde"] }
 # downcast-rs = "2.0.1"
-uuid = { version = "1.16.0", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "1.17.0", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12.2"
 deadpool-redis = "0.21.1"
-redis = { version = "0.32.0", features = ["tokio-comp"], default-features = false }
+redis = { version = "0.32.2", features = ["tokio-comp"], default-features = false }
 bigdecimal = "0.4.8"
 time = "0.3.41"
-rust_decimal = { version = "1.37.1", features = ["maths"]}
+rust_decimal = { version = "1.37.2", features = ["maths"]}
 rust_decimal_macros = "1.37.1"
 # enum_dispatch = "0.3.13"
 # pin-project-lite = "0.2.16"
@@ -67,12 +67,12 @@ derive_more = { version = "2.0.1", features = ["full"] }
 derive_builder = "0.20.2"
 strum = { version = "0.27.1", features = ["derive"] }
 itertools = "0.14.0"
-color-eyre = "0.6.3"
+color-eyre = "0.6.5"
 rand = "0.9.1"
 rsa = { version = "0.9.8", features = ["sha2"] }
 aes-gcm = "0.10.3"
 pkcs8 = "0.10.2"
-serde_with = "3.12.0"
+serde_with = "3.13.0"
 csv = "1.3.1"
 rust_xlsxwriter = "0.88.0"
 chromiumoxide = "0.7.0"
