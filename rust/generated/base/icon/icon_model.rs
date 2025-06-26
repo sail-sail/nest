@@ -54,9 +54,6 @@ pub struct IconModel {
   /// 图标
   #[graphql(name = "img")]
   pub img: String,
-  /// 图标svg
-  #[graphql(name = "img_lbl_svg")]
-  pub img_lbl_svg: String,
   /// 编码
   #[graphql(name = "code")]
   pub code: String,
@@ -139,7 +136,6 @@ impl FromRow<'_, MySqlRow> for IconModel {
       is_deleted,
       id,
       img,
-      img_lbl_svg: String::new(),
       code,
       lbl,
       is_enabled,

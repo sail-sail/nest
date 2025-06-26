@@ -1192,13 +1192,21 @@ pub async fn find_by_id_ok_dept(
   let options = Some(options);
   
   let dept_model = find_by_id_dept(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(dept_model) = dept_model else {
     let err_msg = "此 部门 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(dept_model)

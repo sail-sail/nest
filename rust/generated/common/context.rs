@@ -2197,7 +2197,6 @@ pub fn get_auth_token() -> Option<String> {
   None
 }
 
-#[must_use]
 pub fn get_auth_token_ok() -> Result<String> {
   let ctx = CTX.with(|ctx| ctx.clone());
   if let Some(auth_token) = ctx.old_auth_token.as_ref() {
