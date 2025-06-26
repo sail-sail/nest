@@ -760,13 +760,21 @@ pub async fn find_by_id_ok_cron_job_log_detail(
   let options = Some(options);
   
   let cron_job_log_detail_model = find_by_id_cron_job_log_detail(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(cron_job_log_detail_model) = cron_job_log_detail_model else {
     let err_msg = "此 定时任务日志明细 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(cron_job_log_detail_model)
