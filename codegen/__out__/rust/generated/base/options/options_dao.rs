@@ -917,13 +917,21 @@ pub async fn find_by_id_ok_options(
   let options = Some(options);
   
   let options_model = find_by_id_options(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(options_model) = options_model else {
     let err_msg = "此 系统选项 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(options_model)
