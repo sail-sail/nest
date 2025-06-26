@@ -2688,7 +2688,7 @@ pub async fn find_by_id_ok_<#=table#>(
   let options = Some(options);
   
   let <#=table#>_model = find_by_id_<#=table#>(
-    id,
+    id.clone(),
     options,
   ).await?;
   
@@ -2711,7 +2711,15 @@ pub async fn find_by_id_ok_<#=table#>(
     let err_msg = "此 <#=table_comment#> 已被删除";<#
     }
     #>
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(<#=table#>_model)
