@@ -1058,13 +1058,21 @@ pub async fn find_by_id_ok_wx_pay(
   let options = Some(options);
   
   let wx_pay_model = find_by_id_wx_pay(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(wx_pay_model) = wx_pay_model else {
     let err_msg = "此 微信支付设置 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(wx_pay_model)

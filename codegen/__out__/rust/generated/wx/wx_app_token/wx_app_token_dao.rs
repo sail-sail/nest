@@ -856,13 +856,21 @@ pub async fn find_by_id_ok_wx_app_token(
   let options = Some(options);
   
   let wx_app_token_model = find_by_id_wx_app_token(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(wx_app_token_model) = wx_app_token_model else {
     let err_msg = "此 小程序接口凭据 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(wx_app_token_model)
