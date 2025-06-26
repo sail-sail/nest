@@ -931,13 +931,21 @@ pub async fn find_by_id_ok_dict_detail(
   let options = Some(options);
   
   let dict_detail_model = find_by_id_dict_detail(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(dict_detail_model) = dict_detail_model else {
     let err_msg = "此 系统字典明细 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(dict_detail_model)

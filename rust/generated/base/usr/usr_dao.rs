@@ -216,30 +216,6 @@ async fn get_where_query(
       where_query.push_str(" and t.role_ids is null");
     }
   }
-  // 所属角色
-  {
-    let role_codes: Option<Vec<String>> = match search {
-      Some(item) => item.role_codes.clone(),
-      None => None,
-    };
-    if let Some(role_codes) = role_codes {
-      let arg = {
-        if role_codes.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(role_codes.len());
-          for item in role_codes {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and base_role.code in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
   // 所属部门
   {
     let dept_ids: Option<Vec<DeptId>> = match search {
@@ -776,22 +752,6 @@ pub async fn find_all_usr(
         .unwrap_or(FIND_ALL_IDS_LIMIT);
       if len > ids_limit {
         return Err(eyre!("search.role_ids.length > {ids_limit}"));
-      }
-    }
-  }
-  // 所属角色
-  if let Some(search) = &search {
-    if search.role_codes.is_some() {
-      let len = search.role_codes.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.role_codes.length > {ids_limit}"));
       }
     }
   }
@@ -1449,13 +1409,21 @@ pub async fn find_by_id_ok_usr(
   let options = Some(options);
   
   let usr_model = find_by_id_usr(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(usr_model) = usr_model else {
     let err_msg = "此 用户 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(usr_model)

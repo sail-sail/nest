@@ -39,13 +39,6 @@ import VueDevtoolsJson from "vite-plugin-devtools-json";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: "modern-compiler",
-      },
-    },
-  },
   optimizeDeps: {
     exclude: [
       "@jsquash/webp",
@@ -201,6 +194,7 @@ export default defineConfig({
             "getDownloadUrl",
             "downloadById",
             "getImgUrl",
+            "getImgUrlArr",
           ],
           "@/utils/graphql": [
             "query",
