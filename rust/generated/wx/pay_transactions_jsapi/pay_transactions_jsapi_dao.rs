@@ -1138,13 +1138,21 @@ pub async fn find_by_id_ok_pay_transactions_jsapi(
   let options = Some(options);
   
   let pay_transactions_jsapi_model = find_by_id_pay_transactions_jsapi(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(pay_transactions_jsapi_model) = pay_transactions_jsapi_model else {
     let err_msg = "此 微信JSAPI下单 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(pay_transactions_jsapi_model)

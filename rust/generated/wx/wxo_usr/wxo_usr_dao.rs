@@ -1064,13 +1064,21 @@ pub async fn find_by_id_ok_wxo_usr(
   let options = Some(options);
   
   let wxo_usr_model = find_by_id_wxo_usr(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(wxo_usr_model) = wxo_usr_model else {
     let err_msg = "此 公众号用户 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(wxo_usr_model)
