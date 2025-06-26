@@ -1049,13 +1049,21 @@ pub async fn find_by_id_ok_wxw_usr(
   let options = Some(options);
   
   let wxw_usr_model = find_by_id_wxw_usr(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(wxw_usr_model) = wxw_usr_model else {
     let err_msg = "此 企微用户 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(wxw_usr_model)
