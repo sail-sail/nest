@@ -1037,13 +1037,21 @@ pub async fn find_by_id_ok_wxw_app(
   let options = Some(options);
   
   let wxw_app_model = find_by_id_wxw_app(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(wxw_app_model) = wxw_app_model else {
     let err_msg = "此 企微应用 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(wxw_app_model)

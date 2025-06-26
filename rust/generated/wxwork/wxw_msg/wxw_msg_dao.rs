@@ -990,13 +990,21 @@ pub async fn find_by_id_ok_wxw_msg(
   let options = Some(options);
   
   let wxw_msg_model = find_by_id_wxw_msg(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(wxw_msg_model) = wxw_msg_model else {
     let err_msg = "此 企微消息 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(wxw_msg_model)
