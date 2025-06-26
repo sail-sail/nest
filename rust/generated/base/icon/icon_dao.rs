@@ -551,24 +551,6 @@ pub async fn find_all_icon(
   #[allow(unused_variables)]
   for model in &mut res {
     
-    let stat = crate::common::oss::oss_dao::head_object(
-      &model.img,
-    ).await?;
-    
-    if stat.is_some() {
-      let img_lbl_svg: Option<Vec<u8>> = crate::common::oss::oss_dao::get_object(
-        &model.img,
-      ).await?
-        .map(|v|
-          v.into()
-        );
-      
-      if let Some(img_lbl_svg) = img_lbl_svg {
-        let img_lbl_svg: String = String::from_utf8(img_lbl_svg)?;
-        model.img_lbl_svg = img_lbl_svg;
-      }
-    }
-    
     // 启用
     model.is_enabled_lbl = {
       is_enabled_dict
@@ -866,13 +848,21 @@ pub async fn find_by_id_ok_icon(
   let options = Some(options);
   
   let icon_model = find_by_id_icon(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(icon_model) = icon_model else {
     let err_msg = "此 图标库 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(icon_model)

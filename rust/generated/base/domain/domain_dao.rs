@@ -897,13 +897,21 @@ pub async fn find_by_id_ok_domain(
   let options = Some(options);
   
   let domain_model = find_by_id_domain(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(domain_model) = domain_model else {
     let err_msg = "此 域名 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(domain_model)

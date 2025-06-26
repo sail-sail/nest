@@ -198,7 +198,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('add', '新增') && !isLocked"
+        v-if="permit('add', '新增') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -210,7 +210,7 @@
       </el-button>
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('add', '复制') && !isLocked"
+        v-if="permit('add', '复制') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -237,7 +237,6 @@
         v-if="permit('delete') && !isLocked"
         plain
         type="danger"
-        :disabled="selectedIds.length === 0 || selectedIds.map((item) => tableData.find((item2) => item2.id === item)).some((item) => item?.is_sys === 1)"
         @click="onDeleteByIds"
       >
         <template #icon>
@@ -318,7 +317,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="dictbiz_model && !dictbiz_model.is_add && permit('add', '导入') && !isLocked"
+              v-if="permit('add', '导入') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >
@@ -326,7 +325,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="dictbiz_model && !dictbiz_model.is_sys && permit('edit', '编辑') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onEnableByIds(1)"
             >
@@ -334,7 +333,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="dictbiz_model && !dictbiz_model.is_sys && permit('edit', '编辑') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onEnableByIds(0)"
             >
@@ -350,7 +349,7 @@
     <template v-else>
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('delete') && !isLocked"
+        v-if="permit('delete') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -697,10 +696,6 @@ import {
 import {
   getListDictbiz, // 业务字典
 } from "./Api.ts";
-
-import {
-  findOneDictbiz,
-} from "../dictbiz/Api.ts";
 
 defineOptions({
   name: "业务字典明细",
@@ -1680,23 +1675,10 @@ watch(
   },
 );
 
-let dictbiz_model = $ref<DictbizModel>();
-
-const dict_id = $computed(() => {
-  return search.dictbiz_id as unknown as DictbizId | undefined;
-});
-
 async function initFrame() {
   initColumns(tableColumns);
-  [
-    ,
-    dictbiz_model,
-  ] = await Promise.all([
+  await Promise.all([
     dataGrid(true),
-    findOneDictbiz({
-      id: dict_id,
-      is_deleted: search.is_deleted,
-    }),
   ]);
   inited = true;
 }

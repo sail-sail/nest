@@ -63,4 +63,3 @@ pub struct GenMutation(
   cron::cron_job_log_detail::cron_job_log_detail_graphql::CronJobLogDetailGenMutation,
   cron::job::job_graphql::JobGenMutation,
 );
-

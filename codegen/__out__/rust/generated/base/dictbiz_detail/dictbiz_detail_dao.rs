@@ -952,13 +952,21 @@ pub async fn find_by_id_ok_dictbiz_detail(
   let options = Some(options);
   
   let dictbiz_detail_model = find_by_id_dictbiz_detail(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(dictbiz_detail_model) = dictbiz_detail_model else {
     let err_msg = "此 业务字典明细 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(dictbiz_detail_model)

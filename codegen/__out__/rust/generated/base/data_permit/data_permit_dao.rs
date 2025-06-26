@@ -955,13 +955,21 @@ pub async fn find_by_id_ok_data_permit(
   let options = Some(options);
   
   let data_permit_model = find_by_id_data_permit(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(data_permit_model) = data_permit_model else {
     let err_msg = "此 数据权限 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(data_permit_model)

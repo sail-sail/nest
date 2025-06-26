@@ -949,13 +949,21 @@ pub async fn find_by_id_ok_background_task(
   let options = Some(options);
   
   let background_task_model = find_by_id_background_task(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(background_task_model) = background_task_model else {
     let err_msg = "此 后台任务 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(background_task_model)

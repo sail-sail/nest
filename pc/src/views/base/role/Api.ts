@@ -17,12 +17,6 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-import {
-  getHomeUrlMap,
-} from "./Api2";
-
-const homeUrlMap = getHomeUrlMap();
-
 async function setLblById(
   model?: RoleModel | null,
   isExcelExport = false,
@@ -30,7 +24,6 @@ async function setLblById(
   if (!model) {
     return;
   }
-  model.home_url_lbl = homeUrlMap.find((item) => item.id === model.home_url)?.lbl || model.home_url;
 }
 
 export function intoInputRole(

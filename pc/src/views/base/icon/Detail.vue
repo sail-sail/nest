@@ -77,15 +77,16 @@
         <template v-if="(showBuildIn || builtInModel?.img == null)">
           <el-form-item
             label="图标"
-            prop="img_lbl_svg"
+            prop="img"
           >
-            <CustomIcon
+            <UploadImage
               v-model="dialogModel.img"
-              v-model:model-lbl="dialogModel.img_lbl_svg"
+              db="base_icon.img"
+              accept="image/svg+xml,image/png,image/jpeg,image/webp"
+              :is-public="true"
               :readonly="isLocked || isReadonly"
               :page-inited="inited"
-              @change="onImg"
-            ></CustomIcon>
+            ></UploadImage>
           </el-form-item>
         </template>
         
@@ -297,10 +298,15 @@ watchEffect(async () => {
   await nextTick();
   form_rules = {
     // 图标
-    img_lbl_svg: [
+    img: [
       {
         required: true,
-        message: "请选择 图标",
+        message: "请输入 图标",
+      },
+      {
+        type: "string",
+        max: 22,
+        message: "图标 长度不能超过 22",
       },
     ],
     // 编码
@@ -736,26 +742,6 @@ async function onSave() {
     type: "ok",
     changedIds,
   });
-}
-
-async function onImg(
-  { id, lbl }: { id: string; lbl: string },
-) {
-  const type = lbl.substring(lbl.indexOf("data:") + 5, lbl.indexOf(";"));
-  const textEncoder = new TextEncoder();
-  const blob = new Blob([ textEncoder.encode(lbl) ], { type });
-  const file = new File([ blob ], id);
-  dialogModel.img = await uploadFile(
-    file,
-    {
-      id,
-    },
-    {
-      type: "oss",
-      db: "base_icon.img",
-      isPublic: true,
-    },
-  );
 }
 
 async function onDialogOpen() {

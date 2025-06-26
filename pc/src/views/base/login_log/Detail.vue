@@ -126,17 +126,6 @@
           </el-form-item>
         </template>
         
-        <el-form-item
-          :label="n('登录时间')"
-          prop="login_time"
-        >
-          <CustomInput
-            v-model="dialogModel.create_time_lbl"
-            :placeholder="`${ ns('请输入') } ${ n('登录时间') }`"
-            :readonly="true"
-          ></CustomInput>
-        </el-form-item>
-        
       </el-form>
     </div>
     <div
@@ -225,14 +214,6 @@ const emit = defineEmits<{
 }>();
 
 const pagePath = getPagePathLoginLog();
-
-const {
-  n,
-  ns,
-  nsAsync,
-  initI18ns,
-  initSysI18ns,
-} = useI18n(pagePath);
 
 const permitStore = usePermitStore();
 
