@@ -10,7 +10,6 @@ declare global {
   
   /** 角色 */
   interface RoleModel extends RoleModelType {
-    home_url_lbl: string;
   }
   
   /** 角色 */

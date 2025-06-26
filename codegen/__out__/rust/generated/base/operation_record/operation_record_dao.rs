@@ -831,13 +831,21 @@ pub async fn find_by_id_ok_operation_record(
   let options = Some(options);
   
   let operation_record_model = find_by_id_operation_record(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(operation_record_model) = operation_record_model else {
     let err_msg = "此 操作记录 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(operation_record_model)

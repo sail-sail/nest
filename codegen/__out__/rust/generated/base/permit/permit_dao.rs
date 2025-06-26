@@ -592,13 +592,21 @@ pub async fn find_by_id_ok_permit(
   let options = Some(options);
   
   let permit_model = find_by_id_permit(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(permit_model) = permit_model else {
     let err_msg = "此 按钮权限 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(permit_model)

@@ -305,10 +305,54 @@ declare namespace UniNamespace {
     interface UploadTask {
         /**
          * 中断上传任务
+         * @tutorial https://uniapp.dcloud.net.cn/api/request/network-file.html#uploadfile
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * },
+         * "ios": {
+         * "osVer": "9.0",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
+         * @example ```typescript
+         * var uploadTask = uni.uploadFile({
+         * url: 'http://192.168.12.106:8080/uploadFile', //仅为示例，并非真实接口地址。
+         * complete: ()=> {}
+         * });
+         * uploadTask.abort();
+         * ```
          */
         abort(): void;
         /**
          * 监听上传进度变化
+         * @tutorial https://uniapp.dcloud.net.cn/api/request/network-file.html#uploadfile
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * },
+         * "ios": {
+         * "osVer": "9.0",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
+         * @example ```typescript
+         * uploadTask.onProgressUpdate((res) => {
+         * console.log('上传进度' + res.progress);
+         * console.log('已经上传的数据长度' + res.totalBytesSent);
+         * console.log('预期需要上传的数据总长度' + res.totalBytesExpectedToSend);
+         * });
+         * ```
          */
         onProgressUpdate(callback: (result: OnProgressUpdateResult) => void): void;
         /**
@@ -370,10 +414,54 @@ declare namespace UniNamespace {
     interface DownloadTask {
         /**
          * 中断下载任务
+         * @tutorial https://uniapp.dcloud.net.cn/api/request/network-file.html#downloadfile
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * },
+         * "ios": {
+         * "osVer": "9.0",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
+         * @example ```typescript
+         * var downloadTask = uni.downloadFile({
+         * url: 'https://www.example.com/file/test', //仅为示例，并非真实接口地址。
+         * complete: ()=> {}
+         * });
+         * downloadTask.abort();
+         * ```
          */
         abort(): void;
         /**
          * 监听下载进度变化
+         * @tutorial https://uniapp.dcloud.net.cn/api/request/network-file.html#downloadfile
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * },
+         * "ios": {
+         * "osVer": "9.0",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
+         * @example ```typescript
+         * downloadTask.onProgressUpdate((res) => {
+         * console.log('下载进度' + res.progress);
+         * console.log('已经下载的数据长度' + res.totalBytesWritten);
+         * console.log('预期需要下载的数据总长度' + res.totalBytesExpectedToWrite);
+         * });
+         * ```
          */
         onProgressUpdate(callback: (result: OnProgressDownloadResult) => void): void;
         /**
@@ -505,38 +593,164 @@ declare namespace UniNamespace {
         complete?: (result: GeneralCallbackResult) => void;
     }
 
+    interface OnSocketCloseOptions {
+        /**
+         * 一个数字值表示关闭连接的状态号，表示连接被关闭的原因。如果这个参数没有被指定，默认的取值是1000 （表示正常连接关闭）
+         */
+        code?: number;
+        /**
+         * 一个可读的字符串，表示连接被关闭的原因。这个字符串必须是不长于123字节的UTF-8 文本（不是字符）
+         */
+        reason?: string;
+        /**
+         * 错误信息
+         */
+        errMsg: string;
+    }
+
     interface SocketTask {
         /**
          * 通过 WebSocket 连接发送数据
+         * @tutorial https://uniapp.dcloud.net.cn/api/request/socket-task.html#sockettask-send
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * },
+         * "ios": {
+         * "osVer": "9.0",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
+         * @example ```typescript
+         * task.send({data:"halo"});
+         * ```
          */
         send(options: SendSocketMessageOptions): void;
         /**
          * 关闭 WebSocket 连接
+         * @tutorial https://uniapp.dcloud.net.cn/api/request/socket-task.html#sockettask-close
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * },
+         * "ios": {
+         * "osVer": "9.0",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
+         * @example ```typescript
+         * task.close();
+         * ```
          */
         close(options: CloseSocketOptions): void;
         /**
          * 监听 WebSocket 连接打开事件
+         * @tutorial https://uniapp.dcloud.net.cn/api/request/socket-task.html#sockettask-onopen
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * },
+         * "ios": {
+         * "osVer": "9.0",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
+         * @example ```typescript
+         * task.onOpen((res) => {})
+         * ```
          */
         onOpen(callback: (result: OnSocketOpenCallbackResult) => void): void;
         /**
          * 监听 WebSocket 连接关闭事件
+         * @tutorial https://uniapp.dcloud.net.cn/api/request/socket-task.html#sockettask-onclose
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * },
+         * "ios": {
+         * "osVer": "9.0",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
+         * @example ```typescript
+         * task.onClose((res) => {
+         * })
+         * ```
          */
         onClose(callback: (result: any) => void): void;
         /**
          * 监听 WebSocket 错误
+         * @tutorial https://uniapp.dcloud.net.cn/api/request/socket-task.html#sockettask-onerror
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * },
+         * "ios": {
+         * "osVer": "9.0",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
+         * @example ```typescript
+         * task.onError((res) => {
+         * })
+         * ```
          */
         onError(callback: (result: GeneralCallbackResult) => void): void;
         /**
          * 监听WebSocket接受到服务器的消息事件
+         * @tutorial https://uniapp.dcloud.net.cn/api/request/socket-task.html#sockettask-onmessage
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * },
+         * "ios": {
+         * "osVer": "9.0",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
+         * @example ```typescript
+         * task.onMessage((res) => {
+         * })
+         * ```
          */
         onMessage(callback: (result: OnSocketMessageCallbackResult) => void): void;
     }
 
-    interface OnSocketMessageCallbackResult {
+    interface OnSocketMessageCallbackResult<T = any> {
         /**
          * 服务器返回的消息
          */
-        data: any;
+        data: T;
     }
 
     interface OnSocketOpenCallbackResult {
@@ -676,7 +890,7 @@ declare namespace UniNamespace {
         /**
          * 按钮的文字颜色，字符串格式，默认为"#000000"
          */
-        itemColor?: HBuilderX.ColorString | string;
+        itemColor?: string.ColorString | string;
         /**
          * 接口调用成功的回调函数
          */
@@ -788,6 +1002,14 @@ declare namespace UniNamespace {
          */
         height?: string;
         /**
+         * 压缩后图片的高度，单位为px，若不填写则默认以compressedWidth为准等比缩放
+         */
+        compressedHeight?: number;
+        /**
+         * 压缩后图片的宽度，单位为px，若不填写则默认以compressedHeight为准等比缩放。
+         */
+        compressedWidth?: number;
+        /**
          * 接口调用成功的回调函数
          */
         success?: (result: CompressImageSuccessResult) => void;
@@ -835,11 +1057,11 @@ declare namespace UniNamespace {
         /**
          * 接口调用成功的回调函数
          */
-        success?: (result: any) => void;
+        success?: (result: CompressVideoSuccessData) => void;
         /**
          * 接口调用失败的回调函数
          */
-        fail?: (result: CompressVideoSuccessData) => void;
+        fail?: (result: any) => void;
         /**
          * 接口调用结束的回调函数（调用成功、失败都会执行）
          */
@@ -865,11 +1087,11 @@ declare namespace UniNamespace {
         /**
          * 接口调用成功的回调函数
          */
-        success?: (result: any) => void;
+        success?: (result: GetVideoInfoSuccessData) => void;
         /**
          * 接口调用失败的回调函数
          */
-        fail?: (result: GetVideoInfoSuccessData) => void;
+        fail?: (result: any) => void;
         /**
          * 接口调用结束的回调函数（调用成功、失败都会执行）
          */
@@ -880,11 +1102,11 @@ declare namespace UniNamespace {
         /**
          * 画面方向
          */
-        orientation: string;
+        orientation?: string;
         /**
          * 视频格式
          */
-        type: string;
+        type?: string;
         /**
          * 视频长度
          */
@@ -904,11 +1126,11 @@ declare namespace UniNamespace {
         /**
          * 视频帧率
          */
-        fps: number;
+        fps?: number;
         /**
          * 视频码率，单位 kbps
          */
-        bitrate: number;
+        bitrate?: number;
     }
 
     interface OpenVideoEditorOptions {
@@ -919,11 +1141,11 @@ declare namespace UniNamespace {
         /**
          * 接口调用成功的回调函数
          */
-        success?: (result: any) => void;
+        success?: (result: OpenVideoEditorSuccessData) => void;
         /**
          * 接口调用失败的回调函数
          */
-        fail?: (result: OpenVideoEditorSuccessData) => void;
+        fail?: (result: any) => void;
         /**
          * 接口调用结束的回调函数（调用成功、失败都会执行）
          */
@@ -1027,38 +1249,119 @@ declare namespace UniNamespace {
     interface RecorderManager {
         /**
          * 开始录音
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         start(options: RecorderManagerStartOptions): void;
         /**
          * 暂停录音
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         pause(): void;
         /**
          * 暂停录音
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         resume(): void;
         /**
          * 停止录音
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         stop(): void;
         /**
          * 录音开始事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onStart(options: (result: any) => void): void;
         /**
          * 录音暂停事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onPause(options: (result: any) => void): void;
         /**
          * 录音停止事件，会回调文件地址
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onStop(options: (result: any) => void): void;
         /**
          * 已录制完指定帧大小的文件，会回调录音分片结果数据。如果设置了 frameSize ，则会回调此事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onFrameRecorded(options: (result: any) => void): void;
         /**
          * 录音错误事件, 会回调错误信息
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onError(options: (result: any) => void): void;
     }
@@ -1225,42 +1528,132 @@ declare namespace UniNamespace {
         playbackRate?: number;
         /**
          * 播放
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         play(): void;
         /**
          * 暂停
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         pause(): void;
         /**
          * 跳转到指定位置，单位 s
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         seek(position: number): void;
         /**
          * 停止
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         stop(): void;
         /**
          * 背景音频进入可以播放状态，但不保证后面可以流畅播放
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onCanplay(callback: (result: any) => void): void;
         /**
          * 背景音频播放事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onPlay(callback: (result: any) => void): void;
         /**
          * 背景音频暂停事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onPause(callback: (result: any) => void): void;
         /**
          * 背景音频停止事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onStop(callback: (result: any) => void): void;
         /**
          * 背景音频自然播放结束事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onEnded(callback: (result: any) => void): void;
         /**
          * 背景音频播放进度更新事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onTimeUpdate(callback: (result: any) => void): void;
         /**
@@ -1273,10 +1666,28 @@ declare namespace UniNamespace {
         onNext(callback: (result: any) => void): void;
         /**
          * 背景音频播放错误事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onError(callback: (result: any) => void): void;
         /**
          * 音频加载中事件，当音频因为数据不足，需要停下来加载时会触发
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onWaiting(callback: (result: any) => void): void;
     }
@@ -1351,98 +1762,314 @@ declare namespace UniNamespace {
         pause(): void;
         /**
          * 停止
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         stop(): void;
         /**
          * 播放
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         play(): void;
         /**
          * 跳转到指定位置，单位 s
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         seek(position: number): void;
         /**
          * 销毁当前实例
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         destroy(): void;
         /**
          * 音频进入可以播放状态，但不保证后面可以流畅播放
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onCanplay(callback: (result: any) => void): void;
         /**
          * 音频播放事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onPlay(callback: (result: any) => void): void;
         /**
          * 音频暂停事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onPause(callback: (result: any) => void): void;
         /**
          * 音频停止事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onStop(callback: (result: any) => void): void;
         /**
          * 音频自然播放结束事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onEnded(callback: (result: any) => void): void;
         /**
          * 音频播放进度更新事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onTimeUpdate(callback: (result: any) => void): void;
         /**
          * 音频播放错误事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onError(callback: (result: any) => void): void;
         /**
          * 音频加载中事件，当音频因为数据不足，需要停下来加载时会触发
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onWaiting(callback: (result: any) => void): void;
         /**
          * 音频进行 seek 操作事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onSeeking(callback: (result: any) => void): void;
         /**
          * 音频完成 seek 操作事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         onSeeked(callback: (result: any) => void): void;
         /**
          * 取消监听 onCanplay 事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         offCanplay(callback: (result: any) => void): void;
         /**
          * 取消监听 onPlay 事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         offPlay(callback: (result: any) => void): void;
         /**
          * 取消监听 onPause 事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         offPause(callback: (result: any) => void): void;
         /**
          * 取消监听 onStop 事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         offStop(callback: (result: any) => void): void;
         /**
          * 取消监听 onEnded 事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         offEnded(callback: (result: any) => void): void;
         /**
          * 取消监听 onTimeUpdate 事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         offTimeUpdate(callback: (result: any) => void): void;
         /**
          * 取消监听 onWaiting 事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         offError(callback: (result: any) => void): void;
         /**
          * 取消监听 onWaiting 事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         offWaiting(callback: (result: any) => void): void;
         /**
          * 取消监听 onSeeking 事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         offSeeking(callback: (result: any) => void): void;
         /**
          * 取消监听 onSeeked 事件
+         * @uniPlatform {
+         * "app": {
+         * "android": {
+         * "osVer": "4.4",
+         * "uniVer": "√",
+         * "unixVer": "3.9.0"
+         * }
+         * }
+         * }
          */
         offSeeked(callback: (result: any) => void): void;
     }
@@ -1573,7 +2200,7 @@ declare namespace UniNamespace {
         /**
          * 弹幕颜色
          */
-        color?: HBuilderX.ColorString | string;
+        color?: string.ColorString | string;
     }
 
     interface RequestFullScreenOptions {
@@ -1948,7 +2575,7 @@ declare namespace UniNamespace {
         complete?: (result: any) => void;
     }
 
-    interface GetStorageOptions {
+    interface GetStorageOptions<T = any> {
         /**
          * 本地缓存中的指定的 key
          */
@@ -1956,7 +2583,7 @@ declare namespace UniNamespace {
         /**
          * 接口调用成功的回调函数
          */
-        success?: (result: GetStorageSuccess) => void;
+        success?: (result: GetStorageSuccess<T>) => void;
         /**
          * 接口调用失败的回调函数
          */
@@ -1967,11 +2594,11 @@ declare namespace UniNamespace {
         complete?: (result: any) => void;
     }
 
-    interface GetStorageSuccess {
+    interface GetStorageSuccess<T = any> {
         /**
          * 本地缓存中的指定的 key 对应的内容
          */
-        data: any;
+        data: T;
     }
 
     interface GetStorageInfoOptions {
@@ -2160,6 +2787,10 @@ declare namespace UniNamespace {
          * 搜索关键字
          */
         keyword?: string;
+        /**
+         * 使用安全网络请求地图ServiceApi参考：https://uniapp.dcloud.net.cn/api/location/location.html#chooselocation
+         */
+        useSecureNetwork?: boolean;
         /**
          * 接口调用成功的回调函数
          */
@@ -2684,9 +3315,7 @@ declare namespace UniNamespace {
         /**
          * 当前小程序运行的宿主环境。仅微信小程序支持
          */
-        host?: {
-          appId: string;
-        };
+        host?: string;
         /**
          * 应用设置的语言。仅 App、H5 支持
          */
@@ -3984,8 +4613,10 @@ declare namespace UniNamespace {
          * - loading: 显示加载图标
          * - error: 显示错误图标
          * - none: 不显示图标
+         * - fail: 显示错误图标，此时 title 文本无长度显示，仅支付宝小程序、字节小程序
+         * - exception: 显示异常图标。此时 title 文本无长度显示，仅支付宝小程序
          */
-        icon?: 'success' | 'loading' | 'error' | 'none';
+        icon?: 'success' | 'loading' | 'error' | 'none' | 'fail' | 'exception';
         /**
          * 自定义图标的本地路径，image 的优先级高于 icon
          */
@@ -4062,7 +4693,7 @@ declare namespace UniNamespace {
         /**
          * 取消按钮的文字颜色，默认为"#000000"
          */
-        cancelColor?: HBuilderX.ColorString | string;
+        cancelColor?: string.ColorString | string;
         /**
          * 确定按钮的文字，默认为"确定"
          */
@@ -4070,7 +4701,7 @@ declare namespace UniNamespace {
         /**
          * 确定按钮的文字颜色，默认为"#3CC51F"
          */
-        confirmColor?: HBuilderX.ColorString | string;
+        confirmColor?: string.ColorString | string;
         /**
          * 是否显示输入框
          */
@@ -4110,11 +4741,11 @@ declare namespace UniNamespace {
 
     interface ShowActionSheetOptions {
         /**
-         * 警示文案（已废弃，请改用 alertText）
+         * 菜单标题
          */
         title?: string;
         /**
-         * 警示文案
+         * 警示文案（同菜单标题）
          */
         alertText?: string;
         /**
@@ -4124,7 +4755,7 @@ declare namespace UniNamespace {
         /**
          * 按钮的文字颜色，默认为"#000000"
          */
-        itemColor?: HBuilderX.ColorString | string;
+        itemColor?: string.ColorString | string;
         /**
          * 大屏设备弹出原生选择按钮框的指示区域，默认居中显示
          */
@@ -4192,11 +4823,11 @@ declare namespace UniNamespace {
         /**
          * 前景颜色值，包括按钮、标题、状态栏的颜色
          */
-        frontColor?: HBuilderX.ColorString | string;
+        frontColor?: string.ColorString | string;
         /**
          * 背景颜色值，有效值为十六进制颜色
          */
-        backgroundColor?: HBuilderX.ColorString | string;
+        backgroundColor?: string.ColorString | string;
         /**
          * 动画效果
          */
@@ -4418,15 +5049,15 @@ declare namespace UniNamespace {
         /**
          * tab 上的文字默认颜色
          */
-        color?: HBuilderX.ColorString | string;
+        color?: string.ColorString | string;
         /**
          * tab 上的文字选中时的颜色
          */
-        selectedColor?: HBuilderX.ColorString | string;
+        selectedColor?: string.ColorString | string;
         /**
          * tab 的背景色
          */
-        backgroundColor?: HBuilderX.ColorString | string;
+        backgroundColor?: string.ColorString | string;
         /**
          * 图片背景
          */
@@ -4642,7 +5273,7 @@ declare namespace UniNamespace {
         /**
          * 需要跳转的应用内非 tabBar 的页面的路径 , 路径后可以带参数
          */
-        url: string | HBuilderX.PageURIString;
+        url: string | string.PageURIString;
         /**
          * 窗口显示的动画类型
          * - auto: 自动选择动画效果
@@ -4698,7 +5329,7 @@ declare namespace UniNamespace {
         /**
          * 触发一个事件
          */
-        emit(eventName: string, args?: any []): void;
+        emit(eventName: string, ...args: any[]): void;
         /**
          * 持续监听一个事件
          */
@@ -4717,7 +5348,7 @@ declare namespace UniNamespace {
         /**
          * 需要跳转的应用内非 tabBar 的页面的路径 , 路径后可以带参数
          */
-        url: string | HBuilderX.PageURIString;
+        url: string | string.PageURIString;
         /**
          * 接口调用成功的回调函数
          */
@@ -4734,9 +5365,9 @@ declare namespace UniNamespace {
 
     interface ReLaunchOptions {
         /**
-         * 需要跳转的应用内非 tabBar 的页面的路径 , 路径后可以带参数
+         * 需要跳转的应用内页面路径 , 路径后可以带参数。参数与路径之间使用?分隔，参数键与参数值用=相连，不同参数用&分隔；如 'path?key=value&key2=value2'，如果跳转的页面路径是 tabBar 页面则不能带参数
          */
-        url: string | HBuilderX.PageURIString;
+        url: string | string.PageURIString;
         /**
          * 接口调用成功的回调函数
          */
@@ -4755,7 +5386,7 @@ declare namespace UniNamespace {
         /**
          * 需要跳转的 tabBar 页面的路径，路径后不能带参数
          */
-        url: string | HBuilderX.PageURIString;
+        url: string | string.PageURIString;
         /**
          * 接口调用成功的回调函数
          */
@@ -4774,7 +5405,7 @@ declare namespace UniNamespace {
         /**
          * 预加载页面的路径
          */
-        url: string | HBuilderX.PageURIString;
+        url: string | string.PageURIString;
         /**
          * 接口调用成功的回调函数
          */
@@ -4793,7 +5424,7 @@ declare namespace UniNamespace {
         /**
          * 需要跳转的 tabBar 页面的路径，路径后不能带参数
          */
-        url: string | HBuilderX.PageURIString;
+        url: string | string.PageURIString;
     }
 
     interface CreateIntersectionObserverOptions {
@@ -5070,6 +5701,13 @@ declare namespace UniNamespace {
          * 节点对应的 Context 对象
          */
         context?: MapContext | CanvasContext | VideoContext | EditorContext;
+    }
+
+    interface NodeCallbackResult {
+        /**
+         * 节点对应的 Node 实例
+         */
+        node: any;
     }
 
     interface EditorContext {
@@ -5353,6 +5991,10 @@ declare namespace UniNamespace {
          * 是否返回节点对应的 Context 对象
          */
         context?: boolean;
+        /**
+         * 是否返回节点对应的 Node 实例
+         */
+        node?: boolean;
     }
 
     interface IntersectionObserver {
@@ -5394,31 +6036,31 @@ declare namespace UniNamespace {
          * - landscape:
          * - portrait:
          */
-        orientation: 'landscape' | 'portrait';
+        orientation?: 'landscape' | 'portrait';
         /**
          * 页面宽度（ px 为单位）
          */
-        width: number;
+        width?: number;
         /**
          * 页面高度（ px 为单位）
          */
-        height: number;
+        height?: number;
         /**
          * 页面最小宽度（ px 为单位）
          */
-        'min-width': number;
+        'min-width'?: number;
         /**
          * 页面最小高度（ px 为单位）
          */
-        'min-height': number;
+        'min-height'?: number;
         /**
          * 页面最大宽度（ px 为单位）
          */
-        'max-width': number;
+        'max-width'?: number;
         /**
          * 页面最大高度（ px 为单位）
          */
-        'max-height': number;
+        'max-height'?: number;
     }
 
     interface MediaQueryObserveResult {
@@ -5597,11 +6239,11 @@ declare namespace UniNamespace {
         /**
          * 填充色
          */
-        fillStyle: HBuilderX.ColorString | string;
+        fillStyle: string.ColorString | string;
         /**
          * 边框颜色
          */
-        strokeStyle: HBuilderX.ColorString | string;
+        strokeStyle: string.ColorString | string;
         /**
          * 阴影的模糊级别
          */
@@ -5609,7 +6251,7 @@ declare namespace UniNamespace {
         /**
          * 阴影的颜色
          */
-        shadowColor: HBuilderX.ColorString | string;
+        shadowColor: string.ColorString | string;
         /**
          * 阴影相对于形状在水平方向的偏移
          */
@@ -5659,15 +6301,15 @@ declare namespace UniNamespace {
         /**
          * 设置填充色
          */
-        setFillStyle(color: HBuilderX.ColorString | CanvasGradient): void;
+        setFillStyle(color: string.ColorString | CanvasGradient): void;
         /**
          * 设置边框颜色
          */
-        setStrokeStyle(color: HBuilderX.ColorString | string): void;
+        setStrokeStyle(color: string.ColorString | string): void;
         /**
          * 设置阴影样式
          */
-        setShadow(offsetX?: number, offsetY?: number, blur?: number, color?: HBuilderX.ColorString | string): void;
+        setShadow(offsetX?: number, offsetY?: number, blur?: number, color?: string.ColorString | string): void;
         /**
          * 创建一个线性的渐变颜色
          */
@@ -5679,7 +6321,7 @@ declare namespace UniNamespace {
         /**
          * 创建一个颜色的渐变点
          */
-        addColorStop(stop: number, color: HBuilderX.ColorString | string): void;
+        addColorStop(stop: number, color: string.ColorString | string): void;
         /**
          * 设置线条的宽度
          */
@@ -5830,7 +6472,7 @@ declare namespace UniNamespace {
         /**
          * 添加颜色的渐变点
          */
-        addColorStop(stop: number, color: HBuilderX.ColorString | string): void;
+        addColorStop(stop: number, color: string.ColorString | string): void;
     }
 
     interface CanvasTextMetrics {
@@ -5960,7 +6602,7 @@ declare namespace UniNamespace {
         /**
          * 图像像素点数据，一维数组，每四项表示一个像素点的rgba
          */
-        data?: any [];
+        data?: any;
         /**
          * 源图像数据在目标画布中的位置偏移量（x 轴方向的偏移量）
          */
@@ -6239,11 +6881,17 @@ declare namespace UniNamespace {
         complete?: (result: any) => void;
     }
 
+    interface GetExtConfigSuccessCallbackResult {
+        /** 第三方平台自定义的数据 */
+        extConfig: AnyObject;
+        errMsg: string;
+    }
+
     interface GetExtConfigOptions {
         /**
          * 接口调用成功的回调函数
          */
-        success?: (result: any) => void;
+        success?: (result: GetExtConfigSuccessCallbackResult) => void;
         /**
          * 接口调用失败的回调函数
          */
@@ -6336,8 +6984,9 @@ declare namespace UniNamespace {
          * - xiaomi: 小米登录
          * - apple: Apple登录
          * - univerify: 一键登录
+         * - huawei: 华为登录
          */
-        provider?: 'weixin' | 'qq' | 'sinaweibo' | 'xiaomi' | 'apple' | 'univerify';
+        provider?: 'weixin' | 'qq' | 'sinaweibo' | 'xiaomi' | 'apple' | 'univerify' | 'huawei';
         /**
          * 授权类型，默认 auth_base。
          */
@@ -7212,11 +7861,98 @@ declare namespace UniNamespace {
         complete?: (result: any) => void;
     }
 
+    interface SetPushChannelOptions {
+        /**
+         * 添加的声音文件，注意raw目录下必须要有 ，不传此字段将使用默认铃音。
+         * @defaultValue null
+         */
+        soundName?: string;
+        /**
+         * 通知渠道id
+         */
+        channelId: string;
+        /**
+         * 通知渠道描述
+         */
+        channelDesc: string;
+        /**
+         * 呼吸灯闪烁
+         * @defaultValue false
+         */
+        enableLights?: boolean;
+        /**
+         * 震动
+         * @defaultValue false
+         */
+        enableVibration?: boolean;
+        /**
+         * 通知的重要性级别，可选范围IMPORTANCE_LOW：2、IMPORTANCE_DEFAULT：3、IMPORTANCE_HIGH：4 。
+         * @defaultValue 3
+         */
+        importance?: number;
+        /**
+         * 锁屏可见性，可选范围VISIBILITY_PRIVATE：0、VISIBILITY_PUBLIC：1、VISIBILITY_SECRET：-1、VISIBILITY_NO_OVERRIDE：-1000。
+         * @defaultValue -1000
+         */
+        lockscreenVisibility?: number;
+    }
+    interface ChannelManager {
+        /**
+         * 设置推送渠道
+         *
+         * @uniPlatform {
+         *    "app": {
+         *        "android": {
+         *            "osVer": "4.4",
+         *  		  	 "uniVer": "√",
+         * 			 "unixVer": "3.98"
+         *        },
+         *        "ios": {
+         *            "osVer": "9.0",
+         *  		  	 "uniVer": "x",
+         * 			 "unixVer": "x"
+         *        }
+         *    }
+         * }
+         */
+        setPushChannel(options: SetPushChannelOptions): void;
+        /**
+         * 获取当前应用注册的所有的通知渠道。
+         *
+         * @uniPlatform {
+         *    "app": {
+         *        "android": {
+         *            "osVer": "4.4",
+         *  		  	 "uniVer": "√",
+         * 			 "unixVer": "3.98"
+         *        },
+         *        "ios": {
+         *            "osVer": "9.0",
+         *  		  	 "uniVer": "x",
+         * 			 "unixVer": "x"
+         *        }
+         *    }
+         * }
+         */
+        getAllChannels(): Array<string>;
+    }
+
+    interface GetPushClientIdSuccessData {
+        /**
+         * 个推客户端推送id，对应uni-id-device表的push_clientid
+         */
+        cid: string;
+        /**
+         * 错误描述
+         */
+        errMsg: string;
+    }
+
     interface GetPushClientIdOptions {
         /**
          * 接口调用成功的回调函数
          */
-        success?: (result: any) => void;
+        success?: (result: GetPushClientIdSuccessData) => void;
         /**
          * 接口调用失败的回调函数
          */
@@ -8361,6 +9097,10 @@ declare namespace UniNamespace {
          */
         invoke?: (result: any) => void;
         /**
+         * 方法调用后触发，处理返回值
+         */
+        returnValue?: (result: any) => void;
+        /**
          * 成功回调拦截
          */
         success?: (result: any) => void;
@@ -8846,6 +9586,9 @@ declare namespace UniNamespace {
 declare const uni: UniNamespace.Uni;
 
 interface Uni {
+    env: {
+      USER_DATA_PATH: string;
+    },
     /**
      * 将 Base64 字符串转成 ArrayBuffer 对象
      *
@@ -8898,14 +9641,65 @@ interface Uni {
      * 上传文件
      *
      * 文档: [http://uniapp.dcloud.io/api/request/network-file?id=uploadfile](http://uniapp.dcloud.io/api/request/network-file?id=uploadfile)
+     * @tutorial https://uniapp.dcloud.net.cn/api/request/network-file.html#uploadfile
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.uploadFile({
+     * 			url: 'http://192.168.12.106:8080/uploadFile', //仅为示例，非真实的接口地址
+     * 			filePath: "/static/logo.png",
+     * 			name: 'file',
+     * 			formData: {
+     * 				'user': 'test'
+     * 			},
+     * 			success: (uploadFileRes) => {
+     * 				console.log(uploadFileRes.data);
+     * 			}
+     * 		});
+     * ```
      */
     uploadFile(options: UniNamespace.UploadFileOption): UniNamespace.UploadTask;
     /**
      * 下载文件
      *
      * 文档: [http://uniapp.dcloud.io/api/request/network-file?id=downloadfile](http://uniapp.dcloud.io/api/request/network-file?id=downloadfile)
+     * @tutorial https://uniapp.dcloud.net.cn/api/request/network-file.html#downloadfile
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.downloadFile({
+     * 				url: "http://192.168.12.106:8080/downloadfile",
+     * 				success(e) {
+     * 					console.log("success111 :", e);
+     * 				}
+     * 			});
+     * ```
      */
-    downloadFile(options: UniNamespace.DownloadFileOption): Promise<UniNamespace.DownloadSuccessData>;
+    downloadFile(options: UniNamespace.DownloadFileOption): UniNamespace.DownloadTask;
     /**
      * 导入原生插件
      *
@@ -8928,50 +9722,209 @@ interface Uni {
      * 创建一个 WebSocket 连接
      *
      * 文档: [http://uniapp.dcloud.io/api/request/websocket?id=connectsocket](http://uniapp.dcloud.io/api/request/websocket?id=connectsocket)
+     * @tutorial https://uniapp.dcloud.net.cn/api/request/websocket.html#connectsocket
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     *  uni.connectSocket({
+     * 		url: "ws://192.168.12.106:8080/ws",
+     * 		complete: (e) => {
+     * 			console.log("socket :", e);
+     * 		}
+     * 	});
+     * ```
      */
     connectSocket(options: UniNamespace.ConnectSocketOption): UniNamespace.SocketTask;
     /**
      * 监听WebSocket连接打开事件
      *
      * 文档: [http://uniapp.dcloud.io/api/request/websocket?id=onsocketopen](http://uniapp.dcloud.io/api/request/websocket?id=onsocketopen)
+     * @tutorial https://uniapp.dcloud.net.cn/api/request/websocket.html#onsocketopen
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.onSocketOpen(function (res) {
+     *  console.log('WebSocket连接已打开！');
+     * });
+     * ```
      */
     onSocketOpen(options: (result: UniNamespace.OnSocketOpenCallbackResult) => void): void;
     /**
      * 监听WebSocket错误
      *
      * 文档: [http://uniapp.dcloud.io/api/request/websocket?id=onsocketerror](http://uniapp.dcloud.io/api/request/websocket?id=onsocketerror)
+     * @tutorial https://uniapp.dcloud.net.cn/api/request/websocket.html#onsocketerror
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.onSocketError(function (res) {
+     * console.log('WebSocket连接打开失败，请检查！');
+     * });
+     * ```
      */
     onSocketError(callback: (result: UniNamespace.GeneralCallbackResult) => void): void;
     /**
      * 通过 WebSocket 连接发送数据
      *
      * 文档: [http://uniapp.dcloud.io/api/request/websocket?id=sendsocketmessage](http://uniapp.dcloud.io/api/request/websocket?id=sendsocketmessage)
+     * @tutorial https://uniapp.dcloud.net.cn/api/request/websocket.html#sendsocketmessage
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.sendSocketMessage({
+     * data: msg
+     * });
+     * ```
      */
     sendSocketMessage(options: UniNamespace.SendSocketMessageOptions): void;
     /**
      * 监听WebSocket接受到服务器的消息事件
      *
      * 文档: [http://uniapp.dcloud.io/api/request/websocket?id=onsocketmessage](http://uniapp.dcloud.io/api/request/websocket?id=onsocketmessage)
+     * @tutorial https://uniapp.dcloud.net.cn/api/request/websocket.html#onsocketmessage
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.onSocketMessage(function (res) {
+     * console.log('收到服务器内容：' + res.data);
+     * });
+     * ```
      */
-    onSocketMessage(callback: (result: UniNamespace.OnSocketMessageCallbackResult) => void): void;
+    onSocketMessage<T = any>(callback: (result: UniNamespace.OnSocketMessageCallbackResult<T>) => void): void;
     /**
      * 关闭 WebSocket 连接
      *
      * 文档: [http://uniapp.dcloud.io/api/request/websocket?id=closesocket](http://uniapp.dcloud.io/api/request/websocket?id=closesocket)
+     * @tutorial https://uniapp.dcloud.net.cn/api/request/websocket.html#closesocket
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.closeSocket();
+     * ```
      */
     closeSocket(options: UniNamespace.CloseSocketOptions): void;
     /**
      * 监听WebSocket关闭
      *
      * 文档: [http://uniapp.dcloud.io/api/request/websocket?id=onsocketclose](http://uniapp.dcloud.io/api/request/websocket?id=onsocketclose)
+     * @tutorial https://uniapp.dcloud.net.cn/api/request/websocket.html#onsocketclose
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.onSocketClose(function (res) {
+     * console.log('WebSocket 已关闭！');
+     * });
+     * ```
      */
-    onSocketClose(callback: (result: UniNamespace.GeneralCallbackResult) => void): void;
+    onSocketClose(callback: (result: UniNamespace.OnSocketCloseOptions) => void): void;
     /**
      * 从本地相册选择图片或使用相机拍照
      *
      * 文档: [http://uniapp.dcloud.io/api/media/image?id=chooseimage](http://uniapp.dcloud.io/api/media/image?id=chooseimage)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.chooseImage({
+     * count:3,
+     * success(e){
+     * 	console.log(JSON.stringify(e))
+     * 	}
+     * })
+     * ```
+     * @tutorial http://uniapp.dcloud.io/api/media/image?id=chooseimage
      */
-    chooseImage(options: UniNamespace.ChooseImageOptions): Promise<UniNamespace.ChooseImageSuccessCallbackResult>;
+    chooseImage(options: UniNamespace.ChooseImageOptions): void;
     /**
      * 从本地选择文件（仅支持H5）
      *
@@ -8982,68 +9935,251 @@ interface Uni {
      * 预览图片
      *
      * 文档: [http://uniapp.dcloud.io/api/media/image?id=previewimage](http://uniapp.dcloud.io/api/media/image?id=previewimage)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.previewImage({
+     * urls:['/static/a.jpg','/static/b.jpg'],
+     * success(e){
+     * 	console.log(JSON.stringify(e))
+     * 	}
+     * })
+     * ```
+     * @tutorial http://uniapp.dcloud.io/api/media/image?id=previewimage
      */
-    previewImage(options: UniNamespace.PreviewImageOptions): Promise<void>;
+    previewImage(options: UniNamespace.PreviewImageOptions): void;
     /**
      * 预览图片
      *
      * 文档: [http://uniapp.dcloud.io/api/media/image?id=closepreviewimage](http://uniapp.dcloud.io/api/media/image?id=closepreviewimage)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.closePreviewImage({
+     * success(e){
+     * 	console.log(JSON.stringify(e))
+     * 	}
+     * })
+     * ```
+     * @tutorial http://uniapp.dcloud.io/api/media/image?id=closepreviewimage
      */
     closePreviewImage(options: UniNamespace.CallBackOptions): void;
     /**
      * 预览图片
      *
      * 文档: [http://uniapp.dcloud.io/api/media/image?id=getimageinfo](http://uniapp.dcloud.io/api/media/image?id=getimageinfo)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.getImageInfo({
+     * src:'/static/a.jpg',
+     * success(e){
+     * 	console.log(JSON.stringify(e))
+     * 	},
+     * })
+     * ```
+     * @tutorial http://uniapp.dcloud.io/api/media/image?id=getimageinfo
      */
     getImageInfo(options: UniNamespace.GetImageInfoOptions): void;
     /**
      * 保存图片到系统相册
      *
      * 文档: [http://uniapp.dcloud.io/api/media/image?id=saveimagetophotosalbum](http://uniapp.dcloud.io/api/media/image?id=saveimagetophotosalbum)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.saveImageToPhotosAlbum({
+     * filePath:'/static/a.jpg',
+     * success(e){
+     * 	console.log(JSON.stringify(e))
+     * 	},
+     * })
+     * ```
+     * @tutorial http://uniapp.dcloud.io/api/media/image?id=saveimagetophotosalbum
      */
-    saveImageToPhotosAlbum(options: UniNamespace.SaveImageToPhotosAlbumOptions): Promise<{
-        errMsg: string;
-    }>;
+    saveImageToPhotosAlbum(options: UniNamespace.SaveImageToPhotosAlbumOptions): void;
     /**
      * 压缩图片
      *
      * 文档: [http://uniapp.dcloud.io/api/media/image?id=compressimage](http://uniapp.dcloud.io/api/media/image?id=compressimage)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.compressImage({
+     * src:'/static/a.jpg',
+     * 	quality:80,
+     * success(e){
+     * 	console.log(JSON.stringify(e))
+     * 	},
+     * })
+     * ```
+     * @tutorial http://uniapp.dcloud.io/api/media/image?id=compressimage
      */
     compressImage(options: UniNamespace.CompressImageOptions): void;
     /**
      * 录音管理
      *
      * 文档: [http://uniapp.dcloud.io/api/media/record-manager?id=getrecordermanager](http://uniapp.dcloud.io/api/media/record-manager?id=getrecordermanager)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @tutorial http://uniapp.dcloud.io/api/media/record-manager?id=getrecordermanager
+     * @example ```typescript
+     * 	var manager = uni.getRecorderManager()
+     * manager.start({
+     * 	format:"mp3"
+     * })
+     * manager.onStop((e)=>{
+     * 	console.log("录音结束")
+     * })
+     * ```
      */
     getRecorderManager(): UniNamespace.RecorderManager;
     /**
      * 获取全局唯一的背景音频管理器 backgroundAudioManager
      *
      * 文档: [http://uniapp.dcloud.io/api/media/background-audio-manager?id=getbackgroundaudiomanager](http://uniapp.dcloud.io/api/media/background-audio-manager?id=getbackgroundaudiomanager)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "√"
+     * }
+     * }
+     * }
+     * @return 背景音频对象
+     * @tutorial http://uniapp.dcloud.io/api/media/background-audio-manager?id=getbackgroundaudiomanager
      */
     getBackgroundAudioManager(): UniNamespace.BackgroundAudioManager;
     /**
      * 创建并返回 audio 上下文 audioContext 对象
      *
      * 文档: [http://uniapp.dcloud.io/api/media/audio-context?id=createinneraudiocontext](http://uniapp.dcloud.io/api/media/audio-context?id=createinneraudiocontext)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "√"
+     * }
+     * }
+     * }
+     * @return 音频对象
+     * @tutorial http://uniapp.dcloud.io/api/media/audio-context?id=createinneraudiocontext
      */
     createInnerAudioContext(): UniNamespace.InnerAudioContext;
     /**
      * 拍摄视频或从手机相册中选视频，返回视频的临时文件路径。
      *
      * 文档: [http://uniapp.dcloud.io/api/media/video?id=choosevideo](http://uniapp.dcloud.io/api/media/video?id=choosevideo)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.chooseVideo({
+     * success(e){
+     * 	console.log(JSON.stringify(e))
+     * 	},
+     * })
+     * ```
+     * @tutorial http://uniapp.dcloud.io/api/media/video?id=choosevideo
      */
     chooseVideo(options: UniNamespace.ChooseVideoOptions): void;
     /**
      * 压缩视频
      *
      * 文档: [http://uniapp.dcloud.io/api/media/video?id=compressvideo](http://uniapp.dcloud.io/api/media/video?id=compressvideo)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.compressVideo({
+     *  src:"/static/a.mp4",
+     *  quality:"low",
+     * success(e){
+     * 	console.log(JSON.stringify(e))
+     * 	},
+     * })
+     * ```
+     * @tutorial http://uniapp.dcloud.io/api/media/video?id=compressvideo
      */
     compressVideo(options: UniNamespace.CompressVideoOptions): void;
     /**
      * 压缩视频
      *
      * 文档: [http://uniapp.dcloud.io/api/media/video?id=getvideoinfo](http://uniapp.dcloud.io/api/media/video?id=getvideoinfo)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.GetVideoInfo({
+     *  src:"/static/a.mp4",
+     * success(e){
+     * 	console.log(JSON.stringify(e))
+     * 	},
+     * })
+     * ```
+     * @tutorial http://uniapp.dcloud.io/api/media/video?id=getvideoinfo
      */
     getVideoInfo(options: UniNamespace.GetVideoInfoOptions): void;
     /**
@@ -9056,6 +10192,24 @@ interface Uni {
      * 保存视频到系统相册
      *
      * 文档: [http://uniapp.dcloud.io/api/media/video?id=savevideotophotosalbum](http://uniapp.dcloud.io/api/media/video?id=savevideotophotosalbum)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.saveVideoToPhotosAlbum({
+     *  filePath:"/static/a.mp4",
+     * success(e){
+     * 	console.log(JSON.stringify(e))
+     * 	},
+     * })
+     * ```
+     * @tutorial http://uniapp.dcloud.io/api/media/video?id=savevideotophotosalbum
      */
     saveVideoToPhotosAlbum(options: UniNamespace.SaveVideoToPhotosAlbumOptions): void;
     /**
@@ -9063,7 +10217,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/media/video-context?id=createvideocontext](http://uniapp.dcloud.io/api/media/video-context?id=createvideocontext)
      */
-    createVideoContext(videoId: string, currentComponent?: any): UniNamespace.VideoContext;
+    createVideoContext(videoId: string, componentInstance?: any): UniNamespace.VideoContext;
     /**
      * 创建并返回 camera 组件的上下文 cameraContext 对象
      *
@@ -9075,7 +10229,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/media/camera-context](http://uniapp.dcloud.io/api/media/camera-context)
      */
-    createLivePusherContext(livePusherId: string, currentComponent: any): UniNamespace.LivePusherContext;
+    createLivePusherContext(livePusherId: string, componentInstance: any): UniNamespace.LivePusherContext;
     /**
      * 保存文件到本地
      *
@@ -9107,17 +10261,48 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/file/file?id=opendocument](http://uniapp.dcloud.io/api/file/file?id=opendocument)
      */
-    openDocument(options: UniNamespace.OpenDocumentOptions): Promise<any>;
+    openDocument(options: UniNamespace.OpenDocumentOptions): void;
     /**
      * 将数据存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个异步接口
      *
      * 文档: [http://uniapp.dcloud.io/api/storage/storage?id=setstorage](http://uniapp.dcloud.io/api/storage/storage?id=setstorage)
+     * @tutorial https://uniapp.dcloud.net.cn/api/storage/storage.html#setstorage
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
-    setStorage(options: UniNamespace.SetStorageOptions): PromiseLike<any>;
+    setStorage(options: UniNamespace.SetStorageOptions): void;
     /**
      * 将 data 存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个同步接口
      *
      * 文档: [http://uniapp.dcloud.io/api/storage/storage?id=setstoragesync](http://uniapp.dcloud.io/api/storage/storage?id=setstoragesync)
+     * @param 需要存储的内容，只支持原生类型、及能够通过 JSON.stringify 序列化的对象
+     * @tutorial https://uniapp.dcloud.net.cn/api/storage/storage.html#setstoragesync
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     setStorageSync(key: string, value: any): void;
     /**
@@ -9130,54 +10315,177 @@ interface Uni {
      * 从本地缓存中异步获取指定 key 对应的内容
      *
      * 文档: [http://uniapp.dcloud.io/api/storage/storage?id=getstorage](http://uniapp.dcloud.io/api/storage/storage?id=getstorage)
+     * @tutorial https://uniapp.dcloud.net.cn/api/storage/storage.html#getstorage
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
-    getStorage(options: UniNamespace.GetStorageOptions): PromiseLike<any>;
+    getStorage<T = any>(options: UniNamespace.GetStorageOptions<T>): void;
     /**
      * 从本地缓存中同步获取指定 key 对应的内容
      *
      * 文档: [http://uniapp.dcloud.io/api/storage/storage?id=getstoragesync](http://uniapp.dcloud.io/api/storage/storage?id=getstoragesync)
+     * @param 本地缓存中的指定的 key
+     * @tutorial https://uniapp.dcloud.net.cn/api/storage/storage.html#getstoragesync
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
-    getStorageSync(key: string): any;
+    getStorageSync<T = any>(key: string): T;
     /**
      * 异步获取当前 storage 的相关信息
      *
      * 文档: [http://uniapp.dcloud.io/api/storage/storage?id=getstorageinfo](http://uniapp.dcloud.io/api/storage/storage?id=getstorageinfo)
+     * @tutorial https://uniapp.dcloud.net.cn/api/storage/storage.html#getstorageinfo
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     getStorageInfo(options: UniNamespace.GetStorageInfoOptions): void;
     /**
      * 同步获取当前 storage 的相关信息
      *
      * 文档: [http://uniapp.dcloud.io/api/storage/storage?id=getstorageinfosync](http://uniapp.dcloud.io/api/storage/storage?id=getstorageinfosync)
+     * @tutorial https://uniapp.dcloud.net.cn/api/storage/storage.html#getstorageinfosync
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     getStorageInfoSync(): UniNamespace.GetStorageInfoSuccess;
     /**
      * 从本地缓存中异步移除指定 key
      *
      * 文档: [http://uniapp.dcloud.io/api/storage/storage?id=removestorage](http://uniapp.dcloud.io/api/storage/storage?id=removestorage)
+     * @tutorial hhttps://uniapp.dcloud.net.cn/api/storage/storage.html#removestorage
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     removeStorage(options: UniNamespace.RemoveStorageOptions): void;
     /**
      * 从本地缓存中同步移除指定 key
      *
      * 文档: [http://uniapp.dcloud.io/api/storage/storage?id=removestoragesync](http://uniapp.dcloud.io/api/storage/storage?id=removestoragesync)
+     * @param 本地缓存中的指定的 key
+     * @tutorial https://uniapp.dcloud.net.cn/api/storage/storage.html#removestoragesync
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     removeStorageSync(key: string): void;
     /**
      * 清理本地数据缓存
      *
      * 文档: [http://uniapp.dcloud.io/api/storage/storage?id=clearstorage](http://uniapp.dcloud.io/api/storage/storage?id=clearstorage)
+     * @tutorial https://uniapp.dcloud.net.cn/api/storage/storage.html#clearstorage
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     clearStorage(): void;
     /**
      * 同步清理本地数据缓存
      *
      * 文档: [http://uniapp.dcloud.io/api/storage/storage?id=clearstoragesync](http://uniapp.dcloud.io/api/storage/storage?id=clearstoragesync)
+     * @tutorial https://uniapp.dcloud.net.cn/api/storage/storage.html#clearstoragesync
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "2.0.3",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     clearStorageSync(): void;
     /**
      * 获取当前的地理位置、速度
      *
      * 文档: [http://uniapp.dcloud.io/api/location/location?id=getlocation](http://uniapp.dcloud.io/api/location/location?id=getlocation)
+     * @tutorial http://uniapp.dcloud.io/api/location/location?id=getlocation
      */
     getLocation(options: UniNamespace.GetLocationOptions): void;
     /**
@@ -9229,21 +10537,134 @@ interface Uni {
      */
     offLocationChangeError(callback: (result: any) => void): any;
     /**
+     * 异步获取系统信息
+     *
+     * 文档: [http://uniapp.dcloud.io/api/system/info?id=getsysteminfo](http://uniapp.dcloud.io/api/system/info?id=getsysteminfo)
+     * @tutorial http://uniapp.dcloud.io/api/system/info?id=getsysteminfo
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.getSystemInfo({
+     * success(e) {
+     * 	console.log("success :",e);
+     * },
+     * complete(e) {
+     * 	console.log("complete :",e);
+     * }
+     * })
+     * ```
+     */
+    getSystemInfo(options?: UniNamespace.GetSystemInfoOptions): void;
+    /**
+     * 同步获取系统信息
+     *
+     * 文档: [http://uniapp.dcloud.io/api/system/info?id=getsysteminfosync](http://uniapp.dcloud.io/api/system/info?id=getsysteminfosync)
+     * @tutorial http://uniapp.dcloud.io/api/system/info?id=getsysteminfosync
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.getSystemInfoSync()
+     * ```
+     */
+    getSystemInfoSync(): UniNamespace.GetSystemInfoResult;
+    /**
      * 同步获取窗口信息
      *
      * 文档: [http://uniapp.dcloud.io/api/system/getWindowInfo.html](http://uniapp.dcloud.io/api/system/getWindowInfo.html)
+     * @tutorial http://uniapp.dcloud.io/api/system/getWindowInfo.html
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.getWindowInfo()
+     * ```
      */
     getWindowInfo(): UniNamespace.GetWindowInfoResult;
     /**
      * 同步获取设备基础信息
      *
      * 文档: [http://uniapp.dcloud.io/api/system/getDeviceInfo.html](http://uniapp.dcloud.io/api/system/getDeviceInfo.html)
+     * @tutorial https://uniapp.dcloud.net.cn/api/system/getDeviceInfo.html
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.getDeviceInfo({
+     * filter:[]
+     * })
+     * ```
      */
     getDeviceInfo(): UniNamespace.GetDeviceInfoResult;
     /**
      * 同步获取设备基础信息
      *
      * 文档: [http://uniapp.dcloud.io/api/system/info?id=getappbaseinfo](http://uniapp.dcloud.io/api/system/info?id=getappbaseinfo)
+     * @tutorial https://uniapp.dcloud.net.cn/api/system/getAppBaseInfo.html
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.getAppBaseInfo({
+     * filter:[]
+     * })
+     * ```
      */
     getAppBaseInfo(): UniNamespace.GetAppBaseInfoResult;
     /**
@@ -9251,11 +10672,33 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/caniuse.html](http://uniapp.dcloud.io/api/caniuse.html)
      */
-    canIUse(options: string): boolean;
+    canIUse(schema: keyof Uni | string): boolean;
     /**
      * 获取网络类型
      *
      * 文档: [http://uniapp.dcloud.io/api/system/network?id=getnetworktype](http://uniapp.dcloud.io/api/system/network?id=getnetworktype)
+     * @tutorial http://uniapp.dcloud.io/api/system/network?id=getnetworktype
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.getNetworkType({
+     * 	success(res){
+     * 		console.log(res);
+     * 	}
+     * });
+     * ```
      */
     getNetworkType(options: UniNamespace.GetNetworkTypeOptions): void;
     /**
@@ -9323,13 +10766,13 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/system/phone?id=makephonecall](http://uniapp.dcloud.io/api/system/phone?id=makephonecall)
      */
-    makePhoneCall(options: UniNamespace.MakePhoneCallOptions): PromiseLike<void>;
+    makePhoneCall(options: UniNamespace.MakePhoneCallOptions): void;
     /**
      * 调用扫码界面，扫码成功后返回对应的结果
      *
      * 文档: [http://uniapp.dcloud.io/api/system/barcode?id=scancode](http://uniapp.dcloud.io/api/system/barcode?id=scancode)
      */
-    scanCode(options: UniNamespace.ScanCodeOptions): Promise<UniNamespace.ScanCodeSuccessRes>;
+    scanCode(options: UniNamespace.ScanCodeOptions): void;
     /**
      * 设置系统剪贴板的内容
      *
@@ -9346,18 +10789,72 @@ interface Uni {
      * 获取 APP 授权设置
      *
      * 文档: [http://uniapp.dcloud.io/api/system/getappauthorizesetting](http://uniapp.dcloud.io/api/system/getappauthorizesetting)
+     * @tutorial http://uniapp.dcloud.io/api/system/getappauthorizesetting
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.getAppAuthorizeSetting()
+     * ```
      */
     getAppAuthorizeSetting(): UniNamespace.GetAppAuthorizeSettingResult;
     /**
      * 获取设备设置
      *
      * 文档: [http://uniapp.dcloud.io/api/system/getsystemsetting](http://uniapp.dcloud.io/api/system/getsystemsetting)
+     * @tutorial https://uniapp.dcloud.net.cn/api/system/getsystemsetting.html
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.getSystemSetting()
+     * ```
      */
     getSystemSetting(): UniNamespace.GetsystemsettingResult;
     /**
      * 跳转系统授权管理页
      *
      * 文档: [http://uniapp.dcloud.io/api/system/openappauthorizesetting](http://uniapp.dcloud.io/api/system/openappauthorizesetting)
+     * @tutorial http://uniapp.dcloud.io/api/system/openappauthorizesetting
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
+     * @example ```typescript
+     * uni.openAppAuthorizeSetting({});
+     * ```
      */
     openAppAuthorizeSetting(options: UniNamespace.CallBackOptions): void;
     /**
@@ -9586,36 +11083,174 @@ interface Uni {
      * 显示消息提示框
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/prompt?id=showtoast](http://uniapp.dcloud.io/api/ui/prompt?id=showtoast)
+     * @example ```typescript
+     *    uni.showToast({
+     *        title: '标题',
+     *        duration: 2000
+     *    });
+     * ```
+     * @tutorial [](https://uniapp.dcloud.net.cn/api/ui/prompt.html#showtoast)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     showToast(options: UniNamespace.ShowToastOptions): void;
     /**
      * 显示 loading 提示框
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/prompt?id=showloading](http://uniapp.dcloud.io/api/ui/prompt?id=showloading)
+     * @example ```typescript
+     * uni.showLoading({
+     * 	title: '加载中'
+     * });
+     * ```
+     * @tutorial [](https://uniapp.dcloud.net.cn/api/ui/prompt.html#showloading)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     showLoading(options: UniNamespace.ShowLoadingOptions): void;
     /**
      * 隐藏消息提示框
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/prompt?id=hidetoast](http://uniapp.dcloud.io/api/ui/prompt?id=hidetoast)
+     * @example ```typescript
+     *    uni.hideToast();
+     * ```
+     * @tutorial [](https://uniapp.dcloud.net.cn/api/ui/prompt.html#hidetoast)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     hideToast(): void;
     /**
      * 隐藏 loading 提示框
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/prompt?id=hideloading](http://uniapp.dcloud.io/api/ui/prompt?id=hideloading)
+     * @example ```typescript
+     * uni.showLoading({
+     * 	title: '加载中'
+     * });
+     *
+     * setTimeout(function () {
+     * 	uni.hideLoading();
+     * }, 2000);
+     *
+     * ```
+     * @tutorial [](https://uniapp.dcloud.net.cn/api/ui/prompt.html#hideloading)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     hideLoading(): void;
     /**
      * 显示模态弹窗
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/prompt?id=showmodal](http://uniapp.dcloud.io/api/ui/prompt?id=showmodal)
+     * @example ```typescript
+     * uni.showModal({
+     * 	title: '提示',
+     * 	content: '这是一个模态弹窗',
+     * 	success: function (res) {
+     * 		if (res.confirm) {
+     * 			console.log('用户点击确定');
+     * 		} else if (res.cancel) {
+     * 			console.log('用户点击取消');
+     * 		}
+     * 	}
+     * });
+     * ```
+     * @tutorial [](https://uniapp.dcloud.net.cn/api/ui/prompt.html#showmodal)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
-    showModal(options: UniNamespace.ShowModalOptions): Promise<UniNamespace.ShowModalRes>;
+    showModal(options: UniNamespace.ShowModalOptions): void;
     /**
      * 显示操作菜单
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/prompt?id=showactionsheet](http://uniapp.dcloud.io/api/ui/prompt?id=showactionsheet)
+     * @example ```typescript
+     * uni.showActionSheet({
+     * 	itemList: ['A', 'B', 'C'],
+     * 	success: function (res) {
+     * 		console.log('选中了第' + (res.tapIndex + 1) + '个按钮');
+     * 	},
+     * 	fail: function (res) {
+     * 		console.log(res.errMsg);
+     * 	}
+     * });
+     * ```
+     * @tutorial [](https://uniapp.dcloud.net.cn/api/ui/prompt.html#showactionsheet)
+     * @uniPlatform {
+     * "app": {
+     * "android": {
+     * "osVer": "4.4.4",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * },
+     * "ios": {
+     * "osVer": "9.0",
+     * "uniVer": "√",
+     * "unixVer": "3.9.0"
+     * }
+     * }
+     * }
      */
     showActionSheet(options: UniNamespace.ShowActionSheetOptions): void;
     /**
@@ -9707,31 +11342,31 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=navigateto](http://uniapp.dcloud.io/api/router?id=navigateto)
      */
-    navigateTo(options: UniNamespace.NavigateToOptions): PromiseLike<void>;
+    navigateTo(options: UniNamespace.NavigateToOptions): void;
     /**
      * 关闭当前页面，跳转到应用内的某个页面
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=redirectto](http://uniapp.dcloud.io/api/router?id=redirectto)
      */
-    redirectTo(options: UniNamespace.RedirectToOptions): PromiseLike<void>;
+    redirectTo(options: UniNamespace.RedirectToOptions): void;
     /**
      * 关闭所有页面，打开到应用内的某个页面
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=relaunch](http://uniapp.dcloud.io/api/router?id=relaunch)
      */
-    reLaunch(options: UniNamespace.ReLaunchOptions): PromiseLike<void>;
+    reLaunch(options: UniNamespace.ReLaunchOptions): void;
     /**
      * 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=switchtab](http://uniapp.dcloud.io/api/router?id=switchtab)
      */
-    switchTab(options: UniNamespace.SwitchTabOptions): PromiseLike<void>;
+    switchTab(options: UniNamespace.SwitchTabOptions): void;
     /**
      * 关闭当前页面，返回上一页面或多级页面
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=navigateback](http://uniapp.dcloud.io/api/router?id=navigateback)
      */
-    navigateBack(options?: UniNamespace.NavigateBackOptions): PromiseLike<void>;
+    navigateBack(options?: UniNamespace.NavigateBackOptions): void;
     /**
      * 预加载页面
      *
@@ -9815,13 +11450,13 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/canvas?id=canvasgetimagedata](http://uniapp.dcloud.io/api/ui/canvas?id=canvasgetimagedata)
      */
-    canvasGetImageData(options: UniNamespace.CanvasGetImageDataOptions): void;
+    canvasGetImageData(options: UniNamespace.CanvasGetImageDataOptions, componentInstance?: any): void;
     /**
      * 将像素数据绘制到画布
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/canvas?id=canvasputimagedata](http://uniapp.dcloud.io/api/ui/canvas?id=canvasputimagedata)
      */
-    canvasPutImageData(options: UniNamespace.CanvasPutImageDataOptions): void;
+    canvasPutImageData(options: UniNamespace.CanvasPutImageDataOptions, componentInstance?: any): void;
     /**
      * 监听窗口尺寸变化事件
      *
@@ -9893,31 +11528,31 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/adapt?id=setLeftWindowStyle](http://uniapp.dcloud.io/api/ui/adapt?id=setLeftWindowStyle)
      */
-    setLeftWindowStyle(options: any): void;
+    setLeftWindowStyle(options: Partial<CSSStyleDeclaration> | string.CSSURIString): void;
     /**
      * 设置rightWindow窗体样式
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/adapt?id=setRightWindowStyle](http://uniapp.dcloud.io/api/ui/adapt?id=setRightWindowStyle)
      */
-    setRightWindowStyle(options: any): void;
+    setRightWindowStyle(options: Partial<CSSStyleDeclaration> | string.CSSURIString): void;
     /**
      * 设置topWindow窗体样式
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/adapt?id=setTopWindowStyle](http://uniapp.dcloud.io/api/ui/adapt?id=setTopWindowStyle)
      */
-    setTopWindowStyle(options: any): void;
+    setTopWindowStyle(options: Partial<CSSStyleDeclaration> | string.CSSURIString): void;
     /**
      * 获取服务供应商
      *
      * 文档: [http://uniapp.dcloud.io/api/plugins/provider?id=getprovider](http://uniapp.dcloud.io/api/plugins/provider?id=getprovider)
      */
-    getProvider(options: UniNamespace.GetProviderOptions): PromiseLike<UniNamespace.GetProviderRes>;
+    getProvider(options: UniNamespace.GetProviderOptions): void;
     /**
      * 登录
      *
      * 文档: [http://uniapp.dcloud.io/api/plugins/login?id=login](http://uniapp.dcloud.io/api/plugins/login?id=login)
      */
-    login(options: UniNamespace.LoginOptions): PromiseLike<UniNamespace.LoginRes>;
+    login(options: UniNamespace.LoginOptions): void;
     /**
      * 登录
      *
@@ -9979,6 +11614,12 @@ interface Uni {
      */
     createPushMessage(options: UniNamespace.CreatePushMessageOptions): void;
     /**
+     * 获取通知渠道管理器，Android 8系统以上才可以设置通知渠道，Android 8系统以下返回null。
+     *
+     * 文档: [http://uniapp.dcloud.io/api/plugins/push.html#getChannelManager](http://uniapp.dcloud.io/api/plugins/push.html#getChannelManager)
+     */
+    getChannelManager(): UniNamespace.ChannelManager;
+    /**
      * 获取客户端唯一的推送标识
      *
      * 文档: [http://uniapp.dcloud.io/api/plugins/push.html#getpushclientid](http://uniapp.dcloud.io/api/plugins/push.html#getpushclientid)
@@ -10001,21 +11642,19 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/plugins/payment?id=requestpayment](http://uniapp.dcloud.io/api/plugins/payment?id=requestpayment)
      */
-    requestPayment(options: UniNamespace.RequestPaymentOptions): Promise<{
-        errMsg: string;
-    }>;
+    requestPayment(options: UniNamespace.RequestPaymentOptions): void;
     /**
      * 提前向用户发起授权请求
      *
      * 文档: [http://uniapp.dcloud.io/api/other/authorize?id=authorize](http://uniapp.dcloud.io/api/other/authorize?id=authorize)
      */
-    authorize(options: UniNamespace.AuthorizeOptions): Promise<any>;
+    authorize(options: UniNamespace.AuthorizeOptions): void;
     /**
      * 调起客户端小程序设置界面，返回用户设置的操作结果
      *
      * 文档: [http://uniapp.dcloud.io/api/other/authorize?id=opensetting](http://uniapp.dcloud.io/api/other/authorize?id=opensetting)
      */
-    openSetting(options?: UniNamespace.OpenSettingOptions): Promise<any>;
+    openSetting(options?: UniNamespace.OpenSettingOptions): void;
     /**
      * 获取用户的当前设置
      *
@@ -10178,6 +11817,7 @@ interface Uni {
      * 文档: [http://uniapp.dcloud.io/api/interceptor](http://uniapp.dcloud.io/api/interceptor)
      */
     addInterceptor(name: string, options: UniNamespace.InterceptorOptions): void;
+    addInterceptor(options: UniNamespace.InterceptorOptions): void;
     /**
      * 删除拦截器
      *

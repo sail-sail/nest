@@ -63,4 +63,3 @@ pub struct GenMutation(
   wxwork::wxw_msg::wxw_msg_graphql::WxwMsgGenMutation,
   wxwork::wxw_usr::wxw_usr_graphql::WxwUsrGenMutation,
 );
-
