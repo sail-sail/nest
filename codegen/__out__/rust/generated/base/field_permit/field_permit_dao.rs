@@ -592,13 +592,21 @@ pub async fn find_by_id_ok_field_permit(
   let options = Some(options);
   
   let field_permit_model = find_by_id_field_permit(
-    id,
+    id.clone(),
     options,
   ).await?;
   
   let Some(field_permit_model) = field_permit_model else {
     let err_msg = "此 字段权限 已被删除";
-    return Err(eyre!(err_msg));
+    error!(
+      "{req_id} {err_msg} id: {id:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: err_msg.to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   };
   
   Ok(field_permit_model)

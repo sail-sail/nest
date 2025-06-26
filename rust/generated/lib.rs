@@ -75,4 +75,3 @@ pub struct GenMutation(
   wx::wxo_app_token::wxo_app_token_graphql::WxoAppTokenGenMutation,
   wx::wxo_usr::wxo_usr_graphql::WxoUsrGenMutation,
 );
-

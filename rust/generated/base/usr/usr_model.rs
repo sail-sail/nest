@@ -493,9 +493,6 @@ pub struct UsrSearch {
   /// 所属角色
   #[graphql(name = "role_ids_save_null")]
   pub role_ids_is_null: Option<bool>,
-  /// 所属角色
-  #[graphql(name = "role_codes")]
-  pub role_codes: Option<Vec<String>>,
   /// 所属部门
   #[graphql(name = "dept_ids")]
   pub dept_ids: Option<Vec<DeptId>>,

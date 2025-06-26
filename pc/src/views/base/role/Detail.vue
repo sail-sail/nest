@@ -106,12 +106,11 @@
             label="首页"
             prop="home_url"
           >
-            <CustomSelect
+            <CustomInput
               v-model="dialogModel.home_url"
-              :method="(getHomeUrlMap as any)"
-              :placeholder="`${ ns('请选择') } ${ n('首页') }`"
+              placeholder="请输入 首页"
               :readonly="isLocked || isReadonly"
-            ></CustomSelect>
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -250,10 +249,6 @@ import {
   intoInputRole,
 } from "./Api.ts";
 
-import {
-  getHomeUrlMap,
-} from "./Api2";
-
 const emit = defineEmits<{
   nextId: [
     {
@@ -264,14 +259,6 @@ const emit = defineEmits<{
 }>();
 
 const pagePath = getPagePathRole();
-
-const {
-  n,
-  ns,
-  nsAsync,
-  initI18ns,
-  initSysI18ns,
-} = useI18n(pagePath);
 
 const permitStore = usePermitStore();
 
