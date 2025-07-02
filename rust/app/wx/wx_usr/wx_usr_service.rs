@@ -67,6 +67,7 @@ use generated::common::gql::model::UniqueType;
 use generated::common::util::http::client as reqwest_client;
 use generated::common::exceptions::service_exception::ServiceException;
 
+#[allow(unused_variables)]
 pub async fn code2session(
   code2session_input: Code2sessionInput,
   ip: String,
