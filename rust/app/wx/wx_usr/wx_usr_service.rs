@@ -90,7 +90,7 @@ pub async fn code2session(
   query_string.push_str(&format!("secret={}&", urlencoding::encode(&appsecret)));
   query_string.push_str(&format!("js_code={}&", urlencoding::encode(&js_code)));
   query_string.push_str("grant_type=authorization_code");
-  let url = format!("{}{}", base_url, query_string);
+  let url = format!("{base_url}{query_string}");
   
   info!(
     "{req_id} WxUsrService.code2Session: {url}",
