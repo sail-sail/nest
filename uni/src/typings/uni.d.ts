@@ -11427,25 +11427,25 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=relaunch](http://uniapp.dcloud.io/api/router?id=relaunch)
      */
-    reLaunch(options: UniNamespace.ReLaunchOptions): void;
+    reLaunch(options: UniNamespace.ReLaunchOptions): Promise<any>;
     /**
      * 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=switchtab](http://uniapp.dcloud.io/api/router?id=switchtab)
      */
-    switchTab(options: UniNamespace.SwitchTabOptions): void;
+    switchTab(options: UniNamespace.SwitchTabOptions): Promise<any>;
     /**
      * 关闭当前页面，返回上一页面或多级页面
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=navigateback](http://uniapp.dcloud.io/api/router?id=navigateback)
      */
-    navigateBack(options?: UniNamespace.NavigateBackOptions): void;
+    navigateBack(options?: UniNamespace.NavigateBackOptions): Promise<any>;
     /**
      * 预加载页面
      *
      * 文档: [http://uniapp.dcloud.io/api/preload-page?id=preloadpage](http://uniapp.dcloud.io/api/preload-page?id=preloadpage)
      */
-    preloadPage(options: UniNamespace.PreloadPageOptions): void;
+    preloadPage(options: UniNamespace.PreloadPageOptions): Promise<any>;
     /**
      * 取消页面预加载
      *
