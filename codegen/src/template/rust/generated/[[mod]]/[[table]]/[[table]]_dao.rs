@@ -2085,23 +2085,23 @@ pub async fn find_all_<#=table#>(
     
     // <#=inlineForeignTab.label#>
     model.<#=inline_column_name#> = <#=inline_column_name#>_models
-      .clone()
-      .into_iter()
+      .iter()
       .filter(|item|
         item.<#=inlineForeignTab.column#> == model.id
       )
-      .collect();<#
+      .cloned()
+      .collect::<Vec<_>>();<#
     } else if (inline_foreign_type === "one2one") {
     #>
     
     // <#=inlineForeignTab.label#>
     model.<#=inline_column_name#> = <#=inline_column_name#>_models
-      .clone()
-      .into_iter()
+      .iter()
       .filter(|item|
         item.<#=inlineForeignTab.column#> == model.id
       )
       .take(1)
+      .cloned()
       .collect::<Vec<_>>()
       .pop();<#
       }
@@ -2139,10 +2139,11 @@ pub async fn find_all_<#=table#>(
     
     // <#=column_comment#>
     model.<#=column_name#>_<#=table#>_models = <#=column_name#>_<#=table#>_models.clone()
-      .into_iter()
+      .iter()
       .filter(|item|
         item.<#=many2many.column1#> == model.id
       )
+      .cloned()
       .collect::<Vec<_>>()
       .into();<#
     }
@@ -2151,12 +2152,12 @@ pub async fn find_all_<#=table#>(
     #>
     
     model.<#=auditColumn#>_recent_model = <#=auditColumn#>_recent_models
-      .clone()
-      .into_iter()
+      .iter()
       .filter(|item|
         item.<#=table#>_id == model.id
       )
       .take(1)
+      .cloned()
       .collect::<Vec<_>>()
       .pop();<#
     }
@@ -4992,7 +4993,7 @@ pub async fn find_auto_code_<#=table#>(
     <#=autoCodeColumn.autoCode.seq#>
   };
   
-  let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>", <#=autoCodeColumn.autoCode.seq#>);
+  let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=autoCodeColumn.autoCode.seq#>:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
   
   Ok((<#=autoCodeColumn.autoCode.seq#>, <#=autoCodeColumn.COLUMN_NAME#>))
 }<#
@@ -5085,7 +5086,7 @@ pub async fn find_auto_code_<#=table#>(
     }
   };
   
-  let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{}{:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>", <#=dateSeq#>, <#=autoCodeColumn.autoCode.seq#>);
+  let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=dateSeq#>}{<#=autoCodeColumn.autoCode.seq#>:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
   
   Ok((now.date(), <#=autoCodeColumn.autoCode.seq#>, <#=autoCodeColumn.COLUMN_NAME#>))
 }<#

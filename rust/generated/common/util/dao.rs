@@ -87,10 +87,10 @@ pub fn encrypt(
     iv.into(),
   )
     .encrypt_padded_vec_mut::<Pkcs7>(
-      format!("{}{}", salt, str).as_bytes(),
+      format!("{salt}{str}").as_bytes(),
     );
   let str2 = general_purpose::STANDARD.encode(ct);
-  let str2 = format!("{}{}", iv_str, str2);
+  let str2 = format!("{iv_str}{str2}");
   str2
 }
 
