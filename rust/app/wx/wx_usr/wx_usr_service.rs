@@ -46,6 +46,17 @@ use generated::base::usr::usr_dao::{
   find_by_id_usr,
 };
 
+#[allow(unused_imports)]
+use generated::base::login_log::login_log_dao::{
+  create_login_log,
+};
+
+#[allow(unused_imports)]
+use generated::base::login_log::login_log_model::{
+  LoginLogType,
+  LoginLogInput,
+};
+
 // base_org
 use generated::base::org::org_model::OrgId;
 
@@ -58,6 +69,7 @@ use generated::common::exceptions::service_exception::ServiceException;
 
 pub async fn code2session(
   code2session_input: Code2sessionInput,
+  ip: String,
   options: Option<Options>,
 ) -> Result<LoginModel> {
   
@@ -240,6 +252,21 @@ pub async fn code2session(
   } else {
     org_ids.first().cloned()
   };
+  
+  #[cfg(not(debug_assertions))]
+  {
+    create_login_log(
+      LoginLogInput {
+        username: username.clone().into(),
+        r#type: Some(LoginLogType::Wxapp),
+        ip: ip.clone().into(),
+        is_succ: 1.into(),
+        tenant_id: tenant_id.clone().into(),
+        ..Default::default()
+      },
+      options.clone(),
+    ).await?;
+  }
   
   let now = get_now();
   let server_tokentimeout = get_server_tokentimeout();
