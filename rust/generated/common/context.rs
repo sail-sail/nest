@@ -1430,27 +1430,27 @@ impl Serialize for ArgType {
 impl Display for ArgType {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match self {
-      ArgType::Bool(value) => write!(f, "{}", value),
-      ArgType::I8(value) => write!(f, "{}", value),
-      ArgType::I16(value) => write!(f, "{}", value),
-      ArgType::I32(value) => write!(f, "{}", value),
-      ArgType::I64(value) => write!(f, "{}", value),
-      ArgType::Decimal(value) => write!(f, "{}", value),
-      ArgType::U8(value) => write!(f, "{}", value),
-      ArgType::U16(value) => write!(f, "{}", value),
-      ArgType::U32(value) => write!(f, "{}", value),
-      ArgType::U64(value) => write!(f, "{}", value),
-      ArgType::F32(value) => write!(f, "{}", value),
-      ArgType::F64(value) => write!(f, "{}", value),
-      ArgType::String(value) => write!(f, "{}", value),
-      ArgType::CowStr(value) => write!(f, "{}", value),
+      ArgType::Bool(value) => write!(f, "{value}"),
+      ArgType::I8(value) => write!(f, "{value}"),
+      ArgType::I16(value) => write!(f, "{value}"),
+      ArgType::I32(value) => write!(f, "{value}"),
+      ArgType::I64(value) => write!(f, "{value}"),
+      ArgType::Decimal(value) => write!(f, "{value}"),
+      ArgType::U8(value) => write!(f, "{value}"),
+      ArgType::U16(value) => write!(f, "{value}"),
+      ArgType::U32(value) => write!(f, "{value}"),
+      ArgType::U64(value) => write!(f, "{value}"),
+      ArgType::F32(value) => write!(f, "{value}"),
+      ArgType::F64(value) => write!(f, "{value}"),
+      ArgType::String(value) => write!(f, "{value}"),
+      ArgType::CowStr(value) => write!(f, "{value}"),
       ArgType::TimeStamp(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
       ArgType::Date(value) => write!(f, "{}", value.format("%Y-%m-%d")),
       ArgType::DateTime(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
       ArgType::Time(value) => write!(f, "{}", value.format("%H:%M:%S")),
-      ArgType::Json(value) => write!(f, "{}", value),
-      ArgType::Uuid(value) => write!(f, "{}", value),
-      ArgType::SmolStr(value) => write!(f, "{}", value),
+      ArgType::Json(value) => write!(f, "{value}"),
+      ArgType::Uuid(value) => write!(f, "{value}"),
+      ArgType::SmolStr(value) => write!(f, "{value}"),
     }
   }
 }
@@ -1753,8 +1753,8 @@ impl Options {
   
   pub fn set_cache_key(self, table: &str, sql: &str, args: &Vec<ArgType>) -> Self {
     let mut self_ = self;
-    self_.cache_key1 = format!("dao.sql.{}", table).into();
-    self_.cache_key2 = hash(json!([ &sql, args ]).to_string().as_bytes()).into();
+    self_.cache_key1 = Some(format!("dao.sql.{table}"));
+    self_.cache_key2 = Some(hash(json!([ &sql, args ]).to_string().as_bytes()));
     self_
   }
   
@@ -1762,7 +1762,7 @@ impl Options {
     let mut self_ = self;
     self_.del_cache_key1s = tables.into_iter()
       .map(|table|
-        format!("dao.sql.{}", table)
+        format!("dao.sql.{table}")
       )
       .collect::<Vec<String>>()
       .into();
@@ -2060,7 +2060,7 @@ pub fn escape_id(val: impl AsRef<str>) -> String {
       .map(|item| item.trim())
       .collect()
   }).collect::<Vec<String>>().join("");
-  format!("`{}`", val)
+  format!("`{val}`")
 }
 
 /**
