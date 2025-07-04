@@ -313,6 +313,48 @@ export function getImgUrl(
   return `${ cfg.url }/oss/img?${ params }`;
 }
 
+/**
+ * 获得压缩后图片的url数组
+ **/
+export function getImgUrlArr(
+  model: {
+    id: string;
+    format?: "webp" | "png" | "jpeg" | "jpg";
+    width?: number;
+    height?: number;
+    quality?: number;
+    filename?: string;
+    inline?: "0"|"1";
+    notAuthorization?: boolean;
+  } | string,
+): string[] {
+  if (typeof model === "string") {
+    model = {
+      id: model,
+      format: "webp",
+    };
+  }
+  if (!model.id) {
+    return [ ];
+  }
+  const idArr = (model.id || "").split(",");
+  const imgUrlArr: string[] = [ ];
+  for (const id of idArr) {
+    const imgUrl = getImgUrl({
+      id,
+      format: model.format,
+      width: model.width,
+      height: model.height,
+      quality: model.quality,
+      filename: model.filename,
+      inline: model.inline,
+      notAuthorization: model.notAuthorization,
+    });
+    imgUrlArr.push(imgUrl);
+  }
+  return imgUrlArr;
+}
+
 export function getRequestUrl(
   config: {
     url?: string;

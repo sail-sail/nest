@@ -410,7 +410,7 @@ body .el-input-number.is-without-controls .el-input__inner {
   --readonly_font_color: #909399;
 }
 html:is(.dark) {
-  --readonly_font_color: #909399;
+  --readonly_font_color: #A3A6AD;
 }
 .dict_select_readonly,
 .dictbiz_select_readonly,
@@ -425,6 +425,12 @@ html:is(.dark) {
   color: var(--readonly_font_color);
 }
 .custom_date_picker_readonly {
+  .el-input__wrapper.is-focus {
+    --el-input-focus-border-color: var(--el-input-border-color);
+  }
+  .el-input__wrapper:hover {
+    --el-input-hover-border-color: var(--el-input-border-color);
+  }
   .el-input__inner {
     color: var(--readonly_font_color);
   }
