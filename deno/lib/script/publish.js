@@ -1,3 +1,4 @@
+// deno-lint-ignore-file
 const SSH2Promise = require("ssh2-promise");
 const fs = require("fs/promises");
 const { randomUUID } = require("node:crypto");

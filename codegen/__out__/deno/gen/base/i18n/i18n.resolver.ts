@@ -154,9 +154,6 @@ export async function findByIdsI18n(
   
   const models = await findByIdsI18n(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkI18n(
   } = await import("./i18n.service.ts");
   
   const models = await findByIdsOkI18n(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

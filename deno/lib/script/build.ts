@@ -49,10 +49,12 @@ async function removeExcelTemplate() {
   console.log("removeExcelTemplate");
   try {
     await Deno.remove(`${ pcDir }/public/import_template/`, { recursive: true });
+  // deno-lint-ignore no-empty
   } catch (err) {
   }
   try {
     await Deno.remove(`${ pcDir }/public/excel_template/`, { recursive: true });
+  // deno-lint-ignore no-empty
   } catch (err) {
   }
 }

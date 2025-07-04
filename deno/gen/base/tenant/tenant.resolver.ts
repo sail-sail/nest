@@ -154,9 +154,6 @@ export async function findByIdsTenant(
   
   const models = await findByIdsTenant(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkTenant(
   } = await import("./tenant.service.ts");
   
   const models = await findByIdsOkTenant(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
