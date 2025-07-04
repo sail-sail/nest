@@ -154,9 +154,6 @@ export async function findByIdsOrg(
   
   const models = await findByIdsOrg(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkOrg(
   } = await import("./org.service.ts");
   
   const models = await findByIdsOkOrg(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
