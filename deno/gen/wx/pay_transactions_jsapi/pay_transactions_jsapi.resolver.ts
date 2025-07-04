@@ -152,9 +152,6 @@ export async function findByIdsPayTransactionsJsapi(
   
   const models = await findByIdsPayTransactionsJsapi(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -170,9 +167,6 @@ export async function findByIdsOkPayTransactionsJsapi(
   } = await import("./pay_transactions_jsapi.service.ts");
   
   const models = await findByIdsOkPayTransactionsJsapi(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
