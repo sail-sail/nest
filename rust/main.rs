@@ -251,7 +251,7 @@ async fn main() -> Result<(), std::io::Error> {
       let log_path = log_path.unwrap();
       let file_appender = tracing_appender::rolling::daily(
         log_path,
-        format!("{}.log", server_title).as_str(),
+        format!("{server_title}.log").as_str(),
       );
       let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
       tracing_subscriber::fmt()
@@ -382,7 +382,7 @@ async fn main() -> Result<(), std::io::Error> {
 
     match status {
       Ok(_) => (),
-      Err(err) => eprintln!("Failed to run process: {}", err),
+      Err(err) => eprintln!("Failed to run process: {err:#?}"),
     }
   }
   

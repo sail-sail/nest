@@ -32,7 +32,7 @@ fn init_cache_pool() -> Option<Pool> {
     if cache_username.is_empty() {
       "".to_owned()
     } else {
-      format!("{}:{}@", cache_username, cache_password)
+      format!("{cache_username}:{cache_password}@")
     }
   };
   let url = format!("redis://{cache_user}{cache_hostname}:{cache_port}/{cache_db}");

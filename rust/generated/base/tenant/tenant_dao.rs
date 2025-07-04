@@ -2558,7 +2558,7 @@ pub async fn find_auto_code_tenant(
     code_seq
   };
   
-  let code = format!("ZH{:03}", code_seq);
+  let code = format!("ZH{code_seq:03}");
   
   Ok((code_seq, code))
 }

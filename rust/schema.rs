@@ -28,7 +28,7 @@ async fn main() -> Result<(), std::io::Error> {
     match std::fs::write(file, &schema) {
       Ok(_) => {},
       Err(e) => {
-        println!("write graphql schema error: {}", e);
+        println!("write graphql schema error: {e:#?}");
       },
     }
   }
