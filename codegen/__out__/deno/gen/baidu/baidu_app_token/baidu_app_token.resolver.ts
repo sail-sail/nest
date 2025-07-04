@@ -154,9 +154,6 @@ export async function findByIdsBaiduAppToken(
   
   const models = await findByIdsBaiduAppToken(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkBaiduAppToken(
   } = await import("./baidu_app_token.service.ts");
   
   const models = await findByIdsOkBaiduAppToken(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

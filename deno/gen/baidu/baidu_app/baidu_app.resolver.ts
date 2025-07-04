@@ -154,9 +154,6 @@ export async function findByIdsBaiduApp(
   
   const models = await findByIdsBaiduApp(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkBaiduApp(
   } = await import("./baidu_app.service.ts");
   
   const models = await findByIdsOkBaiduApp(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
