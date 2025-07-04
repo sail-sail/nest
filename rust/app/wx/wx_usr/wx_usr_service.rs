@@ -46,6 +46,17 @@ use generated::base::usr::usr_dao::{
   find_by_id_usr,
 };
 
+#[allow(unused_imports)]
+use generated::base::login_log::login_log_dao::{
+  create_login_log,
+};
+
+#[allow(unused_imports)]
+use generated::base::login_log::login_log_model::{
+  LoginLogType,
+  LoginLogInput,
+};
+
 // base_org
 use generated::base::org::org_model::OrgId;
 
@@ -56,8 +67,10 @@ use generated::common::gql::model::UniqueType;
 use generated::common::util::http::client as reqwest_client;
 use generated::common::exceptions::service_exception::ServiceException;
 
+#[allow(unused_variables)]
 pub async fn code2session(
   code2session_input: Code2sessionInput,
+  ip: String,
   options: Option<Options>,
 ) -> Result<LoginModel> {
   
@@ -90,7 +103,7 @@ pub async fn code2session(
   query_string.push_str(&format!("secret={}&", urlencoding::encode(&appsecret)));
   query_string.push_str(&format!("js_code={}&", urlencoding::encode(&js_code)));
   query_string.push_str("grant_type=authorization_code");
-  let url = format!("{}{}", base_url, query_string);
+  let url = format!("{base_url}{query_string}");
   
   info!(
     "{req_id} WxUsrService.code2Session: {url}",
@@ -240,6 +253,21 @@ pub async fn code2session(
   } else {
     org_ids.first().cloned()
   };
+  
+  #[cfg(not(debug_assertions))]
+  {
+    create_login_log(
+      LoginLogInput {
+        username: username.clone().into(),
+        r#type: Some(LoginLogType::Wxapp),
+        ip: ip.clone().into(),
+        is_succ: 1.into(),
+        tenant_id: tenant_id.clone().into(),
+        ..Default::default()
+      },
+      options.clone(),
+    ).await?;
+  }
   
   let now = get_now();
   let server_tokentimeout = get_server_tokentimeout();
