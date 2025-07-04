@@ -156,9 +156,6 @@ export async function findByIdsCronJob(
   
   const models = await findByIdsCronJob(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -174,9 +171,6 @@ export async function findByIdsOkCronJob(
   } = await import("./cron_job.service.ts");
   
   const models = await findByIdsOkCronJob(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
