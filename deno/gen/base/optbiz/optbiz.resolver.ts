@@ -154,9 +154,6 @@ export async function findByIdsOptbiz(
   
   const models = await findByIdsOptbiz(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkOptbiz(
   } = await import("./optbiz.service.ts");
   
   const models = await findByIdsOkOptbiz(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
