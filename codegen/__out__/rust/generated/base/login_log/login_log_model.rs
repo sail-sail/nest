@@ -576,12 +576,20 @@ pub enum LoginLogType {
   #[default]
   #[graphql(name="account")]
   Account,
+  /// 微信小程序
+  #[graphql(name="wxapp")]
+  Wxapp,
+  /// 微信公众号
+  #[graphql(name="wxo")]
+  Wxo,
 }
 
 impl fmt::Display for LoginLogType {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
       Self::Account => write!(f, "account"),
+      Self::Wxapp => write!(f, "wxapp"),
+      Self::Wxo => write!(f, "wxo"),
     }
   }
 }
@@ -590,6 +598,8 @@ impl From<LoginLogType> for SmolStr {
   fn from(value: LoginLogType) -> Self {
     match value {
       LoginLogType::Account => "account".into(),
+      LoginLogType::Wxapp => "wxapp".into(),
+      LoginLogType::Wxo => "wxo".into(),
     }
   }
 }
@@ -598,6 +608,8 @@ impl From<LoginLogType> for String {
   fn from(value: LoginLogType) -> Self {
     match value {
       LoginLogType::Account => "account".into(),
+      LoginLogType::Wxapp => "wxapp".into(),
+      LoginLogType::Wxo => "wxo".into(),
     }
   }
 }
@@ -614,6 +626,8 @@ impl FromStr for LoginLogType {
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
       "account" => Ok(Self::Account),
+      "wxapp" => Ok(Self::Wxapp),
+      "wxo" => Ok(Self::Wxo),
       _ => Err(eyre!("LoginLogType can't convert from {s}")),
     }
   }
@@ -623,6 +637,8 @@ impl LoginLogType {
   pub fn as_str(&self) -> &str {
     match self {
       Self::Account => "account",
+      Self::Wxapp => "wxapp",
+      Self::Wxo => "wxo",
     }
   }
 }
@@ -633,6 +649,8 @@ impl TryFrom<String> for LoginLogType {
   fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {
       "account" => Ok(Self::Account),
+      "wxapp" => Ok(Self::Wxapp),
+      "wxo" => Ok(Self::Wxo),
       _ => Err(sqlx::Error::Decode(
         Box::new(sqlx::Error::ColumnDecode {
           index: "type".to_owned(),

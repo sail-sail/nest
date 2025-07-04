@@ -8203,6 +8203,77 @@ declare namespace UniNamespace {
          */
         complete?: (result: any) => void;
     }
+    
+    interface ChooseMediaSuccessCallbackResult {
+        /**
+         * 本地临时文件列表
+         */
+        tempFiles: MediaFile[];
+        /**
+         * 文件类型，有效值有 image 、video、mix
+         */
+        type: string;
+        errMsg: string;
+    }
+
+    /**
+     * 接口调用成功的回调函数
+     */
+    type ChooseMediaSuccessCallback = (
+                result: ChooseMediaSuccessCallbackResult
+            ) => void;
+    
+    interface ChooseMediaOption {
+        /**
+         * 仅在 sourceType 为 camera 时生效，使用前置或后置摄像头
+         *
+         * 可选值：
+         * - 'back': 使用后置摄像头;
+         * - 'front': 使用前置摄像头;
+         */
+        camera?: "back" | "front";
+        /**
+         * 接口调用结束的回调函数（调用成功、失败都会执行）
+         */
+        complete?: ChooseMediaCompleteCallback;
+        /**
+         * 最多可以选择的文件个数，基础库2.25.0前，最多可支持9个文件，2.25.0及以后最多可支持20个文件
+         */
+        count?: number;
+        /**
+         * 接口调用失败的回调函数
+         */
+        fail?: ChooseMediaFailCallback;
+        /**
+         * 拍摄视频最长拍摄时间，单位秒。时间范围为 3s 至 60s 之间。不限制相册。
+         */
+        maxDuration?: number;
+        /**
+         * 文件类型
+         *
+         * 可选值：
+         * - 'image': 只能拍摄图片或从相册选择图片;
+         * - 'video': 只能拍摄视频或从相册选择视频;
+         * - 'mix': 可同时选择图片和视频;
+         */
+        mediaType?: ("video" | "image" | "mix")[];
+        /**
+         * 是否压缩所选文件，基础库2.25.0前仅对 mediaType 为 image 时有效，2.25.0及以后对全量 mediaType 有效
+         */
+        sizeType?: string[];
+        /**
+         * 图片和视频选择的来源
+         *
+         * 可选值：
+         * - 'album': 从相册选择;
+         * - 'camera': 使用相机拍摄;
+         */
+        sourceType?: ("album" | "camera")[];
+        /**
+         * 接口调用成功的回调函数
+         */
+        success?: ChooseMediaSuccessCallback;
+    }
 
     interface ChooseAddressRes {
         /**
@@ -9699,7 +9770,7 @@ interface Uni {
      * 			});
      * ```
      */
-    downloadFile(options: UniNamespace.DownloadFileOption): UniNamespace.DownloadTask;
+    downloadFile(options: UniNamespace.DownloadFileOption): Promise<UniNamespace.DownloadSuccessData>;
     /**
      * 导入原生插件
      *
@@ -10261,7 +10332,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/file/file?id=opendocument](http://uniapp.dcloud.io/api/file/file?id=opendocument)
      */
-    openDocument(options: UniNamespace.OpenDocumentOptions): void;
+    openDocument(options: UniNamespace.OpenDocumentOptions): Promise<any>;
     /**
      * 将数据存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个异步接口
      *
@@ -10282,7 +10353,7 @@ interface Uni {
      * }
      * }
      */
-    setStorage(options: UniNamespace.SetStorageOptions): void;
+    setStorage(options: UniNamespace.SetStorageOptions): Promise<any>;
     /**
      * 将 data 存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个同步接口
      *
@@ -10331,7 +10402,7 @@ interface Uni {
      * }
      * }
      */
-    getStorage<T = any>(options: UniNamespace.GetStorageOptions<T>): void;
+    getStorage<T = any>(options: UniNamespace.GetStorageOptions<T>): Promise<UniNamespace.GetStorageSuccess<T>>;
     /**
      * 从本地缓存中同步获取指定 key 对应的内容
      *
@@ -10778,7 +10849,9 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/system/clipboard?id=setclipboarddata](http://uniapp.dcloud.io/api/system/clipboard?id=setclipboarddata)
      */
-    setClipboardData(options: UniNamespace.SetClipboardDataOptions): void;
+    setClipboardData(options: UniNamespace.SetClipboardDataOptions): Promise<{
+        errMsg: "setClipboardData:ok" | string;
+    }>;
     /**
      * 获得系统剪贴板的内容
      *
@@ -11220,7 +11293,7 @@ interface Uni {
      * }
      * }
      */
-    showModal(options: UniNamespace.ShowModalOptions): void;
+    showModal(options: UniNamespace.ShowModalOptions): Promise<UniNamespace.ShowModalRes>;
     /**
      * 显示操作菜单
      *
@@ -11342,7 +11415,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=navigateto](http://uniapp.dcloud.io/api/router?id=navigateto)
      */
-    navigateTo(options: UniNamespace.NavigateToOptions): void;
+    navigateTo(options: UniNamespace.NavigateToOptions): Promise<UniNamespace.NavigateToSuccessOptions>;
     /**
      * 关闭当前页面，跳转到应用内的某个页面
      *
@@ -11354,19 +11427,19 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=relaunch](http://uniapp.dcloud.io/api/router?id=relaunch)
      */
-    reLaunch(options: UniNamespace.ReLaunchOptions): void;
+    reLaunch(options: UniNamespace.ReLaunchOptions): Promise<any>;
     /**
      * 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=switchtab](http://uniapp.dcloud.io/api/router?id=switchtab)
      */
-    switchTab(options: UniNamespace.SwitchTabOptions): void;
+    switchTab(options: UniNamespace.SwitchTabOptions): Promise<any>;
     /**
      * 关闭当前页面，返回上一页面或多级页面
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=navigateback](http://uniapp.dcloud.io/api/router?id=navigateback)
      */
-    navigateBack(options?: UniNamespace.NavigateBackOptions): void;
+    navigateBack(options?: UniNamespace.NavigateBackOptions): Promise<any>;
     /**
      * 预加载页面
      *
@@ -11546,7 +11619,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/plugins/provider?id=getprovider](http://uniapp.dcloud.io/api/plugins/provider?id=getprovider)
      */
-    getProvider(options: UniNamespace.GetProviderOptions): void;
+    getProvider(options: UniNamespace.GetProviderOptions): Promise<UniNamespace.GetProviderRes>;
     /**
      * 登录
      *
@@ -11642,7 +11715,9 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/plugins/payment?id=requestpayment](http://uniapp.dcloud.io/api/plugins/payment?id=requestpayment)
      */
-    requestPayment(options: UniNamespace.RequestPaymentOptions): void;
+    requestPayment(options: UniNamespace.RequestPaymentOptions): Promise<{
+        errMsg: "requestPayment:fail cancel" | "requestPayment:ok";
+    }>;
     /**
      * 提前向用户发起授权请求
      *
@@ -11673,6 +11748,18 @@ interface Uni {
      * 文档: [http://uniapp.dcloud.io/api/other/invoice-title?id=chooseinvoicetitle](http://uniapp.dcloud.io/api/other/invoice-title?id=chooseinvoicetitle)
      */
     chooseInvoiceTitle(options: UniNamespace.ChooseInvoiceTitleOptions): void;
+    /**
+     *
+     * 需要基础库： `2.10.0`
+     *
+     * 在插件中使用：需要基础库 `2.11.1`
+     *
+     * 拍摄或从手机相册中选择图片或视频。
+     *
+     *
+     * 文档: [https://developers.weixin.qq.com/miniprogram/dev/api/media/video/wx.chooseMedia.html](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/wx.chooseMedia.html)
+     */
+    chooseMedia(option: UniNamespace.ChooseMediaOption): Promise<UniNamespace.ChooseMediaSuccessCallbackResult>;
     /**
      * 调起客户端小程序设置界面，返回用户设置的操作结果
      *
