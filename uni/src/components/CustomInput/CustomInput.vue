@@ -12,6 +12,7 @@
   :focus="isFocus"
   :selection-start="selectionStart"
   :selection-end="selectionEnd"
+  width="100%"
   v-bind="$attrs"
   :show-clear="props.clearable == null ? (modelValue ? !readonly : false) : props.clearable"
   :readonly="readonly"

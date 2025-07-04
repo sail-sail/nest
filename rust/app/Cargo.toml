@@ -76,6 +76,7 @@ serde_with.workspace = true
 csv.workspace = true
 rust_xlsxwriter.workspace = true
 chromiumoxide.workspace = true
+docx-handlebars.workspace = true
 
 generated = { path = "../generated" }
 
