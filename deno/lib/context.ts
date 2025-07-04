@@ -960,6 +960,7 @@ export async function query<T = any>(
       log(debugSql);
     }
     try {
+      // deno-lint-ignore no-explicit-any
       const res = await (conn as any).query(sql, args);
       // deno-lint-ignore no-explicit-any
       result = res[0] as any[];
@@ -975,12 +976,14 @@ export async function query<T = any>(
     }
     const pool = await getMysqlPool(opt?.database_name);
     try {
+      // deno-lint-ignore no-explicit-any
       const res = await (pool as any).query(sql, args);
       // deno-lint-ignore no-explicit-any
       result = res[0] as any[];
     } catch(err) {
       const debugSql = getDebugQuery(sql, args);
       error(debugSql);
+      // deno-lint-ignore no-explicit-any
       if ((err as any).code === "ECONNREFUSED") {
         throw new Error("系统错误: 数据库连接失败");
       }
@@ -1027,6 +1030,7 @@ export async function execute(
     if (opt?.debug === true) {
       log(getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
     }
+    // deno-lint-ignore no-explicit-any
     result = await (conn as any).query(sql, args);
   } else {
     if (opt?.debug === true) {
@@ -1034,6 +1038,7 @@ export async function execute(
     }
     try {
       const pool = await getMysqlPool();
+      // deno-lint-ignore no-explicit-any
       result = await (pool as any).query(sql, args);
     } catch(err) {
       error(sql);
