@@ -647,12 +647,12 @@ pub async fn find_all_dict(
     
     // 系统字典明细
     model.dict_detail = dict_detail_models
-      .clone()
-      .into_iter()
+      .iter()
       .filter(|item|
         item.dict_id == model.id
       )
-      .collect();
+      .cloned()
+      .collect::<Vec<_>>();
     
   }
   

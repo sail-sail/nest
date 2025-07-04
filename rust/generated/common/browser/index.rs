@@ -73,7 +73,7 @@ pub async fn check_and_kill_existing_browser() -> Result<()> {
   // 这里可以使用 `netstat` 或 `taskkill` 等命令来检查
   let output = tokio::process::Command::new("cmd")
     .arg("/C")
-    .arg(format!("netstat -ano | findstr :{}", BROWSER_PORT))
+    .arg(format!("netstat -ano | findstr :{BROWSER_PORT}"))
     .output()
     .await?;
   
