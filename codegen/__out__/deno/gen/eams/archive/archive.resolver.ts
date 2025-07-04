@@ -154,9 +154,6 @@ export async function findByIdsArchive(
   
   const models = await findByIdsArchive(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkArchive(
   } = await import("./archive.service.ts");
   
   const models = await findByIdsOkArchive(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

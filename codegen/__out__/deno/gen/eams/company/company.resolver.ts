@@ -154,9 +154,6 @@ export async function findByIdsCompany(
   
   const models = await findByIdsCompany(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkCompany(
   } = await import("./company.service.ts");
   
   const models = await findByIdsOkCompany(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
