@@ -152,9 +152,6 @@ export async function findByIdsWxwMsg(
   
   const models = await findByIdsWxwMsg(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -170,9 +167,6 @@ export async function findByIdsOkWxwMsg(
   } = await import("./wxw_msg.service.ts");
   
   const models = await findByIdsOkWxwMsg(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
