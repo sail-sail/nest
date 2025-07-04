@@ -10,6 +10,10 @@ scalar LoginLogId
 enum LoginLogType {
   "账号"
   account
+  "微信小程序"
+  wxapp
+  "微信公众号"
+  wxo
 }
 
 type LoginLogModel {
