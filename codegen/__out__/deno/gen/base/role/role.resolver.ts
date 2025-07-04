@@ -154,9 +154,6 @@ export async function findByIdsRole(
   
   const models = await findByIdsRole(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkRole(
   } = await import("./role.service.ts");
   
   const models = await findByIdsOkRole(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

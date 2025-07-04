@@ -154,9 +154,6 @@ export async function findByIdsDomain(
   
   const models = await findByIdsDomain(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkDomain(
   } = await import("./domain.service.ts");
   
   const models = await findByIdsOkDomain(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

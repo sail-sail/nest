@@ -152,9 +152,6 @@ export async function findByIdsFieldPermit(
   
   const models = await findByIdsFieldPermit(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -170,9 +167,6 @@ export async function findByIdsOkFieldPermit(
   } = await import("./field_permit.service.ts");
   
   const models = await findByIdsOkFieldPermit(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
