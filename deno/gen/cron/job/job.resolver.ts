@@ -154,9 +154,6 @@ export async function findByIdsJob(
   
   const models = await findByIdsJob(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkJob(
   } = await import("./job.service.ts");
   
   const models = await findByIdsOkJob(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
