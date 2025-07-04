@@ -152,9 +152,6 @@ export async function findByIdsLoginLog(
   
   const models = await findByIdsLoginLog(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -170,9 +167,6 @@ export async function findByIdsOkLoginLog(
   } = await import("./login_log.service.ts");
   
   const models = await findByIdsOkLoginLog(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

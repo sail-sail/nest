@@ -154,9 +154,6 @@ export async function findByIdsIcon(
   
   const models = await findByIdsIcon(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkIcon(
   } = await import("./icon.service.ts");
   
   const models = await findByIdsOkIcon(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

@@ -445,7 +445,9 @@ export async function findByIds<#=Table_Up2#>(
     findByIds<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
-  const models = await findByIds<#=Table_Up2#>(ids);
+  const models = await findByIds<#=Table_Up2#>(ids);<#
+  if (hasPassword) {
+  #>
   
   for (const model of models) {<#
     for (let i = 0; i < columns.length; i++) {
@@ -465,6 +467,8 @@ export async function findByIds<#=Table_Up2#>(
     }
     #>
   }<#
+  }
+  #><#
   if (tableFieldPermit) {
   #>
   
@@ -486,7 +490,9 @@ export async function findByIdsOk<#=Table_Up2#>(
     findByIdsOk<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
-  const models = await findByIdsOk<#=Table_Up2#>(ids);
+  const models = await findByIdsOk<#=Table_Up2#>(ids);<#
+  if (hasPassword) {
+  #>
   
   for (const model of models) {<#
     for (let i = 0; i < columns.length; i++) {
@@ -506,6 +512,8 @@ export async function findByIdsOk<#=Table_Up2#>(
     }
     #>
   }<#
+  }
+  #><#
   if (tableFieldPermit) {
   #>
   

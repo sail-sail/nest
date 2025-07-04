@@ -152,9 +152,6 @@ export async function findByIdsBackgroundTask(
   
   const models = await findByIdsBackgroundTask(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -170,9 +167,6 @@ export async function findByIdsOkBackgroundTask(
   } = await import("./background_task.service.ts");
   
   const models = await findByIdsOkBackgroundTask(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
