@@ -152,9 +152,6 @@ export async function findByIdsSmsSendRecord(
   
   const models = await findByIdsSmsSendRecord(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -170,9 +167,6 @@ export async function findByIdsOkSmsSendRecord(
   } = await import("./sms_send_record.service.ts");
   
   const models = await findByIdsOkSmsSendRecord(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
