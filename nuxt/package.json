@@ -23,22 +23,22 @@
     "vue-router": "4.5.1"
   },
   "devDependencies": {
-    "@nuxt/eslint": "1.4.1",
-    "@nuxt/icon": "1.14.0",
+    "@nuxt/eslint": "1.5.2",
+    "@nuxt/icon": "1.15.0",
     "@types/file-saver": "2.0.7",
-    "@types/node": "24.0.4",
-    "@unocss/nuxt": "66.2.3",
-    "@unocss/preset-rem-to-px": "66.2.3",
-    "@unocss/transformer-directives": "66.2.3",
-    "@vue-macros/nuxt": "3.0.0-beta.14",
-    "@vue-macros/reactivity-transform": "3.0.0-beta.14",
+    "@types/node": "24.0.10",
+    "@unocss/nuxt": "66.3.2",
+    "@unocss/preset-rem-to-px": "66.3.2",
+    "@unocss/transformer-directives": "66.3.2",
+    "@vue-macros/nuxt": "3.0.0-beta.15",
+    "@vue-macros/reactivity-transform": "3.0.0-beta.15",
     "husky": "9.1.7",
     "lint-staged": "16.1.2",
-    "nuxt": "3.17.5",
+    "nuxt": "3.17.6",
     "sass": "1.89.2",
     "typescript": "5.8.3",
-    "unocss": "66.2.3",
-    "vue-tsc": "2.2.10"
+    "unocss": "66.3.2",
+    "vue-tsc": "3.0.1"
   },
   "lint-staged": {
     "*.{ts,vue}": [
