@@ -166,9 +166,6 @@ export async function findByIdsMenu(
   
   const models = await findByIdsMenu(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -184,9 +181,6 @@ export async function findByIdsOkMenu(
   } = await import("./menu.service.ts");
   
   const models = await findByIdsOkMenu(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
