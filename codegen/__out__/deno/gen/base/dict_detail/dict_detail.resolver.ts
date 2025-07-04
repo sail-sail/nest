@@ -154,9 +154,6 @@ export async function findByIdsDictDetail(
   
   const models = await findByIdsDictDetail(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkDictDetail(
   } = await import("./dict_detail.service.ts");
   
   const models = await findByIdsOkDictDetail(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
