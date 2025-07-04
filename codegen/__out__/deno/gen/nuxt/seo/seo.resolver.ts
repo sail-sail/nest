@@ -154,9 +154,6 @@ export async function findByIdsSeo(
   
   const models = await findByIdsSeo(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkSeo(
   } = await import("./seo.service.ts");
   
   const models = await findByIdsOkSeo(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
