@@ -152,9 +152,6 @@ export async function findByIdsPermit(
   
   const models = await findByIdsPermit(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -170,9 +167,6 @@ export async function findByIdsOkPermit(
   } = await import("./permit.service.ts");
   
   const models = await findByIdsOkPermit(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

@@ -610,6 +610,7 @@ export class S3Bucket {
     for await (
       const k of pooledMap(
         50,
+        // deno-lint-ignore no-explicit-any
         (this as any).listAllObjects({ batchSize: 1000 }),
         async (o: { key: string; }) => {
           if (o.key) {

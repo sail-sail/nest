@@ -154,9 +154,6 @@ export async function findByIdsOptions(
   
   const models = await findByIdsOptions(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkOptions(
   } = await import("./options.service.ts");
   
   const models = await findByIdsOkOptions(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

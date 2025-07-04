@@ -152,9 +152,6 @@ export async function findByIdsOperationRecord(
   
   const models = await findByIdsOperationRecord(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -170,9 +167,6 @@ export async function findByIdsOkOperationRecord(
   } = await import("./operation_record.service.ts");
   
   const models = await findByIdsOkOperationRecord(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
