@@ -668,12 +668,12 @@ pub async fn find_all_dictbiz(
     
     // 业务字典明细
     model.dictbiz_detail = dictbiz_detail_models
-      .clone()
-      .into_iter()
+      .iter()
       .filter(|item|
         item.dictbiz_id == model.id
       )
-      .collect();
+      .cloned()
+      .collect::<Vec<_>>();
     
   }
   
