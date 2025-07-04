@@ -2646,7 +2646,7 @@ pub async fn find_auto_code_role(
     code_seq
   };
   
-  let code = format!("JS{:03}", code_seq);
+  let code = format!("JS{code_seq:03}");
   
   Ok((code_seq, code))
 }
