@@ -4998,13 +4998,22 @@ pub async fn find_auto_code_<#=table#>(
   Ok((<#=autoCodeColumn.autoCode.seq#>, <#=autoCodeColumn.COLUMN_NAME#>))
 }<#
 } else if (autoCodeColumn && dateSeq) {
+  const dateSeqColumn = columns.find(function(item) {
+    return item.COLUMN_NAME === dateSeq;
+  });
 #>
 
 // MARK: find_auto_code_<#=table#>
 /// 获得 <#=table_comment#> 自动编码
 pub async fn find_auto_code_<#=table#>(
   options: Option<Options>,
-) -> Result<(chrono::NaiveDate, u32, String)> {
+) -> Result<(<#
+if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
+#>chrono::NaiveDate<#
+} else if (dateSeqColumn.DATA_TYPE.toLowerCase() === "datetime") {
+#>chrono::NaiveDateTime<#
+}
+#>, u32, String)> {
   
   let table = "<#=mod#>_<#=table#>";
   let method = "find_auto_code_<#=table#>";
@@ -5053,7 +5062,7 @@ pub async fn find_auto_code_<#=table#>(
       
       let model_deleted = find_one_<#=table#>(
         Some(<#=Table_Up#>Search {
-          <#=dateSeq#>: Some([ Some(item.<#=dateSeq#>), Some(item.<#=dateSeq#>) ]),
+          <#=dateSeq#>: Some([model.as_ref().map(|item| item.<#=dateSeq#>), model.as_ref().map(|item| item.<#=dateSeq#>)]),
           is_deleted: Some(0),
           ..Default::default()
         }),
@@ -5088,7 +5097,11 @@ pub async fn find_auto_code_<#=table#>(
   
   let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=dateSeq#>}{<#=autoCodeColumn.autoCode.seq#>:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
   
-  Ok((now.date(), <#=autoCodeColumn.autoCode.seq#>, <#=autoCodeColumn.COLUMN_NAME#>))
+  Ok((now<#
+  if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
+  #>.date()<#
+  }
+  #>, <#=autoCodeColumn.autoCode.seq#>, <#=autoCodeColumn.COLUMN_NAME#>))
 }<#
 }
 #>
