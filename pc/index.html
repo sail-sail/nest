@@ -59,7 +59,21 @@
   </head>
   <body>
     <div id="app">
-      <div class="loading_spinner">
+      <div
+        class="loading_spinner"
+        style="
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 9999;
+          width: 50px;
+          height: 50px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
         <svg
           class="circular"
           viewBox="0 0 50 50"
