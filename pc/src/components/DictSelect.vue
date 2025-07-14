@@ -248,6 +248,10 @@ import type {
 } from "element-plus/es/components/select-v2/src/select.types";
 
 import type {
+  SelectV2Props,
+} from "element-plus";
+
+import type {
   GetDict,
 } from "@/typings/types";
 
@@ -277,7 +281,7 @@ const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
   (e: "clear"): void,
-}>();
+} & Partial<SelectV2Props>>();
 
 type OptionsMap = (item: DictModel) => OptionType;
 

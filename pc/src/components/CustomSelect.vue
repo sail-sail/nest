@@ -293,6 +293,10 @@ import type {
 } from "vue";
 
 import type {
+  SelectV2Props,
+} from "element-plus";
+
+import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
@@ -310,7 +314,7 @@ const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any | any[] | null): void;
   (e: "clear"): void;
-}>();
+} & Partial<SelectV2Props>>();
 
 const {
   ns,
