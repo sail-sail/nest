@@ -5,7 +5,7 @@
 ## 架构概览
 
 ### 四模块结构
-- **`deno/`** - 使用 Deno 运行时和 Oak 框架的 GraphQL API 服务器
+- **`rust/`** - 使用 Rust 语言和 async-graphql 框架的 GraphQL API 服务器
 - **`pc/`** - Vue 3 + Element Plus 桌面/Web 管理界面
 - **`uni/`** - Uni-app 跨平台移动应用（微信小程序、H5、APP）
 - **`codegen/`** - 代码生成引擎，创建所有 CRUD 操作和 UI 组件
@@ -28,10 +28,10 @@ cd codegen && npm run codeapply
 
 GraphQL 类型、解析器和服务都从表定义自动生成：
 
-- **模式**：`deno/gen/[module]/[table]/[table].graphql.ts` - 生成带中文注释的 GraphQL 模式
-- **解析器**：`deno/gen/[module]/[table]/[table].resolver.ts` - 生成 CRUD 解析器
-- **模型**：`deno/gen/[module]/[table]/[table].model.ts` - TypeScript 接口
-- **服务**：`deno/gen/[module]/[table]/[table].service.ts` - 数据库操作
+- **模式**：`rust/generated/[module]/[table]/mod.rs` - 生成 Rust GraphQL 模式和类型
+- **解析器**：`rust/generated/[module]/[table]/resolver.rs` - 生成 CRUD 解析器
+- **模型**：`rust/generated/[module]/[table]/model.rs` - Rust 结构体定义
+- **服务**：`rust/generated/[module]/[table]/service.rs` - 数据库操作逻辑
 
 GraphQL 端点自动包含：
 - `findAll[Table]` - 带分页/过滤的列表查询
@@ -89,12 +89,13 @@ export default defineConfig({
 
 ### 开发命令
 
-**后端（Deno）**：
+**后端（Rust）**：
 ```bash
-cd deno
+cd rust
 npm run start                    # 启动开发服务器
 npm run build-prod              # 生产构建
 npm run gqlgen                  # 重新生成 GraphQL 类型
+npm run typecheck               # Rust 代码检查（clippy）
 ```
 
 **前端（PC）**：
@@ -131,7 +132,7 @@ npm run dev:h5                # H5 开发
 
 ### 环境与构建
 
-- **Deno**：使用 `lib/env.ts` 进行环境配置
+- **Rust**：使用 `Cargo.toml` 进行依赖管理，支持 async-graphql 和 sqlx
 - **PC**：Vite + UnoCSS + Vue 3 组合式 API
 - **Uni-app**：跨平台条件编译
 - **数据库**：MySQL，通过 `information_schema` 进行模式内省
