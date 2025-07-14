@@ -61,10 +61,6 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  InputNumberProps,
-} from "element-plus";
-
 import Decimal from "decimal.js";
 
 const emit = defineEmits<{
@@ -90,7 +86,7 @@ const props = withDefaults(
     isReadonlyBorder?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
-  } & Partial<InputNumberProps>>(),
+  }>(),
   {
     modelValue: undefined,
     precision: 0,

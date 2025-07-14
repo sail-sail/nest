@@ -244,10 +244,6 @@
 
 <script lang="ts" setup>
 import type {
-  SelectV2Props,
-} from "element-plus";
-
-import type {
   GetDictbiz,
 } from "@/typings/types";
 
@@ -281,7 +277,7 @@ const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void;
   (e: "clear"): void;
-} & Partial<SelectV2Props>>();
+}>();
 
 type OptionsMap = (item: DictbizModel) => OptionType;
 

@@ -35,10 +35,6 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  CheckboxProps,
-} from "element-plus";
-
 const {
   ns,
   initSysI18ns,
@@ -59,7 +55,7 @@ const props = withDefaults(
     readonly?: boolean;
     trueReadonlyLabel?: string;
     falseReadonlyLabel?: string;
-  } & Partial<CheckboxProps>>(),
+  }>(),
   {
     modelValue: undefined,
     disabled: undefined,

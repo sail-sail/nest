@@ -51,15 +51,12 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  ColorPickerProps,
-} from "element-plus";
 
 const props = withDefaults(
   defineProps<{
     readonly?: boolean;
     isReadonlyBorder?: boolean;
-  } & Partial<ColorPickerProps>>(),
+  }>(),
   {
     readonly: undefined,
     isReadonlyBorder: true,
