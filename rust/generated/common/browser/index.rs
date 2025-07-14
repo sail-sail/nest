@@ -145,8 +145,6 @@ async fn initialize_browser() -> Result<Arc<Mutex<BrowserInstance>>> {
           }
         }
         None => {
-          // 处理程序已结束
-          info!("Handler stream ended");
           break;
         }
       }
@@ -170,7 +168,7 @@ pub async fn new_page<T: Sync + Send>(
   
   // 等待直到并发页面数小于最大值
   while CONCURRENT_PAGES.load(Ordering::SeqCst) >= MAX_CONCURRENT_PAGES {
-    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+    tokio::time::sleep(tokio::time::Duration::from_millis(200)).await;
     info!("等待页面槽位, 当前: {}, 最大: {}", 
           CONCURRENT_PAGES.load(Ordering::SeqCst), MAX_CONCURRENT_PAGES);
   }
@@ -180,8 +178,8 @@ pub async fn new_page<T: Sync + Send>(
   info!("正在打开新页面, 当前计数: {}/{}", 
         CONCURRENT_PAGES.load(Ordering::SeqCst), MAX_CONCURRENT_PAGES);
   
-  let browser_instance = get_browser_instance().await?;
-  let browser_instance = browser_instance.lock().await;
+  let browser_instance = initialize_browser().await?;
+  let mut browser_instance = browser_instance.lock().await;
   
   // 创建新页面
   let page = match browser_instance.browser.new_page(params).await {
@@ -198,16 +196,22 @@ pub async fn new_page<T: Sync + Send>(
   // 执行回调函数
   let res = callback(page_arc.clone()).await;
   
-  // 当我们的引用是最后一个引用时，关闭页面
-  if Arc::strong_count(&page_arc) == 1 {
-    let page = Arc::try_unwrap(page_arc).expect("Failed to unwrap Arc");
-    page.close().await?;
-  }
+  // 关闭页面，必须用原始 page（Arc 不能 move 出 Page）
+  Arc::try_unwrap(page_arc)
+    .map_err(|_| eyre!("Failed to unwrap Arc to close page"))?
+    .close()
+    .await?;
   
   // 减少并发页面计数
   CONCURRENT_PAGES.fetch_sub(1, Ordering::SeqCst);
   info!("已关闭页面, 当前计数: {}/{}", 
         CONCURRENT_PAGES.load(Ordering::SeqCst), MAX_CONCURRENT_PAGES);
+  
+  // 关闭浏览器
+  browser_instance.browser.close().await?;
+  
+  // 尝试中止处理程序任务
+  browser_instance._handler_guard.abort();
   
   drop(browser_instance);
   

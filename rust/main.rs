@@ -493,10 +493,10 @@ async fn main() -> Result<(), std::io::Error> {
       app,
       async {
         let _ = tokio::signal::ctrl_c().await;
-        let res = generated::common::browser::index::destroy_browser().await;
-        if let Err(err) = res {
-          error!("destroy_browser error: {err:#?}");
-        }
+        // let res = generated::common::browser::index::destroy_browser().await;
+        // if let Err(err) = res {
+        //   error!("destroy_browser error: {err:#?}");
+        // }
       },
       None,
     ).await
