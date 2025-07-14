@@ -103,9 +103,6 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  InputProps,
-} from "element-plus";
 
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,7 +124,7 @@ const props = withDefaults(
     readonlyPlaceholder?: string;
     isReadonlyBorder?: boolean;
     align?: "left" | "center" | "right";
-  } & Partial<InputProps>>(),
+  }>(),
   {
     modelValue: undefined,
     type: "text",
