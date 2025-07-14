@@ -37,9 +37,6 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  SwitchProps,
-} from "element-plus";
 
 const {
   ns,
@@ -67,7 +64,7 @@ const props = withDefaults(
     falseReadonlyLabel?: string;
     notBorder?: boolean;
     pageInited?: boolean;
-  } & Partial<SwitchProps>>(),
+  }>(),
   {
     modelValue: undefined,
     disabled: undefined,
