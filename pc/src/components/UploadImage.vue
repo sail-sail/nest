@@ -146,7 +146,7 @@
         <ElIconPlus />
       </el-icon>
       <div
-        v-if="!props.readonly && oldModelValue1"
+        v-if="!props.readonly && oldModelValue1 !== modelValue1"
         un-absolute
         un-right="-.5"
         un-top="-1"
@@ -271,6 +271,7 @@ let oldModelValue1 = $ref(props.modelValue);
 watch(() => props.modelValue, (newVal) => {
   if (modelValue1 !== newVal) {
     modelValue1 = newVal;
+    oldModelValue1 = newVal;
     nowIndex = 0;
   }
 });
@@ -419,7 +420,6 @@ async function onUndo() {
     return;
   }
   modelValue1 = oldModelValue1;
-  oldModelValue1 = "";
   emit("update:modelValue", modelValue1);
   nextTick(focus);
 }
