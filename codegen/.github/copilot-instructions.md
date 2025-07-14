@@ -136,4 +136,6 @@ npm run dev:h5                # H5 开发
 - **Uni-app**：跨平台条件编译
 - **数据库**：MySQL，通过 `information_schema` 进行模式内省
 
+数据库建表规范详见 TABLE_RULES.md,create_table.md
+
 系统强调约定优于配置 - 遵循生成代码中的既定模式，而不是创建自定义实现。
