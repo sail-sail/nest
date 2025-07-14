@@ -91,8 +91,6 @@
 <script lang="ts" setup>
 import type {
   TreeNode,
-  SelectProps,
-  TreeComponentProps,
 } from "element-plus";
 
 import type {
@@ -131,7 +129,7 @@ const props = withDefaults(
     disabled?: boolean;
     readonly?: boolean;
     hideDisabledCheckbox?: boolean;
-  } & Partial<SelectProps> & Partial<TreeComponentProps>>(),
+  }>(),
   {
     height: 400,
     modelValue: undefined,

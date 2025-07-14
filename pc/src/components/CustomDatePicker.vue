@@ -33,7 +33,6 @@
 <script lang="ts" setup>
 import type {
   ElDatePicker,
-  DatePickerProps,
 } from "element-plus";
 
 import dayjs from "dayjs";
@@ -59,7 +58,7 @@ const props = withDefaults(
     placeholder?: string;
     readonlyPlaceholder?: string;
     shortcuts?: DatePickerType["shortcuts"];
-  } & Partial<DatePickerProps>>(),
+  }>(),
   {
     type: undefined,
     modelValue: undefined,
