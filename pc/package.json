@@ -65,6 +65,7 @@
     "@vue-macros/eslint-config": "3.0.0-beta.15",
     "@vue-macros/reactivity-transform": "3.0.0-beta.15",
     "@vue/compiler-sfc": "3.5.17",
+    "@vue/devtools-api": "7.7.7",
     "@vue/runtime-core": "3.5.17",
     "dotenv": "17.2.0",
     "eslint": "9.31.0",

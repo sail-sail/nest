@@ -27,33 +27,45 @@
 ### 2.2 外键字段
 ```sql
 `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
+`usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '用户',
 `dept_id` varchar(22) NOT NULL DEFAULT '' COMMENT '部门',
 ```
 - **格式**：`[表名]_id`
 - **类型**：`varchar(22)`
-- **说明**：关联其他表的主键
+- **说明**：关联其他表的主键, 如果业务上判断此外键关联不需要冗余 lbl, 则不需要 `[表名]_id_lbl` 字段, 否则需要
 
-### 2.3 多对多关联字段
+### 2.3 多对多关联
+- 多对多关联通常都有中间表, 中间表的命名规则是 `[模块]_[表1名]_[表2名]`, 中间表里面的字段命名规则是 `[表1名]_id` 和 `[表2名]_id`, 例如: 用户跟角色的多对多关系
 ```sql
-`role_ids` varchar(1000) NOT NULL DEFAULT '' COMMENT '角色',
+------------------------------------------------------------------------ 用户角色
+drop table if exists `base_usr_role`;
+CREATE TABLE if not exists `base_usr_role` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
+  `role_id` varchar(22) NOT NULL DEFAULT '' COMMENT '角色',
+  `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`usr_id`, `role_id`, `tenant_id`, `is_deleted`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户角色';
 ```
-- **格式**：`[表名]_ids`
-- **类型**：`varchar(长度)`
-- **说明**：存储逗号分隔的多个 ID
 
 ### 2.4 显示标签字段
 ```sql
 `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
-`usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '用户',
 ```
 - **主标签**：`lbl` - 表的主要显示字段
-- **外键标签**：`[外键字段名]_lbl` - 外键对应的显示名称
 
 ## 3. 系统字段规范
 
 ### 3.1 状态控制字段
 ```sql
-`is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
 `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
 `is_hidden` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '隐藏记录',
 ```
@@ -63,12 +75,12 @@
 `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
 `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
 ```
+`order_by` 不是必须的, 比如 订单表 肯定是根据创建时间倒序排序的, 相当于 `订单` 是 `业务表` 所以不需要 `order_by` 字段去人工排序 
 
 ### 3.3 多租户字段
 ```sql
 `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
 `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
-`org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '组织',
 ```
 
 ### 3.4 审计字段（必须包含）
@@ -142,49 +154,13 @@ PRIMARY KEY (`id`)
 
 ### 5.2 常用组合索引
 ```sql
-INDEX (`lbl`, `tenant_id`, `is_deleted`),
-INDEX (`parent_id`, `lbl`, `org_id`, `tenant_id`, `is_deleted`),
-INDEX (`usr_id`, `dept_id`, `tenant_id`, `is_deleted`),
+INDEX (`lbl`, `org_id`, `tenant_id`, `is_deleted`),
 ```
+通常业务上有唯一性的才创建 联合索引
 
 ### 5.3 索引设计原则
-- 包含 `tenant_id` 和 `is_deleted` 进行数据隔离
-- 外键字段必须建立索引
-- 常用查询字段组合建立复合索引
-
-## 6. 表配置规范
-
-### 6.1 基本表配置文件位置
-- **路径**：`codegen/src/tables/[模块名]/[模块名].ts`
-- **函数**：使用 `defineConfig()` 包装配置
-
-### 6.2 表配置示例
-```typescript
-export default defineConfig({
-  base_usr: {
-    opts: {
-      cache: true,           // 启用缓存
-      list_tree: false,      // 是否树形列表
-      uniques: [["username"]], // 唯一约束
-    },
-    columns: [
-      {
-        COLUMN_NAME: "username",
-        require: true,
-        search: true,
-      },
-      {
-        COLUMN_NAME: "role_ids",
-        foreignKey: {
-          table: "role",
-          multiple: true,
-          showType: "dialog",
-        },
-      },
-    ],
-  },
-});
-```
+- 包含 `org_id`, `tenant_id` 和 `is_deleted` 进行数据隔离, 如果有 `org_id` 和 `tenant_id` 字段, 则必须包含这两个字段
+- 有组合唯一性的业务字段组合才建立索引
 
 ## 7. 字段约定
 
@@ -242,13 +218,16 @@ ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
 ## 10. 建表完整示例
 
 ```sql
+------------------------------------------------------------------------ 示例
 DROP TABLE IF EXISTS `base_example`;
 CREATE TABLE IF NOT EXISTS `base_example` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `code_seq` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '编码-序列号',
   `code` varchar(20) NOT NULL DEFAULT '' COMMENT '编码',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `parent_id` varchar(22) NOT NULL DEFAULT '' COMMENT '父级',
-  `type` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '类型,dict:example_type',
+  `is_new` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '新品,dict:yes_no',
+  `type` varchar(20) NOT NULL DEFAULT '' COMMENT '类型,dictbiz:example_type',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
   `usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '用户',
   `img` varchar(22) NOT NULL DEFAULT '' COMMENT '图片',
@@ -258,7 +237,6 @@ CREATE TABLE IF NOT EXISTS `base_example` (
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
-  `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -272,10 +250,8 @@ CREATE TABLE IF NOT EXISTS `base_example` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`code`, `tenant_id`, `is_deleted`),
   INDEX (`lbl`, `tenant_id`, `is_deleted`),
-  INDEX (`parent_id`, `org_id`, `tenant_id`, `is_deleted`),
-  INDEX (`usr_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='示例表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='示例';
 ```
 
 ## 11. 注意事项
@@ -295,3 +271,28 @@ CREATE TABLE IF NOT EXISTS `base_example` (
 3. **禁止随意命名**：必须遵循字段命名规范
 4. **禁止遗漏审计字段**：必须包含完整的审计字段
 5. **禁止跳过配置**：建表后必须配置相应的表配置文件
+
+## 13. 租户隔离, 组织隔离
+
+1. tenant_id 如果表有这个字段代表需要租户隔离
+2. org_id 跟 org_id_lbl 如果表有这2个字段代表需要组织隔离
+
+## 14. 自动编码规则
+
+1. 如果表需要自动编码, 一般是 code 字段, 同时
+  ```sql
+  `code_seq` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '编码-序列号',
+  ```
+  用于自动编码的序列号, 如果此表, 比如订单表, 没有 lbl 字段, 则是 lbl 字段, code_seq 也改为 lbl_seq
+
+2. 如果自动编码需要日期序列, 则在 code_seq 或者 lbl_seq 前面加上
+  ```sql
+  `date_seq` date NOT NULL DEFAULT (CURRENT_DATE) COMMENT '日期-序列号',
+  ```
+  用于存储编码的日期, 每天都是从 1 开始的序列号
+  
+## 15. 业务字段
+  ```sql
+  `type` varchar(20) NOT NULL DEFAULT '' COMMENT '类型,dictbiz:example_type',
+  ```
+  其中: `dictbiz` 代表这是一个业务字段, `dict`代表系统字典, `example_type` 则是业务字典的编码
