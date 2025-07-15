@@ -596,7 +596,7 @@ async function getSchema0(
     }
     
     // 自动编码默认固定生成唯一索引配置
-    if (item.autoCode) {
+    if (item.autoCode && !item.autoCode.dateSeq) {
       tables[table_name].opts = tables[table_name].opts || { };
       tables[table_name].opts.uniques = tables[table_name].opts.uniques || [ ];
       if (
@@ -610,6 +610,27 @@ async function getSchema0(
         )
       ) {
         tables[table_name].opts.uniques.push([ column_name ]);
+      }
+    } else if (item.autoCode && item.autoCode.dateSeq) {
+      tables[table_name].opts = tables[table_name].opts || { };
+      tables[table_name].opts.uniques = tables[table_name].opts.uniques || [ ];
+      if (
+        !tables[table_name].opts.uniques.some(
+          (uniqueItem) => {
+            if (uniqueItem.length !== 2) {
+              return false;
+            }
+            return uniqueItem[0] === item.autoCode.dateSeq && uniqueItem[1] === column_name;
+          }
+        )
+      ) {
+        tables[table_name].opts.uniques.push([ item.autoCode.dateSeq, column_name ]);
+      }
+    }
+    
+    if (item.isFluentEditor) {
+      if (item.noList == null) {
+        item.noList = true;
       }
     }
     

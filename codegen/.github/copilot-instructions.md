@@ -15,11 +15,8 @@
 整个系统由 `codegen/src/tables/` 中的数据库模式定义驱动：
 
 ```bash
-# 从模式定义生成所有代码
+# 从模式定义生成所有代码并将生成的代码应用到目标项目
 cd codegen && npm run codegen
-
-# 将生成的代码应用到目标项目
-cd codegen && npm run codeapply
 ```
 
 **核心模式**：永远不要手动创建 CRUD 操作。始终在 `codegen/src/tables/[module]/[module].ts` 中使用 `defineConfig()` 模式定义模式，然后生成。
@@ -136,6 +133,7 @@ npm run dev:h5                # H5 开发
 - **Uni-app**：跨平台条件编译
 - **数据库**：MySQL，通过 `information_schema` 进行模式内省
 
+创建模块详见: create_mod.md
 数据库建表规范详见 TABLE_RULES.md,create_table.md
 
 系统强调约定优于配置 - 遵循生成代码中的既定模式，而不是创建自定义实现。
