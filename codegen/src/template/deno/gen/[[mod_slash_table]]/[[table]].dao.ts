@@ -2820,10 +2820,10 @@ export async function findByUnique<#=Table_Up#>(
       || column.dictbiz
     ) {
       let _data_type = "string";
+      if (data_type === "tinyint" || data_type === "int") {
+        _data_type = "number";
+      }
       if (column.dict || column.dictbiz) {
-        if (data_type === "tinyint" || data_type === "int") {
-          _data_type = "number";
-        }
         const columnDictModels = [
           ...dictModels.filter(function(item) {
             return item.code === column.dict || item.code === column.dict;
@@ -2843,12 +2843,30 @@ export async function findByUnique<#=Table_Up#>(
       if (foreignKey) {
         _data_type = foreignTable_Up + "Id";
       }
+    #><#
+    if (data_type === "tinyint" || data_type === "int") {
     #>
-    let <#=unique#>: <#=_data_type#>[] = [ ];
+    let <#=unique#>: [(number|undefined|null), (number|undefined|null)] = [ undefined, undefined ];<#
+    } else if (data_type === "date" || data_type === "datetime") {
+    #>
+    let <#=unique#>: [(string|undefined|null), (string|undefined|null)] = [ undefined, undefined ];<#
+    } else {
+    #>
+    let <#=unique#>: <#=_data_type#>[] = [ ];<#
+    }
+    #>
     if (!Array.isArray(search0.<#=unique#>) && search0.<#=unique#> != null) {
       <#=unique#> = [ search0.<#=unique#>, search0.<#=unique#> ];
     } else {
-      <#=unique#> = search0.<#=unique#> || [ ];
+      <#=unique#> = search0.<#=unique#><#
+      if (data_type === "tinyint" || data_type === "int") {
+      #> as unknown as [(number|undefined|null), (number|undefined|null)]<#
+      } else if (data_type === "date" || data_type === "datetime") {
+      #> as unknown as [(string|undefined|null), (string|undefined|null)]<#
+      } else {
+      #> || [ ]<#
+      }
+      #>;
     }<#
     } else {
     #>
