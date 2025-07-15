@@ -15,11 +15,8 @@
 整个系统由 `codegen/src/tables/` 中的数据库模式定义驱动：
 
 ```bash
-# 从模式定义生成所有代码
+# 从模式定义生成所有代码并将生成的代码应用到目标项目
 cd codegen && npm run codegen
-
-# 将生成的代码应用到目标项目
-cd codegen && npm run codeapply
 ```
 
 **核心模式**：永远不要手动创建 CRUD 操作。始终在 `codegen/src/tables/[module]/[module].ts` 中使用 `defineConfig()` 模式定义模式，然后生成。

@@ -82,6 +82,7 @@
     "@unocss/preset-attributify": "66.1.0-beta.10",
     "@vue-macros/eslint-config": "3.0.0-beta.15",
     "@vue-macros/reactivity-transform": "3.0.0-beta.15",
+    "@vue/devtools-api": "7.7.7",
     "@vue/runtime-core": "3.5.17",
     "cross-env": "7.0.3",
     "eslint": "9.30.1",
