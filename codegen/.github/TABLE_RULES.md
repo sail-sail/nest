@@ -27,28 +27,40 @@
 ### 2.2 外键字段
 ```sql
 `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
+`usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '用户',
 `dept_id` varchar(22) NOT NULL DEFAULT '' COMMENT '部门',
 ```
 - **格式**：`[表名]_id`
 - **类型**：`varchar(22)`
-- **说明**：关联其他表的主键
+- **说明**：关联其他表的主键, 如果业务上判断此外键关联不需要冗余 lbl, 则不需要 `[表名]_id_lbl` 字段, 否则需要
 
-### 2.3 多对多关联字段
+### 2.3 多对多关联
+- 多对多关联通常都有中间表, 中间表的命名规则是 `[模块]_[表1名]_[表2名]`, 中间表里面的字段命名规则是 `[表1名]_id` 和 `[表2名]_id`, 例如: 用户跟角色的多对多关系
 ```sql
-`role_ids` varchar(1000) NOT NULL DEFAULT '' COMMENT '角色',
+------------------------------------------------------------------------ 用户角色
+drop table if exists `base_usr_role`;
+CREATE TABLE if not exists `base_usr_role` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
+  `role_id` varchar(22) NOT NULL DEFAULT '' COMMENT '角色',
+  `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`usr_id`, `role_id`, `tenant_id`, `is_deleted`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户角色';
 ```
-- **格式**：`[表名]_ids`
-- **类型**：`varchar(长度)`
-- **说明**：存储逗号分隔的多个 ID
 
 ### 2.4 显示标签字段
 ```sql
 `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
-`usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '用户',
 ```
 - **主标签**：`lbl` - 表的主要显示字段
-- **外键标签**：`[外键字段名]_lbl` - 外键对应的显示名称
-- **说明**：如果业务上判断此外键关联不需要冗余 lbl, 则不需要 `[外键字段名]_lbl` 字段, 否则需要
 
 ## 3. 系统字段规范
 
