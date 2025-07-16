@@ -68,13 +68,21 @@ export async function uploadFile(config: {
     if (config.showErrMsg) {
       const errMsg = (err2 as Error).toString() || "";
       if (errMsg) {
-        uni.showToast({
-          title: errMsg,
-          icon: "error",
-          duration: 3000,
-          mask: true,
-          position: "center",
-        });
+        if (errMsg.length <= 14) {
+          uni.showToast({
+            title: errMsg,
+            icon: "none",
+            duration: 3000,
+            mask: true,
+            position: "center",
+          });
+        } else {
+          await uni.showModal({
+            title: "错误",
+            content: errMsg,
+            showCancel: false,
+          });
+        }
       }
     }
     throw err2;
@@ -93,13 +101,21 @@ export async function uploadFile(config: {
   if (err && config.showErrMsg) {
     const errMsg = err.errMsg || err.toString() || "";
     if (errMsg) {
-      uni.showToast({
-        title: errMsg,
-        icon: "error",
-        duration: 3000,
-        mask: true,
-        position: "center",
-      });
+      if (errMsg.length <= 14) {
+        uni.showToast({
+          title: errMsg,
+          icon: "none",
+          duration: 3000,
+          mask: true,
+          position: "center",
+        });
+      } else {
+        await uni.showModal({
+          title: "错误",
+          content: errMsg,
+          showCancel: false,
+        });
+      }
     }
     throw err;
   }
@@ -117,13 +133,21 @@ export async function uploadFile(config: {
   }
   if (data && data.code !== 0) {
     if (data.msg && (!config || config.showErrMsg !== false)) {
-      uni.showToast({
-        title: data.msg,
-        icon: "none",
-        duration: 3000,
-        mask: true,
-        position: "center",
-      });
+      if (data.msg.length <= 14) {
+        uni.showToast({
+          title: data.msg,
+          icon: "none",
+          duration: 3000,
+          mask: true,
+          position: "center",
+        });
+      } else {
+        await uni.showModal({
+          title: "错误",
+          content: data.msg,
+          showCancel: false,
+        });
+      }
     }
     throw data;
   }
@@ -186,13 +210,21 @@ export async function downloadFile(
     if (config?.showErrMsg) {
       const errMsg = (err2 as Error).toString() || "";
       if (errMsg) {
-        uni.showToast({
-          title: errMsg,
-          icon: "error",
-          duration: 3000,
-          mask: true,
-          position: "center",
-        });
+        if (errMsg.length <= 14) {
+          uni.showToast({
+            title: errMsg,
+            icon: "none",
+            duration: 3000,
+            mask: true,
+            position: "center",
+          });
+        } else {
+          await uni.showModal({
+            title: "错误",
+            content: errMsg,
+            showCancel: false,
+          });
+        }
       }
     }
     throw err2;
@@ -462,13 +494,21 @@ export async function request<T>(
   if (err && (!config || config.showErrMsg !== false)) {
     const errMsg = (err as any).errMsg || err.toString() || "";
     if (errMsg) {
-      uni.showToast({
-        title: errMsg,
-        icon: "none",
-        duration: 3000,
-        mask: true,
-        position: "center",
-      });
+      if (errMsg.length <= 14) {
+        uni.showToast({
+          title: errMsg,
+          icon: "none",
+          duration: 3000,
+          mask: true,
+          position: "center",
+        });
+      } else {
+        await uni.showModal({
+          title: "错误",
+          content: errMsg,
+          showCancel: false,
+        });
+      }
     }
     throw err;
   }
@@ -489,13 +529,21 @@ export async function request<T>(
   }
   if (data && data.code !== 0) {
     if (data.msg && (!config || config.showErrMsg !== false)) {
-      uni.showToast({
-        title: data.msg,
-        icon: "none",
-        duration: 3000,
-        mask: true,
-        position: "center",
-      });
+      if (data.msg.length <= 14) {
+        uni.showToast({
+          title: data.msg,
+          icon: "none",
+          duration: 3000,
+          mask: true,
+          position: "center",
+        });
+      } else {
+        await uni.showModal({
+          title: "错误",
+          content: data.msg,
+          showCancel: false,
+        });
+      }
     }
     throw data;
   }
