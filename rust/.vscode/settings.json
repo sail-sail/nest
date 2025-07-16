@@ -28,8 +28,7 @@
     ".clippy.toml": true,
     ".editorconfig": true,
     "**/.npmrc": true,
-    ".gitignore": true,
-    "app/Cargo.toml": true
+    ".gitignore": true
   },
   "deno.enable": false,
   "files.eol": "\n"
