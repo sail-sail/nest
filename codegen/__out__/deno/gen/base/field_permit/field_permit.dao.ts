@@ -63,10 +63,6 @@ import {
   findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
 
-import {
-  route_path,
-} from "./field_permit.model.ts";
-
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
