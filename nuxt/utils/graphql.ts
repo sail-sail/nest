@@ -69,7 +69,7 @@ function findQueryInfosIdx(queryInfos: QueryInfo[], queryInfo: QueryInfo) {
       return false;
     }
     for (let i = 0; i < keys1.length; i++) {
-      const key = keys1[i];
+      const key = keys1[i] as string;
       if (item.gqlArg!.variables![key] !== queryInfo.gqlArg!.variables![key]) {
         return false;
       }
@@ -108,7 +108,7 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     for (let i = 0; i < queryInfos2.length; i++) {
       const queryInfo = queryInfos2[i];
       const hash = `l${ uniqueID() }`;
-      queryInfo.hash = hash;
+      queryInfo!.hash = hash;
     }
     tasks.push(queryInfos2);
     tasksRepeat.push(queryInfosRepeat2);
@@ -117,8 +117,8 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       let queryBuilderAdd: ReturnType<typeof queryBuilder.add> | undefined;
       for (let i = 0; i < queryInfos2.length; i++) {
         const queryInfo = queryInfos2[i];
-        const queryTmp = queryInfo.gqlArg!.query!;
-        const variablesTmp = queryInfo.gqlArg?.variables;
+        const queryTmp = queryInfo!.gqlArg!.query!;
+        const variablesTmp = queryInfo!.gqlArg?.variables;
         const queryDoc = parse(queryTmp);
         let operationDefinitionNode: OperationDefinitionNode | FragmentDefinitionNode | undefined = undefined;
         for (const definition of queryDoc.definitions) {
@@ -148,7 +148,7 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
             };
             (selection as any).alias = alias;
           }
-          (alias as any).value = `${ queryInfo.hash! }_${ alias.value || selection.name.value }`;
+          (alias as any).value = `${ queryInfo!.hash! }_${ alias.value || selection.name.value }`;
           if (selection.arguments) {
             for (const arg of selection.arguments) {
               (arg.value as any).name.value = `${ (arg.value as any).name.value }${ i }`;
@@ -181,7 +181,7 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       const hashs: string[] = [ ];
       const keys = Object.keys(newResult || { });
       for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
+        const key = keys[i] as string;
         const val = newResult[key];
         const idx = key.indexOf("_");
         const hash = key.substring(0, idx);
@@ -196,18 +196,18 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       // 从 tasks 中查找 hash 对应的 QueryInfo
       const willRemoves: number[] = [ ];
       for (let l = 0; l < hashs.length; l++) {
-        const hash = hashs[l];
+        const hash = hashs[l]!;
         for (let i = 0; i < tasks.length; i++) {
-          const task = tasks[i];
+          const task = tasks[i]!;
           let isTaskEq = false;
           for (let k = 0; k < task.length; k++) {
-            const item = task[k];
+            const item = task[k]!;
             if (item.hash === hash) {
               item.resolve!(results[hash]);
               const itemRepeat = queryInfosRepeat2[queryInfos2.indexOf(item)];
               if (itemRepeat && itemRepeat.length > 0) {
                 for (let m = 0; m < itemRepeat.length; m++) {
-                  const itemRepeatTmp = itemRepeat[m];
+                  const itemRepeatTmp = itemRepeat[m]!;
                   itemRepeatTmp.resolve!(results[hash]);
                 }
               }
@@ -227,23 +227,23 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     })();
   }
   for (let i = 0; i < tasks.length; i++) {
-    const task = tasks[i];
+    const task = tasks[i]!;
     for (let k = 0; k < task.length; k++) {
-      const item = task[k];
+      const item = task[k]!;
       if (item.gqlArg === gqlArg) {
         return await item.result;
       }
     }
   }
   for (let i = 0; i < tasksRepeat.length; i++) {
-    const task = tasksRepeat[i];
+    const task = tasksRepeat[i]!;
     for (let k = 0; k < task.length; k++) {
-      const items = task[k];
+      const items = task[k]!;
       if (!items) {
         continue;
       }
       for (let m = 0; m < items.length; m++) {
-        const item = items[m];
+        const item = items[m]!;
         if (item.gqlArg === gqlArg) {
           return await item.result;
         }

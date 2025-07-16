@@ -28,7 +28,7 @@ async function findDefaultSeo(
   opt?: GqlOpt,
 ) {
   const res: {
-    findDefaultSeo: SeoModel | undefined;
+    findDefaultSeo?: SeoModel;
   } = await query({
     query: /* GraphQL */ `
       query {
