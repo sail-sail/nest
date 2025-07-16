@@ -677,6 +677,64 @@ import {<#
 } from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
 }
 #><#
+// 如果有两个相同的 cascadeUpdateField 就报错
+const cascadeUpdateFields = opts.cascadeUpdateFields || [ ];
+const cascadeUpdateFieldMap = new Map();
+const cascadeUpdateFieldTables = [ ];
+const cascadeUpdateFieldWatchColumns = [ ];
+for (const cascadeUpdateField of cascadeUpdateFields) {
+  const key = `${cascadeUpdateField.mod}_${cascadeUpdateField.table}.${cascadeUpdateField.column}`;
+  if (cascadeUpdateFieldMap.has(key)) {
+    throw `表 ${mod}_${table} 的级联更新 cascadeUpdateFields 字段 ${JSON.stringify(cascadeUpdateField)} 重复`;
+  }
+  cascadeUpdateFieldMap.set(key, cascadeUpdateField);
+  if (!cascadeUpdateFieldTables.some((item) => item.mod === cascadeUpdateField.mod && item.table === cascadeUpdateField.table)) {
+    cascadeUpdateFieldTables.push({
+      mod: cascadeUpdateField.mod,
+      table: cascadeUpdateField.table,
+    });
+  }
+  if (!cascadeUpdateFieldWatchColumns.includes(cascadeUpdateField.watchColumn)) {
+    cascadeUpdateFieldWatchColumns.push(cascadeUpdateField.watchColumn);
+  }
+}
+for (const item of cascadeUpdateFieldTables) {
+  const mod = item.mod;
+  const table = item.table;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const Table_Up = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (
+    findAllTableUps.includes(Table_Up) &&
+    updateByIdTableUps.includes(Table_Up)
+  ) {
+    continue;
+  }
+  const hasFindAllTableUps = findAllTableUps.includes(Table_Up);
+  if (!hasFindAllTableUps) {
+    findAllTableUps.push(Table_Up);
+  }
+  const hasUpdateByIdTableUps = updateByIdTableUps.includes(Table_Up);
+  if (!hasUpdateByIdTableUps) {
+    updateByIdTableUps.push(Table_Up);
+  }
+#>
+
+import {<#
+  if (!hasFindAllTableUps) {
+  #>
+  findAll<#=Table_Up#>,<#
+  }
+  #><#
+  if (!hasUpdateByIdTableUps) {
+  #>
+  updateById<#=Table_Up#>,<#
+  }
+  #>
+} from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
+}
+#><#
 if (
   (
     (hasCreateUsrId && hasCreateUsrIdLbl)
@@ -714,11 +772,15 @@ import {
   createHash,
 } from "node:crypto";<#
 }
+#><#
+if ((hasDataPermit() && hasCreateUsrId) || isUseI18n) {
 #>
 
 import {
   route_path,
 } from "./<#=table#>.model.ts";<#
+}
+#><#
 if (hasIsIcon) {
 #>
 
@@ -5355,6 +5417,12 @@ export async function updateById<#=Table_Up#>(
   const args = new QueryArgs();
   let sql = `update <#=mod#>_<#=table#> set `;
   let updateFldNum = 0;<#
+  if (cascadeUpdateFields.length > 0) {
+  #>
+  const sqlSetFlds: string[] = [ ];
+  const sqlSetFldInput: <#=inputName#> = { };<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -5403,7 +5471,13 @@ export async function updateById<#=Table_Up#>(
     #><#
     }
     #>
-    updateFldNum++;
+    updateFldNum++;<#
+    if (cascadeUpdateFieldWatchColumns.includes(modelLabel)) {
+    #>
+    sqlSetFlds.push("<#=modelLabel#>");
+    sqlSetFldInput.<#=modelLabel#> = input.<#=modelLabel#>;<#
+    }
+    #>
   }<#
     }
   #><#
@@ -5455,7 +5529,13 @@ export async function updateById<#=Table_Up#>(
       #><#
       }
       #>
-      updateFldNum++;
+      updateFldNum++;<#
+      if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
+      #>
+      sqlSetFlds.push("<#=column_name#>");
+      sqlSetFldInput.<#=column_name#> = input.<#=column_name#>;<#
+      }
+      #>
     }
   }<#
     } else {
@@ -5493,7 +5573,13 @@ export async function updateById<#=Table_Up#>(
       #><#
       }
       #>
-      updateFldNum++;
+      updateFldNum++;<#
+      if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
+      #>
+      sqlSetFlds.push("<#=column_name#>");
+      sqlSetFldInput.<#=column_name#> = input.<#=column_name#>;<#
+      }
+      #>
     }
   }<#
     }
@@ -5539,7 +5625,13 @@ export async function updateById<#=Table_Up#>(
       #><#
         }
       #>
-      updateFldNum++;
+      updateFldNum++;<#
+      if (cascadeUpdateFieldWatchColumns.includes(val)) {
+      #>
+      sqlSetFlds.push("<#=val#>");
+      sqlSetFldInput.<#=val#> = input.<#=val#>;<#
+      }
+      #>
     }
   }<#
     }
@@ -5936,6 +6028,62 @@ export async function updateById<#=Table_Up#>(
       #>
     }
   }<#
+  if (cascadeUpdateFieldWatchColumns.length > 0) {
+  #>
+  
+  if (<#
+    for (let i = 0; i < cascadeUpdateFieldWatchColumns.length; i++) {
+      const fld = cascadeUpdateFieldWatchColumns[i];
+    #>
+    sqlSetFlds.includes("<#=fld#>")<#
+    if (i < cascadeUpdateFieldWatchColumns.length - 1) {
+    #> ||<#
+    }
+    #><#
+    }
+    #>
+  ) {<#
+    for (const cascadeUpdateFieldTable of cascadeUpdateFieldTables) {
+      const table = cascadeUpdateFieldTable.table;
+      const mod = cascadeUpdateFieldTable.mod;
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const cascadeUpdateFields2 = cascadeUpdateFields.filter((item) => item.mod === mod && item.table === table);
+    #>
+    
+    const <#=table#>_models = await findAll<#=Table_Up#>(
+      {
+        <#=cascadeUpdateFields2.idColumn#>: [ id ],
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    
+    for (const <#=table#>_model of <#=table#>_models) {
+      const <#=table#>_id = <#=table#>_model.id;
+      const <#=table#>_input: <#=Table_Up#>Input = { };<#
+      for (const item of cascadeUpdateFields2) {
+      #>
+      if (sqlSetFlds.includes("<#=item.watchColumn#>")) {
+        <#=table#>_input.<#=item.column#> = sqlSetFldInput.<#=item.watchColumn#>;
+      }<#
+      }
+      #>
+      await updateById<#=Table_Up#>(
+        <#=table#>_id,
+        <#=table#>_input,
+        options,
+      );
+    }<#
+    }
+    #>
+    
+  }<#
+  }
+  #><#
   if (cache) {
   #>
   
