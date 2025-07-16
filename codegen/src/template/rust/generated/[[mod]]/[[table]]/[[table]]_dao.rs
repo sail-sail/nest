@@ -502,6 +502,69 @@ use crate::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
 };<#
 }
 #><#
+// 如果有两个相同的 cascadeUpdateField 就报错
+const cascadeUpdateFields = opts.cascadeUpdateFields || [ ];
+const cascadeUpdateFieldMap = new Map();
+const cascadeUpdateFieldTables = [ ];
+const cascadeUpdateFieldWatchColumns = [ ];
+for (const cascadeUpdateField of cascadeUpdateFields) {
+  const key = `${cascadeUpdateField.mod}_${cascadeUpdateField.table}.${cascadeUpdateField.column}`;
+  if (cascadeUpdateFieldMap.has(key)) {
+    throw `表 ${mod}_${table} 的级联更新 cascadeUpdateFields 字段 ${JSON.stringify(cascadeUpdateField)} 重复`;
+  }
+  cascadeUpdateFieldMap.set(key, cascadeUpdateField);
+  if (!cascadeUpdateFieldTables.some((item) => item.mod === cascadeUpdateField.mod && item.table === cascadeUpdateField.table)) {
+    cascadeUpdateFieldTables.push({
+      mod: cascadeUpdateField.mod,
+      table: cascadeUpdateField.table,
+    });
+  }
+  if (!cascadeUpdateFieldWatchColumns.includes(cascadeUpdateField.watchColumn)) {
+    cascadeUpdateFieldWatchColumns.push(cascadeUpdateField.watchColumn);
+  }
+}
+for (const item of cascadeUpdateFieldTables) {
+  const mod = item.mod;
+  const table = item.table;
+  const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+  const tableUP = tableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  if (
+    findAllTableUps.includes(tableUP) &&
+    updateByIdTableUps.includes(tableUP)
+  ) {
+    continue;
+  }
+  const hasFindAllTableUps = findAllTableUps.includes(tableUP);
+  if (!hasFindAllTableUps) {
+    findAllTableUps.push(tableUP);
+  }
+  const hasUpdateByIdTableUps = updateByIdTableUps.includes(tableUP);
+  if (!hasUpdateByIdTableUps) {
+    updateByIdTableUps.push(tableUP);
+  }
+#>
+
+use crate::<#=mod#>::<#=table#>::<#=table#>_model::{
+  <#=tableUP#>Search,
+  <#=tableUP#>Input,
+};
+
+use crate::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
+  if (!hasFindAllTableUps) {
+  #>
+  find_all_<#=table#>,<#
+  }
+  #><#
+  if (!hasUpdateByIdTableUps) {
+  #>
+  update_by_id_<#=table#>,<#
+  }
+  #>
+};<#
+}
+#><#
 
 // 已经导入的ID列表
 const modelIds = [ ];
@@ -5886,6 +5949,15 @@ pub async fn update_by_id_<#=table#>(
   let mut sql_fields = String::with_capacity(80 * <#=columns.length#> + 20);
   
   let mut field_num: usize = 0;<#
+  if (cascadeUpdateFields.length > 0) {
+  #>
+  
+  let mut sql_set_flds: Vec<String> = vec![];
+  let mut sql_set_fld_input: <#=tableUP#>Input = <#=tableUP#>Input {
+    ..Default::default()
+  };<#
+  }
+  #><#
   if (hasTenantId) {
   #>
   
@@ -5928,6 +6000,12 @@ pub async fn update_by_id_<#=table#>(
   #> {
     if !<#=modelLabel#>.is_empty() {
       field_num += 1;<#
+      if (cascadeUpdateFieldWatchColumns.includes(modelLabel)) {
+      #>
+      sql_set_flds.push("<#=modelLabel#>".to_owned());
+      sql_set_fld_input.<#=modelLabel#> = Some(<#=modelLabel#>.clone());<#
+      }
+      #><#
       if (!langTableRecords.some((item) => item.COLUMN_NAME === modelLabel)) {
       #>
       sql_fields += "<#=modelLabel#>=?,";
@@ -5992,11 +6070,23 @@ pub async fn update_by_id_<#=table#>(
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    field_num += 1;
+    field_num += 1;<#
+    if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
+    #>
+    sql_set_flds.push("<#=column_name#>".to_owned());
+    sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
+    }
+    #>
     sql_fields += "<#=column_name_mysql#>=?,";
     args.push(<#=column_name_rust#>.into());
   } else if input.<#=column_name#>_save_null == Some(true) {
-    field_num += 1;
+    field_num += 1;<#
+    if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
+    #>
+    sql_set_flds.push("<#=column_name#>".to_owned());
+    sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
+    }
+    #>
     sql_fields += "<#=column_name_mysql#>=null,";
   }<#
     } else {
@@ -6008,6 +6098,12 @@ pub async fn update_by_id_<#=table#>(
     }
   #> {
     field_num += 1;<#
+    if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
+    #>
+    sql_set_flds.push("<#=column_name#>".to_owned());
+    sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
+    }
+    #><#
       if (!langTableRecords.some((item) => item.COLUMN_NAME === column_name)) {
     #>
     sql_fields += "<#=column_name_mysql#>=?,";
@@ -6055,6 +6151,12 @@ pub async fn update_by_id_<#=table#>(
   // <#=column_comment#>
   if let Some(<#=rustKeyEscape(val)#>) = input.<#=rustKeyEscape(val)#> {
     field_num += 1;<#
+    if (cascadeUpdateFieldWatchColumns.includes(val)) {
+    #>
+    sql_set_flds.push("<#=val#>".to_owned());
+    sql_set_fld_input.<#=val#> = Some(<#=val#>.clone());<#
+    }
+    #><#
       if (!langTableRecords.some((item) => item.COLUMN_NAME === val)) {
     #>
     sql_fields += "<#=val_mysql#>=?,";
@@ -6588,6 +6690,64 @@ pub async fn update_by_id_<#=table#>(
       args,
       options.clone(),
     ).await?;<#
+    if (cascadeUpdateFieldWatchColumns.length > 0) {
+    #>
+    
+    if <#
+      for (let i = 0; i < cascadeUpdateFieldWatchColumns.length; i++) {
+        const fld = cascadeUpdateFieldWatchColumns[i];
+      #>
+      sql_set_flds.includes("<#=fld#>")<#
+      if (i < cascadeUpdateFieldWatchColumns.length - 1) {
+      #> ||<#
+      }
+      #><#
+      }
+      #>
+    {<#
+      for (const cascadeUpdateFieldTable of cascadeUpdateFieldTables) {
+        const table = cascadeUpdateFieldTable.table;
+        const mod = cascadeUpdateFieldTable.mod;
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const tableUP = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const cascadeUpdateFields2 = cascadeUpdateFields.filter((item) => item.mod === mod && item.table === table);
+      #>
+      
+      let <#=table#>_models = find_all_<#=table#>(
+        Some(<#=tableUP#>Search {
+          <#=cascadeUpdateFieldTable.column#>: Some(vec![id.clone()]),
+          ..Default::default()
+        }),
+        None,
+        None,
+        options.clone(),
+      ).await?;
+      
+      for <#=table#>_model in <#=table#>_models {
+        let <#=table#>_id = <#=table#>_model.id;
+        let mut <#=table#>_input: <#=tableUP#>Input = <#=tableUP#>Input {
+          ..Default::default()
+        };<#
+        for (const item of cascadeUpdateFields2) {
+        #>
+        if sql_set_flds.includes("<#=item.watchColumn#>") {
+          <#=table#>_input.<#=item.column#> = sql_set_fld_input.<#=item.watchColumn#>;
+        }<#
+        }
+        #>
+        update_by_id_<#=table#>(
+          <#=table#>_id,
+          <#=table#>_input,
+          options.clone(),
+        ).await?;
+      }<#
+      }
+      #>
+    }<#
+    }
+    #><#
     if (
       cache &&
       (mod === "base" && table === "tenant") ||
