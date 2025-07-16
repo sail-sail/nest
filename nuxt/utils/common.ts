@@ -75,7 +75,7 @@ export function list2tree<
   const treeData: T[] = [ ];
   function treeFn(parent_id: string, children: T[]) {
     for (let i = 0; i < list.length; i++) {
-      const item = list[i];
+      const item = list[i]!;
       const children2: T[] = [ ];
       if (item.parent_id === parent_id) {
         children.push({
@@ -85,7 +85,7 @@ export function list2tree<
       }
     }
     for (let i = 0; i < children.length; i++) {
-      const item = children[i];
+      const item = children[i]!;
       item.children = item.children || [ ];
       treeFn(item.id, item.children);
     }

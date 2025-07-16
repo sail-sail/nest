@@ -26,16 +26,15 @@
 </template>
 
 <script setup lang="ts">
-import "@/utils/DateUtil";
+import "@/utils/DateUtil.ts";
 
 import {
   useMsgs,
-} from "./compositions/msg";
+} from "./compositions/msg.ts";
 
 import {
   useMySeoMeta,
-} from "./Api";
-
+} from "./Api.ts";
 
 const {
   msgs,

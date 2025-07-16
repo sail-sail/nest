@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { saveAs } from "file-saver";
+// import { saveAs } from "file-saver";
 import { useLoading } from "@/store/index";
 import { useAuthorization } from "@/store/usr";
 
@@ -320,5 +320,5 @@ export function downloadById(
     return;
   }
   const url = getDownloadUrl(model, type);
-  saveAs(url);
+  // saveAs(url);
 }
