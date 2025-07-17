@@ -24,8 +24,7 @@
     "johnsoncodehk.vscode-tsconfig-helper",
     "jacobpfeifer.pfeifer-hurl",
     "yoavbls.pretty-ts-errors",
-    "hongyan-prettyjson.pretty-json-vscode",
-    "emeraldwalk.runonsave"
+    "hongyan-prettyjson.pretty-json-vscode"
   ],
   "unwantedRecommendations": [
     "mattpocock.ts-error-translator"
