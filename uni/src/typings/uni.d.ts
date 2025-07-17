@@ -11625,7 +11625,7 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/plugins/login?id=login](http://uniapp.dcloud.io/api/plugins/login?id=login)
      */
-    login(options: UniNamespace.LoginOptions): void;
+    login(options: UniNamespace.LoginOptions): Promise<UniNamespace.LoginRes>;
     /**
      * 登录
      *
