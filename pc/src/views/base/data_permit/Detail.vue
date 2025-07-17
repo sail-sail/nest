@@ -91,7 +91,7 @@
                   return !item.route_path;
                 },
               }"
-              :filter-node-method="useMenuTreeFilter"
+              :filter-node-method="(useMenuTreeFilter as any)"
             ></CustomTreeSelect>
           </el-form-item>
         </template>
