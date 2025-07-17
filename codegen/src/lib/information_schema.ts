@@ -596,7 +596,7 @@ async function getSchema0(
     }
     
     // 自动编码默认固定生成唯一索引配置
-    if (item.autoCode) {
+    if (item.autoCode && !item.autoCode.dateSeq) {
       tables[table_name].opts = tables[table_name].opts || { };
       tables[table_name].opts.uniques = tables[table_name].opts.uniques || [ ];
       if (
@@ -610,6 +610,27 @@ async function getSchema0(
         )
       ) {
         tables[table_name].opts.uniques.push([ column_name ]);
+      }
+    } else if (item.autoCode && item.autoCode.dateSeq) {
+      tables[table_name].opts = tables[table_name].opts || { };
+      tables[table_name].opts.uniques = tables[table_name].opts.uniques || [ ];
+      if (
+        !tables[table_name].opts.uniques.some(
+          (uniqueItem) => {
+            if (uniqueItem.length !== 2) {
+              return false;
+            }
+            return uniqueItem[0] === item.autoCode.dateSeq && uniqueItem[1] === column_name;
+          }
+        )
+      ) {
+        tables[table_name].opts.uniques.push([ item.autoCode.dateSeq, column_name ]);
+      }
+    }
+    
+    if (item.isFluentEditor) {
+      if (item.noList == null) {
+        item.noList = true;
       }
     }
     
@@ -1000,6 +1021,7 @@ ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
         }
       }
     }
+    
   }
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const column = tables[table_name].columns[i];
@@ -1036,7 +1058,7 @@ ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
         const table2 = column.COLUMN_NAME.substring(0, column.COLUMN_NAME.length - "_id".length);
         const table2_name = table_names.find((item) => item.substring(item.indexOf("_") + 1) === table2);
         if (!table2_name) {
-          throw new Error(`table2_name not found: ${ table2 }`);
+          throw new Error(`${ table_name }.${ column.COLUMN_NAME } table2_name not found: ${ table2 }`);
         }
         const mod2 = table2_name.substring(0, table_name.indexOf("_"));
         const defaultSort = tables[table2_name]?.opts?.defaultSort;
@@ -1239,6 +1261,23 @@ ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
     // 审核字段默认为不可改
     if (auditColumn && auditColumn.readonly == null) {
       auditColumn.readonly = true;
+    }
+  }
+  
+  // 校验 modelLabel 对应的字段是否在外键关联表中存在
+  const oldRecords = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const column = tables[table_name].columns[i];
+    if (column.modelLabel && column.foreignKey) {
+      if (!oldRecords.some((item0: TableCloumn) => item0.COLUMN_NAME === column.modelLabel)) {
+        throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 的 modelLabel: ${ column.modelLabel } 不存在!`);
+      }
+      continue;
+    }
+    if (!column.modelLabel && column.foreignKey
+      && oldRecords.some((item0: TableCloumn) => item0.COLUMN_NAME === `${ column.COLUMN_NAME }_lbl`)
+    ) {
+      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 的 modelLabel 未设置, 但却存在 ${ column.COLUMN_NAME }_lbl 字段!`);
     }
   }
   
