@@ -81,10 +81,6 @@ import {
   findOneOrg,
 } from "/gen/base/org/org.dao.ts";
 
-import {
-  route_path,
-} from "./usr.model.ts";
-
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<UsrSearch>,

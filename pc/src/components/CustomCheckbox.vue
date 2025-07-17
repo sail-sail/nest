@@ -35,7 +35,6 @@
 </template>
 
 <script lang="ts" setup>
-
 const {
   ns,
   initSysI18ns,
