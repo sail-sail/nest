@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch,PropType } from 'vue'
 import { covetUniNumber, getUnit } from '../../libs/tool'
 import { getDefaultColor } from '../../libs/colors'
 import { useTmConfig } from '../../libs/config'
@@ -49,6 +49,14 @@ const props = defineProps({
      * 是否禁用
      */
     disabled: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 开启后自动隐藏限制的按钮
+     * 最小时隐藏减号按钮
+     */
+    autoHideBtn: {
         type: Boolean,
         default: false
     },
@@ -140,20 +148,28 @@ const props = defineProps({
         default: "#333333"
     },
     /**
+     * 输入框的自定样式
+     * 可以写背景字体等样式
+     */
+    inputStyle:{
+        type: [String, Object] as PropType<Partial<CSSStyleDeclaration>|string>,
+        default: ''
+    },
+    /**
      * 文本文字大小
      */
     fontSize: {
-        type: String,
-        default: "28"
-    },
+    type: String,
+    default: "28"
+}
 })
-
+// FieldKeys<typeof CSSStyleDeclaration>
 const emit = defineEmits([
     /**
      * 输入值或者点击按钮时触发
      * @param {number} str - 当前的值。
      */
-    'change', 
+    'change',
     /**
      * 等同vmodel
      */
@@ -182,6 +198,7 @@ const _fontSize = computed((): string => {
 })
 
 const _unFontSize = computed((): string => props.fontSize)
+const _inputStyle = computed((): any => props.inputStyle)
 
 const _btnFontColor = computed((): string => getDefaultColor(props.btnFontColor))
 
@@ -224,6 +241,7 @@ const _max = computed((): number => props.max)
 const _min = computed((): number => props.min)
 const _step = computed((): number => props.step)
 const _disabled = computed((): boolean => props.disabled)
+const _autoHideBtn = computed((): boolean => props.autoHideBtn)
 
 watch(() => props.modelValue, (newval: number) => {
     if (newval == _value.value) return;
@@ -231,7 +249,9 @@ watch(() => props.modelValue, (newval: number) => {
 })
 
 onMounted(() => {
-    setValue(props.modelValue, false)
+    nextTick(() => {
+        setValue(props.modelValue, false)
+    })
 })
 
 const isInRange = (value: number): boolean => {
@@ -250,7 +270,7 @@ const getDecimalPlaces = (): number => {
  * 加
  */
 const handleIncrement = () => {
-    if(_disabled.value) return
+    if (_disabled.value) return
     const newValue = Math.min(_value.value + _step.value, props.max);
     let val = clampValue(parseFloat(newValue.toFixed(props.decimalLen)));
     setValue(val, true)
@@ -258,7 +278,7 @@ const handleIncrement = () => {
 
 /**减 */
 const handleDecrement = () => {
-    if(_disabled.value) return
+    if (_disabled.value) return
     const newValue = Math.max(_value.value - _step.value, props.min);
     let val = clampValue(parseFloat(newValue.toFixed(props.decimalLen)));
     setValue(val, true)
@@ -310,23 +330,23 @@ export default {
 </script>
 <template>
     <view class="xStepper" :style="{ width: _width, borderRadius: _round }">
-        <view :hover-start-time="20" :hover-stay-time="150"
-			  :hover-class="surDomDisabeld||_disabled ? '' : 'xStepperHoverbtn'"
-            @click="handleDecrement" class="xStepperBtn"
-            :style="{ backgroundColor: _btnColor, height: _height, width: _btnWidth, opacity: surDomDisabeld||_disabled ? 0.6 : 1, borderRadius: _splitBtn ? '50px' : '0rpx' }">
+        <view v-if="(!surDomDisabeld && _autoHideBtn) || !_autoHideBtn" :hover-start-time="20" :hover-stay-time="150"
+            :hover-class="surDomDisabeld || _disabled ? '' : 'xStepperHoverbtn'" @click="handleDecrement"
+            class="xStepperBtn"
+            :style="{ backgroundColor: _btnColor, height: _height, width: _btnWidth, opacity: surDomDisabeld || _disabled ? 0.6 : 1, borderRadius: _splitBtn ? '50px' : '0rpx' }">
             <tm-icon _style="pointer-events: none" :color="_btnFontColor" :size="_unFontSize"
                 name="subtract-line"></tm-icon>
         </view>
 
-        <input :disabled="_disabled" @blur="inputBlur" @input="handleInputChange" :value="_input_value" class="xStepperInput"
-            :style="{ backgroundColor: _splitBtn ? 'transparent' : _btnColor, height: _height, color: _fontColor, fontSize: _fontSize }"
-            :type="decimalLen > 0 ? 'digit' : 'number'" />
-		<view :hover-class="addDomDisabeld||_disabled ? '' : 'xStepperHoverbtn'" :hover-start-time="20"
-			  :hover-stay-time="150"
-            @click="handleIncrement" class="xStepperBtn"
-			  :style="{ backgroundColor: _btnColor, height: _height, width: _btnWidth,opacity: addDomDisabeld||_disabled ? 0.6 : 1, borderRadius: _splitBtn ? '50px' : '0rpx' }">
-			<tm-icon :color="_btnFontColor" _style="pointer-events: none"
-                :size="_unFontSize" name="add-line"></tm-icon>
+        <input v-if="(!surDomDisabeld && _autoHideBtn) || !_autoHideBtn" :disabled="_disabled" @blur="inputBlur"
+            @input="handleInputChange" :value="_input_value" class="xStepperInput" :style="[
+                { backgroundColor: _splitBtn ? 'transparent' : _btnColor, height: _height, color: _fontColor, fontSize: _fontSize },
+                typeof _inputStyle === 'string' ? _inputStyle : {..._inputStyle}
+            ]" :type="decimalLen > 0 ? 'digit' : 'number'" />
+        <view :hover-class="addDomDisabeld || _disabled ? '' : 'xStepperHoverbtn'" :hover-start-time="20"
+            :hover-stay-time="150" @click="handleIncrement" class="xStepperBtn"
+            :style="{ backgroundColor: _btnColor, height: _height, width: _btnWidth, opacity: addDomDisabeld || _disabled ? 0.6 : 1, borderRadius: _splitBtn ? '50px' : '0rpx' }">
+            <tm-icon :color="_btnFontColor" _style="pointer-events: none" :size="_unFontSize" name="add-line"></tm-icon>
         </view>
 
     </view>
