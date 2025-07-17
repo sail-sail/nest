@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import "@/utils/DateUtil.ts";
+import "@/app/utils/DateUtil.ts";
 
 import {
   useMsgs,
