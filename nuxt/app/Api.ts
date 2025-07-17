@@ -4,7 +4,7 @@ import type {
 } from "#/types.ts";
 
 export async function useMySeoMeta() {
-  const seo_model = (await useAsyncData(() => findDefaultSeo())).data.value;
+  const seo_model = (await useAsyncData("useMySeoMeta", () => findDefaultSeo())).data.value;
   if (!seo_model) {
     // console.error("未找到默认的SEO优化");
     return;
