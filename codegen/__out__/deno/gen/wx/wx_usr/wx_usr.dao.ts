@@ -79,10 +79,6 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-import {
-  route_path,
-} from "./wx_usr.model.ts";
-
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<WxUsrSearch>,
