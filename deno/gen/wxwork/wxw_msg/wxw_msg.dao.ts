@@ -77,10 +77,6 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-import {
-  route_path,
-} from "./wxw_msg.model.ts";
-
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<WxwMsgSearch>,
