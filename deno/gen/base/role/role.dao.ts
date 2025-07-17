@@ -79,10 +79,6 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-import {
-  route_path,
-} from "./role.model.ts";
-
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<RoleSearch>,

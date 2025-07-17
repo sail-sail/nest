@@ -75,10 +75,6 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-import {
-  route_path,
-} from "./background_task.model.ts";
-
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<BackgroundTaskSearch>,
