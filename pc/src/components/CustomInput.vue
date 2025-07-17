@@ -202,9 +202,7 @@ defineExpose({
   align-items: center;
 }
 .custom_input_readonly_border {
-  border-width: 1px;
-  border-style: solid;
-  border-color: var(--el-border-color);
+  box-shadow: 0 0 0 1px var(--el-border-color) inset;
   border-radius: 4px;
 }
 .custom_input_readonly_no_border {

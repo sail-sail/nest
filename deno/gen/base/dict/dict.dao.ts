@@ -77,10 +77,6 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-import {
-  route_path,
-} from "./dict.model.ts";
-
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
