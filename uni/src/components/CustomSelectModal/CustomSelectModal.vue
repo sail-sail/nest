@@ -143,7 +143,7 @@
     >
       
       <view
-        v-if="options4SelectV2.length > 5"
+        v-if="options4SelectV2.length > 5 && !isLoading"
         un-p="t-2"
         un-box-border
         un-m="x-4"
@@ -188,65 +188,88 @@
         :scroll-into-view="scrollIntoViewId"
         :scroll-with-animation="true"
       >
-          
-        <view
-          v-for="item of options4SelectV2Computed"
-          :id="'a' + item.value"
-          :key="item.value"
-          :title="item.label"
-          un-m="x-4"
-          un-p="y-4"
-          un-box-border
-          un-flex="~"
-          un-items="center"
-          un-gap="2"
-          un-b="0 b-1 solid #e6e6e6"
-          :style="{
-            'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
-          }"
-          @click="onSelect(item.value)"
-        >
-                
-          <view
-            un-flex="~ [1_0_0]"
-            un-overflow-hidden
-            un-items="center"
-            un-m="l-4"
-          >
-            {{ item.label }}
-          </view>
-                
-          <view
-            style="width: 1.2rem;height: 1.2rem;"
-            un-m="r-4"
-          >
-            <view
-              v-if="selectedValueArr.includes(item.value)"
-              un-i="iconfont-check"
-            ></view>
-          </view>
-                
-        </view>
-          
-        <view
-          v-if="inited && options4SelectV2Computed.length === 0"
-          un-flex="~"
-          un-items="center"
-          un-justify="center"
-          un-text="gray-400"
-          un-h="10"
-        >
-          (暂无数据)
-        </view>
         
-        <view
-          v-else-if="options4SelectV2Computed.length > 5"
-          un-m="y-4"
-          un-p="x-8"
-          un-box-border
+        <template
+          v-if="isLoading"
         >
-          <CustomDivider></CustomDivider>
-        </view>
+          
+          <view
+            un-flex="~"
+            un-items="center"
+            un-justify="center"
+            un-text="gray-400"
+            un-min="h-40"
+            un-p="y-6"
+            un-box-border
+          >
+            加载中...
+          </view>
+          
+        </template>
+        
+        <template
+          v-else
+        >
+          
+          <view
+            v-for="item of options4SelectV2Computed"
+            :id="'a' + item.value"
+            :key="item.value"
+            :title="item.label"
+            un-m="x-4"
+            un-p="y-4"
+            un-box-border
+            un-flex="~"
+            un-items="center"
+            un-gap="2"
+            un-b="0 b-1 solid #e6e6e6"
+            :style="{
+              'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
+            }"
+            @click="onSelect(item.value)"
+          >
+                  
+            <view
+              un-flex="~ [1_0_0]"
+              un-overflow-hidden
+              un-items="center"
+              un-m="l-4"
+            >
+              {{ item.label }}
+            </view>
+                  
+            <view
+              style="width: 1.2rem;height: 1.2rem;"
+              un-m="r-4"
+            >
+              <view
+                v-if="selectedValueArr.includes(item.value)"
+                un-i="iconfont-check"
+              ></view>
+            </view>
+                  
+          </view>
+            
+          <view
+            v-if="inited && options4SelectV2Computed.length === 0"
+            un-flex="~"
+            un-items="center"
+            un-justify="center"
+            un-text="gray-400"
+            un-h="10"
+          >
+            (暂无数据)
+          </view>
+          
+          <view
+            v-else-if="options4SelectV2Computed.length > 5"
+            un-m="y-4"
+            un-p="x-8"
+            un-box-border
+          >
+            <CustomDivider></CustomDivider>
+          </view>
+        </template>
           
       </scroll-view>
       
@@ -326,6 +349,7 @@ const props = withDefaults(
     placeholder?: string;
     height?: string;
     initData?: boolean;
+    refreshWhenShowPicker?: boolean;
     pageInited?: boolean;
     clearable?: boolean;
     multiple?: boolean;
@@ -477,10 +501,13 @@ const modelLabels = computed(() => {
 
 const scrollIntoViewId = ref("");
 
-function onClick() {
+async function onClick() {
   if (readonly) {
     showPicker.value = false;
     return;
+  }
+  if (props.refreshWhenShowPicker) {
+    await onRefresh();
   }
   searchStr.value = "";
   selectedValue.value = props.modelValue;
@@ -490,6 +517,22 @@ function onClick() {
     scrollIntoViewId.value = selectedValueArr.value[0] ? "a" + selectedValueArr.value[0] : "";
   }, 500);
 }
+
+const isLoading = ref(false);
+
+watch(
+  () => [showPicker.value, props.refreshWhenShowPicker],
+  async () => {
+    if (showPicker.value && props.refreshWhenShowPicker) {
+      try {
+        isLoading.value = true;
+        await onRefresh();
+      } finally {
+        isLoading.value = false;
+      }
+    }
+  },
+);
 
 function onClear() {
   if (!props.multiple) {

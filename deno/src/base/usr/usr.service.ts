@@ -82,6 +82,7 @@ export async function login(
   const username = input.username;
   const password = input.password;
   const tenant_id = input.tenant_id;
+  // deno-lint-ignore prefer-const
   let org_id: OrgId | null | undefined = input.org_id;
   if (isEmpty(username) || isEmpty(password)) {
     throw await ns("用户名或密码不能为空");
@@ -164,20 +165,20 @@ export async function login(
     });
   }
   const usr_id = usr_model.id;
-  if (org_id === null) {
-    org_id = undefined;
-  }
-  if (!org_id) {
-    org_id = usr_model.default_org_id;
-  }
-  if (org_id) {
-    const org_ids = await getOrgIdsById(
-      usr_model.id,
-    );
-    if (!org_ids.includes(org_id)) {
-      org_id = undefined;
-    }
-  }
+  // if (org_id === null) {
+  //   org_id = undefined;
+  // }
+  // if (!org_id) {
+  //   org_id = usr_model.default_org_id;
+  // }
+  // if (org_id) {
+  //   const org_ids = await getOrgIdsById(
+  //     usr_model.id,
+  //   );
+  //   if (!org_ids.includes(org_id)) {
+  //     org_id = undefined;
+  //   }
+  // }
   const {
     authorization,
   } = await createToken({
