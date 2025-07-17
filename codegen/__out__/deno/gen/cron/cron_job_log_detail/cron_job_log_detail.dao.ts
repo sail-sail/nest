@@ -73,10 +73,6 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-import {
-  route_path,
-} from "./cron_job_log_detail.model.ts";
-
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<CronJobLogDetailSearch>,
