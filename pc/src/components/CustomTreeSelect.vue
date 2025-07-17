@@ -119,7 +119,8 @@ const props = withDefaults(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     method: () => Promise<any[]>; // 用于获取数据的方法
     height?: number;
-    modelValue?: string | string[] | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    modelValue?: any | any[] | null;
     autoWidth?: boolean;
     maxWidth?: number;
     multiple?: boolean;
