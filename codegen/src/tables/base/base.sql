@@ -123,7 +123,7 @@ CREATE TABLE if not exists `base_usr` (
 drop table if exists `base_login_log`;
 CREATE TABLE if not exists `base_login_log` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `type` ENUM('account') NOT NULL DEFAULT 'account' COMMENT '类型,dict:login_log_type',
+  `type` ENUM('account', 'wxapp', 'wxo') NOT NULL DEFAULT 'account' COMMENT '类型,dict:login_log_type',
   `username` varchar(45) NOT NULL DEFAULT '' COMMENT '用户名',
   `is_succ` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '登录成功,dict:yes_no',
   `ip` varchar(45) NOT NULL DEFAULT '' COMMENT 'IP',
