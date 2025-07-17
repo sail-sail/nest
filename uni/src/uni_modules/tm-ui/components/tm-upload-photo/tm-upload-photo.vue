@@ -83,7 +83,7 @@
 	])
 	const STATUS_COLOR = new Map<TMUPLOAD_PHOTO_STATUS, string>([
 		[0, '#fff'],
-		[1, '#0579FF'],
+		[1, '#F2F2F2'],
 		[2, '#07d73d'],
 		[3, '#f10226'],
 		[4, '#F2F2F2'],
@@ -343,12 +343,12 @@
 				status: status,
 				progress: 100,
 				statusText: STATUS_TEXT.get(status) || '',
-				response: item?.response || item
+				response: item?.response ?? item
 			}
 		})
-		let nowfilesrc = list.value.map(item => item.path)
-		let filst2 = flist.filter(item => !nowfilesrc.includes(item.path))
-		return filst2
+		// let nowfilesrc = list.value.map(item => item.path)
+		// let filst2 = flist.filter(item => !nowfilesrc.includes(item.path))
+		return flist
 	}
 	/**
 	 * 选择图片
@@ -487,8 +487,10 @@
 		//结束上传。
 		if (uploadIndex.value >= list.value.length) {
 			uploading.value = false
-			emit('complete', JSON.parse(JSON.stringify(list.value.slice(0))))
-			emit('update:modelValue', JSON.parse(JSON.stringify(list.value.slice(0))))
+			let oladValue = JSON.parse(JSON.stringify(list.value.slice(0)));
+			oladValue = oladValue.map((el)=>({...el,url:el?.path??el?.url}))
+			emit('complete', oladValue)
+			emit('update:modelValue', oladValue)
 			return
 		}
 		let item = list.value[uploadIndex.value]
@@ -498,6 +500,8 @@
 			upload()
 			return
 		}
+		item.status = TMUPLOAD_PHOTO_STATUS.UPLOADING
+		item.statusText = STATUS_TEXT.get(item.status) || ''
 		uni.uploadFile({
 			url: props.url,
 			filePath: item.path,
@@ -556,12 +560,12 @@
 		})
 	}
 	watch(() => props.modelValue, (val) => {
-		let temlist = covertFileTypeByModelvalue(props.modelValue).slice(0)
+		let temlist = covertFileTypeByModelvalue(val).slice(0)
 		if (temlist.length == 0) {
 			list.value = []
 			return
 		}
-		list.value = [...JSON.parse(JSON.stringify(list.value.slice(0))), ...temlist]
+		list.value = [...temlist]
 	}, { immediate: true, deep: true })
 
 	defineExpose({ startUpload, choose })
