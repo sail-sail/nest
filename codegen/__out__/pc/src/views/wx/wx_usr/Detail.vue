@@ -96,6 +96,7 @@
               v-model="dialogModel.usr_id"
               placeholder="请选择 用户"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></SelectInputUsr>
           </el-form-item>
         </template>
