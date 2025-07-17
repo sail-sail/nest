@@ -414,9 +414,19 @@ const change = (ixs: number[]) => {
 		nowvalstrs[i] = item[ixs[i]].title
 	}
 
+	// 判断下当前月分下的天数和选中的天数区别。
+	let nowMonth = nowvalstrs[0]+"/"+nowvalstrs[1]+'/1'
+	let selectedDay = Number(nowvalstrs[2])
+	let nowDay = new tmDate(nowMonth).getMonthCountDay();
+	if(nowDay<selectedDay){
+		nowvalstrs[2] = nowDay
+	}
+	
+	
 	let value_first = nowvalstrs.slice(0, 3).join('/');
 	let value_last = nowvalstrs.slice(3).join(':');
 	let val = value_first+" "+value_last
+	
 	let stp = getRangByDateTime(new tmDate(val));
 
 	defaultModelvalue(stp.str, true)
