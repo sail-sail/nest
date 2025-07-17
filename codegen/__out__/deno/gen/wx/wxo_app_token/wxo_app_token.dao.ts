@@ -67,10 +67,6 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-import {
-  route_path,
-} from "./wxo_app_token.model.ts";
-
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
