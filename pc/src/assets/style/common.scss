@@ -586,3 +586,7 @@ html .ql-toolbar span.ql-picker-label path {
 .el-table__empty-text {
   font-size: var(--el-font-size-base);
 }
+
+.el-form-item.is-error .el-form-item__content .custom_input_readonly_border {
+  box-shadow: 0 0 0 1px var(--el-color-danger) inset;
+}
