@@ -47,7 +47,9 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@parcel/watcher",
       "esbuild",
+      "oxc-resolver",
       "unrs-resolver",
       "vue-demi"
     ]
