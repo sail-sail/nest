@@ -28,6 +28,12 @@ export function createDate(dateStrs : string) : Date {
 	let minute = result.getMinutes()
 	let second = result.getSeconds()
 	
+	
+	result.setSeconds(59);
+	result.setMinutes(59);
+	result.setHours(59);
+	result.setDate(1);
+	
 	if(regxyymmddhhmmss.test(dateStr)){
 		const match = dateStr.match(regxyymmddhhmmss)!;
 		year = (parseInt(match[1] as string));
@@ -55,6 +61,8 @@ export function createDate(dateStrs : string) : Date {
 		year = (parseInt(match[1] as string));
 		month = (parseInt(match[2] as string) - 1);
 		day = (parseInt(match[3] as string));
+		
+		
 	}else if(regxyymm.test(dateStr)){
 		const match = dateStr.match(regxyymm)!;
 		year = (parseInt(match[1] as string));
@@ -62,16 +70,16 @@ export function createDate(dateStrs : string) : Date {
 	}else if(regxyy.test(dateStr)){
 		const match = dateStr.match(regxyy)!;
 		year = (parseInt(match[1] as string));
+		
 	}
 	
+	
+	result.setSeconds(second);
+	result.setMinutes(minute);
+	result.setHours(hour);
 	result.setFullYear(year);
 	result.setMonth(month);
 	result.setDate(day);
-	result.setHours(hour);
-	result.setMinutes(minute);
-	result.setSeconds(second);
-	
-
 	return result;
 }
 
@@ -95,8 +103,10 @@ export class tmDate {
 				let str = dateStr! as string;
 				str = str.replace(/-/g,'/')
 				let isNumberStr = /^\d+$/.test(str)
+			
 				if(!isNumberStr){
 					this.date = createDate(dateStr!)
+						
 				}else{
 					this.date = new Date(parseInt(str!));
 				}
@@ -412,6 +422,7 @@ export class tmDate {
 	 */
 	getMonthCountDay(): number {
 		let nextDate = createDate(this.format());
+
 		// 先设置为1号，避免后面设置月份时超过月的天数。
 		nextDate.setDate(1)
 		nextDate.setMonth(this.getMonth() + 1)
