@@ -80,8 +80,8 @@
     "@types/node": "24.0.14",
     "@uni-helper/uni-app-types": "1.0.0-alpha.6",
     "@unocss/preset-attributify": "66.1.0-beta.10",
-    "@vue-macros/eslint-config": "3.0.0-beta.15",
-    "@vue-macros/reactivity-transform": "3.0.0-beta.15",
+    "@vue-macros/eslint-config": "3.0.0-beta.17",
+    "@vue-macros/reactivity-transform": "3.0.0-beta.17",
     "@vue/devtools-api": "7.7.7",
     "@vue/runtime-core": "3.5.17",
     "cross-env": "7.0.3",
@@ -104,7 +104,7 @@
     "vite-plugin-vue-inspector": "5.3.2",
     "vitest": "3.2.4",
     "vue-router": "4.5.1",
-    "vue-tsc": "3.0.1"
+    "vue-tsc": "3.0.2"
   },
   "lint-staged": {
     "*.ts": [
