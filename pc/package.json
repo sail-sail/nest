@@ -37,7 +37,7 @@
     "ejsexcel-browserify": "4.4.3",
     "element-plus": "2.10.4",
     "file-saver": "2.0.5",
-    "filesize": "11.0.1",
+    "filesize": "11.0.2",
     "graphql": "16.11.0",
     "graphql-combine-query": "1.2.4",
     "jszip": "3.10.1",
@@ -62,8 +62,8 @@
     "@unocss/preset-rem-to-px": "66.3.3",
     "@vitejs/plugin-vue": "6.0.0",
     "@vitejs/plugin-vue-jsx": "5.0.1",
-    "@vue-macros/eslint-config": "3.0.0-beta.15",
-    "@vue-macros/reactivity-transform": "3.0.0-beta.15",
+    "@vue-macros/eslint-config": "3.0.0-beta.17",
+    "@vue-macros/reactivity-transform": "3.0.0-beta.17",
     "@vue/compiler-sfc": "3.5.17",
     "@vue/devtools-api": "7.7.7",
     "@vue/runtime-core": "3.5.17",
@@ -83,8 +83,8 @@
     "unplugin-icons": "22.1.0",
     "unplugin-turbo-console": "2.2.0",
     "unplugin-vue-components": "28.8.0",
-    "unplugin-vue-define-options": "3.0.0-beta.15",
-    "vite": "7.0.4",
+    "unplugin-vue-define-options": "3.0.0-beta.17",
+    "vite": "7.0.5",
     "vite-plugin-devtools-json": "0.3.0",
     "vite-plugin-inspect": "11.3.0",
     "vite-plugin-pwa": "1.0.1",
@@ -92,7 +92,7 @@
     "vite-plugin-vue-inspector": "5.3.2",
     "vite-plugin-wasm": "3.5.0",
     "vitest": "3.2.4",
-    "vue-tsc": "3.0.1"
+    "vue-tsc": "3.0.2"
   },
   "lint-staged": {
     "*.{ts,vue}": [
