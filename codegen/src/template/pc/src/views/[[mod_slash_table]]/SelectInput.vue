@@ -42,6 +42,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     class="select_input"
     :placeholder="props.placeholder"
     :readonly-placeholder="props.placeholder"
+    @change="onInputChange"
     @click="onInput('input')"
     @clear="onClear"
   >
@@ -220,7 +221,10 @@ watch(
 );
 
 watch(
-  () => modelValue,
+  () => [
+    modelValue,
+    props.multiple,
+  ],
   async () => {
     await refreshInputValue();
   },
@@ -381,6 +385,16 @@ async function onInput(
   emit("update:modelLabel", inputValue);
 }
 
+async function onInputChange() {
+  if (props.multiple) {
+    modelValue = [ ];
+    emit("update:modelValue", modelValue);
+    return;
+  }
+  modelValue = "" as <#=Table_Up#>Id;
+  emit("update:modelValue", modelValue);
+}
+
 const wrapperRef = $(useTemplateRef<InstanceType<typeof HTMLDivElement>>("wrapperRef"));
 
 function focus() {
@@ -404,6 +418,7 @@ async function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
+    emit("update:modelLabel", modelLabel || "");
     return;
   }
   if (!Array.isArray(value)) {
@@ -411,12 +426,14 @@ async function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
+    emit("update:modelLabel", modelLabel || "");
     return;
   }
   emit("change", value[0]);
   if (oldInputValue !== inputValue) {
     await refreshInputValue();
   }
+  emit("update:modelLabel", modelLabel || "");
 }
 
 defineExpose({
