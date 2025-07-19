@@ -57,7 +57,7 @@
     "@eslint/js": "9.31.0",
     "@plugin-web-update-notification/vite": "2.0.0",
     "@types/file-saver": "2.0.7",
-    "@types/node": "24.0.14",
+    "@types/node": "24.0.15",
     "@types/sortablejs": "1.15.8",
     "@unocss/preset-rem-to-px": "66.3.3",
     "@vitejs/plugin-vue": "6.0.0",
@@ -92,7 +92,7 @@
     "vite-plugin-vue-inspector": "5.3.2",
     "vite-plugin-wasm": "3.5.0",
     "vitest": "3.2.4",
-    "vue-tsc": "3.0.2"
+    "vue-tsc": "3.0.3"
   },
   "lint-staged": {
     "*.{ts,vue}": [
