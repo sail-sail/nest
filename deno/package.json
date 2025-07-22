@@ -26,7 +26,7 @@
     "mime": "4.0.7",
     "mnemonist": "0.40.3",
     "mysql2": "3.14.2",
-    "path-to-regexp": "8.2.0",
+    "path-to-regexp": "6.3.0",
     "wechatpay-node-v3": "2.2.1"
   },
   "devDependencies": {
