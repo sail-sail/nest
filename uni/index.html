@@ -66,6 +66,35 @@
       </div>
       <!--app-html-->
     </div>
+    <script>
+      
+      function objectAssignFilter(target, ...sources) {
+        if (target == null) {
+          throw new TypeError('Cannot convert undefined or null to object');
+        }
+        
+        const to = Object(target);
+        
+        for (let i = 0; i < sources.length; i++) {
+          const nextSource = sources[i];
+          
+          if (nextSource != null) {
+            Object.defineProperty(nextSource, '_', {
+              writable: true
+            });
+            for (const key in nextSource) {
+              if (Object.prototype.hasOwnProperty.call(nextSource, key)) {
+                to[key] = nextSource[key];
+              }
+            }
+          }
+        }
+        
+        return to;
+      }
+      Object.assign = objectAssignFilter;
+
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
