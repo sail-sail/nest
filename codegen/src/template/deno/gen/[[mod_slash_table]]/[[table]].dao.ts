@@ -2908,10 +2908,10 @@ export async function findByUnique<#=Table_Up#>(
     #><#
     if (data_type === "tinyint" || data_type === "int") {
     #>
-    let <#=unique#>: [(number|undefined|null), (number|undefined|null)] = [ undefined, undefined ];<#
+    let <#=unique#>: [InputMaybe<number>, InputMaybe<number>] | undefined = undefined;<#
     } else if (data_type === "date" || data_type === "datetime") {
     #>
-    let <#=unique#>: [(string|undefined|null), (string|undefined|null)] = [ undefined, undefined ];<#
+    let <#=unique#>: [InputMaybe<string>, InputMaybe<string>] | undefined = undefined;<#
     } else {
     #>
     let <#=unique#>: <#=_data_type#>[] = [ ];<#
@@ -2922,9 +2922,9 @@ export async function findByUnique<#=Table_Up#>(
     } else {
       <#=unique#> = search0.<#=unique#><#
       if (data_type === "tinyint" || data_type === "int") {
-      #> as unknown as [(number|undefined|null), (number|undefined|null)]<#
+      #> as unknown as [InputMaybe<number>, InputMaybe<number>] | undefined<#
       } else if (data_type === "date" || data_type === "datetime") {
-      #> as unknown as [(string|undefined|null), (string|undefined|null)]<#
+      #> as unknown as [InputMaybe<string>, InputMaybe<string>] | undefined<#
       } else {
       #> || [ ]<#
       }
