@@ -26,14 +26,14 @@
     "mime": "4.0.7",
     "mnemonist": "0.40.3",
     "mysql2": "3.14.2",
-    "path-to-regexp": "8.2.0",
+    "path-to-regexp": "6.3.0",
     "wechatpay-node-v3": "2.2.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.7",
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-operations": "4.6.1",
-    "@types/node": "24.0.14",
+    "@types/node": "24.0.15",
     "chokidar": "3.6.0",
     "commander": "14.0.0",
     "dotenv": "17.2.0",
