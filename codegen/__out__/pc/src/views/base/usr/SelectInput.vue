@@ -21,6 +21,7 @@
     class="select_input"
     :placeholder="props.placeholder"
     :readonly-placeholder="props.placeholder"
+    @change="onInputChange"
     @click="onInput('input')"
     @clear="onClear"
   >
@@ -188,7 +189,10 @@ watch(
 );
 
 watch(
-  () => modelValue,
+  () => [
+    modelValue,
+    props.multiple,
+  ],
   async () => {
     await refreshInputValue();
   },
@@ -342,6 +346,16 @@ async function onInput(
   emit("update:modelLabel", inputValue);
 }
 
+async function onInputChange() {
+  if (props.multiple) {
+    modelValue = [ ];
+    emit("update:modelValue", modelValue);
+    return;
+  }
+  modelValue = "" as UsrId;
+  emit("update:modelValue", modelValue);
+}
+
 const wrapperRef = $(useTemplateRef<InstanceType<typeof HTMLDivElement>>("wrapperRef"));
 
 function focus() {
@@ -365,6 +379,7 @@ async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) 
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
+    emit("update:modelLabel", modelLabel || "");
     return;
   }
   if (!Array.isArray(value)) {
@@ -372,12 +387,14 @@ async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) 
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
+    emit("update:modelLabel", modelLabel || "");
     return;
   }
   emit("change", value[0]);
   if (oldInputValue !== inputValue) {
     await refreshInputValue();
   }
+  emit("update:modelLabel", modelLabel || "");
 }
 
 defineExpose({
