@@ -1,7 +1,7 @@
 
-export default defineStore("dirty", function() {
-  
-  const dirtyRoutePath = ref("");
+const dirtyRoutePath = ref("");
+
+export default function() {
   
   async function fireDirty(
     routePath: string,
@@ -78,4 +78,4 @@ export default defineStore("dirty", function() {
     onDirty,
   };
   
-});
+};

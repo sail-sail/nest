@@ -1,22 +1,26 @@
 import type {
   GetLoginInfo,
 } from "@/typings/types";
+  
+const authorization = useStorage<string>("store.usr.authorization", "");
 
-export default defineStore("usr", function() {
-  
-  const tabsStore = useTabsStore();
-  
-  const permitsStore = usePermitStore();
-  
-  const authorization = ref("");
-  
-  const isLogining = ref(false);
-  
-  const tenant_id = ref<TenantId>();
-  const username = ref<string>();
-  const usr_id = ref<UsrId>();
-  
-  const loginInfo = ref<GetLoginInfo>();
+const isLogining = ref(false);
+
+const tenant_id = ref<TenantId>();
+const username = useStorage<string>("store.usr.username", "");
+const usr_id = useStorage<UsrId>("store.usr.usr_id", "" as unknown as UsrId);
+
+const loginInfo = useStorage<GetLoginInfo | undefined>("store.usr.loginInfo", undefined);
+
+const lang = useStorage<string>("store.usr.lang", "");
+
+const onLoginCallbacks: (() => void | PromiseLike<void>)[] = [ ];
+
+const tabsStore = useTabsStore();
+
+const permitsStore = usePermitStore();
+
+export default function() {
   
   function refreshToken(authorization0: string) {
     authorization.value = authorization0;
@@ -35,8 +39,6 @@ export default defineStore("usr", function() {
     permitsStore.permits = [ ];
   }
   
-  const lang = ref("");
-  
   function setLang(lang0: string) {
     lang.value = lang0;
   }
@@ -50,8 +52,6 @@ export default defineStore("usr", function() {
     authorization.value = "";
     lang.value = "";
   }
-  
-  const onLoginCallbacks: (() => void | PromiseLike<void>)[] = [ ];
   
   function onLogin(callback: () => void | PromiseLike<void>) {
     onDeactivated(function() {
@@ -82,13 +82,48 @@ export default defineStore("usr", function() {
   }
   
   return {
-    authorization,
-    isLogining,
-    loginInfo,
-    username,
-    tenant_id,
-    usr_id,
-    lang,
+    get authorization() {
+      return authorization.value;
+    },
+    set authorization(authorization0: string) {
+      authorization.value = authorization0;
+    },
+    get isLogining() {
+      return isLogining.value;
+    },
+    set isLogining(isLogining0: boolean) {
+      isLogining.value = isLogining0;
+    },
+    get loginInfo() {
+      return loginInfo.value;
+    },
+    set loginInfo(loginInfo0: GetLoginInfo | undefined) {
+      loginInfo.value = loginInfo0;
+    },
+    get username() {
+      return username.value;
+    },
+    set username(username0: string) {
+      username.value = username0;
+    },
+    get tenant_id() {
+      return tenant_id.value!;
+    },
+    set tenant_id(tenant_id0: TenantId) {
+      tenant_id.value = tenant_id0;
+    },
+    get usr_id() {
+      return usr_id.value!;
+    },
+    set usr_id(usr_id0: UsrId) {
+      usr_id.value = usr_id0;
+    },
+    get lang() {
+      return lang.value;
+    },
+    set lang(lang0: string) {
+      lang.value = lang0;
+    },
     refreshToken,
     login,
     logout,
@@ -100,16 +135,4 @@ export default defineStore("usr", function() {
     reset,
   };
   
-},
-{
-  persist: {
-    pick: [
-      "authorization",
-      "username",
-      "usr_id",
-      "tenant_id",
-      "loginInfo",
-      "lang",
-    ],
-  },
-});
+}
