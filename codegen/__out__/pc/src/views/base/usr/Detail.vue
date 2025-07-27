@@ -383,6 +383,10 @@ import {
   getTreeDept,
 } from "@/views/base/dept/Api.ts";
 
+import {
+  findAllOrg as getOrgList,
+} from "@/views/base/org/Api.ts";
+
 const emit = defineEmits<{
   nextId: [
     {
