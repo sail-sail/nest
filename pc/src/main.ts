@@ -1,4 +1,4 @@
-import { createApp, vaporInteropPlugin } from "vue";
+import { createApp } from "vue";
 
 import "element-plus/theme-chalk/dark/css-vars.css";
 import "element-plus/dist/index.css";
@@ -19,15 +19,11 @@ import { searchFormItemWidthAuto } from "./components/SearchFormItemWidthAutoDir
 
 import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
 
-// import cfg from "@/utils/config";
-
 // import VueScan, { type VueScanOptions } from "z-vue-scan";
 
 const app = createApp(App);
 
 // app.use<VueScanOptions>(VueScan, { });
-
-app.use(vaporInteropPlugin);
 
 app.use(router);
 
