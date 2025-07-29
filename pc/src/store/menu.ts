@@ -12,12 +12,18 @@ type MenuModel = MenuModel0 & {
   _isShow?: boolean;
 }
 
-export default defineStore("menu", function() {
-  
-  /** 菜单搜索关键字 */
-  const search = ref("");
-  
-  const menus = ref<MenuModel[]>([ ]);
+const menus = useStorage<MenuModel[]>("store.menu.menus", [ ]);
+
+const isCollapse = useStorage<boolean>("store.menu.isCollapse", false);
+const hide = useStorage<boolean>("store.menu.hide", false);
+
+let searchTimer: NodeJS.Timeout | undefined = undefined;
+let searchTimerHandle: ReturnType<typeof watch> | undefined = undefined;
+
+/** 菜单搜索关键字 */
+const search = ref("");
+
+export default function() {
   
   const pathMenuMap = computed(() => {
     const pathMenuMap = new Map<string, MenuModel>();
@@ -34,10 +40,6 @@ export default defineStore("menu", function() {
   function getLblByPath(path: string) {
     const menu = pathMenuMap.value.get(path);
     return menu?.lbl;
-  }
-  
-  function setMenus(menus0: MenuModel[]) {
-    menus.value = menus0 || [ ];
   }
   
   function treeMenu(children: MenuModel[], callback: (item: MenuModel) => boolean) {
@@ -150,9 +152,6 @@ export default defineStore("menu", function() {
     menus.value = [ ];
   }
   
-  const isCollapse = ref(false);
-  const hide = ref(false);
-  
   function searchMenu(search: string) {
     treeMenu(menus.value, (item) => {
       if (!item.route_path) {
@@ -173,45 +172,57 @@ export default defineStore("menu", function() {
     });
   }
   
-  let searchTimer: NodeJS.Timeout | undefined = undefined;
-  
-  watch(
-    () => search.value,
-    () => {
-      if (searchTimer) {
-        clearTimeout(searchTimer);
-      }
-      if (isEmpty(search.value)) {
-        treeMenu(menus.value, (item) => {
-          item._isShow = true;
-          return true;
-        });
-        return;
-      }
-      searchTimer = setTimeout(() => {
-        searchMenu(search.value);
-      }, 300);
-    },
-  );
+  if (!searchTimerHandle) {
+    searchTimerHandle = watch(
+      () => search.value,
+      () => {
+        if (searchTimer) {
+          clearTimeout(searchTimer);
+        }
+        if (isEmpty(search.value)) {
+          treeMenu(menus.value, (item) => {
+            item._isShow = true;
+            return true;
+          });
+          return;
+        }
+        searchTimer = setTimeout(() => {
+          searchMenu(search.value);
+        }, 300);
+      },
+    );
+  }
   
   return {
-    menus,
-    isCollapse,
-    setMenus,
+    get menus() {
+      return menus.value;
+    },
+    set menus(menus0: MenuModel[]) {
+      menus.value = menus0 || [ ];
+    },
+    get isCollapse() {
+      return isCollapse.value;
+    },
+    set isCollapse(collapse: boolean) {
+      isCollapse.value = collapse;
+    },
     getMenuByPath,
     getMenuById,
     getParentIds,
     clear,
     reset,
-    hide,
-    search,
+    get hide () {
+      return hide.value;
+    },
+    set hide (hide0: boolean) {
+      hide.value = hide0;
+    },
+    get search() {
+      return search.value;
+    },
+    set search(search0: string) {
+      search.value = search0;
+    },
     getLblByPath,
   };
-},
-{
-  persist: {
-    pick: [
-      "menus",
-    ],
-  },
-});
+}
