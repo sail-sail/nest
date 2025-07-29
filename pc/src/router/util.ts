@@ -134,7 +134,7 @@ export async function openForeignPage(
   tabName: string | undefined,
   query?: { [key: string]: string },
 ) {
-  const tabsStore = useTabsStore(cfg.pinia);
+  const tabsStore = useTabsStore();
   await tabsStore.openPageByRouteName(
     routeName,
     tabName,

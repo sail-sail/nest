@@ -23,8 +23,8 @@ export async function request<T>(
     client_tenant_id?: TenantId | null;
   },
 ): Promise<T> {
-  const indexStore = useIndexStore(cfg.pinia);
-  const usrStore = useUsrStore(cfg.pinia);
+  const indexStore = useIndexStore();
+  const usrStore = useUsrStore();
   let err: any;
   let res: {
     data: any;
@@ -167,8 +167,8 @@ export async function uploadFile(
     isPublic?: boolean;
   },
 ) {
-  const indexStore = useIndexStore(cfg.pinia);
-  const usrStore = useUsrStore(cfg.pinia);
+  const indexStore = useIndexStore();
+  const usrStore = useUsrStore();
   config = config || { };
   config.type = config.type || "oss";
   if (!config.url) {
@@ -285,7 +285,7 @@ export function getDownloadUrl(
   } | string,
   type: "oss" | "tmpfile" = "oss",
 ): string {
-  const usrStore = useUsrStore(cfg.pinia);
+  const usrStore = useUsrStore();
   const params = new URLSearchParams();
   if (typeof model === "string") {
     model = { id: model };
@@ -321,7 +321,7 @@ export function getImgUrl(
     notAuthorization?: boolean;
   } | string,
 ) {
-  const usrStore = useUsrStore(cfg.pinia);
+  const usrStore = useUsrStore();
   const params = new URLSearchParams();
   if (typeof model === "string") {
     model = {
