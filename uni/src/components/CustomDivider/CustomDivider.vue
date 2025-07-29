@@ -14,13 +14,13 @@
     un-b="0 b-1 solid gray-200"
     un-h="1"
   ></view>
-  <text
+  <view
     un-text="gray-300"
   >
     <slot>
       此处是底线
     </slot>
-  </text>
+  </view>
   <view
     un-flex="[1_0_0]"
     un-overflow-hidden
