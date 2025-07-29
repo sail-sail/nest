@@ -2,9 +2,10 @@ use color_eyre::eyre::{Result, eyre};
 use tracing::{info, error};
 
 use std::sync::Arc;
-use tokio::sync::Mutex;
-use tokio::sync::OnceCell;
+use tokio::sync::Semaphore;
 use futures::StreamExt;
+
+use tokio::net::TcpListener;
 
 use chromiumoxide::{
   Browser,
@@ -13,32 +14,22 @@ use chromiumoxide::{
 };
 use chromiumoxide::cdp::browser_protocol::target::CreateTargetParams;
 
-// 添加在browser.rs中
-use std::sync::atomic::{AtomicUsize, Ordering};
-
 pub struct BrowserInstance {
   pub browser: Browser,
   _handler_guard: tokio::task::JoinHandle<()>, // 下划线前缀表示仅用于保持生命周期
 }
 
-// 全局浏览器实例
-static BROWSER: OnceCell<Arc<Mutex<BrowserInstance>>> = OnceCell::const_new();
-
-const BROWSER_PORT: u16 = 62222;
-
-// 限制最大并发页面数
-static CONCURRENT_PAGES: AtomicUsize = AtomicUsize::new(0);
-const MAX_CONCURRENT_PAGES: usize = 50; // 根据系统调整
-
 /// 检查并杀掉已有的浏览器实例
 // 如果是linux或者macOS系统
 #[cfg(unix)]
-pub async fn check_and_kill_existing_browser() -> Result<()> {
+pub async fn check_and_kill_existing_browser(
+  port: u16,
+) -> Result<()> {
   // 用命令行通过端口检查是否有浏览器实例在运行
   // 这里可以使用 `pgrep` 或 `lsof` 等命令来检查
   let output = tokio::process::Command::new("lsof")
     .arg("-i")
-    .arg(format!(":{}", BROWSER_PORT))
+    .arg(format!(":{}", port))
     .output()
     .await?;
   
@@ -58,7 +49,7 @@ pub async fn check_and_kill_existing_browser() -> Result<()> {
       info!("Killed existing browser process with PID: {}", pid);
     }
   } else {
-    info!("No existing browser instance found on port {}", BROWSER_PORT);
+    info!("No existing browser instance found on port {}", port);
   }
   
   Ok(())
@@ -67,13 +58,15 @@ pub async fn check_and_kill_existing_browser() -> Result<()> {
 /// 检查并杀掉已有的浏览器实例
 // 如果是windows系统
 #[cfg(windows)]
-pub async fn check_and_kill_existing_browser() -> Result<()> {
+pub async fn check_and_kill_existing_browser(
+  port: u16,
+) -> Result<()> {
   
   // 用命令行通过端口检查是否有浏览器实例在运行
   // 这里可以使用 `netstat` 或 `taskkill` 等命令来检查
   let output = tokio::process::Command::new("cmd")
     .arg("/C")
-    .arg(format!("netstat -ano | findstr :{BROWSER_PORT}"))
+    .arg(format!("netstat -ano | findstr :{port}"))
     .output()
     .await?;
   
@@ -82,7 +75,7 @@ pub async fn check_and_kill_existing_browser() -> Result<()> {
     let pid_output = String::from_utf8_lossy(&output.stdout);
   
     for line in pid_output.lines() {
-      if line.contains(&format!(":{BROWSER_PORT}")) {
+      if line.contains(&format!(":{port}")) {
         let parts: Vec<&str> = line.split_whitespace().collect();
         if let Some(pid) = parts.last() {
           tokio::process::Command::new("taskkill")
@@ -96,20 +89,22 @@ pub async fn check_and_kill_existing_browser() -> Result<()> {
       }
     }
   } else {
-    info!("No existing browser instance found on port {}", BROWSER_PORT);
+    info!("No existing browser instance found on port {}", port);
   }
   
   Ok(())
 }
 
-async fn initialize_browser() -> Result<Arc<Mutex<BrowserInstance>>> {
+async fn initialize_browser(
+  port: u16,
+) -> Result<BrowserInstance> {
   
   let browser_config = BrowserConfig::builder()
     .no_sandbox()
     .arg("--disable-setuid-sandbox")
     .arg("--disable-dev-shm-usage")
     .arg("--disable-gpu")
-    .port(BROWSER_PORT)
+    .port(port)
     .build()
     .map_err(|e| eyre!("{:#?}", e))?;
   
@@ -131,7 +126,9 @@ async fn initialize_browser() -> Result<Arc<Mutex<BrowserInstance>>> {
               std::process::exit(1);
             } else if &err_msg == "Ws(Protocol(ResetWithoutClosingHandshake))" {
               error!("chromiumoxide Browser handler error: {err_msg}");
-              check_and_kill_existing_browser().await.unwrap_or_else(|e| {
+              check_and_kill_existing_browser(
+                port,
+              ).await.unwrap_or_else(|e| {
                 error!("Failed to destroy browser: {e}");
               });
               std::process::exit(1);
@@ -151,69 +148,122 @@ async fn initialize_browser() -> Result<Arc<Mutex<BrowserInstance>>> {
     }
   });
   
-  Ok(Arc::new(Mutex::new(BrowserInstance {
+  Ok(BrowserInstance {
     browser,
     _handler_guard: handler_guard,
-  })))
+  })
 }
 
-pub async fn get_browser_instance() -> Result<Arc<Mutex<BrowserInstance>>> {
-  Ok(BROWSER.get_or_try_init(initialize_browser).await?.clone())
+/// 获取可用端口
+pub async fn get_available_port() -> Result<u16> {
+  let listener = TcpListener::bind("127.0.0.1:0").await?;
+  let port = listener.local_addr()?.port();
+  drop(listener);
+  Ok(port)
 }
+
+/// 异步检查端口是否可用
+// pub async fn is_port_available_async(port: u16) -> bool {
+//   TcpListener::bind(format!("127.0.0.1:{}", port)).await.is_ok()
+// }
+
+// 全局信号量，确保同一时间只有一个浏览器实例在运行
+static BROWSER_QUEUE: Semaphore = Semaphore::const_new(1);
 
 pub async fn new_page<T: Sync + Send>(
   params: impl Into<CreateTargetParams>,
+  timeout: std::time::Duration,
   callback: impl AsyncFnOnce(Arc<Page>) -> Result<T> + Send + 'static,
 ) -> Result<T> {
   
-  // 等待直到并发页面数小于最大值
-  while CONCURRENT_PAGES.load(Ordering::SeqCst) >= MAX_CONCURRENT_PAGES {
-    tokio::time::sleep(tokio::time::Duration::from_millis(200)).await;
-    info!("等待页面槽位, 当前: {}, 最大: {}", 
-          CONCURRENT_PAGES.load(Ordering::SeqCst), MAX_CONCURRENT_PAGES);
-  }
+  // 获取信号量许可，确保串行执行
+  let _permit = BROWSER_QUEUE.acquire().await?;
   
-  // 增加并发页面计数
-  CONCURRENT_PAGES.fetch_add(1, Ordering::SeqCst);
-  info!("正在打开新页面, 当前计数: {}/{}", 
-        CONCURRENT_PAGES.load(Ordering::SeqCst), MAX_CONCURRENT_PAGES);
+  // 随机获取一个可用的端口
+  let port = get_available_port().await?;
   
-  let browser_instance = initialize_browser().await?;
-  let mut browser_instance = browser_instance.lock().await;
+  let browser_instance_res = initialize_browser(
+    port,
+  ).await;
   
-  // 创建新页面
-  let page = match browser_instance.browser.new_page(params).await {
-    Ok(p) => p,
+  let mut browser_instance: BrowserInstance = match browser_instance_res {
+    Ok(instance) => instance,
     Err(e) => {
-      // 出错时减少计数器
-      CONCURRENT_PAGES.fetch_sub(1, Ordering::SeqCst);
-      return Err(e.into());
+      info!("Failed to initialize browser: {e}");
+      // 如果是linux, 执行 pgrep chrome, 然后kill第一个pid
+      #[cfg(unix)]
+      {
+        let output = tokio::process::Command::new("pgrep")
+          .arg("chrome")
+          .output()
+          .await?;
+        if !output.stdout.is_empty() {
+          let output_str = String::from_utf8_lossy(&output.stdout);
+          let pid = output_str.lines().next().unwrap_or("");
+          tokio::process::Command::new("kill")
+            .arg("-9")
+            .arg(pid)
+            .output()
+            .await?;
+          info!("Killed existing browser process with PID: {pid}");
+        } else {
+          return Err(eyre!("Failed to initialize browser"));
+        }
+      }
+      // 如果是windows, 执行 taskkill /F /IM chrome.exe
+      #[cfg(windows)]
+      {
+        let output = tokio::process::Command::new("cmd")
+          .arg("/C")
+          .arg("taskkill /F /IM chrome.exe")
+          .output()
+          .await?;
+        info!("Killed existing browser processes {output:?}");
+      }
+      
+      initialize_browser(
+        port,
+      ).await?
+      
     }
   };
   
+  // 创建新页面
+  let page = browser_instance.browser.new_page(params).await?;
+  
   let page_arc = Arc::new(page);
   
-  // 执行回调函数
-  let res = callback(page_arc.clone()).await;
+  // 使用超时包装 callback 执行
+  let callback_result = tokio::time::timeout(timeout, callback(page_arc.clone())).await;
+  
+  let res = match callback_result {
+    Ok(result) => result,
+    Err(_) => {
+      error!("Callback function timed out after {:?}", timeout);
+      Err(eyre!("Callback function timed out after {:?}", timeout))
+    }
+  };
   
   // 关闭页面，必须用原始 page（Arc 不能 move 出 Page）
-  Arc::try_unwrap(page_arc)
-    .map_err(|_| eyre!("Failed to unwrap Arc to close page"))?
-    .close()
-    .await?;
-  
-  // 减少并发页面计数
-  CONCURRENT_PAGES.fetch_sub(1, Ordering::SeqCst);
-  info!("已关闭页面, 当前计数: {}/{}", 
-        CONCURRENT_PAGES.load(Ordering::SeqCst), MAX_CONCURRENT_PAGES);
-  
-  // 关闭浏览器
-  browser_instance.browser.close().await?;
+  if let Ok(page) = Arc::try_unwrap(page_arc) {
+    if let Err(e) = page.close().await {
+      error!("Failed to close page: {e}");
+    }
+  } else {
+    error!("Failed to unwrap Arc to close page - page may still be referenced");
+  }
   
   // 尝试中止处理程序任务
   browser_instance._handler_guard.abort();
   
+  // 关闭浏览器
+  if let Err(e) = browser_instance.browser.close().await {
+    error!("Failed to close browser: {e}");
+  }
+  
   drop(browser_instance);
+  
+  // 信号量许可会在 _permit 被 drop 时自动释放
   
   res
 }
@@ -227,24 +277,4 @@ pub async fn wait_for_selector(page: &Page, selector: &str, timeout: std::time::
     tokio::time::sleep(std::time::Duration::from_millis(200)).await;
   }
   false
-}
-
-/// 销毁浏览器实例，释放资源
-pub async fn destroy_browser() -> Result<()> {
-  if let Some(browser_mutex) = BROWSER.get() {
-    let mut browser_instance = browser_mutex.lock().await;
-    
-    // 关闭浏览器
-    browser_instance.browser.close().await?;
-    
-    // 尝试中止处理程序任务
-    browser_instance._handler_guard.abort();
-    
-    // 释放锁，以便后续可以重置 OnceCell
-    drop(browser_instance);
-    
-    info!("Browser instance successfully destroyed");
-  }
-  
-  Ok(())
 }

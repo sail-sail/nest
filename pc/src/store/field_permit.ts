@@ -2,11 +2,11 @@ import {
   getFieldPermit as getFieldPermitApi,
 } from "./Api";
 
-export default defineStore("field_permit", function() {
-  
-  const field_permits = ref<{
-    [route_path: string]: string[] | null;
-  }>({ });
+const field_permits = useStorage<{
+  [route_path: string]: string[] | null;
+}>("store.field_permit.field_permits", { });
+
+export default function() {
   
   function getFieldPermit(route_path?: string) {
     if (!route_path) {
@@ -104,8 +104,15 @@ export default defineStore("field_permit", function() {
   }
   
    return {
-    field_permits,
+    get fieldPermit() {
+      return field_permits.value;
+    },
+    set fieldPermit(value: {
+      [route_path: string]: string[] | null;
+    }) {
+      field_permits.value = value || { };
+    },
     getFieldPermit,
     setTableColumnsFieldPermit,
   };
-});
+};

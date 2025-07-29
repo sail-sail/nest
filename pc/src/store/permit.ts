@@ -2,11 +2,11 @@ import type {
   GetUsrPermits,
 } from "@/typings/types";
 
-export default defineStore("permit", function() {
-  
-  const usrStore = useUsrStore();
-  
-  const permits = ref<Pick<GetUsrPermits, "code" | "route_path">[]>([ ]);
+const permits = useStorage<Pick<GetUsrPermits, "code" | "route_path">[]>("store.permit.permits", [ ]);
+
+const usrStore = useUsrStore();
+
+export default function() {
   
   function getPermit(route_path?: string) {
     if (!route_path) {
@@ -29,13 +29,13 @@ export default defineStore("permit", function() {
   }
   
   return {
-    permits,
+    get permits() {
+      return permits.value;
+    },
+    set permits(value: Pick<GetUsrPermits, "code" | "route_path">[]) {
+      permits.value = value;
+    },
     getPermit,
   };
   
-},
-{
-  persist: {
-    key: "permit",
-  },
-});
+};
