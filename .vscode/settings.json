@@ -64,13 +64,7 @@
   "typescript.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
-  "deno.enable": true,
-  "deno.enablePaths": [
-    "./deno"
-  ],
-  "deno.lint": true,
-  "deno.unstable": true,
-  "deno.importMap": "./deno/import_map.json",
+  "deno.enable": false,
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
