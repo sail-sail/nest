@@ -1,4 +1,4 @@
-export default defineStore("tenant", function() {
+export default function() {
   
   // async function getHost(): Promise<{ host: string }> {
   //   const rvData = await query({
@@ -18,4 +18,4 @@ export default defineStore("tenant", function() {
   //   getHost,
   // });
   
-});
+};
