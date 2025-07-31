@@ -69,8 +69,6 @@
     "eslint": "9.32.0",
     "eslint-plugin-vue": "10.4.0",
     "globals": "16.3.0",
-    "husky": "9.1.7",
-    "lint-staged": "16.1.2",
     "mysql2": "3.14.3",
     "sass": "1.89.2",
     "spark-md5": "3.0.2",
@@ -91,11 +89,6 @@
     "vite-plugin-wasm": "3.5.0",
     "vitest": "3.2.4",
     "vue-tsc": "3.0.4"
-  },
-  "lint-staged": {
-    "*.{ts,vue}": [
-      "npm run typecheck"
-    ]
   },
   "pnpm": {
     "onlyBuiltDependencies": [

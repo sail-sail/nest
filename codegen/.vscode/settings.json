@@ -43,6 +43,21 @@
     "cache": true,
     "**/.husky": true
   },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/.git/logs/**": true,
+    "cache/**": true,
+    "__out__/**": true,
+    "dist/**": true,
+    "build/**": true,
+    ".cache/**": true,
+    ".temp/**": true,
+    ".tmp/**": true,
+    "**/*.log": true,
+    "**/.pnpm-store/**": true
+  },
   "diffEditor.useInlineViewWhenSpaceIsLimited": false,
   "git.timeline.showUncommitted": true,
   "scm.showHistoryGraph": false,

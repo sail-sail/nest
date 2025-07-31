@@ -1126,6 +1126,11 @@ ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
         }
       }
     }
+    if (column.foreignKey) {
+      if (column.canSearch == null) {
+        column.canSearch = true;
+      }
+    }
     columns.push({
       ...column,
     });
