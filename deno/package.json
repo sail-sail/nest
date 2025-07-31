@@ -38,15 +38,9 @@
     "commander": "14.0.0",
     "dotenv": "17.2.1",
     "graphql-ts-client-codegen": "3.1.17",
-    "husky": "9.1.7",
     "lint-staged": "16.1.2",
     "ssh2-promise": "1.0.3",
     "typescript": "5.8.3"
-  },
-  "lint-staged": {
-    "*.ts": [
-      "npm run typecheck"
-    ]
   },
   "pnpm": {
     "onlyBuiltDependencies": [
