@@ -129,9 +129,6 @@ export default defineConfig({
             "ElLink",
             "ElColorPicker",
           ],
-          "pinia": [
-            "defineStore",
-          ],
           "numeral": [
             [ "default", "numeral" ]
           ],
