@@ -55,6 +55,23 @@
     "uno_uni.config.ts": true,
     "uno.config.ts": true
   },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/.git/logs/**": true,
+    "dist/**": true,
+    "dist-ssr/**": true,
+    "build/**": true,
+    "unpackage/**": true,
+    ".cache/**": true,
+    ".temp/**": true,
+    ".tmp/**": true,
+    "**/*.log": true,
+    ".eslintrc-auto-import.json": true,
+    "**/vite.config.mts.timestamp-*.mjs": true,
+    "**/.pnpm-store/**": true
+  },
   "diffEditor.useInlineViewWhenSpaceIsLimited": false,
   "git.timeline.showUncommitted": true,
   "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",

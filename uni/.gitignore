@@ -1,16 +1,39 @@
-node_modules
-.DS_Store
-dist
-dist-ssr
+# 依赖目录
+node_modules/
+
+# 构建目录
+dist/
+dist-ssr/
+build/
+unpackage/
+
+# 缓存和临时文件
+.cache/
+.temp/
 *.local
+
+# 包管理文件
 package-lock.json
 pnpm-lock.yaml
-.eslintrc-auto-import.json
-
 yarn.lock
 
+# 生成的类型文件
 src/typings/types.ts
 src/typings/auto-imports.d.ts
 src/typings/components.d.ts
 
+# ESLint 自动生成文件
+.eslintrc-auto-import.json
+
+# Vite 临时文件
 **/vite.config.mts.timestamp-*.mjs
+
+# IDE 和编辑器文件
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
