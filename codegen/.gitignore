@@ -1,1 +1,37 @@
+# 依赖目录
+node_modules/
+
+# 缓存目录
 cache/
+.cache/
+
+# 构建和输出目录
+dist/
+build/
+__out__/
+
+# 临时文件
+.temp/
+.tmp/
+
+# 包管理文件
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# 日志文件
+*.log
+npm-debug.log
+
+# 生成的类型文件
+src/typings/types.ts
+
+# IDE 和编辑器文件
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
