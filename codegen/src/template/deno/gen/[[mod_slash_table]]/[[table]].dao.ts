@@ -377,6 +377,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,<#
   for (let i = 0; i < columns.length; i++) {

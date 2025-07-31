@@ -272,7 +272,7 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
  * 发送 GraphQL 修改请求 
  */
 export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
-  const indexStore = useIndexStore(cfg.pinia);
+  const indexStore = useIndexStore();
   if (!opt?.notLoading && indexStore.loading > 0 && opt?.isMutation) {
     ElMessage.warning("繁忙中，请稍后再重试");
     throw "mutation loading";
@@ -372,7 +372,7 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       return false;
     });
     if (is_token_expired) {
-      const usrStore = useUsrStore(cfg.pinia);
+      const usrStore = useUsrStore();
       usrStore.logout();
       return data;
     }
