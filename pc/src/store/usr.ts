@@ -6,11 +6,15 @@ const authorization = useStorage<string>("store.usr.authorization", "");
 
 const isLogining = ref(false);
 
-const tenant_id = ref<TenantId>();
+const tenant_id = useStorage<TenantId>("store.usr.tenant_id", "" as unknown as TenantId);
 const username = useStorage<string>("store.usr.username", "");
 const usr_id = useStorage<UsrId>("store.usr.usr_id", "" as unknown as UsrId);
 
-const loginInfo = useStorage<GetLoginInfo | undefined>("store.usr.loginInfo", undefined);
+const loginInfo = ref<GetLoginInfo | undefined>(undefined);
+
+if (localStorage.getItem("store.usr.loginInfo")) {
+  loginInfo.value = JSON.parse(localStorage.getItem("store.usr.loginInfo") || "");
+}
 
 const lang = useStorage<string>("store.usr.lang", "");
 
@@ -99,6 +103,11 @@ export default function() {
     },
     set loginInfo(loginInfo0: GetLoginInfo | undefined) {
       loginInfo.value = loginInfo0;
+      if (!loginInfo0) {
+        localStorage.removeItem("store.usr.loginInfo");
+      } else {
+        localStorage.setItem("store.usr.loginInfo", JSON.stringify(loginInfo0));
+      }
     },
     get username() {
       return username.value;
