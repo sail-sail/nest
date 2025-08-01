@@ -23,7 +23,7 @@
     "git.openRepositoryInParentFolders": "never",
     "git.repositoryScanMaxDepth": 1,
     "git.autofetch": false,
-    "git.autorefresh": false,
+    "git.autorefresh": true,
     "git.detectSubmodules": false,
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
     "npm.registry": "https://registry.npmmirror.com",
