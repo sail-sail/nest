@@ -1,6 +1,7 @@
 import type {
   RouteLocationNormalizedLoaded,
   RouteMeta,
+  Router,
 } from "vue-router";
 
 import config from "@/utils/config";
@@ -23,21 +24,22 @@ export interface TabInf {
   meta?: RouteMeta,
 }
 
-export default defineStore("tabs", function() {
+const tabs = useStorage<TabInf[]>("store.tabs.tabs", [ ]);
+
+const actTab = computed(() => tabs.value.find((item) => item.active));
+
+const keepAliveNames = ref<string[]>([ ]);
+
+let indexIsEmptyHandle: ReturnType<typeof watch> | undefined = undefined;
+
+const menuStore = useMenuStore();
+
+let router: Router | undefined = undefined;
+
+export default function() {
   
-  const router = useRouter();
-  const routeNow = useRoute();
-  
-  const menuStore = useMenuStore();
-  
-  const tabs = ref<TabInf[]>([ ]);
-  
-  const actTab = computed(() => tabs.value.find((item) => item.active));
-  
-  const keepAliveNames = ref<string[]>([ ]);
-  
-  if (config.indexIsEmpty) {
-    watch(
+  if (config.indexIsEmpty && !indexIsEmptyHandle) {
+    indexIsEmptyHandle = watch(
       () => tabs.value.length,
       async () => {
         if (tabs.value.length === 0) {
@@ -137,6 +139,11 @@ export default defineStore("tabs", function() {
   }
   
   async function removeTab(tab: TabInf, force = false) {
+    
+    if (!router) {
+      router = useRouter();
+    }
+    
     if (!tab) {
       return false;
     }
@@ -185,6 +192,9 @@ export default defineStore("tabs", function() {
   }
   
   async function closeOtherTabs(tab?: TabInf) {
+    
+    const router = useRouter();
+    
     const notCloseableTabs = tabs.value.filter((item) => item.closeable === false);
     if (!tab) {
       tabs.value = notCloseableTabs;
@@ -210,6 +220,13 @@ export default defineStore("tabs", function() {
   }
   
   async function refreshTab(route: RouteLocationNormalizedLoaded) {
+    
+    const router0 = useRouter();
+    
+    if (!router) {
+      router = router0;
+    }
+    
     let hash = location.hash;
     if (hash.startsWith("#")) {
       hash = hash.substring(1);
@@ -288,6 +305,10 @@ export default defineStore("tabs", function() {
     tabName?: string,
     query?: { [key: string]: string },
   ) {
+    
+    const router = useRouter();
+    const routeNow = useRoute();
+    
     const route = getRouterByName(router, routeName);
     if (!route) {
       ElMessage.error(`未找到对应的路由 ${ routeName }`);
@@ -339,8 +360,15 @@ export default defineStore("tabs", function() {
   }
   
   return {
-    tabs,
-    actTab,
+    get tabs() {
+      return tabs.value;
+    },
+    set tabs(value: TabInf[]) {
+      tabs.value = value || [ ];
+    },
+    get actTab() {
+      return actTab.value;
+    },
     activeTab,
     hasTab,
     findTab,
@@ -353,15 +381,14 @@ export default defineStore("tabs", function() {
     setIndexTab,
     moveTab,
     reset,
-    keepAliveNames,
+    get keepAliveNames() {
+      return keepAliveNames.value;
+    },
+    set keepAliveNames(value: string[]) {
+      keepAliveNames.value = value || [ ];
+    },
     clearKeepAliveNames,
     openPageByRouteName,
   };
   
-}, {
-  persist: {
-    pick: [
-      "tabs",
-    ],
-  },
-});
+};

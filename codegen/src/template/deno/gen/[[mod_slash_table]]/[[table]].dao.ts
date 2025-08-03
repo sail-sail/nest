@@ -377,6 +377,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,<#
   for (let i = 0; i < columns.length; i++) {
@@ -3876,7 +3877,7 @@ export async function findAutoCode<#=Table_Up#>(
     <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
     const model_deleted = await findOne<#=Table_Up#>(
       {
-        <#=dateSeq#>: [ model!.<#=dateSeq#>, model!.<#=dateSeq#> ],
+        <#=dateSeq#>: [ model?.<#=dateSeq#> || <#=dateSeq#>, model?.<#=dateSeq#> || <#=dateSeq#> ],
         is_deleted: 1,
       },
       [

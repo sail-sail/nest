@@ -124,7 +124,7 @@
       @select="(menuSelect as any)"
     >
       <AppSubMenu
-        :children="(menuStore.menus as any[])"
+        :children="(menuStore.menus as MenuModel[])"
         :opened-index="openedIndex"
       ></AppSubMenu>
     </el-menu>
@@ -140,6 +140,15 @@ import {
 import type {
   LocationQueryRaw,
 } from "vue-router";
+
+import type {
+  MenuModel as MenuModel0,
+} from "#/types";
+
+type MenuModel = MenuModel0 & {
+  children: MenuModel[];
+  _isShow?: boolean;
+}
 
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();
@@ -236,7 +245,7 @@ async function menuSelect(id: MenuId) {
 async function getMenusEfc() {
   inited = false;
   const result = await getMenus();
-  menuStore.setMenus(result);
+  menuStore.menus = result;
   setDefaultActiveByRouter(route.path, route.query);
   inited = true;
 }
@@ -245,7 +254,7 @@ async function initFrame() {
   if (usrStore.authorization) {
     await getMenusEfc();
   } else {
-    menuStore.setMenus([ ]);
+    menuStore.menus = [ ];
   }
 }
 
