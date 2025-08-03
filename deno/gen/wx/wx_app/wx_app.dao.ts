@@ -67,6 +67,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -74,10 +75,6 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./wx_app.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -906,6 +903,7 @@ export async function findByIdOkWxApp(
   
   if (!wx_app_model) {
     const err_msg = "此 小程序设置 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

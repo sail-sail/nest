@@ -7,7 +7,7 @@
   :class="{
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
-    'select_input_isShowModelLabel': props.pageInited && hasModelLabel && modelLabel != inputValue,
+    'select_input_isShowModelLabel': props.pageInited && !modelLabelRefreshing && hasModelLabel && modelLabel != inputValue,
   }"
   @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
@@ -100,7 +100,7 @@
     :class="{
       label_readonly_1: props.labelReadonly,
       label_readonly_0: !props.labelReadonly,
-      'select_input_isShowModelLabel': props.pageInited && hasModelLabel && modelLabel != inputValue,
+      'select_input_isShowModelLabel': props.pageInited && !modelLabelRefreshing && hasModelLabel && modelLabel != inputValue,
     }"
     v-bind="$attrs"
   >
@@ -201,6 +201,13 @@ watch(
   },
 );
 
+watch(
+  () => props.pageInited,
+  () => {
+    formItem?.clearValidate();
+  },
+);
+
 let isHover = $ref(false);
 
 function onMouseEnter() {
@@ -254,6 +261,8 @@ async function validateField() {
   }
 }
 
+let modelLabelRefreshing = $ref(false);
+
 /** 根据modelValue刷新输入框的值 */
 async function refreshInputValue() {
   const modelValueArr = getModelValueArr();
@@ -268,7 +277,9 @@ async function refreshInputValue() {
   } else if (selectedValue) {
     models = [ selectedValue ];
   } else {
+    modelLabelRefreshing = true;
     models = await getModelsByIds(modelValueArr);
+    modelLabelRefreshing = false;
   }
   selectedValue = undefined;
   inputValue = models.map((item) => item?.lbl || "").join(",");

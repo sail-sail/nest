@@ -154,9 +154,6 @@ export async function findByIdsWxAppToken(
   
   const models = await findByIdsWxAppToken(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkWxAppToken(
   } = await import("./wx_app_token.service.ts");
   
   const models = await findByIdsOkWxAppToken(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

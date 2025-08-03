@@ -154,9 +154,6 @@ export async function findByIdsWxPay(
   
   const models = await findByIdsWxPay(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkWxPay(
   } = await import("./wx_pay.service.ts");
   
   const models = await findByIdsOkWxPay(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

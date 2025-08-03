@@ -81,13 +81,16 @@ export async function code2Session(
   },
 ): Promise<LoginModel> {
   
-  const wx_app_model = await validateOptionWxApp(
-    await findOneWxApp(
-      {
-        appid: input.appid,
-      },
-    ),
+  const wx_app_model = await findOneWxApp(
+    {
+      appid: input.appid,
+    },
   );
+  
+  if (!wx_app_model) {
+    throw new Error(`小程序 ${ input.appid } 不存在`);
+  }
+  
   await validateIsEnabledWxApp(wx_app_model);
   
   const appid = wx_app_model.appid;
@@ -218,7 +221,7 @@ export async function checkBindWxUsr() {
     return false;
   }
   const wx_usrModel = await validateOptionWxUsr(
-    await findByIdWxUsr(authModel.wx_usr_id),
+    await findByIdWxUsr(authModel.wx_usr_id as WxUsrId),
   );
   const usr_id = wx_usrModel.usr_id;
   if (!usr_id) {
@@ -248,7 +251,7 @@ export async function bindWxUsr(
     throw await ns("此微信已被其它用户绑定");
   }
   
-  const wx_usr_id = authModel?.wx_usr_id;
+  const wx_usr_id = authModel?.wx_usr_id as WxUsrId;
   if (!wx_usr_id) {
     throw "wx_usr_id can not be null";
   }
@@ -291,7 +294,7 @@ export async function bindWxUsr(
   );
   if (!model || !model.id) {
     model = {
-      id: authModel.id,
+      id: authModel?.id as UsrId,
       default_org_id: authUsrModel.default_org_id,
       is_hidden: authUsrModel.is_hidden,
     },

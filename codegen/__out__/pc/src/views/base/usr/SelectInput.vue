@@ -7,7 +7,7 @@
   :class="{
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
-    'select_input_isShowModelLabel': props.pageInited && hasModelLabel && modelLabel != inputValue,
+    'select_input_isShowModelLabel': props.pageInited && !modelLabelRefreshing && hasModelLabel && modelLabel != inputValue,
   }"
   @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
@@ -21,18 +21,24 @@
     class="select_input"
     :placeholder="props.placeholder"
     :readonly-placeholder="props.placeholder"
+    @change="onInputChange"
     @click="onInput('input')"
     @clear="onClear"
   >
+    
     <template
-      v-for="key in $slots"
-      :key="key"
-      #[key]
+      v-for="(_, name) of $slots"
+      :key="name"
+      #[name]="slotProps"
     >
+      
       <slot
-        :name="key"
+        :name="name"
+        v-bind="slotProps"
       ></slot>
+      
     </template>
+    
     <template
       v-if="!$slots.suffix"
       #suffix
@@ -94,7 +100,7 @@
     :class="{
       label_readonly_1: props.labelReadonly,
       label_readonly_0: !props.labelReadonly,
-      'select_input_isShowModelLabel': props.pageInited && hasModelLabel && modelLabel != inputValue,
+      'select_input_isShowModelLabel': props.pageInited && !modelLabelRefreshing && hasModelLabel && modelLabel != inputValue,
     }"
     v-bind="$attrs"
   >
@@ -183,12 +189,22 @@ watch(
 );
 
 watch(
-  () => modelValue,
+  () => [
+    modelValue,
+    props.multiple,
+  ],
   async () => {
     await refreshInputValue();
   },
   {
     immediate: true,
+  },
+);
+
+watch(
+  () => props.pageInited,
+  () => {
+    formItem?.clearValidate();
   },
 );
 
@@ -245,6 +261,8 @@ async function validateField() {
   }
 }
 
+let modelLabelRefreshing = $ref(false);
+
 /** 根据modelValue刷新输入框的值 */
 async function refreshInputValue() {
   const modelValueArr = getModelValueArr();
@@ -259,7 +277,9 @@ async function refreshInputValue() {
   } else if (selectedValue) {
     models = [ selectedValue ];
   } else {
+    modelLabelRefreshing = true;
     models = await getModelsByIds(modelValueArr);
+    modelLabelRefreshing = false;
   }
   selectedValue = undefined;
   inputValue = models.map((item) => item?.lbl || "").join(",");
@@ -326,6 +346,16 @@ async function onInput(
   emit("update:modelLabel", inputValue);
 }
 
+async function onInputChange() {
+  if (props.multiple) {
+    modelValue = [ ];
+    emit("update:modelValue", modelValue);
+    return;
+  }
+  modelValue = "" as UsrId;
+  emit("update:modelValue", modelValue);
+}
+
 const wrapperRef = $(useTemplateRef<InstanceType<typeof HTMLDivElement>>("wrapperRef"));
 
 function focus() {
@@ -349,6 +379,7 @@ async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) 
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
+    emit("update:modelLabel", modelLabel || "");
     return;
   }
   if (!Array.isArray(value)) {
@@ -356,12 +387,14 @@ async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) 
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
+    emit("update:modelLabel", modelLabel || "");
     return;
   }
   emit("change", value[0]);
   if (oldInputValue !== inputValue) {
     await refreshInputValue();
   }
+  emit("update:modelLabel", modelLabel || "");
 }
 
 defineExpose({

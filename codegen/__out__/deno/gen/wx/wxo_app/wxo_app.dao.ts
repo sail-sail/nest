@@ -67,6 +67,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
   WxoAppEncodingType,
@@ -80,10 +81,6 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./wxo_app.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -1097,6 +1094,7 @@ export async function findByIdOkWxoApp(
   
   if (!wxo_app_model) {
     const err_msg = "此 公众号设置 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   
