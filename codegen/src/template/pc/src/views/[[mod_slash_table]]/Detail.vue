@@ -4379,6 +4379,14 @@ for (let i = 0; i < columns.length; i++) {
 import <#=foreignSchema.opts.tableUp#>DetailDialog from "@/views/<#=foreignSchema.opts.mod#>/<#=foreignSchema.opts.table#>/Detail.vue";<#
 }
 #><#
+if (mod === "base" && table === "usr") {
+#>
+
+import {
+  findAllOrg as getOrgList,
+} from "@/views/base/org/Api.ts";<#
+}
+#><#
 if (mod === "cron" && table === "cron_job") {
 #>
 
