@@ -156,9 +156,6 @@ export async function findByIdsPt(
   
   const models = await findByIdsPt(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -174,9 +171,6 @@ export async function findByIdsOkPt(
   } = await import("./pt.service.ts");
   
   const models = await findByIdsOkPt(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

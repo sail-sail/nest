@@ -159,6 +159,7 @@
               v-model="dialogModel.card_id"
               placeholder="请选择 会员卡"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></SelectInputCard>
           </el-form-item>
         </template>

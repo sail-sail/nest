@@ -71,6 +71,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
   CardGrade,
@@ -83,10 +84,6 @@ import {
 import {
   findOneOrg,
 } from "/gen/base/org/org.dao.ts";
-
-import {
-  route_path,
-} from "./card.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -1150,6 +1147,7 @@ export async function findByIdOkCard(
   
   if (!card_model) {
     const err_msg = "此 会员卡 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

@@ -71,6 +71,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
   OrderStatus,
@@ -88,10 +89,6 @@ import {
 import {
   findOneOrg,
 } from "/gen/base/org/org.dao.ts";
-
-import {
-  route_path,
-} from "./order.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -1273,6 +1270,7 @@ export async function findByIdOkOrder(
   
   if (!order_model) {
     const err_msg = "此 订单 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

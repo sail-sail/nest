@@ -154,9 +154,6 @@ export async function findByIdsCardRecharge(
   
   const models = await findByIdsCardRecharge(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkCardRecharge(
   } = await import("./card_recharge.service.ts");
   
   const models = await findByIdsOkCardRecharge(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

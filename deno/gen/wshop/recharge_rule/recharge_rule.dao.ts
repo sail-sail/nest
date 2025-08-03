@@ -69,6 +69,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -76,10 +77,6 @@ import type {
 import {
   findOneOrg,
 } from "/gen/base/org/org.dao.ts";
-
-import {
-  route_path,
-} from "./recharge_rule.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -937,6 +934,7 @@ export async function findByIdOkRechargeRule(
   
   if (!recharge_rule_model) {
     const err_msg = "此 充值赠送规则 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

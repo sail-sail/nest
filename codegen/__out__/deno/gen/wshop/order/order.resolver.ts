@@ -156,9 +156,6 @@ export async function findByIdsOrder(
   
   const models = await findByIdsOrder(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -174,9 +171,6 @@ export async function findByIdsOkOrder(
   } = await import("./order.service.ts");
   
   const models = await findByIdsOkOrder(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

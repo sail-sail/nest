@@ -154,9 +154,6 @@ export async function findByIdsCardConsume(
   
   const models = await findByIdsCardConsume(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkCardConsume(
   } = await import("./card_consume.service.ts");
   
   const models = await findByIdsOkCardConsume(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

@@ -154,9 +154,6 @@ export async function findByIdsWxappConfig(
   
   const models = await findByIdsWxappConfig(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkWxappConfig(
   } = await import("./wxapp_config.service.ts");
   
   const models = await findByIdsOkWxappConfig(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

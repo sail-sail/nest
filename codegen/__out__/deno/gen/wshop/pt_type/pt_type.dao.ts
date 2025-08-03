@@ -67,6 +67,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -74,10 +75,6 @@ import type {
 import {
   findOneOrg,
 } from "/gen/base/org/org.dao.ts";
-
-import {
-  route_path,
-} from "./pt_type.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -1031,6 +1028,7 @@ export async function findByIdOkPtType(
   
   if (!pt_type_model) {
     const err_msg = "此 产品类别 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

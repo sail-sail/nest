@@ -156,9 +156,6 @@ export async function findByIdsRechargeRule(
   
   const models = await findByIdsRechargeRule(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -174,9 +171,6 @@ export async function findByIdsOkRechargeRule(
   } = await import("./recharge_rule.service.ts");
   
   const models = await findByIdsOkRechargeRule(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }
