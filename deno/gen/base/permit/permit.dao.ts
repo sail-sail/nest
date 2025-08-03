@@ -55,6 +55,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -62,10 +63,6 @@ import type {
 import {
   findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
-
-import {
-  route_path,
-} from "./permit.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(

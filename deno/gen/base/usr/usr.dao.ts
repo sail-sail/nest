@@ -72,6 +72,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -79,10 +80,6 @@ import type {
 import {
   findOneOrg,
 } from "/gen/base/org/org.dao.ts";
-
-import {
-  route_path,
-} from "./usr.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,

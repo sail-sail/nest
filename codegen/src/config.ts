@@ -257,7 +257,7 @@ export interface TableCloumn {
      */
     lbl?: string,
     
-    /** 多对多需要级联查询的字段, 默认包含 lbl 字段 */
+    /** 外键关联需要级联查询的字段, 默认包含 lbl 字段 */
     cascade_fields?: string[],
     
     /**
@@ -1009,6 +1009,36 @@ export interface TablesConfigItem {
      * 是否生成uni手机端的Api接口代码, 默认为false
      */
     isUniApi?: boolean;
+    
+    /**
+     * 级联更新字段, 当外键关联的字段变化时, 自动更新相关的字段
+     */
+    cascadeUpdateFields?: {
+      /**
+       * 监听变化的字段名, 一般为 lbl
+       */
+      watchColumn: string;
+      /**
+       * 模块
+       */
+      mod: string;
+      
+      /**
+       * 表
+       */
+      table: string;
+      
+      /**
+       * 外键字段名
+       */
+      idColumn: string;
+      
+      /**
+       * 字段名
+       */
+      column: string;
+      
+    }[];
     
   },
   columns: TableCloumn[];

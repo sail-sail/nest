@@ -65,6 +65,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
   BackgroundTaskState,
@@ -74,10 +75,6 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./background_task.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,

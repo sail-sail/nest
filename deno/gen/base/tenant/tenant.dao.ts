@@ -63,6 +63,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -74,10 +75,6 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./tenant.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(

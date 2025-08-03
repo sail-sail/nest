@@ -67,6 +67,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
   DataPermitScope,
@@ -80,10 +81,6 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./data_permit.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
