@@ -154,9 +154,6 @@ export async function findByIdsLang(
   
   const models = await findByIdsLang(ids);
   
-  for (const model of models) {
-  }
-  
   return models;
 }
 
@@ -172,9 +169,6 @@ export async function findByIdsOkLang(
   } = await import("./lang.service.ts");
   
   const models = await findByIdsOkLang(ids);
-  
-  for (const model of models) {
-  }
   
   return models;
 }

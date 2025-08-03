@@ -65,6 +65,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
   LoginLogType,
@@ -73,10 +74,6 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./login_log.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -793,6 +790,7 @@ export async function findByIdOkLoginLog(
   
   if (!login_log_model) {
     const err_msg = "此 登录日志 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

@@ -31,7 +31,11 @@ html,body {
   flex: 1 0 0;
   overflow: hidden;
   display: flex;
+  width: 100%;
+  height: 100%;
   flex-direction: column;
+  justify-content: safe center;
+  align-items: safe center;
 }
 .el-form {
   label {
@@ -425,6 +429,12 @@ html:is(.dark) {
   color: var(--readonly_font_color);
 }
 .custom_date_picker_readonly {
+  .el-input__wrapper.is-focus {
+    --el-input-focus-border-color: var(--el-input-border-color);
+  }
+  .el-input__wrapper:hover {
+    --el-input-hover-border-color: var(--el-input-border-color);
+  }
   .el-input__inner {
     color: var(--readonly_font_color);
   }
@@ -575,4 +585,8 @@ html .ql-toolbar span.ql-picker-label path {
 
 .el-table__empty-text {
   font-size: var(--el-font-size-base);
+}
+
+.el-form-item.is-error .el-form-item__content .custom_input_readonly_border {
+  box-shadow: 0 0 0 1px var(--el-color-danger) inset;
 }

@@ -65,6 +65,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
   BackgroundTaskState,
@@ -74,10 +75,6 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./background_task.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -915,6 +912,7 @@ export async function findByIdOkBackgroundTask(
   
   if (!background_task_model) {
     const err_msg = "此 后台任务 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

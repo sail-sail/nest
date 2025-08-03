@@ -1,3 +1,4 @@
+// deno-lint-ignore-file
 import wasmCode from "./wasm_code.js";
 
 let cachedUint8ArrayMemory0 = null;

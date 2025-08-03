@@ -55,6 +55,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -62,10 +63,6 @@ import type {
 import {
   findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
-
-import {
-  route_path,
-} from "./permit.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -672,6 +669,7 @@ export async function findByIdOkPermit(
   
   if (!permit_model) {
     const err_msg = "此 按钮权限 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

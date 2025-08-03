@@ -1,19 +1,44 @@
-node_modules
+# 依赖目录 - 使用 / 结尾明确指定目录
+node_modules/
+**/node_modules/
+
+# 包管理文件
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 日志文件
 npm-debug.log
 *.log
 *.diff
-.nuxt
-.output
-package-lock.json
-yarn.lock
-unpackage
+
+# 缓存和临时目录
+.cache/
+.temp/
+.tmp/
+dist/
+build/
+
+# 前端框架相关
+.nuxt/
+.output/
+unpackage/
+
+# 办公文件临时文件
 ~$*.xlsx
-target
+
+# Rust 相关
+target/
 Cargo.lock
+
+# Deno 相关
 deno.lock
 
-*/typings/ids.d.ts
-*/typings/types.ts
+# 生成的类型文件
+**/typings/ids.d.ts
+**/typings/types.ts
+**/typings/auto-imports.d.ts
+**/typings/components.d.ts
 
 /build
 /log

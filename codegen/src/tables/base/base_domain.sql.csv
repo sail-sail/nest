@@ -1,2 +1,2 @@
-id,protocol,lbl,order_by,is_default,is_enabled,is_locked
-0Ni5v4zSQRu9c0frMMsDzQ,http,localhost:4000,1,1,1,1
+id,protocol,lbl,order_by,is_enabled,is_locked
+0Ni5v4zSQRu9c0frMMsDzQ,http,localhost:4000,1,1,1

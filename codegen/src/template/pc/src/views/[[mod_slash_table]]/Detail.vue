@@ -620,6 +620,7 @@ for (let i = 0; i < columns.length; i++) {
               :select-list-readonly="false"<#
               }
               #>
+              :page-inited="inited"
             ></SelectInput<#=Foreign_Table_Up#>><#
             } else if (foreignSchema && foreignSchema.opts?.list_tree
               && !foreignSchema.opts?.ignoreCodegen
@@ -1459,6 +1460,7 @@ for (let i = 0; i < columns.length; i++) {
                       :select-list-readonly="false"<#
                       }
                       #>
+                      :page-inited="inited"
                     >
                     </SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree
@@ -2268,6 +2270,7 @@ for (let i = 0; i < columns.length; i++) {
                     :select-list-readonly="false"<#
                     }
                     #>
+                    :page-inited="inited"
                   ></SelectInput<#=Foreign_Table_Up#>><#
                   } else if (foreignSchema && foreignSchema.opts?.list_tree
                     && !foreignSchema.opts?.ignoreCodegen
@@ -2951,6 +2954,7 @@ for (let i = 0; i < columns.length; i++) {
                       :select-list-readonly="false"<#
                       }
                       #>
+                      :page-inited="inited"
                     >
                     </SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree
@@ -4373,6 +4377,14 @@ for (let i = 0; i < columns.length; i++) {
 
 // <#=foreignSchema.opts.table_comment#>
 import <#=foreignSchema.opts.tableUp#>DetailDialog from "@/views/<#=foreignSchema.opts.mod#>/<#=foreignSchema.opts.table#>/Detail.vue";<#
+}
+#><#
+if (mod === "base" && table === "usr") {
+#>
+
+import {
+  findAllOrg as getOrgList,
+} from "@/views/base/org/Api.ts";<#
 }
 #><#
 if (mod === "cron" && table === "cron_job") {
@@ -6282,41 +6294,6 @@ async function onRefresh() {
   if (data) {
     dialogModel = intoInput<#=Table_Up#>({
       ...data,<#
-      if (hasIsFluentEditor) {
-      #><#
-      for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      if (column_name === "is_locked") continue;
-      if (column_name === "is_deleted") continue;
-      if (column_name === "version") continue;
-      if (column_name === "tenant_id") continue;
-      if (column.noDetail) continue;
-      const foreignKey = column.foreignKey;
-      if (foreignKey && foreignKey.showType === "dialog") {
-        continue;
-      }
-      if (
-        [
-          "is_default",
-        ].includes(column_name)
-      ) {
-        continue;
-      }
-      if (!column.isFluentEditor) {
-        continue;
-      }
-      #>
-      if (<#=column_name#>FluentEditor) {
-        <#=column_name#>FluentEditor.root.innerHTML = dialogModel.<#=column_name#> || "";
-      }<#
-      }
-      #><#
-      }
-      #><#
       for (const inlineForeignTab of inlineForeignTabs) {
         const table = inlineForeignTab.table;
         const mod = inlineForeignTab.mod;
@@ -6336,6 +6313,41 @@ async function onRefresh() {
       }
       #>
     });<#
+    if (hasIsFluentEditor) {
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "is_locked") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "version") continue;
+    if (column_name === "tenant_id") continue;
+    if (column.noDetail) continue;
+    const foreignKey = column.foreignKey;
+    if (foreignKey && foreignKey.showType === "dialog") {
+      continue;
+    }
+    if (
+      [
+        "is_default",
+      ].includes(column_name)
+    ) {
+      continue;
+    }
+    if (!column.isFluentEditor) {
+      continue;
+    }
+    #>
+    if (<#=column_name#>FluentEditor) {
+      <#=column_name#>FluentEditor.root.innerHTML = dialogModel.<#=column_name#> || "";
+    }<#
+    }
+    #><#
+    }
+    #><#
     if (mod === "base" && table === "usr") {
     #>
     old_default_org_id = dialogModel.default_org_id;<#

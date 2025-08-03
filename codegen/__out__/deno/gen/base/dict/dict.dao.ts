@@ -59,6 +59,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
   DictType,
@@ -76,10 +77,6 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./dict.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -884,6 +881,7 @@ export async function findByIdOkDict(
   
   if (!dict_model) {
     const err_msg = "此 系统字典 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

@@ -72,6 +72,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -79,10 +80,6 @@ import type {
 import {
   findOneOrg,
 } from "/gen/base/org/org.dao.ts";
-
-import {
-  route_path,
-} from "./usr.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -1311,6 +1308,7 @@ export async function findByIdOkUsr(
   
   if (!usr_model) {
     const err_msg = "此 用户 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

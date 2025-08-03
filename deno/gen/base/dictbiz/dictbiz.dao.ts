@@ -67,6 +67,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
   DictbizType,
@@ -84,10 +85,6 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./dictbiz.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -901,6 +898,7 @@ export async function findByIdOkDictbiz(
   
   if (!dictbiz_model) {
     const err_msg = "此 业务字典 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

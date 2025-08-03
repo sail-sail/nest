@@ -35,7 +35,6 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        api: "modern-compiler",
         additionalData: `@use "@/assets/style/uni.scss";`,
       },
     },
@@ -73,6 +72,7 @@ export default defineConfig({
             "uploadFile",
             "getDownloadUrl",
             "getImgUrl",
+            "getImgUrlArr",
             "getAttUrl",
             "downloadFile",
             "uniLogin",
@@ -92,7 +92,7 @@ export default defineConfig({
           "decimal.js": [
             [ "default", "Decimal" ],
           ],
-          "@/tmui/components/tm-form/tm-form.vue": [
+          "@/uni_modules/tm-ui/components/tm-form/tm-form.vue": [
             [ "default", "TmForm" ],
           ],
           "@/utils/WxoUtil": [
@@ -109,7 +109,7 @@ export default defineConfig({
     // Components({
     //   dirs: [
     //     "./src/components",
-    //     "./src/uni_modules/tmui/components",
+    //     "./src/uni_modules/tm-ui/components",
     //   ],
     //   dts: "./src/typings/components.d.ts",
     // }),

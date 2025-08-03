@@ -19,34 +19,27 @@
   },
   "dependencies": {
     "dayjs": "1.11.13",
-    "decimal.js": "10.5.0",
+    "decimal.js": "10.6.0",
     "graphql": "16.11.0",
     "js-md5": "0.8.3",
     "lru-cache": "11.1.0",
     "mime": "4.0.7",
     "mnemonist": "0.40.3",
-    "mysql2": "3.14.1",
-    "path-to-regexp": "8.2.0",
+    "mysql2": "3.14.3",
+    "path-to-regexp": "6.3.0",
     "wechatpay-node-v3": "2.2.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.7",
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-operations": "4.6.1",
-    "@types/node": "24.0.3",
-    "chokidar": "3.6.0",
+    "@types/node": "24.1.0",
+    "chokidar": "4.0.3",
     "commander": "14.0.0",
-    "dotenv": "16.5.0",
+    "dotenv": "17.2.1",
     "graphql-ts-client-codegen": "3.1.17",
-    "husky": "9.1.7",
-    "lint-staged": "16.1.2",
     "ssh2-promise": "1.0.3",
-    "typescript": "5.8.3"
-  },
-  "lint-staged": {
-    "*.ts": [
-      "npm run typecheck"
-    ]
+    "typescript": "5.9.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

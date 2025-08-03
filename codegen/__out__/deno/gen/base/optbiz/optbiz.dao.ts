@@ -67,6 +67,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -74,10 +75,6 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./optbiz.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -865,6 +862,7 @@ export async function findByIdOkOptbiz(
   
   if (!optbiz_model) {
     const err_msg = "此 业务选项 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

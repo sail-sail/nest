@@ -67,6 +67,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
   DataPermitScope,
@@ -80,10 +81,6 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./data_permit.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -911,6 +908,7 @@ export async function findByIdOkDataPermit(
   
   if (!data_permit_model) {
     const err_msg = "此 数据权限 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

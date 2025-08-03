@@ -59,6 +59,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -66,10 +67,6 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  route_path,
-} from "./lang.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -803,6 +800,7 @@ export async function findByIdOkLang(
   
   if (!lang_model) {
     const err_msg = "此 语言 已被删除";
+    console.error(`${ err_msg } id: ${ id }`);
     throw new Error(err_msg);
   }
   

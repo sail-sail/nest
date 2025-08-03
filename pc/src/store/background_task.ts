@@ -1,9 +1,15 @@
-export default defineStore("backgrond_task", function() {
-  
-  const listDialogVisible = ref(false);
+
+const listDialogVisible = ref(false);
+
+export default function() {
   
   return {
-    listDialogVisible,
+    get listDialogVisible() {
+      return listDialogVisible.value;
+    },
+    set listDialogVisible(value: boolean) {
+      listDialogVisible.value = value;
+    },
   };
   
-});
+};
