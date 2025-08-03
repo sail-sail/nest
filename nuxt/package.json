@@ -8,7 +8,6 @@
     "start": "nuxt dev",
     "typecheck": "nuxt typecheck && eslint .",
     "lint": "eslint .",
-    "lint-staged": "lint-staged",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "preinstall": "npx only-allow pnpm",
@@ -23,27 +22,20 @@
     "vue-router": "4.5.1"
   },
   "devDependencies": {
-    "@nuxt/eslint": "1.7.0",
+    "@nuxt/eslint": "1.7.1",
     "@nuxt/icon": "1.15.0",
     "@types/file-saver": "2.0.7",
     "@types/node": "24.1.0",
-    "@unocss/nuxt": "66.3.3",
-    "@unocss/preset-rem-to-px": "66.3.3",
-    "@unocss/transformer-directives": "66.3.3",
-    "@vue-macros/nuxt": "3.0.0-beta.17",
-    "@vue-macros/reactivity-transform": "3.0.0-beta.17",
-    "husky": "9.1.7",
-    "lint-staged": "16.1.2",
-    "nuxt": "4.0.1",
+    "@unocss/nuxt": "66.4.0",
+    "@unocss/preset-rem-to-px": "66.4.0",
+    "@unocss/transformer-directives": "66.4.0",
+    "@vue-macros/nuxt": "3.0.0-beta.20",
+    "@vue-macros/reactivity-transform": "3.0.0-beta.20",
+    "nuxt": "4.0.2",
     "sass": "1.89.2",
-    "typescript": "5.8.3",
-    "unocss": "66.3.3",
-    "vue-tsc": "3.0.3"
-  },
-  "lint-staged": {
-    "*.{ts,vue}": [
-      "npm run typecheck"
-    ]
+    "typescript": "5.9.2",
+    "unocss": "66.4.0",
+    "vue-tsc": "3.0.5"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
