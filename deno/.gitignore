@@ -1,11 +1,33 @@
-node_modules
+# 依赖目录
+node_modules/
+
+# 日志文件
 npm-debug.log
 *.log
 *.diff
+
+# 包管理文件
 package-lock.json
 yarn.lock
+pnpm-lock.yaml
 
+# 构建和临时目录
+dist/
+build/
+.cache/
+.temp/
+
+# 项目特定文件
 /lib/script/publish_cnf.js
-/tmp/*
-
+/tmp/
 /gen/types.ts
+
+# IDE 和编辑器文件
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# 操作系统文件
+.DS_Store
+Thumbs.db

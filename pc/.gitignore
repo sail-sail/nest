@@ -1,23 +1,49 @@
-node_modules
-Cargo.lock
-.DS_Store
-.rsw
-dist
-dist-ssr
+# 依赖目录
+node_modules/
+
+# 构建目录
+dist/
+dist-ssr/
+build/
+
+# 缓存和临时文件
+.cache/
+.temp/
 *.local
+.rsw/
+
+# 包管理文件
 package-lock.json
 pnpm-lock.yaml
-.eslintrc-auto-import.json
-
 yarn.lock
 
-src/typings/types.ts
+# Rust 相关
+Cargo.lock
 
+# 生成的类型文件
+src/typings/types.ts
+src/typings/auto-imports.d.ts
+src/typings/components.d.ts
+
+# ESLint 自动生成文件
+.eslintrc-auto-import.json
+
+# Vite 临时文件
 **/vite.config.mts.timestamp-*.mjs
 
+# 公共资源文件
 public/ejsexcel.min.js
-public/@jsquash/**/*.*
-public/@jsquash/**/LICENSE
+public/@jsquash/
 public/wasm-feature-detect.js
 public/excel_template/**/*.xlsx
 public/import_template/**/*.xlsx
+
+# IDE 和编辑器文件
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
