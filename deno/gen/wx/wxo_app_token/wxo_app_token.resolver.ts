@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortWxoAppToken,
+  intoInputWxoAppToken,
 } from "./wxo_app_token.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsWxoAppToken(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputWxoAppToken(input);
     
     await setIdByLblWxoAppToken(input);
     
     await validateWxoAppToken(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsWxoAppToken(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdWxoAppToken(
   input: WxoAppTokenInput,
 ): Promise<WxoAppTokenId> {
   
-  input.id = undefined;
+  intoInputWxoAppToken(input);
   
   const {
     setIdByLblWxoAppToken,

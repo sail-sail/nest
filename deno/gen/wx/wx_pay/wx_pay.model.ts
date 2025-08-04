@@ -120,3 +120,14 @@ export function checkSortWxPay(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputWxPay(
+  input?: WxPayInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

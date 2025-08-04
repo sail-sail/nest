@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortWxPay,
+  intoInputWxPay,
 } from "./wx_pay.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsWxPay(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputWxPay(input);
     
     await setIdByLblWxPay(input);
     
     await validateWxPay(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsWxPay(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdWxPay(
   input: WxPayInput,
 ): Promise<WxPayId> {
   
-  input.id = undefined;
+  intoInputWxPay(input);
   
   const {
     setIdByLblWxPay,

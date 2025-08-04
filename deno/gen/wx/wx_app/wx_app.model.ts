@@ -102,3 +102,14 @@ export function checkSortWxApp(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputWxApp(
+  input?: WxAppInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

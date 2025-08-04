@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortWxUsr,
+  intoInputWxUsr,
 } from "./wx_usr.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsWxUsr(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputWxUsr(input);
     
     await setIdByLblWxUsr(input);
     
     await validateWxUsr(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsWxUsr(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdWxUsr(
   input: WxUsrInput,
 ): Promise<WxUsrId> {
   
-  input.id = undefined;
+  intoInputWxUsr(input);
   
   const {
     setIdByLblWxUsr,

@@ -120,3 +120,14 @@ export function checkSortWxoUsr(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputWxoUsr(
+  input?: WxoUsrInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

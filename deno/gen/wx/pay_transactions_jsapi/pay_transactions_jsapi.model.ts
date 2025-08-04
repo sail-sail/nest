@@ -149,3 +149,14 @@ export function checkSortPayTransactionsJsapi(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputPayTransactionsJsapi(
+  input?: PayTransactionsJsapiInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

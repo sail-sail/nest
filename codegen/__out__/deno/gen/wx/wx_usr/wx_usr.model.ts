@@ -122,3 +122,14 @@ export function checkSortWxUsr(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputWxUsr(
+  input?: WxUsrInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

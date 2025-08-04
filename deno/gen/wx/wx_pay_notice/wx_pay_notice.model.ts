@@ -136,3 +136,14 @@ export function checkSortWxPayNotice(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputWxPayNotice(
+  input?: WxPayNoticeInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

@@ -9,6 +9,7 @@ import type {
 
 import {
   checkSortPayTransactionsJsapi,
+  intoInputPayTransactionsJsapi,
 } from "./pay_transactions_jsapi.model.ts";
 
 import {
