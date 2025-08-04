@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortTenant,
+  intoInputTenant,
 } from "./tenant.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsTenant(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputTenant(input);
     
     await setIdByLblTenant(input);
     
     await validateTenant(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsTenant(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdTenant(
   input: TenantInput,
 ): Promise<TenantId> {
   
-  input.id = undefined;
+  intoInputTenant(input);
   
   const {
     setIdByLblTenant,

@@ -112,3 +112,14 @@ export function checkSortRole(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputRole(
+  input?: RoleInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

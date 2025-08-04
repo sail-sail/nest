@@ -107,3 +107,14 @@ export function checkSortMenu(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputMenu(
+  input?: MenuInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortUsr,
+  intoInputUsr,
 } from "./usr.model.ts";
 
 import {
@@ -239,11 +240,13 @@ export async function createsUsr(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputUsr(input);
     
     await setIdByLblUsr(input);
     
     await validateUsr(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsUsr(inputs, { uniqueType });
@@ -258,7 +261,7 @@ export async function updateByIdUsr(
   input: UsrInput,
 ): Promise<UsrId> {
   
-  input.id = undefined;
+  intoInputUsr(input);
   
   const {
     setIdByLblUsr,

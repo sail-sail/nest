@@ -98,3 +98,14 @@ export function checkSortDictDetail(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputDictDetail(
+  input?: DictDetailInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

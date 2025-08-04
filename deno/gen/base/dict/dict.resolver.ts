@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortDict,
+  intoInputDict,
 } from "./dict.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsDict(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputDict(input);
     
     await setIdByLblDict(input);
     
     await validateDict(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsDict(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdDict(
   input: DictInput,
 ): Promise<DictId> {
   
-  input.id = undefined;
+  intoInputDict(input);
   
   const {
     setIdByLblDict,
