@@ -1,12 +1,44 @@
-node_modules
+# 依赖目录
+node_modules/
+target/
+
+# 包管理和锁定文件
+package-lock.json
+pnpm-lock.yaml
+Cargo.lock
+
+# 日志文件
 npm-debug.log
 *.log
-package-lock.json
+
+# 构建和缓存目录
+dist/
+build/
+.cache/
+.temp/
+.tmp/
+
+# 配置文件
 publish_cnf.js
 
-pnpm-lock.yaml
-
-/target
-/Cargo.lock
-
+# 生成的文件
 generated/common/gql/schema.graphql
+
+# IDE 和编辑器文件
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# Rust 特定文件
+**/*.rs.bk
+.cargo/registry/
+.cargo/git/
+
+# 环境变量文件 (保留示例文件)
+.env.local
+.env.*.local
