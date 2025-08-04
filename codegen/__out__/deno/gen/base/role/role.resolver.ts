@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortRole,
+  intoInputRole,
 } from "./role.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsRole(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputRole(input);
     
     await setIdByLblRole(input);
     
     await validateRole(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsRole(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdRole(
   input: RoleInput,
 ): Promise<RoleId> {
   
-  input.id = undefined;
+  intoInputRole(input);
   
   const {
     setIdByLblRole,

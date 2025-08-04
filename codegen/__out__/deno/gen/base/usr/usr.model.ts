@@ -111,3 +111,14 @@ export function checkSortUsr(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputUsr(
+  input?: UsrInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

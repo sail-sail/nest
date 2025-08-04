@@ -42,6 +42,9 @@
       un-line-height="normal"
       un-whitespace-nowrap
       class="custom_input_number_readonly"
+      :class="{
+        'custom_input_number_placeholder': shouldShowPlaceholder,
+      }"
       v-bind="$attrs"
     >
       {{ modelLabel }}
@@ -52,6 +55,9 @@
   >
     <div
       class="custom_input_number_readonly readonly_border_none"
+      :class="{
+        'custom_input_number_placeholder': shouldShowPlaceholder,
+      }"
       v-bind="$attrs"
     >
       {{ modelLabel }}
@@ -86,6 +92,7 @@ const props = withDefaults(
     isReadonlyBorder?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
+    zeroIsEmpty?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -100,6 +107,7 @@ const props = withDefaults(
     isReadonlyBorder: true,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
+    zeroIsEmpty: true,
   },
 );
 
@@ -140,6 +148,9 @@ const modelValueComputed = $computed({
       if (isNaN(num)) {
         return modelValue;
       }
+      if (props.zeroIsEmpty && num === 0) {
+        return;
+      }
       return num;
     }
     return modelValue;
@@ -163,7 +174,17 @@ const modelLabel = $computed(() => {
   if (props.precision === 0) {
     return modelValue;
   }
+  if (props.zeroIsEmpty && Number(modelValue) === 0) {
+    if (props.readonlyPlaceholder) {
+      return props.readonlyPlaceholder;
+    }
+    return "";
+  }
   return Number(modelValue).toFixed(props.precision);
+});
+
+const shouldShowPlaceholder = $computed<boolean>(() => {
+  return modelValue == null || modelValue === "" || Number(modelValue) === 0;
 });
 
 function onChange() {

@@ -90,3 +90,14 @@ export function checkSortI18n(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputI18n(
+  input?: I18nInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

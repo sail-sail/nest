@@ -110,3 +110,14 @@ export function checkSortOperationRecord(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputOperationRecord(
+  input?: OperationRecordInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

@@ -104,3 +104,14 @@ export function checkSortLoginLog(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputLoginLog(
+  input?: LoginLogInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

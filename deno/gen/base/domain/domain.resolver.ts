@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortDomain,
+  intoInputDomain,
 } from "./domain.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsDomain(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputDomain(input);
     
     await setIdByLblDomain(input);
     
     await validateDomain(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsDomain(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdDomain(
   input: DomainInput,
 ): Promise<DomainId> {
   
-  input.id = undefined;
+  intoInputDomain(input);
   
   const {
     setIdByLblDomain,
