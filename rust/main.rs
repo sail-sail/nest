@@ -308,9 +308,6 @@ async fn main() -> Result<(), std::io::Error> {
     if let Err(_err) = tmpfile_dao::init().await {
       // println!("tmpfile_dao::init() error: {}", err);
     }
-    if let Err(err) = generated::common::browser::index::check_and_kill_existing_browser().await {
-      info!("check_and_kill_existing_browser: {err:#?}");
-    }
   });
   
   // 定时任务
