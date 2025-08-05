@@ -139,12 +139,24 @@ export function useRenderExcel() {
 
 /** 下载Excel文件 */
 export function saveAsExcel(
-  buffer:  Uint32Array,
+  buffer:  Uint8Array | ArrayBuffer | Blob,
   name: string,
 ) {
-  const blob = new Blob([ buffer ], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
+  let blob: Blob;
+  
+  if (buffer instanceof Blob) {
+    blob = buffer;
+  } else if (buffer instanceof ArrayBuffer) {
+    blob = new Blob([ buffer ], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+  } else {
+    // 对于 Uint8Array 或其他 TypedArray
+    blob = new Blob([ buffer as unknown as ArrayBuffer ], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+  }
+  
   saveAs(blob, name);
 }
 

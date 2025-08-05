@@ -32,12 +32,10 @@
 
 <script lang="ts" setup>
 import type {
-  ElDatePicker,
+  DatePickerProps,
 } from "element-plus";
 
 import dayjs from "dayjs";
-
-type DatePickerType = InstanceType<typeof ElDatePicker>;
 
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,9 +45,11 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
+defineSlots<InstanceType<typeof ElDatePicker>['$slots']>();
+
 const props = withDefaults(
-  defineProps<{
-    type?: DatePickerType["type"];
+  defineProps<Partial<DatePickerProps> & {
+    type?: DatePickerProps["type"];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     format?: string;
@@ -57,7 +57,7 @@ const props = withDefaults(
     readonly?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
-    shortcuts?: DatePickerType["shortcuts"];
+    shortcuts?: DatePickerProps["shortcuts"];
   }>(),
   {
     type: undefined,

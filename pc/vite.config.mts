@@ -100,6 +100,12 @@ export default defineConfig({
           "element-plus": [
             "ElButton",
             "ElInput",
+            "ElInputNumber",
+            "ElSwitch",
+            "ElTreeSelect",
+            "ElCheckbox",
+            "ElDatePicker",
+            "ElImage",
             "ElForm",
             "ElFormItem",
             "ElDropdown",
