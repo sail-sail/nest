@@ -28,7 +28,22 @@
       :infinite="false"
       :hide-on-click-modal="true"
     >
-      <template #placeholder>
+      
+      <template
+        v-for="(_, name) of $slots"
+        :key="name"
+        #[name]="slotProps"
+      >
+        <slot
+          :name="name"
+          v-bind="slotProps"
+        ></slot>
+      </template>
+      
+      <template
+        v-if="!$slots.placeholder"
+        #placeholder
+      >
         <div
           un-w="full"
           un-h="full"
@@ -44,7 +59,11 @@
           </el-icon>
         </div>
       </template>
-      <template #error>
+      
+      <template
+        v-if="!$slots.error"
+        #error
+      >
         <div
           un-h="full"
           un-aspect-ratio="1"
@@ -63,6 +82,7 @@
           
         </div>
       </template>
+      
     </el-image>
   </template>
   <div
@@ -80,9 +100,14 @@
 </template>
 
 <script lang="ts" setup>
+import type {
+  ImageProps,
+} from "element-plus";
+
+defineSlots<InstanceType<typeof ElImage>['$slots']>();
 
 const props = withDefaults(
-  defineProps<{
+  defineProps<Partial<ImageProps> & {
     modelValue?: string | null;
     width?: number;
     height?: number;

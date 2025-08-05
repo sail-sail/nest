@@ -4,12 +4,26 @@
   type="primary"
   @click="linkClk"
 >
+  
+  <template
+    v-for="(_, name) of $slots"
+    :key="name"
+    #[name]="slotProps"
+  >
+    <slot
+      :name="name"
+      v-bind="slotProps"
+    ></slot>
+  </template>
+  
   <slot
+    v-if="!$slots.default"
     name="default"
     :count="attLen"
   >
     {{ attLen }}
   </slot>
+  
 </el-link>
 <AttDialog
   ref="attDialogRef"
@@ -18,6 +32,10 @@
 </template>
 
 <script lang="ts" setup>
+import type {
+  LinkProps,
+} from "element-plus";
+
 import AttDialog from "./AttDialog.vue";
 
 const emit = defineEmits([
@@ -25,8 +43,10 @@ const emit = defineEmits([
   "update:modelValue",
 ]);
 
+defineSlots<InstanceType<typeof ElLink>['$slots']>();
+
 const props = withDefaults(
-  defineProps<{
+  defineProps<Partial<LinkProps> & {
     modelValue?: string | null;
     maxSize?: number;
     maxFileSize?: number;

@@ -67,6 +67,10 @@
 </template>
 
 <script lang="ts" setup>
+import type {
+  InputNumberProps,
+} from "element-plus";
+
 import Decimal from "decimal.js";
 
 const emit = defineEmits<{
@@ -77,8 +81,10 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
+defineSlots<InstanceType<typeof ElInputNumber>['$slots']>();
+
 const props = withDefaults(
-  defineProps<{
+  defineProps<Partial<InputNumberProps> & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     precision?: number;

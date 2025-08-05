@@ -19,16 +19,23 @@
   ],
   "settings": {
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
+    "json.schemaDownload.enable": false,
     "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
     "git.openRepositoryInParentFolders": "never",
     "git.repositoryScanMaxDepth": 1,
+    "git.autoRepositoryDetection": false,
     "git.autofetch": false,
     "git.autorefresh": true,
     "git.detectSubmodules": false,
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
     "npm.registry": "https://registry.npmmirror.com",
     "npm.updateStrategy": "LATEST",
+    "npm.autoDetect": "off",
+    "npm.fetchOnlinePackageInfo": false,
     "deno.enable": true,
+    "deno.enablePaths": [
+      "./deno"
+    ], 
     "deno.lint": true,
     "unocss.root": [
       "pc",
