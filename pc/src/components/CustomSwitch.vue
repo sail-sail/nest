@@ -37,6 +37,9 @@
 </template>
 
 <script lang="ts" setup>
+import type {
+  SwitchProps,
+} from "element-plus";
 
 const {
   ns,
@@ -50,8 +53,10 @@ const emit = defineEmits<{
   (e: "change", value?: any): void,
 }>();
 
+defineSlots<InstanceType<typeof ElSwitch>['$slots']>();
+
 const props = withDefaults(
-  defineProps<{
+  defineProps<Partial<SwitchProps> & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     disabled?: boolean;
