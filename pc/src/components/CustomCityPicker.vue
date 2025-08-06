@@ -83,6 +83,10 @@ import {
 } from "element-plus";
 
 import type {
+  CascaderInstance,
+} from "element-plus";
+
+import type {
   CascaderProps,
 } from "element-plus";
 
@@ -94,8 +98,10 @@ import type {
   PcaItem,
 } from "./CustomCityPickerApi";
 
+defineSlots<InstanceType<typeof ElCascader>['$slots']>();
+
 const props = withDefaults(
-  defineProps<{
+  defineProps<Partial<CascaderInstance> & {
     readonly?: boolean;
     readonlyPlaceholder?: string;
     separator?: string;

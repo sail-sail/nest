@@ -27,6 +27,6 @@
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
     "preinstall": "npx only-allow pnpm",
-    "postinstall": "cd deno && pnpm i && cd ../pc && pnpm i && cd ../uni && pnpm i"
+    "postinstall": "git config core.untrackedcache true && git config core.fsmonitor true && git config core.preloadindex true && cd deno && pnpm i && cd ../pc && pnpm i && cd ../uni && pnpm i"
   }
 }
