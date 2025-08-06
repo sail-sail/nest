@@ -91,6 +91,8 @@
 <script lang="ts" setup>
 import type {
   TreeNode,
+  TreeComponentProps,
+  SelectProps,
 } from "element-plus";
 
 import type {
@@ -114,8 +116,10 @@ const emit = defineEmits<{
   (e: "clear"): void;
 }>();
 
+defineSlots<InstanceType<typeof ElTreeSelect>['$slots']>();
+
 const props = withDefaults(
-  defineProps<{
+  defineProps<Partial<TreeComponentProps & SelectProps> & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     method: () => Promise<any[]>; // 用于获取数据的方法
     height?: number;
@@ -185,7 +189,8 @@ const modelLabels: string[] = $computed(() => {
   if (!modelValue) {
     return [ "" ];
   }
-  const label = props.props.label || "label";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const label = props.props.label || "label" as any;
   if (!props.multiple) {
     const model = findModelById(data, modelValue as string)!;
     if (!model) {

@@ -289,6 +289,10 @@
 
 <script lang="ts" setup>
 import type {
+  SelectV2Props,
+} from "element-plus";
+
+import type {
   WatchHandle,
 } from "vue";
 
@@ -329,8 +333,10 @@ let data = $ref<any[]>([ ]);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let modelValueData = $ref<any[]>([ ]);
 
+defineSlots<InstanceType<typeof ElSelectV2>['$slots']>();
+
 const props = withDefaults(
-  defineProps<{
+  defineProps<Partial<SelectV2Props> & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     method: () => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]; // 用于获取数据的方法
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
