@@ -34,8 +34,8 @@
     "npm.fetchOnlinePackageInfo": false,
     "deno.enable": true,
     "deno.enablePaths": [
-      "./deno"
-    ], 
+      "./"
+    ],
     "deno.lint": true,
     "unocss.root": [
       "pc",
