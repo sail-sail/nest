@@ -9,6 +9,11 @@
   :step-strictly="props.stepStrictly"
   :min="props.min"
   :controls="props.controls"
+  :align="props.align"
+  :class="{
+    'custom_input_number_align_center': props.align === 'center',
+    'custom_input_number_align_right': props.align === 'right',
+  }"
   v-bind="$attrs"
   :clearable="!props.disabled && props.clearable"
   :disabled="props.disabled"
@@ -44,6 +49,8 @@
       class="custom_input_number_readonly"
       :class="{
         'custom_input_number_placeholder': shouldShowPlaceholder,
+        'custom_input_number_align_center': props.align === 'center',
+        'custom_input_number_align_right': props.align === 'right',
       }"
       v-bind="$attrs"
     >
@@ -99,6 +106,7 @@ const props = withDefaults(
     placeholder?: string;
     readonlyPlaceholder?: string;
     zeroIsEmpty?: boolean;
+    align?: "center" | "left" | "right";
   }>(),
   {
     modelValue: undefined,
@@ -114,6 +122,7 @@ const props = withDefaults(
     placeholder: undefined,
     readonlyPlaceholder: undefined,
     zeroIsEmpty: true,
+    align: undefined,
   },
 );
 
@@ -201,3 +210,12 @@ function onChange() {
   emit("change", modelValue);
 }
 </script>
+
+<style lang="scss" scoped>
+.custom_input_number_align_center {
+  text-align: center;
+}
+.custom_input_number_align_right {
+  text-align: right;
+}
+</style>
