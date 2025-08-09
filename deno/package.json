@@ -33,7 +33,7 @@
     "@graphql-codegen/cli": "5.0.7",
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-operations": "4.6.1",
-    "@types/node": "24.2.0",
+    "@types/node": "24.2.1",
     "chokidar": "4.0.3",
     "commander": "14.0.0",
     "dotenv": "17.2.1",
