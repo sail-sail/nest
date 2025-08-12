@@ -2,7 +2,7 @@
 <tm-input
   v-if="!readonly"
   ref="inputRef"
-  v-model.lazy="modelValue"
+  :model-value="modelValue"
   class="custom_input w-full"
   :class="{
     'custom_input_readonly': readonly
@@ -20,6 +20,7 @@
   :color="props.color"
   :font-color="props.fontColor ? props.fontColor : (readonly ? 'var(--color-readonly)' : undefined)"
   :type="props.type"
+  @update:model-value="onUpdateModelValue"
   @blur="onBlur"
   @clear="onClear"
 >
@@ -153,41 +154,74 @@ const readonly = $computed(() => {
 });
 
 const modelValue = ref(props.modelValue);
+let isDecimal = false;
 
 watch(
   () => props.modelValue,
   () => {
-    modelValue.value = props.modelValue;
+    if (props.modelValue instanceof Decimal) {
+      isDecimal = true;
+      if (props.modelValue.isNaN() || props.modelValue.isZero()) {
+        modelValue.value = "";
+      } else {
+        modelValue.value = props.modelValue.toString();
+      }
+    } else {
+      isDecimal = false;
+      modelValue.value = props.modelValue;
+    }
   },
   {
     immediate: true,
   },
 );
 
-watch(
-  () => modelValue.value,
-  () => {
-    emit("update:modelValue", modelValue.value);
-  },
-);
+function onUpdateModelValue(value: string) {
+  if (isDecimal && value !== "") {
+    const decimalValue = new Decimal(value);
+    if (decimalValue.isNaN() || decimalValue.isZero()) {
+      modelValue.value = "";
+    } else {
+      modelValue.value = decimalValue.toString();
+    }
+  } else {
+    modelValue.value = value;
+  }
+  emit("update:modelValue", modelValue.value);
+}
 
 const shouldShowPlaceholder = $computed<boolean>(() => {
+  if (isDecimal) {
+    return modelValue.value == null || modelValue.value === "" || new Decimal(modelValue.value).isZero();
+  }
   if (props.type === "number" || props.type === "digit") {
-    return modelValue.value == null || modelValue.value === "" || modelValue.value == 0 || isNaN(modelValue.value);
+    return modelValue.value == null || modelValue.value === "" || Number(modelValue.value) == 0 || isNaN(modelValue.value);
   }
   return modelValue.value == null || modelValue.value === "";
 });
 
 function onBlur(value: string) {
-  emit("blur", value);
-  if (value === props.modelValue) {
-    return;
+  if (!isDecimal) {
+    emit("blur", value);
+    if (value === props.modelValue) {
+      return;
+    }
+    emit("change", modelValue.value);
+  } else {
+    const decimalValue = new Decimal(value);
+    if (decimalValue.equals(new Decimal(props.modelValue))) {
+      return;
+    }
+    emit("change", decimalValue);
   }
-  emit("change", modelValue.value);
 }
 
 function onClear() {
-  modelValue.value = "";
+  if (isDecimal) {
+    modelValue.value = new Decimal(0).toString();
+  } else {
+    modelValue.value = "";
+  }
   emit("clear");
 }
 
