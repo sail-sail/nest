@@ -2,8 +2,6 @@ const {
   readdir,
   readFile,
   lstat,
-  appendFile,
-  writeFile,
 } = require("node:fs/promises");
 
 const SparkMD5 = require("spark-md5");
@@ -63,17 +61,11 @@ function shortUuidV4(str) {
  * 保存权限
  */
 async function savePermit(context, model) {
-  const id = shortUuidV4(
-    JSON.stringify({
-      ph: model.ph,
-      code: model.code,
-    }),
-  );
   // 如果记录已经存在, 则不插入
   {
     const permit_models = await findAllPermit(context);
     const model0 = permit_models.find((item) => {
-      return item.menu_id === model.menu_id && item.code === model.code;
+      return item.id === model.id;
     });
     if (model0) {
       let lbl0Arr = [];
@@ -133,7 +125,7 @@ async function savePermit(context, model) {
     )
   `;
   const args = [
-    id,
+    model.id,
     model.menu_id,
     model.code,
     model.lbl,
@@ -218,7 +210,7 @@ async function getPermits(ph){
     }
     const oldPerm = permits.find((item2) => item2.code === code);
     if (oldPerm) {
-      if (oldPerm.name !== name) {
+      if (!oldPerm.name.split("/").includes(name)) {
         oldPerm.name = oldPerm.name + "/" + name;
       }
       continue;
@@ -259,7 +251,7 @@ async function exec(context) {
       "util.ts",
     ].includes(file);
   });
-  const permitModelsAll = [ ];
+  let permitModelsAll = [ ];
   for (const file of files) {
     const str = await readFile(`${ __dirname }/../router/${ file }`, "utf-8");
     const lines = str.split("\n");
@@ -305,20 +297,53 @@ async function exec(context) {
           }
           // code name
           const permits = await getPermits(ph);
-          const permitModels = permits.map((item) => ({
+          let permitModels = permits.map((item) => ({
+            id: shortUuidV4(
+              JSON.stringify({
+                menu_id: menuModel.id,
+                code: item.code,
+              }),
+            ),
             ph: path.relative(`${ __dirname }/../`, ph).replace(/\\/g, "/"),
             menu_id: menuModel.id,
             code: item.code,
             lbl: item.name,
             order_by: item.order_by,
           }));
+          
           for (const permitModel of permitModels) {
             permitModelsAll.push(permitModel);
-            await savePermit(context, permitModel);
           }
+          
         });
       }
     }
+  }
+  
+  // 过滤掉相同 id 的 permitModelsAll
+  const ids = new Set();
+  const permitModelsFiltered = [ ];
+  for (const permitModel of permitModelsAll) {
+    if (!ids.has(permitModel.id)) {
+      ids.add(permitModel.id);
+      permitModelsFiltered.push(permitModel);
+      continue;
+    }
+    // 更新 lbl
+    const existingModel = permitModelsFiltered.find((item) => item.id === permitModel.id);
+    if (existingModel) {
+      let lblArr = [];
+      lblArr = lblArr.concat(existingModel.lbl.split("/"));
+      lblArr = lblArr.concat(permitModel.lbl.split("/"));
+      lblArr = Array.from(new Set(lblArr));
+      existingModel.lbl = lblArr.join("/");
+      existingModel.order_by = Math.min(existingModel.order_by, permitModel.order_by);
+    }
+  }
+  permitModelsAll = permitModelsFiltered;
+  
+  for (const permitModel of permitModelsAll) {
+    await savePermit(context, permitModel);
   }
   // 删除多余的权限
   _permitModels = undefined;
