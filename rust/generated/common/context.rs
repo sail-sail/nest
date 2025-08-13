@@ -51,18 +51,25 @@ static IS_DEBUG: OnceLock<bool> = OnceLock::new();
 static MULTIPLE_SPACE_REGEX: OnceLock<Regex> = OnceLock::new();
 
 fn server_token_timeout() -> i64 {
-  SERVER_TOKEN_TIMEOUT.get_or_init(|| env::var("server_tokentimeout").unwrap()
+  SERVER_TOKEN_TIMEOUT.get_or_init(|| env::var("server_tokentimeout")
+    .unwrap_or("3600".to_owned())
     .parse::<i64>().unwrap_or(3600))
     .to_owned()
 }
 
 fn db_pool() -> Pool<MySql> {
-  DB_POOL.get_or_init(|| init_db_pool("").unwrap())
+  DB_POOL.get_or_init(|| init_db_pool("").unwrap_or_else(|err| {
+    error!("{err:#?}");
+    std::process::exit(1);
+  }))
     .clone()
 }
 
 fn db_pool_dw() -> Pool<MySql> {
-  DB_POOL_DW.get_or_init(|| init_db_pool("_dw").unwrap())
+  DB_POOL_DW.get_or_init(|| init_db_pool("_dw").unwrap_or_else(|err| {
+    error!("{err:#?}");
+    std::process::exit(1);
+  }))
     .clone()
 }
 
@@ -72,7 +79,10 @@ pub fn is_debug() -> bool {
 }
 
 pub fn multiple_space_regex() -> Regex {
-  MULTIPLE_SPACE_REGEX.get_or_init(|| Regex::new(r"\s+").unwrap())
+  MULTIPLE_SPACE_REGEX.get_or_init(|| Regex::new(r"\s+").unwrap_or_else(|err| {
+    error!("{err:#?}");
+    std::process::exit(1);
+  }))
     .clone()
 }
 
@@ -176,8 +186,8 @@ pub fn has_auth_model() -> bool {
 #[allow(dead_code)]
 pub fn get_auth_model_ok() -> Result<AuthModel> {
   CTX.with(|ctx| {
-    if ctx.auth_model.is_some() {
-      return Ok(ctx.auth_model.clone().unwrap());
+    if let Some(auth_model) = &ctx.auth_model {
+      return Ok(auth_model.clone());
     }
     error!(
       "{req_id} get_auth_model_ok - Not login!",
@@ -361,13 +371,13 @@ impl Ctx {
   /// 查找当前数据库连接的连接id, 如果数据库事务尚未开启则返回0
   async fn query_conn_id(&self) -> Result<u64> {
     let mut tran = self.tran.lock().await;
-    if tran.is_none() {
-      return Ok(0);
+    if let Some(tran) = tran.as_mut() {
+      let row = tran.fetch_one("select connection_id()").await?;
+      let connection_id: u64 = row.try_get(0)?;
+      Ok(connection_id)
+    } else {
+      Ok(0)
     }
-    let tran = tran.as_mut().unwrap();
-    let row = tran.fetch_one("select connection_id()").await?;
-    let connection_id: u64 = row.try_get(0)?;
-    Ok(connection_id)
   }
   
   /// 开启事务
@@ -399,9 +409,9 @@ impl Ctx {
     let mut tran = self.tran.lock().await;
     let tran = tran.take();
     if let Some(mut tran) = tran {
-      let connection_id: u64 = tran
-        .fetch_one("select connection_id()").await?
-        .try_get(0)?;
+      // let connection_id: u64 = tran
+      //   .fetch_one("select connection_id()").await?
+      //   .try_get(0)?;
       if let Err(err) = res {
         let exception = err.downcast_ref::<ServiceException>();
         if let Some(exception) = exception {
@@ -437,13 +447,13 @@ impl Ctx {
         };
         if rollback {
           info!(
-            "{req_id} rollback; -- {connection_id}",
+            "{req_id} rollback;",
             req_id = self.req_id,
           );
           tran.execute("rollback").await?;
         } else {
           info!(
-            "{req_id} commit; -- {connection_id}",
+            "{req_id} commit;",
             req_id = self.req_id,
           );
           tran.execute("commit").await?;
@@ -451,7 +461,7 @@ impl Ctx {
         return Err(err);
       }
       info!(
-        "{req_id} commit; -- {connection_id}",
+        "{req_id} commit;",
         req_id = self.req_id,
       );
       tran.execute("commit").await?;
@@ -590,7 +600,10 @@ impl Ctx {
       let res = {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
-        let tran = tran.as_mut().unwrap();
+        let tran = tran.as_mut()
+          .ok_or_else(|| {
+            eyre!("Transaction not started")
+          })?;
         let res = tran.execute(query).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
@@ -723,9 +736,9 @@ impl Ctx {
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r>,
   {
     if let Some(options) = &options {
-      if options.cache_key1.is_some() && options.cache_key2.is_some() {
-        let cache_key1 = options.cache_key1.as_ref().unwrap();
-        let cache_key2 = options.cache_key2.as_ref().unwrap();
+      if let Some(cache_key1) = &options.cache_key1
+        && let Some(cache_key2) = &options.cache_key2
+      {
         let str = get_cache(cache_key1, cache_key2).await?;
         if let Some(str) = str {
           let res2: Vec<R>;
@@ -820,7 +833,10 @@ impl Ctx {
       let res = {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
-        let tran = tran.as_mut().unwrap();
+        let tran = tran.as_mut()
+          .ok_or_else(|| {
+            eyre!("Transaction not started")
+          })?;
         let res = query.fetch_all((*tran).as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
@@ -833,9 +849,9 @@ impl Ctx {
       };
       
       if let Some(options) = &options {
-        if options.cache_key1.is_some() && options.cache_key2.is_some() {
-          let cache_key1 = options.cache_key1.as_ref().unwrap();
-          let cache_key2 = options.cache_key2.as_ref().unwrap();
+        if let Some(cache_key1) = &options.cache_key1
+          && let Some(cache_key2) = &options.cache_key2
+        {
           let str = serde_json::to_string(&res)?;
           set_cache(cache_key1, cache_key2, &str).await?;
         }
@@ -929,9 +945,9 @@ impl Ctx {
     }
     let res = res?;
     if let Some(options) = &options {
-      if options.cache_key1.is_some() && options.cache_key2.is_some() {
-        let cache_key1 = options.cache_key1.as_ref().unwrap();
-        let cache_key2 = options.cache_key2.as_ref().unwrap();
+      if let Some(cache_key1) = &options.cache_key1
+        && let Some(cache_key2) = &options.cache_key2
+      {
         let str = serde_json::to_string(&res)?;
         set_cache(cache_key1, cache_key2, &str).await?;
       }
@@ -950,9 +966,9 @@ impl Ctx {
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r> + Sync,
   {
     if let Some(options) = &options {
-      if options.cache_key1.is_some() && options.cache_key2.is_some() {
-        let cache_key1 = options.cache_key1.as_ref().unwrap();
-        let cache_key2 = options.cache_key2.as_ref().unwrap();
+      if let Some(cache_key1) = &options.cache_key1
+        && let Some(cache_key2) = &options.cache_key2
+      {
         let str = get_cache(cache_key1, cache_key2).await?;
         if let Some(str) = str {
           let res = serde_json::from_str::<R>(&str);
@@ -1046,7 +1062,10 @@ impl Ctx {
       let res = {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
-        let tran = tran.as_mut().unwrap();
+        let tran = tran.as_mut()
+          .ok_or_else(|| {
+            eyre!("Transaction not started")
+          })?;
         let res = query.fetch_optional((*tran).as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
@@ -1059,9 +1078,9 @@ impl Ctx {
       };
       if let Some(res) = &res {
         if let Some(options) = &options {
-          if options.cache_key1.is_some() && options.cache_key2.is_some() {
-            let cache_key1 = options.cache_key1.as_ref().unwrap();
-            let cache_key2 = options.cache_key2.as_ref().unwrap();
+          if let Some(cache_key1) = &options.cache_key1
+            && let Some(cache_key2) = &options.cache_key2
+          {
             let str = serde_json::to_string(res)?;
             set_cache(cache_key1, cache_key2, &str).await?;
           }
@@ -1157,9 +1176,9 @@ impl Ctx {
     let res = res?;
     if let Some(res) = &res {
       if let Some(options) = &options {
-        if options.cache_key1.is_some() && options.cache_key2.is_some() {
-          let cache_key1 = options.cache_key1.as_ref().unwrap();
-          let cache_key2 = options.cache_key2.as_ref().unwrap();
+        if let Some(cache_key1) = &options.cache_key1
+          && let Some(cache_key2) = &options.cache_key2
+        {
           let str = serde_json::to_string(res)?;
           set_cache(cache_key1, cache_key2, &str).await?;
         }
@@ -1254,7 +1273,11 @@ impl Ctx {
       }
       if let Some(auth_token) = ctx.auth_token.as_deref() {
         res.headers_mut()
-          .insert(AUTHORIZATION, auth_token.parse().unwrap());
+          .insert(
+            AUTHORIZATION,
+            auth_token.parse()
+              .unwrap_or(HeaderValue::from_static(""))
+          );
       }
       let status_code = res.status();
       let is_success = !status_code.is_server_error();
@@ -1732,10 +1755,7 @@ impl Debug for Options {
 impl Options {
   
   pub fn from(options: Option<Options>) -> Options {
-    if options.is_none() {
-      return Options::new();
-    }
-    options.unwrap()
+    options.unwrap_or_default()
   }
   
   #[inline]
@@ -1962,7 +1982,8 @@ impl <'a> CtxBuilder<'a> {
     if auth_token.is_none() {
       return Err(eyre!("token_empty"));
     }
-    let auth_token = auth_token.unwrap();
+    let auth_token = auth_token
+      .ok_or_else(|| eyre!("token_empty"))?;
     self.old_auth_token = Some(auth_token.clone());
     let mut auth_model = match get_auth_model_by_token(auth_token) {
       Ok(item) => item,
@@ -1996,7 +2017,8 @@ impl <'a> CtxBuilder<'a> {
     if auth_token.is_none() {
       return Ok(self);
     }
-    let auth_token = auth_token.unwrap();
+    let auth_token = auth_token
+      .ok_or_else(|| eyre!("token_empty"))?;
     self.old_auth_token = Some(auth_token.clone());
     self.auth_model = get_auth_model_by_token(auth_token).ok();
     Ok(self)
@@ -2110,7 +2132,7 @@ pub fn get_order_by_query(
   if sort.is_none() {
     return String::new();
   }
-  let sort = sort.unwrap().into_iter()
+  let sort = sort.unwrap_or_default().into_iter()
     .filter(|item| 
       !item.prop.is_empty()
     )
