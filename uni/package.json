@@ -92,7 +92,7 @@
     "typescript": "5.9.2",
     "typescript-eslint": "8.39.1",
     "unocss": "66.1.0-beta.10",
-    "unocss-applet": "0.10.0",
+    "unocss-applet": "0.11.0",
     "unplugin-auto-import": "20.0.0",
     "unplugin-turbo-console": "2.2.0",
     "unplugin-vue-components": "29.0.0",
