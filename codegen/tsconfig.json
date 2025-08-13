@@ -10,6 +10,7 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
     "allowImportingTsExtensions": true,
     "target": "esnext",
     "allowJs": true,

@@ -21,6 +21,7 @@
   :font-color="props.fontColor ? props.fontColor : (readonly ? 'var(--color-readonly)' : undefined)"
   :type="props.type"
   @update:model-value="onUpdateModelValue"
+  @focus="onFocus"
   @blur="onBlur"
   @clear="onClear"
 >
@@ -227,11 +228,20 @@ const shouldShowPlaceholder = $computed<boolean>(() => {
   return modelValue.value == null || modelValue.value === "";
 });
 
+const focusValue = ref<string>();
+
+function onFocus() {
+  isFocus.value = true;
+  selectionStart.value = undefined;
+  selectionEnd.value = undefined;
+  focusValue.value = modelValue.value;
+}
+
 function onBlur(value: string) {
   if (props.isDecimal) {
     const decimalValue = new Decimal(value && value.trim() || 0).toDecimalPlaces(props.precision, Decimal.ROUND_DOWN);
     emit("blur", decimalValue);
-    if (decimalValue.equals(new Decimal(props.modelValue))) {
+    if (decimalValue.equals(new Decimal(focusValue.value || 0))) {
       return;
     }
     emit("change", decimalValue);
@@ -241,13 +251,13 @@ function onBlur(value: string) {
       numberValue = 0;
     }
     emit("blur", numberValue);
-    if (numberValue === Number(props.modelValue)) {
+    if (numberValue === Number(focusValue.value)) {
       return;
     }
     emit("change", numberValue);
   } else {
     emit("blur", value);
-    if (value === props.modelValue) {
+    if (value === focusValue.value) {
       return;
     }
     emit("change", modelValue.value);
