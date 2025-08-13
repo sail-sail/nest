@@ -16,7 +16,7 @@ function getTextWidth(textContent: string) {
   return textWidth;
 }
 
-export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
+function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   const bindVal: Function = binding.value;
   if (!bindVal) {
@@ -27,6 +27,15 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
   if (!headTr) {
     return;
   }
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const existingInstance = (headTr as any).__instance;
+  if (existingInstance) {
+    existingInstance.destroy?.();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (headTr as any).__instance = null;
+  }
+  
   const thEls = headTr.querySelectorAll(".el-table__cell") as NodeListOf<HTMLTableElement>;
   thEls.forEach((thEl, i) => {
     thEl.addEventListener("mousedown", function(event) {
@@ -94,7 +103,7 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
       storeColumns(tableColumns);
     });
   });
-  Sortable.create(
+  const instance = Sortable.create(
     headTr,
     {
       animation: 150,
@@ -181,4 +190,27 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
       preventOnFilter: false,
     }
   );
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (headTr as any).__instance = instance;
+}
+
+export const headerOrderDragDirective = {
+  mounted: headerOrderDrag,
+  updated(el: HTMLElement, binding: DirectiveBinding) {
+    if (binding.value !== binding.oldValue) {
+      headerOrderDrag(el, binding);
+    }
+  },
+  unmounted: function(el: HTMLElement) {
+    const headTr = el.querySelector(".el-table__header-wrapper .el-table__header thead tr") as HTMLTableElement;
+    if (!headTr) {
+      return;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const instance = (headTr as any).__instance;
+    if (!instance) {
+      return;
+    }
+    instance.destroy?.();
+  }
 }

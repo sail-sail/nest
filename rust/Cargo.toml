@@ -17,7 +17,7 @@ tokio = { version = "1.47.1", features = ["rt-multi-thread", "macros", "net", "f
 poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
 async-graphql = { version = "7.0.17", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
 smol_str = { version = "0.3.2", features = ["serde"] }
-slab = "0.4.10"
+slab = "0.4.11"
 chrono = { version = "0.4.41", features = ["serde"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15.0"
@@ -31,7 +31,7 @@ hex-literal = "1.0.0"
 hex = "0.4.3"
 base64 = "0.22.1"
 utf8_slice = "1.0.0"
-reqwest = { version = "0.12.22", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
+reqwest = { version = "0.12.23", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
 encoding_rs = "0.8.35"
 urlencoding = "2.1.3"
 url = "2.5.4"
@@ -48,7 +48,7 @@ rust_decimal = { version = "1.37.2", features = ["maths"]}
 rust_decimal_macros = "1.37.1"
 # enum_dispatch = "0.3.13"
 # pin-project-lite = "0.2.16"
-# rayon = "1.10.0"
+# rayon = "1.11.0"
 regex = "1.11.1"
 # yarte = "0.15.7"
 image = { version = "0.25.6", features = ["webp"] }
@@ -72,7 +72,7 @@ aes-gcm = "0.10.3"
 pkcs8 = "0.10.2"
 serde_with = "3.14.0"
 csv = "1.3.1"
-docx-handlebars = "0.2.4"
+docx-handlebars = "0.2.5"
 tokio-tungstenite = { version = "0.27.0", features = ["rustls-tls-webpki-roots"] }
 
 # 安全地使用无proc宏的自引用结构
