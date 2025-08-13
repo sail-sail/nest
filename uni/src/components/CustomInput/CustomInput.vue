@@ -127,6 +127,9 @@ const props = withDefaults(
     readonlyPlaceholder?: string;
     color?: string;
     fontColor?: string;
+    isDecimal?: boolean;
+    isNumber?: boolean;
+    precision?: number;
   }>(),
   {
     modelValue: undefined,
@@ -138,6 +141,9 @@ const props = withDefaults(
     readonlyPlaceholder: undefined,
     color: "transparent",
     fontColor: undefined,
+    isDecimal: false,
+    isNumber: false,
+    precision: 2,
   },
 );
 
@@ -154,20 +160,23 @@ const readonly = $computed(() => {
 });
 
 const modelValue = ref(props.modelValue);
-let isDecimal = false;
 
 watch(
   () => props.modelValue,
   () => {
     if (props.modelValue instanceof Decimal) {
-      isDecimal = true;
       if (props.modelValue.isNaN() || props.modelValue.isZero()) {
         modelValue.value = "";
       } else {
         modelValue.value = props.modelValue.toString();
       }
+    } else if (props.modelValue instanceof Number) {
+      if (props.modelValue == 0) {
+        modelValue.value = "";
+      } else {
+        modelValue.value = props.modelValue.toString();
+      }
     } else {
-      isDecimal = false;
       modelValue.value = props.modelValue;
     }
   },
@@ -177,22 +186,40 @@ watch(
 );
 
 function onUpdateModelValue(value: string) {
-  if (isDecimal && value !== "") {
-    const decimalValue = new Decimal(value);
+  if (props.isDecimal) {
+    let decimalValue = new Decimal(value && value.trim() || 0).toDecimalPlaces(props.precision, Decimal.ROUND_DOWN);
     if (decimalValue.isNaN() || decimalValue.isZero()) {
       modelValue.value = "";
     } else {
       modelValue.value = decimalValue.toString();
     }
-  } else {
+    if (decimalValue.isNaN()) {
+      decimalValue = new Decimal(0);
+    }
+    emit("update:modelValue", decimalValue);
+  } else if (props.isNumber) {
+    let numberValue = Math.round(Number(value) * Math.pow(10, props.precision)) / Math.pow(10, props.precision);
+    if (isNaN(numberValue)) {
+      numberValue = 0;
+    }
+    if (numberValue === 0) {
+      modelValue.value = "";
+    } else {
+      modelValue.value = numberValue.toString();
+    }
+    emit("update:modelValue", numberValue);
+  }else {
     modelValue.value = value;
+    emit("update:modelValue", modelValue.value);
   }
-  emit("update:modelValue", modelValue.value);
 }
 
 const shouldShowPlaceholder = $computed<boolean>(() => {
-  if (isDecimal) {
+  if (props.isDecimal) {
     return modelValue.value == null || modelValue.value === "" || new Decimal(modelValue.value).isZero();
+  }
+  if (props.isNumber) {
+    return modelValue.value == null || modelValue.value === "" || Number(modelValue.value) == 0 || isNaN(Number(modelValue.value));
   }
   if (props.type === "number" || props.type === "digit") {
     return modelValue.value == null || modelValue.value === "" || Number(modelValue.value) == 0 || isNaN(modelValue.value);
@@ -201,27 +228,42 @@ const shouldShowPlaceholder = $computed<boolean>(() => {
 });
 
 function onBlur(value: string) {
-  if (!isDecimal) {
+  if (props.isDecimal) {
+    const decimalValue = new Decimal(value && value.trim() || 0).toDecimalPlaces(props.precision, Decimal.ROUND_DOWN);
+    emit("blur", decimalValue);
+    if (decimalValue.equals(new Decimal(props.modelValue))) {
+      return;
+    }
+    emit("change", decimalValue);
+  } else if (props.isNumber) {
+    let numberValue = Math.round(Number(value) * Math.pow(10, props.precision)) / Math.pow(10, props.precision);
+    if (isNaN(numberValue)) {
+      numberValue = 0;
+    }
+    emit("blur", numberValue);
+    if (numberValue === Number(props.modelValue)) {
+      return;
+    }
+    emit("change", numberValue);
+  } else {
     emit("blur", value);
     if (value === props.modelValue) {
       return;
     }
     emit("change", modelValue.value);
-  } else {
-    const decimalValue = new Decimal(value);
-    if (decimalValue.equals(new Decimal(props.modelValue))) {
-      return;
-    }
-    emit("change", decimalValue);
   }
 }
 
 function onClear() {
-  if (isDecimal) {
+  if (props.isDecimal) {
     modelValue.value = new Decimal(0).toString();
+  } else if (props.isNumber) {
+    modelValue.value = 0;
   } else {
     modelValue.value = "";
   }
+  emit("update:modelValue", modelValue.value);
+  emit("change", modelValue.value);
   emit("clear");
 }
 
