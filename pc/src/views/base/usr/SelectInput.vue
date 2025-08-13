@@ -170,6 +170,8 @@ let selectedValue: UsrModel | (UsrModel | undefined)[] | null | undefined = unde
 let modelLabel = $ref(props.modelLabel);
 let hasModelLabel = $ref(false);
 
+let modelLabelRefreshing = $ref(false);
+
 watch(
   () => props.modelLabel,
   () => {
@@ -260,8 +262,6 @@ async function validateField() {
     formItem?.clearValidate();
   }
 }
-
-let modelLabelRefreshing = $ref(false);
 
 /** 根据modelValue刷新输入框的值 */
 async function refreshInputValue() {
