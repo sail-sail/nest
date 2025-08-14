@@ -295,20 +295,21 @@ pub async fn many2many_update(
     sql_values += ",?";
     args.push(idx.into());
     
-    if many_opts.column1 != "tenant_id" && many_opts.column2 != "tenant_id" {
-      if let Some(tenant_id) = &tenant_id {
-        if column1 != "tenant_id" && column2 != "tenant_id" {
-          sql_fields += ",tenant_id";
-          sql_values += ",?";
-          args.push(tenant_id.clone().as_str().into());
-        }
-      }
+    if many_opts.column1 != "tenant_id" &&
+      many_opts.column2 != "tenant_id" &&
+      let Some(tenant_id) = &tenant_id &&
+      column1 != "tenant_id" &&
+      column2 != "tenant_id"
+    {
+      sql_fields += ",tenant_id";
+      sql_values += ",?";
+      args.push(tenant_id.into());
     }
     
     if let Some(auth_model) = &auth_model {
       sql_fields += ",create_usr_id";
       sql_values += ",?";
-      args.push(auth_model.id.clone().as_str().into());
+      args.push(auth_model.id.into());
     }
     
     sql_fields += &format!(",{column1}");

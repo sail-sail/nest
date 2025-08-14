@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -35,7 +39,7 @@ async fn set_search_query(
   let usr_id = get_auth_id_ok()?;
   let usr_model = validate_option_usr(
     find_by_id_usr(
-      usr_id.clone(),
+      usr_id,
       options.clone(),
     ).await?,
   ).await?;
@@ -49,7 +53,7 @@ async fn set_search_query(
     org_ids.push(OrgId::default());
   }
   
-  if !is_admin(usr_id.clone(), options.clone()).await? {
+  if !is_admin(usr_id, options.clone()).await? {
     search.org_id = Some(org_ids);
   }
   Ok(())
@@ -257,7 +261,7 @@ pub async fn update_by_id_dept(
 ) -> Result<DeptId> {
   
   let is_locked = dept_dao::get_is_locked_by_id_dept(
-    dept_id.clone(),
+    dept_id,
     None,
   ).await?;
   

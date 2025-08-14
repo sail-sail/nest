@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -228,7 +232,7 @@ pub async fn update_by_id_data_permit(
   
   let old_model = validate_option_data_permit(
     data_permit_dao::find_by_id_data_permit(
-      data_permit_id.clone(),
+      data_permit_id,
       options.clone(),
     ).await?,
   ).await?;

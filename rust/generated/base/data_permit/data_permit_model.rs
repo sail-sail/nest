@@ -1,6 +1,10 @@
 
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
+#![allow(clippy::len_zero)]
+
 use std::fmt;
-use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -508,12 +512,46 @@ impl From<DataPermitInput> for DataPermitSearch {
   }
 }
 
-#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct DataPermitId(SmolStr);
+#[derive(Default, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct DataPermitId([u8; 22]);
+
+impl Serialize for DataPermitId {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: serde::Serializer,
+  {
+    match std::str::from_utf8(&self.0) {
+      Ok(s) => serializer.serialize_str(s),
+      Err(_) => serializer.serialize_str("")
+    }
+  }
+}
+
+impl<'de> Deserialize<'de> for DataPermitId {
+  fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+  where
+    D: serde::Deserializer<'de>,
+  {
+    let s = String::deserialize(deserializer)?;
+    Ok(s.as_str().into())
+  }
+}
+
+impl fmt::Debug for DataPermitId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match std::str::from_utf8(&self.0) {
+      Ok(s) => write!(f, "DataPermitId({s})"),
+      Err(_) => write!(f, "DataPermitId()")
+    }
+  }
+}
 
 impl fmt::Display for DataPermitId {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "{}", self.0)
+    match std::str::from_utf8(&self.0) {
+      Ok(s) => write!(f, "{s}"),
+      Err(_) => write!(f, "")
+    }
   }
 }
 
@@ -521,83 +559,121 @@ impl fmt::Display for DataPermitId {
 impl async_graphql::ScalarType for DataPermitId {
   fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
     match value {
-      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      async_graphql::Value::String(s) => {
+        let bytes = s.as_bytes();
+        if bytes.len() == 0 {
+          return Ok(Self([0u8; 22]));
+        }
+        if bytes.len() != 22 {
+          return Err(async_graphql::InputValueError::custom("DataPermitId must be 22 bytes string or empty"));
+        }
+        let mut arr = [0u8; 22];
+        arr.copy_from_slice(bytes);
+        Ok(Self(arr))
+      },
       _ => Err(async_graphql::InputValueError::expected_type(value)),
     }
   }
   
   fn to_value(&self) -> async_graphql::Value {
-    async_graphql::Value::String(self.0.clone().into())
+    let s = std::str::from_utf8(&self.0).unwrap_or("");
+    async_graphql::Value::String(s.into())
   }
 }
 
 impl From<DataPermitId> for ArgType {
   fn from(value: DataPermitId) -> Self {
-    ArgType::SmolStr(value.into())
+    value.to_string().into()
   }
 }
 
 impl From<&DataPermitId> for ArgType {
   fn from(value: &DataPermitId) -> Self {
-    ArgType::SmolStr(value.clone().into())
+    value.to_string().into()
   }
 }
 
 impl From<DataPermitId> for SmolStr {
   fn from(id: DataPermitId) -> Self {
-    id.0
+    std::str::from_utf8(&id.0).unwrap_or("").into()
   }
 }
 
 impl From<SmolStr> for DataPermitId {
   fn from(s: SmolStr) -> Self {
-    Self(s)
+    s.as_str().into()
   }
 }
 
 impl From<&SmolStr> for DataPermitId {
   fn from(s: &SmolStr) -> Self {
-    Self(s.clone())
+    s.as_str().into()
   }
 }
 
 impl From<String> for DataPermitId {
   fn from(s: String) -> Self {
-    Self(s.into())
+    s.as_str().into()
+  }
+}
+
+impl From<[u8; 22]> for DataPermitId {
+  fn from(arr: [u8; 22]) -> Self {
+    Self(arr)
+  }
+}
+
+impl From<&[u8; 22]> for DataPermitId {
+  fn from(arr: &[u8; 22]) -> Self {
+    Self(*arr)
+  }
+}
+
+impl From<DataPermitId> for [u8; 22] {
+  fn from(id: DataPermitId) -> Self {
+    id.0
   }
 }
 
 impl From<&str> for DataPermitId {
   fn from(s: &str) -> Self {
-    Self(s.into())
+    let bytes = s.as_bytes();
+    let mut arr = [0u8; 22];
+    if bytes.len() == 22 {
+      arr.copy_from_slice(bytes);
+    }
+    Self(arr)
   }
 }
 
-impl Deref for DataPermitId {
-  type Target = SmolStr;
+impl DataPermitId {
+  pub fn as_str(&self) -> &str {
+    std::str::from_utf8(&self.0).unwrap_or("")
+  }
   
-  fn deref(&self) -> &SmolStr {
-    &self.0
+  pub fn is_empty(&self) -> bool {
+    self.0 == [0u8; 22]
   }
 }
 
 impl Encode<'_, MySql> for DataPermitId {
   fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
-    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+    buf.extend_from_slice(&self.0);
+    Ok(IsNull::No)
   }
   
   fn size_hint(&self) -> usize {
-    self.len()
+    22
   }
 }
 
 impl sqlx::Type<MySql> for DataPermitId {
   fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
-    <&str as sqlx::Type<MySql>>::type_info()
+    <&[u8] as sqlx::Type<MySql>>::type_info()
   }
   
   fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
-    <&str as sqlx::Type<MySql>>::compatible(ty)
+    <&[u8] as sqlx::Type<MySql>>::compatible(ty)
   }
 }
 
@@ -605,13 +681,21 @@ impl<'r> sqlx::Decode<'r, MySql> for DataPermitId {
   fn decode(
     value: MySqlValueRef<'r>,
   ) -> Result<Self, BoxDynError> {
-    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+    let bytes: &[u8] = <&[u8] as sqlx::Decode<MySql>>::decode(value)?;
+    let mut arr = [0u8; 22];
+    if bytes.len() == 22 {
+      arr.copy_from_slice(bytes);
+    } else if bytes.len() > 22 {
+      return Err("DataPermitId must be 22 bytes".into());
+    }
+    Ok(Self(arr))
   }
 }
 
 impl PartialEq<str> for DataPermitId {
   fn eq(&self, other: &str) -> bool {
-    self.0 == other
+    let bytes = other.as_bytes();
+    self.0 == bytes
   }
 }
 

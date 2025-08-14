@@ -202,7 +202,7 @@ pub fn get_auth_id() -> Option<UsrId> {
   CTX.with(|ctx| {
     ctx.auth_model
       .as_ref()
-      .map(|item| item.id.clone())
+      .map(|item| item.id)
   })
 }
 
@@ -222,11 +222,11 @@ pub fn get_auth_id_ok() -> Result<UsrId> {
 pub fn get_auth_tenant_id() -> Option<TenantId> {
   CTX.with(|ctx| {
     if ctx.auth_model.is_none() && ctx.client_tenant_id.is_some() {
-      return ctx.client_tenant_id.clone();
+      return ctx.client_tenant_id;
     }
     ctx.auth_model
       .as_ref()
-      .map(|item| item.tenant_id.clone())
+      .map(|item| item.tenant_id)
   })
 }
 
@@ -235,7 +235,7 @@ pub fn get_auth_org_id() -> Option<OrgId> {
   CTX.with(|ctx| {
     ctx.auth_model
       .as_ref()
-      .and_then(|item| item.org_id.clone())
+      .and_then(|item| item.org_id)
   })
 }
 
@@ -510,14 +510,13 @@ impl Ctx {
   ) -> Result<u64> {
     
     let mut is_tran = self.is_tran;
-    if let Some(options) = &options {
-      if let Some(is_tran0) = options.get_is_tran() {
+    if let Some(options) = &options
+      && let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
-    }
     
-    if let Some(options) = &options {
-      if let Some(del_cache_key1s) = &options.del_cache_key1s {
+    if let Some(options) = &options
+      && let Some(del_cache_key1s) = &options.del_cache_key1s {
         del_caches(
           del_cache_key1s
             .iter()
@@ -526,7 +525,6 @@ impl Ctx {
             .as_slice()
         ).await?;
       }
-    }
     
     if is_tran {
       let mut query = sqlx::query(&sql);
@@ -615,18 +613,17 @@ impl Ctx {
         res?
       };
       let rows_affected = res.rows_affected();
-      if rows_affected > 0 {
-        if let Some(options) = &options {
-          if let Some(del_cache_key1s) = &options.del_cache_key1s {
-            del_caches(
-              del_cache_key1s
-                .iter()
-                .map(|item| item.as_str())
-                .collect::<Vec<&str>>()
-                .as_slice()
-            ).await?;
-          }
-        }
+      if rows_affected > 0 &&
+        let Some(options) = &options &&
+        let Some(del_cache_key1s) = &options.del_cache_key1s
+      {
+        del_caches(
+          del_cache_key1s
+            .iter()
+            .map(|item| item.as_str())
+            .collect::<Vec<&str>>()
+            .as_slice()
+        ).await?;
       }
       return Ok(rows_affected);
     }
@@ -709,18 +706,17 @@ impl Ctx {
     }
     let res = res?;
     let rows_affected = res.rows_affected();
-    if rows_affected > 0 {
-      if let Some(options) = &options {
-        if let Some(del_cache_key1s) = &options.del_cache_key1s {
-          del_caches(
-            del_cache_key1s
-              .iter()
-              .map(|item| item.as_str())
-              .collect::<Vec<&str>>()
-              .as_slice()
-          ).await?;
-        }
-      }
+    if rows_affected > 0 &&
+      let Some(options) = &options &&
+      let Some(del_cache_key1s) = &options.del_cache_key1s
+    {
+      del_caches(
+        del_cache_key1s
+          .iter()
+          .map(|item| item.as_str())
+          .collect::<Vec<&str>>()
+          .as_slice()
+      ).await?;
     }
     Ok(rows_affected)
   }
@@ -735,30 +731,29 @@ impl Ctx {
   where
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r>,
   {
-    if let Some(options) = &options {
-      if let Some(cache_key1) = &options.cache_key1
-        && let Some(cache_key2) = &options.cache_key2
-      {
-        let str = get_cache(cache_key1, cache_key2).await?;
-        if let Some(str) = str {
-          let res2: Vec<R>;
-          let res = serde_json::from_str::<Vec<R>>(&str);
-          if let Ok(res) = res {
-            res2 = res;
-          } else {
-            res2 = vec![];
-            del_cache(cache_key1).await?;
-          }
-          return Ok(res2);
+    if let Some(options) = &options &&
+      let Some(cache_key1) = &options.cache_key1 &&
+      let Some(cache_key2) = &options.cache_key2
+    {
+      let str = get_cache(cache_key1, cache_key2).await?;
+      if let Some(str) = str {
+        let res2: Vec<R>;
+        let res = serde_json::from_str::<Vec<R>>(&str);
+        if let Ok(res) = res {
+          res2 = res;
+        } else {
+          res2 = vec![];
+          del_cache(cache_key1).await?;
         }
+        return Ok(res2);
       }
     }
     
     let mut is_tran = self.is_tran;
-    if let Some(options) = options.as_ref() {
-      if let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
+    if let Some(options) = options.as_ref() &&
+      let Some(is_tran0) = options.get_is_tran()
+    {
+      is_tran = is_tran0;
     }
     
     if is_tran {
@@ -848,14 +843,13 @@ impl Ctx {
         res?
       };
       
-      if let Some(options) = &options {
-        if let Some(cache_key1) = &options.cache_key1
+      if let Some(options) = &options
+        && let Some(cache_key1) = &options.cache_key1
           && let Some(cache_key2) = &options.cache_key2
         {
           let str = serde_json::to_string(&res)?;
           set_cache(cache_key1, cache_key2, &str).await?;
         }
-      }
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(&sql);
@@ -944,14 +938,13 @@ impl Ctx {
       );
     }
     let res = res?;
-    if let Some(options) = &options {
-      if let Some(cache_key1) = &options.cache_key1
+    if let Some(options) = &options
+      && let Some(cache_key1) = &options.cache_key1
         && let Some(cache_key2) = &options.cache_key2
       {
         let str = serde_json::to_string(&res)?;
         set_cache(cache_key1, cache_key2, &str).await?;
       }
-    }
     Ok(res)
   }
   
@@ -965,8 +958,8 @@ impl Ctx {
   where
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r> + Sync,
   {
-    if let Some(options) = &options {
-      if let Some(cache_key1) = &options.cache_key1
+    if let Some(options) = &options
+      && let Some(cache_key1) = &options.cache_key1
         && let Some(cache_key2) = &options.cache_key2
       {
         let str = get_cache(cache_key1, cache_key2).await?;
@@ -981,14 +974,12 @@ impl Ctx {
           return Ok(res2);
         }
       }
-    }
     
     let mut is_tran = self.is_tran;
-    if let Some(options) = &options {
-      if let Some(is_tran0) = options.get_is_tran() {
+    if let Some(options) = &options
+      && let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
-    }
     
     if is_tran {
       let mut query = sqlx::query_as::<_, R>(&sql);
@@ -1076,16 +1067,14 @@ impl Ctx {
         }
         res?
       };
-      if let Some(res) = &res {
-        if let Some(options) = &options {
-          if let Some(cache_key1) = &options.cache_key1
+      if let Some(res) = &res
+        && let Some(options) = &options
+          && let Some(cache_key1) = &options.cache_key1
             && let Some(cache_key2) = &options.cache_key2
           {
             let str = serde_json::to_string(res)?;
             set_cache(cache_key1, cache_key2, &str).await?;
           }
-        }
-      }
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(&sql);
@@ -1174,16 +1163,14 @@ impl Ctx {
       );
     }
     let res = res?;
-    if let Some(res) = &res {
-      if let Some(options) = &options {
-        if let Some(cache_key1) = &options.cache_key1
+    if let Some(res) = &res
+      && let Some(options) = &options
+        && let Some(cache_key1) = &options.cache_key1
           && let Some(cache_key2) = &options.cache_key2
         {
           let str = serde_json::to_string(res)?;
           set_cache(cache_key1, cache_key2, &str).await?;
         }
-      }
-    }
     Ok(res)
   }
   
@@ -1646,6 +1633,20 @@ impl From<&SmolStr> for ArgType {
   }
 }
 
+impl From<[u8; 22]> for ArgType {
+  fn from(value: [u8; 22]) -> Self {
+    let s = std::str::from_utf8(&value).unwrap_or("").to_string();
+    ArgType::String(s)
+  }
+}
+
+impl From<&[u8; 22]> for ArgType {
+  fn from(value: &[u8; 22]) -> Self {
+    let s = std::str::from_utf8(value).unwrap_or("").to_string();
+    ArgType::String(s)
+  }
+}
+
 #[derive(Default, Clone)]
 pub struct Options {
   
@@ -1710,11 +1711,10 @@ impl Debug for Options {
     if let Some(is_debug) = self.is_debug {
       item = item.field("is_debug", &is_debug);
     }
-    if let Some(is_tran) = self.is_tran {
-      if is_tran {
+    if let Some(is_tran) = self.is_tran
+      && is_tran {
         item = item.field("is_tran", &is_tran);
       }
-    }
     if let Some(cache_key1) = &self.cache_key1 {
       item = item.field("cache_key1", cache_key1);
     }
@@ -1727,27 +1727,24 @@ impl Debug for Options {
     if let Some(unique_type) = &self.unique_type {
       item = item.field("unique_type", unique_type);
     }
-    if let Some(is_encrypt) = self.is_encrypt {
-      if is_encrypt {
+    if let Some(is_encrypt) = self.is_encrypt
+      && is_encrypt {
         item = item.field("is_encrypt", &is_encrypt);
       }
-    }
-    if let Some(has_data_permit) = self.has_data_permit {
-      if has_data_permit {
+    if let Some(has_data_permit) = self.has_data_permit
+      && has_data_permit {
         item = item.field("has_data_permit", &has_data_permit);
       }
-    }
     if !self.database_name.is_empty() {
       item = item.field("database_name", &self.database_name);
     }
     if let Some(ids_limit) = self.ids_limit {
       item = item.field("ids_limit", &ids_limit);
     }
-    if let Some(is_silent_mode) = self.is_silent_mode {
-      if is_silent_mode {
+    if let Some(is_silent_mode) = self.is_silent_mode
+      && is_silent_mode {
         item = item.field("is_silent_mode", &is_silent_mode);
       }
-    }
     item.finish()
   }
 }
@@ -2185,11 +2182,10 @@ pub fn get_is_debug(
 pub fn get_is_silent_mode(
   options: Option<&Options>,
 ) -> bool {
-  if let Some(options) = options {
-    if let Some(is_silent_mode) = options.is_silent_mode {
+  if let Some(options) = options
+    && let Some(is_silent_mode) = options.is_silent_mode {
       return is_silent_mode;
     }
-  }
   let ctx = CTX.with(|ctx| ctx.clone());
   ctx.is_silent_mode
 }
@@ -2198,11 +2194,10 @@ pub fn get_is_silent_mode(
 pub fn get_is_creating(
   options: Option<&Options>,
 ) -> bool {
-  if let Some(options) = options {
-    if let Some(is_creating) = options.is_creating {
+  if let Some(options) = options
+    && let Some(is_creating) = options.is_creating {
       return is_creating;
     }
-  }
   let ctx = CTX.with(|ctx| ctx.clone());
   ctx.is_creating.unwrap_or_default()
 }

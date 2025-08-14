@@ -221,7 +221,7 @@ pub async fn n_lang(
     let lang_id = lang_model.id;
     let i18n_model = find_one_i18n(
       I18nSearch {
-        lang_id: vec![lang_id.clone()].into(),
+        lang_id: vec![lang_id].into(),
         menu_id: vec![menu_id].into(),
         code: code.clone().into(),
         ..Default::default()

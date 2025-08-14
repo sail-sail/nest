@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -208,7 +212,7 @@ pub async fn update_by_id_tenant(
 ) -> Result<TenantId> {
   
   let is_locked = tenant_dao::get_is_locked_by_id_tenant(
-    tenant_id.clone(),
+    tenant_id,
     None,
   ).await?;
   

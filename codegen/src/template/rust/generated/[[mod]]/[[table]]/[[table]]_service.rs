@@ -63,7 +63,11 @@ if (hasAudit) {
   auditModelLabel = auditTableIdColumn.modelLabel;
 }
 
-#>#[allow(unused_imports)]
+#>
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
@@ -164,7 +168,7 @@ async fn set_search_query(
   let usr_id = get_auth_id_ok()?;
   let usr_model = validate_option_usr(
     find_by_id_usr(
-      usr_id.clone(),
+      usr_id,
       options.clone(),
     ).await?,
   ).await?;<#
@@ -186,13 +190,13 @@ async fn set_search_query(
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if !is_admin(usr_id.clone(), options.clone()).await? {
+  if !is_admin(usr_id, options.clone()).await? {
     search.create_usr_id = Some(vec![usr_id]);
   }<#
   } else if (hasOrgId) {
   #>
   
-  if !is_admin(usr_id.clone(), options.clone()).await? {
+  if !is_admin(usr_id, options.clone()).await? {
     search.org_id = Some(org_ids);
   }<#
   }
@@ -540,7 +544,7 @@ pub async fn update_by_id_<#=table#>(
   
   let old_model = validate_option_<#=table#>(
     <#=table#>_dao::find_by_id_<#=table#>(
-      <#=table#>_id.clone(),
+      <#=table#>_id,
       options.clone(),
     ).await?,
   ).await?;<#
@@ -581,7 +585,7 @@ pub async fn update_by_id_<#=table#>(
   #>
   
   let is_locked = <#=table#>_dao::get_is_locked_by_id_<#=table#>(
-    <#=table#>_id.clone(),
+    <#=table#>_id,
     None,
   ).await?;
   
@@ -689,7 +693,7 @@ pub async fn audit_submit_<#=table#>(
   
   let old_model = validate_option_<#=table#>(
     <#=table#>_dao::find_by_id_<#=table#>(
-      <#=table#>_id.clone(),
+      <#=table#>_id,
       options.clone(),
     ).await?,
   ).await?;
@@ -737,7 +741,7 @@ pub async fn audit_submit_<#=table#>(
   };
   
   <#=table#>_dao::update_by_id_<#=table#>(
-    <#=table#>_id.clone(),
+    <#=table#>_id,
     <#=table#>_input,
     options.clone(),
   ).await?;<#
@@ -749,7 +753,7 @@ pub async fn audit_submit_<#=table#>(
   
   let audit_usr_model = validate_option_usr(
     find_by_id_usr(
-      audit_usr_id.clone(),
+      audit_usr_id,
       options.clone(),
     ).await?,
   ).await?;
@@ -788,7 +792,7 @@ pub async fn audit_pass_<#=table#>(
   
   let old_model = validate_option_<#=table#>(
     <#=table#>_dao::find_by_id_<#=table#>(
-      <#=table#>_id.clone(),
+      <#=table#>_id,
       options.clone(),
     ).await?,
   ).await?;
@@ -835,7 +839,7 @@ pub async fn audit_pass_<#=table#>(
   };
   
   <#=table#>_dao::update_by_id_<#=table#>(
-    <#=table#>_id.clone(), 
+    <#=table#>_id, 
     <#=table#>_input,
     options.clone(),
   ).await?;<#
@@ -847,7 +851,7 @@ pub async fn audit_pass_<#=table#>(
   
   let audit_usr_model = validate_option_usr(
     find_by_id_usr(
-      audit_usr_id.clone(),
+      audit_usr_id,
       options.clone(),
     ).await?,
   ).await?;
@@ -888,7 +892,7 @@ pub async fn audit_reject_<#=table#>(
   
   let old_model = validate_option_<#=table#>(
     <#=table#>_dao::find_by_id_<#=table#>(
-      <#=table#>_id.clone(),
+      <#=table#>_id,
       options.clone(),
     ).await?,
   ).await?;
@@ -940,7 +944,7 @@ pub async fn audit_reject_<#=table#>(
   };
   
   <#=table#>_dao::update_by_id_<#=table#>(
-    <#=table#>_id.clone(),
+    <#=table#>_id,
     <#=table#>_input,
     options.clone(),
   ).await?;<#
@@ -952,7 +956,7 @@ pub async fn audit_reject_<#=table#>(
   
   let audit_usr_model = validate_option_usr(
     find_by_id_usr(
-      audit_usr_id.clone(),
+      audit_usr_id,
       options.clone(),
     ).await?,
   ).await?;
@@ -994,7 +998,7 @@ pub async fn audit_review_<#=table#>(
   
   let old_model = validate_option_<#=table#>(
     <#=table#>_dao::find_by_id_<#=table#>(
-      <#=table#>_id.clone(),
+      <#=table#>_id,
       options.clone(),
     ).await?,
   ).await?;
@@ -1041,7 +1045,7 @@ pub async fn audit_review_<#=table#>(
   };
   
   <#=table#>_dao::update_by_id_<#=table#>(
-    <#=table#>_id.clone(), 
+    <#=table#>_id, 
     <#=table#>_input,
     options.clone(),
   ).await?;<#
@@ -1053,7 +1057,7 @@ pub async fn audit_review_<#=table#>(
   
   let audit_usr_model = validate_option_usr(
     find_by_id_usr(
-      audit_usr_id.clone(),
+      audit_usr_id,
       options.clone(),
     ).await?,
   ).await?;
