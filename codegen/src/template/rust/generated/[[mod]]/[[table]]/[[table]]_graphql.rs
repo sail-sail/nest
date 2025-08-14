@@ -61,7 +61,11 @@ if (hasAudit) {
   auditModelLabel = auditTableIdColumn.modelLabel;
 }
 
-#>#[allow(unused_imports)]
+#>
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
+#[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
 

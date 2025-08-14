@@ -1,3 +1,8 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
+
 #[allow(unused_imports)]
 use serde::{Serialize, Deserialize};
 #[allow(unused_imports)]
@@ -669,115 +674,101 @@ pub async fn find_all_tenant(
     }
   }
   // 所属域名
-  if let Some(search) = &search {
-    if search.domain_ids.is_some() {
-      let len = search.domain_ids.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.domain_ids.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.domain_ids.is_some() {
+    let len = search.domain_ids.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.domain_ids.length > {ids_limit}"));
     }
   }
   // 菜单权限
-  if let Some(search) = &search {
-    if search.menu_ids.is_some() {
-      let len = search.menu_ids.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.menu_ids.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.menu_ids.is_some() {
+    let len = search.menu_ids.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.menu_ids.length > {ids_limit}"));
     }
   }
   // 语言
-  if let Some(search) = &search {
-    if search.lang_id.is_some() {
-      let len = search.lang_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.lang_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.lang_id.is_some() {
+    let len = search.lang_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.lang_id.length > {ids_limit}"));
     }
   }
   // 锁定
-  if let Some(search) = &search {
-    if search.is_locked.is_some() {
-      let len = search.is_locked.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.is_locked.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.is_locked.is_some() {
+    let len = search.is_locked.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_locked.length > {ids_limit}"));
     }
   }
   // 启用
-  if let Some(search) = &search {
-    if search.is_enabled.is_some() {
-      let len = search.is_enabled.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.is_enabled.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.is_enabled.is_some() {
+    let len = search.is_enabled.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_enabled.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search {
-    if search.create_usr_id.is_some() {
-      let len = search.create_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.create_usr_id.is_some() {
+    let len = search.create_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search {
-    if search.update_usr_id.is_some() {
-      let len = search.update_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.update_usr_id.is_some() {
+    let len = search.update_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
   
@@ -904,115 +895,101 @@ pub async fn find_count_tenant(
     }
   }
   // 所属域名
-  if let Some(search) = &search {
-    if search.domain_ids.is_some() {
-      let len = search.domain_ids.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.domain_ids.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.domain_ids.is_some() {
+    let len = search.domain_ids.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.domain_ids.length > {ids_limit}"));
     }
   }
   // 菜单权限
-  if let Some(search) = &search {
-    if search.menu_ids.is_some() {
-      let len = search.menu_ids.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.menu_ids.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.menu_ids.is_some() {
+    let len = search.menu_ids.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.menu_ids.length > {ids_limit}"));
     }
   }
   // 语言
-  if let Some(search) = &search {
-    if search.lang_id.is_some() {
-      let len = search.lang_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.lang_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.lang_id.is_some() {
+    let len = search.lang_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.lang_id.length > {ids_limit}"));
     }
   }
   // 锁定
-  if let Some(search) = &search {
-    if search.is_locked.is_some() {
-      let len = search.is_locked.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.is_locked.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.is_locked.is_some() {
+    let len = search.is_locked.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_locked.length > {ids_limit}"));
     }
   }
   // 启用
-  if let Some(search) = &search {
-    if search.is_enabled.is_some() {
-      let len = search.is_enabled.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.is_enabled.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.is_enabled.is_some() {
+    let len = search.is_enabled.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_enabled.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search {
-    if search.create_usr_id.is_some() {
-      let len = search.create_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.create_usr_id.is_some() {
+    let len = search.create_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search {
-    if search.update_usr_id.is_some() {
-      let len = search.update_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.update_usr_id.is_some() {
+    let len = search.update_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
   
@@ -1168,10 +1145,8 @@ pub async fn find_one_tenant(
     );
   }
   
-  if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
-      return Ok(None);
-    }
+  if let Some(search) = &search && search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    return Ok(None);
   }
   
   let options = Options::from(options)
@@ -1225,7 +1200,7 @@ pub async fn find_by_id_ok_tenant(
   let options = Some(options);
   
   let tenant_model = find_by_id_tenant(
-    id.clone(),
+    id,
     options,
   ).await?;
   
@@ -1469,115 +1444,101 @@ pub async fn exists_tenant(
     }
   }
   // 所属域名
-  if let Some(search) = &search {
-    if search.domain_ids.is_some() {
-      let len = search.domain_ids.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.domain_ids.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.domain_ids.is_some() {
+    let len = search.domain_ids.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.domain_ids.length > {ids_limit}"));
     }
   }
   // 菜单权限
-  if let Some(search) = &search {
-    if search.menu_ids.is_some() {
-      let len = search.menu_ids.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.menu_ids.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.menu_ids.is_some() {
+    let len = search.menu_ids.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.menu_ids.length > {ids_limit}"));
     }
   }
   // 语言
-  if let Some(search) = &search {
-    if search.lang_id.is_some() {
-      let len = search.lang_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.lang_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.lang_id.is_some() {
+    let len = search.lang_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.lang_id.length > {ids_limit}"));
     }
   }
   // 锁定
-  if let Some(search) = &search {
-    if search.is_locked.is_some() {
-      let len = search.is_locked.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.is_locked.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.is_locked.is_some() {
+    let len = search.is_locked.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_locked.length > {ids_limit}"));
     }
   }
   // 启用
-  if let Some(search) = &search {
-    if search.is_enabled.is_some() {
-      let len = search.is_enabled.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.is_enabled.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.is_enabled.is_some() {
+    let len = search.is_enabled.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_enabled.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search {
-    if search.create_usr_id.is_some() {
-      let len = search.create_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.create_usr_id.is_some() {
+    let len = search.create_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search {
-    if search.update_usr_id.is_some() {
-      let len = search.update_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.update_usr_id.is_some() {
+    let len = search.update_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
   
@@ -1814,7 +1775,7 @@ pub async fn check_by_unique_tenant(
   }
   if unique_type == UniqueType::Update {
     let id = update_by_id_tenant(
-      model.id.clone(),
+      model.id,
       input,
       options,
     ).await?;
@@ -2223,9 +2184,9 @@ async fn _creates(
   {
     
     let id: TenantId = get_short_uuid().into();
-    ids2.push(id.clone());
+    ids2.push(id);
     
-    inputs2_ids.push(id.clone());
+    inputs2_ids.push(id);
     
     sql_values += "(?";
     args.push(id.into());
@@ -2260,7 +2221,7 @@ async fn _creates(
         let mut usr_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -2277,14 +2238,14 @@ async fn _creates(
         }
         sql_values += ",?";
         args.push(usr_lbl.into());
-      } else if input.create_usr_id.clone().unwrap().as_str() == "-" {
+      } else if input.create_usr_id.unwrap().is_empty() {
         sql_values += ",default";
         sql_values += ",default";
       } else {
-        let mut usr_id = input.create_usr_id.clone();
+        let mut usr_id = input.create_usr_id;
         let mut usr_lbl = String::new();
         let usr_model = find_by_id_usr(
-          usr_id.clone().unwrap(),
+          usr_id.unwrap(),
           options.clone(),
         ).await?;
         if let Some(usr_model) = usr_model {
@@ -2462,10 +2423,10 @@ async fn _creates(
     // 所属域名
     if let Some(domain_ids) = input.domain_ids {
       many2many_update(
-        id.clone().into(),
+        id.into(),
         domain_ids
-          .iter()
-          .map(|item| item.clone().into())
+          .into_iter()
+          .map(|item| item.into())
           .collect(),
         ManyOpts {
           r#mod: "base",
@@ -2479,10 +2440,10 @@ async fn _creates(
     // 菜单权限
     if let Some(menu_ids) = input.menu_ids {
       many2many_update(
-        id.clone().into(),
+        id.into(),
         menu_ids
-          .iter()
-          .map(|item| item.clone().into())
+          .into_iter()
+          .map(|item| item.into())
           .collect(),
         ManyOpts {
           r#mod: "base",
@@ -2672,7 +2633,7 @@ pub async fn update_by_id_tenant(
   let options = Some(options);
   
   let old_model = find_by_id_tenant(
-    id.clone(),
+    id,
     options.clone(),
   ).await?;
   
@@ -2819,7 +2780,7 @@ pub async fn update_by_id_tenant(
         let mut usr_id_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -2836,12 +2797,12 @@ pub async fn update_by_id_tenant(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      } else if input.update_usr_id.clone().unwrap().as_str() != "-" {
-        let mut usr_id = input.update_usr_id.clone();
+      } else if !input.update_usr_id.unwrap().is_empty() {
+        let mut usr_id = input.update_usr_id;
         let mut usr_id_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -2858,8 +2819,8 @@ pub async fn update_by_id_tenant(
         }
       }
     } else {
-      if input.update_usr_id.is_some() && input.update_usr_id.clone().unwrap().as_str() != "-" {
-        let usr_id = input.update_usr_id.clone();
+      if input.update_usr_id.is_some() && !input.update_usr_id.unwrap().is_empty() {
+        let usr_id = input.update_usr_id;
         if let Some(usr_id) = usr_id {
           sql_fields += "update_usr_id=?,";
           args.push(usr_id.into());
@@ -2888,7 +2849,7 @@ pub async fn update_by_id_tenant(
     }
     
     let sql_where = "id=?";
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let sql = format!("update {table} set {sql_fields} where {sql_where} limit 1");
     
@@ -2919,10 +2880,10 @@ pub async fn update_by_id_tenant(
   // 所属域名
   if let Some(domain_ids) = input.domain_ids {
     many2many_update(
-      id.clone().into(),
+      id.into(),
       domain_ids
-        .iter()
-        .map(|item| item.clone().into())
+        .into_iter()
+        .map(|item| item.into())
         .collect(),
       ManyOpts {
         r#mod: "base",
@@ -2936,10 +2897,10 @@ pub async fn update_by_id_tenant(
   // 菜单权限
   if let Some(menu_ids) = input.menu_ids {
     many2many_update(
-      id.clone().into(),
+      id.into(),
       menu_ids
-        .iter()
-        .map(|item| item.clone().into())
+        .into_iter()
+        .map(|item| item.into())
         .collect(),
       ManyOpts {
         r#mod: "base",
@@ -3035,7 +2996,7 @@ pub async fn delete_by_ids_tenant(
   for id in ids.clone() {
     
     let old_model = find_by_id_tenant(
-      id.clone(),
+      id,
       options.clone(),
     ).await?;
     if old_model.is_none() {
@@ -3061,7 +3022,7 @@ pub async fn delete_by_ids_tenant(
     let mut usr_lbl = String::new();
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
-        usr_id.clone().unwrap(),
+        usr_id.unwrap(),
         options.clone(),
       ).await?;
       if let Some(usr_model) = usr_model {
@@ -3071,11 +3032,9 @@ pub async fn delete_by_ids_tenant(
       }
     }
     
-    if !is_silent_mode && !is_creating {
-      if let Some(usr_id) = usr_id {
-        sql_fields.push_str("delete_usr_id=?,");
-        args.push(usr_id.into());
-      }
+    if !is_silent_mode && !is_creating && let Some(usr_id) = usr_id {
+      sql_fields.push_str("delete_usr_id=?,");
+      args.push(usr_id.into());
     }
     
     if !is_silent_mode && !is_creating {
@@ -3094,7 +3053,7 @@ pub async fn delete_by_ids_tenant(
     
     let sql = format!("update {table} set {sql_fields} where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
@@ -3114,7 +3073,7 @@ pub async fn delete_by_ids_tenant(
       if !domain_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_tenant_domain set is_deleted=1 where tenant_id=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.into());
         let arg = {
           let mut items = Vec::with_capacity(domain_ids.len());
           for item in domain_ids {
@@ -3141,7 +3100,7 @@ pub async fn delete_by_ids_tenant(
       if !menu_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_tenant_menu set is_deleted=1 where tenant_id=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.into());
         let arg = {
           let mut items = Vec::with_capacity(menu_ids.len());
           for item in menu_ids {
@@ -3407,13 +3366,13 @@ pub async fn revert_by_ids_tenant(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
     let mut old_model = find_one_tenant(
       TenantSearch {
-        id: Some(id.clone()),
+        id: Some(id),
         is_deleted: Some(1),
         ..Default::default()
       }.into(),
@@ -3423,7 +3382,7 @@ pub async fn revert_by_ids_tenant(
     
     if old_model.is_none() {
       old_model = find_by_id_tenant(
-        id.clone(),
+        id,
         options.clone(),
       ).await?;
     }
@@ -3466,7 +3425,7 @@ pub async fn revert_by_ids_tenant(
       if !domain_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_tenant_domain set is_deleted=0 where tenant_id=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.into());
         let arg = {
           let mut items = Vec::with_capacity(domain_ids.len());
           for item in domain_ids {
@@ -3493,7 +3452,7 @@ pub async fn revert_by_ids_tenant(
       if !menu_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_tenant_menu set is_deleted=0 where tenant_id=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.into());
         let arg = {
           let mut items = Vec::with_capacity(menu_ids.len());
           for item in menu_ids {
@@ -3565,7 +3524,7 @@ pub async fn force_delete_by_ids_tenant(
     
     let old_model = find_all_tenant(
       TenantSearch {
-        id: id.clone().into(),
+        id: id.into(),
         is_deleted: 1.into(),
         ..Default::default()
       }.into(),
@@ -3593,7 +3552,7 @@ pub async fn force_delete_by_ids_tenant(
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
@@ -3617,7 +3576,7 @@ pub async fn force_delete_by_ids_tenant(
       if !domain_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "delete from base_tenant_domain where tenant_id=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.into());
         let mut items = Vec::with_capacity(domain_ids.len());
         for item in domain_ids {
           items.push("?");
@@ -3639,7 +3598,7 @@ pub async fn force_delete_by_ids_tenant(
       if !menu_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "delete from base_tenant_menu where tenant_id=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.into());
         let mut items = Vec::with_capacity(menu_ids.len());
         for item in menu_ids {
           items.push("?");

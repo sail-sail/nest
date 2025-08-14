@@ -1,6 +1,10 @@
 
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
+#![allow(clippy::len_zero)]
+
 use std::fmt;
-use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -553,12 +557,46 @@ impl From<OptionsInput> for OptionsSearch {
   }
 }
 
-#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct OptionsId(SmolStr);
+#[derive(Default, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct OptionsId([u8; 22]);
+
+impl Serialize for OptionsId {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: serde::Serializer,
+  {
+    match std::str::from_utf8(&self.0) {
+      Ok(s) => serializer.serialize_str(s),
+      Err(_) => serializer.serialize_str("")
+    }
+  }
+}
+
+impl<'de> Deserialize<'de> for OptionsId {
+  fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+  where
+    D: serde::Deserializer<'de>,
+  {
+    let s = String::deserialize(deserializer)?;
+    Ok(s.as_str().into())
+  }
+}
+
+impl fmt::Debug for OptionsId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match std::str::from_utf8(&self.0) {
+      Ok(s) => write!(f, "OptionsId({s})"),
+      Err(_) => write!(f, "OptionsId()")
+    }
+  }
+}
 
 impl fmt::Display for OptionsId {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "{}", self.0)
+    match std::str::from_utf8(&self.0) {
+      Ok(s) => write!(f, "{s}"),
+      Err(_) => write!(f, "")
+    }
   }
 }
 
@@ -566,83 +604,121 @@ impl fmt::Display for OptionsId {
 impl async_graphql::ScalarType for OptionsId {
   fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
     match value {
-      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      async_graphql::Value::String(s) => {
+        let bytes = s.as_bytes();
+        if bytes.len() == 0 {
+          return Ok(Self([0u8; 22]));
+        }
+        if bytes.len() != 22 {
+          return Err(async_graphql::InputValueError::custom("OptionsId must be 22 bytes string or empty"));
+        }
+        let mut arr = [0u8; 22];
+        arr.copy_from_slice(bytes);
+        Ok(Self(arr))
+      },
       _ => Err(async_graphql::InputValueError::expected_type(value)),
     }
   }
   
   fn to_value(&self) -> async_graphql::Value {
-    async_graphql::Value::String(self.0.clone().into())
+    let s = std::str::from_utf8(&self.0).unwrap_or("");
+    async_graphql::Value::String(s.into())
   }
 }
 
 impl From<OptionsId> for ArgType {
   fn from(value: OptionsId) -> Self {
-    ArgType::SmolStr(value.into())
+    value.to_string().into()
   }
 }
 
 impl From<&OptionsId> for ArgType {
   fn from(value: &OptionsId) -> Self {
-    ArgType::SmolStr(value.clone().into())
+    value.to_string().into()
   }
 }
 
 impl From<OptionsId> for SmolStr {
   fn from(id: OptionsId) -> Self {
-    id.0
+    std::str::from_utf8(&id.0).unwrap_or("").into()
   }
 }
 
 impl From<SmolStr> for OptionsId {
   fn from(s: SmolStr) -> Self {
-    Self(s)
+    s.as_str().into()
   }
 }
 
 impl From<&SmolStr> for OptionsId {
   fn from(s: &SmolStr) -> Self {
-    Self(s.clone())
+    s.as_str().into()
   }
 }
 
 impl From<String> for OptionsId {
   fn from(s: String) -> Self {
-    Self(s.into())
+    s.as_str().into()
+  }
+}
+
+impl From<[u8; 22]> for OptionsId {
+  fn from(arr: [u8; 22]) -> Self {
+    Self(arr)
+  }
+}
+
+impl From<&[u8; 22]> for OptionsId {
+  fn from(arr: &[u8; 22]) -> Self {
+    Self(*arr)
+  }
+}
+
+impl From<OptionsId> for [u8; 22] {
+  fn from(id: OptionsId) -> Self {
+    id.0
   }
 }
 
 impl From<&str> for OptionsId {
   fn from(s: &str) -> Self {
-    Self(s.into())
+    let bytes = s.as_bytes();
+    let mut arr = [0u8; 22];
+    if bytes.len() == 22 {
+      arr.copy_from_slice(bytes);
+    }
+    Self(arr)
   }
 }
 
-impl Deref for OptionsId {
-  type Target = SmolStr;
+impl OptionsId {
+  pub fn as_str(&self) -> &str {
+    std::str::from_utf8(&self.0).unwrap_or("")
+  }
   
-  fn deref(&self) -> &SmolStr {
-    &self.0
+  pub fn is_empty(&self) -> bool {
+    self.0 == [0u8; 22]
   }
 }
 
 impl Encode<'_, MySql> for OptionsId {
   fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
-    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+    buf.extend_from_slice(&self.0);
+    Ok(IsNull::No)
   }
   
   fn size_hint(&self) -> usize {
-    self.len()
+    22
   }
 }
 
 impl sqlx::Type<MySql> for OptionsId {
   fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
-    <&str as sqlx::Type<MySql>>::type_info()
+    <&[u8] as sqlx::Type<MySql>>::type_info()
   }
   
   fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
-    <&str as sqlx::Type<MySql>>::compatible(ty)
+    <&[u8] as sqlx::Type<MySql>>::compatible(ty)
   }
 }
 
@@ -650,13 +726,21 @@ impl<'r> sqlx::Decode<'r, MySql> for OptionsId {
   fn decode(
     value: MySqlValueRef<'r>,
   ) -> Result<Self, BoxDynError> {
-    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+    let bytes: &[u8] = <&[u8] as sqlx::Decode<MySql>>::decode(value)?;
+    let mut arr = [0u8; 22];
+    if bytes.len() == 22 {
+      arr.copy_from_slice(bytes);
+    } else if bytes.len() > 22 {
+      return Err("OptionsId must be 22 bytes".into());
+    }
+    Ok(Self(arr))
   }
 }
 
 impl PartialEq<str> for OptionsId {
   fn eq(&self, other: &str) -> bool {
-    self.0 == other
+    let bytes = other.as_bytes();
+    self.0 == bytes
   }
 }
 

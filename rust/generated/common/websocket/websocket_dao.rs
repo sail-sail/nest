@@ -26,11 +26,10 @@ pub async fn subscribe(
   }
   let mut callbacks_map = callbacks_map().write().await;
   let callbacks =  callbacks_map.get_mut(topic.as_str());
-  if callbacks.is_none() {
-    callbacks_map.insert(topic, vec![callback]);
-  } else {
-    let callbacks = callbacks.unwrap();
+  if let Some(callbacks) = callbacks {
     callbacks.push(callback);
+  } else {
+    callbacks_map.insert(topic, vec![callback]);
   }
 }
 

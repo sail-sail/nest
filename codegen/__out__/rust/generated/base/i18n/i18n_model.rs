@@ -1,6 +1,10 @@
 
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
+#![allow(clippy::len_zero)]
+
 use std::fmt;
-use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -524,12 +528,46 @@ impl From<I18nInput> for I18nSearch {
   }
 }
 
-#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct I18nId(SmolStr);
+#[derive(Default, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct I18nId([u8; 22]);
+
+impl Serialize for I18nId {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: serde::Serializer,
+  {
+    match std::str::from_utf8(&self.0) {
+      Ok(s) => serializer.serialize_str(s),
+      Err(_) => serializer.serialize_str("")
+    }
+  }
+}
+
+impl<'de> Deserialize<'de> for I18nId {
+  fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+  where
+    D: serde::Deserializer<'de>,
+  {
+    let s = String::deserialize(deserializer)?;
+    Ok(s.as_str().into())
+  }
+}
+
+impl fmt::Debug for I18nId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match std::str::from_utf8(&self.0) {
+      Ok(s) => write!(f, "I18nId({s})"),
+      Err(_) => write!(f, "I18nId()")
+    }
+  }
+}
 
 impl fmt::Display for I18nId {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "{}", self.0)
+    match std::str::from_utf8(&self.0) {
+      Ok(s) => write!(f, "{s}"),
+      Err(_) => write!(f, "")
+    }
   }
 }
 
@@ -537,83 +575,121 @@ impl fmt::Display for I18nId {
 impl async_graphql::ScalarType for I18nId {
   fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
     match value {
-      async_graphql::Value::String(s) => Ok(Self(s.into())),
+      async_graphql::Value::String(s) => {
+        let bytes = s.as_bytes();
+        if bytes.len() == 0 {
+          return Ok(Self([0u8; 22]));
+        }
+        if bytes.len() != 22 {
+          return Err(async_graphql::InputValueError::custom("I18nId must be 22 bytes string or empty"));
+        }
+        let mut arr = [0u8; 22];
+        arr.copy_from_slice(bytes);
+        Ok(Self(arr))
+      },
       _ => Err(async_graphql::InputValueError::expected_type(value)),
     }
   }
   
   fn to_value(&self) -> async_graphql::Value {
-    async_graphql::Value::String(self.0.clone().into())
+    let s = std::str::from_utf8(&self.0).unwrap_or("");
+    async_graphql::Value::String(s.into())
   }
 }
 
 impl From<I18nId> for ArgType {
   fn from(value: I18nId) -> Self {
-    ArgType::SmolStr(value.into())
+    value.to_string().into()
   }
 }
 
 impl From<&I18nId> for ArgType {
   fn from(value: &I18nId) -> Self {
-    ArgType::SmolStr(value.clone().into())
+    value.to_string().into()
   }
 }
 
 impl From<I18nId> for SmolStr {
   fn from(id: I18nId) -> Self {
-    id.0
+    std::str::from_utf8(&id.0).unwrap_or("").into()
   }
 }
 
 impl From<SmolStr> for I18nId {
   fn from(s: SmolStr) -> Self {
-    Self(s)
+    s.as_str().into()
   }
 }
 
 impl From<&SmolStr> for I18nId {
   fn from(s: &SmolStr) -> Self {
-    Self(s.clone())
+    s.as_str().into()
   }
 }
 
 impl From<String> for I18nId {
   fn from(s: String) -> Self {
-    Self(s.into())
+    s.as_str().into()
+  }
+}
+
+impl From<[u8; 22]> for I18nId {
+  fn from(arr: [u8; 22]) -> Self {
+    Self(arr)
+  }
+}
+
+impl From<&[u8; 22]> for I18nId {
+  fn from(arr: &[u8; 22]) -> Self {
+    Self(*arr)
+  }
+}
+
+impl From<I18nId> for [u8; 22] {
+  fn from(id: I18nId) -> Self {
+    id.0
   }
 }
 
 impl From<&str> for I18nId {
   fn from(s: &str) -> Self {
-    Self(s.into())
+    let bytes = s.as_bytes();
+    let mut arr = [0u8; 22];
+    if bytes.len() == 22 {
+      arr.copy_from_slice(bytes);
+    }
+    Self(arr)
   }
 }
 
-impl Deref for I18nId {
-  type Target = SmolStr;
+impl I18nId {
+  pub fn as_str(&self) -> &str {
+    std::str::from_utf8(&self.0).unwrap_or("")
+  }
   
-  fn deref(&self) -> &SmolStr {
-    &self.0
+  pub fn is_empty(&self) -> bool {
+    self.0 == [0u8; 22]
   }
 }
 
 impl Encode<'_, MySql> for I18nId {
   fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
-    <&str as Encode<MySql>>::encode(self.as_str(), buf)
+    buf.extend_from_slice(&self.0);
+    Ok(IsNull::No)
   }
   
   fn size_hint(&self) -> usize {
-    self.len()
+    22
   }
 }
 
 impl sqlx::Type<MySql> for I18nId {
   fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
-    <&str as sqlx::Type<MySql>>::type_info()
+    <&[u8] as sqlx::Type<MySql>>::type_info()
   }
   
   fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
-    <&str as sqlx::Type<MySql>>::compatible(ty)
+    <&[u8] as sqlx::Type<MySql>>::compatible(ty)
   }
 }
 
@@ -621,13 +697,21 @@ impl<'r> sqlx::Decode<'r, MySql> for I18nId {
   fn decode(
     value: MySqlValueRef<'r>,
   ) -> Result<Self, BoxDynError> {
-    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
+    let bytes: &[u8] = <&[u8] as sqlx::Decode<MySql>>::decode(value)?;
+    let mut arr = [0u8; 22];
+    if bytes.len() == 22 {
+      arr.copy_from_slice(bytes);
+    } else if bytes.len() > 22 {
+      return Err("I18nId must be 22 bytes".into());
+    }
+    Ok(Self(arr))
   }
 }
 
 impl PartialEq<str> for I18nId {
   fn eq(&self, other: &str) -> bool {
-    self.0 == other
+    let bytes = other.as_bytes();
+    self.0 == bytes
   }
 }
 

@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -227,7 +231,7 @@ pub async fn update_by_id_org(
 ) -> Result<OrgId> {
   
   let is_locked = org_dao::get_is_locked_by_id_org(
-    org_id.clone(),
+    org_id,
     None,
   ).await?;
   
