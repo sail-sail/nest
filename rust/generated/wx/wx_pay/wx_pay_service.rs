@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -227,7 +231,7 @@ pub async fn update_by_id_wx_pay(
 ) -> Result<WxPayId> {
   
   let is_locked = wx_pay_dao::get_is_locked_by_id_wx_pay(
-    wx_pay_id.clone(),
+    wx_pay_id,
     None,
   ).await?;
   

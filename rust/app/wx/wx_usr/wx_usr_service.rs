@@ -158,8 +158,8 @@ pub async fn code2session(
       options.clone(),
     ).await?;
     update_tenant_by_id_wx_usr(
-      wx_usr_id.clone(),
-      tenant_id.clone(),
+      wx_usr_id,
+      tenant_id,
       options.clone(),
     ).await?;
     wx_usr_model = find_by_id_wx_usr(
@@ -173,15 +173,15 @@ pub async fn code2session(
   
   if wx_usr_model.tenant_id != tenant_id {
     update_tenant_by_id_wx_usr(
-      wx_usr_model.id.clone(),
-      tenant_id.clone(),
+      wx_usr_model.id,
+      tenant_id,
       options.clone(),
     ).await?;
   }
   
   if wx_usr_model.unionid != unionid {
     update_by_id_wx_usr(
-      wx_usr_model.id.clone(),
+      wx_usr_model.id,
       WxUsrInput {
         unionid: Some(unionid.clone()),
         ..Default::default()
@@ -191,7 +191,7 @@ pub async fn code2session(
   }
   
   let usr_model = find_by_id_usr(
-    wx_usr_model.usr_id.clone(),
+    wx_usr_model.usr_id,
     options.clone(),
   ).await?;
   
@@ -213,23 +213,23 @@ pub async fn code2session(
           .set_unique_type(UniqueType::Update)
       ),
     ).await?;
-    wx_usr_model.usr_id = usr_id.clone();
+    wx_usr_model.usr_id = usr_id;
     update_tenant_by_id_usr(
-      usr_id.clone(),
-      tenant_id.clone(),
+      usr_id,
+      tenant_id,
       options.clone(),
     ).await?;
     update_by_id_wx_usr(
-      wx_usr_model.id.clone(),
+      wx_usr_model.id,
       WxUsrInput {
-        usr_id: Some(usr_id.clone()),
+        usr_id: Some(usr_id),
         ..Default::default()
       },
       options.clone(),
     ).await?;
     wx_usr_model = validate_option_wx_usr(
       find_by_id_wx_usr(
-        wx_usr_model.id.clone(),
+        wx_usr_model.id,
         options.clone(),
       ).await?,
     ).await?;
@@ -240,7 +240,7 @@ pub async fn code2session(
   
   let usr_model = validate_option_usr(
     find_by_id_usr(
-      usr_id.clone(),
+      usr_id,
       options.clone(),
     ).await?,
   ).await?;
@@ -262,7 +262,7 @@ pub async fn code2session(
         r#type: Some(LoginLogType::Wxapp),
         ip: ip.clone().into(),
         is_succ: 1.into(),
-        tenant_id: tenant_id.clone().into(),
+        tenant_id: tenant_id.into(),
         ..Default::default()
       },
       options.clone(),
@@ -274,11 +274,11 @@ pub async fn code2session(
   let exp = now.and_utc().timestamp_millis() / 1000 + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
-    id: usr_id.clone(),
+    id: usr_id,
     wx_usr_id: Some(wx_usr_id),
     wxo_usr_id: None,
-    tenant_id: tenant_id.clone(),
-    org_id: org_id.clone(),
+    tenant_id,
+    org_id,
     lang: lang.clone(),
     exp,
   })?;

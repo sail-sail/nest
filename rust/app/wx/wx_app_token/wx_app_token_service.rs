@@ -95,7 +95,7 @@ pub async fn get_access_token(
   
   let wx_app_token_model = find_one_wx_app_token(
     Some(WxAppTokenSearch {
-      wx_app_id: Some(vec![wx_app_id.clone()]),
+      wx_app_id: Some(vec![wx_app_id]),
       ..Default::default()
     }),
     None,
@@ -113,7 +113,7 @@ pub async fn get_access_token(
     
     create_wx_app_token(
       WxAppTokenInput {
-        wx_app_id: Some(wx_app_id.clone()),
+        wx_app_id: Some(wx_app_id),
         appid: Some(appid.clone()),
         appsecret: Some(appsecret.clone()),
         access_token: Some(access_token.clone()),

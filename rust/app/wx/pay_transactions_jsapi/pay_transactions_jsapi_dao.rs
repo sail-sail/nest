@@ -143,7 +143,7 @@ pub async fn transactions_jsapi(
   
   let tenant_model = validate_option_tenant(
     find_by_id_tenant(
-      tenant_id.clone(),
+      tenant_id,
       options.clone(),
     ).await?
   ).await?;
@@ -161,7 +161,7 @@ pub async fn transactions_jsapi(
       ..Default::default()
     }));
   } else {
-    domain_ids[0].clone()
+    domain_ids[0]
   };
   
   let domain_model = find_by_id_ok_domain(
