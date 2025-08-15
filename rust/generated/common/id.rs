@@ -86,7 +86,7 @@ pub fn parse_id<T: Id>(value: async_graphql::Value) -> async_graphql::InputValue
   match value {
     async_graphql::Value::String(s) => {
       let bytes = s.as_bytes();
-      if bytes.len() == 0 {
+      if bytes.is_empty() {
         let arr = [0u8; 22];
         return Ok(T::from_bytes(arr));
       }
