@@ -2,7 +2,6 @@
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
 #![allow(clippy::collapsible_if)]
-#![allow(clippy::len_zero)]
 
 use std::fmt;
 #[allow(unused_imports)]
