@@ -74,6 +74,12 @@ pub struct MenuModel {
   /// 参数
   #[graphql(name = "route_query")]
   pub route_query: String,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide")]
+  pub is_home_hide: u8,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide_lbl")]
+  pub is_home_hide_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -128,6 +134,9 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let route_path: String = row.try_get("route_path")?;
     // 参数
     let route_query: String = row.try_get("route_query")?;
+    // 首页隐藏
+    let is_home_hide: u8 = row.try_get("is_home_hide")?;
+    let is_home_hide_lbl: String = is_home_hide.to_string();
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -170,6 +179,8 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       lbl,
       route_path,
       route_query,
+      is_home_hide,
+      is_home_hide_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -212,6 +223,12 @@ pub struct MenuFieldComment {
   /// 参数
   #[graphql(name = "route_query")]
   pub route_query: String,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide")]
+  pub is_home_hide: String,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide_lbl")]
+  pub is_home_hide_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: String,
@@ -297,6 +314,9 @@ pub struct MenuSearch {
   /// 参数
   #[graphql(skip)]
   pub route_query_like: Option<String>,
+  /// 首页隐藏
+  #[graphql(skip)]
+  pub is_home_hide: Option<Vec<u8>>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -395,6 +415,10 @@ impl std::fmt::Debug for MenuSearch {
     if let Some(ref route_query_like) = self.route_query_like {
       item = item.field("route_query_like", route_query_like);
     }
+    // 首页隐藏
+    if let Some(ref is_home_hide) = self.is_home_hide {
+      item = item.field("is_home_hide", is_home_hide);
+    }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
@@ -479,6 +503,12 @@ pub struct MenuInput {
   /// 参数
   #[graphql(name = "route_query")]
   pub route_query: Option<String>,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide")]
+  pub is_home_hide: Option<u8>,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide_lbl")]
+  pub is_home_hide_lbl: Option<String>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -544,6 +574,9 @@ impl From<MenuModel> for MenuInput {
       route_path: model.route_path.into(),
       // 参数
       route_query: model.route_query.into(),
+      // 首页隐藏
+      is_home_hide: model.is_home_hide.into(),
+      is_home_hide_lbl: model.is_home_hide_lbl.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -588,6 +621,8 @@ impl From<MenuInput> for MenuSearch {
       route_path: input.route_path,
       // 参数
       route_query: input.route_query,
+      // 首页隐藏
+      is_home_hide: input.is_home_hide.map(|x| vec![x]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
