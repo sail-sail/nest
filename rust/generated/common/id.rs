@@ -9,6 +9,9 @@ use smol_str::SmolStr;
 use async_graphql;
 use crate::common::context::ArgType;
 
+/// 空ID的字节数组常量
+pub const EMPTY_ID_BYTES: [u8; 22] = [0u8; 22];
+
 /// 通用ID trait，为22字节的ID类型提供统一接口
 pub trait Id: 
   Default + Clone + Copy + PartialEq + Eq + Hash + Send + Sync + 
@@ -34,12 +37,16 @@ pub trait Id:
   
   /// 转换为字符串切片
   fn as_str(&self) -> &str {
-    std::str::from_utf8(self.as_bytes()).unwrap_or("")
+    if self.is_empty() {
+      ""
+    } else {
+      std::str::from_utf8(self.as_bytes()).unwrap_or("")
+    }
   }
   
   /// 检查是否为空ID
   fn is_empty(&self) -> bool {
-    *self.as_bytes() == [0u8; 22]
+    *self.as_bytes() == crate::common::id::EMPTY_ID_BYTES
   }
 }
 
@@ -49,9 +56,13 @@ where
   S: serde::Serializer,
   T: Id,
 {
-  match std::str::from_utf8(id.as_bytes()) {
-    Ok(s) => serializer.serialize_str(s),
-    Err(_) => serializer.serialize_str("")
+  if id.is_empty() {
+    serializer.serialize_str("")
+  } else {
+    match std::str::from_utf8(id.as_bytes()) {
+      Ok(s) => serializer.serialize_str(s),
+      Err(_) => serializer.serialize_str("")
+    }
   }
 }
 
@@ -75,9 +86,13 @@ pub fn debug_id<T: Id>(id: &T, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 
 /// 为实现Id trait的类型提供默认的Display实现
 pub fn display_id<T: Id>(id: &T, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-  match std::str::from_utf8(id.as_bytes()) {
-    Ok(s) => write!(f, "{}", s),
-    Err(_) => write!(f, "")
+  if id.is_empty() {
+    write!(f, "")
+  } else {
+    match std::str::from_utf8(id.as_bytes()) {
+      Ok(s) => write!(f, "{}", s),
+      Err(_) => write!(f, "")
+    }
   }
 }
 
@@ -87,15 +102,14 @@ pub fn parse_id<T: Id>(value: async_graphql::Value) -> async_graphql::InputValue
     async_graphql::Value::String(s) => {
       let bytes = s.as_bytes();
       if bytes.is_empty() {
-        let arr = [0u8; 22];
-        return Ok(T::from_bytes(arr));
+        return Ok(T::from_bytes(crate::common::id::EMPTY_ID_BYTES));
       }
       if bytes.len() != 22 {
         return Err(async_graphql::InputValueError::custom(
           format!("{} must be 22 bytes string or empty", T::TYPE_NAME)
         ));
       }
-      let mut arr = [0u8; 22];
+      let mut arr = crate::common::id::EMPTY_ID_BYTES;
       arr.copy_from_slice(bytes);
       Ok(T::from_bytes(arr))
     },
@@ -105,8 +119,12 @@ pub fn parse_id<T: Id>(value: async_graphql::Value) -> async_graphql::InputValue
 
 /// 为实现Id trait的类型提供默认的GraphQL ScalarType::to_value实现
 pub fn to_value_id<T: Id>(id: &T) -> async_graphql::Value {
-  let s = std::str::from_utf8(id.as_bytes()).unwrap_or("");
-  async_graphql::Value::String(s.into())
+  if id.is_empty() {
+    async_graphql::Value::String("".into())
+  } else {
+    let s = std::str::from_utf8(id.as_bytes()).unwrap_or("");
+    async_graphql::Value::String(s.into())
+  }
 }
 
 /// 为实现Id trait的类型提供默认的SQLx Encode实现
@@ -118,7 +136,7 @@ pub fn encode_id<T: Id>(id: &T, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDy
 /// 为实现Id trait的类型提供默认的SQLx Decode实现
 pub fn decode_id<T: Id>(value: MySqlValueRef<'_>) -> Result<T, BoxDynError> {
   let bytes: &[u8] = <&[u8] as sqlx::Decode<MySql>>::decode(value)?;
-  let mut arr = [0u8; 22];
+  let mut arr = EMPTY_ID_BYTES;
   if bytes.len() == 22 {
     arr.copy_from_slice(bytes);
   } else if bytes.len() > 22 {
@@ -157,12 +175,16 @@ macro_rules! impl_id {
     impl $id_type {
       /// 转换为字符串切片
       pub fn as_str(&self) -> &str {
-        std::str::from_utf8(&self.0).unwrap_or("")
+        if self.is_empty() {
+          ""
+        } else {
+          std::str::from_utf8(&self.0).unwrap_or("")
+        }
       }
       
       /// 检查是否为空ID
       pub fn is_empty(&self) -> bool {
-        self.0 == [0u8; 22]
+        self.0 == $crate::common::id::EMPTY_ID_BYTES
       }
     }
 
@@ -221,7 +243,7 @@ macro_rules! impl_id {
 
     impl From<$id_type> for SmolStr {
       fn from(id: $id_type) -> Self {
-        std::str::from_utf8(id.as_bytes()).unwrap_or("").into()
+        id.as_str().into()
       }
     }
 
@@ -270,7 +292,7 @@ macro_rules! impl_id {
     impl From<&str> for $id_type {
       fn from(s: &str) -> Self {
         let bytes = s.as_bytes();
-        let mut arr = [0u8; 22];
+        let mut arr = $crate::common::id::EMPTY_ID_BYTES;
         if bytes.len() == 22 {
           arr.copy_from_slice(bytes);
         }
