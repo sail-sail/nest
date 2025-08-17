@@ -443,6 +443,9 @@ export default defineConfig({
         width: 160,
       },
       {
+        COLUMN_NAME: "is_home_hide",
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
