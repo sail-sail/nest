@@ -13,6 +13,8 @@
   :disabled="props.disabled"
   :readonly="props.readonly"
   :placeholder="props.readonly ? props.readonlyPlaceholder : props.placeholder"
+  :start-placeholder="props.startPlaceholder || '开始'"
+  :end-placeholder="props.endPlaceholder || '结束'"
   :shortcuts="shortcutsComputed"
   @change="onChange"
   @clear="onClear"
@@ -57,6 +59,8 @@ const props = withDefaults(
     readonly?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
+    startPlaceholder?: string;
+    endPlaceholder?: string;
     shortcuts?: DatePickerProps["shortcuts"];
   }>(),
   {
@@ -66,6 +70,8 @@ const props = withDefaults(
     disabled: undefined,
     readonly: undefined,
     placeholder: undefined,
+    startPlaceholder: undefined,
+    endPlaceholder: undefined,
     readonlyPlaceholder: undefined,
     shortcuts: undefined,
   },
