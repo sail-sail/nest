@@ -104,6 +104,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
       t.is_deleted=0
       and t.is_enabled=1
       and t.is_hidden=0
+      and t.is_home_hide=0
       {where_query}"#,
   );
   
