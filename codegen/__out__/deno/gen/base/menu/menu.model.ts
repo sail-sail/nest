@@ -27,6 +27,8 @@ declare global {
     /** 参数 */
     route_query?: string;
     route_query_like?: string;
+    /** 首页隐藏 */
+    is_home_hide?: number[];
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */
