@@ -127,6 +127,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_home_hide == null)">
+          <el-form-item
+            label="首页隐藏"
+            prop="is_home_hide"
+          >
+            <DictSelect
+              v-model="dialogModel.is_home_hide"
+              :set="dialogModel.is_home_hide = dialogModel.is_home_hide ?? undefined"
+              code="yes_no"
+              placeholder="请选择 首页隐藏"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"
@@ -322,6 +337,13 @@ watchEffect(async () => {
         type: "string",
         max: 45,
         message: "名称 长度不能超过 45",
+      },
+    ],
+    // 首页隐藏
+    is_home_hide: [
+      {
+        required: true,
+        message: "请选择 首页隐藏",
       },
     ],
     // 排序
@@ -680,6 +702,7 @@ async function nextId() {
 watch(
   () => [
     dialogModel.parent_id,
+    dialogModel.is_home_hide,
   ],
   () => {
     if (!inited) {
@@ -687,6 +710,9 @@ watch(
     }
     if (!dialogModel.parent_id) {
       dialogModel.parent_id_lbl = "";
+    }
+    if (!dialogModel.is_home_hide) {
+      dialogModel.is_home_hide_lbl = "";
     }
   },
 );

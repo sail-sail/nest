@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortOptions,
+  intoInputOptions,
 } from "./options.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsOptions(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputOptions(input);
     
     await setIdByLblOptions(input);
     
     await validateOptions(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsOptions(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdOptions(
   input: OptionsInput,
 ): Promise<OptionsId> {
   
-  input.id = undefined;
+  intoInputOptions(input);
   
   const {
     setIdByLblOptions,

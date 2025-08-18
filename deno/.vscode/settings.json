@@ -51,6 +51,22 @@
     "**/.husky": true,
     "graphql.config.js": true
   },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/.git/logs/**": true,
+    "dist/**": true,
+    "build/**": true,
+    ".cache/**": true,
+    ".temp/**": true,
+    ".tmp/**": true,
+    "tmp/**": true,
+    "gen/**": true,
+    "**/*.log": true,
+    "lib/script/publish_cnf.js": true,
+    "**/.pnpm-store/**": true
+  },
   "diffEditor.useInlineViewWhenSpaceIsLimited": false,
   "terminal.integrated.defaultProfile.windows": "Command Prompt",
   "git.timeline.showUncommitted": true,

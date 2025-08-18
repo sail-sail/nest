@@ -1,6 +1,6 @@
 <template>
 <div
-  v-if="readonly !== true"
+  v-if="props.readonly !== true"
   un-flex="~"
   un-items-center
   un-w="full"
@@ -64,7 +64,7 @@
       un-whitespace-pre-wrap
       class="custom_input_readonly_content"
       :class="{
-        'items-safe-center': type !== 'textarea',
+        'items-safe-center': props.type !== 'textarea',
         'custom_input_placeholder': shouldShowPlaceholder,
       }"
       :style="{
@@ -103,6 +103,9 @@
 </template>
 
 <script lang="ts" setup>
+import type {
+  InputProps,
+} from "element-plus";
 
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,8 +115,10 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
+defineSlots<InstanceType<typeof ElInput>["$slots"]>();
+
 const props = withDefaults(
-  defineProps<{
+  defineProps<Partial<InputProps> & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     type?: string;

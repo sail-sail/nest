@@ -19,6 +19,10 @@ type MenuModel {
   route_path: String!
   "参数"
   route_query: String!
+  "首页隐藏"
+  is_home_hide: Int!
+  "首页隐藏"
+  is_home_hide_lbl: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -63,6 +67,10 @@ type MenuFieldComment {
   route_path: String!
   "参数"
   route_query: String!
+  "首页隐藏"
+  is_home_hide: String!
+  "首页隐藏"
+  is_home_hide_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -105,6 +113,10 @@ input MenuInput {
   route_path: String
   "参数"
   route_query: String
+  "首页隐藏"
+  is_home_hide: Int
+  "首页隐藏"
+  is_home_hide_lbl: String
   "锁定"
   is_locked: Int
   "锁定"

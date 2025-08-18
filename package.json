@@ -26,11 +26,7 @@
     "db_charset": "cd codegen && ts-node src/util/npmDbCharset.ts",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
-    "prepare": "husky",
     "preinstall": "npx only-allow pnpm",
-    "postinstall": "cd deno && pnpm i && cd ../pc && pnpm i && cd ../uni && pnpm i"
-  },
-  "devDependencies": {
-    "husky": "9.1.7"
+    "postinstall": "git config core.untrackedcache true && git config core.fsmonitor true && git config core.preloadindex true && cd deno && pnpm i && cd ../pc && pnpm i && cd ../uni && pnpm i"
   }
 }

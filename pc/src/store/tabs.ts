@@ -1,6 +1,7 @@
 import type {
   RouteLocationNormalizedLoaded,
   RouteMeta,
+  Router,
 } from "vue-router";
 
 import config from "@/utils/config";
@@ -29,9 +30,11 @@ const actTab = computed(() => tabs.value.find((item) => item.active));
 
 const keepAliveNames = ref<string[]>([ ]);
 
-let indexIsEmptyHandle: ReturnType<typeof watch> | undefined;
+let indexIsEmptyHandle: ReturnType<typeof watch> | undefined = undefined;
 
 const menuStore = useMenuStore();
+
+let router: Router | undefined = undefined;
 
 export default function() {
   
@@ -137,7 +140,9 @@ export default function() {
   
   async function removeTab(tab: TabInf, force = false) {
     
-    const router = useRouter();
+    if (!router) {
+      router = useRouter();
+    }
     
     if (!tab) {
       return false;
@@ -188,7 +193,9 @@ export default function() {
   
   async function closeOtherTabs(tab?: TabInf) {
     
-    const router = useRouter();
+    if (!router) {
+      router = useRouter();
+    }
     
     const notCloseableTabs = tabs.value.filter((item) => item.closeable === false);
     if (!tab) {
@@ -216,7 +223,9 @@ export default function() {
   
   async function refreshTab(route: RouteLocationNormalizedLoaded) {
     
-    const router = useRouter();
+    if (!router) {
+      router = useRouter();
+    }
     
     let hash = location.hash;
     if (hash.startsWith("#")) {

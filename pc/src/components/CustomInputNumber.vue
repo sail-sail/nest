@@ -9,6 +9,11 @@
   :step-strictly="props.stepStrictly"
   :min="props.min"
   :controls="props.controls"
+  :align="props.align"
+  :class="{
+    'custom_input_number_align_center': props.align === 'center',
+    'custom_input_number_align_right': props.align === 'right',
+  }"
   v-bind="$attrs"
   :clearable="!props.disabled && props.clearable"
   :disabled="props.disabled"
@@ -42,6 +47,11 @@
       un-line-height="normal"
       un-whitespace-nowrap
       class="custom_input_number_readonly"
+      :class="{
+        'custom_input_number_placeholder': shouldShowPlaceholder,
+        'custom_input_number_align_center': props.align === 'center',
+        'custom_input_number_align_right': props.align === 'right',
+      }"
       v-bind="$attrs"
     >
       {{ modelLabel }}
@@ -52,6 +62,9 @@
   >
     <div
       class="custom_input_number_readonly readonly_border_none"
+      :class="{
+        'custom_input_number_placeholder': shouldShowPlaceholder,
+      }"
       v-bind="$attrs"
     >
       {{ modelLabel }}
@@ -61,6 +74,10 @@
 </template>
 
 <script lang="ts" setup>
+import type {
+  InputNumberProps,
+} from "element-plus";
+
 import Decimal from "decimal.js";
 
 const emit = defineEmits<{
@@ -71,8 +88,10 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
+defineSlots<InstanceType<typeof ElInputNumber>['$slots']>();
+
 const props = withDefaults(
-  defineProps<{
+  defineProps<Partial<InputNumberProps> & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     precision?: number;
@@ -86,6 +105,8 @@ const props = withDefaults(
     isReadonlyBorder?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
+    zeroIsEmpty?: boolean;
+    align?: "center" | "left" | "right";
   }>(),
   {
     modelValue: undefined,
@@ -100,6 +121,8 @@ const props = withDefaults(
     isReadonlyBorder: true,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
+    zeroIsEmpty: true,
+    align: undefined,
   },
 );
 
@@ -140,6 +163,9 @@ const modelValueComputed = $computed({
       if (isNaN(num)) {
         return modelValue;
       }
+      if (props.zeroIsEmpty && num === 0) {
+        return;
+      }
       return num;
     }
     return modelValue;
@@ -163,7 +189,17 @@ const modelLabel = $computed(() => {
   if (props.precision === 0) {
     return modelValue;
   }
+  if (props.zeroIsEmpty && Number(modelValue) === 0) {
+    if (props.readonlyPlaceholder) {
+      return props.readonlyPlaceholder;
+    }
+    return "";
+  }
   return Number(modelValue).toFixed(props.precision);
+});
+
+const shouldShowPlaceholder = $computed<boolean>(() => {
+  return modelValue == null || modelValue === "" || Number(modelValue) === 0;
 });
 
 function onChange() {
@@ -174,3 +210,12 @@ function onChange() {
   emit("change", modelValue);
 }
 </script>
+
+<style lang="scss" scoped>
+.custom_input_number_align_center {
+  text-align: center;
+}
+.custom_input_number_align_right {
+  text-align: right;
+}
+</style>

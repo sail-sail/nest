@@ -39,6 +39,9 @@ export const menuFields = [
   "route_path",
   // 参数
   "route_query",
+  // 首页隐藏
+  "is_home_hide",
+  "is_home_hide_lbl",
   // 锁定
   "is_locked",
   "is_locked_lbl",

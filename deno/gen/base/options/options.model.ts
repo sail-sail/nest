@@ -103,3 +103,14 @@ export function checkSortOptions(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputOptions(
+  input?: OptionsInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}
