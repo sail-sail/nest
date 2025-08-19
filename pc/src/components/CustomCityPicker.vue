@@ -83,10 +83,6 @@ import {
 } from "element-plus";
 
 import type {
-  CascaderInstance,
-} from "element-plus";
-
-import type {
   CascaderProps,
 } from "element-plus";
 
@@ -101,7 +97,7 @@ import type {
 defineSlots<InstanceType<typeof ElCascader>['$slots']>();
 
 const props = withDefaults(
-  defineProps<Partial<CascaderInstance> & {
+  defineProps<{
     readonly?: boolean;
     readonlyPlaceholder?: string;
     separator?: string;
