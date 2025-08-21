@@ -149,19 +149,13 @@ pub fn decode_id<T: Id>(value: MySqlValueRef<'_>) -> Result<T, BoxDynError> {
 #[macro_export]
 macro_rules! impl_id {
   
-  // 简化版本：只需要一个名称参数，TYPE_NAME 和 GRAPHQL_NAME 使用相同的值
-  ($id_type:ident, $name:literal) => {
-    $crate::impl_id!($id_type, $name, $name);
-  };
-  
-  // 完整版本：分别指定 TYPE_NAME 和 GRAPHQL_NAME
-  ($id_type:ident, $type_name:literal, $graphql_name:literal) => {
+  ($id_type:ident) => {
     #[derive(Default, Clone, Copy, PartialEq, Eq, Hash)]
     pub struct $id_type([u8; 22]);
 
     impl $crate::common::id::Id for $id_type {
-      const TYPE_NAME: &'static str = $type_name;
-      const GRAPHQL_NAME: &'static str = $graphql_name;
+      const TYPE_NAME: &'static str = stringify!($id_type);
+      const GRAPHQL_NAME: &'static str = stringify!($id_type);
       
       fn as_bytes(&self) -> &[u8; 22] {
         &self.0
@@ -188,7 +182,7 @@ macro_rules! impl_id {
       }
     }
 
-    impl Serialize for $id_type {
+    impl serde::Serialize for $id_type {
       fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
       where
         S: serde::Serializer,
@@ -197,7 +191,7 @@ macro_rules! impl_id {
       }
     }
 
-    impl<'de> Deserialize<'de> for $id_type {
+    impl<'de> serde::Deserialize<'de> for $id_type {
       fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
       where
         D: serde::Deserializer<'de>,
@@ -206,19 +200,19 @@ macro_rules! impl_id {
       }
     }
 
-    impl fmt::Debug for $id_type {
-      fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    impl std::fmt::Debug for $id_type {
+      fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         $crate::common::id::debug_id(self, f)
       }
     }
 
-    impl fmt::Display for $id_type {
-      fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    impl std::fmt::Display for $id_type {
+      fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         $crate::common::id::display_id(self, f)
       }
     }
 
-    #[async_graphql::Scalar(name = $graphql_name)]
+    #[async_graphql::Scalar]
     impl async_graphql::ScalarType for $id_type {
       fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
         $crate::common::id::parse_id(value)
@@ -229,32 +223,32 @@ macro_rules! impl_id {
       }
     }
 
-    impl From<$id_type> for ArgType {
+    impl From<$id_type> for $crate::common::context::ArgType {
       fn from(value: $id_type) -> Self {
         value.to_string().into()
       }
     }
 
-    impl From<&$id_type> for ArgType {
+    impl From<&$id_type> for $crate::common::context::ArgType {
       fn from(value: &$id_type) -> Self {
         value.to_string().into()
       }
     }
 
-    impl From<$id_type> for SmolStr {
+    impl From<$id_type> for smol_str::SmolStr {
       fn from(id: $id_type) -> Self {
         id.as_str().into()
       }
     }
 
-    impl From<SmolStr> for $id_type {
-      fn from(s: SmolStr) -> Self {
+    impl From<smol_str::SmolStr> for $id_type {
+      fn from(s: smol_str::SmolStr) -> Self {
         s.as_str().into()
       }
     }
 
-    impl From<&SmolStr> for $id_type {
-      fn from(s: &SmolStr) -> Self {
+    impl From<&smol_str::SmolStr> for $id_type {
+      fn from(s: &smol_str::SmolStr) -> Self {
         s.as_str().into()
       }
     }
@@ -300,8 +294,8 @@ macro_rules! impl_id {
       }
     }
 
-    impl<'q> Encode<'q, MySql> for $id_type {
-      fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
+    impl<'q> sqlx::encode::Encode<'q, sqlx::MySql> for $id_type {
+      fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
         $crate::common::id::encode_id(self, buf)
       }
       
@@ -310,18 +304,18 @@ macro_rules! impl_id {
       }
     }
 
-    impl sqlx::Type<MySql> for $id_type {
-      fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
-        <&[u8] as sqlx::Type<MySql>>::type_info()
+    impl sqlx::Type<sqlx::MySql> for $id_type {
+      fn type_info() -> <sqlx::MySql as sqlx::Database>::TypeInfo {
+        <&[u8] as sqlx::Type<sqlx::MySql>>::type_info()
       }
       
-      fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
-        <&[u8] as sqlx::Type<MySql>>::compatible(ty)
+      fn compatible(ty: &<sqlx::MySql as sqlx::Database>::TypeInfo) -> bool {
+        <&[u8] as sqlx::Type<sqlx::MySql>>::compatible(ty)
       }
     }
 
-    impl<'r> sqlx::Decode<'r, MySql> for $id_type {
-      fn decode(value: MySqlValueRef<'r>) -> Result<Self, BoxDynError> {
+    impl<'r> sqlx::Decode<'r, sqlx::MySql> for $id_type {
+      fn decode(value: sqlx::mysql::MySqlValueRef<'r>) -> Result<Self, sqlx::error::BoxDynError> {
         $crate::common::id::decode_id(value)
       }
     }
@@ -335,5 +329,4 @@ macro_rules! impl_id {
   };
 }
 
-// 重新导出宏，使其更容易使用
 pub use impl_id;

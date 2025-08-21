@@ -79,11 +79,11 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
 
-#>
-#![allow(clippy::clone_on_copy)]
+#>#![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
 #![allow(clippy::collapsible_if)]
 
+#[allow(unused_imports)]
 use std::fmt;
 #[allow(unused_imports)]
 use std::collections::HashMap;
@@ -92,13 +92,9 @@ use std::str::FromStr;
 use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
-
 use color_eyre::eyre::{Result, eyre};
 
-use sqlx::encode::{Encode, IsNull};
-use sqlx::error::BoxDynError;
-use sqlx::MySql;
-use sqlx::mysql::MySqlValueRef;
+#[allow(unused_imports)]
 use smol_str::SmolStr;<#
 if (hasDecimal) {
 #>
@@ -119,6 +115,7 @@ use async_graphql::{
   Enum,
 };
 
+#[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 use crate::common::id::{Id, impl_id};<#
@@ -2895,7 +2892,7 @@ impl From<<#=tableUP#>Model> for crate::<#=mod#>::<#=historyTable#>::<#=historyT
 }
 #>
 
-impl_id!(<#=Table_Up#>Id, "<#=Table_Up#>Id");<#
+impl_id!(<#=Table_Up#>Id);<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
