@@ -1,8 +1,8 @@
-
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
 #![allow(clippy::collapsible_if)]
 
+#[allow(unused_imports)]
 use std::fmt;
 #[allow(unused_imports)]
 use std::collections::HashMap;
@@ -11,13 +11,9 @@ use std::str::FromStr;
 use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
-
 use color_eyre::eyre::{Result, eyre};
 
-use sqlx::encode::{Encode, IsNull};
-use sqlx::error::BoxDynError;
-use sqlx::MySql;
-use sqlx::mysql::MySqlValueRef;
+#[allow(unused_imports)]
 use smol_str::SmolStr;
 
 use sqlx::{
@@ -33,6 +29,7 @@ use async_graphql::{
   Enum,
 };
 
+#[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 use crate::common::id::{Id, impl_id};
@@ -734,7 +731,7 @@ impl From<WxPayInput> for WxPaySearch {
   }
 }
 
-impl_id!(WxPayId, "WxPayId");
+impl_id!(WxPayId);
 
 /// 微信支付设置 检测字段是否允许前端排序
 pub fn check_sort_wx_pay(
