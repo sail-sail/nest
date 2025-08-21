@@ -105,7 +105,7 @@ const props = withDefaults(
     isReadonlyBorder?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
-    zeroIsEmpty?: boolean;
+    isHideZero?: boolean;
     align?: "center" | "left" | "right";
   }>(),
   {
@@ -121,7 +121,7 @@ const props = withDefaults(
     isReadonlyBorder: true,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
-    zeroIsEmpty: true,
+    isHideZero: true,
     align: undefined,
   },
 );
@@ -163,7 +163,7 @@ const modelValueComputed = $computed({
       if (isNaN(num)) {
         return modelValue;
       }
-      if (props.zeroIsEmpty && num === 0) {
+      if (props.isHideZero && num === 0) {
         return;
       }
       return num;
@@ -189,7 +189,7 @@ const modelLabel = $computed(() => {
   if (props.precision === 0) {
     return modelValue;
   }
-  if (props.zeroIsEmpty && Number(modelValue) === 0) {
+  if (props.isHideZero && Number(modelValue) === 0) {
     if (props.readonlyPlaceholder) {
       return props.readonlyPlaceholder;
     }
@@ -199,7 +199,7 @@ const modelLabel = $computed(() => {
 });
 
 const shouldShowPlaceholder = $computed<boolean>(() => {
-  return modelValue == null || modelValue === "" || Number(modelValue) === 0;
+  return modelValue == null || modelValue === "" || (!Number(modelValue) && props.isHideZero);
 });
 
 function onChange() {
