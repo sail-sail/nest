@@ -40,6 +40,7 @@
     <div
       un-flex="~ [1_0_0]"
       un-overflow-hidden
+      un-items="center"
       un-p="x-2.5 y-0.875"
       un-box-border
       un-w="full"
