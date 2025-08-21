@@ -10025,7 +10025,7 @@ interface Uni {
      * ```
      * @tutorial http://uniapp.dcloud.io/api/media/image?id=previewimage
      */
-    previewImage(options: UniNamespace.PreviewImageOptions): void;
+    previewImage(options: UniNamespace.PreviewImageOptions): Promise<any>;
     /**
      * 预览图片
      *

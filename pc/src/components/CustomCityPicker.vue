@@ -40,6 +40,7 @@
     <div
       un-flex="~ [1_0_0]"
       un-overflow-hidden
+      un-items="center"
       un-p="x-2.5 y-0.875"
       un-box-border
       un-w="full"
@@ -83,10 +84,6 @@ import {
 } from "element-plus";
 
 import type {
-  CascaderInstance,
-} from "element-plus";
-
-import type {
   CascaderProps,
 } from "element-plus";
 
@@ -101,7 +98,7 @@ import type {
 defineSlots<InstanceType<typeof ElCascader>['$slots']>();
 
 const props = withDefaults(
-  defineProps<Partial<CascaderInstance> & {
+  defineProps<{
     readonly?: boolean;
     readonlyPlaceholder?: string;
     separator?: string;
