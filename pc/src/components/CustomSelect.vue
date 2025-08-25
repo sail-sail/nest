@@ -309,7 +309,8 @@ const t = getCurrentInstance();
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", value: any[]): void;
-  (e: "update:modelValue", value?: string | string[] | null): void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (e: "update:modelValue", value?: any | any[] | null): void;
   (e: "update:modelLabel", value?: string | null): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any | any[] | null): void;
