@@ -18,7 +18,6 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "@lancedb/arrow-flight-sql-client": "0.2.3",
     "dayjs": "1.11.13",
     "decimal.js": "10.6.0",
     "graphql": "16.11.0",
