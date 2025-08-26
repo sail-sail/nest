@@ -28,6 +28,7 @@
     "mnemonist": "0.40.3",
     "mysql2": "3.14.3",
     "path-to-regexp": "6.3.0",
+    "sqlstring": "2.3.3",
     "wechatpay-node-v3": "2.2.1"
   },
   "devDependencies": {

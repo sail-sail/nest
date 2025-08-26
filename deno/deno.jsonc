@@ -55,7 +55,7 @@
     "jose/": "https://deno.land/x/jose@v6.0.12/",
     "mnemonist": "npm:mnemonist@0.40.2",
     "redis": "https://deno.land/x/redis@v0.40.0/mod.ts",
-    "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts",
+    "sqlstring": "npm:sqlstring@2.3.3",
     "mqtt": "jsr:@ymjacky/mqtt5@0.0.21",
     "wechatpay-node-v3": "npm:wechatpay-node-v3@2.2.1"
   }
