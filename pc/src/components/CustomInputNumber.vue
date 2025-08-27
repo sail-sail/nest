@@ -131,11 +131,14 @@ let modelValue = $ref(props.modelValue);
 watch(
   () => props.modelValue,
   () => {
-    if (props.modelValue == null) {
+    if (props.modelValue == null || (props.isHideZero && Number(props.modelValue.toString()) === 0)) {
       modelValue = undefined;
       return;
     }
     modelValue = props.modelValue;
+  },
+  {
+    immediate: true,
   },
 );
 
