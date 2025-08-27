@@ -56,7 +56,7 @@ async function getTsdbUrl(): Promise<string> {
 /**
  * 时序数据库执行sql更新或删除语句
  */
-export async function execute<T extends any>(
+export async function executeTs<T extends any>(
   sql: string,
   // deno-lint-ignore no-explicit-any
   args?: any[] | QueryArgs,
@@ -66,7 +66,7 @@ export async function execute<T extends any>(
   },
 ): Promise<T> {
   
-  const data = await query<T>(sql, args, opt);
+  const data = await queryTs<T>(sql, args, opt);
   
   return data;
 }
@@ -74,7 +74,7 @@ export async function execute<T extends any>(
 /**
  * 时序数据库执行 sql
  */
-export async function query<T extends any>(
+export async function queryTs<T extends any>(
   sql: string,
   // deno-lint-ignore no-explicit-any
   args?: any[] | QueryArgs,
