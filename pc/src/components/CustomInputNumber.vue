@@ -121,7 +121,7 @@ const props = withDefaults(
     isReadonlyBorder: true,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
-    isHideZero: true,
+    isHideZero: false,
     align: undefined,
   },
 );

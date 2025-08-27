@@ -310,7 +310,7 @@ const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", value: any[]): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (e: "update:modelValue", value?: any | any[] | null): void;
+  (e: "update:modelValue", value?: any): void;
   (e: "update:modelLabel", value?: string | null): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any | any[] | null): void;
@@ -344,7 +344,8 @@ const props = withDefaults(
     findByValues?: (value: any[]) => Promise<any[]>; // 通过value获取数据的方法
     optionsMap?: OptionsMap;
     height?: number;
-    modelValue?: string | string[] | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    modelValue?: any;
     modelLabel?: string | null;
     autoWidth?: boolean;
     maxWidth?: number;
@@ -364,7 +365,8 @@ const props = withDefaults(
     findByValues: undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     optionsMap: function(item: any) {
-      const item2 = item as { lbl: string; id: string; };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const item2 = item as { lbl: string; id: any; };
       return {
         label: item2.lbl,
         value: item2.id,
