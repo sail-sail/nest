@@ -47,7 +47,7 @@
     "lru-cache": "npm:lru-cache@11.1.0",
     "mysql2": "npm:mysql2@3.14.3",
     "canvas": "https://deno.land/x/canvas@v1.4.2/mod.ts",
-    "dayjs": "npm:dayjs@1.11.13",
+    "dayjs": "npm:dayjs@1.11.15",
     "js-md5": "npm:js-md5@0.8.3",
     "decimal.js": "https://esm.sh/decimal.js@10.6.0",
     "graphql": "npm:graphql@16.11.0",
