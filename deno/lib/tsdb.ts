@@ -1,8 +1,5 @@
 import {
   log,
-} from "./context.ts";
-
-import type {
   QueryArgs,
 } from "./context.ts";
 
@@ -11,6 +8,7 @@ import {
 } from "./env.ts";
 
 import sqlstring from "sqlstring";
+import Decimal from "decimal.js";
 
 let _tsdbUrl: string | undefined = undefined;
 
@@ -83,6 +81,19 @@ export async function queryTs<T extends any>(
     logResult?: boolean,
   },
 ): Promise<T> {
+  
+  if (args instanceof QueryArgs) {
+    args = args.value;
+  }
+  
+  // Decimal 转换成 string
+  if (args) {
+    for (let i = 0; i < args.length; i++) {
+      if (args[i] instanceof Decimal) {
+        args[i] = args[i].toString();
+      }
+    }
+  }
   
   sql = sqlstring.format(sql, args);
   
