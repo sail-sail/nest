@@ -1,0 +1,52 @@
+{
+  "name": "deno",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "scripts": {
+    "start": "node lib/script/mother.js",
+    "gqlgen": "npx graphql-codegen --config ./lib/script/graphql_codegen_config.ts",
+    "typecheck": "deno check ./mod.ts && deno lint",
+    "lint": "deno lint",
+    "lint-staged": "lint-staged",
+    "build-prod": "deno run -A ./lib/script/build.ts --target linux --env prod",
+    "build-test": "deno run -A ./lib/script/build.ts --target linux --env test",
+    "publish": "node lib/script/publish.js",
+    "build:win": "deno run -A ./lib/script/build.ts",
+    "codegen": "cd .. && npm run codegen",
+    "db_gen_crypto_key": "deno run -A ./lib/script/db_gen_crypto_key.ts",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "dependencies": {
+    "dayjs": "1.11.15",
+    "decimal.js": "10.6.0",
+    "graphql": "16.11.0",
+    "js-md5": "0.8.3",
+    "lru-cache": "11.1.0",
+    "mime": "4.0.7",
+    "mnemonist": "0.40.3",
+    "mysql2": "3.14.3",
+    "path-to-regexp": "6.3.0",
+    "sqlstring": "2.3.3",
+    "wechatpay-node-v3": "2.2.1"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "5.0.7",
+    "@graphql-codegen/typescript": "4.1.6",
+    "@graphql-codegen/typescript-operations": "4.6.1",
+    "@types/node": "24.3.0",
+    "@types/sqlstring": "2.3.2",
+    "chokidar": "3.6.0",
+    "commander": "14.0.0",
+    "dotenv": "17.2.1",
+    "graphql-ts-client-codegen": "3.1.17",
+    "ssh2-promise": "1.0.3",
+    "typescript": "5.9.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "cpu-features",
+      "ssh2"
+    ]
+  }
+}
