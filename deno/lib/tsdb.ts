@@ -1,4 +1,5 @@
 import {
+  error,
   log,
   QueryArgs,
 } from "./context.ts";
@@ -62,7 +63,7 @@ export async function executeTs<T extends any>(
     debug?: boolean,
     logResult?: boolean,
   },
-): Promise<T> {
+): Promise<T[]> {
   
   const data = await queryTs<T>(sql, args, opt);
   
@@ -80,7 +81,7 @@ export async function queryTs<T extends any>(
     debug?: boolean,
     logResult?: boolean,
   },
-): Promise<T> {
+): Promise<T[]> {
   
   if (args instanceof QueryArgs) {
     args = args.value;
@@ -126,11 +127,17 @@ export async function queryTs<T extends any>(
     );
   }
   
-  let data: T;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error(`CnosDB execute failed: ${text}`);
+  let data: T[];
+  
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      error(text);
+      throw err;
+    }
+  } else {
+    data = [ ];
   }
   
   return data;
