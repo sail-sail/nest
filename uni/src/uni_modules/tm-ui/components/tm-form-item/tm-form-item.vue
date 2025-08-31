@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, getCurrentInstance, inject, onBeforeUnmount, watch, PropType,onMounted } from 'vue';
-import { defaultValidator } from "./../tm-form/validator"
-import { useTmConfig } from "../../libs/config";
+import {computed, getCurrentInstance, inject, onBeforeUnmount, onMounted, PropType, ref, watch} from 'vue';
+import {useTmConfig} from "../../libs/config";
 import TmForm from '../tm-form/tm-form.vue';
-import { covetUniNumber } from '../../libs/tool';
-import { getDefaultColor } from '../../libs/colors';
+import {covetUniNumber} from '../../libs/tool';
+import {getDefaultColor} from '../../libs/colors';
 
 /**
  * @displayName 表单子组件
@@ -12,13 +11,14 @@ import { getDefaultColor } from '../../libs/colors';
  * @category 表单组件
  * @page tm-form
  * @description 表单组件的校验规则现在统一放到了form组件上，form-item上不再配置校验，主要是方便统一管理校验模块，并且校验函数作了升级处理。
+ * 嵌套表单时，name值以.连接，比如"a.b.c"
  * @constant 平台兼容
- *	| H5 | uniAPP | 小程序 | version |
+ *    | H5 | uniAPP | 小程序 | version |
  | --- | --- | --- | --- |
  | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-defineOptions({ name: "TmFormItem" });
-const { config } = useTmConfig();
+defineOptions({name: "TmFormItem"});
+const {config} = useTmConfig();
 
 const props = defineProps({
     /**
@@ -197,13 +197,15 @@ const _validFun = (val: any) => {
     }
 }
 
-const setVisibled = (isvisible = true)=>{
+const setVisibled = (isvisible = true) => {
     if (!proxy) return;
     let parent = findParent(proxy)
     if (!parent) return;
     let ele = parent! as InstanceType<typeof TmForm>
-	ele._setMarker(props.name,isvisible)
+
+    ele._setMarker(props.name, isvisible)
 }
+
 function findParent(parent: any): any {
     if (parent == null) return null;
     if (parent.$parent?.$options?.name == "TmForm") return parent.$parent;

@@ -3,7 +3,7 @@ import { ref, computed, onMounted, watch, PropType } from 'vue';
 import { useTmConfig } from "../../libs/config";
 import { tmDate, type tmDateTypeTime, createDate } from '../../libs/tmDate';
 import pickerItem from './../tm-picker-view/picker-item.vue';
-
+import {$i18n} from "@/uni_modules/tm-ui"
 type PICKER_ITEM_INFO = Record<string, any>
 
 /**
@@ -66,7 +66,7 @@ const props = defineProps({
 	 */
 	title: {
 		type: String,
-		default: "请选择时间"
+		default: $i18n.t('tmui32x.tmPickerDate.title')
 	},
 	/**
 	 * 开始时间，请提供正确的时间格式
@@ -114,7 +114,14 @@ const props = defineProps({
 	 */
 	cellUnits: {
 		type: Array as PropType<string[]>,
-		default: (): string[] => ['年', '月', '日', '时', '分', '秒']
+		default: (): string[] => [
+			$i18n.t('tmui32x.tmDateView.cellUnits.year'), 
+			$i18n.t('tmui32x.tmDateView.cellUnits.month'), 
+			$i18n.t('tmui32x.tmDateView.cellUnits.day'), 
+			$i18n.t('tmui32x.tmDateView.cellUnits.hour'), 
+			$i18n.t('tmui32x.tmDateView.cellUnits.minute'), 
+			$i18n.t('tmui32x.tmDateView.cellUnits.second')
+		]
 	},
 	/**
 	 * 是否懒加载内部内容。
@@ -550,7 +557,6 @@ onMounted(() => {
 });
 </script>
 <template>
-	<view>
 	<view @click="openShow">
 		<!--
 		 @slot 插槽,默认触发打开选择器。你的默认布局可以放置在这里。
@@ -566,7 +572,6 @@ onMounted(() => {
 		</view>
 		<tm-icon v-if="!yanchiDuration" size="42" color="error" spin name="loader-line"></tm-icon>
 	</tm-drawer>
-	</view>
 </template>
 <style scoped>
 .tmPickerDateWrap {

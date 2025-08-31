@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, watch, PropType, nextTick } from 'vue';
 import tmPickerView from '../tm-picker-view/tm-picker-view.vue';
+import {$i18n} from "@/uni_modules/tm-ui"
 type TM_PICKER_X_ITEM = Record<string, any>
 type TM_PICKER_ITEM_INFO = Record<string, any>
 const pickerView = ref<InstanceType<typeof tmPickerView> | null>(null)
@@ -55,7 +56,7 @@ const props = defineProps({
      */
     title: {
         type: String,
-        default: "请选择"
+        default: $i18n.t('tmui32x.tmPicker.title')
     },
     /**
      * 是否懒加载内部内容。
@@ -87,17 +88,17 @@ const props = defineProps({
         type: String,
         default: "title"
     },
-	showClose:{
-		type:Boolean,
-		default:false
-	},
-	/**
-	 * 是否禁用弹层
-	 */
-	disabled: {
-	    type: Boolean,
-	    default: false
-	},
+    showClose: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 是否禁用弹层
+     */
+    disabled: {
+        type: Boolean,
+        default: false
+    },
 });
 
 const emit = defineEmits([
@@ -144,7 +145,7 @@ watch(() => props.modelValue, (newvalue: Array<string | number>) => {
         const { strs } = getIndexsByids(props.modelValue);
         emit('update:modelStr', strs.join(','));
         modelStrValue.value = strs.join(',');
-       
+
     }
 });
 
@@ -174,18 +175,18 @@ onMounted(() => {
 });
 
 function onSetDefaultStr() {
-    
-    if (props.modelStr == "" && _list.value.length > 0 ) {
+
+    if (props.modelStr == "" && _list.value.length > 0) {
         const { strs } = getIndexsByids(props.modelValue);
-        
+
         emit('update:modelStr', strs.join(','));
         modelStrValue.value = strs.join(',');
-        
+
     }
 }
 
 function openShow() {
-	if(_disabled.value) return;
+    if (_disabled.value) return;
     show.value = true;
     emit('update:modelShow', true);
 }
@@ -200,12 +201,12 @@ function onClose() {
 
 function strChange(str: string) {
     modelStrValue.value = str;
-    
+
 }
 
 function onOpen() {
     yanchiDuration.value = true;
-   
+
 }
 
 function mchange(ids: string[]) {
@@ -220,16 +221,16 @@ function onCancel() {
 function onConfirm() {
     let ids = nowValue.value.slice(0);
     let str = [] as string[]
-   if(ids.length==0){
-    const temp = getNowCurrent();
-    ids = temp.ids
-    str = temp.strs
-   }else{
-    const temp = getIndexsByids(ids)
-    str = temp.strs
 
-   }
+    if (ids.length == 0) {
+        const temp = getNowCurrent();
+        ids = temp.ids
+        str = temp.strs
+    } else {
+        const temp = getIndexsByids(ids)
+        str = temp.strs
 
+    }
     nowValue.value = ids;
     modelStrValue.value = str.join(',');
     emit('update:modelValue', ids);
@@ -237,14 +238,14 @@ function onConfirm() {
     emit('confirm', ids);
 }
 
-const getIndexsByids = (ids:Array<string|number>):{indexs:Array<number>,data:TM_PICKER_X_ITEM[][],strs:string[]}=> {
+const getIndexsByids = (ids: Array<string | number>): { indexs: Array<number>, data: TM_PICKER_X_ITEM[][], strs: string[] } => {
     let index = 0;
     let val = ids.slice(0)
     let indexs = [] as number[]
     let data = [] as TM_PICKER_X_ITEM[][]
     let strs = [] as string[]
 
-    if(_list.value.length==0||ids.length==0) return {indexs:[],data:[],strs:[]}
+    if (_list.value.length == 0 || ids.length == 0) return { indexs: [], data: [], strs: [] }
 
     function getIndex(nodes: TM_PICKER_X_ITEM[]) {
         if (val.length <= index || val.length == 0) return;
@@ -265,43 +266,43 @@ const getIndexsByids = (ids:Array<string|number>):{indexs:Array<number>,data:TM_
         }
     }
     getIndex(_list.value)
-    return {indexs,data,strs}
+    return { indexs, data, strs }
 }
 //根据索引返回ids
-const getIdsByindexs = (indexs:number[]):{ids:Array<string|number>,data:TM_PICKER_X_ITEM[][],strs:string[]} => {
+const getIdsByindexs = (indexs: number[]): { ids: Array<string | number>, data: TM_PICKER_X_ITEM[][], strs: string[] } => {
     let ids = [] as string[]
     let data = [] as TM_PICKER_X_ITEM[][]
     let index = 0;
     let val = indexs.slice(0)
     let strs = [] as string[]
-    
-    if(_list.value.length==0||indexs.length==0) return {ids:[],data:[],strs:[]}
+
+    if (_list.value.length == 0 || indexs.length == 0) return { ids: [], data: [], strs: [] }
     function getIds(nodes: TM_PICKER_X_ITEM[]) {
         if (val.length <= index || val.length == 0) return;
         let currentsIndex = val[index]
         let id = ''
         let str = ''
         let children = [];
-        if(nodes.length-1 >= currentsIndex){
+        if (nodes.length - 1 >= currentsIndex) {
             id = nodes[currentsIndex][props.rangKey]
             str = nodes[currentsIndex][props.rangText]
-            children = nodes[currentsIndex]?.children||[]
-        }else{
+            children = nodes[currentsIndex]?.children ?? []
+        } else {
             id = nodes[0][props.rangKey]
             str = nodes[0][props.rangText]
-            children = nodes[0]?.children||[]
+            children = nodes[0]?.children ?? []
         }
         ids.push(id)
         data.push(nodes)
         strs.push(str)
 
-        if(children.length>0){
+        if (children.length > 0) {
             index += 1
             getIds(children)
         }
     }
     getIds(_list.value)
-    return {ids,data,strs};
+    return { ids, data, strs };
 }
 const _maxDeep = computed(() => {
     if (_list.value.length == 0) return 0;
@@ -315,11 +316,11 @@ const _maxDeep = computed(() => {
     }
     return getdiepWidth(_list.value.slice(0));
 })
-const getNowCurrent = ()=>{
+const getNowCurrent = () => {
     nowValue.value = props.modelValue.slice(0)
     let currneinexs = getIndexsByids(nowValue.value).indexs;
-    let dinexs =  nowValue.value.length==0||currneinexs.length==0?new Array(_maxDeep.value).fill(0):currneinexs;
-    return  getIdsByindexs(dinexs)
+    let dinexs = nowValue.value.length == 0 || currneinexs.length == 0 ? new Array(_maxDeep.value).fill(0) : currneinexs;
+    return getIdsByindexs(dinexs)
 }
 
 </script>
@@ -341,9 +342,9 @@ export default {
 		 -->
         <slot></slot>
     </view>
-    <tm-drawer :show-close="showClose" @open="onOpen" :widthCoverCenter="true" :disabledScroll="true" max-height="80%" size="850" :title="title"
-        @close="onClose" @confirm="onConfirm" @cancel="onCancel" :showFooter="true" v-model:show="show"
-        >
+    <tm-drawer :show-close="showClose" @open="onOpen" :widthCoverCenter="true" :disabledScroll="true" max-height="80%"
+        size="850" :title="title" @close="onClose" @confirm="onConfirm" @cancel="onCancel" :showFooter="true"
+        v-model:show="show">
         <tm-picker-view v-if="show" ref="pickerView" :rangKey="rangKey" :rangText="rangText" :cell-units="_cellUnits"
             @update:modelStr="strChange" @change="mchange" v-model="nowValue" :list="_list"></tm-picker-view>
     </tm-drawer>
