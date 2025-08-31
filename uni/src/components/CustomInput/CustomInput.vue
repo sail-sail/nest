@@ -256,8 +256,7 @@ function onBlur(value: string) {
     }
     emit("change", numberValue);
   } else {
-    emit("blur", value);
-    if (value === focusValue.value) {
+    if (value === focusValue.value || "") {
       return;
     }
     emit("change", modelValue.value);

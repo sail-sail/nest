@@ -4,7 +4,7 @@ import { useTmConfig } from "../../libs/config";
 import { tmDate, type tmDateTypeTime, createDate } from '../../libs/tmDate';
 import pickerItem from './../tm-picker-view/picker-item.vue';
 type PICKER_ITEM_INFO = Record<string, any>
-
+import {$i18n} from "@/uni_modules/tm-ui"
 /**
  * @displayName 日期选择容器
  * @exportName tm-date-view
@@ -107,7 +107,14 @@ const props = defineProps({
 	 */
 	cellUnits: {
 		type: Array as PropType<string[]>,
-		default: (): string[] => ['年', '月', '日', '时', '分', '秒']
+		default: (): string[] => [
+			$i18n.t('tmui32x.tmDateView.cellUnits.year'), 
+			$i18n.t('tmui32x.tmDateView.cellUnits.month'), 
+			$i18n.t('tmui32x.tmDateView.cellUnits.day'), 
+			$i18n.t('tmui32x.tmDateView.cellUnits.hour'), 
+			$i18n.t('tmui32x.tmDateView.cellUnits.minute'), 
+			$i18n.t('tmui32x.tmDateView.cellUnits.second')
+		]
 	}
 });
 

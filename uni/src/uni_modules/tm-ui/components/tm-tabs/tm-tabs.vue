@@ -375,115 +375,128 @@ const isDisabled = (item: string | Record<string, any>):boolean=>{
 }
 
 defineExpose({ toggleActivate })
-
 </script>
 <script lang="ts">
 export default {
-	options: {
-		styleIsolation: "apply-shared",
-		virtualHost: true,
-		addGlobalClass: true,
-		multipleSlots: true
-	}
-}
+  options: {
+    styleIsolation: "apply-shared",
+    virtualHost: true,
+    addGlobalClass: true,
+    multipleSlots: true,
+  },
+};
 </script>
 <template>
-	<view class="tmTabs" :style="{
-        backgroundColor: _color,
-        'border-radius': _round,
-        height: _height,
-        width: _width
-    }
-        ">
-		<scroll-view
-			:scroll-into-view="'tabs_' + moveName"
-			:scroll-left="tabsleft"
-			:scroll-x="true"
-			:show-scrollbar="false"
-			class="tmTabsWrapBox"
-			enable-flex
-		>
-			<view class="tmTabsWrap" :style="{ justifyContent: _mode }">
-				<view @click="tabsOnclick(item, index)"
-					  class="tmTabsItem"
-					  :id="'tabs_' + _listIds[index]"
-					  :class="[isDisabled(item)?'tmTabsDisabled':'']"
-					  v-for="(item, index) in _list" :key="index"
-					  :style="[
-                        {
-                            color: activeName == _listIds[index] ? _activeTitleColor : _titleColor,
-                            fontSize: activeName == _listIds[index] ? _activeFontSize : _fontSize,
-                            fontWeight: activeName == _listIds[index] ? 'bold' : 'normal',
-                            width: _itemWidth,
-                            padding: `0px ${_gap}`
-                        },
-                        activeName == _listIds[index] ? _activeItemStyle : _customItemStyle
-                    ]">
-					<tm-badge :bg-color="_dotBgColor" :label="getDot(item)">
-						{{ getValue(item) }}
-					</tm-badge>
-					<view v-if="_showLine" class="tmTabsItemLiner" :style="{
-                        width: activeName == _listIds[index] ? (_lineFull ? '100%' : '36%') : '0%',
-                        height: _lineHeight,
-                        maxWidth: !_lineFull ? '36px' : 'auto',
-                        backgroundColor: activeName == _listIds[index] ? _lineColor : 'transparent'
-                    }"></view>
-				</view>
-			</view>
-		</scroll-view>
-	</view>
-
+  <view
+    class="tmTabs"
+    :style="{
+      backgroundColor: _color,
+      'border-radius': _round,
+      height: _height,
+      width: _width,
+    }"
+  >
+    <scroll-view
+      :scroll-into-view="'tabs_' + moveName"
+      :scroll-left="tabsleft"
+      :scroll-x="true"
+      :show-scrollbar="false"
+      class="tmTabsWrapBox"
+      enable-flex
+    >
+      <view class="tmTabsWrap" :style="{ justifyContent: _mode }">
+        <view
+          :disabled="isDisabled(item)"
+          @click="tabsOnclick(item, index)"
+          class="tmTabsItem"
+          :id="'tabs_' + _listIds[index]"
+          :class="[isDisabled(item) ? 'tmTabsDisabled' : '']"
+          v-for="(item, index) in _list"
+          :key="index"
+          :style="[
+            {
+              color: activeName == _listIds[index] ? _activeTitleColor : _titleColor,
+              fontSize: activeName == _listIds[index] ? _activeFontSize : _fontSize,
+              fontWeight: activeName == _listIds[index] ? 'bold' : 'normal',
+              width: _itemWidth,
+              padding: `0px ${_gap}`,
+            },
+            activeName == _listIds[index] ? _activeItemStyle : _customItemStyle,
+          ]"
+        >
+          <tm-badge :bg-color="_dotBgColor" :label="getDot(item)">
+            {{ getValue(item) }}
+          </tm-badge>
+          <view
+            v-if="_showLine"
+            class="tmTabsItemLiner"
+            :style="{
+              width: activeName == _listIds[index] ? (_lineFull ? '100%' : '36%') : '0%',
+              height: _lineHeight,
+              maxWidth: !_lineFull ? '36px' : 'auto',
+              backgroundColor: activeName == _listIds[index] ? _lineColor : 'transparent',
+            }"
+          ></view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
 </template>
-<style lang="css">
+<style lang="scss" scoped>
 .tmTabsItem {
-	/* padding: 0 20rpx; */
-	height: 100%;
-	position: relative;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: row;
-	flex-shrink: 0;
-	box-sizing: border-box;
+  /* padding: 0 20rpx; */
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  &[disabled = true]{
+    cursor: no-drop;
+  }
+  &[disabled = false]{
+    cursor: pointer;
+  }
 }
-.tmTabsDisabled{
-	opacity: 0.4;
-	cursor: no-drop;
+.tmTabsDisabled {
+  opacity: 0.4;
+  cursor: no-drop;
 }
 
 .tmTabsItemLiner {
-	/* height: 2px; */
-	position: absolute;
-	z-index: 1;
-	bottom: 0px;
-	transition: all 0.3s ease-in-out;
-
+  /* height: 2px; */
+  position: absolute;
+  z-index: 1;
+  bottom: 0px;
+  transition: all 0.3s ease-in-out;
 }
 
 .tmTabs {
-	position: relative;
-	box-sizing: border-box;
+  position: relative;
+  box-sizing: border-box;
 }
 
 .tmTabsWrapBox {
-	position: absolute;
-	z-index: 1;
-	width: 100%;
-	height: 100%;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
 }
 
 .tmTabsWrap {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	min-width: 100%;
-	/* justify-content: flex-start; */
-	align-items: center;
-	/* width: auto; */
-	height: 100%;
-	box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  min-width: 100%;
+  /* justify-content: flex-start; */
+  align-items: center;
+  /* width: auto; */
+  height: 100%;
+  box-sizing: border-box;
 }
 </style>
