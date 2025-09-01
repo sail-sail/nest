@@ -94,7 +94,6 @@
     "./deno"
   ],
   "deno.lint": true,
-  "deno.unstable": true,
   "deno.importMap": "./deno/import_map.json",
   "css.validate": false,
   "less.validate": false,

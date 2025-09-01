@@ -3,7 +3,7 @@ import { computed, ref, useSlots, onMounted, watch, onBeforeUnmount } from "vue"
 import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, linearValid, getUnit } from "../../libs/tool";
 import { useTmConfig } from "../../libs/config";
 import { getDefaultColor, setTextColorLightByDark, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
-
+import {$i18n} from "@/uni_modules/tm-ui"
 interface xPickerSelectedListyType {
     id: any;
     title: string
@@ -53,7 +53,7 @@ const props = defineProps({
      */
     title: {
         type: String,
-        default: "请选择"
+        default: $i18n.t('tmui32x.tmPicker.title')
     },
     /**
      * 搜索的字段名称

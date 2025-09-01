@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortOptbiz,
+  intoInputOptbiz,
 } from "./optbiz.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsOptbiz(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputOptbiz(input);
     
     await setIdByLblOptbiz(input);
     
     await validateOptbiz(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsOptbiz(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdOptbiz(
   input: OptbizInput,
 ): Promise<OptbizId> {
   
-  input.id = undefined;
+  intoInputOptbiz(input);
   
   const {
     setIdByLblOptbiz,

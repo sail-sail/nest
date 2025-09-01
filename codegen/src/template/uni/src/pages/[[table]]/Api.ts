@@ -499,7 +499,7 @@ async function setLblById(
   #>
   
   // <#=column_comment#>
-  model.<#=column_name#>_lbl = new Decimal(model.<#=column_name#> ?? 0).toFixed(<#=precision#>);<#
+  model.<#=column_name#>_lbl = new Decimal(model.<#=column_name#> || 0).toFixed(<#=precision#>);<#
     } else if (column.isImg) {
   #>
   

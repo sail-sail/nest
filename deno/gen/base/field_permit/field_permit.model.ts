@@ -71,3 +71,14 @@ export function checkSortFieldPermit(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputFieldPermit(
+  input?: FieldPermitInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

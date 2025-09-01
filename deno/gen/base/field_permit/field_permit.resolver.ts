@@ -9,6 +9,7 @@ import type {
 
 import {
   checkSortFieldPermit,
+  intoInputFieldPermit,
 } from "./field_permit.model.ts";
 
 import {
@@ -179,7 +180,7 @@ export async function updateByIdFieldPermit(
   input: FieldPermitInput,
 ): Promise<FieldPermitId> {
   
-  input.id = undefined;
+  intoInputFieldPermit(input);
   
   const {
     setIdByLblFieldPermit,

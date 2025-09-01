@@ -98,3 +98,14 @@ export function checkSortLang(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputLang(
+  input?: LangInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

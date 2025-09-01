@@ -71,6 +71,7 @@ async function _getMenus(
       t.is_deleted=0
       and t.is_enabled=1
       and t.is_hidden=0
+      and t.is_home_hide=0
   `;
   const usr_id = await get_usr_id();
   if (!usr_id) {

@@ -12,6 +12,10 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+import {
+  intoInputDictDetail,
+} from "/gen/base/dict_detail/dict_detail.model.ts";
+
 export const route_path = "/base/dict";
 
 declare const dictId: unique symbol;
@@ -104,4 +108,18 @@ export function checkSortDict(sort?: SortInput[]) {
       throw new Error(`checkSortDict: ${ JSON.stringify(item) }`);
     }
   }
+}
+
+export function intoInputDict(
+  input?: DictInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+  
+  // 系统字典明细
+  input?.dict_detail?.map(intoInputDictDetail);
 }

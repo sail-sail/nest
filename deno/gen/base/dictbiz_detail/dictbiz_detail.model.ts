@@ -101,3 +101,14 @@ export function checkSortDictbizDetail(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputDictbizDetail(
+  input?: DictbizDetailInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

@@ -5,9 +5,7 @@ import {
   get_is_creating,
 } from "/lib/context.ts";
 
-import {
-  escapeId,
-} from "sqlstring";
+import sqlstring from "sqlstring";
 
 import dayjs from "dayjs";
 
@@ -113,6 +111,9 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.route_query_like)) {
     whereQuery += ` and t.route_query like ${ args.push("%" + sqlLike(search?.route_query_like) + "%") }`;
+  }
+  if (search?.is_home_hide != null) {
+    whereQuery += ` and t.is_home_hide in (${ args.push(search.is_home_hide) })`;
   }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
@@ -235,6 +236,17 @@ export async function findCountMenu(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.parent_id.length > ${ ids_limit }`);
+    }
+  }
+  // 首页隐藏
+  if (search && search.is_home_hide != null) {
+    const len = search.is_home_hide.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_home_hide.length > ${ ids_limit }`);
     }
   }
   // 锁定
@@ -366,6 +378,17 @@ export async function findAllMenu(
       throw new Error(`search.parent_id.length > ${ ids_limit }`);
     }
   }
+  // 首页隐藏
+  if (search && search.is_home_hide != null) {
+    const len = search.is_home_hide.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_home_hide.length > ${ ids_limit }`);
+    }
+  }
   // 锁定
   if (search && search.is_locked != null) {
     const len = search.is_locked.length;
@@ -455,7 +478,7 @@ export async function findAllMenu(
     } else {
       sql += `,`;
     }
-    sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
+    sql += ` ${ sqlstring.escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
   sql += `) f`;
   
@@ -481,9 +504,11 @@ export async function findAllMenu(
   );
   
   const [
+    is_home_hideDict, // 首页隐藏
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
+    "yes_no",
     "is_locked",
     "is_enabled",
   ]);
@@ -493,6 +518,16 @@ export async function findAllMenu(
     
     // 父菜单
     model.parent_id_lbl = model.parent_id_lbl || "";
+    
+    // 首页隐藏
+    let is_home_hide_lbl = model.is_home_hide?.toString() || "";
+    if (model.is_home_hide != null) {
+      const dictItem = is_home_hideDict.find((dictItem) => dictItem.val === String(model.is_home_hide));
+      if (dictItem) {
+        is_home_hide_lbl = dictItem.lbl;
+      }
+    }
+    model.is_home_hide_lbl = is_home_hide_lbl || "";
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -555,9 +590,11 @@ export async function setIdByLblMenu(
   };
   
   const [
+    is_home_hideDict, // 首页隐藏
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
+    "yes_no",
     "is_locked",
     "is_enabled",
   ]);
@@ -586,6 +623,17 @@ export async function setIdByLblMenu(
     if (menu_model) {
       input.parent_id_lbl = menu_model.lbl;
     }
+  }
+  
+  // 首页隐藏
+  if (isNotEmpty(input.is_home_hide_lbl) && input.is_home_hide == null) {
+    const val = is_home_hideDict.find((itemTmp) => itemTmp.lbl === input.is_home_hide_lbl)?.val;
+    if (val != null) {
+      input.is_home_hide = Number(val);
+    }
+  } else if (isEmpty(input.is_home_hide_lbl) && input.is_home_hide != null) {
+    const lbl = is_home_hideDict.find((itemTmp) => itemTmp.val === String(input.is_home_hide))?.lbl || "";
+    input.is_home_hide_lbl = lbl;
   }
   
   // 锁定
@@ -621,6 +669,8 @@ export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
     lbl: "名称",
     route_path: "路由",
     route_query: "参数",
+    is_home_hide: "首页隐藏",
+    is_home_hide_lbl: "首页隐藏",
     is_locked: "锁定",
     is_locked_lbl: "锁定",
     is_enabled: "启用",
@@ -1445,7 +1495,7 @@ async function _creates(
   await delCacheMenu();
   
   const args = new QueryArgs();
-  let sql = "insert into base_menu(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,parent_id,lbl,route_path,route_query,is_locked,is_enabled,order_by,rem,is_hidden)values";
+  let sql = "insert into base_menu(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,parent_id,lbl,route_path,route_query,is_home_hide,is_locked,is_enabled,order_by,rem,is_hidden)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1547,6 +1597,11 @@ async function _creates(
       }
       if (input.route_query != null) {
         sql += `,${ args.push(input.route_query) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_home_hide != null) {
+        sql += `,${ args.push(input.is_home_hide) }`;
       } else {
         sql += ",default";
       }
@@ -1692,6 +1747,12 @@ export async function updateByIdMenu(
   if (input.route_query != null) {
     if (input.route_query != oldModel.route_query) {
       sql += `route_query=${ args.push(input.route_query) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_home_hide != null) {
+    if (input.is_home_hide != oldModel.is_home_hide) {
+      sql += `is_home_hide=${ args.push(input.is_home_hide) },`;
       updateFldNum++;
     }
   }
