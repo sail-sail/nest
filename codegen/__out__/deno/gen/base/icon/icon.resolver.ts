@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortIcon,
+  intoInputIcon,
 } from "./icon.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsIcon(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputIcon(input);
     
     await setIdByLblIcon(input);
     
     await validateIcon(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsIcon(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdIcon(
   input: IconInput,
 ): Promise<IconId> {
   
-  input.id = undefined;
+  intoInputIcon(input);
   
   const {
     setIdByLblIcon,

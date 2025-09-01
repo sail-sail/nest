@@ -1,7 +1,7 @@
 <!--suppress JSDeprecatedSymbols -->
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, PropType, ref, watch } from 'vue'
-
+import {$i18n} from "@/uni_modules/tm-ui"
 
 /**
  * @displayName 规格选择器
@@ -188,8 +188,16 @@ function onConfirm() {
 
 function onAdd() {
 	if (!_nowSelectedItem.value) return
-	let ids = _nowSelectedItem.value.id
+	if(disabledBuy.value) return
 	emit('add', JSON.parse(JSON.stringify(_nowSelectedItem.value)), buy.value)
+	uni.showToast({
+		title:$i18n.t('tmui32x.tmSku.addSuccessText'),
+		icon:"success",
+		success:()=>{
+			onClose()
+		}
+	})
+
 }
 
 //设置默认选中的值。
@@ -251,11 +259,10 @@ const minBuyNumber = computed(() => {
 
 })
 const buyBtnText = computed(() => {
-	if (_nowSelectedItem.value == null) return '未选择商品'
-	if (disabledBuy.value) return '缺货中'
-	return '立即购买'
+	if (_nowSelectedItem.value == null) return $i18n.t('tmui32x.tmSku.noSelectedText')
+	if (disabledBuy.value) return $i18n.t('tmui32x.tmSku.noStockText')
+	return $i18n.t('tmui32x.tmSku.buyBtnText')
 })
-
 
 </script>
 <script lang="ts">
@@ -293,14 +300,19 @@ export default {
 					<text v-if="_nowSelectedItem.original_price>0"
 						  :style="{color:'red',fontSize:'24rpx',paddingLeft:'10rpx'}"
 						  class="skuOrPrice">
-						原价{{ _nowSelectedItem.original_price }}
+							{{ $i18n.t('tmui32x.tmSku.originalPriceText',{count:_nowSelectedItem.original_price}) }}
 					</text>
 				</view>
 				<view v-if="!_nowSelectedItem">
-					<text :style="{color:'red',fontSize:'36rpx'}">未选择</text>
+					<text :style="{color:'red',fontSize:'36rpx'}">{{ $i18n.t('tmui32x.tmSku.noSelectedText') }}</text>
 				</view>
 				<view class="skuSelectedText" style="margin-top: 10rpx">
-					<text>已选择：{{ _nowSelectedItem ? _nowSelectedItem.title : '未选择' }}，数量：{{ buy }}</text>
+					<text v-if="_nowSelectedItem">
+					{{ _nowSelectedItem.title }}，{{ $i18n.t('tmui32x.tmSku.numberText',{count:buy}) }}
+					</text>
+					<text v-else>
+					{{ $i18n.t('tmui32x.tmSku.noSelectedText') }}，{{ $i18n.t('tmui32x.tmSku.numberText',{count:buy}) }}
+					</text>
 				</view>
 				<view style="margin-top: 10rpx">
 					<tm-stepper v-model="buy" :max="maxBuyNumber" :min="minBuyNumber" height="56"
@@ -316,7 +328,8 @@ export default {
 				<view style="margin-top: 24rpx">
 					<tm-badge
 						v-for="(item2) in (item.children||[])"
-						:label="(item2?.inventory_quantity||1)==0?'缺货':''"
+						:key="item2.id"
+						:label="(item2?.inventory_quantity||1)==0?$i18n.t('tmui32x.tmSku.queHuo'):''"
 						:offset="[22,0]"
 					>
 						<tm-tag
@@ -338,7 +351,7 @@ export default {
 					 @slot 添加购物车按钮
 					 -->
 					<slot name="add">
-						<tm-button :color="props.color" :skin="'thin'" block round="64">加入购物车</tm-button>
+						<tm-button :disabled="disabledBuy" :color="props.color" :skin="'thin'" block round="64">{{ $i18n.t('tmui32x.tmSku.addText') }}</tm-button>
 					</slot>
 				</view>
 				<view style="flex: 1;" @click="onConfirm">
@@ -356,6 +369,7 @@ export default {
 		</template>
 
 	</tm-drawer>
+
 </template>
 <style scoped>
 .skuOrPrice {

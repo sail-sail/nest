@@ -777,6 +777,31 @@ export class tmDate {
 		}
 		return qmap;
 	}
+	/**
+	 * 取开始和结束之间的时间（含开始和结束）
+	 */
+	getBetweenDate(start: tmDate, end: tmDate,minx:'min'|'max'|'auto' = 'min'): tmDate {
+		if(this.isBetween(start, end,'s','[]')){
+			return this;
+		}
+		// this更接近哪边就取那边值
+		let startDiff = start.getTime('s')
+		let endDiff = end.getTime('s')
+		
+		if(minx == 'min'){
+			return start;
+		}
+		if(minx == 'max'){
+			return end;
+		}
+
+		if(startDiff < endDiff){
+			return end;
+		}else{
+			return start;
+		}
+
+	}
 
 }
 

@@ -37,6 +37,9 @@ export function intoInputMenu(
     route_path: model?.route_path,
     // 参数
     route_query: model?.route_query,
+    // 首页隐藏
+    is_home_hide: model?.is_home_hide,
+    is_home_hide_lbl: model?.is_home_hide_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -598,11 +601,18 @@ export function useDownloadImportTemplateMenu() {
             lbl
             route_path
             route_query
+            is_home_hide_lbl
             order_by
             rem
           }
           findAllMenu {
             id
+            lbl
+          }
+          getDict(codes: [
+            "yes_no",
+          ]) {
+            code
             lbl
           }
         }
@@ -662,6 +672,7 @@ export function useExportExcelMenu() {
               ${ menuQueryField }
             }
             getDict(codes: [
+              "yes_no",
               "is_locked",
               "is_enabled",
             ]) {
@@ -778,6 +789,7 @@ export function getPagePathMenu() {
 /** 新增时的默认值 */
 export async function getDefaultInputMenu() {
   const defaultInput: MenuInput = {
+    is_home_hide: 0,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,

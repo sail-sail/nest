@@ -233,6 +233,7 @@ CREATE TABLE if not exists `base_menu` (
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `route_path` varchar(100) NOT NULL DEFAULT '' COMMENT '路由',
   `route_query` varchar(200) NOT NULL DEFAULT '' COMMENT '参数',
+  `is_home_hide` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '首页隐藏,dict:yes_no',
   `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',

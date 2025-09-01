@@ -105,3 +105,14 @@ export function checkSortBackgroundTask(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputBackgroundTask(
+  input?: BackgroundTaskInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}
