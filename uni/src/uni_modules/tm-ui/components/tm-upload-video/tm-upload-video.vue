@@ -46,7 +46,7 @@
 	import { covetUniNumber } from '../../libs/tool';
 	import { TMUPLOAD_PHOTO_STATUS } from '../../interface';
 	import { useTmConfig } from "../../libs/config";
-
+	import {$i18n} from "@/uni_modules/tm-ui"
 	/**
 	 * @displayName 视频上传
 	 * @exportName tm-upload-video
@@ -67,12 +67,12 @@
 		size : number
 	}
 	const STATUS_TEXT = new Map<TMUPLOAD_PHOTO_STATUS, string>([
-		[0, '待上传'],
-		[1, '上传中'],
-		[2, '上传成功'],
-		[3, '上传失败'],
-		[4, '已取消'],
-		[5, '超出大小限制']
+		[0, $i18n.t('tmui32x.tmUploadPhoto.statusText.0')],
+		[1, $i18n.t('tmui32x.tmUploadPhoto.statusText.1')],
+		[2, $i18n.t('tmui32x.tmUploadPhoto.statusText.2')],
+		[3, $i18n.t('tmui32x.tmUploadPhoto.statusText.3')],
+		[4, $i18n.t('tmui32x.tmUploadPhoto.statusText.4')],
+		[5, $i18n.t('tmui32x.tmUploadPhoto.statusText.5')]
 	])
 	const STATUS_COLOR = new Map<TMUPLOAD_PHOTO_STATUS, string>([
 		[0, '#fff'],
@@ -328,13 +328,14 @@
 					response: item
 				}
 			}
+			let realStatus = item?.status||status;
 			return {
 				path: item[props.rangUrl] || item['path'] || "",
 				id: getUUID(),
-				status: status,
-				progress: 100,
-				statusText: STATUS_TEXT.get(status) || "",
-				response: item?.response || item
+				status: realStatus,
+				progress: realStatus == TMUPLOAD_PHOTO_STATUS.UPLOAD_SUCCESS?100:0,
+				statusText: STATUS_TEXT.get(realStatus) || "",
+				response: TMUPLOAD_PHOTO_STATUS.UPLOAD_SUCCESS?(item?.response || item):''
 			}
 		})
 		// let nowfilesrc = list.value.map(item => item.path)

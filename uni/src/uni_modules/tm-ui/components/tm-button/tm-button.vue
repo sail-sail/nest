@@ -1,5 +1,5 @@
 <template>
-    <view class="tmButton" :class="[_attrs.loading || _attrs.disabled ? 'tmButtonLoading' : '']"
+    <view :disabled="_attrs.disabled||_attrs.loading" class="tmButton" :class="[_attrs.loading || _attrs.disabled ? 'tmButtonLoading' : '']"
         @touchstart="touchStart" @touchcancel="touchEnd" @touchend="touchEnd" @mousedown="touchStart"
         @mouseup="touchEnd" @mouseleave="touchEnd" :style="[
             {
@@ -332,10 +332,10 @@ const covetButtonSize = (ops: PropsKeyType, s: TM.BUTTON_SIZE, size?: string | n
     ])
     const heights = new Map<TM.BUTTON_SIZE, string>([
         ['xs', '44'],
-        ['s', '60'],
-        ['m', '72'],
-        ['n', '90'],
-        ['g', '100']
+        ['s', '56'],
+        ['m', '68'],
+        ['n', '88'],
+        ['g', '98']
 
     ])
     const fontSizes = new Map<TM.BUTTON_SIZE, string>([
@@ -525,7 +525,6 @@ export default {
 
 <style lang="scss" scoped>
 .tmButton {
-    cursor: pointer;
     position: relative;
     display: inline-flex;
     line-height: 1;
@@ -533,7 +532,12 @@ export default {
     justify-content: center;
     align-items: center;
     gap: 8px;
-
+    &[disabled = true]{
+        cursor: no-drop;
+    }
+    &[disabled = false]{
+        cursor: pointer;
+    }
     &.tmButtonLoading {
         opacity: 0.5;
 
