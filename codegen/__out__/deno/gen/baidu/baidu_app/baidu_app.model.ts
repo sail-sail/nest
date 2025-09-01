@@ -111,3 +111,14 @@ export function checkSortBaiduApp(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputBaiduApp(
+  input?: BaiduAppInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

@@ -113,3 +113,14 @@ export function checkSortBaiduAppToken(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputBaiduAppToken(
+  input?: BaiduAppTokenInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

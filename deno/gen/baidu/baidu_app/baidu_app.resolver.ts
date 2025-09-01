@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortBaiduApp,
+  intoInputBaiduApp,
 } from "./baidu_app.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsBaiduApp(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputBaiduApp(input);
     
     await setIdByLblBaiduApp(input);
     
     await validateBaiduApp(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsBaiduApp(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdBaiduApp(
   input: BaiduAppInput,
 ): Promise<BaiduAppId> {
   
-  input.id = undefined;
+  intoInputBaiduApp(input);
   
   const {
     setIdByLblBaiduApp,
