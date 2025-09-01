@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortDictDetail,
+  intoInputDictDetail,
 } from "./dict_detail.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsDictDetail(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputDictDetail(input);
     
     await setIdByLblDictDetail(input);
     
     await validateDictDetail(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsDictDetail(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdDictDetail(
   input: DictDetailInput,
 ): Promise<DictDetailId> {
   
-  input.id = undefined;
+  intoInputDictDetail(input);
   
   const {
     setIdByLblDictDetail,

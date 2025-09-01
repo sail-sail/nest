@@ -42,7 +42,10 @@ async function getSqlFiles(dir: string, sqlFiles: string[], csvFiles: string[]) 
       continue;
     }
     if (stats.isFile()) {
-      if (file.endsWith(".sql")) {
+      if (
+        file.endsWith(".sql") &&
+        !file.endsWith(".tsdb.sql")
+      ) {
         if (file === "init.sql") {
           sqlFiles.unshift(root+dir+"/"+file);
         } else {

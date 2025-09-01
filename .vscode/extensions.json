@@ -3,7 +3,6 @@
     "ms-ceintl.vscode-language-pack-zh-hans",
     "janisdd.vscode-edit-csv",
     "mechatroner.rainbow-csv",
-    "editorconfig.editorconfig",
     "graphql.vscode-graphql-execution",
     "graphql.vscode-graphql-syntax",
     "howardzuo.vscode-npm-dependency",
@@ -21,7 +20,6 @@
     "vitest.explorer",
     "britesnow.vscode-toggle-quotes",
     "ponetto.vscode-diff-viewer",
-    "chakrounanas.turbo-console-log",
     "johnsoncodehk.vscode-tsconfig-helper",
     "jacobpfeifer.pfeifer-hurl",
     "emeraldwalk.runonsave"

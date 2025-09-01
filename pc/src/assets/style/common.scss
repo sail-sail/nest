@@ -348,13 +348,6 @@ body .el-input-number.is-without-controls .el-input__inner {
     flex-direction: column;
   }
 }
-.el-tabs.el-tabs--card {
-  .el-tabs__header {
-    .el-tabs__item.is-active {
-      background-color: var(--el-fill-color-extra-light);
-    }
-  }
-}
 // 最大号的弹出框
 .el-dialog.large_dialog {
   width: calc(100% - 100px);

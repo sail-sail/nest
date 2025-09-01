@@ -9,6 +9,7 @@ import type {
 
 import {
   checkSortOperationRecord,
+  intoInputOperationRecord,
 } from "./operation_record.model.ts";
 
 import {

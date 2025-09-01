@@ -89,7 +89,7 @@
                 children: 'children',
                 disabled: function(item: TreeNodeData) {
                   return !item.route_path;
-                },
+                } as any,
               }"
               :filter-node-method="(useMenuTreeFilter as any)"
             ></CustomTreeSelect>

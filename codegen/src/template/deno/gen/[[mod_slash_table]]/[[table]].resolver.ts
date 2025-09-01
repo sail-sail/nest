@@ -66,34 +66,7 @@ if (hasAudit) {
   set_is_creating,<#
   }
   #>
-} from "/lib/context.ts";<#
-let hasDecimal = false;
-for (let i = 0; i < columns.length; i++) {
-  const column = columns[i];
-  if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
-  if (column.noList) continue;
-  const column_name = column.COLUMN_NAME;
-  if (column_name === "id") continue;
-  if (column_name === "version") continue;
-  const foreignKey = column.foreignKey;
-  let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
-  if (!column_type) {
-    continue;
-  }
-  if (!column_type.startsWith("decimal")) {
-    continue;
-  }
-  hasDecimal = true;
-}
-#><#
-if (hasDecimal) {
-#>
-
-import Decimal from "decimal.js";<#
-}
-#>
+} from "/lib/context.ts";
 
 import type {<#
   if (opts.noAdd !== true) {
@@ -106,7 +79,8 @@ import type {<#
 } from "/gen/types.ts";
 
 import {
-  checkSort<#=Table_Up#>,<#
+  checkSort<#=Table_Up#>,
+  intoInput<#=Table_Up#>,<#
   if (tableFieldPermit) {
   #><#
     if (opts.noAdd !== true || opts.noEdit !== true) {
@@ -565,37 +539,13 @@ export async function creates<#=Table_Up2#>(
   #>
   
   for (const input of inputs) {
-    input.id = undefined;<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      if (column.noList) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      if (column_name === "version") continue;
-      const foreignKey = column.foreignKey;
-      const data_type = column.DATA_TYPE;
-      const column_type = column.COLUMN_TYPE;
-      if (!column_type) {
-        continue;
-      }
-      if (!column_type.startsWith("decimal")) {
-        continue;
-      }
-      const column_comment = column.COLUMN_COMMENT || "";
-    #>
     
-    // <#=column_comment#>
-    if (input.<#=column_name#> != null) {
-      input.<#=column_name#> = new Decimal(input.<#=column_name#>);
-    }<#
-    }
-    #>
+    intoInput<#=Table_Up#>(input);
     
     await setIdByLbl<#=Table_Up2#>(input);
     
     await validate<#=Table_Up2#>(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await creates<#=Table_Up2#>(inputs, { uniqueType });<#
@@ -633,33 +583,7 @@ export async function updateById<#=Table_Up2#>(
   input: <#=inputName#>,
 ): Promise<<#=Table_Up#>Id> {
   
-  input.id = undefined;<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    if (column.noList) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    if (column_name === "version") continue;
-    const foreignKey = column.foreignKey;
-    const data_type = column.DATA_TYPE;
-    const column_type = column.COLUMN_TYPE;
-    if (!column_type) {
-      continue;
-    }
-    if (!column_type.startsWith("decimal")) {
-      continue;
-    }
-    const column_comment = column.COLUMN_COMMENT || "";
-  #>
-  
-  // <#=column_comment#>
-  if (input.<#=column_name#> != null) {
-    input.<#=column_name#> = new Decimal(input.<#=column_name#>);
-  }<#
-  }
-  #>
+  intoInput<#=Table_Up#>(input);
   
   const {
     setIdByLbl<#=Table_Up2#>,

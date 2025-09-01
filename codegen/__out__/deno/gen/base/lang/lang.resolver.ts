@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortLang,
+  intoInputLang,
 } from "./lang.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsLang(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputLang(input);
     
     await setIdByLblLang(input);
     
     await validateLang(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsLang(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdLang(
   input: LangInput,
 ): Promise<LangId> {
   
-  input.id = undefined;
+  intoInputLang(input);
   
   const {
     setIdByLblLang,

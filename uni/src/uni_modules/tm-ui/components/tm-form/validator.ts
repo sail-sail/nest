@@ -77,7 +77,7 @@ export const defaultValidator = (value: any, rule: TM.FORM_RULE_TYPE) => {
         return false;
     }
 
-    if (typeof value == 'object') {
+    if (typeof value == 'object'&&value!=null) {
         let keys = Object.keys(value)
         return keys.length > 0
     }

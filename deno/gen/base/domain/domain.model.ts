@@ -99,3 +99,14 @@ export function checkSortDomain(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputDomain(
+  input?: DomainInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

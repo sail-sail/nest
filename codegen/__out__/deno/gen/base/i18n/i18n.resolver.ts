@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortI18n,
+  intoInputI18n,
 } from "./i18n.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsI18n(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputI18n(input);
     
     await setIdByLblI18n(input);
     
     await validateI18n(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsI18n(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdI18n(
   input: I18nInput,
 ): Promise<I18nId> {
   
-  input.id = undefined;
+  intoInputI18n(input);
   
   const {
     setIdByLblI18n,
