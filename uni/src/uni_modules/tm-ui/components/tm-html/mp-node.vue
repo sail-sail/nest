@@ -160,7 +160,7 @@
 				ctrl: {},
 				imgs:[],
 				// #ifdef MP-WEIXIN
-				isiOS: uni.getDeviceInfo()?.platform?.includes('iOS')??true
+				isiOS: uni.getDeviceInfo()?.platform?.includes('iOS')||true
 				// #endif
 			}
 		},

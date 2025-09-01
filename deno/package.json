@@ -18,7 +18,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "dayjs": "1.11.15",
+    "dayjs": "1.11.18",
     "decimal.js": "10.6.0",
     "graphql": "16.11.0",
     "js-md5": "0.8.3",

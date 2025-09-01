@@ -170,7 +170,7 @@ class CacheManager {
     // 生成缓存键
     generateCacheKey(config: AxiosRequestConfig): string {
         const {url, method} = config;
-        let keyQ = url?.split('?')[0] ?? url
+        let keyQ = url?.split('?')[0] || url
         // 简化缓存键生成，避免复杂对象序列化可能导致的不一致
         let key = `${method || 'GET'}_${keyQ}`;
 
@@ -300,7 +300,7 @@ class Axios {
     private cacheManager: CacheManager;
 
     constructor(defaultConfig ?: AxiosRequestConfig) {
-        this.defaults = defaultConfig ?? defaultAxiosConfig;
+        this.defaults = defaultConfig || defaultAxiosConfig;
         this.interceptors = {
             request: new InterceptorManager<AxiosRequestConfig>(),
             response: new InterceptorManager<AxiosResponse>()
@@ -385,7 +385,7 @@ class Axios {
                                 const codes = config.successCode || [];
 
                                 if (codes.length > 0) {
-                                    let serverDataCode = (response.data as any)?.code ?? null;
+                                    let serverDataCode = (response.data as any)?.code || null;
                                     if (typeof serverDataCode == 'number') {
                                         if (codes.some(el => el == serverDataCode)) {
                                             cachedResponse.set(config, response);
