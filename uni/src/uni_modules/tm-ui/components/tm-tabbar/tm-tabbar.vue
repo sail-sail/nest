@@ -261,8 +261,8 @@
 				let nodeinfo = ret[0] as UniNamespace.NodeInfo[]
 				if (nodeinfo.length == 0) return
 				let nowx = nodeinfo[Math.max(_outIndex.value, 0)]
-				tuqiHeight.value = nowx?.height ?? 0
-				tuqiWeight.value = nowx?.width ?? 0
+				tuqiHeight.value = nowx?.height || 0
+				tuqiWeight.value = nowx?.width || 0
 			})
 	}
 

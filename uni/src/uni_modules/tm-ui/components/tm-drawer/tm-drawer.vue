@@ -392,7 +392,7 @@ const setDomHeight = ()=>{
     _height.value = sys.windowHeight
     windtop.value = _offset.value
     // #endif
-    safeFooterHeight.value = (sys.safeAreaInsets?.bottom??0) == 0 ? 16 : sys.safeAreaInsets.bottom
+    safeFooterHeight.value = (sys.safeAreaInsets?.bottom||0) == 0 ? 16 : sys.safeAreaInsets.bottom
 }
 
 

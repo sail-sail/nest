@@ -83,28 +83,28 @@ export function mergeI18nOpts(args ?: I18nOptions) : I18nOptionsReally {
 
 	// 合并用户配置和默认配置
 	return {
-		locale: args.locale ?? defaultOptions.locale,
-		fallbackLocale: args.fallbackLocale ?? defaultOptions.fallbackLocale,
-		messages: args.messages ?? defaultOptions.messages,
-		datetimeFormats: args.datetimeFormats ?? defaultOptions.datetimeFormats,
-		numberFormats: args.numberFormats ?? defaultOptions.numberFormats,
-		modifiers: args.modifiers ?? defaultOptions.modifiers,
-		pluralRules: args.pluralRules ?? defaultOptions.pluralRules,
-		missing: args.missing ?? defaultOptions.missing,
-		missingWarn: args.missingWarn ?? defaultOptions.missingWarn,
-		fallbackWarn: args.fallbackWarn ?? defaultOptions.fallbackWarn,
-		fallbackRoot: args.fallbackRoot ?? defaultOptions.fallbackRoot,
-		fallbackFormat: args.fallbackFormat ?? defaultOptions.fallbackFormat,
-		unresolving: args.unresolving ?? defaultOptions.unresolving,
-		postTranslation: args.postTranslation ?? defaultOptions.postTranslation,
-		warnHtmlMessage: args.warnHtmlMessage ?? defaultOptions.warnHtmlMessage,
-		escapeParameter: args.escapeParameter ?? defaultOptions.escapeParameter,
-		inheritLocale: args.inheritLocale ?? defaultOptions.inheritLocale,
-		warnHandler: args.warnHandler ?? defaultOptions.warnHandler,
-		pluralRule: args.pluralRule ?? defaultOptions.pluralRule,
-		globalInjection: args.globalInjection ?? defaultOptions.globalInjection,
-		allowComposition: args.allowComposition ?? defaultOptions.allowComposition,
-		legacy: args.legacy ?? defaultOptions.legacy
+		locale: args.locale || defaultOptions.locale,
+		fallbackLocale: args.fallbackLocale || defaultOptions.fallbackLocale,
+		messages: args.messages || defaultOptions.messages,
+		datetimeFormats: args.datetimeFormats || defaultOptions.datetimeFormats,
+		numberFormats: args.numberFormats || defaultOptions.numberFormats,
+		modifiers: args.modifiers || defaultOptions.modifiers,
+		pluralRules: args.pluralRules || defaultOptions.pluralRules,
+		missing: args.missing || defaultOptions.missing,
+		missingWarn: args.missingWarn || defaultOptions.missingWarn,
+		fallbackWarn: args.fallbackWarn || defaultOptions.fallbackWarn,
+		fallbackRoot: args.fallbackRoot || defaultOptions.fallbackRoot,
+		fallbackFormat: args.fallbackFormat || defaultOptions.fallbackFormat,
+		unresolving: args.unresolving || defaultOptions.unresolving,
+		postTranslation: args.postTranslation || defaultOptions.postTranslation,
+		warnHtmlMessage: args.warnHtmlMessage || defaultOptions.warnHtmlMessage,
+		escapeParameter: args.escapeParameter || defaultOptions.escapeParameter,
+		inheritLocale: args.inheritLocale || defaultOptions.inheritLocale,
+		warnHandler: args.warnHandler || defaultOptions.warnHandler,
+		pluralRule: args.pluralRule || defaultOptions.pluralRule,
+		globalInjection: args.globalInjection || defaultOptions.globalInjection,
+		allowComposition: args.allowComposition || defaultOptions.allowComposition,
+		legacy: args.legacy || defaultOptions.legacy
 	} as I18nOptionsReally;
 
 
@@ -153,7 +153,7 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 	t(key : string, ...argsopts : Array<any>) : string {
 		let repeatCount : NumberOrNull = null;
 		let values : UTSJSONObjectOrArray = {};
-		let locale : string = this.ops?.locale??'zh-Hans';
+		let locale : string = this.ops?.locale||'zh-Hans';
 		if (argsopts.length > 0) {
 			// 严格的类型检查和参数解析
 			let args : AnyOrNull = argsopts[0]
@@ -236,7 +236,7 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 	 * @returns 格式化后的字符串
 	 */
 	n(val : number, formatName ?: StringOrNull, opts ?: NumberFormatOrNull) : string {
-		let currentLocale = (opts?.local ?? this.ops.locale)!;
+		let currentLocale = (opts?.local || this.ops.locale)!;
 		let formatOptions : NumberFormatOpts = {
 			style: 'decimal',
 			currency: 'CNY',
@@ -251,16 +251,16 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 		};
 		if (opts != null) {
 			formatOptions = {
-				style: opts?.style ?? formatOptions.style,
-				currency: opts?.currency ?? formatOptions.currency,
-				local: opts?.local ?? formatOptions.local,
-				currencyDisplay: opts?.currencyDisplay ?? formatOptions.currencyDisplay,
-				useGrouping: opts?.useGrouping ?? formatOptions.useGrouping,
-				minimumIntegerDigits: opts?.minimumIntegerDigits ?? formatOptions.minimumIntegerDigits,
-				minimumFractionDigits: opts?.minimumFractionDigits ?? formatOptions.minimumFractionDigits,
-				maximumFractionDigits: opts?.maximumFractionDigits ?? formatOptions.maximumFractionDigits,
-				minimumSignificantDigits: opts?.minimumSignificantDigits ?? formatOptions.minimumSignificantDigits,
-				maximumSignificantDigits: opts?.maximumSignificantDigits ?? formatOptions.maximumSignificantDigits
+				style: opts?.style || formatOptions.style,
+				currency: opts?.currency || formatOptions.currency,
+				local: opts?.local || formatOptions.local,
+				currencyDisplay: opts?.currencyDisplay || formatOptions.currencyDisplay,
+				useGrouping: opts?.useGrouping || formatOptions.useGrouping,
+				minimumIntegerDigits: opts?.minimumIntegerDigits || formatOptions.minimumIntegerDigits,
+				minimumFractionDigits: opts?.minimumFractionDigits || formatOptions.minimumFractionDigits,
+				maximumFractionDigits: opts?.maximumFractionDigits || formatOptions.maximumFractionDigits,
+				minimumSignificantDigits: opts?.minimumSignificantDigits || formatOptions.minimumSignificantDigits,
+				maximumSignificantDigits: opts?.maximumSignificantDigits || formatOptions.maximumSignificantDigits
 			};
 		}
 
@@ -273,16 +273,16 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 				if (localeFormats.has(formatNameReal)) {
 					const formatOptions_templ = localeFormats.get(formatNameReal)!;
 					formatOptions = {
-						style: formatOptions_templ?.style ?? formatOptions.style,
-						currency: formatOptions_templ?.currency ?? formatOptions.currency,
-						local: formatOptions_templ?.local ?? formatOptions.local,
-						currencyDisplay: formatOptions_templ?.currencyDisplay ?? formatOptions.currencyDisplay,
-						useGrouping: formatOptions_templ?.useGrouping ?? formatOptions.useGrouping,
-						minimumIntegerDigits: formatOptions_templ?.minimumIntegerDigits ?? formatOptions.minimumIntegerDigits,
-						minimumFractionDigits: formatOptions_templ?.minimumFractionDigits ?? formatOptions.minimumFractionDigits,
-						maximumFractionDigits: formatOptions_templ?.maximumFractionDigits ?? formatOptions.maximumFractionDigits,
-						minimumSignificantDigits: formatOptions_templ?.minimumSignificantDigits ?? formatOptions.minimumSignificantDigits,
-						maximumSignificantDigits: formatOptions_templ?.maximumSignificantDigits ?? formatOptions.maximumSignificantDigits
+						style: formatOptions_templ?.style || formatOptions.style,
+						currency: formatOptions_templ?.currency || formatOptions.currency,
+						local: formatOptions_templ?.local || formatOptions.local,
+						currencyDisplay: formatOptions_templ?.currencyDisplay || formatOptions.currencyDisplay,
+						useGrouping: formatOptions_templ?.useGrouping || formatOptions.useGrouping,
+						minimumIntegerDigits: formatOptions_templ?.minimumIntegerDigits || formatOptions.minimumIntegerDigits,
+						minimumFractionDigits: formatOptions_templ?.minimumFractionDigits || formatOptions.minimumFractionDigits,
+						maximumFractionDigits: formatOptions_templ?.maximumFractionDigits || formatOptions.maximumFractionDigits,
+						minimumSignificantDigits: formatOptions_templ?.minimumSignificantDigits || formatOptions.minimumSignificantDigits,
+						maximumSignificantDigits: formatOptions_templ?.maximumSignificantDigits || formatOptions.maximumSignificantDigits
 					};
 				} else {
 					this.ops.warnHandler(`Number format '${formatNameReal}' not found for locale '${currentLocale}'`, null);
@@ -305,7 +305,7 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 	 * @returns 格式化后的字符串
 	 */
 	d(val : DateOrNumberOrString, formatName ?: StringOrNull, opts ?: DateTimeFormatOrNull) : string {
-		let currentLocale = (opts?.local ?? this.ops.locale)!;
+		let currentLocale = (opts?.local || this.ops.locale)!;
 		let formatOptions : DateTimeFormatReal = {
 			localeMatcher: 'best fit',
 			local: currentLocale,
@@ -333,28 +333,28 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 
 		if (opts != null) {
 			formatOptions = {
-				localeMatcher: opts?.localeMatcher ?? formatOptions.localeMatcher,
-				local: opts?.local ?? formatOptions.local,
-				dateSeparator: opts?.dateSeparator ?? formatOptions.dateSeparator,
-				calendar: opts?.calendar ?? formatOptions.calendar,
-				numberingSystem: opts?.numberingSystem ?? formatOptions.numberingSystem,
-				timeZone: opts?.timeZone ?? formatOptions.timeZone,
-				hour12: opts?.hour12 ?? formatOptions.hour12,
-				hourCycle: opts?.hourCycle ?? formatOptions.hourCycle,
-				formatMatcher: opts?.formatMatcher ?? formatOptions.formatMatcher,
-				weekday: opts?.weekday ?? formatOptions.weekday,
-				era: opts?.era ?? formatOptions.era,
-				year: opts?.year ?? formatOptions.year,
-				month: opts?.month ?? formatOptions.month,
-				day: opts?.day ?? formatOptions.day,
-				dayPeriod: opts?.dayPeriod ?? formatOptions.dayPeriod,
-				hour: opts?.hour ?? formatOptions.hour,
-				minute: opts?.minute ?? formatOptions.minute,
-				second: opts?.second ?? formatOptions.second,
-				fractionalSecondDigits: opts?.fractionalSecondDigits ?? formatOptions.fractionalSecondDigits,
-				timeZoneName: opts?.timeZoneName ?? formatOptions.timeZoneName,
-				dateStyle: opts?.dateStyle ?? formatOptions.dateStyle,
-				timeStyle: opts?.timeStyle ?? formatOptions.timeStyle
+				localeMatcher: opts?.localeMatcher || formatOptions.localeMatcher,
+				local: opts?.local || formatOptions.local,
+				dateSeparator: opts?.dateSeparator || formatOptions.dateSeparator,
+				calendar: opts?.calendar || formatOptions.calendar,
+				numberingSystem: opts?.numberingSystem || formatOptions.numberingSystem,
+				timeZone: opts?.timeZone || formatOptions.timeZone,
+				hour12: opts?.hour12 || formatOptions.hour12,
+				hourCycle: opts?.hourCycle || formatOptions.hourCycle,
+				formatMatcher: opts?.formatMatcher || formatOptions.formatMatcher,
+				weekday: opts?.weekday || formatOptions.weekday,
+				era: opts?.era || formatOptions.era,
+				year: opts?.year || formatOptions.year,
+				month: opts?.month || formatOptions.month,
+				day: opts?.day || formatOptions.day,
+				dayPeriod: opts?.dayPeriod || formatOptions.dayPeriod,
+				hour: opts?.hour || formatOptions.hour,
+				minute: opts?.minute || formatOptions.minute,
+				second: opts?.second || formatOptions.second,
+				fractionalSecondDigits: opts?.fractionalSecondDigits || formatOptions.fractionalSecondDigits,
+				timeZoneName: opts?.timeZoneName || formatOptions.timeZoneName,
+				dateStyle: opts?.dateStyle || formatOptions.dateStyle,
+				timeStyle: opts?.timeStyle || formatOptions.timeStyle
 			};
 		}
 
@@ -367,28 +367,28 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 				if (localeFormats.has(formatNameReal)) {
 					const formatOptions_templ = localeFormats.get(formatNameReal)!;
 					formatOptions = {
-						localeMatcher: formatOptions_templ?.localeMatcher ?? formatOptions.localeMatcher,
-						local: formatOptions_templ?.local ?? formatOptions.local,
-						calendar: formatOptions_templ?.calendar ?? formatOptions.calendar,
-						numberingSystem: formatOptions_templ?.numberingSystem ?? formatOptions.numberingSystem,
-						timeZone: formatOptions_templ?.timeZone ?? formatOptions.timeZone,
-						hour12: formatOptions_templ?.hour12 ?? formatOptions.hour12,
-						hourCycle: formatOptions_templ?.hourCycle ?? formatOptions.hourCycle,
-						formatMatcher: formatOptions_templ?.formatMatcher ?? formatOptions.formatMatcher,
-						dateSeparator: formatOptions_templ?.dateSeparator ?? formatOptions.dateSeparator,
-						weekday: formatOptions_templ?.weekday ?? formatOptions.weekday,
-						era: formatOptions_templ?.era ?? formatOptions.era,
-						year: formatOptions_templ?.year ?? formatOptions.year,
-						month: formatOptions_templ?.month ?? formatOptions.month,
-						day: formatOptions_templ?.day ?? formatOptions.day,
-						dayPeriod: formatOptions_templ?.dayPeriod ?? formatOptions.dayPeriod,
-						hour: formatOptions_templ?.hour ?? formatOptions.hour,
-						minute: formatOptions_templ?.minute ?? formatOptions.minute,
-						second: formatOptions_templ?.second ?? formatOptions.second,
-						fractionalSecondDigits: formatOptions_templ?.fractionalSecondDigits ?? formatOptions.fractionalSecondDigits,
-						timeZoneName: formatOptions_templ?.timeZoneName ?? formatOptions.timeZoneName,
-						dateStyle: formatOptions_templ?.dateStyle ?? formatOptions.dateStyle,
-						timeStyle: formatOptions_templ?.timeStyle ?? formatOptions.timeStyle
+						localeMatcher: formatOptions_templ?.localeMatcher || formatOptions.localeMatcher,
+						local: formatOptions_templ?.local || formatOptions.local,
+						calendar: formatOptions_templ?.calendar || formatOptions.calendar,
+						numberingSystem: formatOptions_templ?.numberingSystem || formatOptions.numberingSystem,
+						timeZone: formatOptions_templ?.timeZone || formatOptions.timeZone,
+						hour12: formatOptions_templ?.hour12 || formatOptions.hour12,
+						hourCycle: formatOptions_templ?.hourCycle || formatOptions.hourCycle,
+						formatMatcher: formatOptions_templ?.formatMatcher || formatOptions.formatMatcher,
+						dateSeparator: formatOptions_templ?.dateSeparator || formatOptions.dateSeparator,
+						weekday: formatOptions_templ?.weekday || formatOptions.weekday,
+						era: formatOptions_templ?.era || formatOptions.era,
+						year: formatOptions_templ?.year || formatOptions.year,
+						month: formatOptions_templ?.month || formatOptions.month,
+						day: formatOptions_templ?.day || formatOptions.day,
+						dayPeriod: formatOptions_templ?.dayPeriod || formatOptions.dayPeriod,
+						hour: formatOptions_templ?.hour || formatOptions.hour,
+						minute: formatOptions_templ?.minute || formatOptions.minute,
+						second: formatOptions_templ?.second || formatOptions.second,
+						fractionalSecondDigits: formatOptions_templ?.fractionalSecondDigits || formatOptions.fractionalSecondDigits,
+						timeZoneName: formatOptions_templ?.timeZoneName || formatOptions.timeZoneName,
+						dateStyle: formatOptions_templ?.dateStyle || formatOptions.dateStyle,
+						timeStyle: formatOptions_templ?.timeStyle || formatOptions.timeStyle
 					};
 				} else {
 					this.ops.warnHandler(`DateTime format '${formatNameReal}' not found for locale '${currentLocale}'`, null);
@@ -408,7 +408,7 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 	 * @param {Record<string,any>} newMessage 键值及字段。
 	 */
 	mergeLocaleMessage(local : string, newMessage : Record<string, any>) {
-		let nowmessage = this.ops.messages?.[local]??null;
+		let nowmessage = this.ops.messages?.[local]||null;
 		if (nowmessage != null) {
 			nowmessage = { ...nowmessage, ...newMessage }
 			this.ops.messages[local] = {...this.ops.messages.local,...newMessage}
@@ -992,8 +992,8 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 	 * @returns 格式化后的字符串
 	 */
 	private formatWithSignificantDigits(value : number, options : NumberFormatOpts) : string {
-		const minSigDigits = options.minimumSignificantDigits ?? 1;
-		const maxSigDigits = options.maximumSignificantDigits ?? 21;
+		const minSigDigits = options.minimumSignificantDigits || 1;
+		const maxSigDigits = options.maximumSignificantDigits || 21;
 
 		// 确保有效数字位数在合理范围内
 		const actualMinSigDigits = Math.max(1, Math.min(minSigDigits, 21));
@@ -1568,7 +1568,7 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 		const separator = Tmui4xI18n.THOUSANDS_SEPARATOR_MAP.get(langCode);
 
 		// 如果找到对应的分隔符则返回，否则返回默认的逗号
-		return separator ?? ',';
+		return separator || ',';
 	}
 
 	/**
@@ -1579,8 +1579,8 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 	 * @returns 格式化后的货币字符串
 	 */
 	private formatCurrency(numStr : string, options : NumberFormatOpts, locale : string) : string {
-		const currency = options.currency ?? 'USD';
-		const currencyDisplay = options.currencyDisplay ?? 'symbol';
+		const currency = options.currency || 'USD';
+		const currencyDisplay = options.currencyDisplay || 'symbol';
 
 		let currencySymbol = currency;
 		if (currencyDisplay == 'symbol') {
@@ -1759,7 +1759,7 @@ export class Tmui4xI18n implements Tmui4xI18nTml {
 				typeof objdata == 'number'
 			) return objdata
 			if (path == null) return null;
-			return realGetAny((objdata! as Record<string, any>)?.[path]??null);
+			return realGetAny((objdata! as Record<string, any>)?.[path]||null);
 		}
 
 		let current : AnyOrNull = getAny(obj);

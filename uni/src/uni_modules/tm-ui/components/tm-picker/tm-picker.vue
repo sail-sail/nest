@@ -286,11 +286,11 @@ const getIdsByindexs = (indexs: number[]): { ids: Array<string | number>, data: 
         if (nodes.length - 1 >= currentsIndex) {
             id = nodes[currentsIndex][props.rangKey]
             str = nodes[currentsIndex][props.rangText]
-            children = nodes[currentsIndex]?.children ?? []
+            children = nodes[currentsIndex]?.children || []
         } else {
             id = nodes[0][props.rangKey]
             str = nodes[0][props.rangText]
-            children = nodes[0]?.children ?? []
+            children = nodes[0]?.children || []
         }
         ids.push(id)
         data.push(nodes)

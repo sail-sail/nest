@@ -328,14 +328,14 @@
 					response: item
 				}
 			}
-			let realStatus = item?.status??status;
+			let realStatus = item?.status||status;
 			return {
 				path: item[props.rangUrl] || item['path'] || "",
 				id: getUUID(),
 				status: realStatus,
 				progress: realStatus == TMUPLOAD_PHOTO_STATUS.UPLOAD_SUCCESS?100:0,
 				statusText: STATUS_TEXT.get(realStatus) || "",
-				response: TMUPLOAD_PHOTO_STATUS.UPLOAD_SUCCESS?(item?.response ?? item):''
+				response: TMUPLOAD_PHOTO_STATUS.UPLOAD_SUCCESS?(item?.response || item):''
 			}
 		})
 		// let nowfilesrc = list.value.map(item => item.path)
