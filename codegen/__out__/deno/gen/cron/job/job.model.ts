@@ -103,3 +103,14 @@ export function checkSortJob(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputJob(
+  input?: JobInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

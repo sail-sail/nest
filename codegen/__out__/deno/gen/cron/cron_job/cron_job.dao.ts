@@ -5,9 +5,7 @@ import {
   get_is_creating,
 } from "/lib/context.ts";
 
-import {
-  escapeId,
-} from "sqlstring";
+import sqlstring from "sqlstring";
 
 import dayjs from "dayjs";
 
@@ -76,6 +74,7 @@ import {
 } from "/gen/types.ts";
 
 import type {
+  InputMaybe,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -486,7 +485,7 @@ export async function findAllCronJob(
     } else {
       sql += `,`;
     }
-    sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
+    sql += ` ${ sqlstring.escapeId(item.prop) } ${ escapeDec(item.order) }`;
   }
   sql += `) f`;
   

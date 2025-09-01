@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortCronJob,
+  intoInputCronJob,
 } from "./cron_job.model.ts";
 
 import {
@@ -198,11 +199,13 @@ export async function createsCronJob(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputCronJob(input);
     
     await setIdByLblCronJob(input);
     
     await validateCronJob(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsCronJob(inputs, { uniqueType });
@@ -217,7 +220,7 @@ export async function updateByIdCronJob(
   input: CronJobInput,
 ): Promise<CronJobId> {
   
-  input.id = undefined;
+  intoInputCronJob(input);
   
   const {
     setIdByLblCronJob,

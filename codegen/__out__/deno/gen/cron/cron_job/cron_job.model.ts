@@ -110,3 +110,14 @@ export function checkSortCronJob(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputCronJob(
+  input?: CronJobInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

@@ -114,3 +114,14 @@ export function checkSortCronJobLog(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputCronJobLog(
+  input?: CronJobLogInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

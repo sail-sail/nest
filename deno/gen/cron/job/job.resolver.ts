@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortJob,
+  intoInputJob,
 } from "./job.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsJob(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputJob(input);
     
     await setIdByLblJob(input);
     
     await validateJob(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsJob(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdJob(
   input: JobInput,
 ): Promise<JobId> {
   
-  input.id = undefined;
+  intoInputJob(input);
   
   const {
     setIdByLblJob,

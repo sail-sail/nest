@@ -9,6 +9,7 @@ import type {
 
 import {
   checkSortCronJobLogDetail,
+  intoInputCronJobLogDetail,
 } from "./cron_job_log_detail.model.ts";
 
 import {
