@@ -139,3 +139,14 @@ export function checkSortWxwAppToken(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputWxwAppToken(
+  input?: WxwAppTokenInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

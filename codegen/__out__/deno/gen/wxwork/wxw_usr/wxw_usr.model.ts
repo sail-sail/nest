@@ -189,3 +189,14 @@ export function checkSortWxwUsr(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputWxwUsr(
+  input?: WxwUsrInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

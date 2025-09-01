@@ -133,3 +133,14 @@ export function checkSortWxwMsg(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputWxwMsg(
+  input?: WxwMsgInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}
