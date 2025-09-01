@@ -14,28 +14,28 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "decimal.js-light": "2.5.1",
+    "decimal.js": "10.6.0",
     "file-saver": "2.0.5",
     "graphql": "16.11.0",
     "graphql-combine-query": "1.2.4",
-    "vue": "3.5.18",
+    "vue": "3.5.20",
     "vue-router": "4.5.1"
   },
   "devDependencies": {
-    "@nuxt/eslint": "1.7.1",
-    "@nuxt/icon": "1.15.0",
+    "@nuxt/eslint": "1.9.0",
+    "@nuxt/icon": "2.0.0",
     "@types/file-saver": "2.0.7",
-    "@types/node": "24.1.0",
-    "@unocss/nuxt": "66.4.0",
-    "@unocss/preset-rem-to-px": "66.4.0",
-    "@unocss/transformer-directives": "66.4.0",
-    "@vue-macros/nuxt": "3.0.0-beta.20",
-    "@vue-macros/reactivity-transform": "3.0.0-beta.20",
-    "nuxt": "4.0.2",
-    "sass": "1.89.2",
+    "@types/node": "24.3.0",
+    "@unocss/nuxt": "66.5.0",
+    "@unocss/preset-rem-to-px": "66.5.0",
+    "@unocss/transformer-directives": "66.5.0",
+    "@vue-macros/nuxt": "3.0.0-beta.22",
+    "@vue-macros/reactivity-transform": "3.0.0-beta.22",
+    "nuxt": "4.0.3",
+    "sass": "1.91.0",
     "typescript": "5.9.2",
-    "unocss": "66.4.0",
-    "vue-tsc": "3.0.5"
+    "unocss": "66.5.0",
+    "vue-tsc": "3.0.6"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

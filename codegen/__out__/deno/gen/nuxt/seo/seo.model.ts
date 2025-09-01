@@ -117,3 +117,14 @@ export function checkSortSeo(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputSeo(
+  input?: SeoInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

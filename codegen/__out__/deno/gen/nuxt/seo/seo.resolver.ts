@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortSeo,
+  intoInputSeo,
 } from "./seo.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsSeo(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputSeo(input);
     
     await setIdByLblSeo(input);
     
     await validateSeo(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsSeo(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdSeo(
   input: SeoInput,
 ): Promise<SeoId> {
   
-  input.id = undefined;
+  intoInputSeo(input);
   
   const {
     setIdByLblSeo,
