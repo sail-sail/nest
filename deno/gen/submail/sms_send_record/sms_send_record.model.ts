@@ -90,3 +90,14 @@ export function checkSortSmsSendRecord(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputSmsSendRecord(
+  input?: SmsSendRecordInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

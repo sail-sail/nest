@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortSmsApp,
+  intoInputSmsApp,
 } from "./sms_app.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsSmsApp(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputSmsApp(input);
     
     await setIdByLblSmsApp(input);
     
     await validateSmsApp(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsSmsApp(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdSmsApp(
   input: SmsAppInput,
 ): Promise<SmsAppId> {
   
-  input.id = undefined;
+  intoInputSmsApp(input);
   
   const {
     setIdByLblSmsApp,

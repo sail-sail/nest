@@ -107,3 +107,14 @@ export function checkSortSmsApp(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputSmsApp(
+  input?: SmsAppInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}
