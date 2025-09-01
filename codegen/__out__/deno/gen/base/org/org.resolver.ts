@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortOrg,
+  intoInputOrg,
 } from "./org.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsOrg(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputOrg(input);
     
     await setIdByLblOrg(input);
     
     await validateOrg(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsOrg(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdOrg(
   input: OrgInput,
 ): Promise<OrgId> {
   
-  input.id = undefined;
+  intoInputOrg(input);
   
   const {
     setIdByLblOrg,

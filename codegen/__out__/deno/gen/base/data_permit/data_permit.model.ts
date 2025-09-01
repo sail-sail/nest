@@ -101,3 +101,14 @@ export function checkSortDataPermit(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputDataPermit(
+  input?: DataPermitInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

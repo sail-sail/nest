@@ -12,6 +12,10 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+import {
+  intoInputDictbizDetail,
+} from "/gen/base/dictbiz_detail/dictbiz_detail.model.ts";
+
 export const route_path = "/base/dictbiz";
 
 declare const dictbizId: unique symbol;
@@ -107,4 +111,18 @@ export function checkSortDictbiz(sort?: SortInput[]) {
       throw new Error(`checkSortDictbiz: ${ JSON.stringify(item) }`);
     }
   }
+}
+
+export function intoInputDictbiz(
+  input?: DictbizInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+  
+  // 业务字典明细
+  input?.dictbiz_detail?.map(intoInputDictbizDetail);
 }

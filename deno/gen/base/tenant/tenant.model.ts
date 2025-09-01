@@ -112,3 +112,14 @@ export function checkSortTenant(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputTenant(
+  input?: TenantInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

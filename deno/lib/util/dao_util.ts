@@ -1,6 +1,4 @@
-import {
-  escapeId,
-} from "sqlstring";
+import sqlstring from "sqlstring";
 
 import {
   query,
@@ -104,12 +102,12 @@ export async function many2manyUpdate(
     models = await query<Model>(`
       select
         t.id,
-        t.${ escapeId(many.column2) } column2Id,
+        t.${ sqlstring.escapeId(many.column2) } column2Id,
         t.is_deleted,
         t.order_by
-      from ${ escapeId(many.mod + "_" +many.table) } t
+      from ${ sqlstring.escapeId(many.mod + "_" +many.table) } t
       where
-        t.${ escapeId(many.column1) } = ?
+        t.${ sqlstring.escapeId(many.column1) } = ?
     `, [ model.id ]);
     for (let i = 0; i < models.length; i++) {
       const model = models[i];
@@ -118,7 +116,7 @@ export async function many2manyUpdate(
         if (model.is_deleted === 0) {
           const sql = `
             update
-              ${ escapeId(many.mod + "_" + many.table) }
+              ${ sqlstring.escapeId(many.mod + "_" + many.table) }
             set
               is_deleted = ?
               ,delete_time = ?
@@ -140,7 +138,7 @@ export async function many2manyUpdate(
       if (model.is_deleted === 1 || model.order_by !== idx + 1) {
         const sql = `
           update
-            ${ escapeId(many.mod + "_" + many.table) }
+            ${ sqlstring.escapeId(many.mod + "_" + many.table) }
           set
             is_deleted = ?
             ,order_by = ?

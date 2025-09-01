@@ -97,3 +97,14 @@ export function checkSortIcon(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputIcon(
+  input?: IconInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

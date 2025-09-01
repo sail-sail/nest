@@ -72,14 +72,14 @@ const props = defineProps({
      * 验证码框的宽
      */
     width: {
-        type: [String,Number],
+        type: [String, Number],
         default: "100",
     },
     /**
      * 验证码框的高
      */
     height: {
-        type: [String,Number],
+        type: [String, Number],
         default: "100",
     },
     /**
@@ -196,18 +196,18 @@ const emits = defineEmits([
 ]);
 
 watch(
-  () => props.modelValue,
-  (newval: string) => {
-      if (newval == inputValue.value) return;
-      inputValue.value = newval;
-      let len = newval.split("").length;
-      if (len == _maxLength.value) {
-          /**
-           * 输入长度等于指定长度时触发
-           */
-          emits("confirm", inputValue.value);
-      }
-  }
+    () => props.modelValue,
+    (newval: string) => {
+        if (newval == inputValue.value) return;
+        inputValue.value = newval;
+        let len = newval.split("").length;
+        if (len == _maxLength.value) {
+            /**
+             * 输入长度等于指定长度时触发
+             */
+            emits("confirm", inputValue.value);
+        }
+    }
 );
 
 const _fontColor = computed((): string => {
@@ -222,7 +222,7 @@ const _fontColor = computed((): string => {
 const _borderColor = computed((): string => {
     let outLineColor = props.borderColor == "" ? xConfig.color : props.borderColor;
     let darkOutlineColor =
-      props.darkBorderColor == "" ? _fontColor.value : props.darkBorderColor;
+        props.darkBorderColor == "" ? _fontColor.value : props.darkBorderColor;
 
     if (xConfig.mode === "dark") {
         return getDefaultColor(darkOutlineColor);
@@ -233,7 +233,7 @@ const _borderColor = computed((): string => {
 const _unborderColor = computed((): string => {
     let unBorderColor = props.unBorderColor == "" ? _fontColor.value : props.unBorderColor;
     let unDarkBorderColor =
-      props.unDarkBorderColor == "" ? _fontColor.value : props.unDarkBorderColor;
+        props.unDarkBorderColor == "" ? _fontColor.value : props.unDarkBorderColor;
 
     if (xConfig.mode === "dark") {
         return getDefaultColor(unDarkBorderColor);
@@ -356,32 +356,32 @@ const onFocus = () => {
 <template>
     <view @click="onClick" class="xCodeInput">
         <input @focus="onFocus" v-if="useSysKeyborad" :focus="_autoFocus" :style="{
-    width: '100%',
-    height: _height,
-  }" @confirm="onconfirm" @input="inputEvent" v-model="inputValue" @blur="blur" :auto-focus="_autoFocus"
-               class="xCodeInputInput" type="number" />
+            width: '100%',
+            height: _height,
+        }" @confirm="onconfirm" @input="inputEvent" v-model="inputValue" @blur="blur" :auto-focus="_autoFocus"
+            class="xCodeInputInput" type="number" />
 
         <view class="xCodeInputItem" :style="{
-    borderRadius: _round,
-    border: `2px solid ${borderColorAc(index)}`,
-    backgroundColor: skin == 'fill' ? _bgcolor : 'transparent',
-    width: _width,
-    height: _height,
-    marginRight: index == _maxLength - 1 ? '0px' : _gutter,
-  }" v-for="(_, index) in _maxLength" :key="index">
+            borderRadius: _round,
+            border: `2px solid ${borderColorAc(index)}`,
+            backgroundColor: skin == 'fill' ? _bgcolor : 'transparent',
+            width: _width,
+            height: _height,
+            marginRight: index == _maxLength - 1 ? '0px' : _gutter,
+        }" v-for="(_, index) in _maxLength" :key="index">
             <text :class="[
-    index <= inputValue.length ? 'xCodeInputItemTextOn' : 'xCodeInputItemTextOff',
-  ]" class="xCodeInputItemText" :style="{
-    fontWeight: 'bold',
-    color: _fontColor,
-    fontSize: _fontSize,
-  }">
+                    index <= inputValue.length ? 'xCodeInputItemTextOn' : 'xCodeInputItemTextOff',
+                ]" class="xCodeInputItemText" :style="{
+                fontWeight: 'bold',
+                color: _fontColor,
+                fontSize: _fontSize,
+            }">
                 {{ getValue(index) }}
             </text>
-            <tm-skeleton v-if="index <= inputValue.length && getValue(index) == '' && placeShape == 'round' && isFocus
-    " height="5px" width="5px" :color="_borderColor" :dark-color="_borderColor"></tm-skeleton>
-            <tm-skeleton v-if="index <= inputValue.length && getValue(index) == '' && placeShape == 'line' && isFocus" height="2px"
-                         width="33%" :color="_borderColor" :dark-color="_borderColor"></tm-skeleton>
+            <tm-skeleton v-if="index <= inputValue.length && getValue(index) == '' && placeShape == 'round' && isFocus" 
+            height="5px" width="5px" :color="_borderColor" :dark-color="_borderColor" round="36"></tm-skeleton>
+            <tm-skeleton v-if="index <= inputValue.length && getValue(index) == '' && placeShape == 'line' && isFocus"
+                height="2px" width="33%" :color="_borderColor" :dark-color="_borderColor"></tm-skeleton>
         </view>
     </view>
 </template>

@@ -455,8 +455,13 @@ export function runInAsyncHooks<A extends unknown[], F extends (...args: A) => R
   fn: F,
   thisArg?: ThisParameterType<F>,
   ...args: A
-): ReturnType<F> {
-  return asyncHooksContextManager.run(context, fn, thisArg, ...args);
+): ReturnType<F> | undefined {
+  try {
+    const data = asyncHooksContextManager.run(context, fn, thisArg, ...args);
+    return data;
+  } catch (err) {
+    error(err);
+  }
 }
 
 export function useContext() {

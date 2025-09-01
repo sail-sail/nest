@@ -4,7 +4,7 @@ import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumbe
 import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj, isBlackAndWhite, setBgColorLightByDark } from "../../libs/colors";
 import { useTmConfig } from "../../libs/config";
 import { onPageScroll,onReady } from '@dcloudio/uni-app';
-
+import {$i18n} from "@/uni_modules/tm-ui"
 /**
  * @displayName 标题导航
  * @exportName tm-navbar
@@ -77,7 +77,7 @@ const props = defineProps({
      */
     title: {
         type: String,
-        default: '标题'
+        default: $i18n.t('tmui32x.tmNavbar.title')
     },
     /**
      * 默认标题颜色，暗黑是取白，如果有其它需求建议插槽。
@@ -279,7 +279,7 @@ const _styleMap = computed(() => {
 })
 const onReadyEvent = ()=>{
     let sys = uni.getWindowInfo();
-    statusBarHeight.value = sys.statusBarHeight || 0
+    statusBarHeight.value = sys?.statusBarHeight || 0
     emits('init', statusBarHeight.value + navbarHeight)
     if (props.staticTransparent) {
         fiexRatio.value = 0

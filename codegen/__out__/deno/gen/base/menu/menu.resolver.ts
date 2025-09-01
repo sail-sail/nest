@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortMenu,
+  intoInputMenu,
 } from "./menu.model.ts";
 
 import {
@@ -208,11 +209,13 @@ export async function createsMenu(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputMenu(input);
     
     await setIdByLblMenu(input);
     
     await validateMenu(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsMenu(inputs, { uniqueType });
@@ -227,7 +230,7 @@ export async function updateByIdMenu(
   input: MenuInput,
 ): Promise<MenuId> {
   
-  input.id = undefined;
+  intoInputMenu(input);
   
   const {
     setIdByLblMenu,

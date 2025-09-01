@@ -99,3 +99,14 @@ export function checkSortDept(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputDept(
+  input?: DeptInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

@@ -103,3 +103,14 @@ export function checkSortOptbiz(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputOptbiz(
+  input?: OptbizInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}
