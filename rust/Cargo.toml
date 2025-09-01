@@ -5,12 +5,12 @@ edition = "2024"
 default-run = "rust"
 
 [workspace.dependencies]
-serde_json = "1.0.142"
+serde_json = "1.0.143"
 serde = { version = "1.0.219", features = ["derive"] }
 mime = "0.3.17"
 futures-util = "0.3.31"
 tracing = "0.1.41"
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
 tracing-appender = "0.2.3"
 tracing-attributes = "0.1.30"
 tokio = { version = "1.47.1", features = ["rt-multi-thread", "macros", "net", "fs"] }
@@ -41,17 +41,17 @@ smallvec = { version = "1.15.1", features = ["union", "serde"] }
 uuid = { version = "1.17.0", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12.2"
 deadpool-redis = "0.22.0"
-redis = { version = "0.32.4", features = ["tokio-comp"], default-features = false }
+redis = { version = "0.32.5", features = ["tokio-comp"], default-features = false }
 bigdecimal = "0.4.8"
-time = "0.3.41"
+time = "0.3.42"
 rust_decimal = { version = "1.37.2", features = ["maths"]}
 rust_decimal_macros = "1.37.1"
 # enum_dispatch = "0.3.13"
 # pin-project-lite = "0.2.16"
 # rayon = "1.11.0"
-regex = "1.11.1"
+regex = "1.11.2"
 # yarte = "0.15.7"
-image = { version = "0.25.6", features = ["webp"] }
+image = { version = "0.25.7", features = ["webp"] }
 delay_timer = "0.11.6"
 num-traits = "0.2.19"
 fast_chemail = "0.9.6"
