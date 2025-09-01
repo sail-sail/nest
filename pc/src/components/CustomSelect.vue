@@ -289,6 +289,10 @@
 
 <script lang="ts" setup>
 import type {
+  SelectV2Props,
+} from "element-plus";
+
+import type {
   WatchHandle,
 } from "vue";
 
@@ -305,7 +309,8 @@ const t = getCurrentInstance();
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", value: any[]): void;
-  (e: "update:modelValue", value?: string | string[] | null): void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (e: "update:modelValue", value?: any): void;
   (e: "update:modelLabel", value?: string | null): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any | any[] | null): void;
@@ -329,15 +334,18 @@ let data = $ref<any[]>([ ]);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let modelValueData = $ref<any[]>([ ]);
 
+defineSlots<InstanceType<typeof ElSelectV2>['$slots']>();
+
 const props = withDefaults(
-  defineProps<{
+  defineProps<Partial<SelectV2Props> & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     method: () => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]; // 用于获取数据的方法
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     findByValues?: (value: any[]) => Promise<any[]>; // 通过value获取数据的方法
     optionsMap?: OptionsMap;
     height?: number;
-    modelValue?: string | string[] | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    modelValue?: any;
     modelLabel?: string | null;
     autoWidth?: boolean;
     maxWidth?: number;
@@ -357,7 +365,8 @@ const props = withDefaults(
     findByValues: undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     optionsMap: function(item: any) {
-      const item2 = item as { lbl: string; id: string; };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const item2 = item as { lbl: string; id: any; };
       return {
         label: item2.lbl,
         value: item2.id,

@@ -99,3 +99,14 @@ export function checkSortOrg(sort?: SortInput[]) {
     }
   }
 }
+
+export function intoInputOrg(
+  input?: OrgInput,
+) {
+  
+  if (!input) {
+    return;
+  }
+  
+  input.id = undefined;
+}

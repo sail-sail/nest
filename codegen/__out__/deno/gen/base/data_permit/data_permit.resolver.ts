@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortDataPermit,
+  intoInputDataPermit,
 } from "./data_permit.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsDataPermit(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputDataPermit(input);
     
     await setIdByLblDataPermit(input);
     
     await validateDataPermit(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsDataPermit(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdDataPermit(
   input: DataPermitInput,
 ): Promise<DataPermitId> {
   
-  input.id = undefined;
+  intoInputDataPermit(input);
   
   const {
     setIdByLblDataPermit,

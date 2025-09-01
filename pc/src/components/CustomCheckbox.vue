@@ -35,6 +35,10 @@
 </template>
 
 <script lang="ts" setup>
+import type {
+  CheckboxProps,
+} from "element-plus";
+
 const {
   ns,
   initSysI18ns,
@@ -47,8 +51,10 @@ const emit = defineEmits<{
   (e: "change", value?: any): void,
 }>();
 
+defineSlots<InstanceType<typeof ElCheckbox>['$slots']>();
+
 const props = withDefaults(
-  defineProps<{
+  defineProps<Partial<CheckboxProps> & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     disabled?: boolean;

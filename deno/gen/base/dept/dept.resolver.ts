@@ -11,6 +11,7 @@ import type {
 
 import {
   checkSortDept,
+  intoInputDept,
 } from "./dept.model.ts";
 
 import {
@@ -196,11 +197,13 @@ export async function createsDept(
   );
   
   for (const input of inputs) {
-    input.id = undefined;
+    
+    intoInputDept(input);
     
     await setIdByLblDept(input);
     
     await validateDept(input);
+    
   }
   const uniqueType = unique_type;
   const ids = await createsDept(inputs, { uniqueType });
@@ -215,7 +218,7 @@ export async function updateByIdDept(
   input: DeptInput,
 ): Promise<DeptId> {
   
-  input.id = undefined;
+  intoInputDept(input);
   
   const {
     setIdByLblDept,

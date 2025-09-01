@@ -59,3 +59,5 @@ database_crypto_key.txt
 
 docs/.vitepress/cache
 docs/.vitepress/dist
+
+**/test.ts
