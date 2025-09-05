@@ -22,10 +22,10 @@
     "decimal.js": "10.6.0",
     "graphql": "16.11.0",
     "js-md5": "0.8.3",
-    "lru-cache": "11.1.0",
+    "lru-cache": "11.2.1",
     "mime": "4.0.7",
     "mnemonist": "0.40.3",
-    "mysql2": "3.14.3",
+    "mysql2": "3.14.4",
     "path-to-regexp": "6.3.0",
     "sqlstring": "2.3.3",
     "wechatpay-node-v3": "2.2.1"
@@ -38,7 +38,7 @@
     "@types/sqlstring": "2.3.2",
     "chokidar": "3.6.0",
     "commander": "14.0.0",
-    "dotenv": "17.2.1",
+    "dotenv": "17.2.2",
     "graphql-ts-client-codegen": "3.1.17",
     "ssh2-promise": "1.0.3",
     "typescript": "5.9.2"
