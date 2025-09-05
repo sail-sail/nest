@@ -32,10 +32,6 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  LinkProps,
-} from "element-plus";
-
 import AttDialog from "./AttDialog.vue";
 
 const emit = defineEmits([
@@ -43,10 +39,8 @@ const emit = defineEmits([
   "update:modelValue",
 ]);
 
-defineSlots<InstanceType<typeof ElLink>['$slots']>();
-
 const props = withDefaults(
-  defineProps<Partial<LinkProps> & {
+  defineProps<{
     modelValue?: string | null;
     maxSize?: number;
     maxFileSize?: number;

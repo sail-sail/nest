@@ -55,10 +55,8 @@ import type {
   ColorPickerProps,
 } from "element-plus";
 
-defineSlots<InstanceType<typeof ElColorPicker>['$slots']>();
-
 const props = withDefaults(
-  defineProps<Partial<ColorPickerProps> & {
+  defineProps<{
     readonly?: boolean;
     isReadonlyBorder?: boolean;
   }>(),
