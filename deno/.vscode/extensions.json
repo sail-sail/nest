@@ -2,6 +2,7 @@
   "recommendations": [
     "ms-ceintl.vscode-language-pack-zh-hans",
     "janisdd.vscode-edit-csv",
+    "mechatroner.rainbow-csv",
     "editorconfig.editorconfig",
     "graphql.vscode-graphql-execution",
     "graphql.vscode-graphql-syntax",

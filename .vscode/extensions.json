@@ -2,6 +2,7 @@
   "recommendations": [
     "ms-ceintl.vscode-language-pack-zh-hans",
     "janisdd.vscode-edit-csv",
+    "mechatroner.rainbow-csv",
     "graphql.vscode-graphql-execution",
     "graphql.vscode-graphql-syntax",
     "howardzuo.vscode-npm-dependency",
@@ -18,8 +19,7 @@
     "denoland.vscode-deno",
     "ponetto.vscode-diff-viewer",
     "johnsoncodehk.vscode-tsconfig-helper",
-    "jacobpfeifer.pfeifer-hurl",
-    "emeraldwalk.runonsave"
+    "jacobpfeifer.pfeifer-hurl"
   ],
   "unwantedRecommendations": [
     "mattpocock.ts-error-translator"
