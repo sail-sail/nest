@@ -124,6 +124,20 @@ for (let i = 0; i < columns.length; i++) {
   }
 }
 
+// 根据关键字搜索
+const searchByKeyword = opts?.searchByKeyword;
+
+if (searchByKeyword) {
+  if (!searchByKeyword.prop) {
+    throw `表: ${ mod }_${ table } 的 opts.searchByKeyword.prop 不能为空`;
+    process.exit(1);
+  }
+  if (!searchByKeyword.fields || !Array.isArray(searchByKeyword.fields) || searchByKeyword.fields.length === 0) {
+    throw `表: ${ mod }_${ table } 的 opts.searchByKeyword.fields 不能为空`;
+    process.exit(1);
+  }
+}
+
 #><template>
 <div
   un-flex="~ [1_0_0] col"
@@ -153,6 +167,39 @@ for (let i = 0; i < columns.length; i++) {
       @submit.prevent
       @keydown.enter="onSearch(true)"
     ><#
+    if (searchByKeyword && !searchByKeyword.hideInList) {
+      const prop = searchByKeyword.prop;
+      const lbl = searchByKeyword.lbl || "关键字";
+      const placeholder = searchByKeyword.placeholder || "关键字";
+      const fields = searchByKeyword.fields;
+    #>
+      
+      <el-form-item<#
+        if (isUseI18n) {
+        #>
+        :label="n('<#=lbl#>')"<#
+        } else {
+        #>
+        label="<#=lbl#>"<#
+        }
+        #>
+        prop="<#=prop#>"
+      >
+        <CustomInput
+          v-model="search.<#=prop#>"<#
+          if (isUseI18n) {
+          #>
+          :placeholder="`${ ns('请输入') } ${ n('<#=placeholder#>') }`"<#
+          } else {
+          #>
+          placeholder="请输入 <#=placeholder#>"<#
+          }
+          #>
+          @clear="onSearchClear"
+        ></CustomInput>
+      </el-form-item><#
+    }
+    #><#
       let hasSearchExpand = false;
       const searchIntColumns = [ ];
       for (let i = 0; i < columns.length; i++) {
