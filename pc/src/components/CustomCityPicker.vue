@@ -96,8 +96,6 @@ import type {
   PcaItem,
 } from "./CustomCityPickerApi";
 
-defineSlots<InstanceType<typeof ElCascader>['$slots']>();
-
 const props = withDefaults(
   defineProps<{
     readonly?: boolean;

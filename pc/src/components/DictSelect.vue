@@ -244,10 +244,6 @@
 
 <script lang="ts" setup>
 import type {
-  SelectV2Props,
-} from "element-plus";
-
-import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
 
@@ -285,10 +281,8 @@ const emit = defineEmits<{
 
 type OptionsMap = (item: DictModel) => OptionType;
 
-defineSlots<InstanceType<typeof ElSelectV2>['$slots']>();
-
 const props = withDefaults(
-  defineProps<Partial<SelectV2Props> & {
+  defineProps<{
     code: string;
     optionsMap?: OptionsMap;
     height?: number;

@@ -244,10 +244,6 @@
 
 <script lang="ts" setup>
 import type {
-  SelectV2Props,
-} from "element-plus";
-
-import type {
   GetDictbiz,
 } from "@/typings/types";
 
@@ -285,10 +281,8 @@ const emit = defineEmits<{
 
 type OptionsMap = (item: DictbizModel) => OptionType;
 
-defineSlots<InstanceType<typeof ElSelectV2>['$slots']>();
-
 const props = withDefaults(
-  defineProps<Partial<SelectV2Props> & {
+  defineProps<{
     code: string;
     optionsMap?: OptionsMap;
     height?: number;
