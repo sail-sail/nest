@@ -858,6 +858,14 @@ export interface TablesConfigItem {
      */
     secondSorts?: { prop: string, order: "ascending"|"descending" }[];
     
+    searchByKeyword?: {
+      prop: string;
+      fields: string[];
+      lbl?: string;
+      placeholder?: string;
+      hideInList?: boolean;
+    };
+    
     /**
      * 不允许删除
      */

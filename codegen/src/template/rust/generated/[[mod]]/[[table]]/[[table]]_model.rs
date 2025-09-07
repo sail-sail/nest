@@ -79,6 +79,20 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
 
+// 根据关键字搜索
+const searchByKeyword = opts?.searchByKeyword;
+
+if (searchByKeyword) {
+  if (!searchByKeyword.prop) {
+    throw `表: ${ mod }_${ table } 的 opts.searchByKeyword.prop 不能为空`;
+    process.exit(1);
+  }
+  if (!searchByKeyword.fields || !Array.isArray(searchByKeyword.fields) || searchByKeyword.fields.length === 0) {
+    throw `表: ${ mod }_${ table } 的 opts.searchByKeyword.fields 不能为空`;
+    process.exit(1);
+  }
+}
+
 #>#![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
 #![allow(clippy::collapsible_if)]
@@ -1729,6 +1743,12 @@ pub struct <#=tableUP#>Search {
   if (hasIsDeleted) {
   #>
   pub is_deleted: Option<u8>,<#
+  }
+  #><#
+  if (searchByKeyword) {
+  #>
+  #[graphql(name = "<#=searchByKeyword.prop#>")]
+  pub <#=searchByKeyword.prop#>: Option<String>,<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
