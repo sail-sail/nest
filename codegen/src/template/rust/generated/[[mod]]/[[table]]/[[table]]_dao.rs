@@ -157,6 +157,10 @@ for (const inlineForeignTab of inlineForeignTabs) {
     inline_column_modelLabels.push(inline_column_modelLabel);
   }
 }
+
+// 根据关键字搜索
+const searchByKeyword = opts?.searchByKeyword;
+
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -854,7 +858,7 @@ async fn get_where_query(
   }<#
   }
   #><#
-    if (hasTenantId) {
+  if (hasTenantId) {
   #>
   {
     let tenant_id = {
@@ -875,7 +879,39 @@ async fn get_where_query(
       args.push(tenant_id.into());
     }
   }<#
+  }
+  #><#
+  if (searchByKeyword) {
+    const prop = searchByKeyword.prop;
+    const prop_rust = rustKeyEscape(prop);
+    const fields = searchByKeyword.fields;
+  #>
+  {
+    let <#=prop_rust#>: Option<String> = match search {
+      Some(item) => item.<#=prop_rust#>.clone(),
+      None => None,
+    };
+    if let Some(<#=prop_rust#>) = <#=prop_rust#> && !<#=prop_rust#>.is_empty() {
+      where_query.push_str(" and (");<#
+      for (let i = 0; i < fields.length; i++) {
+        const field = fields[i];
+        const field_rust = rustKeyEscape(field);
+      #><#
+        if (i > 0) {
+      #>
+        
+      where_query.push_str(" or");<#
+        }
+      #>
+      where_query.push_str(" t.<#=field#> like ?");
+      args.push(format!("%{}%", sql_like(&<#=prop_rust#>)).into());<#
+      }
+      #>
+      where_query.push(')');
+      
     }
+  }<#
+  }
   #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
