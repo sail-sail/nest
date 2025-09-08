@@ -142,6 +142,9 @@ for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
   langTableRecords.push(record);
 }
 
+// 根据关键字搜索
+const searchByKeyword = opts?.searchByKeyword;
+
 // 审核
 const hasAudit = !!opts?.audit;
 let auditColumn = "";
@@ -867,6 +870,28 @@ async function getWhereQuery(
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
+  }<#
+  }
+  #><#
+  if (searchByKeyword) {
+    const prop = searchByKeyword.prop;
+    const fields = searchByKeyword.fields;
+  #>
+  if (isNotEmpty(search?.<#=prop#>)) {
+    whereQuery += " and (";<#
+    for (let i = 0; i < fields.length; i++) {
+      const field = fields[i];
+      const field_rust = rustKeyEscape(field);
+      #><#
+      if (i > 0) {
+      #>
+      whereQuery += " or";<#
+      }
+    #>
+    whereQuery += ` t.<#=field#> like ${ args.push("%" + sqlLike(search?.<#=prop#>) + "%") }`;<#
+    }
+    #>
+    whereQuery += ")";
   }<#
   }
   #><#
