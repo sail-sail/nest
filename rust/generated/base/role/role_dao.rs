@@ -165,7 +165,7 @@ async fn get_where_query(
       Some(item) => item.code_like.clone(),
       None => None,
     };
-    if let Some(code_like) = code_like {
+    if let Some(code_like) = code_like && !code_like.is_empty() {
       where_query.push_str(" and t.code like ?");
       args.push(format!("%{}%", sql_like(&code_like)).into());
     }
@@ -184,7 +184,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -203,7 +203,7 @@ async fn get_where_query(
       Some(item) => item.home_url_like.clone(),
       None => None,
     };
-    if let Some(home_url_like) = home_url_like {
+    if let Some(home_url_like) = home_url_like && !home_url_like.is_empty() {
       where_query.push_str(" and t.home_url like ?");
       args.push(format!("%{}%", sql_like(&home_url_like)).into());
     }
@@ -241,6 +241,16 @@ async fn get_where_query(
       where_query.push_str(" and t.menu_ids is null");
     }
   }
+  {
+    let menu_ids_lbl_like = match search {
+      Some(item) => item.menu_ids_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(menu_ids_lbl_like) = menu_ids_lbl_like && !menu_ids_lbl_like.is_empty() {
+      where_query.push_str(" and base_menu.lbl like ?");
+      args.push(format!("%{}%", sql_like(&menu_ids_lbl_like)).into());
+    }
+  }
   // 按钮权限
   {
     let permit_ids: Option<Vec<PermitId>> = match search {
@@ -272,6 +282,16 @@ async fn get_where_query(
     };
     if permit_ids_is_null {
       where_query.push_str(" and t.permit_ids is null");
+    }
+  }
+  {
+    let permit_ids_lbl_like = match search {
+      Some(item) => item.permit_ids_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(permit_ids_lbl_like) = permit_ids_lbl_like && !permit_ids_lbl_like.is_empty() {
+      where_query.push_str(" and base_permit.lbl like ?");
+      args.push(format!("%{}%", sql_like(&permit_ids_lbl_like)).into());
     }
   }
   // 数据权限
@@ -338,6 +358,16 @@ async fn get_where_query(
     };
     if field_permit_ids_is_null {
       where_query.push_str(" and t.field_permit_ids is null");
+    }
+  }
+  {
+    let field_permit_ids_lbl_like = match search {
+      Some(item) => item.field_permit_ids_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(field_permit_ids_lbl_like) = field_permit_ids_lbl_like && !field_permit_ids_lbl_like.is_empty() {
+      where_query.push_str(" and base_field_permit.lbl like ?");
+      args.push(format!("%{}%", sql_like(&field_permit_ids_lbl_like)).into());
     }
   }
   // 锁定
@@ -419,7 +449,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }

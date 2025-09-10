@@ -494,18 +494,27 @@ pub struct UsrSearch {
   /// 所属角色
   #[graphql(name = "role_ids_save_null")]
   pub role_ids_is_null: Option<bool>,
+  /// 所属角色
+  #[graphql(name = "role_ids_lbl_like")]
+  pub role_ids_lbl_like: Option<String>,
   /// 所属部门
   #[graphql(name = "dept_ids")]
   pub dept_ids: Option<Vec<DeptId>>,
   /// 所属部门
   #[graphql(name = "dept_ids_save_null")]
   pub dept_ids_is_null: Option<bool>,
+  /// 所属部门
+  #[graphql(name = "dept_ids_lbl_like")]
+  pub dept_ids_lbl_like: Option<String>,
   /// 所属组织
   #[graphql(name = "org_ids")]
   pub org_ids: Option<Vec<OrgId>>,
   /// 所属组织
   #[graphql(name = "org_ids_save_null")]
   pub org_ids_is_null: Option<bool>,
+  /// 所属组织
+  #[graphql(name = "org_ids_lbl_like")]
+  pub org_ids_lbl_like: Option<String>,
   /// 默认组织
   #[graphql(name = "default_org_id")]
   pub default_org_id: Option<Vec<OrgId>>,

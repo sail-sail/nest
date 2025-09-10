@@ -1902,6 +1902,20 @@ pub struct <#=tableUP#>Search {
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
+  if (foreignKey.lbl) {
+  #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno || !canSearch) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_<#=foreignKey.lbl#>_like")]<#
+  }
+  #>
+  pub <#=column_name#>_<#=foreignKey.lbl#>_like: Option<String>,<#
+  }
+  #><#
     } else if ((column.dict || column.dictbiz) && data_type !== "tinyint") {
       const columnDictModels = [
         ...dictModels.filter(function(item) {

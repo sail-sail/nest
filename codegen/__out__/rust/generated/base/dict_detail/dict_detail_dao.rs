@@ -185,7 +185,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -204,7 +204,7 @@ async fn get_where_query(
       Some(item) => item.val_like.clone(),
       None => None,
     };
-    if let Some(val_like) = val_like {
+    if let Some(val_like) = val_like && !val_like.is_empty() {
       where_query.push_str(" and t.val like ?");
       args.push(format!("%{}%", sql_like(&val_like)).into());
     }
@@ -264,7 +264,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }

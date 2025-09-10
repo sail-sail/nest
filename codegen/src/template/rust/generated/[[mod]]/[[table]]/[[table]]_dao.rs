@@ -1233,6 +1233,20 @@ async fn get_where_query(
       where_query.push_str(" and t.<#=column_name#> is null");
     }
   }<#
+  if (foreignKey.lbl) {
+  #>
+  {
+    let <#=column_name#>_<#=foreignKey.lbl#>_like = match search {
+      Some(item) => item.<#=column_name#>_<#=foreignKey.lbl#>_like.clone(),
+      None => None,
+    };
+    if let Some(<#=column_name#>_<#=foreignKey.lbl#>_like) = <#=column_name#>_<#=foreignKey.lbl#>_like && !<#=column_name#>_<#=foreignKey.lbl#>_like.is_empty() {
+      where_query.push_str(" and <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.lbl#> like ?");
+      args.push(format!("%{}%", sql_like(&<#=column_name#>_<#=foreignKey.lbl#>_like)).into());
+    }
+  }<#
+  }
+  #><#
     } else if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
@@ -1371,7 +1385,7 @@ async fn get_where_query(
       Some(item) => item.<#=column_name#>_like.clone(),
       None => None,
     };
-    if let Some(<#=column_name#>_like) = <#=column_name#>_like {<#
+    if let Some(<#=column_name#>_like) = <#=column_name#>_like && !<#=column_name#>_like.is_empty() {<#
       if (!langTableRecords.some((record) => record.COLUMN_NAME === column_name)) {
       #>
       where_query.push_str(" and t.<#=column_name#> like ?");

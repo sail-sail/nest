@@ -211,7 +211,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -247,6 +247,16 @@ async fn get_where_query(
     };
     if usr_ids_is_null {
       where_query.push_str(" and t.usr_ids is null");
+    }
+  }
+  {
+    let usr_ids_lbl_like = match search {
+      Some(item) => item.usr_ids_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(usr_ids_lbl_like) = usr_ids_lbl_like && !usr_ids_lbl_like.is_empty() {
+      where_query.push_str(" and base_usr.lbl like ?");
+      args.push(format!("%{}%", sql_like(&usr_ids_lbl_like)).into());
     }
   }
   // 锁定
@@ -396,7 +406,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }

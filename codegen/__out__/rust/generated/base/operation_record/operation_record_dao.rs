@@ -136,7 +136,7 @@ async fn get_where_query(
       Some(item) => item.module_like.clone(),
       None => None,
     };
-    if let Some(module_like) = module_like {
+    if let Some(module_like) = module_like && !module_like.is_empty() {
       where_query.push_str(" and t.module like ?");
       args.push(format!("%{}%", sql_like(&module_like)).into());
     }
@@ -155,7 +155,7 @@ async fn get_where_query(
       Some(item) => item.module_lbl_like.clone(),
       None => None,
     };
-    if let Some(module_lbl_like) = module_lbl_like {
+    if let Some(module_lbl_like) = module_lbl_like && !module_lbl_like.is_empty() {
       where_query.push_str(" and t.module_lbl like ?");
       args.push(format!("%{}%", sql_like(&module_lbl_like)).into());
     }
@@ -174,7 +174,7 @@ async fn get_where_query(
       Some(item) => item.method_like.clone(),
       None => None,
     };
-    if let Some(method_like) = method_like {
+    if let Some(method_like) = method_like && !method_like.is_empty() {
       where_query.push_str(" and t.method like ?");
       args.push(format!("%{}%", sql_like(&method_like)).into());
     }
@@ -193,7 +193,7 @@ async fn get_where_query(
       Some(item) => item.method_lbl_like.clone(),
       None => None,
     };
-    if let Some(method_lbl_like) = method_lbl_like {
+    if let Some(method_lbl_like) = method_lbl_like && !method_lbl_like.is_empty() {
       where_query.push_str(" and t.method_lbl like ?");
       args.push(format!("%{}%", sql_like(&method_lbl_like)).into());
     }
@@ -212,7 +212,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -248,7 +248,7 @@ async fn get_where_query(
       Some(item) => item.old_data_like.clone(),
       None => None,
     };
-    if let Some(old_data_like) = old_data_like {
+    if let Some(old_data_like) = old_data_like && !old_data_like.is_empty() {
       where_query.push_str(" and t.old_data like ?");
       args.push(format!("%{}%", sql_like(&old_data_like)).into());
     }
@@ -267,7 +267,7 @@ async fn get_where_query(
       Some(item) => item.new_data_like.clone(),
       None => None,
     };
-    if let Some(new_data_like) = new_data_like {
+    if let Some(new_data_like) = new_data_like && !new_data_like.is_empty() {
       where_query.push_str(" and t.new_data like ?");
       args.push(format!("%{}%", sql_like(&new_data_like)).into());
     }
