@@ -129,17 +129,26 @@ async function getWhereQuery(
   if (search?.role_ids_is_null) {
     whereQuery += ` and base_role.id is null`;
   }
+  if (isNotEmpty(search?.role_ids_lbl_like)) {
+    whereQuery += ` and base_role.lbl like ${ args.push("%" + sqlLike(search?.role_ids_lbl_like) + "%") }`;
+  }
   if (search?.dept_ids != null) {
     whereQuery += ` and base_dept.id in (${ args.push(search.dept_ids) })`;
   }
   if (search?.dept_ids_is_null) {
     whereQuery += ` and base_dept.id is null`;
   }
+  if (isNotEmpty(search?.dept_ids_lbl_like)) {
+    whereQuery += ` and base_dept.lbl like ${ args.push("%" + sqlLike(search?.dept_ids_lbl_like) + "%") }`;
+  }
   if (search?.org_ids != null) {
     whereQuery += ` and base_org.id in (${ args.push(search.org_ids) })`;
   }
   if (search?.org_ids_is_null) {
     whereQuery += ` and base_org.id is null`;
+  }
+  if (isNotEmpty(search?.org_ids_lbl_like)) {
+    whereQuery += ` and base_org.lbl like ${ args.push("%" + sqlLike(search?.org_ids_lbl_like) + "%") }`;
   }
   if (search?.default_org_id != null) {
     whereQuery += ` and t.default_org_id in (${ args.push(search.default_org_id) })`;
