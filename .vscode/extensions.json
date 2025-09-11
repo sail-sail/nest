@@ -17,12 +17,9 @@
     "mattpocock.ts-error-translator",
     "usernamehw.errorlens",
     "denoland.vscode-deno",
-    "vitest.explorer",
-    "britesnow.vscode-toggle-quotes",
     "ponetto.vscode-diff-viewer",
     "johnsoncodehk.vscode-tsconfig-helper",
-    "jacobpfeifer.pfeifer-hurl",
-    "emeraldwalk.runonsave"
+    "jacobpfeifer.pfeifer-hurl"
   ],
   "unwantedRecommendations": [
     "mattpocock.ts-error-translator"
