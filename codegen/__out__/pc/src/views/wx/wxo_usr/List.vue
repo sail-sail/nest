@@ -686,10 +686,6 @@ import {
   useDownloadImportTemplateWxoUsr,
 } from "./Api.ts";
 
-import {
-  getListUsr, // 绑定用户
-} from "./Api.ts";
-
 defineOptions({
   name: "公众号用户",
 });

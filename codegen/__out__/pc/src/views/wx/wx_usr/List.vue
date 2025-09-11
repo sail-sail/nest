@@ -713,10 +713,6 @@ import {
   useDownloadImportTemplateWxUsr,
 } from "./Api.ts";
 
-import {
-  getListUsr, // 用户
-} from "./Api.ts";
-
 defineOptions({
   name: "小程序用户",
 });
