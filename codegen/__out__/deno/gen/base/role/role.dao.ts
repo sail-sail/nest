@@ -135,11 +135,17 @@ async function getWhereQuery(
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
+  if (isNotEmpty(search?.menu_ids_lbl_like)) {
+    whereQuery += ` and base_menu.lbl like ${ args.push("%" + sqlLike(search?.menu_ids_lbl_like) + "%") }`;
+  }
   if (search?.permit_ids != null) {
     whereQuery += ` and base_permit.id in (${ args.push(search.permit_ids) })`;
   }
   if (search?.permit_ids_is_null) {
     whereQuery += ` and base_permit.id is null`;
+  }
+  if (isNotEmpty(search?.permit_ids_lbl_like)) {
+    whereQuery += ` and base_permit.lbl like ${ args.push("%" + sqlLike(search?.permit_ids_lbl_like) + "%") }`;
   }
   if (search?.data_permit_ids != null) {
     whereQuery += ` and base_data_permit.id in (${ args.push(search.data_permit_ids) })`;
@@ -147,11 +153,17 @@ async function getWhereQuery(
   if (search?.data_permit_ids_is_null) {
     whereQuery += ` and base_data_permit.id is null`;
   }
+  if (isNotEmpty(search?.data_permit_ids__like)) {
+    whereQuery += ` and base_data_permit. like ${ args.push("%" + sqlLike(search?.data_permit_ids__like) + "%") }`;
+  }
   if (search?.field_permit_ids != null) {
     whereQuery += ` and base_field_permit.id in (${ args.push(search.field_permit_ids) })`;
   }
   if (search?.field_permit_ids_is_null) {
     whereQuery += ` and base_field_permit.id is null`;
+  }
+  if (isNotEmpty(search?.field_permit_ids_lbl_like)) {
+    whereQuery += ` and base_field_permit.lbl like ${ args.push("%" + sqlLike(search?.field_permit_ids_lbl_like) + "%") }`;
   }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
