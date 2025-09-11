@@ -216,7 +216,7 @@
             :id="'a' + item.value"
             :key="item.value"
             :title="item.label"
-            un-m="x-4"
+            un-m="x-2"
             un-p="y-4"
             un-box-border
             un-flex="~"
@@ -225,6 +225,7 @@
             un-b="0 b-1 solid #e6e6e6"
             :style="{
               'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
+              'border-color': selectedValueArr.includes(item.value) ? '#0579ff' : '#e6e6e6',
             }"
             @click="onSelect(item.value)"
           >
@@ -263,9 +264,7 @@
           
           <view
             v-else-if="options4SelectV2Computed.length > 5"
-            un-m="y-4"
-            un-p="x-8"
-            un-box-border
+            un-m="y-2"
           >
             <CustomDivider></CustomDivider>
           </view>
@@ -274,12 +273,12 @@
       </scroll-view>
       
       <view
-        un-p="x-4 y-4"
+        un-p="x-2 y-2"
         un-box-border
         un-flex="~"
         un-w="full"
         un-items="center"
-        un-gap="4"
+        un-gap="x-2"
       >
         
         <view
