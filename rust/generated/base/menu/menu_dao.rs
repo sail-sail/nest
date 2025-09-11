@@ -184,7 +184,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -203,7 +203,7 @@ async fn get_where_query(
       Some(item) => item.route_path_like.clone(),
       None => None,
     };
-    if let Some(route_path_like) = route_path_like {
+    if let Some(route_path_like) = route_path_like && !route_path_like.is_empty() {
       where_query.push_str(" and t.route_path like ?");
       args.push(format!("%{}%", sql_like(&route_path_like)).into());
     }
@@ -222,7 +222,7 @@ async fn get_where_query(
       Some(item) => item.route_query_like.clone(),
       None => None,
     };
-    if let Some(route_query_like) = route_query_like {
+    if let Some(route_query_like) = route_query_like && !route_query_like.is_empty() {
       where_query.push_str(" and t.route_query like ?");
       args.push(format!("%{}%", sql_like(&route_query_like)).into());
     }
@@ -330,7 +330,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }

@@ -143,7 +143,7 @@ async fn get_where_query(
       Some(item) => item.code_like.clone(),
       None => None,
     };
-    if let Some(code_like) = code_like {
+    if let Some(code_like) = code_like && !code_like.is_empty() {
       where_query.push_str(" and t.code like ?");
       args.push(format!("%{}%", sql_like(&code_like)).into());
     }
@@ -162,7 +162,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -200,6 +200,16 @@ async fn get_where_query(
       where_query.push_str(" and t.domain_ids is null");
     }
   }
+  {
+    let domain_ids_lbl_like = match search {
+      Some(item) => item.domain_ids_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(domain_ids_lbl_like) = domain_ids_lbl_like && !domain_ids_lbl_like.is_empty() {
+      where_query.push_str(" and base_domain.lbl like ?");
+      args.push(format!("%{}%", sql_like(&domain_ids_lbl_like)).into());
+    }
+  }
   // 菜单权限
   {
     let menu_ids: Option<Vec<MenuId>> = match search {
@@ -233,6 +243,16 @@ async fn get_where_query(
       where_query.push_str(" and t.menu_ids is null");
     }
   }
+  {
+    let menu_ids_lbl_like = match search {
+      Some(item) => item.menu_ids_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(menu_ids_lbl_like) = menu_ids_lbl_like && !menu_ids_lbl_like.is_empty() {
+      where_query.push_str(" and base_menu.lbl like ?");
+      args.push(format!("%{}%", sql_like(&menu_ids_lbl_like)).into());
+    }
+  }
   // 标题
   {
     let title = match search {
@@ -247,7 +267,7 @@ async fn get_where_query(
       Some(item) => item.title_like.clone(),
       None => None,
     };
-    if let Some(title_like) = title_like {
+    if let Some(title_like) = title_like && !title_like.is_empty() {
       where_query.push_str(" and t.title like ?");
       args.push(format!("%{}%", sql_like(&title_like)).into());
     }
@@ -266,7 +286,7 @@ async fn get_where_query(
       Some(item) => item.info_like.clone(),
       None => None,
     };
-    if let Some(info_like) = info_like {
+    if let Some(info_like) = info_like && !info_like.is_empty() {
       where_query.push_str(" and t.info like ?");
       args.push(format!("%{}%", sql_like(&info_like)).into());
     }
@@ -418,7 +438,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }

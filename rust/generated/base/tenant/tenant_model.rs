@@ -409,12 +409,18 @@ pub struct TenantSearch {
   /// 所属域名
   #[graphql(name = "domain_ids_save_null")]
   pub domain_ids_is_null: Option<bool>,
+  /// 所属域名
+  #[graphql(name = "domain_ids_lbl_like")]
+  pub domain_ids_lbl_like: Option<String>,
   /// 菜单权限
   #[graphql(name = "menu_ids")]
   pub menu_ids: Option<Vec<MenuId>>,
   /// 菜单权限
   #[graphql(name = "menu_ids_save_null")]
   pub menu_ids_is_null: Option<bool>,
+  /// 菜单权限
+  #[graphql(name = "menu_ids_lbl_like")]
+  pub menu_ids_lbl_like: Option<String>,
   /// 标题
   #[graphql(skip)]
   pub title: Option<String>,

@@ -482,12 +482,18 @@ pub struct RoleSearch {
   /// 菜单权限
   #[graphql(name = "menu_ids_save_null")]
   pub menu_ids_is_null: Option<bool>,
+  /// 菜单权限
+  #[graphql(name = "menu_ids_lbl_like")]
+  pub menu_ids_lbl_like: Option<String>,
   /// 按钮权限
   #[graphql(name = "permit_ids")]
   pub permit_ids: Option<Vec<PermitId>>,
   /// 按钮权限
   #[graphql(name = "permit_ids_save_null")]
   pub permit_ids_is_null: Option<bool>,
+  /// 按钮权限
+  #[graphql(name = "permit_ids_lbl_like")]
+  pub permit_ids_lbl_like: Option<String>,
   /// 数据权限
   #[graphql(name = "data_permit_ids")]
   pub data_permit_ids: Option<Vec<DataPermitId>>,
@@ -500,6 +506,9 @@ pub struct RoleSearch {
   /// 字段权限
   #[graphql(name = "field_permit_ids_save_null")]
   pub field_permit_ids_is_null: Option<bool>,
+  /// 字段权限
+  #[graphql(name = "field_permit_ids_lbl_like")]
+  pub field_permit_ids_lbl_like: Option<String>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,

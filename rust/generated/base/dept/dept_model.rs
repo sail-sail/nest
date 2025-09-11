@@ -345,6 +345,9 @@ pub struct DeptSearch {
   /// 部门负责人
   #[graphql(name = "usr_ids_save_null")]
   pub usr_ids_is_null: Option<bool>,
+  /// 部门负责人
+  #[graphql(name = "usr_ids_lbl_like")]
+  pub usr_ids_lbl_like: Option<String>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,

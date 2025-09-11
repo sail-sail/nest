@@ -162,7 +162,7 @@ async fn get_where_query(
       Some(item) => item.username_like.clone(),
       None => None,
     };
-    if let Some(username_like) = username_like {
+    if let Some(username_like) = username_like && !username_like.is_empty() {
       where_query.push_str(" and t.username like ?");
       args.push(format!("%{}%", sql_like(&username_like)).into());
     }
@@ -205,7 +205,7 @@ async fn get_where_query(
       Some(item) => item.ip_like.clone(),
       None => None,
     };
-    if let Some(ip_like) = ip_like {
+    if let Some(ip_like) = ip_like && !ip_like.is_empty() {
       where_query.push_str(" and t.ip like ?");
       args.push(format!("%{}%", sql_like(&ip_like)).into());
     }

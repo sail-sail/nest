@@ -145,7 +145,7 @@ async fn get_where_query(
       Some(item) => item.img_like.clone(),
       None => None,
     };
-    if let Some(img_like) = img_like {
+    if let Some(img_like) = img_like && !img_like.is_empty() {
       where_query.push_str(" and t.img like ?");
       args.push(format!("%{}%", sql_like(&img_like)).into());
     }
@@ -164,7 +164,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -183,7 +183,7 @@ async fn get_where_query(
       Some(item) => item.username_like.clone(),
       None => None,
     };
-    if let Some(username_like) = username_like {
+    if let Some(username_like) = username_like && !username_like.is_empty() {
       where_query.push_str(" and t.username like ?");
       args.push(format!("%{}%", sql_like(&username_like)).into());
     }
@@ -221,6 +221,16 @@ async fn get_where_query(
       where_query.push_str(" and t.role_ids is null");
     }
   }
+  {
+    let role_ids_lbl_like = match search {
+      Some(item) => item.role_ids_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(role_ids_lbl_like) = role_ids_lbl_like && !role_ids_lbl_like.is_empty() {
+      where_query.push_str(" and base_role.lbl like ?");
+      args.push(format!("%{}%", sql_like(&role_ids_lbl_like)).into());
+    }
+  }
   // 所属部门
   {
     let dept_ids: Option<Vec<DeptId>> = match search {
@@ -254,6 +264,16 @@ async fn get_where_query(
       where_query.push_str(" and t.dept_ids is null");
     }
   }
+  {
+    let dept_ids_lbl_like = match search {
+      Some(item) => item.dept_ids_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(dept_ids_lbl_like) = dept_ids_lbl_like && !dept_ids_lbl_like.is_empty() {
+      where_query.push_str(" and base_dept.lbl like ?");
+      args.push(format!("%{}%", sql_like(&dept_ids_lbl_like)).into());
+    }
+  }
   // 所属组织
   {
     let org_ids: Option<Vec<OrgId>> = match search {
@@ -285,6 +305,16 @@ async fn get_where_query(
     };
     if org_ids_is_null {
       where_query.push_str(" and t.org_ids is null");
+    }
+  }
+  {
+    let org_ids_lbl_like = match search {
+      Some(item) => item.org_ids_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(org_ids_lbl_like) = org_ids_lbl_like && !org_ids_lbl_like.is_empty() {
+      where_query.push_str(" and base_org.lbl like ?");
+      args.push(format!("%{}%", sql_like(&org_ids_lbl_like)).into());
     }
   }
   // 默认组织
@@ -456,7 +486,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
