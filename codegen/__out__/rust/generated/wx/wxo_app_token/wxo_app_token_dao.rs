@@ -182,7 +182,7 @@ async fn get_where_query(
       Some(item) => item.appid_like.clone(),
       None => None,
     };
-    if let Some(appid_like) = appid_like {
+    if let Some(appid_like) = appid_like && !appid_like.is_empty() {
       where_query.push_str(" and t.appid like ?");
       args.push(format!("%{}%", sql_like(&appid_like)).into());
     }
@@ -201,7 +201,7 @@ async fn get_where_query(
       Some(item) => item.appsecret_like.clone(),
       None => None,
     };
-    if let Some(appsecret_like) = appsecret_like {
+    if let Some(appsecret_like) = appsecret_like && !appsecret_like.is_empty() {
       where_query.push_str(" and t.appsecret like ?");
       args.push(format!("%{}%", sql_like(&appsecret_like)).into());
     }
@@ -220,7 +220,7 @@ async fn get_where_query(
       Some(item) => item.access_token_like.clone(),
       None => None,
     };
-    if let Some(access_token_like) = access_token_like {
+    if let Some(access_token_like) = access_token_like && !access_token_like.is_empty() {
       where_query.push_str(" and t.access_token like ?");
       args.push(format!("%{}%", sql_like(&access_token_like)).into());
     }

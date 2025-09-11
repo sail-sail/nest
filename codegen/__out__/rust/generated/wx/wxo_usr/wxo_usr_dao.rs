@@ -138,7 +138,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -157,7 +157,7 @@ async fn get_where_query(
       Some(item) => item.head_img_like.clone(),
       None => None,
     };
-    if let Some(head_img_like) = head_img_like {
+    if let Some(head_img_like) = head_img_like && !head_img_like.is_empty() {
       where_query.push_str(" and t.head_img like ?");
       args.push(format!("%{}%", sql_like(&head_img_like)).into());
     }
@@ -242,7 +242,7 @@ async fn get_where_query(
       Some(item) => item.appid_like.clone(),
       None => None,
     };
-    if let Some(appid_like) = appid_like {
+    if let Some(appid_like) = appid_like && !appid_like.is_empty() {
       where_query.push_str(" and t.appid like ?");
       args.push(format!("%{}%", sql_like(&appid_like)).into());
     }
@@ -261,7 +261,7 @@ async fn get_where_query(
       Some(item) => item.openid_like.clone(),
       None => None,
     };
-    if let Some(openid_like) = openid_like {
+    if let Some(openid_like) = openid_like && !openid_like.is_empty() {
       where_query.push_str(" and t.openid like ?");
       args.push(format!("%{}%", sql_like(&openid_like)).into());
     }
@@ -280,7 +280,7 @@ async fn get_where_query(
       Some(item) => item.unionid_like.clone(),
       None => None,
     };
-    if let Some(unionid_like) = unionid_like {
+    if let Some(unionid_like) = unionid_like && !unionid_like.is_empty() {
       where_query.push_str(" and t.unionid like ?");
       args.push(format!("%{}%", sql_like(&unionid_like)).into());
     }
@@ -323,7 +323,7 @@ async fn get_where_query(
       Some(item) => item.province_like.clone(),
       None => None,
     };
-    if let Some(province_like) = province_like {
+    if let Some(province_like) = province_like && !province_like.is_empty() {
       where_query.push_str(" and t.province like ?");
       args.push(format!("%{}%", sql_like(&province_like)).into());
     }
@@ -342,7 +342,7 @@ async fn get_where_query(
       Some(item) => item.city_like.clone(),
       None => None,
     };
-    if let Some(city_like) = city_like {
+    if let Some(city_like) = city_like && !city_like.is_empty() {
       where_query.push_str(" and t.city like ?");
       args.push(format!("%{}%", sql_like(&city_like)).into());
     }
@@ -361,7 +361,7 @@ async fn get_where_query(
       Some(item) => item.country_like.clone(),
       None => None,
     };
-    if let Some(country_like) = country_like {
+    if let Some(country_like) = country_like && !country_like.is_empty() {
       where_query.push_str(" and t.country like ?");
       args.push(format!("%{}%", sql_like(&country_like)).into());
     }
@@ -380,7 +380,7 @@ async fn get_where_query(
       Some(item) => item.privilege_like.clone(),
       None => None,
     };
-    if let Some(privilege_like) = privilege_like {
+    if let Some(privilege_like) = privilege_like && !privilege_like.is_empty() {
       where_query.push_str(" and t.privilege like ?");
       args.push(format!("%{}%", sql_like(&privilege_like)).into());
     }
@@ -399,7 +399,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }

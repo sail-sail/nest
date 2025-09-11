@@ -139,7 +139,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -158,7 +158,7 @@ async fn get_where_query(
       Some(item) => item.appid_like.clone(),
       None => None,
     };
-    if let Some(appid_like) = appid_like {
+    if let Some(appid_like) = appid_like && !appid_like.is_empty() {
       where_query.push_str(" and t.appid like ?");
       args.push(format!("%{}%", sql_like(&appid_like)).into());
     }
@@ -177,7 +177,7 @@ async fn get_where_query(
       Some(item) => item.mchid_like.clone(),
       None => None,
     };
-    if let Some(mchid_like) = mchid_like {
+    if let Some(mchid_like) = mchid_like && !mchid_like.is_empty() {
       where_query.push_str(" and t.mchid like ?");
       args.push(format!("%{}%", sql_like(&mchid_like)).into());
     }
@@ -196,7 +196,7 @@ async fn get_where_query(
       Some(item) => item.serial_no_like.clone(),
       None => None,
     };
-    if let Some(serial_no_like) = serial_no_like {
+    if let Some(serial_no_like) = serial_no_like && !serial_no_like.is_empty() {
       where_query.push_str(" and t.serial_no like ?");
       args.push(format!("%{}%", sql_like(&serial_no_like)).into());
     }
@@ -215,7 +215,7 @@ async fn get_where_query(
       Some(item) => item.public_key_like.clone(),
       None => None,
     };
-    if let Some(public_key_like) = public_key_like {
+    if let Some(public_key_like) = public_key_like && !public_key_like.is_empty() {
       where_query.push_str(" and t.public_key like ?");
       args.push(format!("%{}%", sql_like(&public_key_like)).into());
     }
@@ -234,7 +234,7 @@ async fn get_where_query(
       Some(item) => item.private_key_like.clone(),
       None => None,
     };
-    if let Some(private_key_like) = private_key_like {
+    if let Some(private_key_like) = private_key_like && !private_key_like.is_empty() {
       where_query.push_str(" and t.private_key like ?");
       args.push(format!("%{}%", sql_like(&private_key_like)).into());
     }
@@ -253,7 +253,7 @@ async fn get_where_query(
       Some(item) => item.v3_key_like.clone(),
       None => None,
     };
-    if let Some(v3_key_like) = v3_key_like {
+    if let Some(v3_key_like) = v3_key_like && !v3_key_like.is_empty() {
       where_query.push_str(" and t.v3_key like ?");
       args.push(format!("%{}%", sql_like(&v3_key_like)).into());
     }
@@ -272,7 +272,7 @@ async fn get_where_query(
       Some(item) => item.payer_client_ip_like.clone(),
       None => None,
     };
-    if let Some(payer_client_ip_like) = payer_client_ip_like {
+    if let Some(payer_client_ip_like) = payer_client_ip_like && !payer_client_ip_like.is_empty() {
       where_query.push_str(" and t.payer_client_ip like ?");
       args.push(format!("%{}%", sql_like(&payer_client_ip_like)).into());
     }
@@ -291,7 +291,7 @@ async fn get_where_query(
       Some(item) => item.notify_url_like.clone(),
       None => None,
     };
-    if let Some(notify_url_like) = notify_url_like {
+    if let Some(notify_url_like) = notify_url_like && !notify_url_like.is_empty() {
       where_query.push_str(" and t.notify_url like ?");
       args.push(format!("%{}%", sql_like(&notify_url_like)).into());
     }
@@ -375,7 +375,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }

@@ -205,6 +205,8 @@ async function onSave() {
       return;
     }
   }
+  await nextTick();
+  await nextTick();
   emit("change", selectedModels);
 }
 

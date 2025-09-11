@@ -138,7 +138,7 @@ async fn get_where_query(
       Some(item) => item.appid_like.clone(),
       None => None,
     };
-    if let Some(appid_like) = appid_like {
+    if let Some(appid_like) = appid_like && !appid_like.is_empty() {
       where_query.push_str(" and t.appid like ?");
       args.push(format!("%{}%", sql_like(&appid_like)).into());
     }
@@ -157,7 +157,7 @@ async fn get_where_query(
       Some(item) => item.mchid_like.clone(),
       None => None,
     };
-    if let Some(mchid_like) = mchid_like {
+    if let Some(mchid_like) = mchid_like && !mchid_like.is_empty() {
       where_query.push_str(" and t.mchid like ?");
       args.push(format!("%{}%", sql_like(&mchid_like)).into());
     }
@@ -176,7 +176,7 @@ async fn get_where_query(
       Some(item) => item.openid_like.clone(),
       None => None,
     };
-    if let Some(openid_like) = openid_like {
+    if let Some(openid_like) = openid_like && !openid_like.is_empty() {
       where_query.push_str(" and t.openid like ?");
       args.push(format!("%{}%", sql_like(&openid_like)).into());
     }
@@ -195,7 +195,7 @@ async fn get_where_query(
       Some(item) => item.out_trade_no_like.clone(),
       None => None,
     };
-    if let Some(out_trade_no_like) = out_trade_no_like {
+    if let Some(out_trade_no_like) = out_trade_no_like && !out_trade_no_like.is_empty() {
       where_query.push_str(" and t.out_trade_no like ?");
       args.push(format!("%{}%", sql_like(&out_trade_no_like)).into());
     }
@@ -214,7 +214,7 @@ async fn get_where_query(
       Some(item) => item.transaction_id_like.clone(),
       None => None,
     };
-    if let Some(transaction_id_like) = transaction_id_like {
+    if let Some(transaction_id_like) = transaction_id_like && !transaction_id_like.is_empty() {
       where_query.push_str(" and t.transaction_id like ?");
       args.push(format!("%{}%", sql_like(&transaction_id_like)).into());
     }
@@ -281,7 +281,7 @@ async fn get_where_query(
       Some(item) => item.trade_state_desc_like.clone(),
       None => None,
     };
-    if let Some(trade_state_desc_like) = trade_state_desc_like {
+    if let Some(trade_state_desc_like) = trade_state_desc_like && !trade_state_desc_like.is_empty() {
       where_query.push_str(" and t.trade_state_desc like ?");
       args.push(format!("%{}%", sql_like(&trade_state_desc_like)).into());
     }
@@ -300,7 +300,7 @@ async fn get_where_query(
       Some(item) => item.bank_type_like.clone(),
       None => None,
     };
-    if let Some(bank_type_like) = bank_type_like {
+    if let Some(bank_type_like) = bank_type_like && !bank_type_like.is_empty() {
       where_query.push_str(" and t.bank_type like ?");
       args.push(format!("%{}%", sql_like(&bank_type_like)).into());
     }
@@ -319,7 +319,7 @@ async fn get_where_query(
       Some(item) => item.attach_like.clone(),
       None => None,
     };
-    if let Some(attach_like) = attach_like {
+    if let Some(attach_like) = attach_like && !attach_like.is_empty() {
       where_query.push_str(" and t.attach like ?");
       args.push(format!("%{}%", sql_like(&attach_like)).into());
     }
@@ -437,7 +437,7 @@ async fn get_where_query(
       Some(item) => item.device_id_like.clone(),
       None => None,
     };
-    if let Some(device_id_like) = device_id_like {
+    if let Some(device_id_like) = device_id_like && !device_id_like.is_empty() {
       where_query.push_str(" and t.device_id like ?");
       args.push(format!("%{}%", sql_like(&device_id_like)).into());
     }
@@ -456,7 +456,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }

@@ -140,7 +140,7 @@ async fn get_where_query(
       Some(item) => item.code_like.clone(),
       None => None,
     };
-    if let Some(code_like) = code_like {
+    if let Some(code_like) = code_like && !code_like.is_empty() {
       where_query.push_str(" and t.code like ?");
       args.push(format!("%{}%", sql_like(&code_like)).into());
     }
@@ -159,7 +159,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -178,7 +178,7 @@ async fn get_where_query(
       Some(item) => item.appid_like.clone(),
       None => None,
     };
-    if let Some(appid_like) = appid_like {
+    if let Some(appid_like) = appid_like && !appid_like.is_empty() {
       where_query.push_str(" and t.appid like ?");
       args.push(format!("%{}%", sql_like(&appid_like)).into());
     }
@@ -197,7 +197,7 @@ async fn get_where_query(
       Some(item) => item.appsecret_like.clone(),
       None => None,
     };
-    if let Some(appsecret_like) = appsecret_like {
+    if let Some(appsecret_like) = appsecret_like && !appsecret_like.is_empty() {
       where_query.push_str(" and t.appsecret like ?");
       args.push(format!("%{}%", sql_like(&appsecret_like)).into());
     }
@@ -216,7 +216,7 @@ async fn get_where_query(
       Some(item) => item.token_like.clone(),
       None => None,
     };
-    if let Some(token_like) = token_like {
+    if let Some(token_like) = token_like && !token_like.is_empty() {
       where_query.push_str(" and t.token like ?");
       args.push(format!("%{}%", sql_like(&token_like)).into());
     }
@@ -235,7 +235,7 @@ async fn get_where_query(
       Some(item) => item.encoding_aes_key_like.clone(),
       None => None,
     };
-    if let Some(encoding_aes_key_like) = encoding_aes_key_like {
+    if let Some(encoding_aes_key_like) = encoding_aes_key_like && !encoding_aes_key_like.is_empty() {
       where_query.push_str(" and t.encoding_aes_key like ?");
       args.push(format!("%{}%", sql_like(&encoding_aes_key_like)).into());
     }
@@ -433,7 +433,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
