@@ -64,6 +64,20 @@ if (hasAudit) {
   auditModelLabel = auditTableIdColumn.modelLabel;
 }
 
+// 根据关键字搜索
+const searchByKeyword = opts?.searchByKeyword;
+ 
+if (searchByKeyword) {
+  if (!searchByKeyword.prop) {
+    throw `表: ${ mod }_${ table } 的 opts.searchByKeyword.prop 不能为空`;
+    process.exit(1);
+  }
+  if (!searchByKeyword.fields || !Array.isArray(searchByKeyword.fields) || searchByKeyword.fields.length === 0) {
+    throw `表: ${ mod }_${ table } 的 opts.searchByKeyword.fields 不能为空`;
+    process.exit(1);
+  }
+}
+
 #>import { defineGraphql } from "/lib/context.ts";
 
 import type { } from "./<#=table#>.model.ts";
@@ -765,6 +779,14 @@ input <#=searchName#> {<#
   #>
   "ID列表"
   ids: [<#=Table_Up#>Id!]<#
+  if (searchByKeyword) {
+    const prop = searchByKeyword.prop;
+    const lbl = searchByKeyword.lbl;
+  #>
+  "<#=lbl#>"
+  <#=prop#>: String<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
