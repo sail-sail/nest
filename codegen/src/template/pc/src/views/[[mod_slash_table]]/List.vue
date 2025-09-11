@@ -2650,6 +2650,9 @@ if (
     if (foreignSchema && foreignSchema.opts?.list_tree) {
       return false;
     }
+    if (foreignKey && (foreignKey.isSearchByLbl || foreignKey.isSearchBySelectInput)) {
+      return false;
+    }
     return true;
   })
 ) {
