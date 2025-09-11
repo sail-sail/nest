@@ -31,10 +31,11 @@ export async function doRequest({
       url.searchParams.set(key, params[key]);
     }
   }
+  const body2 = body as BufferSource;
   const request = new Request(url.toString(), {
     headers,
     method,
-    body,
+    body: body2,
   });
 
   const signedRequest = await signer.sign("s3", request);
@@ -79,7 +80,7 @@ async function sha256Hex(data: string | Uint8Array): Promise<string> {
   if (typeof data === "string") {
     data = encoder.encode(data);
   }
-  const hash = await crypto.subtle.digest("SHA-256", data);
+  const hash = await crypto.subtle.digest("SHA-256", data as BufferSource);
   return [...new Uint8Array(hash)]
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
