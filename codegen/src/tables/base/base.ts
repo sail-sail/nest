@@ -302,6 +302,7 @@ export default defineConfig({
             order: "ascending",
           },
           selectType: "select",
+          isSearchBySelectInput: false,
         },
       },
       {

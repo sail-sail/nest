@@ -315,6 +315,9 @@ export interface TableCloumn {
      */
     isSearchByLbl?: boolean;
     
+    /** 是否在表格中用弹出框的形式搜索, 而不是下拉框, 默认为 false */
+    isSearchBySelectInput?: boolean;
+    
   },
   
   /** foreignTabs 弹出框的大小, 默认为 medium */
@@ -857,6 +860,14 @@ export interface TablesConfigItem {
      * 固定的二级排序
      */
     secondSorts?: { prop: string, order: "ascending"|"descending" }[];
+    
+    searchByKeyword?: {
+      prop: string;
+      fields: string[];
+      lbl?: string;
+      placeholder?: string;
+      hideInList?: boolean;
+    };
     
     /**
      * 不允许删除

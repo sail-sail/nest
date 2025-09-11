@@ -100,14 +100,9 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  ImageProps,
-} from "element-plus";
-
-defineSlots<InstanceType<typeof ElImage>['$slots']>();
 
 const props = withDefaults(
-  defineProps<Partial<ImageProps> & {
+  defineProps<{
     modelValue?: string | null;
     width?: number;
     height?: number;

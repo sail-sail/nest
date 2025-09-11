@@ -142,6 +142,9 @@ for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
   langTableRecords.push(record);
 }
 
+// 根据关键字搜索
+const searchByKeyword = opts?.searchByKeyword;
+
 // 审核
 const hasAudit = !!opts?.audit;
 let auditColumn = "";
@@ -870,6 +873,28 @@ async function getWhereQuery(
   }<#
   }
   #><#
+  if (searchByKeyword) {
+    const prop = searchByKeyword.prop;
+    const fields = searchByKeyword.fields;
+  #>
+  if (isNotEmpty(search?.<#=prop#>)) {
+    whereQuery += " and (";<#
+    for (let i = 0; i < fields.length; i++) {
+      const field = fields[i];
+      const field_rust = rustKeyEscape(field);
+      #><#
+      if (i > 0) {
+      #>
+      whereQuery += " or";<#
+      }
+    #>
+    whereQuery += ` t.<#=field#> like ${ args.push("%" + sqlLike(search?.<#=prop#>) + "%") }`;<#
+    }
+    #>
+    whereQuery += ")";
+  }<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -989,6 +1014,9 @@ async function getWhereQuery(
   }
   if (search?.<#=column_name#>_is_null) {
     whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id is null`;
+  }
+  if (isNotEmpty(search?.<#=column_name#>_<#=foreignKey.lbl#>_like)) {
+    whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") }`;
   }<#
     }
   #><#

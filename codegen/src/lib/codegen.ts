@@ -84,7 +84,7 @@ function hasSelectInputFn(
     for (const column of columns) {
       if (!column.foreignKey) continue;
       if (column.foreignKey.table === table_name) {
-        if (column.foreignKey.selectType === "selectInput") {
+        if (column.foreignKey.selectType === "selectInput" || column.foreignKey.isSearchBySelectInput) {
           hasSelectInput = true;
           break;
         }

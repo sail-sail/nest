@@ -88,10 +88,8 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
-defineSlots<InstanceType<typeof ElInputNumber>['$slots']>();
-
 const props = withDefaults(
-  defineProps<Partial<InputNumberProps> & {
+  defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     precision?: number;

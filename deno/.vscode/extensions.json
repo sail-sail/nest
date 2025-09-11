@@ -18,12 +18,9 @@
     "usernamehw.errorlens",
     "denoland.vscode-deno",
     "vitest.explorer",
-    "britesnow.vscode-toggle-quotes",
     "ponetto.vscode-diff-viewer",
-    "chakrounanas.turbo-console-log",
     "johnsoncodehk.vscode-tsconfig-helper",
     "jacobpfeifer.pfeifer-hurl",
-    "yoavbls.pretty-ts-errors",
     "hongyan-prettyjson.pretty-json-vscode"
   ],
   "unwantedRecommendations": [

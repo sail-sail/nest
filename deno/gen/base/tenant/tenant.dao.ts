@@ -116,11 +116,17 @@ async function getWhereQuery(
   if (search?.domain_ids_is_null) {
     whereQuery += ` and base_domain.id is null`;
   }
+  if (isNotEmpty(search?.domain_ids_lbl_like)) {
+    whereQuery += ` and base_domain.lbl like ${ args.push("%" + sqlLike(search?.domain_ids_lbl_like) + "%") }`;
+  }
   if (search?.menu_ids != null) {
     whereQuery += ` and base_menu.id in (${ args.push(search.menu_ids) })`;
   }
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
+  }
+  if (isNotEmpty(search?.menu_ids_lbl_like)) {
+    whereQuery += ` and base_menu.lbl like ${ args.push("%" + sqlLike(search?.menu_ids_lbl_like) + "%") }`;
   }
   if (search?.title != null) {
     whereQuery += ` and t.title=${ args.push(search.title) }`;
