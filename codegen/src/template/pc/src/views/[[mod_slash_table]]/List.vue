@@ -124,6 +124,20 @@ for (let i = 0; i < columns.length; i++) {
   }
 }
 
+// 根据关键字搜索
+const searchByKeyword = opts?.searchByKeyword;
+
+if (searchByKeyword) {
+  if (!searchByKeyword.prop) {
+    throw `表: ${ mod }_${ table } 的 opts.searchByKeyword.prop 不能为空`;
+    process.exit(1);
+  }
+  if (!searchByKeyword.fields || !Array.isArray(searchByKeyword.fields) || searchByKeyword.fields.length === 0) {
+    throw `表: ${ mod }_${ table } 的 opts.searchByKeyword.fields 不能为空`;
+    process.exit(1);
+  }
+}
+
 #><template>
 <div
   un-flex="~ [1_0_0] col"
@@ -153,6 +167,39 @@ for (let i = 0; i < columns.length; i++) {
       @submit.prevent
       @keydown.enter="onSearch(true)"
     ><#
+    if (searchByKeyword && !searchByKeyword.hideInList) {
+      const prop = searchByKeyword.prop;
+      const lbl = searchByKeyword.lbl || "关键字";
+      const placeholder = searchByKeyword.placeholder || "关键字";
+      const fields = searchByKeyword.fields;
+    #>
+      
+      <el-form-item<#
+        if (isUseI18n) {
+        #>
+        :label="n('<#=lbl#>')"<#
+        } else {
+        #>
+        label="<#=lbl#>"<#
+        }
+        #>
+        prop="<#=prop#>"
+      >
+        <CustomInput
+          v-model="search.<#=prop#>"<#
+          if (isUseI18n) {
+          #>
+          :placeholder="`${ ns('请输入') } ${ n('<#=placeholder#>') }`"<#
+          } else {
+          #>
+          placeholder="请输入 <#=placeholder#>"<#
+          }
+          #>
+          @clear="onSearchClear"
+        ></CustomInput>
+      </el-form-item><#
+    }
+    #><#
       let hasSearchExpand = false;
       const searchIntColumns = [ ];
       for (let i = 0; i < columns.length; i++) {
@@ -282,7 +329,7 @@ for (let i = 0; i < columns.length; i++) {
           ></CustomTreeSelect>
         </el-form-item>
       </template><#
-      } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.isSearchByLbl) {
+      } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.isSearchByLbl && !foreignKey.isSearchBySelectInput) {
       #>
       <template v-if="<#
         if (fieldPermit) {
@@ -322,7 +369,7 @@ for (let i = 0; i < columns.length; i++) {
           ></CustomSelect>
         </el-form-item>
       </template><#
-      } else if (foreignKey && foreignKey.type !== "many2many" && foreignKey.isSearchByLbl) {
+      } else if (foreignKey && foreignKey.type !== "many2many" && foreignKey.isSearchByLbl && !foreignKey.isSearchBySelectInput) {
       #>
       <template v-if="<#
         if (fieldPermit) {
@@ -354,7 +401,42 @@ for (let i = 0; i < columns.length; i++) {
           ></CustomInput>
         </el-form-item>
       </template><#
-      } else if (foreignKey && foreignKey.type === "many2many") {
+      } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.isSearchByLbl && foreignKey.isSearchBySelectInput) {
+      #>
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
+          prop="<#=column_name#>"
+        >
+          <SelectInput<#=Foreign_Table_Up#>
+            v-model="<#=column_name#>_search"
+            v-model:model-label="search.<#=column_name#>_like"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
+            :label-readonly="false"
+            multiple
+            @change="onSearch(false)"
+          ></SelectInput<#=Foreign_Table_Up#>>
+        </el-form-item>
+      </template><#
+      } else if (foreignKey && foreignKey.type === "many2many" && !foreignKey.isSearchBySelectInput) {
       #>
       <template v-if="<#
         if (fieldPermit) {
@@ -392,6 +474,41 @@ for (let i = 0; i < columns.length; i++) {
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
+        </el-form-item>
+      </template><#
+      } else if (foreignKey && foreignKey.type === "many2many" && foreignKey.isSearchBySelectInput) {
+      #>
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
+          prop="<#=column_name#>"
+        >
+          <SelectInput<#=Foreign_Table_Up#>
+            v-model="<#=column_name#>_search"
+            v-model:model-label="search.<#=column_name#>_<#=foreignKey.lbl#>_like"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
+            :label-readonly="false"
+            multiple
+            @change="onSearch(false)"
+          ></SelectInput<#=Foreign_Table_Up#>>
         </el-form-item>
       </template><#
       } else if (column.dict) {
@@ -2270,7 +2387,7 @@ for (let i = 0; i < columns.length; i++) {
   #><#
     if (
       (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
-      && (foreignKey && ([ "selectType", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
+      && (foreignKey && ([ "selectInput", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
       && !(foreignSchema && foreignSchema.opts?.list_tree)
     ) {
   #>
@@ -2402,7 +2519,7 @@ for (let i = 0; i < columns.length; i++) {
 #><#
   if (
     (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog")
-    && (foreignKey && ([ "selectType", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
+    && (foreignKey && ([ "selectInput", "select" ].includes(foreignKey.selectType) || !foreignKey.selectType))
     && !(foreignSchema && foreignSchema.opts?.list_tree)
   ) {
 #>
@@ -2415,6 +2532,10 @@ import <#=Foreign_Table_Up#>List from "../<#=foreignTable#>/List.vue";<#
 #>
 
 import <#=Foreign_Table_Up#>TreeList from "../<#=foreignTable#>/TreeList.vue";<#
+  } else if (foreignKey && foreignKey.isSearchBySelectInput) {
+#>
+
+import SelectInput<#=Foreign_Table_Up#> from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/SelectInput.vue";<#
   }
 #><#
   if (foreignKey && foreignKey.isLinkForeignTabs) {
@@ -2546,6 +2667,9 @@ import {<#
     const foreignKey = column.foreignKey;
     const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
     if (foreignSchema && foreignSchema.opts?.list_tree) {
+      continue;
+    }
+    if (foreignKey && (foreignKey.isSearchByLbl || foreignKey.isSearchBySelectInput)) {
       continue;
     }
   #>

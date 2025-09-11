@@ -95,7 +95,7 @@
     un-w="full"
     un-min="h-8"
     un-line-height="normal"
-    un-break-words
+    un-break-all
     class="dictbiz_select_readonly"
     :class="{
       'custom_select_placeholder': shouldShowPlaceholder,
@@ -195,7 +195,7 @@
     un-w="full"
     un-min="h-8"
     un-line-height="normal"
-    un-break-words
+    un-break-all
     class="dictbiz_select_readonly"
     :class="{
       'dictbiz_select_placeholder': shouldShowPlaceholder,
@@ -244,10 +244,6 @@
 
 <script lang="ts" setup>
 import type {
-  SelectV2Props,
-} from "element-plus";
-
-import type {
   GetDictbiz,
 } from "@/typings/types";
 
@@ -285,10 +281,8 @@ const emit = defineEmits<{
 
 type OptionsMap = (item: DictbizModel) => OptionType;
 
-defineSlots<InstanceType<typeof ElSelectV2>['$slots']>();
-
 const props = withDefaults(
-  defineProps<Partial<SelectV2Props> & {
+  defineProps<{
     code: string;
     optionsMap?: OptionsMap;
     height?: number;
