@@ -587,7 +587,7 @@
 									</view>
 								</scroll-view>
 							</view>
-							<view v-else :style="{ height: '100%', padding: _contentPadding }">
+							<view v-else :style="{ height: _showTitle ? 'calc(100% - 50px)' : '100%', padding: _contentPadding }">
 								<!--
                 @slot 默认插槽
                 -->
@@ -598,13 +598,38 @@
                 @slot 底部操作栏
                 -->
 								<slot name="footer">
+									
+									<view
+									  un-flex="~ [1_0_0]"
+										un-overflow="hidden"
+										un-gap="x-2"
+									>
+									
+									<view
+									  un-flex="~ [1_0_0]"
+										un-overflow="hidden"
+									>
 									<tm-button :loading="isLoading" :color="_btnColor" @click="cancelEvt"
 										v-if="_showCancel" skin="thin"
-										style="margin-right: 16px; flex: 1">{{ _cancelText }}</tm-button>
+										style="margin-right: 16px; flex: 1"
+									  block	
+									>{{ _cancelText }}</tm-button>
+									</view>
+									
+									<view
+									  un-flex="~ [1_0_0]"
+										un-overflow="hidden"
+									>
 									<tm-button :loading="isLoading" :color="_btnColor" @click="confirmEvt"
-										style="flex: 1">{{
+										style="flex: 1"
+										block
+									>{{
                     _confirmText
                   }}</tm-button>
+									</view>
+									
+									</view>
+									
 								</slot>
 							</view>
 						</view>

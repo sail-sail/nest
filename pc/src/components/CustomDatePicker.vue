@@ -47,10 +47,8 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
-defineSlots<InstanceType<typeof ElDatePicker>['$slots']>();
-
 const props = withDefaults(
-  defineProps<Partial<DatePickerProps> & {
+  defineProps<{
     type?: DatePickerProps["type"];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;

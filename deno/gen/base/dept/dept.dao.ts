@@ -131,6 +131,9 @@ async function getWhereQuery(
   if (search?.usr_ids_is_null) {
     whereQuery += ` and base_usr.id is null`;
   }
+  if (isNotEmpty(search?.usr_ids_lbl_like)) {
+    whereQuery += ` and base_usr.lbl like ${ args.push("%" + sqlLike(search?.usr_ids_lbl_like) + "%") }`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }

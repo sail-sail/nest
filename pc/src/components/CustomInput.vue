@@ -103,9 +103,6 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  InputProps,
-} from "element-plus";
 
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -115,10 +112,8 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
-defineSlots<InstanceType<typeof ElInput>["$slots"]>();
-
 const props = withDefaults(
-  defineProps<Partial<InputProps> & {
+  defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     type?: string;
