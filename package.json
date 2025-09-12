@@ -23,6 +23,7 @@
     "build-test": "cd deno && npm run build-test",
     "publish": "cd deno && npm run publish",
     "upgrade": "cd codegen && npm run upgrade && npm run codegen",
+    "upgrade_all": "cd codegen && npm run upgrade_all",
     "db_charset": "cd codegen && ts-node src/util/npmDbCharset.ts",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
