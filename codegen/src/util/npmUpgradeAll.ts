@@ -20,6 +20,9 @@ const branchs: {
   { from: "rust", to: "rust4wxwork" },
 ];
 
+const httpProxy = "http://127.0.0.1:7890";
+const httpsProxy = "https://127.0.0.1:7890";
+
 async function exec() {
   
   if (branchs.length === 0) {
@@ -63,7 +66,14 @@ async function exec() {
       console.log(command);
       execSync(command, { stdio: "inherit" });
       
-      command = `set http_proxy=http://127.0.0.1:7890 & set https_proxy=http://127.0.0.1:7890 & git push github-nest`;
+      command = `git`;
+      if (httpProxy) {
+        command += ` -c http.proxy=${ httpProxy }`;
+      }
+      if (httpsProxy) {
+        command += ` -c https.proxy=${ httpsProxy }`;
+      }
+      command += ` push github-nest`;
       console.log(command);
       execSync(command, { stdio: "inherit" });
       
