@@ -67,10 +67,8 @@ pub async fn get_dict<T: AsRef<str>>(
   ).await?;
   
   for d in res.iter_mut() {
-    if let Some(lbl_lang) = d.lbl_lang.as_ref() {
-      if !lbl_lang.is_empty() {
-        d.lbl = lbl_lang.clone();
-      }
+    if let Some(lbl_lang) = d.lbl_lang.as_ref() && !lbl_lang.is_empty() {
+      d.lbl = lbl_lang.clone();
     }
   }
   

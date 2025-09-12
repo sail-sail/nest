@@ -157,7 +157,7 @@ pub async fn get_login_tenants(
   for tenant_model in tenant_models {
     
     let lang_model = find_by_id_lang(
-      tenant_model.lang_id.clone(),
+      tenant_model.lang_id,
       None,
     ).await?;
     
@@ -199,7 +199,7 @@ pub async fn get_login_tenant_by_ids(
   for tenant_model in tenant_models {
     
     let lang_model = find_by_id_lang(
-      tenant_model.lang_id.clone(),
+      tenant_model.lang_id,
       None,
     ).await?;
     
@@ -229,7 +229,7 @@ pub async fn set_tenant_admin_pwd(
   let pwd = input.pwd;
   
   let tenant_model = find_by_id_tenant(
-    tenant_id.clone(),
+    tenant_id,
     None,
   ).await?;
   validate_option_tenant(tenant_model).await?;
@@ -237,7 +237,7 @@ pub async fn set_tenant_admin_pwd(
   let usr_model = find_one_usr(
     UsrSearch {
       username: "admin".to_owned().into(),
-      tenant_id: tenant_id.clone().into(),
+      tenant_id: tenant_id.into(),
       ..Default::default()
     }.into(),
     None,

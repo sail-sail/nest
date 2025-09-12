@@ -116,21 +116,21 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
   let mut menu_id_map = HashMap::<MenuId, String>::with_capacity(permit_len);
   
   for permit_model in permit_models.iter() {
-    let menu_id = permit_model.menu_id.clone();
+    let menu_id = permit_model.menu_id;
     if menu_id_map.contains_key(&menu_id) {
       continue;
     }
     if menu_id.is_empty() {
-      menu_id_map.insert(menu_id.clone(), "".to_owned());
+      menu_id_map.insert(menu_id, "".to_owned());
     }
     
     let menu_model = find_by_id_menu(
-      menu_id.clone(),
+      menu_id,
       options.clone(),
     ).await?;
     
     if menu_model.is_none() {
-      menu_id_map.insert(menu_id.clone(), "".to_owned());
+      menu_id_map.insert(menu_id, "".to_owned());
       continue;
     }
     let menu_model = menu_model.unwrap();
@@ -271,7 +271,7 @@ pub async fn use_permit(
     let permit_model = find_one_permit(
       PermitSearch {
         ids: permit_ids.into(),
-        menu_id: vec![menu_id.clone()].into(),
+        menu_id: vec![menu_id].into(),
         code: code.clone().into(),
         ..Default::default()
       }.into(),

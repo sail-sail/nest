@@ -1,6 +1,9 @@
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
 
+#[allow(unused_imports)]
 use std::fmt;
-use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -8,13 +11,9 @@ use std::str::FromStr;
 use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
-
 use color_eyre::eyre::{Result, eyre};
 
-use sqlx::encode::{Encode, IsNull};
-use sqlx::error::BoxDynError;
-use sqlx::MySql;
-use sqlx::mysql::MySqlValueRef;
+#[allow(unused_imports)]
 use smol_str::SmolStr;
 
 use sqlx::{
@@ -30,8 +29,10 @@ use async_graphql::{
   Enum,
 };
 
+#[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
+use crate::common::id::{Id, impl_id};
 use crate::base::usr::usr_model::UsrId;
 
 static CAN_SORT_IN_API_MENU: OnceLock<[&'static str; 4]> = OnceLock::new();
@@ -70,6 +71,12 @@ pub struct MenuModel {
   /// 参数
   #[graphql(name = "route_query")]
   pub route_query: String,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide")]
+  pub is_home_hide: u8,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide_lbl")]
+  pub is_home_hide_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -124,6 +131,9 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let route_path: String = row.try_get("route_path")?;
     // 参数
     let route_query: String = row.try_get("route_query")?;
+    // 首页隐藏
+    let is_home_hide: u8 = row.try_get("is_home_hide")?;
+    let is_home_hide_lbl: String = is_home_hide.to_string();
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -166,6 +176,8 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       lbl,
       route_path,
       route_query,
+      is_home_hide,
+      is_home_hide_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -208,6 +220,12 @@ pub struct MenuFieldComment {
   /// 参数
   #[graphql(name = "route_query")]
   pub route_query: String,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide")]
+  pub is_home_hide: String,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide_lbl")]
+  pub is_home_hide_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: String,
@@ -293,6 +311,9 @@ pub struct MenuSearch {
   /// 参数
   #[graphql(skip)]
   pub route_query_like: Option<String>,
+  /// 首页隐藏
+  #[graphql(skip)]
+  pub is_home_hide: Option<Vec<u8>>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -391,6 +412,10 @@ impl std::fmt::Debug for MenuSearch {
     if let Some(ref route_query_like) = self.route_query_like {
       item = item.field("route_query_like", route_query_like);
     }
+    // 首页隐藏
+    if let Some(ref is_home_hide) = self.is_home_hide {
+      item = item.field("is_home_hide", is_home_hide);
+    }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
@@ -475,6 +500,12 @@ pub struct MenuInput {
   /// 参数
   #[graphql(name = "route_query")]
   pub route_query: Option<String>,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide")]
+  pub is_home_hide: Option<u8>,
+  /// 首页隐藏
+  #[graphql(name = "is_home_hide_lbl")]
+  pub is_home_hide_lbl: Option<String>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -540,6 +571,9 @@ impl From<MenuModel> for MenuInput {
       route_path: model.route_path.into(),
       // 参数
       route_query: model.route_query.into(),
+      // 首页隐藏
+      is_home_hide: model.is_home_hide.into(),
+      is_home_hide_lbl: model.is_home_hide_lbl.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -584,6 +618,8 @@ impl From<MenuInput> for MenuSearch {
       route_path: input.route_path,
       // 参数
       route_query: input.route_query,
+      // 首页隐藏
+      is_home_hide: input.is_home_hide.map(|x| vec![x]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
@@ -609,112 +645,7 @@ impl From<MenuInput> for MenuSearch {
   }
 }
 
-#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct MenuId(SmolStr);
-
-impl fmt::Display for MenuId {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "{}", self.0)
-  }
-}
-
-#[async_graphql::Scalar(name = "MenuId")]
-impl async_graphql::ScalarType for MenuId {
-  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
-    match value {
-      async_graphql::Value::String(s) => Ok(Self(s.into())),
-      _ => Err(async_graphql::InputValueError::expected_type(value)),
-    }
-  }
-  
-  fn to_value(&self) -> async_graphql::Value {
-    async_graphql::Value::String(self.0.clone().into())
-  }
-}
-
-impl From<MenuId> for ArgType {
-  fn from(value: MenuId) -> Self {
-    ArgType::SmolStr(value.into())
-  }
-}
-
-impl From<&MenuId> for ArgType {
-  fn from(value: &MenuId) -> Self {
-    ArgType::SmolStr(value.clone().into())
-  }
-}
-
-impl From<MenuId> for SmolStr {
-  fn from(id: MenuId) -> Self {
-    id.0
-  }
-}
-
-impl From<SmolStr> for MenuId {
-  fn from(s: SmolStr) -> Self {
-    Self(s)
-  }
-}
-
-impl From<&SmolStr> for MenuId {
-  fn from(s: &SmolStr) -> Self {
-    Self(s.clone())
-  }
-}
-
-impl From<String> for MenuId {
-  fn from(s: String) -> Self {
-    Self(s.into())
-  }
-}
-
-impl From<&str> for MenuId {
-  fn from(s: &str) -> Self {
-    Self(s.into())
-  }
-}
-
-impl Deref for MenuId {
-  type Target = SmolStr;
-  
-  fn deref(&self) -> &SmolStr {
-    &self.0
-  }
-}
-
-impl Encode<'_, MySql> for MenuId {
-  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
-    <&str as Encode<MySql>>::encode(self.as_str(), buf)
-  }
-  
-  fn size_hint(&self) -> usize {
-    self.len()
-  }
-}
-
-impl sqlx::Type<MySql> for MenuId {
-  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
-    <&str as sqlx::Type<MySql>>::type_info()
-  }
-  
-  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
-    <&str as sqlx::Type<MySql>>::compatible(ty)
-  }
-}
-
-impl<'r> sqlx::Decode<'r, MySql> for MenuId {
-  fn decode(
-    value: MySqlValueRef<'r>,
-  ) -> Result<Self, BoxDynError> {
-    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
-  }
-}
-
-impl PartialEq<str> for MenuId {
-  fn eq(&self, other: &str) -> bool {
-    self.0 == other
-  }
-}
+impl_id!(MenuId);
 
 /// 菜单 检测字段是否允许前端排序
 pub fn check_sort_menu(

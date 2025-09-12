@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -26,6 +30,7 @@ pub struct RoleGenQuery;
 impl RoleGenQuery {
   
   /// 根据搜索条件和分页查找角色列表
+  #[graphql(name = "findAllRole")]
   async fn find_all_role(
     &self,
     ctx: &Context<'_>,
@@ -47,6 +52,7 @@ impl RoleGenQuery {
   }
   
   /// 根据条件查找角色总数
+  #[graphql(name = "findCountRole")]
   async fn find_count_role(
     &self,
     ctx: &Context<'_>,
@@ -64,6 +70,7 @@ impl RoleGenQuery {
   }
   
   /// 根据条件查找第一个角色
+  #[graphql(name = "findOneRole")]
   async fn find_one_role(
     &self,
     ctx: &Context<'_>,
@@ -83,6 +90,7 @@ impl RoleGenQuery {
   }
   
   /// 根据条件查找第一个角色, 如果不存在则抛错
+  #[graphql(name = "findOneOkRole")]
   async fn find_one_ok_role(
     &self,
     ctx: &Context<'_>,
@@ -102,6 +110,7 @@ impl RoleGenQuery {
   }
   
   /// 根据 id 查找角色
+  #[graphql(name = "findByIdRole")]
   async fn find_by_id_role(
     &self,
     ctx: &Context<'_>,
@@ -119,6 +128,7 @@ impl RoleGenQuery {
   }
   
   /// 根据 id 查找角色, 如果不存在则抛错
+  #[graphql(name = "findByIdOkRole")]
   async fn find_by_id_ok_role(
     &self,
     ctx: &Context<'_>,
@@ -136,6 +146,7 @@ impl RoleGenQuery {
   }
   
   /// 根据 id 查找角色
+  #[graphql(name = "findByIdsRole")]
   async fn find_by_ids_role(
     &self,
     ctx: &Context<'_>,
@@ -153,6 +164,7 @@ impl RoleGenQuery {
   }
   
   /// 根据 id 查找角色
+  #[graphql(name = "findByIdsOkRole")]
   async fn find_by_ids_ok_role(
     &self,
     ctx: &Context<'_>,
@@ -171,6 +183,7 @@ impl RoleGenQuery {
   
   /// 根据 id 查找角色是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdRole")]
   async fn get_is_enabled_by_id_role(
     &self,
     ctx: &Context<'_>,
@@ -190,6 +203,7 @@ impl RoleGenQuery {
   /// 根据 id 查找角色是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsLockedByIdRole")]
   async fn get_is_locked_by_id_role(
     &self,
     ctx: &Context<'_>,
@@ -207,6 +221,7 @@ impl RoleGenQuery {
   }
   
   /// 获取角色字段注释
+  #[graphql(name = "getFieldCommentsRole")]
   async fn get_field_comments_role(
     &self,
     ctx: &Context<'_>,
@@ -221,6 +236,7 @@ impl RoleGenQuery {
   }
   
   /// 查找 角色 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByRole")]
   async fn find_last_order_by_role(
     &self,
     ctx: &Context<'_>,
@@ -244,6 +260,7 @@ pub struct RoleGenMutation;
 impl RoleGenMutation {
   
   /// 创建角色
+  #[graphql(name = "createsRole")]
   async fn creates_role(
     &self,
     ctx: &Context<'_>,
@@ -268,6 +285,7 @@ impl RoleGenMutation {
   }
   
   /// 角色根据id修改租户id
+  #[graphql(name = "updateTenantByIdRole")]
   async fn update_tenant_by_id_role(
     &self,
     ctx: &Context<'_>,
@@ -288,6 +306,7 @@ impl RoleGenMutation {
   }
   
   /// 根据 id 修改角色
+  #[graphql(name = "updateByIdRole")]
   async fn update_by_id_role(
     &self,
     ctx: &Context<'_>,
@@ -308,6 +327,7 @@ impl RoleGenMutation {
   }
   
   /// 根据 ids 删除角色
+  #[graphql(name = "deleteByIdsRole")]
   async fn delete_by_ids_role(
     &self,
     ctx: &Context<'_>,
@@ -326,6 +346,7 @@ impl RoleGenMutation {
   }
   
   /// 根据 ids 启用或者禁用角色
+  #[graphql(name = "enableByIdsRole")]
   async fn enable_by_ids_role(
     &self,
     ctx: &Context<'_>,
@@ -346,6 +367,7 @@ impl RoleGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
+  #[graphql(name = "lockByIdsRole")]
   async fn lock_by_ids_role(
     &self,
     ctx: &Context<'_>,
@@ -366,6 +388,7 @@ impl RoleGenMutation {
   }
   
   /// 根据 ids 还原角色
+  #[graphql(name = "revertByIdsRole")]
   async fn revert_by_ids_role(
     &self,
     ctx: &Context<'_>,
@@ -384,6 +407,7 @@ impl RoleGenMutation {
   }
   
   /// 根据 ids 彻底删除角色
+  #[graphql(name = "forceDeleteByIdsRole")]
   async fn force_delete_by_ids_role(
     &self,
     ctx: &Context<'_>,

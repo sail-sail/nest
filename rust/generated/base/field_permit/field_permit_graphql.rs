@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -24,6 +28,7 @@ pub struct FieldPermitGenQuery;
 impl FieldPermitGenQuery {
   
   /// 根据搜索条件和分页查找字段权限列表
+  #[graphql(name = "findAllFieldPermit")]
   async fn find_all_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -45,6 +50,7 @@ impl FieldPermitGenQuery {
   }
   
   /// 根据条件查找字段权限总数
+  #[graphql(name = "findCountFieldPermit")]
   async fn find_count_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -62,6 +68,7 @@ impl FieldPermitGenQuery {
   }
   
   /// 根据条件查找第一个字段权限
+  #[graphql(name = "findOneFieldPermit")]
   async fn find_one_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -81,6 +88,7 @@ impl FieldPermitGenQuery {
   }
   
   /// 根据条件查找第一个字段权限, 如果不存在则抛错
+  #[graphql(name = "findOneOkFieldPermit")]
   async fn find_one_ok_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -100,6 +108,7 @@ impl FieldPermitGenQuery {
   }
   
   /// 根据 id 查找字段权限
+  #[graphql(name = "findByIdFieldPermit")]
   async fn find_by_id_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -117,6 +126,7 @@ impl FieldPermitGenQuery {
   }
   
   /// 根据 id 查找字段权限, 如果不存在则抛错
+  #[graphql(name = "findByIdOkFieldPermit")]
   async fn find_by_id_ok_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -134,6 +144,7 @@ impl FieldPermitGenQuery {
   }
   
   /// 根据 id 查找字段权限
+  #[graphql(name = "findByIdsFieldPermit")]
   async fn find_by_ids_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -151,6 +162,7 @@ impl FieldPermitGenQuery {
   }
   
   /// 根据 id 查找字段权限
+  #[graphql(name = "findByIdsOkFieldPermit")]
   async fn find_by_ids_ok_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -168,6 +180,7 @@ impl FieldPermitGenQuery {
   }
   
   /// 获取字段权限字段注释
+  #[graphql(name = "getFieldCommentsFieldPermit")]
   async fn get_field_comments_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -182,6 +195,7 @@ impl FieldPermitGenQuery {
   }
   
   /// 查找 字段权限 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByFieldPermit")]
   async fn find_last_order_by_field_permit(
     &self,
     ctx: &Context<'_>,
@@ -205,6 +219,7 @@ pub struct FieldPermitGenMutation;
 impl FieldPermitGenMutation {
   
   /// 根据 id 修改字段权限
+  #[graphql(name = "updateByIdFieldPermit")]
   async fn update_by_id_field_permit(
     &self,
     ctx: &Context<'_>,

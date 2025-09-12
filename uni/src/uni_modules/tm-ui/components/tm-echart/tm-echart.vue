@@ -33,7 +33,7 @@
 	   | --- | --- | --- | --- |
 	   | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
 	*/
-	defineOptions({ name: 'TmF2' });
+	defineOptions({ name: 'TmEchart' });
 	const { config } = useTmConfig()
 	const emits = defineEmits([
 		/**

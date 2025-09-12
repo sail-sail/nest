@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -24,6 +28,7 @@ pub struct PermitGenQuery;
 impl PermitGenQuery {
   
   /// 根据搜索条件和分页查找按钮权限列表
+  #[graphql(name = "findAllPermit")]
   async fn find_all_permit(
     &self,
     ctx: &Context<'_>,
@@ -45,6 +50,7 @@ impl PermitGenQuery {
   }
   
   /// 根据条件查找按钮权限总数
+  #[graphql(name = "findCountPermit")]
   async fn find_count_permit(
     &self,
     ctx: &Context<'_>,
@@ -62,6 +68,7 @@ impl PermitGenQuery {
   }
   
   /// 根据条件查找第一个按钮权限
+  #[graphql(name = "findOnePermit")]
   async fn find_one_permit(
     &self,
     ctx: &Context<'_>,
@@ -81,6 +88,7 @@ impl PermitGenQuery {
   }
   
   /// 根据条件查找第一个按钮权限, 如果不存在则抛错
+  #[graphql(name = "findOneOkPermit")]
   async fn find_one_ok_permit(
     &self,
     ctx: &Context<'_>,
@@ -100,6 +108,7 @@ impl PermitGenQuery {
   }
   
   /// 根据 id 查找按钮权限
+  #[graphql(name = "findByIdPermit")]
   async fn find_by_id_permit(
     &self,
     ctx: &Context<'_>,
@@ -117,6 +126,7 @@ impl PermitGenQuery {
   }
   
   /// 根据 id 查找按钮权限, 如果不存在则抛错
+  #[graphql(name = "findByIdOkPermit")]
   async fn find_by_id_ok_permit(
     &self,
     ctx: &Context<'_>,
@@ -134,6 +144,7 @@ impl PermitGenQuery {
   }
   
   /// 根据 id 查找按钮权限
+  #[graphql(name = "findByIdsPermit")]
   async fn find_by_ids_permit(
     &self,
     ctx: &Context<'_>,
@@ -151,6 +162,7 @@ impl PermitGenQuery {
   }
   
   /// 根据 id 查找按钮权限
+  #[graphql(name = "findByIdsOkPermit")]
   async fn find_by_ids_ok_permit(
     &self,
     ctx: &Context<'_>,
@@ -168,6 +180,7 @@ impl PermitGenQuery {
   }
   
   /// 获取按钮权限字段注释
+  #[graphql(name = "getFieldCommentsPermit")]
   async fn get_field_comments_permit(
     &self,
     ctx: &Context<'_>,
@@ -182,6 +195,7 @@ impl PermitGenQuery {
   }
   
   /// 查找 按钮权限 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByPermit")]
   async fn find_last_order_by_permit(
     &self,
     ctx: &Context<'_>,
@@ -205,6 +219,7 @@ pub struct PermitGenMutation;
 impl PermitGenMutation {
   
   /// 根据 id 修改按钮权限
+  #[graphql(name = "updateByIdPermit")]
   async fn update_by_id_permit(
     &self,
     ctx: &Context<'_>,

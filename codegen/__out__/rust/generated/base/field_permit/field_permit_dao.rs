@@ -1,3 +1,8 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
+
 #[allow(unused_imports)]
 use serde::{Serialize, Deserialize};
 #[allow(unused_imports)]
@@ -170,7 +175,7 @@ async fn get_where_query(
       Some(item) => item.code_like.clone(),
       None => None,
     };
-    if let Some(code_like) = code_like {
+    if let Some(code_like) = code_like && !code_like.is_empty() {
       where_query.push_str(" and t.code like ?");
       args.push(format!("%{}%", sql_like(&code_like)).into());
     }
@@ -189,7 +194,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -225,7 +230,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
@@ -289,19 +294,17 @@ pub async fn find_all_field_permit(
     }
   }
   // 菜单
-  if let Some(search) = &search {
-    if search.menu_id.is_some() {
-      let len = search.menu_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.menu_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.menu_id.is_some() {
+    let len = search.menu_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.menu_id.length > {ids_limit}"));
     }
   }
   
@@ -385,19 +388,17 @@ pub async fn find_count_field_permit(
     }
   }
   // 菜单
-  if let Some(search) = &search {
-    if search.menu_id.is_some() {
-      let len = search.menu_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.menu_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.menu_id.is_some() {
+    let len = search.menu_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.menu_id.length > {ids_limit}"));
     }
   }
   
@@ -535,10 +536,8 @@ pub async fn find_one_field_permit(
     );
   }
   
-  if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
-      return Ok(None);
-    }
+  if let Some(search) = &search && search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    return Ok(None);
   }
   
   let options = Options::from(options)
@@ -592,7 +591,7 @@ pub async fn find_by_id_ok_field_permit(
   let options = Some(options);
   
   let field_permit_model = find_by_id_field_permit(
-    id.clone(),
+    id,
     options,
   ).await?;
   
@@ -836,19 +835,17 @@ pub async fn exists_field_permit(
     }
   }
   // 菜单
-  if let Some(search) = &search {
-    if search.menu_id.is_some() {
-      let len = search.menu_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.menu_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.menu_id.is_some() {
+    let len = search.menu_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.menu_id.length > {ids_limit}"));
     }
   }
   
@@ -1061,7 +1058,7 @@ pub async fn check_by_unique_field_permit(
   }
   if unique_type == UniqueType::Update {
     let id = update_by_id_field_permit(
-      model.id.clone(),
+      model.id,
       input,
       options,
     ).await?;
@@ -1285,9 +1282,9 @@ async fn _creates(
   {
     
     let id: FieldPermitId = get_short_uuid().into();
-    ids2.push(id.clone());
+    ids2.push(id);
     
-    inputs2_ids.push(id.clone());
+    inputs2_ids.push(id);
     
     sql_values += "(?";
     args.push(id.into());
@@ -1471,7 +1468,7 @@ pub async fn update_by_id_field_permit(
   let options = Some(options);
   
   let old_model = find_by_id_field_permit(
-    id.clone(),
+    id,
     options.clone(),
   ).await?;
   
@@ -1560,7 +1557,7 @@ pub async fn update_by_id_field_permit(
     }
     
     let sql_where = "id=?";
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let sql = format!("update {table} set {sql_fields} where {sql_where} limit 1");
     
@@ -1661,7 +1658,7 @@ pub async fn delete_by_ids_field_permit(
   for id in ids.clone() {
     
     let old_model = find_by_id_field_permit(
-      id.clone(),
+      id,
       options.clone(),
     ).await?;
     if old_model.is_none() {
@@ -1683,7 +1680,7 @@ pub async fn delete_by_ids_field_permit(
     
     let sql = format!("delete from {table} where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
@@ -1701,7 +1698,7 @@ pub async fn delete_by_ids_field_permit(
     {
       let mut args = QueryArgs::new();
       let sql = "update base_role_field_permit set is_deleted=1 where field_permit_id=? and is_deleted=0".to_owned();
-      args.push(id.clone().into());
+      args.push(id.into());
       let args: Vec<_> = args.into();
       execute(
         sql,

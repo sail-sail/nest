@@ -33,9 +33,6 @@
     "npm.autoDetect": "off",
     "npm.fetchOnlinePackageInfo": false,
     "deno.enable": false,
-    "deno.enablePaths": [
-      "./deno"
-    ], 
     "deno.lint": true,
     "unocss.root": [
       "pc",

@@ -98,7 +98,7 @@ pub async fn login(
   
   // 获取租户
   let tenant_model = find_by_id_ok_tenant(
-    tenant_id.clone(),
+    tenant_id,
     None,
   ).await?;
   
@@ -110,7 +110,7 @@ pub async fn login(
   
   // 获取语言
   let lang_model = find_by_id_lang(
-    lang_id.clone(),
+    lang_id,
     None,
   ).await?;
   
@@ -131,7 +131,7 @@ pub async fn login(
         username: username.clone().into(),
         ip: ip.clone().into(),
         is_succ: vec![1].into(),
-        tenant_id: tenant_id.clone().into(),
+        tenant_id: tenant_id.into(),
         ..Default::default()
       }.into(),
       None,
@@ -144,7 +144,7 @@ pub async fn login(
           ip: ip.clone().into(),
           is_succ: vec![0].into(),
           create_time: [begin.into(), end.into()].into(),
-          tenant_id: tenant_id.clone().into(),
+          tenant_id: tenant_id.into(),
           ..Default::default()
         }.into(),
         None,
@@ -162,7 +162,7 @@ pub async fn login(
   let usr_model = find_one_usr(
     UsrSearch {
       username: username.clone().into(),
-      tenant_id: tenant_id.clone().into(),
+      tenant_id: tenant_id.into(),
       ..Default::default()
     }.into(),
     None,
@@ -178,7 +178,7 @@ pub async fn login(
           username: username.clone().into(),
           ip: ip.clone().into(),
           is_succ: 0.into(),
-          tenant_id: tenant_id.clone().into(),
+          tenant_id: tenant_id.into(),
           ..Default::default()
         },
         None,
@@ -209,7 +209,7 @@ pub async fn login(
           username: username.clone().into(),
           ip: ip.clone().into(),
           is_succ: 0.into(),
-          tenant_id: tenant_id.clone().into(),
+          tenant_id: tenant_id.into(),
           ..Default::default()
         },
         None,
@@ -237,7 +237,7 @@ pub async fn login(
         username: username.clone().into(),
         ip: ip.clone().into(),
         is_succ: 1.into(),
-        tenant_id: tenant_id.clone().into(),
+        tenant_id: tenant_id.into(),
         ..Default::default()
       },
       None,
@@ -254,7 +254,7 @@ pub async fn login(
     if !usr_model.default_org_id.is_empty() {
       org_id = usr_model.default_org_id.into();
     } else if !org_ids.is_empty() {
-      org_id = org_ids[0].clone().into();
+      org_id = org_ids[0].into();
     }
   }
   let org_id = org_id;
@@ -264,9 +264,9 @@ pub async fn login(
   let exp = now.and_utc().timestamp_millis() / 1000 + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
-    id: usr_id.clone(),
-    tenant_id: tenant_id.clone(),
-    org_id: org_id.clone(),
+    id: usr_id,
+    tenant_id,
+    org_id,
     lang: Some(lang.clone()),
     exp,
     ..Default::default()
@@ -353,7 +353,7 @@ pub async fn change_password(
   let options = Some(options);
   
   let usr_model = find_by_id_usr(
-    usr_id.clone(),
+    usr_id,
     options.clone(),
   ).await?;
   let usr_model = validate_option_usr(

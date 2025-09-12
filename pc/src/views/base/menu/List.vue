@@ -554,6 +554,22 @@
             </el-table-column>
           </template>
           
+          <!-- 首页隐藏 -->
+          <template v-else-if="'is_home_hide_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_home_hide"
+                  @change="onIs_home_hide(row.id, row.is_home_hide)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
@@ -1068,6 +1084,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "首页隐藏",
+      prop: "is_home_hide_lbl",
+      sortBy: "is_home_hide",
+      width: 85,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
@@ -1412,6 +1437,7 @@ async function onImportExcel() {
     [ "名称" ]: "lbl",
     [ "路由" ]: "route_path",
     [ "参数" ]: "route_query",
+    [ "首页隐藏" ]: "is_home_hide_lbl",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
@@ -1441,6 +1467,7 @@ async function onImportExcel() {
           "lbl": "string",
           "route_path": "string",
           "route_query": "string",
+          "is_home_hide_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
@@ -1472,6 +1499,30 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
+}
+
+/** 首页隐藏 */
+async function onIs_home_hide(id: MenuId, is_home_hide: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateByIdMenu(
+    id,
+    {
+      is_home_hide,
+    },
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 锁定 */

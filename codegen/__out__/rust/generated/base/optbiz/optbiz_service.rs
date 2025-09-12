@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -228,13 +232,13 @@ pub async fn update_by_id_optbiz(
   
   let old_model = validate_option_optbiz(
     optbiz_dao::find_by_id_optbiz(
-      optbiz_id.clone(),
+      optbiz_id,
       options.clone(),
     ).await?,
   ).await?;
   
   let is_locked = optbiz_dao::get_is_locked_by_id_optbiz(
-    optbiz_id.clone(),
+    optbiz_id,
     None,
   ).await?;
   

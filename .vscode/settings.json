@@ -87,6 +87,10 @@
     "**/@rsw/**": true
   },
   "typescript.inlayHints.parameterTypes.enabled": false,
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.suggest.autoImports": false,
+  "typescript.updateImportsOnFileMove.enabled": "never",
+  "typescript.preferences.importModuleSpecifier": "relative",
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
   "deno.enable": false,

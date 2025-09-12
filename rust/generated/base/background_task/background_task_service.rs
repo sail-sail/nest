@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -33,12 +37,12 @@ async fn set_search_query(
   let usr_id = get_auth_id_ok()?;
   let usr_model = validate_option_usr(
     find_by_id_usr(
-      usr_id.clone(),
+      usr_id,
       options.clone(),
     ).await?,
   ).await?;
   
-  if !is_admin(usr_id.clone(), options.clone()).await? {
+  if !is_admin(usr_id, options.clone()).await? {
     search.create_usr_id = Some(vec![usr_id]);
   }
   Ok(())

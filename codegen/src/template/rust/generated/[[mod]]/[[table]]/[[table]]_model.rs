@@ -79,9 +79,26 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
 
-#>
+// 根据关键字搜索
+const searchByKeyword = opts?.searchByKeyword;
+
+if (searchByKeyword) {
+  if (!searchByKeyword.prop) {
+    throw `表: ${ mod }_${ table } 的 opts.searchByKeyword.prop 不能为空`;
+    process.exit(1);
+  }
+  if (!searchByKeyword.fields || !Array.isArray(searchByKeyword.fields) || searchByKeyword.fields.length === 0) {
+    throw `表: ${ mod }_${ table } 的 opts.searchByKeyword.fields 不能为空`;
+    process.exit(1);
+  }
+}
+
+#>#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
+
+#[allow(unused_imports)]
 use std::fmt;
-use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -89,13 +106,9 @@ use std::str::FromStr;
 use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
-
 use color_eyre::eyre::{Result, eyre};
 
-use sqlx::encode::{Encode, IsNull};
-use sqlx::error::BoxDynError;
-use sqlx::MySql;
-use sqlx::mysql::MySqlValueRef;
+#[allow(unused_imports)]
 use smol_str::SmolStr;<#
 if (hasDecimal) {
 #>
@@ -116,8 +129,10 @@ use async_graphql::{
   Enum,
 };
 
+#[allow(unused_imports)]
 use crate::common::context::ArgType;
-use crate::common::gql::model::SortInput;<#
+use crate::common::gql::model::SortInput;
+use crate::common::id::{Id, impl_id};<#
 if (hasAudit && auditTable_Up) {
 #>
 
@@ -1730,6 +1745,12 @@ pub struct <#=tableUP#>Search {
   pub is_deleted: Option<u8>,<#
   }
   #><#
+  if (searchByKeyword) {
+  #>
+  #[graphql(name = "<#=searchByKeyword.prop#>")]
+  pub <#=searchByKeyword.prop#>: Option<String>,<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1881,6 +1902,20 @@ pub struct <#=tableUP#>Search {
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
+  if (foreignKey.lbl) {
+  #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno || !canSearch) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_<#=foreignKey.lbl#>_like")]<#
+  }
+  #>
+  pub <#=column_name#>_<#=foreignKey.lbl#>_like: Option<String>,<#
+  }
+  #><#
     } else if ((column.dict || column.dictbiz) && data_type !== "tinyint") {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
@@ -2891,112 +2926,7 @@ impl From<<#=tableUP#>Model> for crate::<#=mod#>::<#=historyTable#>::<#=historyT
 }
 #>
 
-#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct <#=Table_Up#>Id(SmolStr);
-
-impl fmt::Display for <#=Table_Up#>Id {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "{}", self.0)
-  }
-}
-
-#[async_graphql::Scalar(name = "<#=Table_Up#>Id")]
-impl async_graphql::ScalarType for <#=Table_Up#>Id {
-  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
-    match value {
-      async_graphql::Value::String(s) => Ok(Self(s.into())),
-      _ => Err(async_graphql::InputValueError::expected_type(value)),
-    }
-  }
-  
-  fn to_value(&self) -> async_graphql::Value {
-    async_graphql::Value::String(self.0.clone().into())
-  }
-}
-
-impl From<<#=Table_Up#>Id> for ArgType {
-  fn from(value: <#=Table_Up#>Id) -> Self {
-    ArgType::SmolStr(value.into())
-  }
-}
-
-impl From<&<#=Table_Up#>Id> for ArgType {
-  fn from(value: &<#=Table_Up#>Id) -> Self {
-    ArgType::SmolStr(value.clone().into())
-  }
-}
-
-impl From<<#=Table_Up#>Id> for SmolStr {
-  fn from(id: <#=Table_Up#>Id) -> Self {
-    id.0
-  }
-}
-
-impl From<SmolStr> for <#=Table_Up#>Id {
-  fn from(s: SmolStr) -> Self {
-    Self(s)
-  }
-}
-
-impl From<&SmolStr> for <#=Table_Up#>Id {
-  fn from(s: &SmolStr) -> Self {
-    Self(s.clone())
-  }
-}
-
-impl From<String> for <#=Table_Up#>Id {
-  fn from(s: String) -> Self {
-    Self(s.into())
-  }
-}
-
-impl From<&str> for <#=Table_Up#>Id {
-  fn from(s: &str) -> Self {
-    Self(s.into())
-  }
-}
-
-impl Deref for <#=Table_Up#>Id {
-  type Target = SmolStr;
-  
-  fn deref(&self) -> &SmolStr {
-    &self.0
-  }
-}
-
-impl Encode<'_, MySql> for <#=Table_Up#>Id {
-  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
-    <&str as Encode<MySql>>::encode(self.as_str(), buf)
-  }
-  
-  fn size_hint(&self) -> usize {
-    self.len()
-  }
-}
-
-impl sqlx::Type<MySql> for <#=Table_Up#>Id {
-  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
-    <&str as sqlx::Type<MySql>>::type_info()
-  }
-  
-  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
-    <&str as sqlx::Type<MySql>>::compatible(ty)
-  }
-}
-
-impl<'r> sqlx::Decode<'r, MySql> for <#=Table_Up#>Id {
-  fn decode(
-    value: MySqlValueRef<'r>,
-  ) -> Result<Self, BoxDynError> {
-    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
-  }
-}
-
-impl PartialEq<str> for <#=Table_Up#>Id {
-  fn eq(&self, other: &str) -> bool {
-    self.0 == other
-  }
-}<#
+impl_id!(<#=Table_Up#>Id);<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;

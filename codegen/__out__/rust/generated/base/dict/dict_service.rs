@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -209,7 +213,7 @@ pub async fn update_by_id_dict(
   
   let old_model = validate_option_dict(
     dict_dao::find_by_id_dict(
-      dict_id.clone(),
+      dict_id,
       options.clone(),
     ).await?,
   ).await?;

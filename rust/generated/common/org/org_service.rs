@@ -17,10 +17,8 @@ pub async fn org_login_select(
   org_id: OrgId,
 ) -> Result<String> {
   let org_id2 = get_auth_org_id();
-  if let Some(org_id2) = org_id2 {
-    if org_id == org_id2 {
-      return Ok("".to_owned());
-    }
+  if let Some(org_id2) = org_id2 && org_id == org_id2 {
+    return Ok("".to_owned());
   }
   let mut auth_model = get_auth_model()
     .ok_or_else(|| 
@@ -32,7 +30,7 @@ pub async fn org_login_select(
   let options = Some(options);
   
   let usr_model = find_by_id_usr(
-    auth_model.id.clone(),
+    auth_model.id,
     options,
   ).await?;
   let org_ids: Vec<OrgId> = {
