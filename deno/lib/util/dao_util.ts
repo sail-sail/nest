@@ -223,7 +223,7 @@ try {
 if (database_crypto_key) {
   cryptoKey = await crypto.subtle.importKey(
     "raw",
-    database_crypto_key,
+    database_crypto_key as BufferSource,
     {
       name: "AES-CBC",
     },

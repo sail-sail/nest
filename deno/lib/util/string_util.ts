@@ -40,7 +40,7 @@ export async function hash(
     {
       name: digestAlgorithmName,
     },
-    data,
+    data as ArrayBuffer,
   );
   return encodeBase64(buf2);
 }
