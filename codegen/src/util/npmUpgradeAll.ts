@@ -36,21 +36,25 @@ async function exec() {
     const branch = branchs[i];
     
     command = `git switch ${ branch.to }`;
+    console.log();
     console.log(command);
     execSync(command, { stdio: "inherit" });
     
     command = `git merge ${ branch.from } --no-edit`;
+    console.log();
     console.log(command);
     execSync(command, { stdio: "inherit" });
     
     try {
       command = `git commit -m "upgrade"`;
+      console.log();
       console.log(command);
       execSync(command, { stdio: "inherit" });
     } catch (e) {
     }
     
     command = `git push`;
+    console.log();
     console.log(command);
     execSync(command, { stdio: "inherit" });
     
@@ -63,6 +67,7 @@ async function exec() {
       const branch = branchs[i];
       
       command = `git switch ${ branch.to }`;
+      console.log();
       console.log(command);
       execSync(command, { stdio: "inherit" });
       
@@ -75,6 +80,7 @@ async function exec() {
       //   command += ` -c https.proxy=${ httpsProxy }`;
       // }
       // command += ` pull github-nest ${ branch.to }`;
+      // console.log();
       // console.log(command);
       // try {
       //   execSync(command, { stdio: "inherit" });
@@ -90,6 +96,7 @@ async function exec() {
         command += ` -c https.proxy=${ httpsProxy }`;
       }
       command += ` push github-nest`;
+      console.log();
       console.log(command);
       execSync(command, { stdio: "inherit" });
       
