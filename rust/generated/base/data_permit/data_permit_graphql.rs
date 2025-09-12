@@ -30,6 +30,7 @@ pub struct DataPermitGenQuery;
 impl DataPermitGenQuery {
   
   /// 根据搜索条件和分页查找数据权限列表
+  #[graphql(name = "findAllDataPermit")]
   async fn find_all_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -51,6 +52,7 @@ impl DataPermitGenQuery {
   }
   
   /// 根据条件查找数据权限总数
+  #[graphql(name = "findCountDataPermit")]
   async fn find_count_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -68,6 +70,7 @@ impl DataPermitGenQuery {
   }
   
   /// 根据条件查找第一个数据权限
+  #[graphql(name = "findOneDataPermit")]
   async fn find_one_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -87,6 +90,7 @@ impl DataPermitGenQuery {
   }
   
   /// 根据条件查找第一个数据权限, 如果不存在则抛错
+  #[graphql(name = "findOneOkDataPermit")]
   async fn find_one_ok_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -106,6 +110,7 @@ impl DataPermitGenQuery {
   }
   
   /// 根据 id 查找数据权限
+  #[graphql(name = "findByIdDataPermit")]
   async fn find_by_id_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -123,6 +128,7 @@ impl DataPermitGenQuery {
   }
   
   /// 根据 id 查找数据权限, 如果不存在则抛错
+  #[graphql(name = "findByIdOkDataPermit")]
   async fn find_by_id_ok_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -140,6 +146,7 @@ impl DataPermitGenQuery {
   }
   
   /// 根据 id 查找数据权限
+  #[graphql(name = "findByIdsDataPermit")]
   async fn find_by_ids_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -157,6 +164,7 @@ impl DataPermitGenQuery {
   }
   
   /// 根据 id 查找数据权限
+  #[graphql(name = "findByIdsOkDataPermit")]
   async fn find_by_ids_ok_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -174,6 +182,7 @@ impl DataPermitGenQuery {
   }
   
   /// 获取数据权限字段注释
+  #[graphql(name = "getFieldCommentsDataPermit")]
   async fn get_field_comments_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -196,6 +205,7 @@ pub struct DataPermitGenMutation;
 impl DataPermitGenMutation {
   
   /// 创建数据权限
+  #[graphql(name = "createsDataPermit")]
   async fn creates_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -220,6 +230,7 @@ impl DataPermitGenMutation {
   }
   
   /// 数据权限根据id修改租户id
+  #[graphql(name = "updateTenantByIdDataPermit")]
   async fn update_tenant_by_id_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -240,6 +251,7 @@ impl DataPermitGenMutation {
   }
   
   /// 根据 id 修改数据权限
+  #[graphql(name = "updateByIdDataPermit")]
   async fn update_by_id_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -260,6 +272,7 @@ impl DataPermitGenMutation {
   }
   
   /// 根据 ids 删除数据权限
+  #[graphql(name = "deleteByIdsDataPermit")]
   async fn delete_by_ids_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -278,6 +291,7 @@ impl DataPermitGenMutation {
   }
   
   /// 根据 ids 还原数据权限
+  #[graphql(name = "revertByIdsDataPermit")]
   async fn revert_by_ids_data_permit(
     &self,
     ctx: &Context<'_>,
@@ -296,6 +310,7 @@ impl DataPermitGenMutation {
   }
   
   /// 根据 ids 彻底删除数据权限
+  #[graphql(name = "forceDeleteByIdsDataPermit")]
   async fn force_delete_by_ids_data_permit(
     &self,
     ctx: &Context<'_>,

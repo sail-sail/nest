@@ -28,6 +28,7 @@ pub struct MenuGenQuery;
 impl MenuGenQuery {
   
   /// 根据搜索条件和分页查找菜单列表
+  #[graphql(name = "findAllMenu")]
   async fn find_all_menu(
     &self,
     ctx: &Context<'_>,
@@ -49,6 +50,7 @@ impl MenuGenQuery {
   }
   
   /// 根据条件查找菜单总数
+  #[graphql(name = "findCountMenu")]
   async fn find_count_menu(
     &self,
     ctx: &Context<'_>,
@@ -66,6 +68,7 @@ impl MenuGenQuery {
   }
   
   /// 根据条件查找第一个菜单
+  #[graphql(name = "findOneMenu")]
   async fn find_one_menu(
     &self,
     ctx: &Context<'_>,
@@ -85,6 +88,7 @@ impl MenuGenQuery {
   }
   
   /// 根据条件查找第一个菜单, 如果不存在则抛错
+  #[graphql(name = "findOneOkMenu")]
   async fn find_one_ok_menu(
     &self,
     ctx: &Context<'_>,
@@ -104,6 +108,7 @@ impl MenuGenQuery {
   }
   
   /// 根据 id 查找菜单
+  #[graphql(name = "findByIdMenu")]
   async fn find_by_id_menu(
     &self,
     ctx: &Context<'_>,
@@ -121,6 +126,7 @@ impl MenuGenQuery {
   }
   
   /// 根据 id 查找菜单, 如果不存在则抛错
+  #[graphql(name = "findByIdOkMenu")]
   async fn find_by_id_ok_menu(
     &self,
     ctx: &Context<'_>,
@@ -138,6 +144,7 @@ impl MenuGenQuery {
   }
   
   /// 根据 id 查找菜单
+  #[graphql(name = "findByIdsMenu")]
   async fn find_by_ids_menu(
     &self,
     ctx: &Context<'_>,
@@ -155,6 +162,7 @@ impl MenuGenQuery {
   }
   
   /// 根据 id 查找菜单
+  #[graphql(name = "findByIdsOkMenu")]
   async fn find_by_ids_ok_menu(
     &self,
     ctx: &Context<'_>,
@@ -173,6 +181,7 @@ impl MenuGenQuery {
   
   /// 根据 id 查找菜单是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdMenu")]
   async fn get_is_enabled_by_id_menu(
     &self,
     ctx: &Context<'_>,
@@ -192,6 +201,7 @@ impl MenuGenQuery {
   /// 根据 id 查找菜单是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsLockedByIdMenu")]
   async fn get_is_locked_by_id_menu(
     &self,
     ctx: &Context<'_>,
@@ -209,6 +219,7 @@ impl MenuGenQuery {
   }
   
   /// 获取菜单字段注释
+  #[graphql(name = "getFieldCommentsMenu")]
   async fn get_field_comments_menu(
     &self,
     ctx: &Context<'_>,
@@ -223,6 +234,7 @@ impl MenuGenQuery {
   }
   
   /// 查找 菜单 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByMenu")]
   async fn find_last_order_by_menu(
     &self,
     ctx: &Context<'_>,
@@ -246,6 +258,7 @@ pub struct MenuGenMutation;
 impl MenuGenMutation {
   
   /// 创建菜单
+  #[graphql(name = "createsMenu")]
   async fn creates_menu(
     &self,
     ctx: &Context<'_>,
@@ -270,6 +283,7 @@ impl MenuGenMutation {
   }
   
   /// 根据 id 修改菜单
+  #[graphql(name = "updateByIdMenu")]
   async fn update_by_id_menu(
     &self,
     ctx: &Context<'_>,
@@ -290,6 +304,7 @@ impl MenuGenMutation {
   }
   
   /// 根据 ids 删除菜单
+  #[graphql(name = "deleteByIdsMenu")]
   async fn delete_by_ids_menu(
     &self,
     ctx: &Context<'_>,
@@ -308,6 +323,7 @@ impl MenuGenMutation {
   }
   
   /// 根据 ids 启用或者禁用菜单
+  #[graphql(name = "enableByIdsMenu")]
   async fn enable_by_ids_menu(
     &self,
     ctx: &Context<'_>,
@@ -328,6 +344,7 @@ impl MenuGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
+  #[graphql(name = "lockByIdsMenu")]
   async fn lock_by_ids_menu(
     &self,
     ctx: &Context<'_>,
@@ -348,6 +365,7 @@ impl MenuGenMutation {
   }
   
   /// 根据 ids 还原菜单
+  #[graphql(name = "revertByIdsMenu")]
   async fn revert_by_ids_menu(
     &self,
     ctx: &Context<'_>,
@@ -366,6 +384,7 @@ impl MenuGenMutation {
   }
   
   /// 根据 ids 彻底删除菜单
+  #[graphql(name = "forceDeleteByIdsMenu")]
   async fn force_delete_by_ids_menu(
     &self,
     ctx: &Context<'_>,

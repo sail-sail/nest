@@ -30,6 +30,7 @@ pub struct OperationRecordGenQuery;
 impl OperationRecordGenQuery {
   
   /// 根据搜索条件和分页查找操作记录列表
+  #[graphql(name = "findAllOperationRecord")]
   async fn find_all_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -51,6 +52,7 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据条件查找操作记录总数
+  #[graphql(name = "findCountOperationRecord")]
   async fn find_count_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -68,6 +70,7 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据条件查找第一个操作记录
+  #[graphql(name = "findOneOperationRecord")]
   async fn find_one_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -87,6 +90,7 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据条件查找第一个操作记录, 如果不存在则抛错
+  #[graphql(name = "findOneOkOperationRecord")]
   async fn find_one_ok_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -106,6 +110,7 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据 id 查找操作记录
+  #[graphql(name = "findByIdOperationRecord")]
   async fn find_by_id_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -123,6 +128,7 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据 id 查找操作记录, 如果不存在则抛错
+  #[graphql(name = "findByIdOkOperationRecord")]
   async fn find_by_id_ok_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -140,6 +146,7 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据 id 查找操作记录
+  #[graphql(name = "findByIdsOperationRecord")]
   async fn find_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -157,6 +164,7 @@ impl OperationRecordGenQuery {
   }
   
   /// 根据 id 查找操作记录
+  #[graphql(name = "findByIdsOkOperationRecord")]
   async fn find_by_ids_ok_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -174,6 +182,7 @@ impl OperationRecordGenQuery {
   }
   
   /// 获取操作记录字段注释
+  #[graphql(name = "getFieldCommentsOperationRecord")]
   async fn get_field_comments_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -197,6 +206,7 @@ impl OperationRecordGenMutation {
   
   /// 占位方法, 用于实现 OperationRecordInput
   #[allow(unused_variables)]
+  #[graphql(name = "noAddNoEditOperationRecord")]
   async fn no_add_no_edit_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -206,6 +216,7 @@ impl OperationRecordGenMutation {
   }
   
   /// 操作记录根据id修改租户id
+  #[graphql(name = "updateTenantByIdOperationRecord")]
   async fn update_tenant_by_id_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -226,6 +237,7 @@ impl OperationRecordGenMutation {
   }
   
   /// 根据 ids 删除操作记录
+  #[graphql(name = "deleteByIdsOperationRecord")]
   async fn delete_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -244,6 +256,7 @@ impl OperationRecordGenMutation {
   }
   
   /// 根据 ids 还原操作记录
+  #[graphql(name = "revertByIdsOperationRecord")]
   async fn revert_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
@@ -262,6 +275,7 @@ impl OperationRecordGenMutation {
   }
   
   /// 根据 ids 彻底删除操作记录
+  #[graphql(name = "forceDeleteByIdsOperationRecord")]
   async fn force_delete_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,

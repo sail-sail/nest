@@ -28,6 +28,7 @@ pub struct OptionsGenQuery;
 impl OptionsGenQuery {
   
   /// 根据搜索条件和分页查找系统选项列表
+  #[graphql(name = "findAllOptions")]
   async fn find_all_options(
     &self,
     ctx: &Context<'_>,
@@ -49,6 +50,7 @@ impl OptionsGenQuery {
   }
   
   /// 根据条件查找系统选项总数
+  #[graphql(name = "findCountOptions")]
   async fn find_count_options(
     &self,
     ctx: &Context<'_>,
@@ -66,6 +68,7 @@ impl OptionsGenQuery {
   }
   
   /// 根据条件查找第一个系统选项
+  #[graphql(name = "findOneOptions")]
   async fn find_one_options(
     &self,
     ctx: &Context<'_>,
@@ -85,6 +88,7 @@ impl OptionsGenQuery {
   }
   
   /// 根据条件查找第一个系统选项, 如果不存在则抛错
+  #[graphql(name = "findOneOkOptions")]
   async fn find_one_ok_options(
     &self,
     ctx: &Context<'_>,
@@ -104,6 +108,7 @@ impl OptionsGenQuery {
   }
   
   /// 根据 id 查找系统选项
+  #[graphql(name = "findByIdOptions")]
   async fn find_by_id_options(
     &self,
     ctx: &Context<'_>,
@@ -121,6 +126,7 @@ impl OptionsGenQuery {
   }
   
   /// 根据 id 查找系统选项, 如果不存在则抛错
+  #[graphql(name = "findByIdOkOptions")]
   async fn find_by_id_ok_options(
     &self,
     ctx: &Context<'_>,
@@ -138,6 +144,7 @@ impl OptionsGenQuery {
   }
   
   /// 根据 id 查找系统选项
+  #[graphql(name = "findByIdsOptions")]
   async fn find_by_ids_options(
     &self,
     ctx: &Context<'_>,
@@ -155,6 +162,7 @@ impl OptionsGenQuery {
   }
   
   /// 根据 id 查找系统选项
+  #[graphql(name = "findByIdsOkOptions")]
   async fn find_by_ids_ok_options(
     &self,
     ctx: &Context<'_>,
@@ -173,6 +181,7 @@ impl OptionsGenQuery {
   
   /// 根据 id 查找系统选项是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdOptions")]
   async fn get_is_enabled_by_id_options(
     &self,
     ctx: &Context<'_>,
@@ -192,6 +201,7 @@ impl OptionsGenQuery {
   /// 根据 id 查找系统选项是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsLockedByIdOptions")]
   async fn get_is_locked_by_id_options(
     &self,
     ctx: &Context<'_>,
@@ -209,6 +219,7 @@ impl OptionsGenQuery {
   }
   
   /// 获取系统选项字段注释
+  #[graphql(name = "getFieldCommentsOptions")]
   async fn get_field_comments_options(
     &self,
     ctx: &Context<'_>,
@@ -223,6 +234,7 @@ impl OptionsGenQuery {
   }
   
   /// 查找 系统选项 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByOptions")]
   async fn find_last_order_by_options(
     &self,
     ctx: &Context<'_>,
@@ -246,6 +258,7 @@ pub struct OptionsGenMutation;
 impl OptionsGenMutation {
   
   /// 创建系统选项
+  #[graphql(name = "createsOptions")]
   async fn creates_options(
     &self,
     ctx: &Context<'_>,
@@ -270,6 +283,7 @@ impl OptionsGenMutation {
   }
   
   /// 根据 id 修改系统选项
+  #[graphql(name = "updateByIdOptions")]
   async fn update_by_id_options(
     &self,
     ctx: &Context<'_>,
@@ -290,6 +304,7 @@ impl OptionsGenMutation {
   }
   
   /// 根据 ids 删除系统选项
+  #[graphql(name = "deleteByIdsOptions")]
   async fn delete_by_ids_options(
     &self,
     ctx: &Context<'_>,
@@ -308,6 +323,7 @@ impl OptionsGenMutation {
   }
   
   /// 根据 ids 启用或者禁用系统选项
+  #[graphql(name = "enableByIdsOptions")]
   async fn enable_by_ids_options(
     &self,
     ctx: &Context<'_>,
@@ -328,6 +344,7 @@ impl OptionsGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
+  #[graphql(name = "lockByIdsOptions")]
   async fn lock_by_ids_options(
     &self,
     ctx: &Context<'_>,
@@ -348,6 +365,7 @@ impl OptionsGenMutation {
   }
   
   /// 根据 ids 还原系统选项
+  #[graphql(name = "revertByIdsOptions")]
   async fn revert_by_ids_options(
     &self,
     ctx: &Context<'_>,
@@ -366,6 +384,7 @@ impl OptionsGenMutation {
   }
   
   /// 根据 ids 彻底删除系统选项
+  #[graphql(name = "forceDeleteByIdsOptions")]
   async fn force_delete_by_ids_options(
     &self,
     ctx: &Context<'_>,

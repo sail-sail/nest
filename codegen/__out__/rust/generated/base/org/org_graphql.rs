@@ -30,6 +30,7 @@ pub struct OrgGenQuery;
 impl OrgGenQuery {
   
   /// 根据搜索条件和分页查找组织列表
+  #[graphql(name = "findAllOrg")]
   async fn find_all_org(
     &self,
     ctx: &Context<'_>,
@@ -51,6 +52,7 @@ impl OrgGenQuery {
   }
   
   /// 根据条件查找组织总数
+  #[graphql(name = "findCountOrg")]
   async fn find_count_org(
     &self,
     ctx: &Context<'_>,
@@ -68,6 +70,7 @@ impl OrgGenQuery {
   }
   
   /// 根据条件查找第一个组织
+  #[graphql(name = "findOneOrg")]
   async fn find_one_org(
     &self,
     ctx: &Context<'_>,
@@ -87,6 +90,7 @@ impl OrgGenQuery {
   }
   
   /// 根据条件查找第一个组织, 如果不存在则抛错
+  #[graphql(name = "findOneOkOrg")]
   async fn find_one_ok_org(
     &self,
     ctx: &Context<'_>,
@@ -106,6 +110,7 @@ impl OrgGenQuery {
   }
   
   /// 根据 id 查找组织
+  #[graphql(name = "findByIdOrg")]
   async fn find_by_id_org(
     &self,
     ctx: &Context<'_>,
@@ -123,6 +128,7 @@ impl OrgGenQuery {
   }
   
   /// 根据 id 查找组织, 如果不存在则抛错
+  #[graphql(name = "findByIdOkOrg")]
   async fn find_by_id_ok_org(
     &self,
     ctx: &Context<'_>,
@@ -140,6 +146,7 @@ impl OrgGenQuery {
   }
   
   /// 根据 id 查找组织
+  #[graphql(name = "findByIdsOrg")]
   async fn find_by_ids_org(
     &self,
     ctx: &Context<'_>,
@@ -157,6 +164,7 @@ impl OrgGenQuery {
   }
   
   /// 根据 id 查找组织
+  #[graphql(name = "findByIdsOkOrg")]
   async fn find_by_ids_ok_org(
     &self,
     ctx: &Context<'_>,
@@ -175,6 +183,7 @@ impl OrgGenQuery {
   
   /// 根据 id 查找组织是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdOrg")]
   async fn get_is_enabled_by_id_org(
     &self,
     ctx: &Context<'_>,
@@ -194,6 +203,7 @@ impl OrgGenQuery {
   /// 根据 id 查找组织是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsLockedByIdOrg")]
   async fn get_is_locked_by_id_org(
     &self,
     ctx: &Context<'_>,
@@ -211,6 +221,7 @@ impl OrgGenQuery {
   }
   
   /// 获取组织字段注释
+  #[graphql(name = "getFieldCommentsOrg")]
   async fn get_field_comments_org(
     &self,
     ctx: &Context<'_>,
@@ -225,6 +236,7 @@ impl OrgGenQuery {
   }
   
   /// 查找 组织 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByOrg")]
   async fn find_last_order_by_org(
     &self,
     ctx: &Context<'_>,
@@ -248,6 +260,7 @@ pub struct OrgGenMutation;
 impl OrgGenMutation {
   
   /// 创建组织
+  #[graphql(name = "createsOrg")]
   async fn creates_org(
     &self,
     ctx: &Context<'_>,
@@ -272,6 +285,7 @@ impl OrgGenMutation {
   }
   
   /// 组织根据id修改租户id
+  #[graphql(name = "updateTenantByIdOrg")]
   async fn update_tenant_by_id_org(
     &self,
     ctx: &Context<'_>,
@@ -292,6 +306,7 @@ impl OrgGenMutation {
   }
   
   /// 根据 id 修改组织
+  #[graphql(name = "updateByIdOrg")]
   async fn update_by_id_org(
     &self,
     ctx: &Context<'_>,
@@ -312,6 +327,7 @@ impl OrgGenMutation {
   }
   
   /// 根据 ids 删除组织
+  #[graphql(name = "deleteByIdsOrg")]
   async fn delete_by_ids_org(
     &self,
     ctx: &Context<'_>,
@@ -330,6 +346,7 @@ impl OrgGenMutation {
   }
   
   /// 根据 ids 启用或者禁用组织
+  #[graphql(name = "enableByIdsOrg")]
   async fn enable_by_ids_org(
     &self,
     ctx: &Context<'_>,
@@ -350,6 +367,7 @@ impl OrgGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
+  #[graphql(name = "lockByIdsOrg")]
   async fn lock_by_ids_org(
     &self,
     ctx: &Context<'_>,
@@ -370,6 +388,7 @@ impl OrgGenMutation {
   }
   
   /// 根据 ids 还原组织
+  #[graphql(name = "revertByIdsOrg")]
   async fn revert_by_ids_org(
     &self,
     ctx: &Context<'_>,
@@ -388,6 +407,7 @@ impl OrgGenMutation {
   }
   
   /// 根据 ids 彻底删除组织
+  #[graphql(name = "forceDeleteByIdsOrg")]
   async fn force_delete_by_ids_org(
     &self,
     ctx: &Context<'_>,
