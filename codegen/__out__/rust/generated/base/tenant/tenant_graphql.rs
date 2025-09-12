@@ -28,6 +28,7 @@ pub struct TenantGenQuery;
 impl TenantGenQuery {
   
   /// 根据搜索条件和分页查找租户列表
+  #[graphql(name = "findAllTenant")]
   async fn find_all_tenant(
     &self,
     ctx: &Context<'_>,
@@ -49,6 +50,7 @@ impl TenantGenQuery {
   }
   
   /// 根据条件查找租户总数
+  #[graphql(name = "findCountTenant")]
   async fn find_count_tenant(
     &self,
     ctx: &Context<'_>,
@@ -66,6 +68,7 @@ impl TenantGenQuery {
   }
   
   /// 根据条件查找第一个租户
+  #[graphql(name = "findOneTenant")]
   async fn find_one_tenant(
     &self,
     ctx: &Context<'_>,
@@ -85,6 +88,7 @@ impl TenantGenQuery {
   }
   
   /// 根据条件查找第一个租户, 如果不存在则抛错
+  #[graphql(name = "findOneOkTenant")]
   async fn find_one_ok_tenant(
     &self,
     ctx: &Context<'_>,
@@ -104,6 +108,7 @@ impl TenantGenQuery {
   }
   
   /// 根据 id 查找租户
+  #[graphql(name = "findByIdTenant")]
   async fn find_by_id_tenant(
     &self,
     ctx: &Context<'_>,
@@ -121,6 +126,7 @@ impl TenantGenQuery {
   }
   
   /// 根据 id 查找租户, 如果不存在则抛错
+  #[graphql(name = "findByIdOkTenant")]
   async fn find_by_id_ok_tenant(
     &self,
     ctx: &Context<'_>,
@@ -138,6 +144,7 @@ impl TenantGenQuery {
   }
   
   /// 根据 id 查找租户
+  #[graphql(name = "findByIdsTenant")]
   async fn find_by_ids_tenant(
     &self,
     ctx: &Context<'_>,
@@ -155,6 +162,7 @@ impl TenantGenQuery {
   }
   
   /// 根据 id 查找租户
+  #[graphql(name = "findByIdsOkTenant")]
   async fn find_by_ids_ok_tenant(
     &self,
     ctx: &Context<'_>,
@@ -173,6 +181,7 @@ impl TenantGenQuery {
   
   /// 根据 id 查找租户是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdTenant")]
   async fn get_is_enabled_by_id_tenant(
     &self,
     ctx: &Context<'_>,
@@ -192,6 +201,7 @@ impl TenantGenQuery {
   /// 根据 id 查找租户是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsLockedByIdTenant")]
   async fn get_is_locked_by_id_tenant(
     &self,
     ctx: &Context<'_>,
@@ -209,6 +219,7 @@ impl TenantGenQuery {
   }
   
   /// 获取租户字段注释
+  #[graphql(name = "getFieldCommentsTenant")]
   async fn get_field_comments_tenant(
     &self,
     ctx: &Context<'_>,
@@ -223,6 +234,7 @@ impl TenantGenQuery {
   }
   
   /// 查找 租户 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByTenant")]
   async fn find_last_order_by_tenant(
     &self,
     ctx: &Context<'_>,
@@ -246,6 +258,7 @@ pub struct TenantGenMutation;
 impl TenantGenMutation {
   
   /// 创建租户
+  #[graphql(name = "createsTenant")]
   async fn creates_tenant(
     &self,
     ctx: &Context<'_>,
@@ -270,6 +283,7 @@ impl TenantGenMutation {
   }
   
   /// 根据 id 修改租户
+  #[graphql(name = "updateByIdTenant")]
   async fn update_by_id_tenant(
     &self,
     ctx: &Context<'_>,
@@ -290,6 +304,7 @@ impl TenantGenMutation {
   }
   
   /// 根据 ids 删除租户
+  #[graphql(name = "deleteByIdsTenant")]
   async fn delete_by_ids_tenant(
     &self,
     ctx: &Context<'_>,
@@ -308,6 +323,7 @@ impl TenantGenMutation {
   }
   
   /// 根据 ids 启用或者禁用租户
+  #[graphql(name = "enableByIdsTenant")]
   async fn enable_by_ids_tenant(
     &self,
     ctx: &Context<'_>,
@@ -328,6 +344,7 @@ impl TenantGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
+  #[graphql(name = "lockByIdsTenant")]
   async fn lock_by_ids_tenant(
     &self,
     ctx: &Context<'_>,
@@ -348,6 +365,7 @@ impl TenantGenMutation {
   }
   
   /// 根据 ids 还原租户
+  #[graphql(name = "revertByIdsTenant")]
   async fn revert_by_ids_tenant(
     &self,
     ctx: &Context<'_>,
@@ -366,6 +384,7 @@ impl TenantGenMutation {
   }
   
   /// 根据 ids 彻底删除租户
+  #[graphql(name = "forceDeleteByIdsTenant")]
   async fn force_delete_by_ids_tenant(
     &self,
     ctx: &Context<'_>,

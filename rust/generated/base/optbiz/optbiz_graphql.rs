@@ -30,6 +30,7 @@ pub struct OptbizGenQuery;
 impl OptbizGenQuery {
   
   /// 根据搜索条件和分页查找业务选项列表
+  #[graphql(name = "findAllOptbiz")]
   async fn find_all_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -51,6 +52,7 @@ impl OptbizGenQuery {
   }
   
   /// 根据条件查找业务选项总数
+  #[graphql(name = "findCountOptbiz")]
   async fn find_count_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -68,6 +70,7 @@ impl OptbizGenQuery {
   }
   
   /// 根据条件查找第一个业务选项
+  #[graphql(name = "findOneOptbiz")]
   async fn find_one_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -87,6 +90,7 @@ impl OptbizGenQuery {
   }
   
   /// 根据条件查找第一个业务选项, 如果不存在则抛错
+  #[graphql(name = "findOneOkOptbiz")]
   async fn find_one_ok_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -106,6 +110,7 @@ impl OptbizGenQuery {
   }
   
   /// 根据 id 查找业务选项
+  #[graphql(name = "findByIdOptbiz")]
   async fn find_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -123,6 +128,7 @@ impl OptbizGenQuery {
   }
   
   /// 根据 id 查找业务选项, 如果不存在则抛错
+  #[graphql(name = "findByIdOkOptbiz")]
   async fn find_by_id_ok_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -140,6 +146,7 @@ impl OptbizGenQuery {
   }
   
   /// 根据 id 查找业务选项
+  #[graphql(name = "findByIdsOptbiz")]
   async fn find_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -157,6 +164,7 @@ impl OptbizGenQuery {
   }
   
   /// 根据 id 查找业务选项
+  #[graphql(name = "findByIdsOkOptbiz")]
   async fn find_by_ids_ok_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -175,6 +183,7 @@ impl OptbizGenQuery {
   
   /// 根据 id 查找业务选项是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdOptbiz")]
   async fn get_is_enabled_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -194,6 +203,7 @@ impl OptbizGenQuery {
   /// 根据 id 查找业务选项是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsLockedByIdOptbiz")]
   async fn get_is_locked_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -211,6 +221,7 @@ impl OptbizGenQuery {
   }
   
   /// 获取业务选项字段注释
+  #[graphql(name = "getFieldCommentsOptbiz")]
   async fn get_field_comments_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -225,6 +236,7 @@ impl OptbizGenQuery {
   }
   
   /// 查找 业务选项 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByOptbiz")]
   async fn find_last_order_by_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -248,6 +260,7 @@ pub struct OptbizGenMutation;
 impl OptbizGenMutation {
   
   /// 创建业务选项
+  #[graphql(name = "createsOptbiz")]
   async fn creates_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -272,6 +285,7 @@ impl OptbizGenMutation {
   }
   
   /// 业务选项根据id修改租户id
+  #[graphql(name = "updateTenantByIdOptbiz")]
   async fn update_tenant_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -292,6 +306,7 @@ impl OptbizGenMutation {
   }
   
   /// 根据 id 修改业务选项
+  #[graphql(name = "updateByIdOptbiz")]
   async fn update_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -312,6 +327,7 @@ impl OptbizGenMutation {
   }
   
   /// 根据 ids 删除业务选项
+  #[graphql(name = "deleteByIdsOptbiz")]
   async fn delete_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -330,6 +346,7 @@ impl OptbizGenMutation {
   }
   
   /// 根据 ids 启用或者禁用业务选项
+  #[graphql(name = "enableByIdsOptbiz")]
   async fn enable_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -350,6 +367,7 @@ impl OptbizGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
+  #[graphql(name = "lockByIdsOptbiz")]
   async fn lock_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -370,6 +388,7 @@ impl OptbizGenMutation {
   }
   
   /// 根据 ids 还原业务选项
+  #[graphql(name = "revertByIdsOptbiz")]
   async fn revert_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
@@ -388,6 +407,7 @@ impl OptbizGenMutation {
   }
   
   /// 根据 ids 彻底删除业务选项
+  #[graphql(name = "forceDeleteByIdsOptbiz")]
   async fn force_delete_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,

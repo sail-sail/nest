@@ -30,6 +30,7 @@ pub struct DictbizGenQuery;
 impl DictbizGenQuery {
   
   /// 根据搜索条件和分页查找业务字典列表
+  #[graphql(name = "findAllDictbiz")]
   async fn find_all_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -51,6 +52,7 @@ impl DictbizGenQuery {
   }
   
   /// 根据条件查找业务字典总数
+  #[graphql(name = "findCountDictbiz")]
   async fn find_count_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -68,6 +70,7 @@ impl DictbizGenQuery {
   }
   
   /// 根据条件查找第一个业务字典
+  #[graphql(name = "findOneDictbiz")]
   async fn find_one_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -87,6 +90,7 @@ impl DictbizGenQuery {
   }
   
   /// 根据条件查找第一个业务字典, 如果不存在则抛错
+  #[graphql(name = "findOneOkDictbiz")]
   async fn find_one_ok_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -106,6 +110,7 @@ impl DictbizGenQuery {
   }
   
   /// 根据 id 查找业务字典
+  #[graphql(name = "findByIdDictbiz")]
   async fn find_by_id_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -123,6 +128,7 @@ impl DictbizGenQuery {
   }
   
   /// 根据 id 查找业务字典, 如果不存在则抛错
+  #[graphql(name = "findByIdOkDictbiz")]
   async fn find_by_id_ok_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -140,6 +146,7 @@ impl DictbizGenQuery {
   }
   
   /// 根据 id 查找业务字典
+  #[graphql(name = "findByIdsDictbiz")]
   async fn find_by_ids_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -157,6 +164,7 @@ impl DictbizGenQuery {
   }
   
   /// 根据 id 查找业务字典
+  #[graphql(name = "findByIdsOkDictbiz")]
   async fn find_by_ids_ok_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -175,6 +183,7 @@ impl DictbizGenQuery {
   
   /// 根据 id 查找业务字典是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdDictbiz")]
   async fn get_is_enabled_by_id_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -192,6 +201,7 @@ impl DictbizGenQuery {
   }
   
   /// 获取业务字典字段注释
+  #[graphql(name = "getFieldCommentsDictbiz")]
   async fn get_field_comments_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -206,6 +216,7 @@ impl DictbizGenQuery {
   }
   
   /// 查找 业务字典 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByDictbiz")]
   async fn find_last_order_by_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -229,6 +240,7 @@ pub struct DictbizGenMutation;
 impl DictbizGenMutation {
   
   /// 创建业务字典
+  #[graphql(name = "createsDictbiz")]
   async fn creates_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -253,6 +265,7 @@ impl DictbizGenMutation {
   }
   
   /// 业务字典根据id修改租户id
+  #[graphql(name = "updateTenantByIdDictbiz")]
   async fn update_tenant_by_id_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -273,6 +286,7 @@ impl DictbizGenMutation {
   }
   
   /// 根据 id 修改业务字典
+  #[graphql(name = "updateByIdDictbiz")]
   async fn update_by_id_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -293,6 +307,7 @@ impl DictbizGenMutation {
   }
   
   /// 根据 ids 删除业务字典
+  #[graphql(name = "deleteByIdsDictbiz")]
   async fn delete_by_ids_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -311,6 +326,7 @@ impl DictbizGenMutation {
   }
   
   /// 根据 ids 启用或者禁用业务字典
+  #[graphql(name = "enableByIdsDictbiz")]
   async fn enable_by_ids_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -331,6 +347,7 @@ impl DictbizGenMutation {
   }
   
   /// 根据 ids 还原业务字典
+  #[graphql(name = "revertByIdsDictbiz")]
   async fn revert_by_ids_dictbiz(
     &self,
     ctx: &Context<'_>,
@@ -349,6 +366,7 @@ impl DictbizGenMutation {
   }
   
   /// 根据 ids 彻底删除业务字典
+  #[graphql(name = "forceDeleteByIdsDictbiz")]
   async fn force_delete_by_ids_dictbiz(
     &self,
     ctx: &Context<'_>,
