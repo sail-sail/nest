@@ -15,6 +15,7 @@
     "permit": "cd ../pc && node src/utils/permit_scan.js",
     "field_permit": "ts-node src/util/npmFieldPermit.ts",
     "upgrade": "ts-node src/util/npmUpgrade.ts",
+    "upgrade_all": "ts-node src/util/npmUpgradeAll.ts",
     "db_charset": "ts-node src/util/npmDbCharset.ts",
     "preinstall": "npx only-allow pnpm"
   },
