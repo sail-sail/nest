@@ -8,7 +8,7 @@ export async function sha256Hex(data: string | Uint8Array): Promise<string> {
   if (typeof data === "string") {
     data = new TextEncoder().encode(data);
   }
-  const hash = await crypto.subtle.digest("SHA-256", data);
+  const hash = await crypto.subtle.digest("SHA-256", data as BufferSource);
   return hex(new Uint8Array(hash));
 }
 
@@ -22,7 +22,7 @@ export async function hmacSha256(
 
   const key = await crypto.subtle.importKey(
     "raw",
-    keyData,
+    keyData as BufferSource,
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign"],
