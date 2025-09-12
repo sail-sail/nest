@@ -12,7 +12,7 @@ import App from "./App.vue";
 
 import router from "./router/index";
 import "./utils/DateUtil";
-import { headerOrderDrag } from "./components/TableHeaderOrderDrag";
+import { headerOrderDragDirective } from "./components/TableHeaderOrderDrag";
 import { draggable } from "./components/draggable";
 import { tableDataSortable } from "./components/TableDataSortable";
 import { searchFormItemWidthAuto } from "./components/SearchFormItemWidthAutoDirective";
@@ -27,7 +27,7 @@ const app = createApp(App);
 
 app.use(router);
 
-app.directive("header-order-drag", headerOrderDrag);
+app.directive("header-order-drag", headerOrderDragDirective);
 app.directive("draggable", draggable);
 app.directive("table-data-sortable", tableDataSortable);
 app.directive("search-form-item-width-auto", searchFormItemWidthAuto);

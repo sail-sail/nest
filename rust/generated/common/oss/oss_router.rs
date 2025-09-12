@@ -235,11 +235,10 @@ async fn _download(
       response = response.header("Content-Length", content_length.to_string());
     }
   }
-  if let Some(content_type) = &stat.content_type {
-    if !content_type.is_empty() {
+  if let Some(content_type) = &stat.content_type
+    && !content_type.is_empty() {
       response = response.content_type(content_type);
     }
-  }
   filename = filename.trim().to_string();
   if filename.is_empty() {
     filename = stat.filename;
@@ -250,24 +249,20 @@ async fn _download(
     filename = urlencoding::encode(filename.as_str()).to_string();
   }
   response = response.header("Content-Disposition", format!("{attachment}; filename={filename}"));
-  if let Some(last_modified) = &stat.last_modified {
-    if !last_modified.is_empty() {
+  if let Some(last_modified) = &stat.last_modified
+    && !last_modified.is_empty() {
       response = response.header("Last-Modified", last_modified);
     }
-  }
-  if let Some(etag) = &stat.etag {
-    if !etag.is_empty() {
+  if let Some(etag) = &stat.etag
+    && !etag.is_empty() {
       response = response.header("ETag", etag);
     }
-  }
-  if let Some(if_none_match) = if_none_match {
-    if let Some(etag) = stat.etag {
-      if if_none_match == etag {
+  if let Some(if_none_match) = if_none_match
+    && let Some(etag) = stat.etag
+      && if_none_match == etag {
         response = response.status(StatusCode::NOT_MODIFIED);
         return response.finish();
       }
-    }
-  }
   // let content = oss_service::get_object(&id).await;
   // if let Err(err) = content {
   //   return Response::builder()
@@ -383,16 +378,14 @@ async fn _img(
     }
   }
   let mut response = Response::builder();
-  if let Some(content_length) = stat.content_length {
-    if content_length <= 0 {
+  if let Some(content_length) = stat.content_length
+    && content_length <= 0 {
       return Response::builder().status(StatusCode::NOT_FOUND).finish();
     }
-  }
-  if let Some(content_type) = &stat.content_type {
-    if !content_type.is_empty() {
+  if let Some(content_type) = &stat.content_type
+    && !content_type.is_empty() {
       response = response.content_type(content_type);
     }
-  }
   filename = filename.trim().to_string();
   let file_name_empty = filename.is_empty();
   if file_name_empty {
@@ -449,14 +442,13 @@ async fn _img(
       filename = filename.replace('"', "");
     }
   }
-  if let Some(if_none_match) = if_none_match {
-    if let Some(etag) = &stat.etag {
+  if let Some(if_none_match) = if_none_match
+    && let Some(etag) = &stat.etag {
       if if_none_match == etag {
-        if let Some(last_modified) = &stat.last_modified {
-          if !last_modified.is_empty() {
+        if let Some(last_modified) = &stat.last_modified
+          && !last_modified.is_empty() {
             response = response.header("Last-Modified", last_modified);
           }
-        }
         if !etag.is_empty() {
           response = response.header("ETag", etag);
         }
@@ -467,7 +459,6 @@ async fn _img(
         response = response.header("ETag", etag);
       }
     }
-  }
   let is_img = match &stat.content_type {
     Some(content_type) => {
       content_type.starts_with("image/") && !content_type.starts_with("image/svg")
@@ -490,16 +481,14 @@ async fn _img(
     let content: Vec<u8> = content.into();
     let len = content.len();
     response = response.header("Content-Length", len.to_string());
-    if let Some(last_modified) = &stat.last_modified {
-      if !last_modified.is_empty() {
+    if let Some(last_modified) = &stat.last_modified
+      && !last_modified.is_empty() {
         response = response.header("Last-Modified", last_modified);
       }
-    }
-    if let Some(etag) = &stat.etag {
-      if !etag.is_empty() {
+    if let Some(etag) = &stat.etag
+      && !etag.is_empty() {
         response = response.header("ETag", etag);
       }
-    }
     return response.body(content);
   }
   
@@ -507,11 +496,10 @@ async fn _img(
     .ok()
     .flatten();
   if let Some(stat) = stat {
-    if let Some(content_type) = &stat.content_type {
-      if !content_type.is_empty() {
+    if let Some(content_type) = &stat.content_type
+      && !content_type.is_empty() {
         response = response.content_type(content_type);
       }
-    }
     if file_name_empty {
       filename = stat.filename;
       if filename.is_empty() {
@@ -520,14 +508,13 @@ async fn _img(
     } else {
       filename = urlencoding::encode(filename.as_str()).to_string();
     }
-    if let Some(if_none_match) = if_none_match {
-      if let Some(etag) = &stat.etag {
+    if let Some(if_none_match) = if_none_match
+      && let Some(etag) = &stat.etag {
         if if_none_match == etag {
-          if let Some(last_modified) = &stat.last_modified {
-            if !last_modified.is_empty() {
+          if let Some(last_modified) = &stat.last_modified
+            && !last_modified.is_empty() {
               response = response.header("Last-Modified", last_modified);
             }
-          }
           if !etag.is_empty() {
             response = response.header("ETag", etag);
           }
@@ -538,12 +525,10 @@ async fn _img(
           response = response.header("ETag", etag);
         }
       }
-    }
-    if let Some(etag) = &stat.etag {
-      if !etag.is_empty() {
+    if let Some(etag) = &stat.etag
+      && !etag.is_empty() {
         response = response.header("ETag", etag);
       }
-    }
     let content = tmpfile_dao::get_object(&cache_id).await;
     if let Err(err) = content {
       return Response::builder()
@@ -628,15 +613,14 @@ async fn _img(
     .ok()
     .flatten();
   
-  if let Some(stat) = &stat {
-    if let Some(if_none_match) = if_none_match {
-      if let Some(etag) = &stat.etag {
+  if let Some(stat) = &stat
+    && let Some(if_none_match) = if_none_match
+      && let Some(etag) = &stat.etag {
         if if_none_match == etag {
-          if let Some(last_modified) = &stat.last_modified {
-            if !last_modified.is_empty() {
+          if let Some(last_modified) = &stat.last_modified
+            && !last_modified.is_empty() {
               response = response.header("Last-Modified", last_modified);
             }
-          }
           if !etag.is_empty() {
             response = response.header("ETag", etag);
           }
@@ -649,15 +633,11 @@ async fn _img(
           response = response.header("ETag", etag);
         }
       }
-    }
-  }
-  if let Some(stat) = stat {
-    if let Some(etag) = &stat.etag {
-      if !etag.is_empty() {
+  if let Some(stat) = stat
+    && let Some(etag) = &stat.etag
+      && !etag.is_empty() {
         response = response.header("ETag", etag);
       }
-    }
-  }
   response = response.header("Content-Length", len.to_string());
   response = response.content_type(content_type);
   response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));

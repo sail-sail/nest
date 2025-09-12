@@ -8,7 +8,6 @@ cache/
 # 构建和输出目录
 dist/
 build/
-__out__/
 
 # 临时文件
 .temp/

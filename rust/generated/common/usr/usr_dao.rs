@@ -32,7 +32,7 @@ pub async fn get_token_by_usr_id(
   
   let usr_model = validate_option_usr(
     find_by_id_usr(
-      usr_id.clone(),
+      usr_id,
       None,
     ).await?,
   ).await?;
@@ -47,11 +47,10 @@ pub async fn get_token_by_usr_id(
   if org_id.is_none() || org_id.as_ref().unwrap().is_empty() {
     org_id = Some(usr_model.default_org_id);
   }
-  if let Some(item) = org_id.as_ref() {
-    if !org_ids.contains(item) {
+  if let Some(item) = org_id.as_ref()
+    && !org_ids.contains(item) {
       org_id = None;
     }
-  }
   let org_id = org_id;
   
   let now = get_now();
@@ -59,9 +58,9 @@ pub async fn get_token_by_usr_id(
   let exp = now.and_utc().timestamp_millis() / 1000 + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
-    id: usr_id.clone(),
-    tenant_id: tenant_id.clone(),
-    org_id: org_id.clone(),
+    id: usr_id,
+    tenant_id,
+    org_id,
     lang: Some(lang.clone()),
     exp,
     ..Default::default()
@@ -85,7 +84,7 @@ pub async fn is_admin(
 ) -> Result<bool> {
   
   let usr_model = find_by_id_usr(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   

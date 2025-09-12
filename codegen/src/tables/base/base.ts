@@ -302,6 +302,7 @@ export default defineConfig({
             order: "ascending",
           },
           selectType: "select",
+          isSearchBySelectInput: false,
         },
       },
       {
@@ -441,6 +442,9 @@ export default defineConfig({
         COLUMN_NAME: "route_query",
         align: "left",
         width: 160,
+      },
+      {
+        COLUMN_NAME: "is_home_hide",
       },
       {
         COLUMN_NAME: "is_locked",

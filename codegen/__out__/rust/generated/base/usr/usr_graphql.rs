@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -26,6 +30,7 @@ pub struct UsrGenQuery;
 impl UsrGenQuery {
   
   /// 根据搜索条件和分页查找用户列表
+  #[graphql(name = "findAllUsr")]
   async fn find_all_usr(
     &self,
     ctx: &Context<'_>,
@@ -47,6 +52,7 @@ impl UsrGenQuery {
   }
   
   /// 根据条件查找用户总数
+  #[graphql(name = "findCountUsr")]
   async fn find_count_usr(
     &self,
     ctx: &Context<'_>,
@@ -64,6 +70,7 @@ impl UsrGenQuery {
   }
   
   /// 根据条件查找第一个用户
+  #[graphql(name = "findOneUsr")]
   async fn find_one_usr(
     &self,
     ctx: &Context<'_>,
@@ -83,6 +90,7 @@ impl UsrGenQuery {
   }
   
   /// 根据条件查找第一个用户, 如果不存在则抛错
+  #[graphql(name = "findOneOkUsr")]
   async fn find_one_ok_usr(
     &self,
     ctx: &Context<'_>,
@@ -102,6 +110,7 @@ impl UsrGenQuery {
   }
   
   /// 根据 id 查找用户
+  #[graphql(name = "findByIdUsr")]
   async fn find_by_id_usr(
     &self,
     ctx: &Context<'_>,
@@ -119,6 +128,7 @@ impl UsrGenQuery {
   }
   
   /// 根据 id 查找用户, 如果不存在则抛错
+  #[graphql(name = "findByIdOkUsr")]
   async fn find_by_id_ok_usr(
     &self,
     ctx: &Context<'_>,
@@ -136,6 +146,7 @@ impl UsrGenQuery {
   }
   
   /// 根据 id 查找用户
+  #[graphql(name = "findByIdsUsr")]
   async fn find_by_ids_usr(
     &self,
     ctx: &Context<'_>,
@@ -153,6 +164,7 @@ impl UsrGenQuery {
   }
   
   /// 根据 id 查找用户
+  #[graphql(name = "findByIdsOkUsr")]
   async fn find_by_ids_ok_usr(
     &self,
     ctx: &Context<'_>,
@@ -171,6 +183,7 @@ impl UsrGenQuery {
   
   /// 根据 id 查找用户是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdUsr")]
   async fn get_is_enabled_by_id_usr(
     &self,
     ctx: &Context<'_>,
@@ -190,6 +203,7 @@ impl UsrGenQuery {
   /// 根据 id 查找用户是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsLockedByIdUsr")]
   async fn get_is_locked_by_id_usr(
     &self,
     ctx: &Context<'_>,
@@ -207,6 +221,7 @@ impl UsrGenQuery {
   }
   
   /// 获取用户字段注释
+  #[graphql(name = "getFieldCommentsUsr")]
   async fn get_field_comments_usr(
     &self,
     ctx: &Context<'_>,
@@ -221,6 +236,7 @@ impl UsrGenQuery {
   }
   
   /// 查找 用户 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByUsr")]
   async fn find_last_order_by_usr(
     &self,
     ctx: &Context<'_>,
@@ -244,6 +260,7 @@ pub struct UsrGenMutation;
 impl UsrGenMutation {
   
   /// 创建用户
+  #[graphql(name = "createsUsr")]
   async fn creates_usr(
     &self,
     ctx: &Context<'_>,
@@ -268,6 +285,7 @@ impl UsrGenMutation {
   }
   
   /// 用户根据id修改租户id
+  #[graphql(name = "updateTenantByIdUsr")]
   async fn update_tenant_by_id_usr(
     &self,
     ctx: &Context<'_>,
@@ -288,6 +306,7 @@ impl UsrGenMutation {
   }
   
   /// 根据 id 修改用户
+  #[graphql(name = "updateByIdUsr")]
   async fn update_by_id_usr(
     &self,
     ctx: &Context<'_>,
@@ -308,6 +327,7 @@ impl UsrGenMutation {
   }
   
   /// 根据 ids 删除用户
+  #[graphql(name = "deleteByIdsUsr")]
   async fn delete_by_ids_usr(
     &self,
     ctx: &Context<'_>,
@@ -326,6 +346,7 @@ impl UsrGenMutation {
   }
   
   /// 根据 ids 启用或者禁用用户
+  #[graphql(name = "enableByIdsUsr")]
   async fn enable_by_ids_usr(
     &self,
     ctx: &Context<'_>,
@@ -346,6 +367,7 @@ impl UsrGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
+  #[graphql(name = "lockByIdsUsr")]
   async fn lock_by_ids_usr(
     &self,
     ctx: &Context<'_>,
@@ -366,6 +388,7 @@ impl UsrGenMutation {
   }
   
   /// 根据 ids 还原用户
+  #[graphql(name = "revertByIdsUsr")]
   async fn revert_by_ids_usr(
     &self,
     ctx: &Context<'_>,
@@ -384,6 +407,7 @@ impl UsrGenMutation {
   }
   
   /// 根据 ids 彻底删除用户
+  #[graphql(name = "forceDeleteByIdsUsr")]
   async fn force_delete_by_ids_usr(
     &self,
     ctx: &Context<'_>,

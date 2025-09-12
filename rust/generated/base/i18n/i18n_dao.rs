@@ -1,3 +1,8 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
+
 #[allow(unused_imports)]
 use serde::{Serialize, Deserialize};
 #[allow(unused_imports)]
@@ -244,7 +249,7 @@ async fn get_where_query(
       Some(item) => item.code_like.clone(),
       None => None,
     };
-    if let Some(code_like) = code_like {
+    if let Some(code_like) = code_like && !code_like.is_empty() {
       where_query.push_str(" and t.code like ?");
       args.push(format!("%{}%", sql_like(&code_like)).into());
     }
@@ -263,7 +268,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -282,7 +287,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
@@ -517,67 +522,59 @@ pub async fn find_all_i18n(
     }
   }
   // 语言
-  if let Some(search) = &search {
-    if search.lang_id.is_some() {
-      let len = search.lang_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.lang_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.lang_id.is_some() {
+    let len = search.lang_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.lang_id.length > {ids_limit}"));
     }
   }
   // 菜单
-  if let Some(search) = &search {
-    if search.menu_id.is_some() {
-      let len = search.menu_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.menu_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.menu_id.is_some() {
+    let len = search.menu_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.menu_id.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search {
-    if search.create_usr_id.is_some() {
-      let len = search.create_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.create_usr_id.is_some() {
+    let len = search.create_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search {
-    if search.update_usr_id.is_some() {
-      let len = search.update_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.update_usr_id.is_some() {
+    let len = search.update_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
   
@@ -666,67 +663,59 @@ pub async fn find_count_i18n(
     }
   }
   // 语言
-  if let Some(search) = &search {
-    if search.lang_id.is_some() {
-      let len = search.lang_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.lang_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.lang_id.is_some() {
+    let len = search.lang_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.lang_id.length > {ids_limit}"));
     }
   }
   // 菜单
-  if let Some(search) = &search {
-    if search.menu_id.is_some() {
-      let len = search.menu_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.menu_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.menu_id.is_some() {
+    let len = search.menu_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.menu_id.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search {
-    if search.create_usr_id.is_some() {
-      let len = search.create_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.create_usr_id.is_some() {
+    let len = search.create_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search {
-    if search.update_usr_id.is_some() {
-      let len = search.update_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.update_usr_id.is_some() {
+    let len = search.update_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
   
@@ -873,10 +862,8 @@ pub async fn find_one_i18n(
     );
   }
   
-  if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
-      return Ok(None);
-    }
+  if let Some(search) = &search && search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    return Ok(None);
   }
   
   let options = Options::from(options)
@@ -930,7 +917,7 @@ pub async fn find_by_id_ok_i18n(
   let options = Some(options);
   
   let i18n_model = find_by_id_i18n(
-    id.clone(),
+    id,
     options,
   ).await?;
   
@@ -1174,67 +1161,59 @@ pub async fn exists_i18n(
     }
   }
   // 语言
-  if let Some(search) = &search {
-    if search.lang_id.is_some() {
-      let len = search.lang_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.lang_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.lang_id.is_some() {
+    let len = search.lang_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.lang_id.length > {ids_limit}"));
     }
   }
   // 菜单
-  if let Some(search) = &search {
-    if search.menu_id.is_some() {
-      let len = search.menu_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.menu_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.menu_id.is_some() {
+    let len = search.menu_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.menu_id.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search {
-    if search.create_usr_id.is_some() {
-      let len = search.create_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.create_usr_id.is_some() {
+    let len = search.create_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search {
-    if search.update_usr_id.is_some() {
-      let len = search.update_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.update_usr_id.is_some() {
+    let len = search.update_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
   
@@ -1450,7 +1429,7 @@ pub async fn check_by_unique_i18n(
   }
   if unique_type == UniqueType::Update {
     let id = update_by_id_i18n(
-      model.id.clone(),
+      model.id,
       input,
       options,
     ).await?;
@@ -1714,9 +1693,9 @@ async fn _creates(
   {
     
     let id: I18nId = get_short_uuid().into();
-    ids2.push(id.clone());
+    ids2.push(id);
     
-    inputs2_ids.push(id.clone());
+    inputs2_ids.push(id);
     
     sql_values += "(?";
     args.push(id.into());
@@ -1751,7 +1730,7 @@ async fn _creates(
         let mut usr_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -1768,14 +1747,14 @@ async fn _creates(
         }
         sql_values += ",?";
         args.push(usr_lbl.into());
-      } else if input.create_usr_id.clone().unwrap().as_str() == "-" {
+      } else if input.create_usr_id.unwrap().is_empty() {
         sql_values += ",default";
         sql_values += ",default";
       } else {
-        let mut usr_id = input.create_usr_id.clone();
+        let mut usr_id = input.create_usr_id;
         let mut usr_lbl = String::new();
         let usr_model = find_by_id_usr(
-          usr_id.clone().unwrap(),
+          usr_id.unwrap(),
           options.clone(),
         ).await?;
         if let Some(usr_model) = usr_model {
@@ -1995,7 +1974,7 @@ pub async fn update_by_id_i18n(
   let options = Some(options);
   
   let old_model = find_by_id_i18n(
-    id.clone(),
+    id,
     options.clone(),
   ).await?;
   
@@ -2088,7 +2067,7 @@ pub async fn update_by_id_i18n(
         let mut usr_id_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -2105,12 +2084,12 @@ pub async fn update_by_id_i18n(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      } else if input.update_usr_id.clone().unwrap().as_str() != "-" {
-        let mut usr_id = input.update_usr_id.clone();
+      } else if !input.update_usr_id.unwrap().is_empty() {
+        let mut usr_id = input.update_usr_id;
         let mut usr_id_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -2127,8 +2106,8 @@ pub async fn update_by_id_i18n(
         }
       }
     } else {
-      if input.update_usr_id.is_some() && input.update_usr_id.clone().unwrap().as_str() != "-" {
-        let usr_id = input.update_usr_id.clone();
+      if input.update_usr_id.is_some() && !input.update_usr_id.unwrap().is_empty() {
+        let usr_id = input.update_usr_id;
         if let Some(usr_id) = usr_id {
           sql_fields += "update_usr_id=?,";
           args.push(usr_id.into());
@@ -2157,7 +2136,7 @@ pub async fn update_by_id_i18n(
     }
     
     let sql_where = "id=?";
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let sql = format!("update {table} set {sql_fields} where {sql_where} limit 1");
     
@@ -2258,7 +2237,7 @@ pub async fn delete_by_ids_i18n(
   for id in ids.clone() {
     
     let old_model = find_by_id_i18n(
-      id.clone(),
+      id,
       options.clone(),
     ).await?;
     if old_model.is_none() {
@@ -2284,7 +2263,7 @@ pub async fn delete_by_ids_i18n(
     let mut usr_lbl = String::new();
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
-        usr_id.clone().unwrap(),
+        usr_id.unwrap(),
         options.clone(),
       ).await?;
       if let Some(usr_model) = usr_model {
@@ -2294,11 +2273,9 @@ pub async fn delete_by_ids_i18n(
       }
     }
     
-    if !is_silent_mode && !is_creating {
-      if let Some(usr_id) = usr_id {
-        sql_fields.push_str("delete_usr_id=?,");
-        args.push(usr_id.into());
-      }
+    if !is_silent_mode && !is_creating && let Some(usr_id) = usr_id {
+      sql_fields.push_str("delete_usr_id=?,");
+      args.push(usr_id.into());
     }
     
     if !is_silent_mode && !is_creating {
@@ -2317,7 +2294,7 @@ pub async fn delete_by_ids_i18n(
     
     let sql = format!("update {table} set {sql_fields} where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
@@ -2380,13 +2357,13 @@ pub async fn revert_by_ids_i18n(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
     let mut old_model = find_one_i18n(
       I18nSearch {
-        id: Some(id.clone()),
+        id: Some(id),
         is_deleted: Some(1),
         ..Default::default()
       }.into(),
@@ -2396,7 +2373,7 @@ pub async fn revert_by_ids_i18n(
     
     if old_model.is_none() {
       old_model = find_by_id_i18n(
-        id.clone(),
+        id,
         options.clone(),
       ).await?;
     }
@@ -2480,7 +2457,7 @@ pub async fn force_delete_by_ids_i18n(
     
     let old_model = find_all_i18n(
       I18nSearch {
-        id: id.clone().into(),
+        id: id.into(),
         is_deleted: 1.into(),
         ..Default::default()
       }.into(),
@@ -2508,7 +2485,7 @@ pub async fn force_delete_by_ids_i18n(
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     

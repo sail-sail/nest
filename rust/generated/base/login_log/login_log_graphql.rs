@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -26,6 +30,7 @@ pub struct LoginLogGenQuery;
 impl LoginLogGenQuery {
   
   /// 根据搜索条件和分页查找登录日志列表
+  #[graphql(name = "findAllLoginLog")]
   async fn find_all_login_log(
     &self,
     ctx: &Context<'_>,
@@ -47,6 +52,7 @@ impl LoginLogGenQuery {
   }
   
   /// 根据条件查找登录日志总数
+  #[graphql(name = "findCountLoginLog")]
   async fn find_count_login_log(
     &self,
     ctx: &Context<'_>,
@@ -64,6 +70,7 @@ impl LoginLogGenQuery {
   }
   
   /// 根据条件查找第一个登录日志
+  #[graphql(name = "findOneLoginLog")]
   async fn find_one_login_log(
     &self,
     ctx: &Context<'_>,
@@ -83,6 +90,7 @@ impl LoginLogGenQuery {
   }
   
   /// 根据条件查找第一个登录日志, 如果不存在则抛错
+  #[graphql(name = "findOneOkLoginLog")]
   async fn find_one_ok_login_log(
     &self,
     ctx: &Context<'_>,
@@ -102,6 +110,7 @@ impl LoginLogGenQuery {
   }
   
   /// 根据 id 查找登录日志
+  #[graphql(name = "findByIdLoginLog")]
   async fn find_by_id_login_log(
     &self,
     ctx: &Context<'_>,
@@ -119,6 +128,7 @@ impl LoginLogGenQuery {
   }
   
   /// 根据 id 查找登录日志, 如果不存在则抛错
+  #[graphql(name = "findByIdOkLoginLog")]
   async fn find_by_id_ok_login_log(
     &self,
     ctx: &Context<'_>,
@@ -136,6 +146,7 @@ impl LoginLogGenQuery {
   }
   
   /// 根据 id 查找登录日志
+  #[graphql(name = "findByIdsLoginLog")]
   async fn find_by_ids_login_log(
     &self,
     ctx: &Context<'_>,
@@ -153,6 +164,7 @@ impl LoginLogGenQuery {
   }
   
   /// 根据 id 查找登录日志
+  #[graphql(name = "findByIdsOkLoginLog")]
   async fn find_by_ids_ok_login_log(
     &self,
     ctx: &Context<'_>,
@@ -170,6 +182,7 @@ impl LoginLogGenQuery {
   }
   
   /// 获取登录日志字段注释
+  #[graphql(name = "getFieldCommentsLoginLog")]
   async fn get_field_comments_login_log(
     &self,
     ctx: &Context<'_>,
@@ -193,6 +206,7 @@ impl LoginLogGenMutation {
   
   /// 占位方法, 用于实现 LoginLogInput
   #[allow(unused_variables)]
+  #[graphql(name = "noAddNoEditLoginLog")]
   async fn no_add_no_edit_login_log(
     &self,
     ctx: &Context<'_>,
@@ -202,6 +216,7 @@ impl LoginLogGenMutation {
   }
   
   /// 登录日志根据id修改租户id
+  #[graphql(name = "updateTenantByIdLoginLog")]
   async fn update_tenant_by_id_login_log(
     &self,
     ctx: &Context<'_>,
@@ -222,6 +237,7 @@ impl LoginLogGenMutation {
   }
   
   /// 根据 ids 删除登录日志
+  #[graphql(name = "deleteByIdsLoginLog")]
   async fn delete_by_ids_login_log(
     &self,
     ctx: &Context<'_>,
@@ -240,6 +256,7 @@ impl LoginLogGenMutation {
   }
   
   /// 根据 ids 还原登录日志
+  #[graphql(name = "revertByIdsLoginLog")]
   async fn revert_by_ids_login_log(
     &self,
     ctx: &Context<'_>,
@@ -258,6 +275,7 @@ impl LoginLogGenMutation {
   }
   
   /// 根据 ids 彻底删除登录日志
+  #[graphql(name = "forceDeleteByIdsLoginLog")]
   async fn force_delete_by_ids_login_log(
     &self,
     ctx: &Context<'_>,

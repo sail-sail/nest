@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use std::time::Instant;
 

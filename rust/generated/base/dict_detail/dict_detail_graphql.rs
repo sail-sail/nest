@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -24,6 +28,7 @@ pub struct DictDetailGenQuery;
 impl DictDetailGenQuery {
   
   /// 根据搜索条件和分页查找系统字典明细列表
+  #[graphql(name = "findAllDictDetail")]
   async fn find_all_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -45,6 +50,7 @@ impl DictDetailGenQuery {
   }
   
   /// 根据条件查找系统字典明细总数
+  #[graphql(name = "findCountDictDetail")]
   async fn find_count_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -62,6 +68,7 @@ impl DictDetailGenQuery {
   }
   
   /// 根据条件查找第一个系统字典明细
+  #[graphql(name = "findOneDictDetail")]
   async fn find_one_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -81,6 +88,7 @@ impl DictDetailGenQuery {
   }
   
   /// 根据条件查找第一个系统字典明细, 如果不存在则抛错
+  #[graphql(name = "findOneOkDictDetail")]
   async fn find_one_ok_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -100,6 +108,7 @@ impl DictDetailGenQuery {
   }
   
   /// 根据 id 查找系统字典明细
+  #[graphql(name = "findByIdDictDetail")]
   async fn find_by_id_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -117,6 +126,7 @@ impl DictDetailGenQuery {
   }
   
   /// 根据 id 查找系统字典明细, 如果不存在则抛错
+  #[graphql(name = "findByIdOkDictDetail")]
   async fn find_by_id_ok_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -134,6 +144,7 @@ impl DictDetailGenQuery {
   }
   
   /// 根据 id 查找系统字典明细
+  #[graphql(name = "findByIdsDictDetail")]
   async fn find_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -151,6 +162,7 @@ impl DictDetailGenQuery {
   }
   
   /// 根据 id 查找系统字典明细
+  #[graphql(name = "findByIdsOkDictDetail")]
   async fn find_by_ids_ok_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -169,6 +181,7 @@ impl DictDetailGenQuery {
   
   /// 根据 id 查找系统字典明细是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdDictDetail")]
   async fn get_is_enabled_by_id_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -186,6 +199,7 @@ impl DictDetailGenQuery {
   }
   
   /// 获取系统字典明细字段注释
+  #[graphql(name = "getFieldCommentsDictDetail")]
   async fn get_field_comments_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -200,6 +214,7 @@ impl DictDetailGenQuery {
   }
   
   /// 查找 系统字典明细 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByDictDetail")]
   async fn find_last_order_by_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -223,6 +238,7 @@ pub struct DictDetailGenMutation;
 impl DictDetailGenMutation {
   
   /// 创建系统字典明细
+  #[graphql(name = "createsDictDetail")]
   async fn creates_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -247,6 +263,7 @@ impl DictDetailGenMutation {
   }
   
   /// 根据 id 修改系统字典明细
+  #[graphql(name = "updateByIdDictDetail")]
   async fn update_by_id_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -267,6 +284,7 @@ impl DictDetailGenMutation {
   }
   
   /// 根据 ids 删除系统字典明细
+  #[graphql(name = "deleteByIdsDictDetail")]
   async fn delete_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -285,6 +303,7 @@ impl DictDetailGenMutation {
   }
   
   /// 根据 ids 启用或者禁用系统字典明细
+  #[graphql(name = "enableByIdsDictDetail")]
   async fn enable_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -305,6 +324,7 @@ impl DictDetailGenMutation {
   }
   
   /// 根据 ids 还原系统字典明细
+  #[graphql(name = "revertByIdsDictDetail")]
   async fn revert_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
@@ -323,6 +343,7 @@ impl DictDetailGenMutation {
   }
   
   /// 根据 ids 彻底删除系统字典明细
+  #[graphql(name = "forceDeleteByIdsDictDetail")]
   async fn force_delete_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,

@@ -81,7 +81,11 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
 
-#>#[allow(unused_imports)]
+#>
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
+#[allow(unused_imports)]
 use std::time::Instant;
 
 use color_eyre::eyre::Result;
@@ -885,7 +889,7 @@ pub async fn update_by_id_<#=table#>(
   #>
   
   let old_data = find_by_id_<#=table#>(
-    id.clone(),
+    id,
     None,
   ).await?;<#
   }
@@ -976,7 +980,7 @@ pub async fn audit_submit_<#=table#>(
   if (log) {
   #>
   
-  let old_data = id.clone();<#
+  let old_data = id;<#
   }
   #>
   
@@ -1054,7 +1058,7 @@ pub async fn audit_pass_<#=table#>(
   if (log) {
   #>
   
-  let old_data = id.clone();<#
+  let old_data = id;<#
   }
   #>
   
@@ -1133,7 +1137,7 @@ pub async fn audit_reject_<#=table#>(
   if (log) {
   #>
   
-  let old_data = id.clone();<#
+  let old_data = id;<#
   }
   #>
   
@@ -1214,7 +1218,7 @@ pub async fn audit_review_<#=table#>(
   if (log) {
   #>
   
-  let old_data = id.clone();<#
+  let old_data = id;<#
   }
   #>
   

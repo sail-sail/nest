@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -26,6 +30,7 @@ pub struct DictbizDetailGenQuery;
 impl DictbizDetailGenQuery {
   
   /// 根据搜索条件和分页查找业务字典明细列表
+  #[graphql(name = "findAllDictbizDetail")]
   async fn find_all_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -47,6 +52,7 @@ impl DictbizDetailGenQuery {
   }
   
   /// 根据条件查找业务字典明细总数
+  #[graphql(name = "findCountDictbizDetail")]
   async fn find_count_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -64,6 +70,7 @@ impl DictbizDetailGenQuery {
   }
   
   /// 根据条件查找第一个业务字典明细
+  #[graphql(name = "findOneDictbizDetail")]
   async fn find_one_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -83,6 +90,7 @@ impl DictbizDetailGenQuery {
   }
   
   /// 根据条件查找第一个业务字典明细, 如果不存在则抛错
+  #[graphql(name = "findOneOkDictbizDetail")]
   async fn find_one_ok_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -102,6 +110,7 @@ impl DictbizDetailGenQuery {
   }
   
   /// 根据 id 查找业务字典明细
+  #[graphql(name = "findByIdDictbizDetail")]
   async fn find_by_id_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -119,6 +128,7 @@ impl DictbizDetailGenQuery {
   }
   
   /// 根据 id 查找业务字典明细, 如果不存在则抛错
+  #[graphql(name = "findByIdOkDictbizDetail")]
   async fn find_by_id_ok_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -136,6 +146,7 @@ impl DictbizDetailGenQuery {
   }
   
   /// 根据 id 查找业务字典明细
+  #[graphql(name = "findByIdsDictbizDetail")]
   async fn find_by_ids_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -153,6 +164,7 @@ impl DictbizDetailGenQuery {
   }
   
   /// 根据 id 查找业务字典明细
+  #[graphql(name = "findByIdsOkDictbizDetail")]
   async fn find_by_ids_ok_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -171,6 +183,7 @@ impl DictbizDetailGenQuery {
   
   /// 根据 id 查找业务字典明细是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdDictbizDetail")]
   async fn get_is_enabled_by_id_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -188,6 +201,7 @@ impl DictbizDetailGenQuery {
   }
   
   /// 获取业务字典明细字段注释
+  #[graphql(name = "getFieldCommentsDictbizDetail")]
   async fn get_field_comments_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -202,6 +216,7 @@ impl DictbizDetailGenQuery {
   }
   
   /// 查找 业务字典明细 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByDictbizDetail")]
   async fn find_last_order_by_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -225,6 +240,7 @@ pub struct DictbizDetailGenMutation;
 impl DictbizDetailGenMutation {
   
   /// 创建业务字典明细
+  #[graphql(name = "createsDictbizDetail")]
   async fn creates_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -249,6 +265,7 @@ impl DictbizDetailGenMutation {
   }
   
   /// 业务字典明细根据id修改租户id
+  #[graphql(name = "updateTenantByIdDictbizDetail")]
   async fn update_tenant_by_id_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -269,6 +286,7 @@ impl DictbizDetailGenMutation {
   }
   
   /// 根据 id 修改业务字典明细
+  #[graphql(name = "updateByIdDictbizDetail")]
   async fn update_by_id_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -289,6 +307,7 @@ impl DictbizDetailGenMutation {
   }
   
   /// 根据 ids 删除业务字典明细
+  #[graphql(name = "deleteByIdsDictbizDetail")]
   async fn delete_by_ids_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -307,6 +326,7 @@ impl DictbizDetailGenMutation {
   }
   
   /// 根据 ids 启用或者禁用业务字典明细
+  #[graphql(name = "enableByIdsDictbizDetail")]
   async fn enable_by_ids_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -327,6 +347,7 @@ impl DictbizDetailGenMutation {
   }
   
   /// 根据 ids 还原业务字典明细
+  #[graphql(name = "revertByIdsDictbizDetail")]
   async fn revert_by_ids_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
@@ -345,6 +366,7 @@ impl DictbizDetailGenMutation {
   }
   
   /// 根据 ids 彻底删除业务字典明细
+  #[graphql(name = "forceDeleteByIdsDictbizDetail")]
   async fn force_delete_by_ids_dictbiz_detail(
     &self,
     ctx: &Context<'_>,

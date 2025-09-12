@@ -1,6 +1,9 @@
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
 
+#[allow(unused_imports)]
 use std::fmt;
-use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -8,13 +11,9 @@ use std::str::FromStr;
 use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
-
 use color_eyre::eyre::{Result, eyre};
 
-use sqlx::encode::{Encode, IsNull};
-use sqlx::error::BoxDynError;
-use sqlx::MySql;
-use sqlx::mysql::MySqlValueRef;
+#[allow(unused_imports)]
 use smol_str::SmolStr;
 
 use sqlx::{
@@ -30,8 +29,10 @@ use async_graphql::{
   Enum,
 };
 
+#[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
+use crate::common::id::{Id, impl_id};
 
 use crate::base::tenant::tenant_model::TenantId;
 use crate::base::role::role_model::RoleId;
@@ -493,18 +494,27 @@ pub struct UsrSearch {
   /// 所属角色
   #[graphql(name = "role_ids_save_null")]
   pub role_ids_is_null: Option<bool>,
+  /// 所属角色
+  #[graphql(name = "role_ids_lbl_like")]
+  pub role_ids_lbl_like: Option<String>,
   /// 所属部门
   #[graphql(name = "dept_ids")]
   pub dept_ids: Option<Vec<DeptId>>,
   /// 所属部门
   #[graphql(name = "dept_ids_save_null")]
   pub dept_ids_is_null: Option<bool>,
+  /// 所属部门
+  #[graphql(name = "dept_ids_lbl_like")]
+  pub dept_ids_lbl_like: Option<String>,
   /// 所属组织
   #[graphql(name = "org_ids")]
   pub org_ids: Option<Vec<OrgId>>,
   /// 所属组织
   #[graphql(name = "org_ids_save_null")]
   pub org_ids_is_null: Option<bool>,
+  /// 所属组织
+  #[graphql(name = "org_ids_lbl_like")]
+  pub org_ids_lbl_like: Option<String>,
   /// 默认组织
   #[graphql(name = "default_org_id")]
   pub default_org_id: Option<Vec<OrgId>>,
@@ -919,112 +929,7 @@ impl From<UsrInput> for UsrSearch {
   }
 }
 
-#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct UsrId(SmolStr);
-
-impl fmt::Display for UsrId {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "{}", self.0)
-  }
-}
-
-#[async_graphql::Scalar(name = "UsrId")]
-impl async_graphql::ScalarType for UsrId {
-  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
-    match value {
-      async_graphql::Value::String(s) => Ok(Self(s.into())),
-      _ => Err(async_graphql::InputValueError::expected_type(value)),
-    }
-  }
-  
-  fn to_value(&self) -> async_graphql::Value {
-    async_graphql::Value::String(self.0.clone().into())
-  }
-}
-
-impl From<UsrId> for ArgType {
-  fn from(value: UsrId) -> Self {
-    ArgType::SmolStr(value.into())
-  }
-}
-
-impl From<&UsrId> for ArgType {
-  fn from(value: &UsrId) -> Self {
-    ArgType::SmolStr(value.clone().into())
-  }
-}
-
-impl From<UsrId> for SmolStr {
-  fn from(id: UsrId) -> Self {
-    id.0
-  }
-}
-
-impl From<SmolStr> for UsrId {
-  fn from(s: SmolStr) -> Self {
-    Self(s)
-  }
-}
-
-impl From<&SmolStr> for UsrId {
-  fn from(s: &SmolStr) -> Self {
-    Self(s.clone())
-  }
-}
-
-impl From<String> for UsrId {
-  fn from(s: String) -> Self {
-    Self(s.into())
-  }
-}
-
-impl From<&str> for UsrId {
-  fn from(s: &str) -> Self {
-    Self(s.into())
-  }
-}
-
-impl Deref for UsrId {
-  type Target = SmolStr;
-  
-  fn deref(&self) -> &SmolStr {
-    &self.0
-  }
-}
-
-impl Encode<'_, MySql> for UsrId {
-  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
-    <&str as Encode<MySql>>::encode(self.as_str(), buf)
-  }
-  
-  fn size_hint(&self) -> usize {
-    self.len()
-  }
-}
-
-impl sqlx::Type<MySql> for UsrId {
-  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
-    <&str as sqlx::Type<MySql>>::type_info()
-  }
-  
-  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
-    <&str as sqlx::Type<MySql>>::compatible(ty)
-  }
-}
-
-impl<'r> sqlx::Decode<'r, MySql> for UsrId {
-  fn decode(
-    value: MySqlValueRef<'r>,
-  ) -> Result<Self, BoxDynError> {
-    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
-  }
-}
-
-impl PartialEq<str> for UsrId {
-  fn eq(&self, other: &str) -> bool {
-    self.0 == other
-  }
-}
+impl_id!(UsrId);
 
 /// 用户类型
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]

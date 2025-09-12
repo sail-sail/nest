@@ -193,7 +193,9 @@ export default function() {
   
   async function closeOtherTabs(tab?: TabInf) {
     
-    const router = useRouter();
+    if (!router) {
+      router = useRouter();
+    }
     
     const notCloseableTabs = tabs.value.filter((item) => item.closeable === false);
     if (!tab) {
@@ -221,10 +223,8 @@ export default function() {
   
   async function refreshTab(route: RouteLocationNormalizedLoaded) {
     
-    const router0 = useRouter();
-    
     if (!router) {
-      router = router0;
+      router = useRouter();
     }
     
     let hash = location.hash;

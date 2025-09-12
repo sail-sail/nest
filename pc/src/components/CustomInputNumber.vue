@@ -9,6 +9,11 @@
   :step-strictly="props.stepStrictly"
   :min="props.min"
   :controls="props.controls"
+  :align="props.align"
+  :class="{
+    'custom_input_number_align_center': props.align === 'center',
+    'custom_input_number_align_right': props.align === 'right',
+  }"
   v-bind="$attrs"
   :clearable="!props.disabled && props.clearable"
   :disabled="props.disabled"
@@ -44,6 +49,8 @@
       class="custom_input_number_readonly"
       :class="{
         'custom_input_number_placeholder': shouldShowPlaceholder,
+        'custom_input_number_align_center': props.align === 'center',
+        'custom_input_number_align_right': props.align === 'right',
       }"
       v-bind="$attrs"
     >
@@ -81,10 +88,8 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
-defineSlots<InstanceType<typeof ElInputNumber>['$slots']>();
-
 const props = withDefaults(
-  defineProps<Partial<InputNumberProps> & {
+  defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     precision?: number;
@@ -98,7 +103,8 @@ const props = withDefaults(
     isReadonlyBorder?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
-    zeroIsEmpty?: boolean;
+    isHideZero?: boolean;
+    align?: "center" | "left" | "right";
   }>(),
   {
     modelValue: undefined,
@@ -113,7 +119,8 @@ const props = withDefaults(
     isReadonlyBorder: true,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
-    zeroIsEmpty: true,
+    isHideZero: false,
+    align: undefined,
   },
 );
 
@@ -122,11 +129,14 @@ let modelValue = $ref(props.modelValue);
 watch(
   () => props.modelValue,
   () => {
-    if (props.modelValue == null) {
+    if (props.modelValue == null || (props.isHideZero && Number(props.modelValue.toString()) === 0)) {
       modelValue = undefined;
       return;
     }
     modelValue = props.modelValue;
+  },
+  {
+    immediate: true,
   },
 );
 
@@ -154,7 +164,7 @@ const modelValueComputed = $computed({
       if (isNaN(num)) {
         return modelValue;
       }
-      if (props.zeroIsEmpty && num === 0) {
+      if (props.isHideZero && num === 0) {
         return;
       }
       return num;
@@ -180,7 +190,7 @@ const modelLabel = $computed(() => {
   if (props.precision === 0) {
     return modelValue;
   }
-  if (props.zeroIsEmpty && Number(modelValue) === 0) {
+  if (props.isHideZero && Number(modelValue) === 0) {
     if (props.readonlyPlaceholder) {
       return props.readonlyPlaceholder;
     }
@@ -190,7 +200,7 @@ const modelLabel = $computed(() => {
 });
 
 const shouldShowPlaceholder = $computed<boolean>(() => {
-  return modelValue == null || modelValue === "" || Number(modelValue) === 0;
+  return modelValue == null || modelValue === "" || (!Number(modelValue) && props.isHideZero);
 });
 
 function onChange() {
@@ -201,3 +211,12 @@ function onChange() {
   emit("change", modelValue);
 }
 </script>
+
+<style lang="scss" scoped>
+.custom_input_number_align_center {
+  text-align: center;
+}
+.custom_input_number_align_right {
+  text-align: right;
+}
+</style>

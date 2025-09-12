@@ -1,6 +1,9 @@
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
 
+#[allow(unused_imports)]
 use std::fmt;
-use std::ops::Deref;
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -8,13 +11,9 @@ use std::str::FromStr;
 use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
-
 use color_eyre::eyre::{Result, eyre};
 
-use sqlx::encode::{Encode, IsNull};
-use sqlx::error::BoxDynError;
-use sqlx::MySql;
-use sqlx::mysql::MySqlValueRef;
+#[allow(unused_imports)]
 use smol_str::SmolStr;
 
 use sqlx::{
@@ -30,8 +29,10 @@ use async_graphql::{
   Enum,
 };
 
+#[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
+use crate::common::id::{Id, impl_id};
 use crate::base::domain::domain_model::DomainId;
 use crate::base::menu::menu_model::MenuId;
 use crate::base::lang::lang_model::LangId;
@@ -408,12 +409,18 @@ pub struct TenantSearch {
   /// 所属域名
   #[graphql(name = "domain_ids_save_null")]
   pub domain_ids_is_null: Option<bool>,
+  /// 所属域名
+  #[graphql(name = "domain_ids_lbl_like")]
+  pub domain_ids_lbl_like: Option<String>,
   /// 菜单权限
   #[graphql(name = "menu_ids")]
   pub menu_ids: Option<Vec<MenuId>>,
   /// 菜单权限
   #[graphql(name = "menu_ids_save_null")]
   pub menu_ids_is_null: Option<bool>,
+  /// 菜单权限
+  #[graphql(name = "menu_ids_lbl_like")]
+  pub menu_ids_lbl_like: Option<String>,
   /// 标题
   #[graphql(skip)]
   pub title: Option<String>,
@@ -805,112 +812,7 @@ impl From<TenantInput> for TenantSearch {
   }
 }
 
-#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct TenantId(SmolStr);
-
-impl fmt::Display for TenantId {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "{}", self.0)
-  }
-}
-
-#[async_graphql::Scalar(name = "TenantId")]
-impl async_graphql::ScalarType for TenantId {
-  fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
-    match value {
-      async_graphql::Value::String(s) => Ok(Self(s.into())),
-      _ => Err(async_graphql::InputValueError::expected_type(value)),
-    }
-  }
-  
-  fn to_value(&self) -> async_graphql::Value {
-    async_graphql::Value::String(self.0.clone().into())
-  }
-}
-
-impl From<TenantId> for ArgType {
-  fn from(value: TenantId) -> Self {
-    ArgType::SmolStr(value.into())
-  }
-}
-
-impl From<&TenantId> for ArgType {
-  fn from(value: &TenantId) -> Self {
-    ArgType::SmolStr(value.clone().into())
-  }
-}
-
-impl From<TenantId> for SmolStr {
-  fn from(id: TenantId) -> Self {
-    id.0
-  }
-}
-
-impl From<SmolStr> for TenantId {
-  fn from(s: SmolStr) -> Self {
-    Self(s)
-  }
-}
-
-impl From<&SmolStr> for TenantId {
-  fn from(s: &SmolStr) -> Self {
-    Self(s.clone())
-  }
-}
-
-impl From<String> for TenantId {
-  fn from(s: String) -> Self {
-    Self(s.into())
-  }
-}
-
-impl From<&str> for TenantId {
-  fn from(s: &str) -> Self {
-    Self(s.into())
-  }
-}
-
-impl Deref for TenantId {
-  type Target = SmolStr;
-  
-  fn deref(&self) -> &SmolStr {
-    &self.0
-  }
-}
-
-impl Encode<'_, MySql> for TenantId {
-  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
-    <&str as Encode<MySql>>::encode(self.as_str(), buf)
-  }
-  
-  fn size_hint(&self) -> usize {
-    self.len()
-  }
-}
-
-impl sqlx::Type<MySql> for TenantId {
-  fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
-    <&str as sqlx::Type<MySql>>::type_info()
-  }
-  
-  fn compatible(ty: &<MySql as sqlx::Database>::TypeInfo) -> bool {
-    <&str as sqlx::Type<MySql>>::compatible(ty)
-  }
-}
-
-impl<'r> sqlx::Decode<'r, MySql> for TenantId {
-  fn decode(
-    value: MySqlValueRef<'r>,
-  ) -> Result<Self, BoxDynError> {
-    <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
-  }
-}
-
-impl PartialEq<str> for TenantId {
-  fn eq(&self, other: &str) -> bool {
-    self.0 == other
-  }
-}
+impl_id!(TenantId);
 
 /// 租户 检测字段是否允许前端排序
 pub fn check_sort_tenant(

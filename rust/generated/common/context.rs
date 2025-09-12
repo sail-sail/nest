@@ -51,18 +51,25 @@ static IS_DEBUG: OnceLock<bool> = OnceLock::new();
 static MULTIPLE_SPACE_REGEX: OnceLock<Regex> = OnceLock::new();
 
 fn server_token_timeout() -> i64 {
-  SERVER_TOKEN_TIMEOUT.get_or_init(|| env::var("server_tokentimeout").unwrap()
+  SERVER_TOKEN_TIMEOUT.get_or_init(|| env::var("server_tokentimeout")
+    .unwrap_or("3600".to_owned())
     .parse::<i64>().unwrap_or(3600))
     .to_owned()
 }
 
 fn db_pool() -> Pool<MySql> {
-  DB_POOL.get_or_init(|| init_db_pool("").unwrap())
+  DB_POOL.get_or_init(|| init_db_pool("").unwrap_or_else(|err| {
+    error!("{err:#?}");
+    std::process::exit(1);
+  }))
     .clone()
 }
 
 fn db_pool_dw() -> Pool<MySql> {
-  DB_POOL_DW.get_or_init(|| init_db_pool("_dw").unwrap())
+  DB_POOL_DW.get_or_init(|| init_db_pool("_dw").unwrap_or_else(|err| {
+    error!("{err:#?}");
+    std::process::exit(1);
+  }))
     .clone()
 }
 
@@ -72,7 +79,10 @@ pub fn is_debug() -> bool {
 }
 
 pub fn multiple_space_regex() -> Regex {
-  MULTIPLE_SPACE_REGEX.get_or_init(|| Regex::new(r"\s+").unwrap())
+  MULTIPLE_SPACE_REGEX.get_or_init(|| Regex::new(r"\s+").unwrap_or_else(|err| {
+    error!("{err:#?}");
+    std::process::exit(1);
+  }))
     .clone()
 }
 
@@ -176,8 +186,8 @@ pub fn has_auth_model() -> bool {
 #[allow(dead_code)]
 pub fn get_auth_model_ok() -> Result<AuthModel> {
   CTX.with(|ctx| {
-    if ctx.auth_model.is_some() {
-      return Ok(ctx.auth_model.clone().unwrap());
+    if let Some(auth_model) = &ctx.auth_model {
+      return Ok(auth_model.clone());
     }
     error!(
       "{req_id} get_auth_model_ok - Not login!",
@@ -192,7 +202,7 @@ pub fn get_auth_id() -> Option<UsrId> {
   CTX.with(|ctx| {
     ctx.auth_model
       .as_ref()
-      .map(|item| item.id.clone())
+      .map(|item| item.id)
   })
 }
 
@@ -212,11 +222,11 @@ pub fn get_auth_id_ok() -> Result<UsrId> {
 pub fn get_auth_tenant_id() -> Option<TenantId> {
   CTX.with(|ctx| {
     if ctx.auth_model.is_none() && ctx.client_tenant_id.is_some() {
-      return ctx.client_tenant_id.clone();
+      return ctx.client_tenant_id;
     }
     ctx.auth_model
       .as_ref()
-      .map(|item| item.tenant_id.clone())
+      .map(|item| item.tenant_id)
   })
 }
 
@@ -225,7 +235,7 @@ pub fn get_auth_org_id() -> Option<OrgId> {
   CTX.with(|ctx| {
     ctx.auth_model
       .as_ref()
-      .and_then(|item| item.org_id.clone())
+      .and_then(|item| item.org_id)
   })
 }
 
@@ -361,13 +371,13 @@ impl Ctx {
   /// 查找当前数据库连接的连接id, 如果数据库事务尚未开启则返回0
   async fn query_conn_id(&self) -> Result<u64> {
     let mut tran = self.tran.lock().await;
-    if tran.is_none() {
-      return Ok(0);
+    if let Some(tran) = tran.as_mut() {
+      let row = tran.fetch_one("select connection_id()").await?;
+      let connection_id: u64 = row.try_get(0)?;
+      Ok(connection_id)
+    } else {
+      Ok(0)
     }
-    let tran = tran.as_mut().unwrap();
-    let row = tran.fetch_one("select connection_id()").await?;
-    let connection_id: u64 = row.try_get(0)?;
-    Ok(connection_id)
   }
   
   /// 开启事务
@@ -399,9 +409,9 @@ impl Ctx {
     let mut tran = self.tran.lock().await;
     let tran = tran.take();
     if let Some(mut tran) = tran {
-      let connection_id: u64 = tran
-        .fetch_one("select connection_id()").await?
-        .try_get(0)?;
+      // let connection_id: u64 = tran
+      //   .fetch_one("select connection_id()").await?
+      //   .try_get(0)?;
       if let Err(err) = res {
         let exception = err.downcast_ref::<ServiceException>();
         if let Some(exception) = exception {
@@ -437,13 +447,13 @@ impl Ctx {
         };
         if rollback {
           info!(
-            "{req_id} rollback; -- {connection_id}",
+            "{req_id} rollback;",
             req_id = self.req_id,
           );
           tran.execute("rollback").await?;
         } else {
           info!(
-            "{req_id} commit; -- {connection_id}",
+            "{req_id} commit;",
             req_id = self.req_id,
           );
           tran.execute("commit").await?;
@@ -451,7 +461,7 @@ impl Ctx {
         return Err(err);
       }
       info!(
-        "{req_id} commit; -- {connection_id}",
+        "{req_id} commit;",
         req_id = self.req_id,
       );
       tran.execute("commit").await?;
@@ -500,14 +510,13 @@ impl Ctx {
   ) -> Result<u64> {
     
     let mut is_tran = self.is_tran;
-    if let Some(options) = &options {
-      if let Some(is_tran0) = options.get_is_tran() {
+    if let Some(options) = &options
+      && let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
-    }
     
-    if let Some(options) = &options {
-      if let Some(del_cache_key1s) = &options.del_cache_key1s {
+    if let Some(options) = &options
+      && let Some(del_cache_key1s) = &options.del_cache_key1s {
         del_caches(
           del_cache_key1s
             .iter()
@@ -516,7 +525,6 @@ impl Ctx {
             .as_slice()
         ).await?;
       }
-    }
     
     if is_tran {
       let mut query = sqlx::query(&sql);
@@ -590,7 +598,10 @@ impl Ctx {
       let res = {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
-        let tran = tran.as_mut().unwrap();
+        let tran = tran.as_mut()
+          .ok_or_else(|| {
+            eyre!("Transaction not started")
+          })?;
         let res = tran.execute(query).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
@@ -602,18 +613,17 @@ impl Ctx {
         res?
       };
       let rows_affected = res.rows_affected();
-      if rows_affected > 0 {
-        if let Some(options) = &options {
-          if let Some(del_cache_key1s) = &options.del_cache_key1s {
-            del_caches(
-              del_cache_key1s
-                .iter()
-                .map(|item| item.as_str())
-                .collect::<Vec<&str>>()
-                .as_slice()
-            ).await?;
-          }
-        }
+      if rows_affected > 0 &&
+        let Some(options) = &options &&
+        let Some(del_cache_key1s) = &options.del_cache_key1s
+      {
+        del_caches(
+          del_cache_key1s
+            .iter()
+            .map(|item| item.as_str())
+            .collect::<Vec<&str>>()
+            .as_slice()
+        ).await?;
       }
       return Ok(rows_affected);
     }
@@ -696,18 +706,17 @@ impl Ctx {
     }
     let res = res?;
     let rows_affected = res.rows_affected();
-    if rows_affected > 0 {
-      if let Some(options) = &options {
-        if let Some(del_cache_key1s) = &options.del_cache_key1s {
-          del_caches(
-            del_cache_key1s
-              .iter()
-              .map(|item| item.as_str())
-              .collect::<Vec<&str>>()
-              .as_slice()
-          ).await?;
-        }
-      }
+    if rows_affected > 0 &&
+      let Some(options) = &options &&
+      let Some(del_cache_key1s) = &options.del_cache_key1s
+    {
+      del_caches(
+        del_cache_key1s
+          .iter()
+          .map(|item| item.as_str())
+          .collect::<Vec<&str>>()
+          .as_slice()
+      ).await?;
     }
     Ok(rows_affected)
   }
@@ -722,30 +731,29 @@ impl Ctx {
   where
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r>,
   {
-    if let Some(options) = &options {
-      if options.cache_key1.is_some() && options.cache_key2.is_some() {
-        let cache_key1 = options.cache_key1.as_ref().unwrap();
-        let cache_key2 = options.cache_key2.as_ref().unwrap();
-        let str = get_cache(cache_key1, cache_key2).await?;
-        if let Some(str) = str {
-          let res2: Vec<R>;
-          let res = serde_json::from_str::<Vec<R>>(&str);
-          if let Ok(res) = res {
-            res2 = res;
-          } else {
-            res2 = vec![];
-            del_cache(cache_key1).await?;
-          }
-          return Ok(res2);
+    if let Some(options) = &options &&
+      let Some(cache_key1) = &options.cache_key1 &&
+      let Some(cache_key2) = &options.cache_key2
+    {
+      let str = get_cache(cache_key1, cache_key2).await?;
+      if let Some(str) = str {
+        let res2: Vec<R>;
+        let res = serde_json::from_str::<Vec<R>>(&str);
+        if let Ok(res) = res {
+          res2 = res;
+        } else {
+          res2 = vec![];
+          del_cache(cache_key1).await?;
         }
+        return Ok(res2);
       }
     }
     
     let mut is_tran = self.is_tran;
-    if let Some(options) = options.as_ref() {
-      if let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
+    if let Some(options) = options.as_ref() &&
+      let Some(is_tran0) = options.get_is_tran()
+    {
+      is_tran = is_tran0;
     }
     
     if is_tran {
@@ -820,7 +828,10 @@ impl Ctx {
       let res = {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
-        let tran = tran.as_mut().unwrap();
+        let tran = tran.as_mut()
+          .ok_or_else(|| {
+            eyre!("Transaction not started")
+          })?;
         let res = query.fetch_all((*tran).as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
@@ -832,14 +843,13 @@ impl Ctx {
         res?
       };
       
-      if let Some(options) = &options {
-        if options.cache_key1.is_some() && options.cache_key2.is_some() {
-          let cache_key1 = options.cache_key1.as_ref().unwrap();
-          let cache_key2 = options.cache_key2.as_ref().unwrap();
+      if let Some(options) = &options
+        && let Some(cache_key1) = &options.cache_key1
+          && let Some(cache_key2) = &options.cache_key2
+        {
           let str = serde_json::to_string(&res)?;
           set_cache(cache_key1, cache_key2, &str).await?;
         }
-      }
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(&sql);
@@ -928,14 +938,13 @@ impl Ctx {
       );
     }
     let res = res?;
-    if let Some(options) = &options {
-      if options.cache_key1.is_some() && options.cache_key2.is_some() {
-        let cache_key1 = options.cache_key1.as_ref().unwrap();
-        let cache_key2 = options.cache_key2.as_ref().unwrap();
+    if let Some(options) = &options
+      && let Some(cache_key1) = &options.cache_key1
+        && let Some(cache_key2) = &options.cache_key2
+      {
         let str = serde_json::to_string(&res)?;
         set_cache(cache_key1, cache_key2, &str).await?;
       }
-    }
     Ok(res)
   }
   
@@ -949,10 +958,10 @@ impl Ctx {
   where
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r> + Sync,
   {
-    if let Some(options) = &options {
-      if options.cache_key1.is_some() && options.cache_key2.is_some() {
-        let cache_key1 = options.cache_key1.as_ref().unwrap();
-        let cache_key2 = options.cache_key2.as_ref().unwrap();
+    if let Some(options) = &options
+      && let Some(cache_key1) = &options.cache_key1
+        && let Some(cache_key2) = &options.cache_key2
+      {
         let str = get_cache(cache_key1, cache_key2).await?;
         if let Some(str) = str {
           let res = serde_json::from_str::<R>(&str);
@@ -965,14 +974,12 @@ impl Ctx {
           return Ok(res2);
         }
       }
-    }
     
     let mut is_tran = self.is_tran;
-    if let Some(options) = &options {
-      if let Some(is_tran0) = options.get_is_tran() {
+    if let Some(options) = &options
+      && let Some(is_tran0) = options.get_is_tran() {
         is_tran = is_tran0;
       }
-    }
     
     if is_tran {
       let mut query = sqlx::query_as::<_, R>(&sql);
@@ -1046,7 +1053,10 @@ impl Ctx {
       let res = {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
-        let tran = tran.as_mut().unwrap();
+        let tran = tran.as_mut()
+          .ok_or_else(|| {
+            eyre!("Transaction not started")
+          })?;
         let res = query.fetch_optional((*tran).as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
@@ -1057,16 +1067,14 @@ impl Ctx {
         }
         res?
       };
-      if let Some(res) = &res {
-        if let Some(options) = &options {
-          if options.cache_key1.is_some() && options.cache_key2.is_some() {
-            let cache_key1 = options.cache_key1.as_ref().unwrap();
-            let cache_key2 = options.cache_key2.as_ref().unwrap();
+      if let Some(res) = &res
+        && let Some(options) = &options
+          && let Some(cache_key1) = &options.cache_key1
+            && let Some(cache_key2) = &options.cache_key2
+          {
             let str = serde_json::to_string(res)?;
             set_cache(cache_key1, cache_key2, &str).await?;
           }
-        }
-      }
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(&sql);
@@ -1155,16 +1163,14 @@ impl Ctx {
       );
     }
     let res = res?;
-    if let Some(res) = &res {
-      if let Some(options) = &options {
-        if options.cache_key1.is_some() && options.cache_key2.is_some() {
-          let cache_key1 = options.cache_key1.as_ref().unwrap();
-          let cache_key2 = options.cache_key2.as_ref().unwrap();
+    if let Some(res) = &res
+      && let Some(options) = &options
+        && let Some(cache_key1) = &options.cache_key1
+          && let Some(cache_key2) = &options.cache_key2
+        {
           let str = serde_json::to_string(res)?;
           set_cache(cache_key1, cache_key2, &str).await?;
         }
-      }
-    }
     Ok(res)
   }
   
@@ -1254,7 +1260,11 @@ impl Ctx {
       }
       if let Some(auth_token) = ctx.auth_token.as_deref() {
         res.headers_mut()
-          .insert(AUTHORIZATION, auth_token.parse().unwrap());
+          .insert(
+            AUTHORIZATION,
+            auth_token.parse()
+              .unwrap_or(HeaderValue::from_static(""))
+          );
       }
       let status_code = res.status();
       let is_success = !status_code.is_server_error();
@@ -1623,6 +1633,20 @@ impl From<&SmolStr> for ArgType {
   }
 }
 
+impl From<[u8; 22]> for ArgType {
+  fn from(value: [u8; 22]) -> Self {
+    let s = std::str::from_utf8(&value).unwrap_or("").to_string();
+    ArgType::String(s)
+  }
+}
+
+impl From<&[u8; 22]> for ArgType {
+  fn from(value: &[u8; 22]) -> Self {
+    let s = std::str::from_utf8(value).unwrap_or("").to_string();
+    ArgType::String(s)
+  }
+}
+
 #[derive(Default, Clone)]
 pub struct Options {
   
@@ -1687,11 +1711,10 @@ impl Debug for Options {
     if let Some(is_debug) = self.is_debug {
       item = item.field("is_debug", &is_debug);
     }
-    if let Some(is_tran) = self.is_tran {
-      if is_tran {
+    if let Some(is_tran) = self.is_tran
+      && is_tran {
         item = item.field("is_tran", &is_tran);
       }
-    }
     if let Some(cache_key1) = &self.cache_key1 {
       item = item.field("cache_key1", cache_key1);
     }
@@ -1704,27 +1727,24 @@ impl Debug for Options {
     if let Some(unique_type) = &self.unique_type {
       item = item.field("unique_type", unique_type);
     }
-    if let Some(is_encrypt) = self.is_encrypt {
-      if is_encrypt {
+    if let Some(is_encrypt) = self.is_encrypt
+      && is_encrypt {
         item = item.field("is_encrypt", &is_encrypt);
       }
-    }
-    if let Some(has_data_permit) = self.has_data_permit {
-      if has_data_permit {
+    if let Some(has_data_permit) = self.has_data_permit
+      && has_data_permit {
         item = item.field("has_data_permit", &has_data_permit);
       }
-    }
     if !self.database_name.is_empty() {
       item = item.field("database_name", &self.database_name);
     }
     if let Some(ids_limit) = self.ids_limit {
       item = item.field("ids_limit", &ids_limit);
     }
-    if let Some(is_silent_mode) = self.is_silent_mode {
-      if is_silent_mode {
+    if let Some(is_silent_mode) = self.is_silent_mode
+      && is_silent_mode {
         item = item.field("is_silent_mode", &is_silent_mode);
       }
-    }
     item.finish()
   }
 }
@@ -1732,10 +1752,7 @@ impl Debug for Options {
 impl Options {
   
   pub fn from(options: Option<Options>) -> Options {
-    if options.is_none() {
-      return Options::new();
-    }
-    options.unwrap()
+    options.unwrap_or_default()
   }
   
   #[inline]
@@ -1962,7 +1979,8 @@ impl <'a> CtxBuilder<'a> {
     if auth_token.is_none() {
       return Err(eyre!("token_empty"));
     }
-    let auth_token = auth_token.unwrap();
+    let auth_token = auth_token
+      .ok_or_else(|| eyre!("token_empty"))?;
     self.old_auth_token = Some(auth_token.clone());
     let mut auth_model = match get_auth_model_by_token(auth_token) {
       Ok(item) => item,
@@ -1996,7 +2014,8 @@ impl <'a> CtxBuilder<'a> {
     if auth_token.is_none() {
       return Ok(self);
     }
-    let auth_token = auth_token.unwrap();
+    let auth_token = auth_token
+      .ok_or_else(|| eyre!("token_empty"))?;
     self.old_auth_token = Some(auth_token.clone());
     self.auth_model = get_auth_model_by_token(auth_token).ok();
     Ok(self)
@@ -2110,7 +2129,7 @@ pub fn get_order_by_query(
   if sort.is_none() {
     return String::new();
   }
-  let sort = sort.unwrap().into_iter()
+  let sort = sort.unwrap_or_default().into_iter()
     .filter(|item| 
       !item.prop.is_empty()
     )
@@ -2163,11 +2182,10 @@ pub fn get_is_debug(
 pub fn get_is_silent_mode(
   options: Option<&Options>,
 ) -> bool {
-  if let Some(options) = options {
-    if let Some(is_silent_mode) = options.is_silent_mode {
+  if let Some(options) = options
+    && let Some(is_silent_mode) = options.is_silent_mode {
       return is_silent_mode;
     }
-  }
   let ctx = CTX.with(|ctx| ctx.clone());
   ctx.is_silent_mode
 }
@@ -2176,11 +2194,10 @@ pub fn get_is_silent_mode(
 pub fn get_is_creating(
   options: Option<&Options>,
 ) -> bool {
-  if let Some(options) = options {
-    if let Some(is_creating) = options.is_creating {
+  if let Some(options) = options
+    && let Some(is_creating) = options.is_creating {
       return is_creating;
     }
-  }
   let ctx = CTX.with(|ctx| ctx.clone());
   ctx.is_creating.unwrap_or_default()
 }

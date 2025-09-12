@@ -24,7 +24,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   v-if="!props.readonly"
   ref="wrapperRef"
   class="select_input_wrapper"
-  tabindex="0"
+  :tabindex="!props.labelReadonly || props.disabled ? -1 : 0"
   :class="{
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
@@ -42,9 +42,12 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     class="select_input"
     :placeholder="props.placeholder"
     :readonly-placeholder="props.placeholder"
+    @update:model-value="inputValue = $event"
     @change="onInputChange"
     @click="onInput('input')"
     @clear="onClear"
+    @focus="onFocus"
+    @blur="onBlur"
   >
     
     <template
@@ -64,11 +67,14 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
       v-if="!$slots.suffix"
       #suffix
     >
-      <template
+      <div
         v-if="!props.disabled"
+        un-flex="~"
+        un-items="center"
+        un-gap="x-1"
       >
         <template
-          v-if="modelValue && modelValue.length > 0 && props.labelReadonly"
+          v-if="inputValue && inputValue.length > 0 && !props.labelReadonly && (isFocus || isHover)"
         >
           <el-icon
             un-cursor="pointer"
@@ -76,34 +82,29 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
             size="14"
             @click="onClear"
           >
-            <ElIconCircleClose
-              v-if="isHover"
-            />
-            <ElIconArrowDown
-              v-else
-            />
+            <ElIconCircleClose />
           </el-icon>
         </template>
-        <template
-          v-else
+        
+        <el-icon
+          un-cursor="pointer"
+          un-m="r-0.5"
+          size="14"
+          @click="onInput('icon')"
         >
-          <el-icon
-            un-cursor="pointer"
-            un-m="r-0.5"
-            size="14"
-            @click="onInput('icon')"
-          >
-            <ElIconArrowDown />
-          </el-icon>
-        </template>
-      </template>
+          <ElIconArrowDown />
+        </el-icon>
+      </div>
+      
     </template>
   </CustomInput>
+  
   <SelectList
     v-bind="$attrs"
     ref="selectListRef"
     @change="onSelectList"
   ></SelectList>
+  
 </div>
 <template
   v-else
@@ -202,6 +203,10 @@ let selectedValue: <#=modelName#> | (<#=modelName#> | undefined)[] | null | unde
 let modelLabel = $ref(props.modelLabel);
 let hasModelLabel = $ref(false);
 
+let modelLabelRefreshing = $ref(false);
+
+let isInputChanging = false;
+
 watch(
   () => props.modelLabel,
   () => {
@@ -239,6 +244,16 @@ watch(
     formItem?.clearValidate();
   },
 );
+
+let isFocus = $ref(false);
+
+function onFocus() {
+  isFocus = true;
+}
+
+function onBlur() {
+  isFocus = false;
+}
 
 let isHover = $ref(false);
 
@@ -293,10 +308,14 @@ async function validateField() {
   }
 }
 
-let modelLabelRefreshing = $ref(false);
-
 /** 根据modelValue刷新输入框的值 */
 async function refreshInputValue() {
+  if (isInputChanging) {
+    isInputChanging = false;
+    modelLabel = inputValue || "";
+    emit("update:modelLabel", modelLabel);
+    return;
+  }
   const modelValueArr = getModelValueArr();
   if (modelValueArr.length === 0) {
     inputValue = "";
@@ -386,6 +405,7 @@ async function onInput(
 }
 
 async function onInputChange() {
+  isInputChanging = true;
   if (props.multiple) {
     modelValue = [ ];
     emit("update:modelValue", modelValue);
@@ -414,26 +434,26 @@ function blur() {
 async function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null) {
   selectedValue = value;
   if (props.multiple) {
-    emit("change", value);
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
     emit("update:modelLabel", modelLabel || "");
+    emit("change", value);
     return;
   }
   if (!Array.isArray(value)) {
-    emit("change", value);
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
     emit("update:modelLabel", modelLabel || "");
+    emit("change", value);
     return;
   }
-  emit("change", value[0]);
   if (oldInputValue !== inputValue) {
     await refreshInputValue();
   }
   emit("update:modelLabel", modelLabel || "");
+  emit("change", value[0]);
 }
 
 defineExpose({

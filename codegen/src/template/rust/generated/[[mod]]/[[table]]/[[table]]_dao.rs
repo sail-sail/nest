@@ -157,7 +157,16 @@ for (const inlineForeignTab of inlineForeignTabs) {
     inline_column_modelLabels.push(inline_column_modelLabel);
   }
 }
-#>#[allow(unused_imports)]
+
+// 根据关键字搜索
+const searchByKeyword = opts?.searchByKeyword;
+
+#>
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
+
+#[allow(unused_imports)]
 use serde::{Serialize, Deserialize};
 #[allow(unused_imports)]
 use std::collections::HashMap;
@@ -849,18 +858,18 @@ async fn get_where_query(
   }<#
   }
   #><#
-    if (hasTenantId) {
+  if (hasTenantId) {
   #>
   {
     let tenant_id = {
       let tenant_id = match search {
-        Some(item) => item.tenant_id.clone(),
+        Some(item) => item.tenant_id,
         None => None,
       };
       match tenant_id {
         None => get_auth_tenant_id(),
         Some(item) => match item.as_str() {
-          "-" => None,
+          "" => None,
           _ => item.into(),
         },
       }
@@ -870,7 +879,39 @@ async fn get_where_query(
       args.push(tenant_id.into());
     }
   }<#
+  }
+  #><#
+  if (searchByKeyword) {
+    const prop = searchByKeyword.prop;
+    const prop_rust = rustKeyEscape(prop);
+    const fields = searchByKeyword.fields;
+  #>
+  {
+    let <#=prop_rust#>: Option<String> = match search {
+      Some(item) => item.<#=prop_rust#>.clone(),
+      None => None,
+    };
+    if let Some(<#=prop_rust#>) = <#=prop_rust#> && !<#=prop_rust#>.is_empty() {
+      where_query.push_str(" and (");<#
+      for (let i = 0; i < fields.length; i++) {
+        const field = fields[i];
+        const field_rust = rustKeyEscape(field);
+      #><#
+        if (i > 0) {
+      #>
+        
+      where_query.push_str(" or");<#
+        }
+      #>
+      where_query.push_str(" t.<#=field#> like ?");
+      args.push(format!("%{}%", sql_like(&<#=prop_rust#>)).into());<#
+      }
+      #>
+      where_query.push(')');
+      
     }
+  }<#
+  }
   #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1192,6 +1233,20 @@ async fn get_where_query(
       where_query.push_str(" and t.<#=column_name#> is null");
     }
   }<#
+  if (foreignKey.lbl) {
+  #>
+  {
+    let <#=column_name#>_<#=foreignKey.lbl#>_like = match search {
+      Some(item) => item.<#=column_name#>_<#=foreignKey.lbl#>_like.clone(),
+      None => None,
+    };
+    if let Some(<#=column_name#>_<#=foreignKey.lbl#>_like) = <#=column_name#>_<#=foreignKey.lbl#>_like && !<#=column_name#>_<#=foreignKey.lbl#>_like.is_empty() {
+      where_query.push_str(" and <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.lbl#> like ?");
+      args.push(format!("%{}%", sql_like(&<#=column_name#>_<#=foreignKey.lbl#>_like)).into());
+    }
+  }<#
+  }
+  #><#
     } else if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
@@ -1330,7 +1385,7 @@ async fn get_where_query(
       Some(item) => item.<#=column_name#>_like.clone(),
       None => None,
     };
-    if let Some(<#=column_name#>_like) = <#=column_name#>_like {<#
+    if let Some(<#=column_name#>_like) = <#=column_name#>_like && !<#=column_name#>_like.is_empty() {<#
       if (!langTableRecords.some((record) => record.COLUMN_NAME === column_name)) {
       #>
       where_query.push_str(" and t.<#=column_name#> like ?");
@@ -1627,19 +1682,17 @@ pub async fn find_all_<#=table#>(
     ) {
   #>
   // <#=column_comment#>
-  if let Some(search) = &search {
-    if search.<#=column_name_rust#>.is_some() {
-      let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.<#=column_name_rust#>.is_some() {
+    let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
     }
   }<#
     }
@@ -1950,7 +2003,7 @@ pub async fn find_all_<#=table#>(
     <#=inlineForeignTable_Up#>Search {
       <#=inlineForeignTab.column#>: res
         .iter()
-        .map(|item| item.id.clone())
+        .map(|item| item.id)
         .collect::<Vec<<#=Table_Up#>Id>>()
         .into(),<#
       if (hasIsDeleted) {
@@ -2003,7 +2056,7 @@ pub async fn find_all_<#=table#>(
     <#=Table_Up#>Search {
       <#=many2many.column1#>: res
         .iter()
-        .map(|item| item.id.clone())
+        .map(|item| item.id)
         .collect::<Vec<<#=oldTable_UP#>Id>>()
         .into(),<#
       if (hasIsDeleted) {
@@ -2026,7 +2079,7 @@ pub async fn find_all_<#=table#>(
     <#=auditTable_Up#>Search {
       <#=table#>_id: res
         .iter()
-        .map(|item| item.id.clone())
+        .map(|item| item.id)
         .collect::<Vec<<#=oldTable_UP#>Id>>()
         .into(),<#
       if (hasIsDeleted) {
@@ -2304,19 +2357,17 @@ pub async fn find_count_<#=table#>(
     ) {
   #>
   // <#=column_comment#>
-  if let Some(search) = &search {
-    if search.<#=column_name_rust#>.is_some() {
-      let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.<#=column_name_rust#>.is_some() {
+    let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
     }
   }<#
     }
@@ -2695,10 +2746,8 @@ pub async fn find_one_<#=table#>(
     );
   }
   
-  if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
-      return Ok(None);
-    }
+  if let Some(search) = &search && search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    return Ok(None);
   }
   
   let options = Options::from(options)
@@ -2752,7 +2801,7 @@ pub async fn find_by_id_ok_<#=table#>(
   let options = Some(options);
   
   let <#=table#>_model = find_by_id_<#=table#>(
-    id.clone(),
+    id,
     options,
   ).await?;
   
@@ -3085,19 +3134,17 @@ pub async fn exists_<#=table#>(
     ) {
   #>
   // <#=column_comment#>
-  if let Some(search) = &search {
-    if search.<#=column_name_rust#>.is_some() {
-      let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.<#=column_name_rust#>.is_some() {
+    let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
     }
   }<#
     }
@@ -3376,7 +3423,7 @@ pub async fn check_by_unique_<#=table#>(
   }
   if unique_type == UniqueType::Update {
     let id = update_by_id_<#=table#>(
-      model.id.clone(),
+      model.id,
       input,
       options,
     ).await?;
@@ -3443,32 +3490,30 @@ pub async fn set_id_by_lbl_<#=table#>(
   #>
   
   // <#=column_comment#>
-  if input.<#=column_name_rust#>.is_none() {
-    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
-      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
-      if input.<#=column_name_rust#>.is_none() {
-        input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
+  if input.<#=column_name_rust#>.is_none() && let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
+    input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
+    if input.<#=column_name_rust#>.is_none() {
+      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
+    }
+    if input.<#=column_name_rust#>.is_none() {
+      let field_comments = get_field_comments_<#=table#>(
+        None,
+      ).await?;
+      let column_comment = field_comments.<#=column_name_rust#>;<#
+      if (isUseI18n) {
+      #>
+      
+      let err_msg = i18n_dao::ns(
+        "日期格式错误".to_owned(),
+        None,
+      ).await?;<#
+      } else {
+      #>
+      
+      let err_msg = "日期格式错误";<#
       }
-      if input.<#=column_name_rust#>.is_none() {
-        let field_comments = get_field_comments_<#=table#>(
-          None,
-        ).await?;
-        let column_comment = field_comments.<#=column_name_rust#>;<#
-        if (isUseI18n) {
-        #>
-        
-        let err_msg = i18n_dao::ns(
-          "日期格式错误".to_owned(),
-          None,
-        ).await?;<#
-        } else {
-        #>
-        
-        let err_msg = "日期格式错误";<#
-        }
-        #>
-        return Err(eyre!("{column_comment} {err_msg}"));
-      }
+      #>
+      return Err(eyre!("{column_comment} {err_msg}"));
     }
   }
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
@@ -3478,64 +3523,60 @@ pub async fn set_id_by_lbl_<#=table#>(
   #>
   
   // <#=column_comment#>
-  if input.<#=column_name_rust#>.is_none() {
-    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
-      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
-      if input.<#=column_name_rust#>.is_none() {
-        input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
+  if input.<#=column_name_rust#>.is_none() && let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
+    input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
+    if input.<#=column_name_rust#>.is_none() {
+      input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
+    }
+    if input.<#=column_name_rust#>.is_none() {
+      let field_comments = get_field_comments_<#=table#>(
+        None,
+      ).await?;
+      let column_comment = field_comments.<#=column_name_rust#>;<#
+      if (isUseI18n) {
+      #>
+      
+      let err_msg = i18n_dao::ns(
+        "日期格式错误".to_owned(),
+        None,
+      ).await?;<#
+      } else {
+      #>
+      
+      let err_msg = "日期格式错误";<#
       }
-      if input.<#=column_name_rust#>.is_none() {
-        let field_comments = get_field_comments_<#=table#>(
-          None,
-        ).await?;
-        let column_comment = field_comments.<#=column_name_rust#>;<#
-        if (isUseI18n) {
-        #>
-        
-        let err_msg = i18n_dao::ns(
-          "日期格式错误".to_owned(),
-          None,
-        ).await?;<#
-        } else {
-        #>
-        
-        let err_msg = "日期格式错误";<#
-        }
-        #>
-        return Err(eyre!("{column_comment} {err_msg}"));
-      }
+      #>
+      return Err(eyre!("{column_comment} {err_msg}"));
     }
   }<#
     } else if (data_type === "datetime") {
   #>
   
   // <#=column_comment#>
-  if input.<#=column_name_rust#>.is_none() {
-    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
-      input.<#=column_name_rust#> = chrono::NaiveDateTime::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
-      if input.<#=column_name_rust#>.is_none() {
-        input.<#=column_name_rust#> = chrono::NaiveDateTime::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
+  if input.<#=column_name_rust#>.is_none() && let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|s| !s.is_empty()) {
+    input.<#=column_name_rust#> = chrono::NaiveDateTime::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d %H:%M:%S").ok();
+    if input.<#=column_name_rust#>.is_none() {
+      input.<#=column_name_rust#> = chrono::NaiveDateTime::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
+    }
+    if input.<#=column_name_rust#>.is_none() {
+      let field_comments = get_field_comments_<#=table#>(
+        None,
+      ).await?;
+      let column_comment = field_comments.<#=column_name_rust#>;<#
+      if (isUseI18n) {
+      #>
+      
+      let err_msg = i18n_dao::ns(
+        "日期格式错误".to_owned(),
+        None,
+      ).await?;<#
+      } else {
+      #>
+      
+      let err_msg = "日期格式错误";<#
       }
-      if input.<#=column_name_rust#>.is_none() {
-        let field_comments = get_field_comments_<#=table#>(
-          None,
-        ).await?;
-        let column_comment = field_comments.<#=column_name_rust#>;<#
-        if (isUseI18n) {
-        #>
-        
-        let err_msg = i18n_dao::ns(
-          "日期格式错误".to_owned(),
-          None,
-        ).await?;<#
-        } else {
-        #>
-        
-        let err_msg = "日期格式错误";<#
-        }
-        #>
-        return Err(eyre!("{column_comment} {err_msg}"));
-      }
+      #>
+      return Err(eyre!("{column_comment} {err_msg}"));
     }
   }<#
     }
@@ -4190,7 +4231,7 @@ async fn _creates(
         #>
         let tenant_id = {
           if input.tenant_id.is_some() {
-            input.tenant_id.clone()
+            input.tenant_id
           } else {
             get_auth_tenant_id()
           }
@@ -4433,9 +4474,9 @@ async fn _creates(
   {
     
     let id: <#=Table_Up#>Id = get_short_uuid().into();
-    ids2.push(id.clone());
+    ids2.push(id);
     
-    inputs2_ids.push(id.clone());
+    inputs2_ids.push(id);
     
     sql_values += "(?";
     args.push(id.into());<#
@@ -4476,7 +4517,7 @@ async fn _creates(
     
     if !is_silent_mode {
       if let Some(create_usr_id) = input.create_usr_id {
-        if create_usr_id.as_str() != "-" {
+        if !create_usr_id.is_empty() {
           sql_values += ",?";
           args.push(create_usr_id.into());
         } else {
@@ -4506,7 +4547,7 @@ async fn _creates(
         let mut usr_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -4523,14 +4564,14 @@ async fn _creates(
         }
         sql_values += ",?";
         args.push(usr_lbl.into());
-      } else if input.create_usr_id.clone().unwrap().as_str() == "-" {
+      } else if input.create_usr_id.unwrap().is_empty() {
         sql_values += ",default";
         sql_values += ",default";
       } else {
-        let mut usr_id = input.create_usr_id.clone();
+        let mut usr_id = input.create_usr_id;
         let mut usr_lbl = String::new();
         let usr_model = find_by_id_usr(
-          usr_id.clone().unwrap(),
+          usr_id.unwrap(),
           options.clone(),
         ).await?;
         if let Some(usr_model) = usr_model {
@@ -4863,10 +4904,10 @@ async fn _creates(
     // <#=column_comment#>
     if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
       many2many_update(
-        id.clone().into(),
+        id.into(),
         <#=column_name_rust#>
-          .iter()
-          .map(|item| item.clone().into())
+          .into_iter()
+          .map(|item| item.into())
           .collect(),
         ManyOpts {
           r#mod: "<#=many2many.mod#>",
@@ -4905,7 +4946,7 @@ async fn _creates(
     // <#=inlineForeignTab.label#>
     if let Some(<#=inline_column_name#>) = input.<#=inline_column_name#> {
       for mut model in <#=inline_column_name#> {
-        model.<#=inlineForeignTab.column#> = Some(id.clone());<#
+        model.<#=inlineForeignTab.column#> = Some(id);<#
         if (inline_column_modelLabel && opts?.lbl_field) {
         #>
         model.<#=inline_column_modelLabel#> = input.<#=opts?.lbl_field#>.clone();<#
@@ -4922,7 +4963,7 @@ async fn _creates(
     
     // <#=inlineForeignTab.label#>
     if let Some(mut <#=inline_column_name#>) = input.<#=inline_column_name#> {
-      <#=inline_column_name#>.<#=inlineForeignTab.column#> = Some(id.clone());<#
+      <#=inline_column_name#>.<#=inlineForeignTab.column#> = Some(id);<#
       if (inline_column_modelLabel && opts?.lbl_field) {
       #>
       <#=inline_column_name#>.<#=inline_column_modelLabel#> = input.<#=opts?.lbl_field#>.clone();<#
@@ -4971,7 +5012,7 @@ async fn _creates(
     if let Some(<#=column_name#>_<#=table#>_models) = input.<#=column_name#>_<#=table#>_models {
       for input2 in <#=column_name#>_<#=table#>_models {
         let mut input2 = input2;
-        input2.<#=many2many.column1#> = Some(id.clone());<#
+        input2.<#=many2many.column1#> = Some(id);<#
         if (modelLabel && opts?.lbl_field) {
         #>
         input2.<#=many2many.column1#>_lbl = input.<#=opts?.lbl_field#>.clone();<#
@@ -5388,7 +5429,7 @@ pub async fn get_editable_data_permits_by_ids_<#=table#>(
     } else if !has_tenant_permit && has_dept_parent_permit {
       let dept_ids = get_auth_and_parents_dept_ids().await?;
       let model_dept_ids = get_parents_dept_ids(
-        Some(model.create_usr_id.clone()),
+        Some(model.create_usr_id),
       ).await?;
       if model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
         editable_data_permits.push(1);
@@ -5398,7 +5439,7 @@ pub async fn get_editable_data_permits_by_ids_<#=table#>(
     } else if !has_tenant_permit && has_dept_permit {
       let dept_ids = get_auth_dept_ids().await?;
       let model_dept_ids = get_dept_ids(
-        model.create_usr_id.clone(),
+        model.create_usr_id,
       ).await?;
       if model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
         editable_data_permits.push(1);
@@ -5410,7 +5451,7 @@ pub async fn get_editable_data_permits_by_ids_<#=table#>(
     if !has_tenant_permit && has_role_permit {
       let role_ids = get_auth_role_ids().await?;
       let model_role_ids = get_role_ids(
-        model.create_usr_id.clone(),
+        model.create_usr_id,
       ).await?;
       if model_role_ids.iter().any(|item| role_ids.contains(item)) {
         editable_data_permits.push(1);
@@ -5506,7 +5547,7 @@ async fn refresh_lang_by_input(
       let sql = "select id,<#=modelLabel#> from <#=opts.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?";
       let mut args = QueryArgs::new();
       args.push(model.lang_id.into());
-      args.push(input.id.clone().unwrap_or_default().into());
+      args.push(input.id.unwrap_or_default().into());
       let lang_model = query_one::<ResultTmp2>(
         sql,
         args.into(),
@@ -5519,7 +5560,7 @@ async fn refresh_lang_by_input(
         let id: LangId = get_short_uuid().into();
         lang_args.push(id.into());
         lang_args.push(model.lang_id.into());
-        lang_args.push(input.id.clone().unwrap_or_default().into());
+        lang_args.push(input.id.unwrap_or_default().into());
         lang_args.push(model.<#=foreignKey.lbl#>.into());
         execute(
           lang_sql,
@@ -5552,7 +5593,7 @@ async fn refresh_lang_by_input(
   let lang_sql = "select id from <#=opts.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?".to_owned();
   let mut lang_args = QueryArgs::new();
   lang_args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
-  lang_args.push(input.id.clone().unwrap_or_default().clone().into());
+  lang_args.push(input.id.unwrap_or_default().into());
   let model = query_one::<ResultTmp>(
     lang_sql,
     lang_args.into(),
@@ -5590,7 +5631,7 @@ async fn refresh_lang_by_input(
     let id: LangId = get_short_uuid().into();
     lang_args.push(id.into());
     lang_args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
-    lang_args.push(input.id.clone().unwrap_or_default().clone().into());<#
+    lang_args.push(input.id.unwrap_or_default().clone().into());<#
     for (let i = 0; i < langTableRecords.length; i++) {
       const record = langTableRecords[i];
       const column_name = record.COLUMN_NAME;
@@ -5725,7 +5766,7 @@ pub async fn update_by_id_<#=table#>(
       #>
       let tenant_id = {
         if input.tenant_id.is_some() {
-          input.tenant_id.clone()
+          input.tenant_id
         } else {
           get_auth_tenant_id()
         }
@@ -5763,7 +5804,7 @@ pub async fn update_by_id_<#=table#>(
   #>
   
   let old_model = find_by_id_<#=table#>(
-    id.clone(),
+    id,
     options.clone(),
   ).await?;
   
@@ -5849,7 +5890,7 @@ pub async fn update_by_id_<#=table#>(
   } else if !has_tenant_permit && has_dept_parent_permit {
     let dept_ids = get_auth_and_parents_dept_ids().await?;
     let model_dept_ids = get_parents_dept_ids(
-      old_model.create_usr_id.clone().into(),
+      old_model.create_usr_id.into(),
     ).await?;
     if !dept_ids.iter().any(|item| model_dept_ids.contains(item)) {
       return get_not_permit_err_fn().await;
@@ -5857,7 +5898,7 @@ pub async fn update_by_id_<#=table#>(
   } else if !has_tenant_permit && has_dept_permit {
     let dept_ids = get_auth_dept_ids().await?;
     let model_dept_ids = get_dept_ids(
-      old_model.create_usr_id.clone(),
+      old_model.create_usr_id,
     ).await?;
     if !model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
       return get_not_permit_err_fn().await;
@@ -5867,7 +5908,7 @@ pub async fn update_by_id_<#=table#>(
   if !has_tenant_permit && has_role_permit {
     let role_ids = get_auth_role_ids().await?;
     let model_role_ids = get_role_ids(
-      old_model.create_usr_id.clone(),
+      old_model.create_usr_id,
     ).await?;
     if !model_role_ids.iter().any(|item| role_ids.contains(item)) {
       return get_not_permit_err_fn().await;
@@ -5888,7 +5929,7 @@ pub async fn update_by_id_<#=table#>(
   
   if server_i18n_enable {
     let mut input = input.clone();
-    input.id = Some(id.clone());
+    input.id = Some(id);
     refresh_lang_by_input(
       &input,
       options.clone(),
@@ -6210,7 +6251,7 @@ pub async fn update_by_id_<#=table#>(
   if let Some(<#=inline_column_name#>_input) = input.<#=inline_column_name#> {
     let <#=inline_column_name#>_models = find_all_<#=table#>(
       <#=Table_Up#>Search {
-        <#=inlineForeignTab.column#>: vec![id.clone()].into(),<#
+        <#=inlineForeignTab.column#>: vec![id].into(),<#
         if (hasIsDeleted) {
         #>
         is_deleted: 0.into(),<#
@@ -6229,7 +6270,7 @@ pub async fn update_by_id_<#=table#>(
       if <#=inline_column_name#>_input
         .iter()
         .filter(|item| item.id.is_some())
-        .any(|item| item.id == Some(model.id.clone()))
+        .any(|item| item.id == Some(model.id))
       {
         continue;
       }
@@ -6240,7 +6281,7 @@ pub async fn update_by_id_<#=table#>(
     }
     for mut input2 in <#=inline_column_name#>_input {
       if input2.id.is_none() {
-        input2.<#=inlineForeignTab.column#> = Some(id.clone());<#
+        input2.<#=inlineForeignTab.column#> = Some(id);<#
         if (inline_column_modelLabel && opts?.lbl_field) {
         #>
         input2.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
@@ -6252,7 +6293,7 @@ pub async fn update_by_id_<#=table#>(
         ).await?;
         continue;
       }
-      let id2 = input2.id.clone().unwrap();
+      let id2 = input2.id.unwrap();
       if !<#=inline_column_name#>_models
         .iter()
         .any(|item| item.id == id2)
@@ -6263,7 +6304,7 @@ pub async fn update_by_id_<#=table#>(
         ).await?;
       }
       input2.id = None;
-      input2.<#=inlineForeignTab.column#> = Some(id.clone());<#
+      input2.<#=inlineForeignTab.column#> = Some(id);<#
       if (inline_column_modelLabel && opts?.lbl_field) {
       #>
       input2.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
@@ -6290,7 +6331,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;
     let <#=inline_column_name#>_models = find_all_<#=table#>(
       <#=Table_Up#>Search {
-        <#=inlineForeignTab.column#>: vec![id.clone()].into(),<#
+        <#=inlineForeignTab.column#>: vec![id].into(),<#
         if (hasIsDeleted) {
         #>
         is_deleted: 0.into(),<#
@@ -6303,7 +6344,7 @@ pub async fn update_by_id_<#=table#>(
       options.clone(),
     ).await?;
     for model in <#=inline_column_name#>_models.clone() {
-      if <#=inline_column_name#>_input.id == model.id.clone().into() {
+      if <#=inline_column_name#>_input.id == model.id.into() {
         continue;
       }
       delete_by_ids_<#=table#>(
@@ -6311,7 +6352,7 @@ pub async fn update_by_id_<#=table#>(
         options.clone(),
       ).await?;
     }
-    if let Some(id2) = <#=inline_column_name#>_input.id.clone() {
+    if let Some(id2) = <#=inline_column_name#>_input.id {
       if !<#=inline_column_name#>_models
         .iter()
         .any(|item| item.id == id2)
@@ -6384,7 +6425,7 @@ pub async fn update_by_id_<#=table#>(
   {
     let <#=table#>_models = find_all_<#=table#>(
       <#=Table_Up#>Search {
-        <#=many2many.column1#>: vec![id.clone()].into(),
+        <#=many2many.column1#>: vec![id].into(),
         ..Default::default()
       }.into(),
       None,
@@ -6418,7 +6459,7 @@ pub async fn update_by_id_<#=table#>(
         }
       }
       if !has_in {
-        <#=table#>_delete_ids.push(<#=table#>_model.id.clone());
+        <#=table#>_delete_ids.push(<#=table#>_model.id);
       }
     }
     
@@ -6436,13 +6477,13 @@ pub async fn update_by_id_<#=table#>(
           model,
         );
         if is_equals {
-          old_id = Some(model.id.clone());
+          old_id = Some(model.id);
           break;
         }
       }
       if let Some(old_id) = old_id {
         <#=table#>_update_models.push(UpdateModel {
-          id: old_id.clone(),
+          id: old_id,
           input,
         });
       } else {
@@ -6452,7 +6493,7 @@ pub async fn update_by_id_<#=table#>(
     
     for input in <#=table#>_create_models {
       let mut input = input;
-      input.<#=many2many.column1#> = id.clone().into();
+      input.<#=many2many.column1#> = id.into();
       create_<#=table#>(
         input,
         options.clone(),
@@ -6517,7 +6558,7 @@ pub async fn update_by_id_<#=table#>(
     if !is_silent_mode {
       if let Some(version) = input.version {
         if version > 0 {
-          let version2 = get_version_by_id_<#=table#>(id.clone(), options.clone()).await?;
+          let version2 = get_version_by_id_<#=table#>(id, options.clone()).await?;
           if let Some(version2) = version2 {
             if version2 > version {<#
               if (isUseI18n) {
@@ -6555,7 +6596,7 @@ pub async fn update_by_id_<#=table#>(
     #>
     if !is_silent_mode && !is_creating {
       if let Some(update_usr_id) = input.update_usr_id {
-        if update_usr_id.as_str() != "-" {
+        if !update_usr_id.is_empty() {
           sql_fields += "update_usr_id=?,";
           args.push(update_usr_id.into());
         }
@@ -6567,7 +6608,7 @@ pub async fn update_by_id_<#=table#>(
         }
       }
     } else if let Some(update_usr_id) = input.update_usr_id {
-      if update_usr_id.as_str() != "-" {
+      if !update_usr_id.is_empty() {
         sql_fields += "update_usr_id=?,";
         args.push(update_usr_id.into());
       }
@@ -6580,7 +6621,7 @@ pub async fn update_by_id_<#=table#>(
         let mut usr_id_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -6597,12 +6638,12 @@ pub async fn update_by_id_<#=table#>(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      } else if input.update_usr_id.clone().unwrap().as_str() != "-" {
-        let mut usr_id = input.update_usr_id.clone();
+      } else if !input.update_usr_id.unwrap().is_empty() {
+        let mut usr_id = input.update_usr_id;
         let mut usr_id_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -6619,8 +6660,8 @@ pub async fn update_by_id_<#=table#>(
         }
       }
     } else {
-      if input.update_usr_id.is_some() && input.update_usr_id.clone().unwrap().as_str() != "-" {
-        let usr_id = input.update_usr_id.clone();
+      if input.update_usr_id.is_some() && !input.update_usr_id.unwrap().is_empty() {
+        let usr_id = input.update_usr_id;
         if let Some(usr_id) = usr_id {
           sql_fields += "update_usr_id=?,";
           args.push(usr_id.into());
@@ -6655,7 +6696,7 @@ pub async fn update_by_id_<#=table#>(
     }
     
     let sql_where = "id=?";
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let sql = format!("update {table} set {sql_fields} where {sql_where} limit 1");
     
@@ -6717,7 +6758,7 @@ pub async fn update_by_id_<#=table#>(
       
       let <#=table#>_models = find_all_<#=table#>(
         Some(<#=tableUP#>Search {
-          <#=cascadeUpdateFieldTable.column#>: Some(vec![id.clone()]),
+          <#=cascadeUpdateFieldTable.column#>: Some(vec![id]),
           ..Default::default()
         }),
         None,
@@ -6786,10 +6827,10 @@ pub async fn update_by_id_<#=table#>(
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
     many2many_update(
-      id.clone().into(),
+      id.into(),
       <#=column_name_rust#>
-        .iter()
-        .map(|item| item.clone().into())
+        .into_iter()
+        .map(|item| item.into())
         .collect(),
       ManyOpts {
         r#mod: "<#=many2many.mod#>",
@@ -6970,7 +7011,7 @@ pub async fn delete_by_ids_<#=table#>(
   for id in ids.clone() {
     
     let old_model = find_by_id_<#=table#>(
-      id.clone(),
+      id,
       options.clone(),
     ).await?;
     if old_model.is_none() {
@@ -6998,7 +7039,7 @@ pub async fn delete_by_ids_<#=table#>(
     } else if !has_tenant_permit && has_dept_parent_permit {
       let dept_ids = get_auth_and_parents_dept_ids().await?;
       let model_dept_ids = get_parents_dept_ids(
-        old_model.create_usr_id.clone().into(),
+        old_model.create_usr_id.into(),
       ).await?;
       if !dept_ids.iter().any(|item| model_dept_ids.contains(item)) {
         return get_not_permit_err_fn().await;
@@ -7006,7 +7047,7 @@ pub async fn delete_by_ids_<#=table#>(
     } else if !has_tenant_permit && has_dept_permit {
       let dept_ids = get_auth_dept_ids().await?;
       let model_dept_ids = get_dept_ids(
-        old_model.create_usr_id.clone(),
+        old_model.create_usr_id,
       ).await?;
       if !model_dept_ids.iter().any(|item| dept_ids.contains(item)) {
         return get_not_permit_err_fn().await;
@@ -7016,7 +7057,7 @@ pub async fn delete_by_ids_<#=table#>(
     if !has_tenant_permit && has_role_permit {
       let role_ids = get_auth_role_ids().await?;
       let model_role_ids = get_role_ids(
-        old_model.create_usr_id.clone(),
+        old_model.create_usr_id,
       ).await?;
       if !model_role_ids.iter().any(|item| role_ids.contains(item)) {
         return get_not_permit_err_fn().await;
@@ -7037,7 +7078,7 @@ pub async fn delete_by_ids_<#=table#>(
     let mut usr_lbl = String::new();
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
-        usr_id.clone().unwrap(),
+        usr_id.unwrap(),
         options.clone(),
       ).await?;
       if let Some(usr_model) = usr_model {
@@ -7051,11 +7092,9 @@ pub async fn delete_by_ids_<#=table#>(
     if (hasDeleteUsrId) {
     #>
     
-    if !is_silent_mode && !is_creating {
-      if let Some(usr_id) = usr_id {
-        sql_fields.push_str("delete_usr_id=?,");
-        args.push(usr_id.into());
-      }
+    if !is_silent_mode && !is_creating && let Some(usr_id) = usr_id {
+      sql_fields.push_str("delete_usr_id=?,");
+      args.push(usr_id.into());
     }<#
     }
     #><#
@@ -7090,7 +7129,7 @@ pub async fn delete_by_ids_<#=table#>(
     }
     #>
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
@@ -7122,7 +7161,7 @@ pub async fn delete_by_ids_<#=table#>(
       }
       #>
       let mut args = QueryArgs::new();
-      args.push(id.clone().into());
+      args.push(id.into());
       execute(
         sql,
         args.into(),
@@ -7161,7 +7200,7 @@ pub async fn delete_by_ids_<#=table#>(
         if (hasIsDeleted) {
         #>
         let mut sql = "update <#=mod#>_<#=many2many.table#> set is_deleted=1 where <#=many2many.column1#>=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.into());
         let arg = {
           let mut items = Vec::with_capacity(<#=column_name#>.len());
           for item in <#=column_name#> {
@@ -7178,7 +7217,7 @@ pub async fn delete_by_ids_<#=table#>(
         } else {
         #>
         let mut sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.into());
         let arg = {
           let mut items = Vec::with_capacity(<#=column_name#>.len());
           for item in <#=column_name#> {
@@ -7201,7 +7240,7 @@ pub async fn delete_by_ids_<#=table#>(
         } else {
         #>
         let mut sql = "select count(id) as total from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.into());
         let arg = {
           let mut items = Vec::with_capacity(<#=column_name#>.len());
           for item in <#=column_name#> {
@@ -7263,11 +7302,11 @@ pub async fn delete_by_ids_<#=table#>(
       if (hasIsDeleted) {
       #>
       let sql = "update <#=mod#>_<#=many2many.table#> set is_deleted=1 where <#=many2many.column2#>=? and is_deleted=0".to_owned();
-      args.push(id.clone().into());<#
+      args.push(id.into());<#
       } else {
       #>
       let sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=? and is_deleted=0".to_owned();
-      args.push(id.clone().into());<#
+      args.push(id.into());<#
       }
       #>
       let args: Vec<_> = args.into();
@@ -7486,7 +7525,7 @@ pub async fn default_by_id_<#=table#>(
     
     let sql = format!("update {table} set is_default=0 where is_default=1 and id!=?");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
@@ -7836,13 +7875,13 @@ pub async fn revert_by_ids_<#=table#>(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
     let mut old_model = find_one_<#=table#>(
       <#=tableUP#>Search {
-        id: Some(id.clone()),
+        id: Some(id),
         is_deleted: Some(1),
         ..Default::default()
       }.into(),
@@ -7852,7 +7891,7 @@ pub async fn revert_by_ids_<#=table#>(
     
     if old_model.is_none() {
       old_model = find_by_id_<#=table#>(
-        id.clone(),
+        id,
         options.clone(),
       ).await?;
     }
@@ -7913,7 +7952,7 @@ pub async fn revert_by_ids_<#=table#>(
     if server_i18n_enable {
       let sql = "update <#=opts.langTable.opts.table_name#> set is_deleted=0 where <#=table#>_id=?".to_owned();
       let mut args = QueryArgs::new();
-      args.push(id.clone().into());
+      args.push(id.into());
       execute(
         sql,
         args.into(),
@@ -7976,7 +8015,7 @@ pub async fn revert_by_ids_<#=table#>(
       if !<#=column_name#>.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update <#=mod#>_<#=many2many.table#> set is_deleted=0 where <#=many2many.column1#>=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.into());
         let arg = {
           let mut items = Vec::with_capacity(<#=column_name#>.len());
           for item in <#=column_name#> {
@@ -8188,7 +8227,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     
     let old_model = find_all_<#=table#>(
       <#=tableUP#>Search {
-        id: id.clone().into(),<#
+        id: id.into(),<#
         if (hasIsDeleted) {
         #>
         is_deleted: 1.into(),<#
@@ -8224,7 +8263,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     }
     #> limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
@@ -8263,7 +8302,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     if server_i18n_enable {
       let sql = "delete from <#=opts.langTable.opts.table_name#> where <#=table#>_id=?".to_owned();
       let mut args = QueryArgs::new();
-      args.push(id.clone().into());
+      args.push(id.into());
       execute(
         sql,
         args.into(),
@@ -8298,7 +8337,7 @@ pub async fn force_delete_by_ids_<#=table#>(
       if !<#=column_name#>.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.into());
         let mut items = Vec::with_capacity(<#=column_name#>.len());
         for item in <#=column_name#> {
           items.push("?");
@@ -8331,7 +8370,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     {
       let mut args = QueryArgs::new();
       let sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=?".to_owned();
-      args.push(id.clone().into());
+      args.push(id.into());
       let args: Vec<_> = args.into();
       execute(
         sql,

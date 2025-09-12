@@ -181,7 +181,7 @@ async fn get_children_all_dept_ids(
   children_ids: &mut Vec<DeptId>,
 ) -> Result<()> {
   
-  children_ids.push(parent_id.clone());
+  children_ids.push(parent_id);
   
   let options = Options::new();
   let options = options.set_is_debug(Some(false));

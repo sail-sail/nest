@@ -3,7 +3,6 @@
     "ms-ceintl.vscode-language-pack-zh-hans",
     "janisdd.vscode-edit-csv",
     "mechatroner.rainbow-csv",
-    "editorconfig.editorconfig",
     "graphql.vscode-graphql-execution",
     "graphql.vscode-graphql-syntax",
     "howardzuo.vscode-npm-dependency",
@@ -17,13 +16,10 @@
     "redhat.vscode-xml",
     "mattpocock.ts-error-translator",
     "usernamehw.errorlens",
-    "vitest.explorer",
-    "britesnow.vscode-toggle-quotes",
+    "denoland.vscode-deno",
     "ponetto.vscode-diff-viewer",
-    "chakrounanas.turbo-console-log",
     "johnsoncodehk.vscode-tsconfig-helper",
-    "jacobpfeifer.pfeifer-hurl",
-    "emeraldwalk.runonsave"
+    "jacobpfeifer.pfeifer-hurl"
   ],
   "unwantedRecommendations": [
     "mattpocock.ts-error-translator"

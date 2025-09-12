@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -26,6 +30,7 @@ pub struct BackgroundTaskGenQuery;
 impl BackgroundTaskGenQuery {
   
   /// 根据搜索条件和分页查找后台任务列表
+  #[graphql(name = "findAllBackgroundTask")]
   async fn find_all_background_task(
     &self,
     ctx: &Context<'_>,
@@ -47,6 +52,7 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据条件查找后台任务总数
+  #[graphql(name = "findCountBackgroundTask")]
   async fn find_count_background_task(
     &self,
     ctx: &Context<'_>,
@@ -64,6 +70,7 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据条件查找第一个后台任务
+  #[graphql(name = "findOneBackgroundTask")]
   async fn find_one_background_task(
     &self,
     ctx: &Context<'_>,
@@ -83,6 +90,7 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据条件查找第一个后台任务, 如果不存在则抛错
+  #[graphql(name = "findOneOkBackgroundTask")]
   async fn find_one_ok_background_task(
     &self,
     ctx: &Context<'_>,
@@ -102,6 +110,7 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据 id 查找后台任务
+  #[graphql(name = "findByIdBackgroundTask")]
   async fn find_by_id_background_task(
     &self,
     ctx: &Context<'_>,
@@ -119,6 +128,7 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据 id 查找后台任务, 如果不存在则抛错
+  #[graphql(name = "findByIdOkBackgroundTask")]
   async fn find_by_id_ok_background_task(
     &self,
     ctx: &Context<'_>,
@@ -136,6 +146,7 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据 id 查找后台任务
+  #[graphql(name = "findByIdsBackgroundTask")]
   async fn find_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
@@ -153,6 +164,7 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 根据 id 查找后台任务
+  #[graphql(name = "findByIdsOkBackgroundTask")]
   async fn find_by_ids_ok_background_task(
     &self,
     ctx: &Context<'_>,
@@ -170,6 +182,7 @@ impl BackgroundTaskGenQuery {
   }
   
   /// 获取后台任务字段注释
+  #[graphql(name = "getFieldCommentsBackgroundTask")]
   async fn get_field_comments_background_task(
     &self,
     ctx: &Context<'_>,
@@ -193,6 +206,7 @@ impl BackgroundTaskGenMutation {
   
   /// 占位方法, 用于实现 BackgroundTaskInput
   #[allow(unused_variables)]
+  #[graphql(name = "noAddNoEditBackgroundTask")]
   async fn no_add_no_edit_background_task(
     &self,
     ctx: &Context<'_>,
@@ -202,6 +216,7 @@ impl BackgroundTaskGenMutation {
   }
   
   /// 后台任务根据id修改租户id
+  #[graphql(name = "updateTenantByIdBackgroundTask")]
   async fn update_tenant_by_id_background_task(
     &self,
     ctx: &Context<'_>,
@@ -222,6 +237,7 @@ impl BackgroundTaskGenMutation {
   }
   
   /// 根据 ids 删除后台任务
+  #[graphql(name = "deleteByIdsBackgroundTask")]
   async fn delete_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
@@ -240,6 +256,7 @@ impl BackgroundTaskGenMutation {
   }
   
   /// 根据 ids 还原后台任务
+  #[graphql(name = "revertByIdsBackgroundTask")]
   async fn revert_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
@@ -258,6 +275,7 @@ impl BackgroundTaskGenMutation {
   }
   
   /// 根据 ids 彻底删除后台任务
+  #[graphql(name = "forceDeleteByIdsBackgroundTask")]
   async fn force_delete_by_ids_background_task(
     &self,
     ctx: &Context<'_>,

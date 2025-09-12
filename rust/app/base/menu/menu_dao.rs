@@ -63,7 +63,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let usr_model = validate_option_usr(
     find_by_id_usr(
-      usr_id.clone(),
+      usr_id,
       options,
     ).await?,
   ).await?;
@@ -103,6 +103,8 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
     where
       t.is_deleted=0
       and t.is_enabled=1
+      and t.is_hidden=0
+      and t.is_home_hide=0
       {where_query}"#,
   );
   
@@ -142,7 +144,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
 // ) {
 //   let mut models: Vec<GetMenus> = all_models.clone().into_iter()
 //     .filter(|item| {
-//       if let Some(parent_id) = parent_id.clone() {
+//       if let Some(parent_id) = parent_id {
 //         item.parent_id == parent_id
 //       } else {
 //         item.parent_id == ""

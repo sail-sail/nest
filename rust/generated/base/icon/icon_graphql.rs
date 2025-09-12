@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -24,6 +28,7 @@ pub struct IconGenQuery;
 impl IconGenQuery {
   
   /// 根据搜索条件和分页查找图标库列表
+  #[graphql(name = "findAllIcon")]
   async fn find_all_icon(
     &self,
     ctx: &Context<'_>,
@@ -45,6 +50,7 @@ impl IconGenQuery {
   }
   
   /// 根据条件查找图标库总数
+  #[graphql(name = "findCountIcon")]
   async fn find_count_icon(
     &self,
     ctx: &Context<'_>,
@@ -62,6 +68,7 @@ impl IconGenQuery {
   }
   
   /// 根据条件查找第一个图标库
+  #[graphql(name = "findOneIcon")]
   async fn find_one_icon(
     &self,
     ctx: &Context<'_>,
@@ -81,6 +88,7 @@ impl IconGenQuery {
   }
   
   /// 根据条件查找第一个图标库, 如果不存在则抛错
+  #[graphql(name = "findOneOkIcon")]
   async fn find_one_ok_icon(
     &self,
     ctx: &Context<'_>,
@@ -100,6 +108,7 @@ impl IconGenQuery {
   }
   
   /// 根据 id 查找图标库
+  #[graphql(name = "findByIdIcon")]
   async fn find_by_id_icon(
     &self,
     ctx: &Context<'_>,
@@ -117,6 +126,7 @@ impl IconGenQuery {
   }
   
   /// 根据 id 查找图标库, 如果不存在则抛错
+  #[graphql(name = "findByIdOkIcon")]
   async fn find_by_id_ok_icon(
     &self,
     ctx: &Context<'_>,
@@ -134,6 +144,7 @@ impl IconGenQuery {
   }
   
   /// 根据 id 查找图标库
+  #[graphql(name = "findByIdsIcon")]
   async fn find_by_ids_icon(
     &self,
     ctx: &Context<'_>,
@@ -151,6 +162,7 @@ impl IconGenQuery {
   }
   
   /// 根据 id 查找图标库
+  #[graphql(name = "findByIdsOkIcon")]
   async fn find_by_ids_ok_icon(
     &self,
     ctx: &Context<'_>,
@@ -169,6 +181,7 @@ impl IconGenQuery {
   
   /// 根据 id 查找图标库是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdIcon")]
   async fn get_is_enabled_by_id_icon(
     &self,
     ctx: &Context<'_>,
@@ -186,6 +199,7 @@ impl IconGenQuery {
   }
   
   /// 获取图标库字段注释
+  #[graphql(name = "getFieldCommentsIcon")]
   async fn get_field_comments_icon(
     &self,
     ctx: &Context<'_>,
@@ -200,6 +214,7 @@ impl IconGenQuery {
   }
   
   /// 查找 图标库 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByIcon")]
   async fn find_last_order_by_icon(
     &self,
     ctx: &Context<'_>,
@@ -223,6 +238,7 @@ pub struct IconGenMutation;
 impl IconGenMutation {
   
   /// 创建图标库
+  #[graphql(name = "createsIcon")]
   async fn creates_icon(
     &self,
     ctx: &Context<'_>,
@@ -247,6 +263,7 @@ impl IconGenMutation {
   }
   
   /// 根据 id 修改图标库
+  #[graphql(name = "updateByIdIcon")]
   async fn update_by_id_icon(
     &self,
     ctx: &Context<'_>,
@@ -267,6 +284,7 @@ impl IconGenMutation {
   }
   
   /// 根据 ids 删除图标库
+  #[graphql(name = "deleteByIdsIcon")]
   async fn delete_by_ids_icon(
     &self,
     ctx: &Context<'_>,
@@ -285,6 +303,7 @@ impl IconGenMutation {
   }
   
   /// 根据 ids 启用或者禁用图标库
+  #[graphql(name = "enableByIdsIcon")]
   async fn enable_by_ids_icon(
     &self,
     ctx: &Context<'_>,
@@ -305,6 +324,7 @@ impl IconGenMutation {
   }
   
   /// 根据 ids 还原图标库
+  #[graphql(name = "revertByIdsIcon")]
   async fn revert_by_ids_icon(
     &self,
     ctx: &Context<'_>,
@@ -323,6 +343,7 @@ impl IconGenMutation {
   }
   
   /// 根据 ids 彻底删除图标库
+  #[graphql(name = "forceDeleteByIdsIcon")]
   async fn force_delete_by_ids_icon(
     &self,
     ctx: &Context<'_>,
