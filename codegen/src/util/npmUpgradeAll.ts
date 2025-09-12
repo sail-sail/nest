@@ -66,6 +66,22 @@ async function exec() {
       console.log(command);
       execSync(command, { stdio: "inherit" });
       
+      // 先从 github-nest 拉取最新更改
+      // command = `git`;
+      // if (httpProxy) {
+      //   command += ` -c http.proxy=${ httpProxy }`;
+      // }
+      // if (httpsProxy) {
+      //   command += ` -c https.proxy=${ httpsProxy }`;
+      // }
+      // command += ` pull github-nest ${ branch.to }`;
+      // console.log(command);
+      // try {
+      //   execSync(command, { stdio: "inherit" });
+      // } catch (e) {
+      //   console.warn(`拉取分支 ${branch.to} 失败，可能是新分支`);
+      // }
+      
       command = `git`;
       if (httpProxy) {
         command += ` -c http.proxy=${ httpProxy }`;
