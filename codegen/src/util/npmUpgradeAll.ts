@@ -106,6 +106,10 @@ async function exec() {
     console.warn("远程仓库 github-nest 不存在，跳过推送");
   }
   
+  command = `git switch main`;
+  console.log();
+  console.log(command);
+  execSync(command, { stdio: "inherit" });
   
 }
 
