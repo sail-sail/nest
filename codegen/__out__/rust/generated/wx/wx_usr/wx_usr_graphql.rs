@@ -30,6 +30,7 @@ pub struct WxUsrGenQuery;
 impl WxUsrGenQuery {
   
   /// 根据搜索条件和分页查找小程序用户列表
+  #[graphql(name = "findAllWxUsr")]
   async fn find_all_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -51,6 +52,7 @@ impl WxUsrGenQuery {
   }
   
   /// 根据条件查找小程序用户总数
+  #[graphql(name = "findCountWxUsr")]
   async fn find_count_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -68,6 +70,7 @@ impl WxUsrGenQuery {
   }
   
   /// 根据条件查找第一个小程序用户
+  #[graphql(name = "findOneWxUsr")]
   async fn find_one_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -87,6 +90,7 @@ impl WxUsrGenQuery {
   }
   
   /// 根据条件查找第一个小程序用户, 如果不存在则抛错
+  #[graphql(name = "findOneOkWxUsr")]
   async fn find_one_ok_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -106,6 +110,7 @@ impl WxUsrGenQuery {
   }
   
   /// 根据 id 查找小程序用户
+  #[graphql(name = "findByIdWxUsr")]
   async fn find_by_id_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -123,6 +128,7 @@ impl WxUsrGenQuery {
   }
   
   /// 根据 id 查找小程序用户, 如果不存在则抛错
+  #[graphql(name = "findByIdOkWxUsr")]
   async fn find_by_id_ok_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -140,6 +146,7 @@ impl WxUsrGenQuery {
   }
   
   /// 根据 id 查找小程序用户
+  #[graphql(name = "findByIdsWxUsr")]
   async fn find_by_ids_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -157,6 +164,7 @@ impl WxUsrGenQuery {
   }
   
   /// 根据 id 查找小程序用户
+  #[graphql(name = "findByIdsOkWxUsr")]
   async fn find_by_ids_ok_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -174,6 +182,7 @@ impl WxUsrGenQuery {
   }
   
   /// 获取小程序用户字段注释
+  #[graphql(name = "getFieldCommentsWxUsr")]
   async fn get_field_comments_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -196,6 +205,7 @@ pub struct WxUsrGenMutation;
 impl WxUsrGenMutation {
   
   /// 创建小程序用户
+  #[graphql(name = "createsWxUsr")]
   async fn creates_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -220,6 +230,7 @@ impl WxUsrGenMutation {
   }
   
   /// 小程序用户根据id修改租户id
+  #[graphql(name = "updateTenantByIdWxUsr")]
   async fn update_tenant_by_id_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -240,6 +251,7 @@ impl WxUsrGenMutation {
   }
   
   /// 根据 id 修改小程序用户
+  #[graphql(name = "updateByIdWxUsr")]
   async fn update_by_id_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -260,6 +272,7 @@ impl WxUsrGenMutation {
   }
   
   /// 根据 ids 删除小程序用户
+  #[graphql(name = "deleteByIdsWxUsr")]
   async fn delete_by_ids_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -278,6 +291,7 @@ impl WxUsrGenMutation {
   }
   
   /// 根据 ids 还原小程序用户
+  #[graphql(name = "revertByIdsWxUsr")]
   async fn revert_by_ids_wx_usr(
     &self,
     ctx: &Context<'_>,
@@ -296,6 +310,7 @@ impl WxUsrGenMutation {
   }
   
   /// 根据 ids 彻底删除小程序用户
+  #[graphql(name = "forceDeleteByIdsWxUsr")]
   async fn force_delete_by_ids_wx_usr(
     &self,
     ctx: &Context<'_>,

@@ -30,6 +30,7 @@ pub struct PayTransactionsJsapiGenQuery;
 impl PayTransactionsJsapiGenQuery {
   
   /// 根据搜索条件和分页查找微信JSAPI下单列表
+  #[graphql(name = "findAllPayTransactionsJsapi")]
   async fn find_all_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
@@ -51,6 +52,7 @@ impl PayTransactionsJsapiGenQuery {
   }
   
   /// 根据条件查找微信JSAPI下单总数
+  #[graphql(name = "findCountPayTransactionsJsapi")]
   async fn find_count_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
@@ -68,6 +70,7 @@ impl PayTransactionsJsapiGenQuery {
   }
   
   /// 根据条件查找第一个微信JSAPI下单
+  #[graphql(name = "findOnePayTransactionsJsapi")]
   async fn find_one_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
@@ -87,6 +90,7 @@ impl PayTransactionsJsapiGenQuery {
   }
   
   /// 根据条件查找第一个微信JSAPI下单, 如果不存在则抛错
+  #[graphql(name = "findOneOkPayTransactionsJsapi")]
   async fn find_one_ok_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
@@ -106,6 +110,7 @@ impl PayTransactionsJsapiGenQuery {
   }
   
   /// 根据 id 查找微信JSAPI下单
+  #[graphql(name = "findByIdPayTransactionsJsapi")]
   async fn find_by_id_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
@@ -123,6 +128,7 @@ impl PayTransactionsJsapiGenQuery {
   }
   
   /// 根据 id 查找微信JSAPI下单, 如果不存在则抛错
+  #[graphql(name = "findByIdOkPayTransactionsJsapi")]
   async fn find_by_id_ok_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
@@ -140,6 +146,7 @@ impl PayTransactionsJsapiGenQuery {
   }
   
   /// 根据 id 查找微信JSAPI下单
+  #[graphql(name = "findByIdsPayTransactionsJsapi")]
   async fn find_by_ids_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
@@ -157,6 +164,7 @@ impl PayTransactionsJsapiGenQuery {
   }
   
   /// 根据 id 查找微信JSAPI下单
+  #[graphql(name = "findByIdsOkPayTransactionsJsapi")]
   async fn find_by_ids_ok_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
@@ -174,6 +182,7 @@ impl PayTransactionsJsapiGenQuery {
   }
   
   /// 获取微信JSAPI下单字段注释
+  #[graphql(name = "getFieldCommentsPayTransactionsJsapi")]
   async fn get_field_comments_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
@@ -197,6 +206,7 @@ impl PayTransactionsJsapiGenMutation {
   
   /// 占位方法, 用于实现 PayTransactionsJsapiInput
   #[allow(unused_variables)]
+  #[graphql(name = "noAddNoEditPayTransactionsJsapi")]
   async fn no_add_no_edit_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
@@ -206,6 +216,7 @@ impl PayTransactionsJsapiGenMutation {
   }
   
   /// 微信JSAPI下单根据id修改租户id
+  #[graphql(name = "updateTenantByIdPayTransactionsJsapi")]
   async fn update_tenant_by_id_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,

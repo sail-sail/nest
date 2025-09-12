@@ -30,6 +30,7 @@ pub struct WxoUsrGenQuery;
 impl WxoUsrGenQuery {
   
   /// 根据搜索条件和分页查找公众号用户列表
+  #[graphql(name = "findAllWxoUsr")]
   async fn find_all_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -51,6 +52,7 @@ impl WxoUsrGenQuery {
   }
   
   /// 根据条件查找公众号用户总数
+  #[graphql(name = "findCountWxoUsr")]
   async fn find_count_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -68,6 +70,7 @@ impl WxoUsrGenQuery {
   }
   
   /// 根据条件查找第一个公众号用户
+  #[graphql(name = "findOneWxoUsr")]
   async fn find_one_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -87,6 +90,7 @@ impl WxoUsrGenQuery {
   }
   
   /// 根据条件查找第一个公众号用户, 如果不存在则抛错
+  #[graphql(name = "findOneOkWxoUsr")]
   async fn find_one_ok_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -106,6 +110,7 @@ impl WxoUsrGenQuery {
   }
   
   /// 根据 id 查找公众号用户
+  #[graphql(name = "findByIdWxoUsr")]
   async fn find_by_id_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -123,6 +128,7 @@ impl WxoUsrGenQuery {
   }
   
   /// 根据 id 查找公众号用户, 如果不存在则抛错
+  #[graphql(name = "findByIdOkWxoUsr")]
   async fn find_by_id_ok_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -140,6 +146,7 @@ impl WxoUsrGenQuery {
   }
   
   /// 根据 id 查找公众号用户
+  #[graphql(name = "findByIdsWxoUsr")]
   async fn find_by_ids_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -157,6 +164,7 @@ impl WxoUsrGenQuery {
   }
   
   /// 根据 id 查找公众号用户
+  #[graphql(name = "findByIdsOkWxoUsr")]
   async fn find_by_ids_ok_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -174,6 +182,7 @@ impl WxoUsrGenQuery {
   }
   
   /// 获取公众号用户字段注释
+  #[graphql(name = "getFieldCommentsWxoUsr")]
   async fn get_field_comments_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -196,6 +205,7 @@ pub struct WxoUsrGenMutation;
 impl WxoUsrGenMutation {
   
   /// 创建公众号用户
+  #[graphql(name = "createsWxoUsr")]
   async fn creates_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -220,6 +230,7 @@ impl WxoUsrGenMutation {
   }
   
   /// 公众号用户根据id修改租户id
+  #[graphql(name = "updateTenantByIdWxoUsr")]
   async fn update_tenant_by_id_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -240,6 +251,7 @@ impl WxoUsrGenMutation {
   }
   
   /// 根据 id 修改公众号用户
+  #[graphql(name = "updateByIdWxoUsr")]
   async fn update_by_id_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -260,6 +272,7 @@ impl WxoUsrGenMutation {
   }
   
   /// 根据 ids 删除公众号用户
+  #[graphql(name = "deleteByIdsWxoUsr")]
   async fn delete_by_ids_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -278,6 +291,7 @@ impl WxoUsrGenMutation {
   }
   
   /// 根据 ids 还原公众号用户
+  #[graphql(name = "revertByIdsWxoUsr")]
   async fn revert_by_ids_wxo_usr(
     &self,
     ctx: &Context<'_>,
@@ -296,6 +310,7 @@ impl WxoUsrGenMutation {
   }
   
   /// 根据 ids 彻底删除公众号用户
+  #[graphql(name = "forceDeleteByIdsWxoUsr")]
   async fn force_delete_by_ids_wxo_usr(
     &self,
     ctx: &Context<'_>,

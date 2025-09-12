@@ -30,6 +30,7 @@ pub struct WxPayGenQuery;
 impl WxPayGenQuery {
   
   /// 根据搜索条件和分页查找微信支付设置列表
+  #[graphql(name = "findAllWxPay")]
   async fn find_all_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -51,6 +52,7 @@ impl WxPayGenQuery {
   }
   
   /// 根据条件查找微信支付设置总数
+  #[graphql(name = "findCountWxPay")]
   async fn find_count_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -68,6 +70,7 @@ impl WxPayGenQuery {
   }
   
   /// 根据条件查找第一个微信支付设置
+  #[graphql(name = "findOneWxPay")]
   async fn find_one_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -87,6 +90,7 @@ impl WxPayGenQuery {
   }
   
   /// 根据条件查找第一个微信支付设置, 如果不存在则抛错
+  #[graphql(name = "findOneOkWxPay")]
   async fn find_one_ok_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -106,6 +110,7 @@ impl WxPayGenQuery {
   }
   
   /// 根据 id 查找微信支付设置
+  #[graphql(name = "findByIdWxPay")]
   async fn find_by_id_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -123,6 +128,7 @@ impl WxPayGenQuery {
   }
   
   /// 根据 id 查找微信支付设置, 如果不存在则抛错
+  #[graphql(name = "findByIdOkWxPay")]
   async fn find_by_id_ok_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -140,6 +146,7 @@ impl WxPayGenQuery {
   }
   
   /// 根据 id 查找微信支付设置
+  #[graphql(name = "findByIdsWxPay")]
   async fn find_by_ids_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -157,6 +164,7 @@ impl WxPayGenQuery {
   }
   
   /// 根据 id 查找微信支付设置
+  #[graphql(name = "findByIdsOkWxPay")]
   async fn find_by_ids_ok_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -175,6 +183,7 @@ impl WxPayGenQuery {
   
   /// 根据 id 查找微信支付设置是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdWxPay")]
   async fn get_is_enabled_by_id_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -194,6 +203,7 @@ impl WxPayGenQuery {
   /// 根据 id 查找微信支付设置是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsLockedByIdWxPay")]
   async fn get_is_locked_by_id_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -211,6 +221,7 @@ impl WxPayGenQuery {
   }
   
   /// 获取微信支付设置字段注释
+  #[graphql(name = "getFieldCommentsWxPay")]
   async fn get_field_comments_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -225,6 +236,7 @@ impl WxPayGenQuery {
   }
   
   /// 查找 微信支付设置 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByWxPay")]
   async fn find_last_order_by_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -248,6 +260,7 @@ pub struct WxPayGenMutation;
 impl WxPayGenMutation {
   
   /// 创建微信支付设置
+  #[graphql(name = "createsWxPay")]
   async fn creates_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -272,6 +285,7 @@ impl WxPayGenMutation {
   }
   
   /// 微信支付设置根据id修改租户id
+  #[graphql(name = "updateTenantByIdWxPay")]
   async fn update_tenant_by_id_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -292,6 +306,7 @@ impl WxPayGenMutation {
   }
   
   /// 根据 id 修改微信支付设置
+  #[graphql(name = "updateByIdWxPay")]
   async fn update_by_id_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -312,6 +327,7 @@ impl WxPayGenMutation {
   }
   
   /// 根据 ids 删除微信支付设置
+  #[graphql(name = "deleteByIdsWxPay")]
   async fn delete_by_ids_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -330,6 +346,7 @@ impl WxPayGenMutation {
   }
   
   /// 根据 ids 启用或者禁用微信支付设置
+  #[graphql(name = "enableByIdsWxPay")]
   async fn enable_by_ids_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -350,6 +367,7 @@ impl WxPayGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
+  #[graphql(name = "lockByIdsWxPay")]
   async fn lock_by_ids_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -370,6 +388,7 @@ impl WxPayGenMutation {
   }
   
   /// 根据 ids 还原微信支付设置
+  #[graphql(name = "revertByIdsWxPay")]
   async fn revert_by_ids_wx_pay(
     &self,
     ctx: &Context<'_>,
@@ -388,6 +407,7 @@ impl WxPayGenMutation {
   }
   
   /// 根据 ids 彻底删除微信支付设置
+  #[graphql(name = "forceDeleteByIdsWxPay")]
   async fn force_delete_by_ids_wx_pay(
     &self,
     ctx: &Context<'_>,

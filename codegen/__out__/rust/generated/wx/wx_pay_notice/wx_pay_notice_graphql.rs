@@ -30,6 +30,7 @@ pub struct WxPayNoticeGenQuery;
 impl WxPayNoticeGenQuery {
   
   /// 根据搜索条件和分页查找微信支付通知列表
+  #[graphql(name = "findAllWxPayNotice")]
   async fn find_all_wx_pay_notice(
     &self,
     ctx: &Context<'_>,
@@ -51,6 +52,7 @@ impl WxPayNoticeGenQuery {
   }
   
   /// 根据条件查找微信支付通知总数
+  #[graphql(name = "findCountWxPayNotice")]
   async fn find_count_wx_pay_notice(
     &self,
     ctx: &Context<'_>,
@@ -68,6 +70,7 @@ impl WxPayNoticeGenQuery {
   }
   
   /// 根据条件查找第一个微信支付通知
+  #[graphql(name = "findOneWxPayNotice")]
   async fn find_one_wx_pay_notice(
     &self,
     ctx: &Context<'_>,
@@ -87,6 +90,7 @@ impl WxPayNoticeGenQuery {
   }
   
   /// 根据条件查找第一个微信支付通知, 如果不存在则抛错
+  #[graphql(name = "findOneOkWxPayNotice")]
   async fn find_one_ok_wx_pay_notice(
     &self,
     ctx: &Context<'_>,
@@ -106,6 +110,7 @@ impl WxPayNoticeGenQuery {
   }
   
   /// 根据 id 查找微信支付通知
+  #[graphql(name = "findByIdWxPayNotice")]
   async fn find_by_id_wx_pay_notice(
     &self,
     ctx: &Context<'_>,
@@ -123,6 +128,7 @@ impl WxPayNoticeGenQuery {
   }
   
   /// 根据 id 查找微信支付通知, 如果不存在则抛错
+  #[graphql(name = "findByIdOkWxPayNotice")]
   async fn find_by_id_ok_wx_pay_notice(
     &self,
     ctx: &Context<'_>,
@@ -140,6 +146,7 @@ impl WxPayNoticeGenQuery {
   }
   
   /// 根据 id 查找微信支付通知
+  #[graphql(name = "findByIdsWxPayNotice")]
   async fn find_by_ids_wx_pay_notice(
     &self,
     ctx: &Context<'_>,
@@ -157,6 +164,7 @@ impl WxPayNoticeGenQuery {
   }
   
   /// 根据 id 查找微信支付通知
+  #[graphql(name = "findByIdsOkWxPayNotice")]
   async fn find_by_ids_ok_wx_pay_notice(
     &self,
     ctx: &Context<'_>,
@@ -174,6 +182,7 @@ impl WxPayNoticeGenQuery {
   }
   
   /// 获取微信支付通知字段注释
+  #[graphql(name = "getFieldCommentsWxPayNotice")]
   async fn get_field_comments_wx_pay_notice(
     &self,
     ctx: &Context<'_>,
@@ -197,6 +206,7 @@ impl WxPayNoticeGenMutation {
   
   /// 占位方法, 用于实现 WxPayNoticeInput
   #[allow(unused_variables)]
+  #[graphql(name = "noAddNoEditWxPayNotice")]
   async fn no_add_no_edit_wx_pay_notice(
     &self,
     ctx: &Context<'_>,
@@ -206,6 +216,7 @@ impl WxPayNoticeGenMutation {
   }
   
   /// 微信支付通知根据id修改租户id
+  #[graphql(name = "updateTenantByIdWxPayNotice")]
   async fn update_tenant_by_id_wx_pay_notice(
     &self,
     ctx: &Context<'_>,

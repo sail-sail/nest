@@ -30,6 +30,7 @@ pub struct WxAppGenQuery;
 impl WxAppGenQuery {
   
   /// 根据搜索条件和分页查找小程序设置列表
+  #[graphql(name = "findAllWxApp")]
   async fn find_all_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -51,6 +52,7 @@ impl WxAppGenQuery {
   }
   
   /// 根据条件查找小程序设置总数
+  #[graphql(name = "findCountWxApp")]
   async fn find_count_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -68,6 +70,7 @@ impl WxAppGenQuery {
   }
   
   /// 根据条件查找第一个小程序设置
+  #[graphql(name = "findOneWxApp")]
   async fn find_one_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -87,6 +90,7 @@ impl WxAppGenQuery {
   }
   
   /// 根据条件查找第一个小程序设置, 如果不存在则抛错
+  #[graphql(name = "findOneOkWxApp")]
   async fn find_one_ok_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -106,6 +110,7 @@ impl WxAppGenQuery {
   }
   
   /// 根据 id 查找小程序设置
+  #[graphql(name = "findByIdWxApp")]
   async fn find_by_id_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -123,6 +128,7 @@ impl WxAppGenQuery {
   }
   
   /// 根据 id 查找小程序设置, 如果不存在则抛错
+  #[graphql(name = "findByIdOkWxApp")]
   async fn find_by_id_ok_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -140,6 +146,7 @@ impl WxAppGenQuery {
   }
   
   /// 根据 id 查找小程序设置
+  #[graphql(name = "findByIdsWxApp")]
   async fn find_by_ids_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -157,6 +164,7 @@ impl WxAppGenQuery {
   }
   
   /// 根据 id 查找小程序设置
+  #[graphql(name = "findByIdsOkWxApp")]
   async fn find_by_ids_ok_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -175,6 +183,7 @@ impl WxAppGenQuery {
   
   /// 根据 id 查找小程序设置是否已启用
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsEnabledByIdWxApp")]
   async fn get_is_enabled_by_id_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -194,6 +203,7 @@ impl WxAppGenQuery {
   /// 根据 id 查找小程序设置是否已锁定
   /// 已锁定的记录不能修改和删除
   /// 记录不存在则返回 false
+  #[graphql(name = "getIsLockedByIdWxApp")]
   async fn get_is_locked_by_id_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -211,6 +221,7 @@ impl WxAppGenQuery {
   }
   
   /// 获取小程序设置字段注释
+  #[graphql(name = "getFieldCommentsWxApp")]
   async fn get_field_comments_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -225,6 +236,7 @@ impl WxAppGenQuery {
   }
   
   /// 查找 小程序设置 order_by 字段的最大值
+  #[graphql(name = "findLastOrderByWxApp")]
   async fn find_last_order_by_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -248,6 +260,7 @@ pub struct WxAppGenMutation;
 impl WxAppGenMutation {
   
   /// 创建小程序设置
+  #[graphql(name = "createsWxApp")]
   async fn creates_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -272,6 +285,7 @@ impl WxAppGenMutation {
   }
   
   /// 小程序设置根据id修改租户id
+  #[graphql(name = "updateTenantByIdWxApp")]
   async fn update_tenant_by_id_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -292,6 +306,7 @@ impl WxAppGenMutation {
   }
   
   /// 根据 id 修改小程序设置
+  #[graphql(name = "updateByIdWxApp")]
   async fn update_by_id_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -312,6 +327,7 @@ impl WxAppGenMutation {
   }
   
   /// 根据 ids 删除小程序设置
+  #[graphql(name = "deleteByIdsWxApp")]
   async fn delete_by_ids_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -330,6 +346,7 @@ impl WxAppGenMutation {
   }
   
   /// 根据 ids 启用或者禁用小程序设置
+  #[graphql(name = "enableByIdsWxApp")]
   async fn enable_by_ids_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -350,6 +367,7 @@ impl WxAppGenMutation {
   }
   
   /// 根据 ids 锁定或解锁数据
+  #[graphql(name = "lockByIdsWxApp")]
   async fn lock_by_ids_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -370,6 +388,7 @@ impl WxAppGenMutation {
   }
   
   /// 根据 ids 还原小程序设置
+  #[graphql(name = "revertByIdsWxApp")]
   async fn revert_by_ids_wx_app(
     &self,
     ctx: &Context<'_>,
@@ -388,6 +407,7 @@ impl WxAppGenMutation {
   }
   
   /// 根据 ids 彻底删除小程序设置
+  #[graphql(name = "forceDeleteByIdsWxApp")]
   async fn force_delete_by_ids_wx_app(
     &self,
     ctx: &Context<'_>,

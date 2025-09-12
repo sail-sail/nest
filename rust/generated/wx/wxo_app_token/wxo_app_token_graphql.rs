@@ -28,6 +28,7 @@ pub struct WxoAppTokenGenQuery;
 impl WxoAppTokenGenQuery {
   
   /// 根据搜索条件和分页查找小程序接口凭据列表
+  #[graphql(name = "findAllWxoAppToken")]
   async fn find_all_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -49,6 +50,7 @@ impl WxoAppTokenGenQuery {
   }
   
   /// 根据条件查找小程序接口凭据总数
+  #[graphql(name = "findCountWxoAppToken")]
   async fn find_count_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -66,6 +68,7 @@ impl WxoAppTokenGenQuery {
   }
   
   /// 根据条件查找第一个小程序接口凭据
+  #[graphql(name = "findOneWxoAppToken")]
   async fn find_one_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -85,6 +88,7 @@ impl WxoAppTokenGenQuery {
   }
   
   /// 根据条件查找第一个小程序接口凭据, 如果不存在则抛错
+  #[graphql(name = "findOneOkWxoAppToken")]
   async fn find_one_ok_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -104,6 +108,7 @@ impl WxoAppTokenGenQuery {
   }
   
   /// 根据 id 查找小程序接口凭据
+  #[graphql(name = "findByIdWxoAppToken")]
   async fn find_by_id_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -121,6 +126,7 @@ impl WxoAppTokenGenQuery {
   }
   
   /// 根据 id 查找小程序接口凭据, 如果不存在则抛错
+  #[graphql(name = "findByIdOkWxoAppToken")]
   async fn find_by_id_ok_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -138,6 +144,7 @@ impl WxoAppTokenGenQuery {
   }
   
   /// 根据 id 查找小程序接口凭据
+  #[graphql(name = "findByIdsWxoAppToken")]
   async fn find_by_ids_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -155,6 +162,7 @@ impl WxoAppTokenGenQuery {
   }
   
   /// 根据 id 查找小程序接口凭据
+  #[graphql(name = "findByIdsOkWxoAppToken")]
   async fn find_by_ids_ok_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -172,6 +180,7 @@ impl WxoAppTokenGenQuery {
   }
   
   /// 获取小程序接口凭据字段注释
+  #[graphql(name = "getFieldCommentsWxoAppToken")]
   async fn get_field_comments_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -194,6 +203,7 @@ pub struct WxoAppTokenGenMutation;
 impl WxoAppTokenGenMutation {
   
   /// 创建小程序接口凭据
+  #[graphql(name = "createsWxoAppToken")]
   async fn creates_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -218,6 +228,7 @@ impl WxoAppTokenGenMutation {
   }
   
   /// 根据 id 修改小程序接口凭据
+  #[graphql(name = "updateByIdWxoAppToken")]
   async fn update_by_id_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -238,6 +249,7 @@ impl WxoAppTokenGenMutation {
   }
   
   /// 根据 ids 删除小程序接口凭据
+  #[graphql(name = "deleteByIdsWxoAppToken")]
   async fn delete_by_ids_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -256,6 +268,7 @@ impl WxoAppTokenGenMutation {
   }
   
   /// 根据 ids 还原小程序接口凭据
+  #[graphql(name = "revertByIdsWxoAppToken")]
   async fn revert_by_ids_wxo_app_token(
     &self,
     ctx: &Context<'_>,
@@ -274,6 +287,7 @@ impl WxoAppTokenGenMutation {
   }
   
   /// 根据 ids 彻底删除小程序接口凭据
+  #[graphql(name = "forceDeleteByIdsWxoAppToken")]
   async fn force_delete_by_ids_wxo_app_token(
     &self,
     ctx: &Context<'_>,
