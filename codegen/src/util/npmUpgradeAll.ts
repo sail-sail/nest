@@ -4,6 +4,7 @@ const branchs: {
   from: string;
   to: string;
 }[] = [
+  { from: "main", to: "main" },
   { from: "main", to: "deno4wx" },
   { from: "main", to: "deno4wxwork" },
   { from: "main", to: "deno4baidu" },
