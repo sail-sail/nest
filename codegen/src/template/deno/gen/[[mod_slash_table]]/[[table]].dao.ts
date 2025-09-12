@@ -1014,10 +1014,14 @@ async function getWhereQuery(
   }
   if (search?.<#=column_name#>_is_null) {
     whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id is null`;
-  }
+  }<#
+  if (foreignKey.lbl) {
+  #>
   if (isNotEmpty(search?.<#=column_name#>_<#=foreignKey.lbl#>_like)) {
     whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") }`;
   }<#
+  }
+  #><#
     }
   #><#
     } else if (column.dict || column.dictbiz) {

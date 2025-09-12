@@ -153,9 +153,6 @@ async function getWhereQuery(
   if (search?.data_permit_ids_is_null) {
     whereQuery += ` and base_data_permit.id is null`;
   }
-  if (isNotEmpty(search?.data_permit_ids__like)) {
-    whereQuery += ` and base_data_permit. like ${ args.push("%" + sqlLike(search?.data_permit_ids__like) + "%") }`;
-  }
   if (search?.field_permit_ids != null) {
     whereQuery += ` and base_field_permit.id in (${ args.push(search.field_permit_ids) })`;
   }
