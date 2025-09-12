@@ -12,8 +12,9 @@ const branchs: {
   { from: "main", to: "deno4nuxt" },
   { from: "main", to: "deno4submail" },
   { from: "main", to: "deno4tsdb" },
-  
   { from: "main", to: "rust" },
+  
+  { from: "rust", to: "rust" },
   { from: "rust", to: "rust4cron" },
   { from: "rust", to: "rust4wx" },
   { from: "rust", to: "rust4wxwork" },
