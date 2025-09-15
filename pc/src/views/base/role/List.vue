@@ -765,6 +765,7 @@
   >
     <MenuTreeList
       :tenant_ids="[ usrStore.tenant_id ]"
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"

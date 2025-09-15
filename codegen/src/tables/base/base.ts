@@ -431,6 +431,7 @@ export default defineConfig({
             order: "ascending",
           },
         },
+        align: "center",
         fixed: "left",
       },
       {
