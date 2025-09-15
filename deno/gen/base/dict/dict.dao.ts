@@ -86,6 +86,15 @@ async function getWhereQuery(
   
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  if (isNotEmpty(search?.keyword)) {
+    whereQuery += " and (";
+    whereQuery += ` t.code like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += " or";
+    whereQuery += ` t.lbl like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += " or";
+    whereQuery += ` t.rem like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += ")";
+  }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }

@@ -25,9 +25,6 @@ declare global {
     is_locked?: number[];
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
-    /** 备注 */
-    rem?: string;
-    rem_like?: string;
     /** 创建时间 */
     create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */

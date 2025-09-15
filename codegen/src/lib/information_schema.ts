@@ -634,6 +634,16 @@ async function getSchema0(
       }
     }
     
+    // 关键字搜索
+    if (tables[table_name]?.opts?.searchByKeyword) {
+      const fields = tables[table_name].opts.searchByKeyword.fields;
+      if (fields && fields.includes(column_name)) {
+        if (item.canSearch == null) {
+          item.canSearch = true;
+        }
+      }
+    }
+    
   }
   
   // 校验
