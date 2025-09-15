@@ -1125,7 +1125,7 @@ export async function findById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ): Promise<<#=modelName#> | undefined> {
-
+  
   if (!id) {
     return;
   }
@@ -1509,13 +1509,13 @@ for (let i = 0; i < columns.length; i++) {
   if (!foreignKey) continue;
   const foreignTable = foreignKey.table;
   const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  if (foreignTableArr.includes(foreignTable)) continue;
+  foreignTableArr.push(foreignTable);
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
   const defaultSort = foreignKey && foreignKey.defaultSort;
   const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
-  if (foreignTableArr.includes(foreignTable)) continue;
-  foreignTableArr.push(foreignTable);
   const foreignHasEnabled = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_enabled");
 #><#
 if (Foreign_Table_Up !== Table_Up) {
@@ -1698,13 +1698,14 @@ for (const inlineForeignTab of inlineForeignTabs) {
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
-    const defaultSort = foreignKey && foreignKey.defaultSort;
-    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
     if (foreignTableArr.includes(foreignTable)) continue;
     foreignTableArr.push(foreignTable);
+    const defaultSort = foreignKey && foreignKey.defaultSort;
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
     const foreignHasEnabled = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_enabled");
-#><#
-if (Foreign_Table_Up !== old_Table_Up) {
+    if (Foreign_Table_Up === old_Table_Up) {
+      continue;
+    }
 #>
 
 export async function findAll<#=Foreign_Table_Up#>(
@@ -1732,9 +1733,7 @@ export async function findAll<#=Foreign_Table_Up#>(
   }, opt);
   const <#=foreignTable#>_models = data.findAll<#=Foreign_Table_Up#>;
   return <#=foreignTable#>_models;
-}<#
 }
-#>
 
 export async function getList<#=Foreign_Table_Up#>() {
   const data = await findAll<#=Foreign_Table_Up#>(<#
