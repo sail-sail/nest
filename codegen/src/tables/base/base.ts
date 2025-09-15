@@ -8,6 +8,12 @@ export default defineConfig({
       uniques: [
         [ "lbl" ],
       ],
+      searchByKeyword: {
+        prop: "keyword",
+        fields: [ "code", "lbl", "rem" ],
+        lbl: "关键字",
+        placeholder: "编码/名称/备注",
+      },
     },
     columns: [
       {
@@ -17,6 +23,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "code",
         align: "center",
+        search: false,
         width: 100,
         readonly: true,
         readonlyPlaceholder: "(自动生成)",
@@ -29,6 +36,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "lbl",
         align: "center",
+        search: false,
       },
       {
         COLUMN_NAME: "home_url",
@@ -423,6 +431,7 @@ export default defineConfig({
             order: "ascending",
           },
         },
+        align: "center",
         fixed: "left",
       },
       {
@@ -814,11 +823,17 @@ export default defineConfig({
         "ky",
       ],
       isRealData: false,
+      searchByKeyword: {
+        prop: "keyword",
+        fields: [ "lbl", "ky", "val", "rem" ],
+        lbl: "关键字",
+        placeholder: "名称/键/值/备注",
+      },
     },
     columns: [
       {
         COLUMN_NAME: "lbl",
-        search: true,
+        search: false,
         width: 280,
         align: "left",
         fixed: "left",
@@ -830,7 +845,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "val",
-        search: true,
+        search: false,
         width: 140,
         align: "left",
       },
@@ -872,11 +887,17 @@ export default defineConfig({
         "ky",
       ],
       isRealData: false,
+      searchByKeyword: {
+        prop: "keyword",
+        fields: [ "lbl", "ky", "val", "rem" ],
+        lbl: "关键字",
+        placeholder: "名称/键/值/备注",
+      },
     },
     columns: [
       {
         COLUMN_NAME: "lbl",
-        search: true,
+        search: false,
         width: 280,
         align: "left",
         fixed: "left",
@@ -885,11 +906,11 @@ export default defineConfig({
         COLUMN_NAME: "ky",
         width: 240,
         align: "left",
-        search: true,
+        search: false,
       },
       {
         COLUMN_NAME: "val",
-        search: true,
+        search: false,
         width: 180,
         align: "left",
       },
@@ -1122,13 +1143,19 @@ export default defineConfig({
           column: "dict_id",
         },
       ],
+      searchByKeyword: {
+        prop: "keyword",
+        fields: [ "code", "lbl", "rem" ],
+        lbl: "关键字",
+        placeholder: "编码/名称/备注",
+      },
     },
     columns: [
       {
         COLUMN_NAME: "code",
         align: "left",
         require: true,
-        search: true,
+        search: false,
         width: 240,
         foreignTabs: [
           {
@@ -1144,7 +1171,7 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         align: "left",
         require: true,
-        search: true,
+        search: false,
         width: 240,
         fixed: "left",
       },
@@ -1266,13 +1293,19 @@ export default defineConfig({
           column: "dictbiz_id",
         },
       ],
+      searchByKeyword: {
+        prop: "keyword",
+        fields: [ "code", "lbl", "rem" ],
+        lbl: "关键字",
+        placeholder: "编码/名称/备注",
+      },
     },
     columns: [
       {
         COLUMN_NAME: "code",
         align: "left",
         require: true,
-        search: true,
+        search: false,
         width: 240,
         foreignTabs: [
           {
@@ -1287,7 +1320,7 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         align: "left",
         require: true,
-        search: true,
+        search: false,
         width: 240,
       },
       {
