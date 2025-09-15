@@ -2,7 +2,7 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
-// import { VitePWA } from "vite-plugin-pwa";
+import { VitePWA } from "vite-plugin-pwa";
 // import ViteRsw from "vite-plugin-rsw";
 
 import Inspector from "vite-plugin-vue-inspector";
@@ -246,22 +246,27 @@ export default defineConfig({
       ],
       dts: "./src/typings/components.d.ts",
     }),
-    // VitePWA({
-    //   registerType: "autoUpdate",
-    //   manifest: {
-    //     name: "管理系统",
-    //     short_name: "管理系统",
-    //     description: "管理系统",
-    //     theme_color: "#ffffff",
-    //     icons: [
-    //       {
-    //         src: "favicon.png",
-    //         sizes: "512x512",
-    //         type: "image/png",
-    //       },
-    //     ]
-    //   },
-    // }),
+    VitePWA({
+      workbox: {
+        globPatterns: [ ],
+        runtimeCaching: [ ],
+        skipWaiting: false,
+        clientsClaim: false,
+      },
+      manifest: {
+        name: "管理系统",
+        short_name: "管理系统",
+        description: "管理系统",
+        theme_color: "#ffffff",
+        icons: [
+          {
+            src: "favicon.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+        ]
+      },
+    }),
     // ViteRsw({
     //   cli: "pnpm",
     //   root: "./",
@@ -272,7 +277,9 @@ export default defineConfig({
     Unocss({
       configFile: "./uno.config.ts",
     }),
-    webUpdateNotice(),
+    webUpdateNotice({
+      versionType: "build_timestamp",
+    }),
   ],
   resolve: {
     alias: {
