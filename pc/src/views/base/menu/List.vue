@@ -77,6 +77,28 @@
         </el-form-item>
       </template>
       
+      <!-- 仅当前租户 -->
+      <template v-if="(showBuildIn || builtInSearch?.is_current_tenant == null)">
+        <el-form-item
+          label=" "
+          prop="is_current_tenant"
+        >
+          <CustomCheckbox
+            v-model="search.is_current_tenant"
+            :true-value="1"
+            :false-value="0"
+            @change="onSearch(false)"
+          >
+            <div
+              un-relative
+              un-top="-.5"
+            >
+              仅当前租户
+            </div>
+          </CustomCheckbox>
+        </el-form-item>
+      </template>
+      
       <div
         class="search-ids-checked"
       >
@@ -794,6 +816,7 @@ const props = defineProps<{
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   is_enabled?: string|string[]; // 启用
+  is_current_tenant?: number; // 仅当前租户
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -809,6 +832,7 @@ const builtInSearchType: { [key: string]: string } = {
   parent_id_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
+  is_current_tenant: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1053,7 +1077,7 @@ function getTableColumns(): ColumnType[] {
       sortBy: "parent_id_lbl",
       width: 180,
       sortable: "custom",
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",

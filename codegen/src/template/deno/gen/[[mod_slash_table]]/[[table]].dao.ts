@@ -885,7 +885,7 @@ async function getWhereQuery(
       #><#
       if (i > 0) {
       #>
-      whereQuery += " or";<#
+    whereQuery += " or";<#
       }
     #>
     whereQuery += ` t.<#=field#> like ${ args.push("%" + sqlLike(search?.<#=prop#>) + "%") }`;<#

@@ -66,6 +66,10 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -120,6 +124,12 @@ async function getWhereQuery(
   }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
+  }
+  // 仅当前租户
+  if (search?.is_current_tenant) {
+    const usr_id = await get_usr_id();
+    const tenant_id = await getTenant_id(usr_id);
+    whereQuery += ` and base_tenant_menu.tenant_id=${ args.push(tenant_id) }`;
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
@@ -189,7 +199,9 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_menu t
-  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id`;
+  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id
+  left join base_tenant_menu on base_tenant_menu.menu_id=t.id and base_tenant_menu.is_deleted=0
+  `;
   return fromQuery;
 }
 
