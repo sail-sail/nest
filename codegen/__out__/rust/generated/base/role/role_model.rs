@@ -455,6 +455,8 @@ pub struct RoleSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
+  #[graphql(name = "keyword")]
+  pub keyword: Option<String>,
   /// 编码-序列号
   #[graphql(skip)]
   pub code_seq: Option<[Option<u32>; 2]>,
@@ -519,10 +521,10 @@ pub struct RoleSearch {
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
-  #[graphql(skip)]
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 备注
-  #[graphql(skip)]
+  #[graphql(name = "rem_like")]
   pub rem_like: Option<String>,
   /// 创建人
   #[graphql(name = "create_usr_id")]

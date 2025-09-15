@@ -257,6 +257,8 @@ pub struct OptbizSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
+  #[graphql(name = "keyword")]
+  pub keyword: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
@@ -285,10 +287,10 @@ pub struct OptbizSearch {
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
-  #[graphql(skip)]
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 备注
-  #[graphql(skip)]
+  #[graphql(name = "rem_like")]
   pub rem_like: Option<String>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
