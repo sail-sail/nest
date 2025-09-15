@@ -776,6 +776,7 @@
     :is-locked="isLocked"
   >
     <PermitTreeList
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
@@ -789,6 +790,7 @@
     :is-locked="isLocked"
   >
     <DataPermitTreeList
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
@@ -802,6 +804,7 @@
     :is-locked="isLocked"
   >
     <FieldPermitTreeList
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"

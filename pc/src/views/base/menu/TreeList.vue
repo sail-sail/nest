@@ -182,6 +182,7 @@ async function onFindTree() {
   const is_current_tenant = attrs.is_current_tenant as number | undefined;
   treeData = await findTreeMenu({
     is_current_tenant,
+    is_enabled: [ 1 ],
   });
   if (parent_id) {
     const node = getById(parent_id, treeData);
