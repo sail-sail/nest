@@ -117,16 +117,24 @@ input OptionsSearch {
   is_deleted: Int
   "ID列表"
   ids: [OptionsId!]
+  "关键字"
+  keyword: String
   "ID"
   id: OptionsId
   "名称"
   lbl: String
   lbl_like: String
+  "键"
+  ky: String
+  ky_like: String
   "值"
   val: String
   val_like: String
   "启用"
   is_enabled: [Int!]
+  "备注"
+  rem: String
+  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"

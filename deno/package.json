@@ -34,7 +34,7 @@
     "@graphql-codegen/cli": "6.0.0",
     "@graphql-codegen/typescript": "5.0.0",
     "@graphql-codegen/typescript-operations": "5.0.0",
-    "@types/node": "24.4.0",
+    "@types/node": "20.19.15",
     "@types/sqlstring": "2.3.2",
     "chokidar": "4.0.3",
     "commander": "14.0.1",
