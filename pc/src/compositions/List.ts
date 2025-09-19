@@ -85,16 +85,18 @@ export function usePage<T>(
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   dataGrid: Function,
   opt?: {
+    pageSize?: number,
     pageSizes?: number[],
     isPagination?: boolean, // 默认为true
   },
 ) {
   
   const pageSizes = $ref(opt?.pageSizes || [ 20, 50, 100 ]);
+  const size = opt?.pageSize ?? pageSizes[0];
   
   // 分页
   const page = $ref({
-    size: pageSizes[0],
+    size,
     current: 1,
     total: 0,
   });
