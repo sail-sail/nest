@@ -908,7 +908,6 @@ async fn get_where_query(
       }
       #>
       where_query.push(')');
-      
     }
   }<#
   }

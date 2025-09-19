@@ -28,31 +28,16 @@
       @keydown.enter="onSearch(true)"
     >
       
-      <template v-if="(builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null))">
-        <el-form-item
-          label="编码"
-          prop="code_like"
-        >
-          <CustomInput
-            v-model="search.code_like"
-            placeholder="请输入 编码"
-            @clear="onSearchClear"
-          ></CustomInput>
-        </el-form-item>
-      </template>
-      
-      <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
-        <el-form-item
-          label="名称"
-          prop="lbl_like"
-        >
-          <CustomInput
-            v-model="search.lbl_like"
-            placeholder="请输入 名称"
-            @clear="onSearchClear"
-          ></CustomInput>
-        </el-form-item>
-      </template>
+      <el-form-item
+        label="关键字"
+        prop="keyword"
+      >
+        <CustomInput
+          v-model="search.keyword"
+          placeholder="请输入 编码/名称/备注"
+          @clear="onSearchClear"
+        ></CustomInput>
+      </el-form-item>
       
       <template v-if="(showBuildIn || builtInSearch?.menu_ids == null)">
         <el-form-item
@@ -689,7 +674,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -777,6 +762,7 @@
   >
     <MenuTreeList
       :tenant_ids="[ usrStore.tenant_id ]"
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
@@ -790,6 +776,7 @@
     :is-locked="isLocked"
   >
     <PermitTreeList
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
@@ -803,6 +790,7 @@
     :is-locked="isLocked"
   >
     <DataPermitTreeList
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
@@ -816,6 +804,7 @@
     :is-locked="isLocked"
   >
     <FieldPermitTreeList
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
@@ -924,6 +913,8 @@ const props = defineProps<{
   field_permit_ids?: string|string[]; // 字段权限
   field_permit_ids_lbl?: string[]; // 字段权限
   is_enabled?: string|string[]; // 启用
+  rem?: string; // 备注
+  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
