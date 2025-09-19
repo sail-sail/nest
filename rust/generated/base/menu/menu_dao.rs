@@ -299,6 +299,18 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
+  // 仅当前租户
+  {
+    let is_current_tenant: Option<u8> = match search {
+      Some(item) => item.is_current_tenant,
+      None => None,
+    };
+    if let Some(is_current_tenant) = is_current_tenant && is_current_tenant == 1 {
+      let auth_tenant_id = get_auth_tenant_id();
+      where_query.push_str(" and base_tenant_menu.tenant_id=?");
+      args.push(auth_tenant_id.unwrap_or_default().into());
+    }
+  }
   // 排序
   {
     let mut order_by = match search {
@@ -540,7 +552,9 @@ async fn get_from_query(
 ) -> Result<String> {
   
   let from_query = r#"base_menu t
-  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id"#.to_owned();
+  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id
+  left join base_tenant_menu on base_tenant_menu.menu_id=t.id and base_tenant_menu.is_deleted=0
+  "#.to_owned();
   Ok(from_query)
 }
 

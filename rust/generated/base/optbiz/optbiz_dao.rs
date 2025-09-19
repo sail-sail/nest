@@ -125,6 +125,30 @@ async fn get_where_query(
       args.push(tenant_id.into());
     }
   }
+  {
+    let keyword: Option<String> = match search {
+      Some(item) => item.keyword.clone(),
+      None => None,
+    };
+    if let Some(keyword) = keyword && !keyword.is_empty() {
+      where_query.push_str(" and (");
+      where_query.push_str(" t.lbl like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+        
+      where_query.push_str(" or");
+      where_query.push_str(" t.ky like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+        
+      where_query.push_str(" or");
+      where_query.push_str(" t.val like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+        
+      where_query.push_str(" or");
+      where_query.push_str(" t.rem like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+      where_query.push(')');
+    }
+  }
   // 名称
   {
     let lbl = match search {
