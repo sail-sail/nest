@@ -133,6 +133,8 @@ input DictSearch {
   is_deleted: Int
   "ID列表"
   ids: [DictId!]
+  "关键字"
+  keyword: String
   "ID"
   id: DictId
   "编码"
@@ -143,6 +145,9 @@ input DictSearch {
   lbl_like: String
   "启用"
   is_enabled: [Int!]
+  "备注"
+  rem: String
+  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
