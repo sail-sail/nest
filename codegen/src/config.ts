@@ -861,6 +861,9 @@ export interface TablesConfigItem {
      */
     secondSorts?: { prop: string, order: "ascending"|"descending" }[];
     
+    /**
+     * 关键字搜索
+     */
     searchByKeyword?: {
       prop: string;
       fields: string[];

@@ -1053,7 +1053,7 @@ function getTableColumns(): ColumnType[] {
       sortBy: "parent_id_lbl",
       width: 180,
       sortable: "custom",
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",

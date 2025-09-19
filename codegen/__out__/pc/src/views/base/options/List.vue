@@ -28,31 +28,16 @@
       @keydown.enter="onSearch(true)"
     >
       
-      <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
-        <el-form-item
-          label="名称"
-          prop="lbl_like"
-        >
-          <CustomInput
-            v-model="search.lbl_like"
-            placeholder="请输入 名称"
-            @clear="onSearchClear"
-          ></CustomInput>
-        </el-form-item>
-      </template>
-      
-      <template v-if="(builtInSearch?.val == null && (showBuildIn || builtInSearch?.val_like == null))">
-        <el-form-item
-          label="值"
-          prop="val_like"
-        >
-          <CustomInput
-            v-model="search.val_like"
-            placeholder="请输入 值"
-            @clear="onSearchClear"
-          ></CustomInput>
-        </el-form-item>
-      </template>
+      <el-form-item
+        label="关键字"
+        prop="keyword"
+      >
+        <CustomInput
+          v-model="search.keyword"
+          placeholder="请输入 名称/键/值/备注"
+          @clear="onSearchClear"
+        ></CustomInput>
+      </el-form-item>
       
       <template v-if="(showBuildIn || builtInSearch?.is_enabled == null)">
         <el-form-item
@@ -520,7 +505,7 @@
           </template>
           
           <!-- 键 -->
-          <template v-else-if="'ky' === col.prop">
+          <template v-else-if="'ky' === col.prop && (showBuildIn || builtInSearch?.ky == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -597,7 +582,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -755,9 +740,13 @@ const props = defineProps<{
   id?: OptionsId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  ky?: string; // 键
+  ky_like?: string; // 键
   val?: string; // 值
   val_like?: string; // 值
   is_enabled?: string|string[]; // 启用
+  rem?: string; // 备注
+  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {

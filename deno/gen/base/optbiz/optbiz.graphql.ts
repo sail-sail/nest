@@ -117,6 +117,8 @@ input OptbizSearch {
   is_deleted: Int
   "ID列表"
   ids: [OptbizId!]
+  "关键字"
+  keyword: String
   "ID"
   id: OptbizId
   "名称"
@@ -130,6 +132,9 @@ input OptbizSearch {
   val_like: String
   "启用"
   is_enabled: [Int!]
+  "备注"
+  rem: String
+  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
