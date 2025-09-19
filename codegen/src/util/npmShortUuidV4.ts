@@ -1,9 +1,8 @@
 import { shortUuidV4 } from "./uuid";
-import { exec } from "node:child_process";
-import {
-  writeFileSync,
-  unlinkSync,
-} from "node:fs";
+import clipboardy from "clipboardy";
+
+// 使用方法: npm run uuid [数量]
+// 或: nr uuid [数量]
 
 const ids = [ ];
 
@@ -20,18 +19,6 @@ for (let i = 0; i < num; i++) {
 }
 const idStr = ids.join("\n");
 
-writeFileSync("temp", idStr);
-
-exec(`CHCP 65001 && clip < temp`, function(err, stdout, stderr) {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  if (stderr) {
-    console.error(stderr);
-    return;
-  }
-  console.log(stdout);
-  console.log(idStr);
-  unlinkSync("temp");
-});
+console.log(idStr);
+clipboardy.writeSync(idStr);
+console.log("\n已复制到剪贴板");
