@@ -150,6 +150,8 @@ input MenuSearch {
   lbl_like: String
   "启用"
   is_enabled: [Int!]
+  "仅当前租户"
+  is_current_tenant: Int
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
