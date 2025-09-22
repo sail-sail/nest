@@ -27,16 +27,16 @@
     "ejsexcel": "4.2.2",
     "fast-csv": "5.0.5",
     "fs-extra": "11.3.2",
-    "mysql2": "3.14.5",
+    "mysql2": "3.15.0",
     "shelljs": "0.10.0",
     "uuid": "13.0.0"
   },
   "devDependencies": {
     "@swc/wasm": "1.13.5",
     "@types/fs-extra": "11.0.4",
-    "@types/node": "20.19.15",
+    "@types/node": "24.5.2",
     "@types/shelljs": "0.8.17",
-    "@types/uuid": "10.0.0",
+    "@types/uuid": "11.0.0",
     "ts-node": "10.9.2",
     "typescript": "5.9.2"
   }
