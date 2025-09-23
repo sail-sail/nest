@@ -3,13 +3,13 @@ import {
   getAllTables,
   getSchema,
   type Context,
-} from "../lib/information_schema";
+} from "../lib/information_schema.ts";
 
 import * as crypto from "node:crypto";
 
 import * as dayjs from "dayjs";
 
-import tables_cnf from "../tables/tables";
+import tables_cnf from "../tables/tables.ts";
 
 const old_tables_cnf = JSON.parse(JSON.stringify(tables_cnf)) as typeof tables_cnf;
 

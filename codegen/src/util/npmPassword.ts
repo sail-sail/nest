@@ -17,7 +17,7 @@ const envArgs = process.argv;
 const password = (envArgs[2] || "").trim();
 
 if (!password) {
-  console.log("请输入密码!");
+  console.log(`请输入密码: npm run pwd "[密码]"`);
   process.exit(0);
 }
 

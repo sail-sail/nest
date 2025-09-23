@@ -1,6 +1,6 @@
 import {
   initContext,
-} from "../lib/information_schema";
+} from "../lib/information_schema.ts";
 
 async function exec() {
   console.time("sql");

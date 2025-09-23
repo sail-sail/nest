@@ -1,6 +1,6 @@
-import { initContext } from "../lib/information_schema";
+import { initContext } from "../lib/information_schema.ts";
 import { Command } from "commander";
-import { coderemove } from "../lib/coderemove";
+import { coderemove } from "../lib/coderemove.ts";
 
 const envArgs = process.argv;
 const program = new Command();
