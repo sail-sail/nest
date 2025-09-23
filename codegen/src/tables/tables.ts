@@ -1,6 +1,6 @@
-import { defineConfig } from "../config";
+import { defineConfig } from "../config.ts";
 
-import base from "./base/base";
+import base from "./base/base.ts";
 
 // 网站
 import nuxt from "./nuxt/nuxt";

@@ -17,6 +17,17 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@nuxt/eslint",
   ],
+  hooks: {
+    // 修改构建清单，禁用prefetch和preload
+    'build:manifest': (manifest) => {
+      for (const key in manifest) {
+        if (manifest[key]) {
+          manifest[key].prefetch = false;
+          manifest[key].preload = false;
+        }
+      }
+    }
+  },
   icon: {
     customCollections: [
       {

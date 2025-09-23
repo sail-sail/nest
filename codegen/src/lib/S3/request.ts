@@ -1,4 +1,4 @@
-import type { Signer } from "./deps";
+import type { Signer } from "./deps.ts";
 
 export interface Params {
   [key: string]: string;
