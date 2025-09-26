@@ -1,25 +1,35 @@
-import {
-  readdir,
-  stat,
-  readFile,
-} from "fs-extra";
+import fsExtraPkg from "fs-extra";
 
 import {
   initContext,
   type Context,
-} from "../lib/information_schema";
+} from "../lib/information_schema.ts";
 
 import {
   isEmpty,
-} from "../lib/StringUitl";
+} from "../lib/StringUitl.ts";
 
 import {
   execCsvFile,
-} from "./common";
+} from "./common.ts";
 
 import {
   isUseI18n,
-} from "../tables/tables";
+} from "../tables/tables.ts";
+
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
+
+// 获取当前文件的目录路径 (ES 模块中 __dirname 的等效方法)
+// @ts-ignore
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const {
+  readdir,
+  stat,
+  readFile,
+} = fsExtraPkg;
 
 const root = `${ __dirname }/../tables/`;
 

@@ -2,7 +2,7 @@ import {
   getSchema,
   initContext,
   type Context,
-} from "../lib/information_schema";
+} from "../lib/information_schema.ts";
 
 import { Command } from "commander";
 import { Chalk } from "chalk";
@@ -12,13 +12,13 @@ import {
   genRouter,
   // genMenu,
   denoGenTypes,
-} from "../lib/codegen";
+} from "../lib/codegen.ts";
 
-import tables from "../tables/tables";
+import tables from "../tables/tables.ts";
 
 import {
   gitDiffOut,
-} from "../lib/codegen";
+} from "../lib/codegen.ts";
 
 import {
   execSync,
@@ -26,7 +26,15 @@ import {
 
 import {
   resolve,
+  dirname,
 } from "path";
+
+import { fileURLToPath } from "url";
+
+// 获取当前文件的目录路径 (ES 模块中 __dirname 的等效方法)
+// @ts-ignore
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const projectPh = resolve(`${ __dirname }/../../`).replace(/\\/gm, "/");
 
