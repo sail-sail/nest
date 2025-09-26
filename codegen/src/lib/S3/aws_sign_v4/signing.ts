@@ -1,4 +1,4 @@
-import { hex, hmacSha256 } from "./util";
+import { hex, hmacSha256 } from "./util.ts";
 
 const AWS4: Uint8Array = new TextEncoder().encode("AWS4");
 

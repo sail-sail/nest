@@ -1,4 +1,4 @@
-import { defineConfig } from "../../config";
+import { defineConfig } from "../../config.ts";
 
 export default defineConfig({
   // 角色
