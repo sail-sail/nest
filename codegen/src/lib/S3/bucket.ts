@@ -3,8 +3,8 @@ import {
   decodeXMLEntities,
   parseXML,
   pooledMap,
-} from "./deps";
-import type { S3Config } from "./client";
+} from "./deps.ts";
+import type { S3Config } from "./client.ts";
 import type {
   CommonPrefix,
   CopyObjectOptions,
@@ -22,11 +22,11 @@ import type {
   ReplicationStatus,
   S3Object,
   StorageClass,
-} from "./types";
-import { S3Error } from "./error";
-import type { Signer } from "./deps";
-import { doRequest, encodeURIS3 } from "./request";
-import type { Params } from "./request";
+} from "./types.ts";
+import { S3Error } from "./error.ts";
+import type { Signer } from "./deps.ts";
+import { doRequest, encodeURIS3 } from "./request.ts";
+import type { Params } from "./request.ts";
 
 export interface S3BucketConfig extends S3Config {
   bucket: string;

@@ -1,9 +1,9 @@
 import * as mysql from "mysql2";
 import type { Pool, PoolConnection } from "mysql2/promise";
-import nestConfig from "./nest_config";
-import tables from "../tables/tables";
-import config, { TableCloumn, TablesConfigItem } from "../config";
-import { isEmpty } from "./StringUitl";
+import nestConfig from "./nest_config.ts";
+import tables from "../tables/tables.ts";
+import config, { type TableCloumn, type TablesConfigItem } from "../config.ts";
+import { isEmpty } from "./StringUitl.ts";
 import { Chalk } from "chalk";
 
 const chalk = new Chalk();
@@ -59,7 +59,7 @@ export async function getTableComment(context: Context, table_name: string) {
         t.TABLE_SCHEMA=(select database())
     `;
     const result = await context.conn.query(sql);
-    schemaTables = <any[]>result[0];
+    schemaTables = result[0] as any[];
   }
   const table_schema = schemaTables.find(item => item.TABLE_NAME === table_name);
   if (!table_schema) {
@@ -88,7 +88,7 @@ async function getSchema0(
       order by t.ORDINAL_POSITION
     `;
     const result = await context.conn.query(sql);
-    allTableSchemaRecords = <TableCloumn[]>result[0];
+    allTableSchemaRecords = result[0] as TableCloumn[];
   }
   const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
   if (!tables[table_name]) {
@@ -1312,7 +1312,7 @@ export async function getAllTables(context: Context) {
         t.TABLE_SCHEMA=(select database())
     `;
     const result = await context.conn.query(sql);
-    schemaTables = <any[]>result[0];
+    schemaTables = result[0] as any[];
   }
   return schemaTables;
 }
@@ -1362,7 +1362,7 @@ export async function getDictModels(context: Context) {
         t.create_time asc
     `;
     const result = await context.conn.query(sql);
-    _dictModels = <any[]>result[0];
+    _dictModels = result[0] as any[];
   }
   return _dictModels;
 }
@@ -1381,7 +1381,7 @@ export async function getDictbizModels(context: Context) {
         limit 1
       `
       const result = await context.conn.query(sql);
-      const records = <any[]>result[0];
+      const records = result[0] as any[];
       if (records.length === 0) {
         throw new Error(`租户不存在`);
       }
@@ -1414,7 +1414,7 @@ export async function getDictbizModels(context: Context) {
         t.create_time asc
     `;
     const result = await context.conn.query(sql, [ tenant_id ]);
-    _dictbizModels = <any[]>result[0];
+    _dictbizModels = result[0] as any[];
   }
   return _dictbizModels;
 }
@@ -1441,7 +1441,7 @@ export async function getDictHeadModels(context: Context) {
         t.order_by asc
     `;
     const result = await context.conn.query(sql);
-    _dictHeadModels = <any[]>result[0];
+    _dictHeadModels = result[0] as any[];
   }
   return _dictHeadModels;
 }
@@ -1468,7 +1468,7 @@ export async function getDictbizHeadModels(context: Context) {
         t.order_by asc
     `;
     const result = await context.conn.query(sql);
-    _dictbizHeadModels = <any[]>result[0];
+    _dictbizHeadModels = result[0] as any[];
   }
   return _dictbizHeadModels;
 }
