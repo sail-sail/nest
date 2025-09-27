@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -26,6 +30,7 @@ pub struct WxwAppTokenGenQuery;
 impl WxwAppTokenGenQuery {
   
   /// 根据搜索条件和分页查找企微应用接口凭据列表
+  #[graphql(name = "findAllWxwAppToken")]
   async fn find_all_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -47,6 +52,7 @@ impl WxwAppTokenGenQuery {
   }
   
   /// 根据条件查找企微应用接口凭据总数
+  #[graphql(name = "findCountWxwAppToken")]
   async fn find_count_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -64,6 +70,7 @@ impl WxwAppTokenGenQuery {
   }
   
   /// 根据条件查找第一个企微应用接口凭据
+  #[graphql(name = "findOneWxwAppToken")]
   async fn find_one_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -83,6 +90,7 @@ impl WxwAppTokenGenQuery {
   }
   
   /// 根据条件查找第一个企微应用接口凭据, 如果不存在则抛错
+  #[graphql(name = "findOneOkWxwAppToken")]
   async fn find_one_ok_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -102,6 +110,7 @@ impl WxwAppTokenGenQuery {
   }
   
   /// 根据 id 查找企微应用接口凭据
+  #[graphql(name = "findByIdWxwAppToken")]
   async fn find_by_id_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -119,6 +128,7 @@ impl WxwAppTokenGenQuery {
   }
   
   /// 根据 id 查找企微应用接口凭据, 如果不存在则抛错
+  #[graphql(name = "findByIdOkWxwAppToken")]
   async fn find_by_id_ok_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -136,6 +146,7 @@ impl WxwAppTokenGenQuery {
   }
   
   /// 根据 id 查找企微应用接口凭据
+  #[graphql(name = "findByIdsWxwAppToken")]
   async fn find_by_ids_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -153,6 +164,7 @@ impl WxwAppTokenGenQuery {
   }
   
   /// 根据 id 查找企微应用接口凭据
+  #[graphql(name = "findByIdsOkWxwAppToken")]
   async fn find_by_ids_ok_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -170,6 +182,7 @@ impl WxwAppTokenGenQuery {
   }
   
   /// 获取企微应用接口凭据字段注释
+  #[graphql(name = "getFieldCommentsWxwAppToken")]
   async fn get_field_comments_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -192,6 +205,7 @@ pub struct WxwAppTokenGenMutation;
 impl WxwAppTokenGenMutation {
   
   /// 创建企微应用接口凭据
+  #[graphql(name = "createsWxwAppToken")]
   async fn creates_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -216,6 +230,7 @@ impl WxwAppTokenGenMutation {
   }
   
   /// 企微应用接口凭据根据id修改租户id
+  #[graphql(name = "updateTenantByIdWxwAppToken")]
   async fn update_tenant_by_id_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -236,6 +251,7 @@ impl WxwAppTokenGenMutation {
   }
   
   /// 根据 id 修改企微应用接口凭据
+  #[graphql(name = "updateByIdWxwAppToken")]
   async fn update_by_id_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -256,6 +272,7 @@ impl WxwAppTokenGenMutation {
   }
   
   /// 根据 ids 删除企微应用接口凭据
+  #[graphql(name = "deleteByIdsWxwAppToken")]
   async fn delete_by_ids_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -274,6 +291,7 @@ impl WxwAppTokenGenMutation {
   }
   
   /// 根据 ids 还原企微应用接口凭据
+  #[graphql(name = "revertByIdsWxwAppToken")]
   async fn revert_by_ids_wxw_app_token(
     &self,
     ctx: &Context<'_>,
@@ -292,6 +310,7 @@ impl WxwAppTokenGenMutation {
   }
   
   /// 根据 ids 彻底删除企微应用接口凭据
+  #[graphql(name = "forceDeleteByIdsWxwAppToken")]
   async fn force_delete_by_ids_wxw_app_token(
     &self,
     ctx: &Context<'_>,

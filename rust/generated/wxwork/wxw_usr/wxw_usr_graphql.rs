@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -26,6 +30,7 @@ pub struct WxwUsrGenQuery;
 impl WxwUsrGenQuery {
   
   /// 根据搜索条件和分页查找企微用户列表
+  #[graphql(name = "findAllWxwUsr")]
   async fn find_all_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -47,6 +52,7 @@ impl WxwUsrGenQuery {
   }
   
   /// 根据条件查找企微用户总数
+  #[graphql(name = "findCountWxwUsr")]
   async fn find_count_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -64,6 +70,7 @@ impl WxwUsrGenQuery {
   }
   
   /// 根据条件查找第一个企微用户
+  #[graphql(name = "findOneWxwUsr")]
   async fn find_one_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -83,6 +90,7 @@ impl WxwUsrGenQuery {
   }
   
   /// 根据条件查找第一个企微用户, 如果不存在则抛错
+  #[graphql(name = "findOneOkWxwUsr")]
   async fn find_one_ok_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -102,6 +110,7 @@ impl WxwUsrGenQuery {
   }
   
   /// 根据 id 查找企微用户
+  #[graphql(name = "findByIdWxwUsr")]
   async fn find_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -119,6 +128,7 @@ impl WxwUsrGenQuery {
   }
   
   /// 根据 id 查找企微用户, 如果不存在则抛错
+  #[graphql(name = "findByIdOkWxwUsr")]
   async fn find_by_id_ok_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -136,6 +146,7 @@ impl WxwUsrGenQuery {
   }
   
   /// 根据 id 查找企微用户
+  #[graphql(name = "findByIdsWxwUsr")]
   async fn find_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -153,6 +164,7 @@ impl WxwUsrGenQuery {
   }
   
   /// 根据 id 查找企微用户
+  #[graphql(name = "findByIdsOkWxwUsr")]
   async fn find_by_ids_ok_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -170,6 +182,7 @@ impl WxwUsrGenQuery {
   }
   
   /// 获取企微用户字段注释
+  #[graphql(name = "getFieldCommentsWxwUsr")]
   async fn get_field_comments_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -192,6 +205,7 @@ pub struct WxwUsrGenMutation;
 impl WxwUsrGenMutation {
   
   /// 创建企微用户
+  #[graphql(name = "createsWxwUsr")]
   async fn creates_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -216,6 +230,7 @@ impl WxwUsrGenMutation {
   }
   
   /// 企微用户根据id修改租户id
+  #[graphql(name = "updateTenantByIdWxwUsr")]
   async fn update_tenant_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -236,6 +251,7 @@ impl WxwUsrGenMutation {
   }
   
   /// 根据 id 修改企微用户
+  #[graphql(name = "updateByIdWxwUsr")]
   async fn update_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -256,6 +272,7 @@ impl WxwUsrGenMutation {
   }
   
   /// 根据 ids 删除企微用户
+  #[graphql(name = "deleteByIdsWxwUsr")]
   async fn delete_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -274,6 +291,7 @@ impl WxwUsrGenMutation {
   }
   
   /// 根据 ids 还原企微用户
+  #[graphql(name = "revertByIdsWxwUsr")]
   async fn revert_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
@@ -292,6 +310,7 @@ impl WxwUsrGenMutation {
   }
   
   /// 根据 ids 彻底删除企微用户
+  #[graphql(name = "forceDeleteByIdsWxwUsr")]
   async fn force_delete_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,

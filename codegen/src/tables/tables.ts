@@ -2,7 +2,7 @@ import { defineConfig } from "../config.ts";
 
 import base from "./base/base.ts";
 
-import wxwork from "./wxwork/wxwork";
+import wxwork from "./wxwork/wxwork.ts";
 
 /** 是否使用国际化 */
 export const isUseI18n = false;

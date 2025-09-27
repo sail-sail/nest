@@ -1,3 +1,8 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+#![allow(clippy::collapsible_if)]
+
 #[allow(unused_imports)]
 use serde::{Serialize, Deserialize};
 #[allow(unused_imports)]
@@ -102,13 +107,13 @@ async fn get_where_query(
   {
     let tenant_id = {
       let tenant_id = match search {
-        Some(item) => item.tenant_id.clone(),
+        Some(item) => item.tenant_id,
         None => None,
       };
       match tenant_id {
         None => get_auth_tenant_id(),
         Some(item) => match item.as_str() {
-          "-" => None,
+          "" => None,
           _ => item.into(),
         },
       }
@@ -198,7 +203,7 @@ async fn get_where_query(
       Some(item) => item.corpid_like.clone(),
       None => None,
     };
-    if let Some(corpid_like) = corpid_like {
+    if let Some(corpid_like) = corpid_like && !corpid_like.is_empty() {
       where_query.push_str(" and t.corpid like ?");
       args.push(format!("%{}%", sql_like(&corpid_like)).into());
     }
@@ -217,7 +222,7 @@ async fn get_where_query(
       Some(item) => item.agentid_like.clone(),
       None => None,
     };
-    if let Some(agentid_like) = agentid_like {
+    if let Some(agentid_like) = agentid_like && !agentid_like.is_empty() {
       where_query.push_str(" and t.agentid like ?");
       args.push(format!("%{}%", sql_like(&agentid_like)).into());
     }
@@ -236,7 +241,7 @@ async fn get_where_query(
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
-    if let Some(lbl_like) = lbl_like {
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
       where_query.push_str(" and t.lbl like ?");
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
@@ -255,7 +260,7 @@ async fn get_where_query(
       Some(item) => item.userid_like.clone(),
       None => None,
     };
-    if let Some(userid_like) = userid_like {
+    if let Some(userid_like) = userid_like && !userid_like.is_empty() {
       where_query.push_str(" and t.userid like ?");
       args.push(format!("%{}%", sql_like(&userid_like)).into());
     }
@@ -274,7 +279,7 @@ async fn get_where_query(
       Some(item) => item.mobile_like.clone(),
       None => None,
     };
-    if let Some(mobile_like) = mobile_like {
+    if let Some(mobile_like) = mobile_like && !mobile_like.is_empty() {
       where_query.push_str(" and t.mobile like ?");
       args.push(format!("%{}%", sql_like(&mobile_like)).into());
     }
@@ -293,7 +298,7 @@ async fn get_where_query(
       Some(item) => item.gender_like.clone(),
       None => None,
     };
-    if let Some(gender_like) = gender_like {
+    if let Some(gender_like) = gender_like && !gender_like.is_empty() {
       where_query.push_str(" and t.gender like ?");
       args.push(format!("%{}%", sql_like(&gender_like)).into());
     }
@@ -312,7 +317,7 @@ async fn get_where_query(
       Some(item) => item.email_like.clone(),
       None => None,
     };
-    if let Some(email_like) = email_like {
+    if let Some(email_like) = email_like && !email_like.is_empty() {
       where_query.push_str(" and t.email like ?");
       args.push(format!("%{}%", sql_like(&email_like)).into());
     }
@@ -331,7 +336,7 @@ async fn get_where_query(
       Some(item) => item.biz_email_like.clone(),
       None => None,
     };
-    if let Some(biz_email_like) = biz_email_like {
+    if let Some(biz_email_like) = biz_email_like && !biz_email_like.is_empty() {
       where_query.push_str(" and t.biz_email like ?");
       args.push(format!("%{}%", sql_like(&biz_email_like)).into());
     }
@@ -350,7 +355,7 @@ async fn get_where_query(
       Some(item) => item.direct_leader_like.clone(),
       None => None,
     };
-    if let Some(direct_leader_like) = direct_leader_like {
+    if let Some(direct_leader_like) = direct_leader_like && !direct_leader_like.is_empty() {
       where_query.push_str(" and t.direct_leader like ?");
       args.push(format!("%{}%", sql_like(&direct_leader_like)).into());
     }
@@ -369,7 +374,7 @@ async fn get_where_query(
       Some(item) => item.position_like.clone(),
       None => None,
     };
-    if let Some(position_like) = position_like {
+    if let Some(position_like) = position_like && !position_like.is_empty() {
       where_query.push_str(" and t.position like ?");
       args.push(format!("%{}%", sql_like(&position_like)).into());
     }
@@ -388,7 +393,7 @@ async fn get_where_query(
       Some(item) => item.avatar_like.clone(),
       None => None,
     };
-    if let Some(avatar_like) = avatar_like {
+    if let Some(avatar_like) = avatar_like && !avatar_like.is_empty() {
       where_query.push_str(" and t.avatar like ?");
       args.push(format!("%{}%", sql_like(&avatar_like)).into());
     }
@@ -407,7 +412,7 @@ async fn get_where_query(
       Some(item) => item.thumb_avatar_like.clone(),
       None => None,
     };
-    if let Some(thumb_avatar_like) = thumb_avatar_like {
+    if let Some(thumb_avatar_like) = thumb_avatar_like && !thumb_avatar_like.is_empty() {
       where_query.push_str(" and t.thumb_avatar like ?");
       args.push(format!("%{}%", sql_like(&thumb_avatar_like)).into());
     }
@@ -426,7 +431,7 @@ async fn get_where_query(
       Some(item) => item.qr_code_like.clone(),
       None => None,
     };
-    if let Some(qr_code_like) = qr_code_like {
+    if let Some(qr_code_like) = qr_code_like && !qr_code_like.is_empty() {
       where_query.push_str(" and t.qr_code like ?");
       args.push(format!("%{}%", sql_like(&qr_code_like)).into());
     }
@@ -445,7 +450,7 @@ async fn get_where_query(
       Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(rem_like) = rem_like {
+    if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
@@ -679,51 +684,45 @@ pub async fn find_all_wxw_usr(
     }
   }
   // 企微应用
-  if let Some(search) = &search {
-    if search.wxw_app_id.is_some() {
-      let len = search.wxw_app_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.wxw_app_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.wxw_app_id.is_some() {
+    let len = search.wxw_app_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.wxw_app_id.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search {
-    if search.create_usr_id.is_some() {
-      let len = search.create_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.create_usr_id.is_some() {
+    let len = search.create_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search {
-    if search.update_usr_id.is_some() {
-      let len = search.update_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.update_usr_id.is_some() {
+    let len = search.update_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
   
@@ -811,51 +810,45 @@ pub async fn find_count_wxw_usr(
     }
   }
   // 企微应用
-  if let Some(search) = &search {
-    if search.wxw_app_id.is_some() {
-      let len = search.wxw_app_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.wxw_app_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.wxw_app_id.is_some() {
+    let len = search.wxw_app_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.wxw_app_id.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search {
-    if search.create_usr_id.is_some() {
-      let len = search.create_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.create_usr_id.is_some() {
+    let len = search.create_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search {
-    if search.update_usr_id.is_some() {
-      let len = search.update_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.update_usr_id.is_some() {
+    let len = search.update_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
   
@@ -992,10 +985,8 @@ pub async fn find_one_wxw_usr(
     );
   }
   
-  if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
-      return Ok(None);
-    }
+  if let Some(search) = &search && search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    return Ok(None);
   }
   
   let options = Options::from(options)
@@ -1049,7 +1040,7 @@ pub async fn find_by_id_ok_wxw_usr(
   let options = Some(options);
   
   let wxw_usr_model = find_by_id_wxw_usr(
-    id.clone(),
+    id,
     options,
   ).await?;
   
@@ -1293,51 +1284,45 @@ pub async fn exists_wxw_usr(
     }
   }
   // 企微应用
-  if let Some(search) = &search {
-    if search.wxw_app_id.is_some() {
-      let len = search.wxw_app_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.wxw_app_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.wxw_app_id.is_some() {
+    let len = search.wxw_app_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.wxw_app_id.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search {
-    if search.create_usr_id.is_some() {
-      let len = search.create_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.create_usr_id.is_some() {
+    let len = search.create_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search {
-    if search.update_usr_id.is_some() {
-      let len = search.update_usr_id.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(false);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-      }
+  if let Some(search) = &search && search.update_usr_id.is_some() {
+    let len = search.update_usr_id.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
   
@@ -1580,7 +1565,7 @@ pub async fn check_by_unique_wxw_usr(
   }
   if unique_type == UniqueType::Update {
     let id = update_by_id_wxw_usr(
-      model.id.clone(),
+      model.id,
       input,
       options,
     ).await?;
@@ -1829,9 +1814,9 @@ async fn _creates(
   {
     
     let id: WxwUsrId = get_short_uuid().into();
-    ids2.push(id.clone());
+    ids2.push(id);
     
-    inputs2_ids.push(id.clone());
+    inputs2_ids.push(id);
     
     sql_values += "(?";
     args.push(id.into());
@@ -1866,7 +1851,7 @@ async fn _creates(
         let mut usr_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -1883,14 +1868,14 @@ async fn _creates(
         }
         sql_values += ",?";
         args.push(usr_lbl.into());
-      } else if input.create_usr_id.clone().unwrap().as_str() == "-" {
+      } else if input.create_usr_id.unwrap().is_empty() {
         sql_values += ",default";
         sql_values += ",default";
       } else {
-        let mut usr_id = input.create_usr_id.clone();
+        let mut usr_id = input.create_usr_id;
         let mut usr_lbl = String::new();
         let usr_model = find_by_id_usr(
-          usr_id.clone().unwrap(),
+          usr_id.unwrap(),
           options.clone(),
         ).await?;
         if let Some(usr_model) = usr_model {
@@ -2236,7 +2221,7 @@ pub async fn update_by_id_wxw_usr(
   let options = Some(options);
   
   let old_model = find_by_id_wxw_usr(
-    id.clone(),
+    id,
     options.clone(),
   ).await?;
   
@@ -2395,7 +2380,7 @@ pub async fn update_by_id_wxw_usr(
         let mut usr_id_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -2412,12 +2397,12 @@ pub async fn update_by_id_wxw_usr(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      } else if input.update_usr_id.clone().unwrap().as_str() != "-" {
-        let mut usr_id = input.update_usr_id.clone();
+      } else if !input.update_usr_id.unwrap().is_empty() {
+        let mut usr_id = input.update_usr_id;
         let mut usr_id_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
-            usr_id.clone().unwrap(),
+            usr_id.unwrap(),
             options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
@@ -2434,8 +2419,8 @@ pub async fn update_by_id_wxw_usr(
         }
       }
     } else {
-      if input.update_usr_id.is_some() && input.update_usr_id.clone().unwrap().as_str() != "-" {
-        let usr_id = input.update_usr_id.clone();
+      if input.update_usr_id.is_some() && !input.update_usr_id.unwrap().is_empty() {
+        let usr_id = input.update_usr_id;
         if let Some(usr_id) = usr_id {
           sql_fields += "update_usr_id=?,";
           args.push(usr_id.into());
@@ -2464,7 +2449,7 @@ pub async fn update_by_id_wxw_usr(
     }
     
     let sql_where = "id=?";
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let sql = format!("update {table} set {sql_fields} where {sql_where} limit 1");
     
@@ -2565,7 +2550,7 @@ pub async fn delete_by_ids_wxw_usr(
   for id in ids.clone() {
     
     let old_model = find_by_id_wxw_usr(
-      id.clone(),
+      id,
       options.clone(),
     ).await?;
     if old_model.is_none() {
@@ -2591,7 +2576,7 @@ pub async fn delete_by_ids_wxw_usr(
     let mut usr_lbl = String::new();
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
-        usr_id.clone().unwrap(),
+        usr_id.unwrap(),
         options.clone(),
       ).await?;
       if let Some(usr_model) = usr_model {
@@ -2601,11 +2586,9 @@ pub async fn delete_by_ids_wxw_usr(
       }
     }
     
-    if !is_silent_mode && !is_creating {
-      if let Some(usr_id) = usr_id {
-        sql_fields.push_str("delete_usr_id=?,");
-        args.push(usr_id.into());
-      }
+    if !is_silent_mode && !is_creating && let Some(usr_id) = usr_id {
+      sql_fields.push_str("delete_usr_id=?,");
+      args.push(usr_id.into());
     }
     
     if !is_silent_mode && !is_creating {
@@ -2624,7 +2607,7 @@ pub async fn delete_by_ids_wxw_usr(
     
     let sql = format!("update {table} set {sql_fields} where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
@@ -2687,13 +2670,13 @@ pub async fn revert_by_ids_wxw_usr(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     
     let mut old_model = find_one_wxw_usr(
       WxwUsrSearch {
-        id: Some(id.clone()),
+        id: Some(id),
         is_deleted: Some(1),
         ..Default::default()
       }.into(),
@@ -2703,7 +2686,7 @@ pub async fn revert_by_ids_wxw_usr(
     
     if old_model.is_none() {
       old_model = find_by_id_wxw_usr(
-        id.clone(),
+        id,
         options.clone(),
       ).await?;
     }
@@ -2787,7 +2770,7 @@ pub async fn force_delete_by_ids_wxw_usr(
     
     let old_model = find_all_wxw_usr(
       WxwUsrSearch {
-        id: id.clone().into(),
+        id: id.into(),
         is_deleted: 1.into(),
         ..Default::default()
       }.into(),
@@ -2815,7 +2798,7 @@ pub async fn force_delete_by_ids_wxw_usr(
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.into());
     
     let args: Vec<_> = args.into();
     

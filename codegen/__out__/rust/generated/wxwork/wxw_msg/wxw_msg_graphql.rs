@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -26,6 +30,7 @@ pub struct WxwMsgGenQuery;
 impl WxwMsgGenQuery {
   
   /// 根据搜索条件和分页查找企微消息列表
+  #[graphql(name = "findAllWxwMsg")]
   async fn find_all_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -47,6 +52,7 @@ impl WxwMsgGenQuery {
   }
   
   /// 根据条件查找企微消息总数
+  #[graphql(name = "findCountWxwMsg")]
   async fn find_count_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -64,6 +70,7 @@ impl WxwMsgGenQuery {
   }
   
   /// 根据条件查找第一个企微消息
+  #[graphql(name = "findOneWxwMsg")]
   async fn find_one_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -83,6 +90,7 @@ impl WxwMsgGenQuery {
   }
   
   /// 根据条件查找第一个企微消息, 如果不存在则抛错
+  #[graphql(name = "findOneOkWxwMsg")]
   async fn find_one_ok_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -102,6 +110,7 @@ impl WxwMsgGenQuery {
   }
   
   /// 根据 id 查找企微消息
+  #[graphql(name = "findByIdWxwMsg")]
   async fn find_by_id_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -119,6 +128,7 @@ impl WxwMsgGenQuery {
   }
   
   /// 根据 id 查找企微消息, 如果不存在则抛错
+  #[graphql(name = "findByIdOkWxwMsg")]
   async fn find_by_id_ok_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -136,6 +146,7 @@ impl WxwMsgGenQuery {
   }
   
   /// 根据 id 查找企微消息
+  #[graphql(name = "findByIdsWxwMsg")]
   async fn find_by_ids_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -153,6 +164,7 @@ impl WxwMsgGenQuery {
   }
   
   /// 根据 id 查找企微消息
+  #[graphql(name = "findByIdsOkWxwMsg")]
   async fn find_by_ids_ok_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -170,6 +182,7 @@ impl WxwMsgGenQuery {
   }
   
   /// 获取企微消息字段注释
+  #[graphql(name = "getFieldCommentsWxwMsg")]
   async fn get_field_comments_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -193,6 +206,7 @@ impl WxwMsgGenMutation {
   
   /// 占位方法, 用于实现 WxwMsgInput
   #[allow(unused_variables)]
+  #[graphql(name = "noAddNoEditWxwMsg")]
   async fn no_add_no_edit_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -202,6 +216,7 @@ impl WxwMsgGenMutation {
   }
   
   /// 企微消息根据id修改租户id
+  #[graphql(name = "updateTenantByIdWxwMsg")]
   async fn update_tenant_by_id_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -222,6 +237,7 @@ impl WxwMsgGenMutation {
   }
   
   /// 根据 ids 删除企微消息
+  #[graphql(name = "deleteByIdsWxwMsg")]
   async fn delete_by_ids_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -240,6 +256,7 @@ impl WxwMsgGenMutation {
   }
   
   /// 根据 ids 还原企微消息
+  #[graphql(name = "revertByIdsWxwMsg")]
   async fn revert_by_ids_wxw_msg(
     &self,
     ctx: &Context<'_>,
@@ -258,6 +275,7 @@ impl WxwMsgGenMutation {
   }
   
   /// 根据 ids 彻底删除企微消息
+  #[graphql(name = "forceDeleteByIdsWxwMsg")]
   async fn force_delete_by_ids_wxw_msg(
     &self,
     ctx: &Context<'_>,

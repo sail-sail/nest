@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -227,7 +231,7 @@ pub async fn update_by_id_wxw_app(
 ) -> Result<WxwAppId> {
   
   let is_locked = wxw_app_dao::get_is_locked_by_id_wxw_app(
-    wxw_app_id.clone(),
+    wxw_app_id,
     None,
   ).await?;
   
