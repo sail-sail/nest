@@ -1,4 +1,4 @@
-import { shortUuidV4 } from "./uuid";
+import { shortUuidV4 } from "./uuid.ts";
 import clipboardy from "clipboardy";
 
 // 使用方法: npm run uuid [数量]
