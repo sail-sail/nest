@@ -30,9 +30,5 @@
     "node_modules",
     "__out__/**/*.*",
     "src/template/**/*.*"
-  ],
-  "ts-node": {
-    "transpileOnly": true,
-    "swc": true
-  }
+  ]
 }
