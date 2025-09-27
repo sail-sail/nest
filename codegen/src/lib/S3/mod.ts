@@ -1,5 +1,5 @@
-export * from "./client";
-export * from "./bucket";
+export * from "./client.ts";
+export * from "./bucket.ts";
 export type {
   CommonPrefix,
   CopyDirective,
