@@ -3,7 +3,7 @@ import { defineConfig } from "../config.ts";
 import base from "./base/base.ts";
 
 // 百度设置
-import baidu from "./baidu/baidu";
+import baidu from "./baidu/baidu.ts";
 
 /** 是否使用国际化 */
 export const isUseI18n = false;
