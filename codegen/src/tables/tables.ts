@@ -3,7 +3,7 @@ import { defineConfig } from "../config.ts";
 import base from "./base/base.ts";
 
 // 网站
-import nuxt from "./nuxt/nuxt";
+import nuxt from "./nuxt/nuxt.ts";
 
 /** 是否使用国际化 */
 export const isUseI18n = false;
