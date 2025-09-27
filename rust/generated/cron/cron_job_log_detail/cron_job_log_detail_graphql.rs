@@ -1,3 +1,7 @@
+
+#![allow(clippy::clone_on_copy)]
+#![allow(clippy::redundant_clone)]
+
 #[allow(unused_imports)]
 use color_eyre::eyre::{Result, eyre};
 use async_graphql::{Context, Object};
@@ -26,6 +30,7 @@ pub struct CronJobLogDetailGenQuery;
 impl CronJobLogDetailGenQuery {
   
   /// 根据搜索条件和分页查找定时任务日志明细列表
+  #[graphql(name = "findAllCronJobLogDetail")]
   async fn find_all_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -47,6 +52,7 @@ impl CronJobLogDetailGenQuery {
   }
   
   /// 根据条件查找定时任务日志明细总数
+  #[graphql(name = "findCountCronJobLogDetail")]
   async fn find_count_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -64,6 +70,7 @@ impl CronJobLogDetailGenQuery {
   }
   
   /// 根据条件查找第一个定时任务日志明细
+  #[graphql(name = "findOneCronJobLogDetail")]
   async fn find_one_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -83,6 +90,7 @@ impl CronJobLogDetailGenQuery {
   }
   
   /// 根据条件查找第一个定时任务日志明细, 如果不存在则抛错
+  #[graphql(name = "findOneOkCronJobLogDetail")]
   async fn find_one_ok_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -102,6 +110,7 @@ impl CronJobLogDetailGenQuery {
   }
   
   /// 根据 id 查找定时任务日志明细
+  #[graphql(name = "findByIdCronJobLogDetail")]
   async fn find_by_id_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -119,6 +128,7 @@ impl CronJobLogDetailGenQuery {
   }
   
   /// 根据 id 查找定时任务日志明细, 如果不存在则抛错
+  #[graphql(name = "findByIdOkCronJobLogDetail")]
   async fn find_by_id_ok_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -136,6 +146,7 @@ impl CronJobLogDetailGenQuery {
   }
   
   /// 根据 id 查找定时任务日志明细
+  #[graphql(name = "findByIdsCronJobLogDetail")]
   async fn find_by_ids_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -153,6 +164,7 @@ impl CronJobLogDetailGenQuery {
   }
   
   /// 根据 id 查找定时任务日志明细
+  #[graphql(name = "findByIdsOkCronJobLogDetail")]
   async fn find_by_ids_ok_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -170,6 +182,7 @@ impl CronJobLogDetailGenQuery {
   }
   
   /// 获取定时任务日志明细字段注释
+  #[graphql(name = "getFieldCommentsCronJobLogDetail")]
   async fn get_field_comments_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -193,6 +206,7 @@ impl CronJobLogDetailGenMutation {
   
   /// 占位方法, 用于实现 CronJobLogDetailInput
   #[allow(unused_variables)]
+  #[graphql(name = "noAddNoEditCronJobLogDetail")]
   async fn no_add_no_edit_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -202,6 +216,7 @@ impl CronJobLogDetailGenMutation {
   }
   
   /// 定时任务日志明细根据id修改租户id
+  #[graphql(name = "updateTenantByIdCronJobLogDetail")]
   async fn update_tenant_by_id_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -222,6 +237,7 @@ impl CronJobLogDetailGenMutation {
   }
   
   /// 根据 ids 删除定时任务日志明细
+  #[graphql(name = "deleteByIdsCronJobLogDetail")]
   async fn delete_by_ids_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -240,6 +256,7 @@ impl CronJobLogDetailGenMutation {
   }
   
   /// 根据 ids 还原定时任务日志明细
+  #[graphql(name = "revertByIdsCronJobLogDetail")]
   async fn revert_by_ids_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
@@ -258,6 +275,7 @@ impl CronJobLogDetailGenMutation {
   }
   
   /// 根据 ids 彻底删除定时任务日志明细
+  #[graphql(name = "forceDeleteByIdsCronJobLogDetail")]
   async fn force_delete_by_ids_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
