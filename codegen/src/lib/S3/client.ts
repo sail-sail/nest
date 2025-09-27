@@ -1,9 +1,9 @@
-import { AWSSignerV4 } from "./deps";
-import type { CreateBucketOptions } from "./types";
-import { S3Error } from "./error";
-import { S3Bucket } from "./bucket";
-import { doRequest, encoder } from "./request";
-import type { Params } from "./request";
+import { AWSSignerV4 } from "./deps.ts";
+import type { CreateBucketOptions } from "./types.ts";
+import { S3Error } from "./error.ts";
+import { S3Bucket } from "./bucket.ts";
+import { doRequest, encoder } from "./request.ts";
+import type { Params } from "./request.ts";
 
 export interface S3Config {
   region: string;

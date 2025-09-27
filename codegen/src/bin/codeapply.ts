@@ -1,4 +1,4 @@
-import { gitDiffOut } from "../lib/codegen";
+import { gitDiffOut } from "../lib/codegen.ts";
 
 async function exec() {
   await gitDiffOut();
