@@ -1,7 +1,7 @@
-import { toAmz, toDateStamp } from "./date";
+import { toAmz, toDateStamp } from "./date.ts";
 export { toAmz, toDateStamp };
-import { getSignatureKey, signAwsV4 } from "./signing";
-import { sha256Hex } from "./util";
+import { getSignatureKey, signAwsV4 } from "./signing.ts";
+import { sha256Hex } from "./util.ts";
 
 /**
  * Generic AWS Signer interface

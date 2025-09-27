@@ -19,17 +19,24 @@ import {
 
 import {
   execCsvFile,
-} from "./common";
+} from "./common.ts";
 
 import {
   initContext,
-} from "../lib/information_schema";
+} from "../lib/information_schema.ts";
 
 import * as crypto from "node:crypto";
 
 import {
   isEmpty,
-} from "../lib/StringUitl";
+} from "../lib/StringUitl.ts";
+
+import { fileURLToPath } from "node:url";
+
+// 获取当前文件的目录路径 (ES 模块中 __dirname 的等效方法)
+// @ts-ignore
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 let argv2 = process.argv[2];
 if (!argv2) {

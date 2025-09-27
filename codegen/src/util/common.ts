@@ -1,6 +1,4 @@
-import {
-  readFile,
-} from "fs-extra";
+import fsExtraPkg from "fs-extra";
 
 import {
   createHash,
@@ -11,25 +9,29 @@ import { parse } from "fast-csv";
 
 import type {
   Context,
-} from "../lib/information_schema";
+} from "../lib/information_schema.ts";
 
 import {
   isEmpty,
-} from "../lib/StringUitl";
+} from "../lib/StringUitl.ts";
 
 import type {
   S3Bucket,
-} from "../lib/S3/mod";
+} from "../lib/S3/mod.ts";
 
 import {
   S3,
-} from "../lib/S3/mod";
+} from "../lib/S3/mod.ts";
 
-import cfg from "../lib/nest_config";
+import cfg from "../lib/nest_config.ts";
 
 import {
   isUseI18n,
-} from "../tables/tables";
+} from "../tables/tables.ts";
+
+const {
+  readFile,
+} = fsExtraPkg;
 
 let _bucket: S3Bucket | undefined;
 
