@@ -1,6 +1,8 @@
 export class S3Error extends Error {
   override name = "S3Error";
-  constructor(message: string, public response: string) {
+  response: string;
+  constructor(message: string, response: string) {
     super(message);
+    this.response = response;
   }
 }

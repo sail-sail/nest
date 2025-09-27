@@ -1,22 +1,37 @@
-import { readFile, stat, writeFile, constants as fs_constants, access, readdir, mkdir, copy, copyFile, type Stats, rm } from "fs-extra";
+import fsExtraPkg from "fs-extra";
+import type { Stats } from "fs-extra";
 import * as ejsexcel from "ejsexcel";
-import { Context, getAllTables, getDictModels, getDictbizModels } from "./information_schema";
-import { includeFtl, isEmpty as isEmpty0, uniqueID as uniqueID0, formatMsg as formatMsg0 } from "./StringUitl";
+import { Context, getAllTables, getDictModels, getDictbizModels } from "./information_schema.ts";
+import { includeFtl, isEmpty as isEmpty0, uniqueID as uniqueID0, formatMsg as formatMsg0 } from "./StringUitl.ts";
 import { basename, dirname, resolve, normalize } from "path";
+import { fileURLToPath } from "url";
 import { Chalk } from "chalk";
-import * as shelljs from "shelljs";
+import shelljs from "shelljs";
 import * as uuid from "uuid";
-import tables, { isUseI18n as isUseI18n0 } from "../tables/tables";
+import tables, { isUseI18n as isUseI18n0 } from "../tables/tables.ts";
 import { createHash } from "crypto";
 import { unlink } from "fs/promises";
-import { TablesConfigItem } from "../config";
-import { getSchema } from "./information_schema";
+import { type TablesConfigItem } from "../config.ts";
+import { getSchema } from "./information_schema.ts";
 
 import {
   execSync,
   exec,
-  ExecException,
+  type ExecException,
 } from "child_process";
+
+const {
+  readFile,
+  stat,
+  writeFile,
+  constants: fs_constants,
+  access,
+  readdir,
+  mkdir,
+  copy,
+  copyFile,
+  rm,
+} = fsExtraPkg;
 
 if (!shelljs.which("git")) {
   shelljs.echo("请先安装git: https://git-scm.com");
@@ -31,6 +46,11 @@ const isUseI18n = isUseI18n0;
 // }
 
 const chalk = new Chalk();
+
+// 获取当前文件的目录路径 (ES 模块中 __dirname 的等效方法)
+// @ts-ignore
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const out = resolve(`${ __dirname }/../../__out__/`).replace(/\\/gm, "/");
 const rootPh = resolve(`${ __dirname }/../template`).replace(/\\/gm, "/");
@@ -516,11 +536,11 @@ export async function genMenu(context: Context) {
   let orderBy = 999;
   const prnMenuId = shortUuidV4();
   const create_time = new Date();
-  const [ menu ] = <any>(await context.conn.execute(`
+  const [ menu ] = (await context.conn.execute(`
     select t.*
     from menu t
     where t.lbl = '自动生成'
-  `))[0];
+  `))[0] as any;
   if (!menu) {
     await context.conn.execute(`
       insert into menu(id, lbl, route_path, tenant_id, order_by, create_time)
@@ -534,13 +554,13 @@ export async function genMenu(context: Context) {
     from information_schema.TABLES t
     where t.table_schema = (select database())
   `);
-  const records: {TABLE_NAME: string, TABLE_COMMENT: string}[] = <any>result[0];
+  const records: {TABLE_NAME: string, TABLE_COMMENT: string}[] = result[0] as any;
   for (let i = 0; i < records.length; i++) {
     const record = records[i];
-    const [ menu ] = <any>(await context.conn.query(`
+    const [ menu ] = (await context.conn.query(`
       select t.* from menu t
       where t.route_path = ?
-    `, [ `/${ record.TABLE_NAME }` ]))[0];
+    `, [ `/${ record.TABLE_NAME }` ]))[0] as any;
     if (menu) continue;
     await context.conn.execute(`
       insert into menu(id, menu_id, lbl, route_path, tenant_id, order_by, create_time)

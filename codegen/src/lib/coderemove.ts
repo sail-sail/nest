@@ -1,6 +1,13 @@
-import { resolve } from "path";
-import { Context } from "./information_schema";
+import { dirname, resolve } from "path";
+import { Context } from "./information_schema.ts";
 import { rm } from "fs/promises";
+
+import { fileURLToPath } from "url";
+
+// 获取当前文件的目录路径 (ES 模块中 __dirname 的等效方法)
+// @ts-ignore
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const out = resolve(`${ __dirname }/../../__out__/`).replace(/\\/gm, "/");
 const projectPh = resolve(`${ __dirname }/../../../`).replace(/\\/gm, "/");
