@@ -2325,9 +2325,9 @@ if (searchByKeyword) {
     </div>
     <div
       un-flex="~"
-      un-justify-end
-      un-p="y-1"
-      un-box-border
+      un-justify="end"
+      un-items="center"
+      un-h="10"
     ><#
       if (list_page) {
       #>
