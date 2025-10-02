@@ -25,7 +25,7 @@
     "clipboardy": "5.0.0",
     "commander": "14.0.1",
     "dayjs": "1.11.18",
-    "dotenv": "17.2.2",
+    "dotenv": "17.2.3",
     "ejsexcel": "4.2.2",
     "fast-csv": "5.0.5",
     "fs-extra": "11.3.2",
@@ -35,9 +35,9 @@
   },
   "devDependencies": {
     "@types/fs-extra": "11.0.4",
-    "@types/node": "24.5.2",
+    "@types/node": "24.6.2",
     "@types/shelljs": "0.8.17",
     "@types/uuid": "11.0.0",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   }
 }
