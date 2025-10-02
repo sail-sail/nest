@@ -32,16 +32,16 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "6.0.0",
-    "@graphql-codegen/typescript": "5.0.0",
-    "@graphql-codegen/typescript-operations": "5.0.0",
-    "@types/node": "24.5.2",
+    "@graphql-codegen/typescript": "5.0.1",
+    "@graphql-codegen/typescript-operations": "5.0.1",
+    "@types/node": "24.6.2",
     "@types/sqlstring": "2.3.2",
     "chokidar": "4.0.3",
     "commander": "14.0.1",
-    "dotenv": "17.2.2",
+    "dotenv": "17.2.3",
     "graphql-ts-client-codegen": "3.1.17",
     "ssh2-promise": "1.0.3",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
