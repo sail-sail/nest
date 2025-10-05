@@ -1,7 +1,7 @@
 use std::env;
 use color_eyre::eyre::Result;
 use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Command};
-use s3::request::tokio_backend::HyperRequest;
+use s3::request::tokio_backend::ReqwestRequest;
 use s3::request::Request;
 
 #[derive(Debug)]
@@ -25,7 +25,7 @@ async fn create_bucket(
 ) -> Result<()> {
   let mut config = BucketConfiguration::default();
   config.set_region("us-east-1".parse()?);
-  let request = HyperRequest::new(&bucket, "", Command::CreateBucket { config }).await?;
+  let request = ReqwestRequest::new(&bucket, "", Command::CreateBucket { config }).await?;
   let _ = request.response_data(false).await?;
   Ok(())
 }
