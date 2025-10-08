@@ -75,6 +75,8 @@ pkcs8.workspace = true
 serde_with.workspace = true
 csv.workspace = true
 docx-handlebars.workspace = true
+xlsx-handlebars.workspace = true
+tokio-tungstenite.workspace = true
 
 generated = { path = "../generated" }
 
