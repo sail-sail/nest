@@ -2739,7 +2739,7 @@ if (hasForeignPage) {
 #>
 
 import {
-  openForeignPage,
+  useOpenForeignPage,
 } from "@/router/util.ts";<#
 }
 #><#
@@ -2759,7 +2759,13 @@ if (list_tree) {
 }
 #>defineOptions({
   name: "<#=optionsName#>",
-});
+});<#
+if (hasForeignPage) {
+#>
+
+const openForeignPage = useOpenForeignPage();<#
+}
+#>
 
 const pagePath = getPagePath<#=Table_Up#>();
 const __filename = new URL(import.meta.url).pathname;
