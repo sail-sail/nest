@@ -639,12 +639,14 @@ import {
 } from "./Api.ts";
 
 import {
-  openForeignPage,
+  useOpenForeignPage,
 } from "@/router/util.ts";
 
 defineOptions({
   name: "微信JSAPI下单",
 });
+
+const openForeignPage = useOpenForeignPage();
 
 const pagePath = getPagePathPayTransactionsJsapi();
 const __filename = new URL(import.meta.url).pathname;

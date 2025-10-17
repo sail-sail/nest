@@ -655,12 +655,14 @@ import {
 } from "./Api.ts";
 
 import {
-  openForeignPage,
+  useOpenForeignPage,
 } from "@/router/util.ts";
 
 defineOptions({
   name: "微信支付通知",
 });
+
+const openForeignPage = useOpenForeignPage();
 
 const pagePath = getPagePathWxPayNotice();
 const __filename = new URL(import.meta.url).pathname;
