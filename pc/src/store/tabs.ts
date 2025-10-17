@@ -1,5 +1,6 @@
 import type {
   RouteLocationNormalizedLoaded,
+  RouteLocationNormalizedLoadedGeneric,
   RouteMeta,
   Router,
 } from "vue-router";
@@ -301,13 +302,15 @@ export default function() {
   }
   
   async function openPageByRouteName(
+    router: Router,
+    route0: RouteLocationNormalizedLoadedGeneric,
     routeName: string,
     tabName?: string,
     query?: { [key: string]: string },
   ) {
     
-    const router = useRouter();
-    const routeNow = useRoute();
+    // const router = useRouter();
+    // const route = useRoute();
     
     const route = getRouterByName(router, routeName);
     if (!route) {
@@ -345,7 +348,7 @@ export default function() {
     if (oldTab) {
       oldTab.lbl = tab.lbl;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const comp = routeNow.matched[1].instances?.default as any;
+      const comp = route0.matched[1].instances?.default as any;
       await comp?.refresh?.();
     }
     return navFail;
