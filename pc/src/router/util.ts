@@ -3,6 +3,7 @@ import type {
 } from "vue";
 
 import type {
+  RouteLocationNormalizedLoadedGeneric,
   Router,
   RouteRecordRaw,
 } from "vue-router";
@@ -130,14 +131,38 @@ export function getRouterByName(
 }
 
 export async function openForeignPage(
+  router: Router,
+  route: RouteLocationNormalizedLoadedGeneric,
   routeName: string,
   tabName: string | undefined,
   query?: { [key: string]: string },
 ) {
   const tabsStore = useTabsStore();
   await tabsStore.openPageByRouteName(
+    router,
+    route,
     routeName,
     tabName,
     query,
   );
+}
+
+export function useOpenForeignPage() {
+  
+  const router = useRouter();
+  const route = useRoute();
+  
+  return async function(
+    routeName: string,
+    tabName: string | undefined,
+    query?: { [key: string]: string },
+  ) {
+    return openForeignPage(
+      router,
+      route,
+      routeName,
+      tabName,
+      query,
+    );
+  };
 }

@@ -500,11 +500,14 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
-                <LinkImage
-                  v-model="row[column.property]"
-                  un-h="8"
-                ></LinkImage>
+              <template #default="{ row }">
+                <CustomIcon
+                  :model-value="row.img"
+                  :model-lbl="row.img_lbl_svg"
+                  :readonly="true"
+                  un-justify-center
+                  un-items-center
+                ></CustomIcon>
               </template>
             </el-table-column>
           </template>
