@@ -67,9 +67,6 @@
 <script setup lang="ts">
 import type {
   Ref,
-} from "vue";
-
-import type {
   WatchStopHandle,
 } from "vue";
 
@@ -129,7 +126,7 @@ function showDialog<OnCloseResolveType>(
     titleWatchHandle = watch(
       arg.title,
       () => {
-        dialogTitle = resolveUnref(arg.title) || "";
+        dialogTitle = unref(arg.title) || "";
       },
       {
         immediate: true,
@@ -142,7 +139,7 @@ function showDialog<OnCloseResolveType>(
     noticeWatchHandle = watch(
       arg.notice,
       () => {
-        dialogNotice = resolveUnref(arg.notice) || "";
+        dialogNotice = unref(arg.notice) || "";
       },
       {
         immediate: true,

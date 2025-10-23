@@ -937,7 +937,7 @@ async function onSave() {
 }
 
 const default_org_idRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("default_org_idRef"));
-let old_default_org_id: OrgId | null | undefined = undefined;
+let old_default_org_id: InputMaybe<OrgId> | undefined = undefined;
 
 async function getOrgListApi() {
   const org_ids = dialogModel.org_ids || [ ];
