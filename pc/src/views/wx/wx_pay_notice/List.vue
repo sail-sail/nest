@@ -615,9 +615,9 @@
     </div>
     <div
       un-flex="~"
-      un-justify-end
-      un-p="y-1"
-      un-box-border
+      un-justify="end"
+      un-items="center"
+      un-h="10"
     >
       <el-pagination
         v-if="isPagination"
@@ -655,12 +655,14 @@ import {
 } from "./Api.ts";
 
 import {
-  openForeignPage,
+  useOpenForeignPage,
 } from "@/router/util.ts";
 
 defineOptions({
   name: "微信支付通知",
 });
+
+const openForeignPage = useOpenForeignPage();
 
 const pagePath = getPagePathWxPayNotice();
 const __filename = new URL(import.meta.url).pathname;
