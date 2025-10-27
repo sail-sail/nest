@@ -19,6 +19,10 @@ type WxAppModel {
   appsecret: String!
   "默认角色"
   default_role_codes: String!
+  "默认角色"
+  default_role_ids: [RoleId!]!
+  "默认角色"
+  default_role_ids_lbl: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -105,6 +109,8 @@ input WxAppInput {
   appsecret: String
   "默认角色"
   default_role_codes: String
+  "默认角色"
+  default_role_ids: [RoleId!]
   "锁定"
   is_locked: Int
   "锁定"

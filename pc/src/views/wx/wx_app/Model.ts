@@ -40,6 +40,10 @@ export const wxAppFields = [
   "appsecret",
   // 默认角色
   "default_role_codes",
+  // 默认角色
+  "default_role_ids",
+  // 默认角色
+  "default_role_ids_lbl",
   // 锁定
   "is_locked",
   "is_locked_lbl",

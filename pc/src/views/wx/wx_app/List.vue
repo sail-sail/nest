@@ -551,7 +551,7 @@
           </template>
           
           <!-- 默认角色 -->
-          <template v-else-if="'default_role_codes' === col.prop">
+          <template v-else-if="'default_role_ids_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1039,14 +1039,14 @@ function getTableColumns(): ColumnType[] {
     {
       label: "开发者ID",
       prop: "appid",
-      width: 160,
+      width: 180,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
     {
       label: "默认角色",
-      prop: "default_role_codes",
+      prop: "default_role_ids_lbl",
       width: 200,
       align: "left",
       headerAlign: "center",

@@ -6,6 +6,11 @@ import type {
 
 import * as wxo_appDao from "./wxo_app.dao.ts";
 
+import {
+  findByIdsOkRole,
+  findAllRole,
+} from "/gen/base/role/role.dao.ts";
+
 async function setSearchQuery(
   _search: WxoAppSearch,
 ) {
@@ -43,6 +48,14 @@ export async function findAllWxoApp(
   
   const wxo_app_models = await wxo_appDao.findAllWxoApp(search, page, sort);
   
+  // default_role_codes 转 default_role_ids
+  for (const wxo_app_model of wxo_app_models) {
+    const default_role_codes = wxo_app_model.default_role_codes;
+    const role_models = await to_default_role_models(default_role_codes);
+    wxo_app_model.default_role_ids = role_models.map((x) => x.id);
+    wxo_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
+  }
+  
   return wxo_app_models;
 }
 
@@ -69,6 +82,14 @@ export async function findOneWxoApp(
   
   const wxo_app_model = await wxo_appDao.findOneWxoApp(search, sort);
   
+  // default_role_codes 转 default_role_ids
+  if (wxo_app_model) {
+    const default_role_codes = wxo_app_model.default_role_codes;
+    const role_models = await to_default_role_models(default_role_codes);
+    wxo_app_model.default_role_ids = role_models.map((x) => x.id);
+    wxo_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
+  }
+  
   return wxo_app_model;
 }
 
@@ -86,6 +107,12 @@ export async function findOneOkWxoApp(
   
   const wxo_app_model = await wxo_appDao.findOneOkWxoApp(search, sort);
   
+  // default_role_codes 转 default_role_ids
+  const default_role_codes = wxo_app_model.default_role_codes;
+  const role_models = await to_default_role_models(default_role_codes);
+  wxo_app_model.default_role_ids = role_models.map((x) => x.id);
+  wxo_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
+  
   return wxo_app_model;
 }
 
@@ -97,6 +124,14 @@ export async function findByIdWxoApp(
 ): Promise<WxoAppModel | undefined> {
   
   const wxo_app_model = await wxo_appDao.findByIdWxoApp(wxo_app_id);
+  
+  // default_role_codes 转 default_role_ids
+  if (wxo_app_model) {
+    const default_role_codes = wxo_app_model.default_role_codes;
+    const role_models = await to_default_role_models(default_role_codes);
+    wxo_app_model.default_role_ids = role_models.map((x) => x.id);
+    wxo_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
+  }
   
   return wxo_app_model;
 }
@@ -110,6 +145,12 @@ export async function findByIdOkWxoApp(
   
   const wxo_app_model = await wxo_appDao.findByIdOkWxoApp(wxo_app_id);
   
+  // default_role_codes 转 default_role_ids
+  const default_role_codes = wxo_app_model.default_role_codes;
+  const role_models = await to_default_role_models(default_role_codes);
+  wxo_app_model.default_role_ids = role_models.map((x) => x.id);
+  wxo_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
+  
   return wxo_app_model;
 }
 
@@ -122,6 +163,14 @@ export async function findByIdsWxoApp(
   
   const wxo_app_models = await wxo_appDao.findByIdsWxoApp(wxo_app_ids);
   
+  // default_role_codes 转 default_role_ids
+  for (const wxo_app_model of wxo_app_models) {
+    const default_role_codes = wxo_app_model.default_role_codes;
+    const role_models = await to_default_role_models(default_role_codes);
+    wxo_app_model.default_role_ids = role_models.map((x) => x.id);
+    wxo_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
+  }
+  
   return wxo_app_models;
 }
 
@@ -133,6 +182,14 @@ export async function findByIdsOkWxoApp(
 ): Promise<WxoAppModel[]> {
   
   const wxo_app_models = await wxo_appDao.findByIdsOkWxoApp(wxo_app_ids);
+  
+  // default_role_codes 转 default_role_ids
+  for (const wxo_app_model of wxo_app_models) {
+    const default_role_codes = wxo_app_model.default_role_codes;
+    const role_models = await to_default_role_models(default_role_codes);
+    wxo_app_model.default_role_ids = role_models.map((x) => x.id);
+    wxo_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
+  }
   
   return wxo_app_models;
 }
@@ -175,6 +232,48 @@ export async function validateWxoApp(
 }
 
 /**
+ * default_role_ids 转 default_role_codes
+ */
+async function to_default_role_codes(
+  default_role_ids?: RoleId[] | null,
+): Promise<string[]> {
+  
+  if (!default_role_ids || default_role_ids.length === 0) {
+    return [ ];
+  }
+  
+  const role_models = await findByIdsOkRole(default_role_ids);
+  
+  const role_codes = role_models.map((x) => x.code);
+  
+  return role_codes;
+}
+
+/**
+ * default_role_codes 转 default_role_ids
+ */
+async function to_default_role_models(
+  default_role_codes?: string | null,
+): Promise<RoleModel[]> {
+  
+  if (!default_role_codes || default_role_codes.length === 0) {
+    return [ ];
+  }
+  
+  const codes = default_role_codes.split(",").map((x) => x.trim()).filter((x) => x.length > 0);
+  
+  if (codes.length === 0) {
+    return [ ];
+  }
+  
+  const role_models = await findAllRole({
+    codes,
+  });
+  
+  return role_models;
+}
+
+/**
  * 批量创建公众号设置
  */
 export async function createsWxoApp(
@@ -183,6 +282,14 @@ export async function createsWxoApp(
     uniqueType?: UniqueType;
   },
 ): Promise<WxoAppId[]> {
+  
+  // default_role_ids 转 default_role_codes
+  for (const input of inputs) {
+    const default_role_ids = input.default_role_ids;
+    const default_role_codes = await to_default_role_codes(default_role_ids);
+    input.default_role_codes = default_role_codes.join(",");
+  }
+  
   const wxo_app_ids = await wxo_appDao.createsWxoApp(inputs, options);
   
   return wxo_app_ids;
@@ -199,6 +306,13 @@ export async function updateByIdWxoApp(
   const is_locked = await wxo_appDao.getIsLockedByIdWxoApp(wxo_app_id);
   if (is_locked) {
     throw "不能修改已经锁定的 公众号设置";
+  }
+  
+  // default_role_ids 转 default_role_codes
+  {
+    const default_role_ids = input.default_role_ids;
+    const default_role_codes = await to_default_role_codes(default_role_ids);
+    input.default_role_codes = default_role_codes.join(",");
   }
   
   const wxo_app_id2 = await wxo_appDao.updateByIdWxoApp(wxo_app_id, input);

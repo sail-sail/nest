@@ -38,6 +38,8 @@ export function intoInputWxApp(
     appsecret: model?.appsecret,
     // 默认角色
     default_role_codes: model?.default_role_codes,
+    // 默认角色
+    default_role_ids: model?.default_role_ids,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,

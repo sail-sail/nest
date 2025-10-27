@@ -25,7 +25,7 @@ export default defineConfig({
         COLUMN_NAME: "appid",
         require: true,
         search: true,
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "appsecret",
@@ -123,7 +123,7 @@ export default defineConfig({
         COLUMN_NAME: "appid",
         require: true,
         search: true,
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "nick_name",
@@ -206,7 +206,7 @@ export default defineConfig({
         COLUMN_NAME: "appid",
         require: true,
         search: true,
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "appsecret",
@@ -331,7 +331,7 @@ export default defineConfig({
         COLUMN_NAME: "appid",
         require: true,
         search: true,
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "openid",
@@ -397,7 +397,7 @@ export default defineConfig({
         COLUMN_NAME: "appid",
         require: true,
         search: true,
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "mchid",
