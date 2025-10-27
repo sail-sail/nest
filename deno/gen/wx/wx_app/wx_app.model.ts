@@ -24,6 +24,9 @@ declare global {
     /** 开发者密码 */
     appsecret?: string;
     appsecret_like?: string;
+    /** 默认角色 */
+    default_role_codes?: string;
+    default_role_codes_like?: string;
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */

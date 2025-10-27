@@ -51,6 +51,8 @@ export const wxoAppFields = [
   // 网页授权域名
   "domain_id",
   "domain_id_lbl",
+  // 默认角色
+  "default_role_codes",
   // 锁定
   "is_locked",
   "is_locked_lbl",

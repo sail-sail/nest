@@ -586,6 +586,15 @@
             </el-table-column>
           </template>
           
+          <!-- 默认角色 -->
+          <template v-else-if="'default_role_codes' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
@@ -1111,6 +1120,14 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "默认角色",
+      prop: "default_role_codes",
+      width: 200,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
@@ -1458,6 +1475,7 @@ async function onImportExcel() {
     [ "消息加解密方式" ]: "encoding_type_lbl",
     [ "授权作用域" ]: "scope_lbl",
     [ "网页授权域名" ]: "domain_id_lbl",
+    [ "默认角色" ]: "default_role_codes",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
@@ -1490,6 +1508,7 @@ async function onImportExcel() {
           "encoding_type_lbl": "string",
           "scope_lbl": "string",
           "domain_id_lbl": "string",
+          "default_role_codes": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",

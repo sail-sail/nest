@@ -35,6 +35,11 @@ export default defineConfig({
         noList: true,
       },
       {
+        COLUMN_NAME: "default_role_codes",
+        width: 200,
+        align: "left",
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
@@ -232,6 +237,11 @@ export default defineConfig({
       {
         COLUMN_NAME: "domain_id",
         width: 240,
+        align: "left",
+      },
+      {
+        COLUMN_NAME: "default_role_codes",
+        width: 200,
         align: "left",
       },
       {

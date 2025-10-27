@@ -123,6 +123,12 @@ async function getWhereQuery(
   if (isNotEmpty(search?.appsecret_like)) {
     whereQuery += ` and t.appsecret like ${ args.push("%" + sqlLike(search?.appsecret_like) + "%") }`;
   }
+  if (search?.default_role_codes != null) {
+    whereQuery += ` and t.default_role_codes=${ args.push(search.default_role_codes) }`;
+  }
+  if (isNotEmpty(search?.default_role_codes_like)) {
+    whereQuery += ` and t.default_role_codes like ${ args.push("%" + sqlLike(search?.default_role_codes_like) + "%") }`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
@@ -551,6 +557,7 @@ export async function getFieldCommentsWxApp(): Promise<WxAppFieldComment> {
     lbl: "名称",
     appid: "开发者ID",
     appsecret: "开发者密码",
+    default_role_codes: "默认角色",
     is_locked: "锁定",
     is_locked_lbl: "锁定",
     is_enabled: "启用",
@@ -1153,6 +1160,13 @@ export async function validateWxApp(
     fieldComments.appsecret,
   );
   
+  // 默认角色
+  await validators.chars_max_length(
+    input.default_role_codes,
+    500,
+    fieldComments.default_role_codes,
+  );
+  
   // 备注
   await validators.chars_max_length(
     input.rem,
@@ -1404,7 +1418,7 @@ async function _creates(
   await delCacheWxApp();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wx_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,appid,appsecret,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into wx_wx_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,appid,appsecret,default_role_codes,is_locked,is_enabled,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1519,6 +1533,11 @@ async function _creates(
       }
       if (input.appsecret != null) {
         sql += `,${ args.push(input.appsecret) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.default_role_codes != null) {
+        sql += `,${ args.push(input.default_role_codes) }`;
       } else {
         sql += ",default";
       }
@@ -1708,6 +1727,12 @@ export async function updateByIdWxApp(
   if (input.appsecret != null) {
     if (input.appsecret != oldModel.appsecret) {
       sql += `appsecret=${ args.push(input.appsecret) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.default_role_codes != null) {
+    if (input.default_role_codes != oldModel.default_role_codes) {
+      sql += `default_role_codes=${ args.push(input.default_role_codes) },`;
       updateFldNum++;
     }
   }

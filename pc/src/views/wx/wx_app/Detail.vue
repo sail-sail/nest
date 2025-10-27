@@ -126,6 +126,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.default_role_codes == null)">
+          <el-form-item
+            label="默认角色"
+            prop="default_role_codes"
+          >
+            <CustomInput
+              v-model="dialogModel.default_role_codes"
+              placeholder="请输入 默认角色"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"

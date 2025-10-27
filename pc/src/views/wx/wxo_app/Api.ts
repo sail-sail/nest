@@ -54,6 +54,8 @@ export function intoInputWxoApp(
     // 网页授权域名
     domain_id: model?.domain_id,
     domain_id_lbl: model?.domain_id_lbl,
+    // 默认角色
+    default_role_codes: model?.default_role_codes,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -598,6 +600,7 @@ export function useDownloadImportTemplateWxoApp() {
             encoding_type_lbl
             scope_lbl
             domain_id_lbl
+            default_role_codes
             order_by
             rem
           }

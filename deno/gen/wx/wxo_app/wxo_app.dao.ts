@@ -159,6 +159,12 @@ async function getWhereQuery(
   if (isNotEmpty(search?.domain_id_lbl_like)) {
     whereQuery += ` and domain_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.domain_id_lbl_like) + "%") }`;
   }
+  if (search?.default_role_codes != null) {
+    whereQuery += ` and t.default_role_codes=${ args.push(search.default_role_codes) }`;
+  }
+  if (isNotEmpty(search?.default_role_codes_like)) {
+    whereQuery += ` and t.default_role_codes like ${ args.push("%" + sqlLike(search?.default_role_codes_like) + "%") }`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
@@ -742,6 +748,7 @@ export async function getFieldCommentsWxoApp(): Promise<WxoAppFieldComment> {
     scope_lbl: "授权作用域",
     domain_id: "网页授权域名",
     domain_id_lbl: "网页授权域名",
+    default_role_codes: "默认角色",
     is_locked: "锁定",
     is_locked_lbl: "锁定",
     is_enabled: "启用",
@@ -1365,6 +1372,13 @@ export async function validateWxoApp(
     fieldComments.domain_id,
   );
   
+  // 默认角色
+  await validators.chars_max_length(
+    input.default_role_codes,
+    500,
+    fieldComments.default_role_codes,
+  );
+  
   // 备注
   await validators.chars_max_length(
     input.rem,
@@ -1616,7 +1630,7 @@ async function _creates(
   await delCacheWxoApp();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wxo_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,appid,appsecret,token,encoding_aes_key,encoding_type,scope,domain_id,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into wx_wxo_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,appid,appsecret,token,encoding_aes_key,encoding_type,scope,domain_id,default_role_codes,is_locked,is_enabled,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1756,6 +1770,11 @@ async function _creates(
       }
       if (input.domain_id != null) {
         sql += `,${ args.push(input.domain_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.default_role_codes != null) {
+        sql += `,${ args.push(input.default_role_codes) }`;
       } else {
         sql += ",default";
       }
@@ -1975,6 +1994,12 @@ export async function updateByIdWxoApp(
   if (input.domain_id != null) {
     if (input.domain_id != oldModel.domain_id) {
       sql += `domain_id=${ args.push(input.domain_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.default_role_codes != null) {
+    if (input.default_role_codes != oldModel.default_role_codes) {
+      sql += `default_role_codes=${ args.push(input.default_role_codes) },`;
       updateFldNum++;
     }
   }

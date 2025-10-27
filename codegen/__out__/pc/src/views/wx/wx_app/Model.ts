@@ -38,6 +38,8 @@ export const wxAppFields = [
   "appid",
   // 开发者密码
   "appsecret",
+  // 默认角色
+  "default_role_codes",
   // 锁定
   "is_locked",
   "is_locked_lbl",

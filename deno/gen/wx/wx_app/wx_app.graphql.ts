@@ -17,6 +17,8 @@ type WxAppModel {
   appid: String!
   "开发者密码"
   appsecret: String!
+  "默认角色"
+  default_role_codes: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -59,6 +61,8 @@ type WxAppFieldComment {
   appid: String!
   "开发者密码"
   appsecret: String!
+  "默认角色"
+  default_role_codes: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -99,6 +103,8 @@ input WxAppInput {
   appid: String
   "开发者密码"
   appsecret: String
+  "默认角色"
+  default_role_codes: String
   "锁定"
   is_locked: Int
   "锁定"

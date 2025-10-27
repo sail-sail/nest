@@ -51,6 +51,8 @@ type WxoAppModel {
   domain_id: DomainId!
   "网页授权域名"
   domain_id_lbl: String!
+  "默认角色"
+  default_role_codes: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -109,6 +111,8 @@ type WxoAppFieldComment {
   domain_id: String!
   "网页授权域名"
   domain_id_lbl: String!
+  "默认角色"
+  default_role_codes: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -165,6 +169,8 @@ input WxoAppInput {
   domain_id: DomainId
   "网页授权域名"
   domain_id_lbl: String
+  "默认角色"
+  default_role_codes: String
   "锁定"
   is_locked: Int
   "锁定"
