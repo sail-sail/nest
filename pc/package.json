@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.3.2",
-    "@formkit/auto-animate": "0.9.0",
     "@jsquash/resize": "2.1.0",
     "@jsquash/webp": "1.5.0",
     "@opentiny/fluent-editor": "4.0.0-alpha.5",
@@ -30,7 +29,7 @@
     "@vue/runtime-dom": "3.5.22",
     "@vue/shared": "3.5.22",
     "@vueuse/core": "14.0.0",
-    "cronstrue": "3.3.0",
+    "cronstrue": "3.9.0",
     "danmu": "0.18.1",
     "dayjs": "1.11.18",
     "decimal.js": "10.6.0",
@@ -58,7 +57,7 @@
     "@plugin-web-update-notification/vite": "2.0.2",
     "@types/file-saver": "2.0.7",
     "@types/node": "24.9.1",
-    "@types/sortablejs": "1.15.8",
+    "@types/sortablejs": "1.15.9",
     "@unocss/preset-rem-to-px": "66.5.4",
     "@vitejs/plugin-vue": "6.0.1",
     "@vitejs/plugin-vue-jsx": "5.1.1",
@@ -82,15 +81,15 @@
     "unplugin-turbo-console": "2.2.0",
     "unplugin-vue-components": "30.0.0",
     "unplugin-vue-define-options": "3.1.1",
-    "vite": "7.1.11",
+    "vite": "7.1.12",
     "vite-plugin-devtools-json": "1.0.0",
     "vite-plugin-inspect": "11.3.3",
     "vite-plugin-pwa": "1.1.0",
     "vite-plugin-vue-devtools": "8.0.3",
     "vite-plugin-vue-inspector": "5.3.2",
     "vite-plugin-wasm": "3.5.0",
-    "vitest": "3.2.4",
-    "vue-tsc": "3.1.1"
+    "vitest": "4.0.3",
+    "vue-tsc": "3.1.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
