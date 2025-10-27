@@ -547,6 +547,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
+  wx_pay_notice_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }

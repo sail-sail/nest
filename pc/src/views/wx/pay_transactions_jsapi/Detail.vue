@@ -499,6 +499,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
+  pay_transactions_jsapi_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }

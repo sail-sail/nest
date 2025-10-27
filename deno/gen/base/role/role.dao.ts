@@ -126,6 +126,9 @@ async function getWhereQuery(
   if (isNotEmpty(search?.code_like)) {
     whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
   }
+  if (search?.codes != null && search?.codes.length > 0) {
+    whereQuery += ` and t.code in (${ args.push(search.codes) })`;
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
@@ -424,6 +427,17 @@ export async function findCountRole(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  // 编码
+  if (search && search.codes != null) {
+    const len = search.codes.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.codes.length > ${ ids_limit }`);
     }
   }
   

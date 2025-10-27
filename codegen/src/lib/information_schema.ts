@@ -1296,6 +1296,14 @@ ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
     }
   }
   
+  // isGenSelectList
+  if (tables[table_name].opts.isGenSelectList == null) {
+    const hasSelectInput = hasSelectInputFn(mod, table);
+    if (hasSelectInput) {
+      tables[table_name].opts.isGenSelectList = true;
+    }
+  }
+  
   tablesConfigItemMap[table_name] = tables[table_name];
   return tablesConfigItemMap[table_name];
 }
@@ -1471,4 +1479,37 @@ export async function getDictbizHeadModels(context: Context) {
     _dictbizHeadModels = result[0] as any[];
   }
   return _dictbizHeadModels;
+}
+
+/**
+ * 检查此表是否有selectInput
+ * @param table 
+ */
+function hasSelectInputFn(
+  mod: string,
+  table_name: string,
+) {
+  let hasSelectInput = tables[mod + "_" + table_name].opts?.hasSelectInput;
+  if (hasSelectInput != null) {
+    return hasSelectInput;
+  }
+  const keys = Object.keys(tables);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const columns = tables[key].columns;
+    let hasSelectInput = false;
+    for (const column of columns) {
+      if (!column.foreignKey) continue;
+      if (column.foreignKey.table === table_name) {
+        if (column.foreignKey.selectType === "selectInput" || column.foreignKey.isSearchBySelectInput) {
+          hasSelectInput = true;
+          break;
+        }
+      }
+    }
+    if (hasSelectInput) {
+      return true;
+    }
+  }
+  return false;
 }

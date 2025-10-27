@@ -53,7 +53,7 @@
         un-gap="x-1"
       >
         <template
-          v-if="inputValue && inputValue.length > 0 && !props.labelReadonly && (isFocus || isHover)"
+          v-if="inputValue && inputValue.length > 0 && (isFocus || isHover)"
         >
           <el-icon
             un-cursor="pointer"
