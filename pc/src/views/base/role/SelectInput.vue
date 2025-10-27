@@ -90,7 +90,7 @@
 >
   <div
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75 y-1"
+    un-p="x-2.5 y-1"
     un-box-border
     un-rounded
     un-w="full"
