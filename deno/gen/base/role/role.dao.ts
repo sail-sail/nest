@@ -591,6 +591,17 @@ export async function findAllRole(
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
+  // 编码
+  if (search && search.codes != null) {
+    const len = search.codes.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.codes.length > ${ ids_limit }`);
+    }
+  }
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*

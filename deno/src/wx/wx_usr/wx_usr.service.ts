@@ -72,6 +72,10 @@ import {
   findLoginUsr,
   getOrgIdsById,
 } from "/src/base/usr/usr.dao.ts";
+
+import {
+  findAllRole,
+} from "/gen/base/role/role.dao.ts";
  
 export async function code2Session(
   input: {
@@ -95,6 +99,7 @@ export async function code2Session(
   
   const appid = wx_app_model.appid;
   const appsecret = wx_app_model.appsecret;
+  const default_role_codes = wx_app_model.default_role_codes;
   const js_code = input.code;
   
   const params = new URLSearchParams();
@@ -152,10 +157,16 @@ export async function code2Session(
     );
   }
   if (!wx_usr_model.usr_id) {
-    const usr_id: UsrId = await createUsr(
+    
+    const role_models = await findAllRole({
+      codes: default_role_codes ? default_role_codes.split(",") : [ ],
+    });
+    const default_role_ids = role_models.map((x) => x.id);
+    
+    const usr_id = await createUsr(
       {
-        lbl: await ns("游客"),
-        rem: await ns("微信用户"),
+        lbl: openid,
+        role_ids: default_role_ids,
         is_hidden: 1,
       },
       {
