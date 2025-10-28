@@ -744,6 +744,11 @@ export interface TablesConfigItem {
   opts?: {
     
     /**
+     * 是否生成 SelectList 跟 SelectInput 组件, 默认为: false
+     */
+    isGenSelectList?: boolean;
+    
+    /**
      * 用于显示的字段
      */
     lbl_field?: string;

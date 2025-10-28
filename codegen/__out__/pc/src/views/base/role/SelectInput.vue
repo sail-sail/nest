@@ -118,14 +118,14 @@ import {
 import SelectList from "./SelectList.vue";
 
 import {
-  findByIdsUsr,
-  getPagePathUsr,
+  findByIdsRole,
+  getPagePathRole,
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: UsrId | UsrId[] | null): void,
+  (e: "update:modelValue", value?: RoleId | RoleId[] | null): void,
   (e: "update:modelLabel", value?: string): void,
-  (e: "change", value?: UsrModel | (UsrModel | undefined)[] | null): void,
+  (e: "change", value?: RoleModel | (RoleModel | undefined)[] | null): void,
   (e: "clear"): void,
 }>();
 
@@ -133,11 +133,11 @@ const {
   formItem,
 } = useFormItem();
 
-const pagePath = getPagePathUsr();
+const pagePath = getPagePathRole();
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: UsrId | UsrId[] | null;
+    modelValue?: RoleId | RoleId[] | null;
     modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;
@@ -166,7 +166,7 @@ let inputValue = $ref("");
 let oldInputValue = $ref("");
 
 let modelValue = $ref(props.modelValue);
-let selectedValue: UsrModel | (UsrModel | undefined)[] | null | undefined = undefined;
+let selectedValue: RoleModel | (RoleModel | undefined)[] | null | undefined = undefined;
 
 let modelLabel = $ref(props.modelLabel);
 let hasModelLabel = $ref(false);
@@ -242,28 +242,28 @@ async function onEnter(e: KeyboardEvent) {
 }
 
 function getModelValueArr() {
-  let modelValueArr: UsrId[] = [ ];
+  let modelValueArr: RoleId[] = [ ];
   if (modelValue) {
     if (Array.isArray(modelValue)) {
       modelValueArr = modelValue;
     } else {
-      modelValueArr = modelValue.split(",") as unknown as UsrId[];
+      modelValueArr = modelValue.split(",") as unknown as RoleId[];
     }
   }
   return modelValueArr;
 }
 
-async function getModelsByIds(ids: UsrId[]) {
+async function getModelsByIds(ids: RoleId[]) {
   if (ids.length === 0) {
     return [ ];
   }
-  const usr_models = await findByIdsUsr(
+  const role_models = await findByIdsRole(
     ids,
     {
       notLoading: true,
     },
   );
-  return usr_models;
+  return role_models;
 }
 
 async function validateField() {
@@ -290,7 +290,7 @@ async function refreshInputValue() {
     oldInputValue = inputValue;
     return;
   }
-  let models: UsrModel[];
+  let models: RoleModel[];
   if (selectedValue && Array.isArray(selectedValue)) {
     models = selectedValue.filter((item) => item != null);
   } else if (selectedValue) {
@@ -340,7 +340,7 @@ async function onInput(
     selectedIds,
     selectedModels,
   } = await selectListRef.showDialog({
-    title: `选择 用户`,
+    title: `选择 角色`,
     action: "select",
     multiple: props.multiple,
     isReadonly: () => props.selectListReadonly,
@@ -372,7 +372,7 @@ async function onInputChange() {
     emit("update:modelValue", modelValue);
     return;
   }
-  modelValue = "" as UsrId;
+  modelValue = "" as RoleId;
   emit("update:modelValue", modelValue);
 }
 
@@ -392,7 +392,7 @@ function blur() {
   wrapperRef.focus();
 }
 
-async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) {
+async function onSelectList(value?: RoleModel | (RoleModel | undefined)[] | null) {
   selectedValue = value;
   if (props.multiple) {
     if (oldInputValue !== inputValue) {
