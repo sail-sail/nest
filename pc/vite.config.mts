@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
-import vueJsx from "@vitejs/plugin-vue-jsx";
+import Vue from "@vitejs/plugin-vue";
+import VueJsx from "@vitejs/plugin-vue-jsx";
 // import { VitePWA } from "vite-plugin-pwa";
 // import ViteRsw from "vite-plugin-rsw";
 
@@ -22,15 +22,10 @@ import {
 } from "unplugin-vue-components/resolvers";
 
 import Unocss from "unocss/vite";
-
 import { webUpdateNotice } from "@plugin-web-update-notification/vite";
-
-import defineOptions from "unplugin-vue-define-options/vite";
-
+import DefineOptions from "unplugin-vue-define-options/vite";
 import ReactivityTransform from "@vue-macros/reactivity-transform/vite";
-
-import wasm from "vite-plugin-wasm";
-
+import Wasm from "vite-plugin-wasm";
 import TurboConsole from "unplugin-turbo-console/vite";
 
 // import VueDevTools from "vite-plugin-vue-devtools";
@@ -46,17 +41,23 @@ export default defineConfig({
     ],
   },
   plugins: [
-    TurboConsole(),
+    Unocss({
+      mode: "vue-scoped",
+      configFile: "./uno.config.ts",
+    }),
+    TurboConsole({
+      inspector: false,
+    }),
     Inspector({
       toggleButtonPos: "top-left",
     }),
     // VueDevTools(),
     VueDevtoolsJson(),
-    vue(),
+    Vue(),
     ReactivityTransform(),
-    defineOptions(),
-    vueJsx(),
-    wasm(),
+    DefineOptions(),
+    VueJsx(),
+    Wasm(),
     Icons({
       compiler: "vue3",
       customCollections: {
@@ -274,9 +275,6 @@ export default defineConfig({
     //     "@rsw/excel-render"
     //   ],
     // }),
-    Unocss({
-      configFile: "./uno.config.ts",
-    }),
     webUpdateNotice({
       versionType: "build_timestamp",
     }),

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import "uno.css";
 
 onLaunch((async(options?: App.LaunchShowOption) => {
   const indexStore = useIndexStore();

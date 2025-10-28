@@ -373,6 +373,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
+  field_permit_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }
