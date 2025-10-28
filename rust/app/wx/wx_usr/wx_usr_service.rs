@@ -57,6 +57,11 @@ use generated::base::login_log::login_log_model::{
   LoginLogInput,
 };
 
+// role
+use generated::base::role::role_dao::{
+  find_all_role,
+};
+
 // base_org
 use generated::base::org::org_model::OrgId;
 
@@ -93,6 +98,7 @@ pub async fn code2session(
   
   let appid = wx_app_model.appid;
   let appsecret = wx_app_model.appsecret;
+  let default_role_codes = wx_app_model.default_role_codes;
   let js_code = code;
   let tenant_id = wx_app_model.tenant_id;
   
@@ -200,10 +206,30 @@ pub async fn code2session(
   }
   
   if wx_usr_model.usr_id.is_empty() {
+    
+    let role_models = find_all_role(
+      Some(generated::base::role::role_model::RoleSearch {
+        codes: if default_role_codes.is_empty() {
+          None
+        } else {
+          Some(default_role_codes.split(",").map(|s| s.to_string()).collect())
+        },
+        ..Default::default()
+      }),
+      None,
+      None,
+      options.clone(),
+    ).await?;
+    
+    let default_role_ids: Vec<generated::base::role::role_model::RoleId> = role_models
+      .into_iter()
+      .map(|x| x.id)
+      .collect();
+    
     let usr_id = create_usr(
       UsrInput {
-        lbl: Some("游客".to_string()),
-        rem: Some("游客".to_string()),
+        lbl: Some(openid.clone()),
+        role_ids: Some(default_role_ids),
         is_hidden: Some(1),
         ..Default::default()
       },
