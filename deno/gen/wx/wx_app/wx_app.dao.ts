@@ -60,6 +60,11 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
+  findAllRole,
+  findByIdsOkRole,
+} from "/gen/base/role/role.dao.ts";
+
+import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -454,6 +459,22 @@ export async function findAllWxApp(
     "is_enabled",
   ]);
   
+  // 收集所有的 default_role_codes 并查询对应的 role_models
+  const allCodes = new Set<string>();
+  for (const model of result) {
+    if (model.default_role_codes) {
+      const codes = model.default_role_codes.split(",").map((x) => x.trim()).filter((x) => x.length > 0);
+      codes.forEach((code) => allCodes.add(code));
+    }
+  }
+  
+  let role_models: RoleModel[] = [];
+  if (allCodes.size > 0) {
+    role_models = await findAllRole({
+      codes: Array.from(allCodes),
+    });
+  }
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -476,6 +497,17 @@ export async function findAllWxApp(
       }
     }
     model.is_enabled_lbl = is_enabled_lbl || "";
+    
+    // default_role_codes 转 default_role_ids
+    if (model.default_role_codes) {
+      const codes = model.default_role_codes.split(",").map((x) => x.trim()).filter((x) => x.length > 0);
+      const filteredRoles = role_models.filter((role) => codes.includes(role.code));
+      model.default_role_ids = filteredRoles.map((x) => x.id);
+      model.default_role_ids_lbl = filteredRoles.map((x) => x.lbl).join(",");
+    } else {
+      model.default_role_ids = [ ];
+      model.default_role_ids_lbl = "";
+    }
     
     // 创建时间
     if (model.create_time) {
@@ -1372,6 +1404,20 @@ async function _creates(
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
+  // default_role_ids 转 default_role_codes
+  for (const input of inputs) {
+    if (input.default_role_codes == null) {
+      if (input.default_role_ids && input.default_role_ids.length > 0) {
+        const role_models = await findByIdsOkRole(input.default_role_ids);
+        const filteredRoles = role_models.filter((role) => input.default_role_ids!.includes(role.id));
+        const default_role_codes = filteredRoles.map((x) => x.code);
+        input.default_role_codes = default_role_codes.join(",");
+      } else {
+        input.default_role_codes = "";
+      }
+    }
+  }
+  
   const ids2: WxAppId[] = [ ];
   const inputs2: WxAppInput[] = [ ];
   
@@ -1674,6 +1720,17 @@ export async function updateByIdWxApp(
   }
   if (!input) {
     throw new Error("updateByIdWxApp: input cannot be null");
+  }
+  
+  // default_role_ids 转 default_role_codes
+  if (input.default_role_codes == null) {
+    if (input.default_role_ids && input.default_role_ids.length > 0) {
+      const role_models = await findByIdsOkRole(input.default_role_ids);
+      const default_role_codes = role_models.map((x) => x.code);
+      input.default_role_codes = default_role_codes.join(",");
+    } else {
+      input.default_role_codes = "";
+    }
   }
   
   // 修改租户id

@@ -6,11 +6,6 @@ import type {
 
 import * as wx_appDao from "./wx_app.dao.ts";
 
-import {
-  findByIdsOkRole,
-  findAllRole,
-} from "/gen/base/role/role.dao.ts";
-
 async function setSearchQuery(
   _search: WxAppSearch,
 ) {
@@ -48,14 +43,6 @@ export async function findAllWxApp(
   
   const wx_app_models = await wx_appDao.findAllWxApp(search, page, sort);
   
-  // default_role_codes 转 default_role_ids
-  for (const wx_app_model of wx_app_models) {
-    const default_role_codes = wx_app_model.default_role_codes;
-    const role_models = await to_default_role_models(default_role_codes);
-    wx_app_model.default_role_ids = role_models.map((x) => x.id);
-    wx_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
-  }
-  
   return wx_app_models;
 }
 
@@ -82,14 +69,6 @@ export async function findOneWxApp(
   
   const wx_app_model = await wx_appDao.findOneWxApp(search, sort);
   
-  // default_role_codes 转 default_role_ids
-  if (wx_app_model) {
-    const default_role_codes = wx_app_model.default_role_codes;
-    const role_models = await to_default_role_models(default_role_codes);
-    wx_app_model.default_role_ids = role_models.map((x) => x.id);
-    wx_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
-  }
-  
   return wx_app_model;
 }
 
@@ -107,12 +86,6 @@ export async function findOneOkWxApp(
   
   const wx_app_model = await wx_appDao.findOneOkWxApp(search, sort);
   
-  // default_role_codes 转 default_role_ids
-  const default_role_codes = wx_app_model.default_role_codes;
-  const role_models = await to_default_role_models(default_role_codes);
-  wx_app_model.default_role_ids = role_models.map((x) => x.id);
-  wx_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
-  
   return wx_app_model;
 }
 
@@ -124,14 +97,6 @@ export async function findByIdWxApp(
 ): Promise<WxAppModel | undefined> {
   
   const wx_app_model = await wx_appDao.findByIdWxApp(wx_app_id);
-  
-  // default_role_codes 转 default_role_ids
-  if (wx_app_model) {
-    const default_role_codes = wx_app_model.default_role_codes;
-    const role_models = await to_default_role_models(default_role_codes);
-    wx_app_model.default_role_ids = role_models.map((x) => x.id);
-    wx_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
-  }
   
   return wx_app_model;
 }
@@ -145,12 +110,6 @@ export async function findByIdOkWxApp(
   
   const wx_app_model = await wx_appDao.findByIdOkWxApp(wx_app_id);
   
-  // default_role_codes 转 default_role_ids
-  const default_role_codes = wx_app_model.default_role_codes;
-  const role_models = await to_default_role_models(default_role_codes);
-  wx_app_model.default_role_ids = role_models.map((x) => x.id);
-  wx_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
-  
   return wx_app_model;
 }
 
@@ -163,14 +122,6 @@ export async function findByIdsWxApp(
   
   const wx_app_models = await wx_appDao.findByIdsWxApp(wx_app_ids);
   
-  // default_role_codes 转 default_role_ids
-  for (const wx_app_model of wx_app_models) {
-    const default_role_codes = wx_app_model.default_role_codes;
-    const role_models = await to_default_role_models(default_role_codes);
-    wx_app_model.default_role_ids = role_models.map((x) => x.id);
-    wx_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
-  }
-  
   return wx_app_models;
 }
 
@@ -182,14 +133,6 @@ export async function findByIdsOkWxApp(
 ): Promise<WxAppModel[]> {
   
   const wx_app_models = await wx_appDao.findByIdsOkWxApp(wx_app_ids);
-  
-  // default_role_codes 转 default_role_ids
-  for (const wx_app_model of wx_app_models) {
-    const default_role_codes = wx_app_model.default_role_codes;
-    const role_models = await to_default_role_models(default_role_codes);
-    wx_app_model.default_role_ids = role_models.map((x) => x.id);
-    wx_app_model.default_role_ids_lbl = role_models.map((x) => x.lbl).join(",");
-  }
   
   return wx_app_models;
 }
@@ -232,48 +175,6 @@ export async function validateWxApp(
 }
 
 /**
- * default_role_ids 转 default_role_codes
- */
-async function to_default_role_codes(
-  default_role_ids?: RoleId[] | null,
-): Promise<string[]> {
-  
-  if (!default_role_ids || default_role_ids.length === 0) {
-    return [ ];
-  }
-  
-  const role_models = await findByIdsOkRole(default_role_ids);
-  
-  const role_codes = role_models.map((x) => x.code);
-  
-  return role_codes;
-}
-
-/**
- * default_role_codes 转 default_role_ids
- */
-async function to_default_role_models(
-  default_role_codes?: string | null,
-): Promise<RoleModel[]> {
-  
-  if (!default_role_codes || default_role_codes.length === 0) {
-    return [ ];
-  }
-  
-  const codes = default_role_codes.split(",").map((x) => x.trim()).filter((x) => x.length > 0);
-  
-  if (codes.length === 0) {
-    return [ ];
-  }
-  
-  const role_models = await findAllRole({
-    codes,
-  });
-  
-  return role_models;
-}
-
-/**
  * 批量创建小程序设置
  */
 export async function createsWxApp(
@@ -282,14 +183,6 @@ export async function createsWxApp(
     uniqueType?: UniqueType;
   },
 ): Promise<WxAppId[]> {
-  
-  // default_role_ids 转 default_role_codes
-  for (const input of inputs) {
-    const default_role_ids = input.default_role_ids;
-    const default_role_codes = await to_default_role_codes(default_role_ids);
-    input.default_role_codes = default_role_codes.join(",");
-  }
-  
   const wx_app_ids = await wx_appDao.createsWxApp(inputs, options);
   
   return wx_app_ids;
@@ -306,13 +199,6 @@ export async function updateByIdWxApp(
   const is_locked = await wx_appDao.getIsLockedByIdWxApp(wx_app_id);
   if (is_locked) {
     throw "不能修改已经锁定的 小程序设置";
-  }
-  
-  // default_role_ids 转 default_role_codes
-  {
-    const default_role_ids = input.default_role_ids;
-    const default_role_codes = await to_default_role_codes(default_role_ids);
-    input.default_role_codes = default_role_codes.join(",");
   }
   
   const wx_app_id2 = await wx_appDao.updateByIdWxApp(wx_app_id, input);

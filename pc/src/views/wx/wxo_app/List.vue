@@ -587,7 +587,7 @@
           </template>
           
           <!-- 默认角色 -->
-          <template v-else-if="'default_role_codes' === col.prop">
+          <template v-else-if="'default_role_ids_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
