@@ -221,6 +221,7 @@ pub async fn creates_wx_app(
   let mut inputs = inputs;
   for input in &mut inputs {
     input.id = None;
+    input.default_role_codes = None;
   }
   let inputs = inputs;
   
@@ -287,6 +288,7 @@ pub async fn update_by_id_wx_app(
   
   let mut input = input;
   input.id = None;
+  input.default_role_codes = None;
   let input = input;
   
   let input = wx_app_service::set_id_by_lbl_wx_app(

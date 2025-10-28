@@ -1017,7 +1017,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "开发者ID",
       prop: "appid",
-      width: 160,
+      width: 180,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,

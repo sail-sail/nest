@@ -201,7 +201,7 @@
               ref="default_org_idRef"
               v-model="dialogModel.default_org_id"
               :init="false"
-              :method="getOrgListApi"
+              :method="getListOrgApi"
               :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
@@ -940,7 +940,7 @@ async function onSave() {
 const default_org_idRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("default_org_idRef"));
 let old_default_org_id: InputMaybe<OrgId> | undefined = undefined;
 
-async function getOrgListApi() {
+async function getListOrgApi() {
   const org_ids = dialogModel.org_ids || [ ];
   if (!dialogModel.default_org_id && old_default_org_id) {
     if (org_ids.includes(old_default_org_id)) {
@@ -950,7 +950,7 @@ async function getOrgListApi() {
   if (!dialogModel.default_org_id || !org_ids.includes(dialogModel.default_org_id)) {
     dialogModel.default_org_id = undefined;
   }
-  let data = await getOrgList();
+  let data = await getListOrg();
   data = data.filter((item) => {
     return org_ids.includes(item.id);
   });

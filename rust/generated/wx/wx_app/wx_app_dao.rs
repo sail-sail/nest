@@ -58,6 +58,12 @@ use crate::base::usr::usr_model::UsrId;
 
 use crate::base::usr::usr_dao::find_by_id_usr;
 
+use crate::base::role::role_dao::{
+  find_all_role,
+  find_by_ids_ok_role,
+};
+use crate::base::role::role_model::RoleSearch;
+
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
@@ -69,7 +75,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 15 * 2);
+  let mut where_query = String::with_capacity(80 * 16 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -199,6 +205,25 @@ async fn get_where_query(
     if let Some(appsecret_like) = appsecret_like && !appsecret_like.is_empty() {
       where_query.push_str(" and t.appsecret like ?");
       args.push(format!("%{}%", sql_like(&appsecret_like)).into());
+    }
+  }
+  // 默认角色
+  {
+    let default_role_codes = match search {
+      Some(item) => item.default_role_codes.clone(),
+      None => None,
+    };
+    if let Some(default_role_codes) = default_role_codes {
+      where_query.push_str(" and t.default_role_codes=?");
+      args.push(default_role_codes.into());
+    }
+    let default_role_codes_like = match search {
+      Some(item) => item.default_role_codes_like.clone(),
+      None => None,
+    };
+    if let Some(default_role_codes_like) = default_role_codes_like && !default_role_codes_like.is_empty() {
+      where_query.push_str(" and t.default_role_codes like ?");
+      args.push(format!("%{}%", sql_like(&default_role_codes_like)).into());
     }
   }
   // 锁定
@@ -613,7 +638,7 @@ pub async fn find_all_wx_app(
   let mut res: Vec<WxAppModel> = query(
     sql,
     args,
-    Some(options),
+    Some(options.clone()),
   ).await?;
   
   let dict_vec = get_dict(&[
@@ -626,6 +651,29 @@ pub async fn find_all_wx_app(
   ]: [Vec<_>; 2] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
+  
+  // 收集所有不重复的 role_codes 并批量查询
+  let mut all_role_codes: Vec<String> = vec![];
+  for model in &res {
+    if !model.default_role_codes.is_empty() {
+      for code in model.default_role_codes.split(",") {
+        let code = code.to_string();
+        if !all_role_codes.contains(&code) {
+          all_role_codes.push(code);
+        }
+      }
+    }
+  }
+  
+  let role_models = find_all_role(
+    Some(RoleSearch {
+      codes: Some(all_role_codes),
+      ..Default::default()
+    }),
+    None,
+    None,
+    Some(options).clone(),
+  ).await?;
   
   #[allow(unused_variables)]
   for model in &mut res {
@@ -646,6 +694,17 @@ pub async fn find_all_wx_app(
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string())
+    };
+    
+    // default_role_codes 转 default_role_ids
+    if !model.default_role_codes.is_empty() {
+      let role_codes: Vec<&str> = model.default_role_codes.split(",").collect();
+      let filtered_roles: Vec<_> = role_models
+        .iter()
+        .filter(|role| role_codes.contains(&role.code.as_str()))
+        .collect();
+      model.default_role_ids = filtered_roles.iter().map(|x| x.id).collect();
+      model.default_role_ids_lbl = filtered_roles.iter().map(|x| x.lbl.clone()).collect::<Vec<String>>().join(",");
     };
     
   }
@@ -792,6 +851,7 @@ pub async fn get_field_comments_wx_app(
     lbl: "名称".into(),
     appid: "开发者ID".into(),
     appsecret: "开发者密码".into(),
+    default_role_codes: "默认角色".into(),
     is_locked: "锁定".into(),
     is_locked_lbl: "锁定".into(),
     is_enabled: "启用".into(),
@@ -1703,6 +1763,30 @@ async fn _creates(
     )
     .unwrap_or_default();
   
+  // default_role_ids 转 default_role_codes
+  let mut inputs = inputs;
+  for input in inputs.iter_mut() {
+    if input.default_role_codes.is_none() {
+      if let Some(default_role_ids) = &input.default_role_ids {
+        
+        let role_models = find_by_ids_ok_role(
+          default_role_ids.clone(),
+          options.clone(),
+        ).await?;
+        
+        let default_role_codes: Vec<String> = role_models
+          .into_iter()
+          .map(|item| item.code)
+          .collect();
+        
+        input.default_role_codes = Some(default_role_codes.join(","));
+      } else {
+        input.default_role_codes = Some(String::new());
+      }
+    }
+  }
+  let inputs = inputs;
+  
   let mut ids2: Vec<WxAppId> = vec![];
   let mut inputs2: Vec<WxAppInput> = vec![];
   
@@ -1751,7 +1835,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 15 + 20);
+  let mut sql_fields = String::with_capacity(80 * 16 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1769,6 +1853,8 @@ async fn _creates(
   sql_fields += ",appid";
   // 开发者密码
   sql_fields += ",appsecret";
+  // 默认角色
+  sql_fields += ",default_role_codes";
   // 锁定
   sql_fields += ",is_locked";
   // 启用
@@ -1779,7 +1865,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 15 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 16 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1930,6 +2016,13 @@ async fn _creates(
     if let Some(appsecret) = input.appsecret {
       sql_values += ",?";
       args.push(appsecret.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 默认角色
+    if let Some(default_role_codes) = input.default_role_codes {
+      sql_values += ",?";
+      args.push(default_role_codes.into());
     } else {
       sql_values += ",default";
     }
@@ -2197,9 +2290,29 @@ pub async fn update_by_id_wx_app(
     }
   }
   
+  // default_role_ids 转 default_role_codes
+  if input.default_role_codes.is_none() {
+    if let Some(default_role_ids) = &input.default_role_ids {
+      
+      let role_models = find_by_ids_ok_role(
+        default_role_ids.clone(),
+        options.clone(),
+      ).await?;
+      
+      let default_role_codes: Vec<String> = role_models
+        .into_iter()
+        .map(|item| item.code)
+        .collect();
+      
+      input.default_role_codes = Some(default_role_codes.join(","));
+    } else {
+      input.default_role_codes = Some(String::new());
+    }
+  }
+  
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 15 + 20);
+  let mut sql_fields = String::with_capacity(80 * 16 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2231,6 +2344,12 @@ pub async fn update_by_id_wx_app(
     field_num += 1;
     sql_fields += "appsecret=?,";
     args.push(appsecret.into());
+  }
+  // 默认角色
+  if let Some(default_role_codes) = input.default_role_codes {
+    field_num += 1;
+    sql_fields += "default_role_codes=?,";
+    args.push(default_role_codes.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {

@@ -3,18 +3,24 @@ use serde_json::json;
 
 use poem::{http::StatusCode, Response};
 
-use generated::common::context::get_req_id;
+use generated::common::context::{
+  Options,
+  get_req_id,
+};
 
 use super::wx_usr_model::Code2sessionInput;
 use super::wx_usr_service::code2session as code2session_service;
 
 pub async fn code2session(
   code2session_input: Code2sessionInput,
+  ip: String,
+  options: Option<Options>,
 ) -> Response {
   
   let login_model = code2session_service(
     code2session_input,
-    None,
+    ip,
+    options,
   ).await;
   
   if let Err(err) = login_model {

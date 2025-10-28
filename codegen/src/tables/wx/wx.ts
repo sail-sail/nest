@@ -25,7 +25,7 @@ export default defineConfig({
         COLUMN_NAME: "appid",
         require: true,
         search: true,
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "appsecret",
@@ -33,6 +33,11 @@ export default defineConfig({
         width: 260,
         align: "left",
         noList: true,
+      },
+      {
+        COLUMN_NAME: "default_role_codes",
+        width: 200,
+        align: "left",
       },
       {
         COLUMN_NAME: "is_locked",
@@ -118,7 +123,7 @@ export default defineConfig({
         COLUMN_NAME: "appid",
         require: true,
         search: true,
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "nick_name",
@@ -201,7 +206,7 @@ export default defineConfig({
         COLUMN_NAME: "appid",
         require: true,
         search: true,
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "appsecret",
@@ -232,6 +237,11 @@ export default defineConfig({
       {
         COLUMN_NAME: "domain_id",
         width: 240,
+        align: "left",
+      },
+      {
+        COLUMN_NAME: "default_role_codes",
+        width: 200,
         align: "left",
       },
       {
@@ -321,7 +331,7 @@ export default defineConfig({
         COLUMN_NAME: "appid",
         require: true,
         search: true,
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "openid",
@@ -387,7 +397,7 @@ export default defineConfig({
         COLUMN_NAME: "appid",
         require: true,
         search: true,
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "mchid",

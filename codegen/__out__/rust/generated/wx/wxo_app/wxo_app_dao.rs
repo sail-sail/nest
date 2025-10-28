@@ -70,7 +70,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 20 * 2);
+  let mut where_query = String::with_capacity(80 * 21 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -352,6 +352,25 @@ async fn get_where_query(
     if let Some(domain_id_lbl_like) = domain_id_lbl_like {
       where_query.push_str(" and domain_id_lbl.lbl like ?");
       args.push(format!("%{}%", sql_like(&domain_id_lbl_like)).into());
+    }
+  }
+  // 默认角色
+  {
+    let default_role_codes = match search {
+      Some(item) => item.default_role_codes.clone(),
+      None => None,
+    };
+    if let Some(default_role_codes) = default_role_codes {
+      where_query.push_str(" and t.default_role_codes=?");
+      args.push(default_role_codes.into());
+    }
+    let default_role_codes_like = match search {
+      Some(item) => item.default_role_codes_like.clone(),
+      None => None,
+    };
+    if let Some(default_role_codes_like) = default_role_codes_like && !default_role_codes_like.is_empty() {
+      where_query.push_str(" and t.default_role_codes like ?");
+      args.push(format!("%{}%", sql_like(&default_role_codes_like)).into());
     }
   }
   // 锁定
@@ -1061,6 +1080,7 @@ pub async fn get_field_comments_wxo_app(
     scope_lbl: "授权作用域".into(),
     domain_id: "网页授权域名".into(),
     domain_id_lbl: "网页授权域名".into(),
+    default_role_codes: "默认角色".into(),
     is_locked: "锁定".into(),
     is_locked_lbl: "锁定".into(),
     is_enabled: "启用".into(),
@@ -2180,7 +2200,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2208,6 +2228,8 @@ async fn _creates(
   sql_fields += ",scope";
   // 网页授权域名
   sql_fields += ",domain_id";
+  // 默认角色
+  sql_fields += ",default_role_codes";
   // 锁定
   sql_fields += ",is_locked";
   // 启用
@@ -2218,7 +2240,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 20 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 21 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2404,6 +2426,13 @@ async fn _creates(
     if let Some(domain_id) = input.domain_id {
       sql_values += ",?";
       args.push(domain_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 默认角色
+    if let Some(default_role_codes) = input.default_role_codes {
+      sql_values += ",?";
+      args.push(default_role_codes.into());
     } else {
       sql_values += ",default";
     }
@@ -2673,7 +2702,7 @@ pub async fn update_by_id_wxo_app(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2735,6 +2764,12 @@ pub async fn update_by_id_wxo_app(
     field_num += 1;
     sql_fields += "domain_id=?,";
     args.push(domain_id.into());
+  }
+  // 默认角色
+  if let Some(default_role_codes) = input.default_role_codes {
+    field_num += 1;
+    sql_fields += "default_role_codes=?,";
+    args.push(default_role_codes.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {

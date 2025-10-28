@@ -912,6 +912,9 @@ const inlineForeignTabLabel = $ref("业务字典明细");
 const dictbiz_detailRef = $(useTemplateRef<InstanceType<typeof ElTable>>("dictbiz_detailRef"));
 
 const dictbiz_detailData = $computed(() => {
+  if (!dialogModel.is_add) {
+    return dialogModel.dictbiz_detail ?? [ ];
+  }
   if (!isLocked && !isReadonly) {
     return [
       ...dialogModel.dictbiz_detail ?? [ ],

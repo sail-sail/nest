@@ -540,6 +540,9 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                {{ row.home_url_lbl }}
+              </template>
             </el-table-column>
           </template>
           

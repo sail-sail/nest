@@ -94,6 +94,9 @@ pub struct WxoAppModel {
   /// 网页授权域名
   #[graphql(name = "domain_id_lbl")]
   pub domain_id_lbl: String,
+  /// 默认角色
+  #[graphql(name = "default_role_codes")]
+  pub default_role_codes: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -160,6 +163,8 @@ impl FromRow<'_, MySqlRow> for WxoAppModel {
     let domain_id: DomainId = row.try_get("domain_id")?;
     let domain_id_lbl: Option<String> = row.try_get("domain_id_lbl")?;
     let domain_id_lbl = domain_id_lbl.unwrap_or_default();
+    // 默认角色
+    let default_role_codes: String = row.try_get("default_role_codes")?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -209,6 +214,7 @@ impl FromRow<'_, MySqlRow> for WxoAppModel {
       scope_lbl,
       domain_id,
       domain_id_lbl,
+      default_role_codes,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -272,6 +278,9 @@ pub struct WxoAppFieldComment {
   /// 网页授权域名
   #[graphql(name = "domain_id_lbl")]
   pub domain_id_lbl: String,
+  /// 默认角色
+  #[graphql(name = "default_role_codes")]
+  pub default_role_codes: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: String,
@@ -381,6 +390,12 @@ pub struct WxoAppSearch {
   /// 网页授权域名
   #[graphql(name = "domain_id_lbl_like")]
   pub domain_id_lbl_like: Option<String>,
+  /// 默认角色
+  #[graphql(skip)]
+  pub default_role_codes: Option<String>,
+  /// 默认角色
+  #[graphql(skip)]
+  pub default_role_codes_like: Option<String>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -508,6 +523,13 @@ impl std::fmt::Debug for WxoAppSearch {
     if let Some(ref domain_id_is_null) = self.domain_id_is_null {
       item = item.field("domain_id_is_null", domain_id_is_null);
     }
+    // 默认角色
+    if let Some(ref default_role_codes) = self.default_role_codes {
+      item = item.field("default_role_codes", default_role_codes);
+    }
+    if let Some(ref default_role_codes_like) = self.default_role_codes_like {
+      item = item.field("default_role_codes_like", default_role_codes_like);
+    }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
@@ -613,6 +635,9 @@ pub struct WxoAppInput {
   /// 网页授权域名
   #[graphql(name = "domain_id_lbl")]
   pub domain_id_lbl: Option<String>,
+  /// 默认角色
+  #[graphql(name = "default_role_codes")]
+  pub default_role_codes: Option<String>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -690,6 +715,8 @@ impl From<WxoAppModel> for WxoAppInput {
       // 网页授权域名
       domain_id: model.domain_id.into(),
       domain_id_lbl: model.domain_id_lbl.into(),
+      // 默认角色
+      default_role_codes: model.default_role_codes.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -744,6 +771,8 @@ impl From<WxoAppInput> for WxoAppSearch {
       scope: input.scope.map(|x| vec![x]),
       // 网页授权域名
       domain_id: input.domain_id.map(|x| vec![x]),
+      // 默认角色
+      default_role_codes: input.default_role_codes,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用

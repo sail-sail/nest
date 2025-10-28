@@ -126,6 +126,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.default_role_ids == null)">
+          <el-form-item
+            label="默认角色"
+            prop="default_role_ids"
+          >
+            <RoleSelectInput
+              v-model="dialogModel.default_role_ids"
+              :model-label="wx_app_model?.default_role_ids_lbl"
+              placeholder="请选择 默认角色"
+              :multiple="true"
+              :readonly="isLocked || isReadonly"
+            ></RoleSelectInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"
@@ -260,6 +275,8 @@ import {
   getPagePathWxApp,
   intoInputWxApp,
 } from "./Api.ts";
+
+import RoleSelectInput from "@/views/base/role/SelectInput.vue";
 
 const emit = defineEmits<{
   nextId: [
@@ -455,6 +472,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
+  wx_app_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }

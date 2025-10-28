@@ -36,6 +36,7 @@ use crate::common::id::{Id, impl_id};
 
 use crate::base::tenant::tenant_model::TenantId;
 use crate::base::usr::usr_model::UsrId;
+use crate::base::role::role_model::RoleId;
 
 static CAN_SORT_IN_API_WX_APP: OnceLock<[&'static str; 3]> = OnceLock::new();
 
@@ -69,6 +70,15 @@ pub struct WxAppModel {
   /// 开发者密码
   #[graphql(name = "appsecret")]
   pub appsecret: String,
+  /// 默认角色
+  #[graphql(name = "default_role_codes")]
+  pub default_role_codes: String,
+  /// 默认角色
+  #[graphql(name = "default_role_ids")]
+  pub default_role_ids: Vec<RoleId>,
+  /// 默认角色
+  #[graphql(name = "default_role_ids_lbl")]
+  pub default_role_ids_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -121,6 +131,8 @@ impl FromRow<'_, MySqlRow> for WxAppModel {
     let appid: String = row.try_get("appid")?;
     // 开发者密码
     let appsecret: String = row.try_get("appsecret")?;
+    // 默认角色
+    let default_role_codes: String = row.try_get("default_role_codes")?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -162,6 +174,9 @@ impl FromRow<'_, MySqlRow> for WxAppModel {
       lbl,
       appid,
       appsecret,
+      default_role_codes,
+      default_role_ids: vec![],
+      default_role_ids_lbl: String::new(),
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -201,6 +216,9 @@ pub struct WxAppFieldComment {
   /// 开发者密码
   #[graphql(name = "appsecret")]
   pub appsecret: String,
+  /// 默认角色
+  #[graphql(name = "default_role_codes")]
+  pub default_role_codes: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: String,
@@ -280,6 +298,12 @@ pub struct WxAppSearch {
   /// 开发者密码
   #[graphql(skip)]
   pub appsecret_like: Option<String>,
+  /// 默认角色
+  #[graphql(skip)]
+  pub default_role_codes: Option<String>,
+  /// 默认角色
+  #[graphql(skip)]
+  pub default_role_codes_like: Option<String>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -372,6 +396,13 @@ impl std::fmt::Debug for WxAppSearch {
     if let Some(ref appsecret_like) = self.appsecret_like {
       item = item.field("appsecret_like", appsecret_like);
     }
+    // 默认角色
+    if let Some(ref default_role_codes) = self.default_role_codes {
+      item = item.field("default_role_codes", default_role_codes);
+    }
+    if let Some(ref default_role_codes_like) = self.default_role_codes_like {
+      item = item.field("default_role_codes_like", default_role_codes_like);
+    }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
@@ -453,6 +484,12 @@ pub struct WxAppInput {
   /// 开发者密码
   #[graphql(name = "appsecret")]
   pub appsecret: Option<String>,
+  /// 默认角色
+  #[graphql(name = "default_role_codes")]
+  pub default_role_codes: Option<String>,
+  /// 默认角色
+  #[graphql(name = "default_role_ids")]
+  pub default_role_ids: Option<Vec<RoleId>>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -517,6 +554,9 @@ impl From<WxAppModel> for WxAppInput {
       appid: model.appid.into(),
       // 开发者密码
       appsecret: model.appsecret.into(),
+      // 默认角色
+      default_role_codes: model.default_role_codes.into(),
+      default_role_ids: Some(Vec::<RoleId>::new()),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -561,6 +601,8 @@ impl From<WxAppInput> for WxAppSearch {
       appid: input.appid,
       // 开发者密码
       appsecret: input.appsecret,
+      // 默认角色
+      default_role_codes: input.default_role_codes,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
