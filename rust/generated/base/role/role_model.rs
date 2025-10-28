@@ -466,6 +466,9 @@ pub struct RoleSearch {
   /// 编码
   #[graphql(name = "code_like")]
   pub code_like: Option<String>,
+  /// 编码
+  #[graphql(name = "codes")]
+  pub codes: Option<Vec<String>>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
