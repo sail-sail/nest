@@ -554,6 +554,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
+  dictbiz_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }

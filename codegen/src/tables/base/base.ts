@@ -14,6 +14,7 @@ export default defineConfig({
         lbl: "关键字",
         placeholder: "编码/名称/备注",
       },
+      isGenSelectList: true,
     },
     columns: [
       {
@@ -253,6 +254,7 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      isGenSelectList: true,
     },
     columns: [
       {
