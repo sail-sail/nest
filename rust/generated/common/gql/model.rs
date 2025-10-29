@@ -5,7 +5,7 @@ use async_graphql::{
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(SimpleObject, InputObject, Copy, Clone)]
+#[derive(SimpleObject, InputObject, Copy, Clone, Deserialize, Serialize)]
 pub struct PageInput {
   pub pg_offset: Option<i64>,
   pub pg_size: Option<i64>,
