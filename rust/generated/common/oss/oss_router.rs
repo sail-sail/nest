@@ -290,7 +290,7 @@ async fn _download(
   let content = content.unwrap();
   use futures::StreamExt;
   let byte_stream = content.bytes.map(|result| {
-    result.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))
+    result.map_err(|e| std::io::Error::other(e.to_string()))
   });
   response.body(poem::Body::from_bytes_stream(byte_stream))
 }
