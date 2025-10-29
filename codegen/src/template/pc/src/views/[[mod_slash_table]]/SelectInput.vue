@@ -74,7 +74,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
         un-gap="x-1"
       >
         <template
-          v-if="inputValue && inputValue.length > 0 && !props.labelReadonly && (isFocus || isHover)"
+          v-if="inputValue && inputValue.length > 0 && (isFocus || isHover)"
         >
           <el-icon
             un-cursor="pointer"
@@ -111,7 +111,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 >
   <div
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75 y-1"
+    un-p="x-2.5 y-1"
     un-box-border
     un-rounded
     un-w="full"

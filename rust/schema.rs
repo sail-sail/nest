@@ -20,13 +20,13 @@ async fn main() -> Result<(), std::io::Error> {
     if std::path::Path::new(file).exists() {
       std::fs::read_to_string(file).unwrap()
     } else {
-      "".to_string()
+      String::new()
     }
   };
   if old_schema != schema {
     println!("write graphql schema");
     match std::fs::write(file, &schema) {
-      Ok(_) => {},
+      Ok(()) => {},
       Err(e) => {
         println!("write graphql schema error: {e:#?}");
       },

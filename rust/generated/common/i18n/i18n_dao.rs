@@ -180,8 +180,8 @@ pub async fn n_lang(
     if let Some(map) = map {
       let res: Cow<str> = reg().replace_all(&i18n_lbl, |caps: &Captures| {
         let key = caps.get(1).map(|m| m.as_str().to_owned()).unwrap_or_default();
-        let value = map.get(&key).unwrap_or(&"".to_owned()).clone();
-        value
+        
+        map.get(&key).unwrap_or(&"".to_owned()).clone()
       });
       i18n_lbl = res.to_string();
     }
@@ -236,8 +236,8 @@ pub async fn n_lang(
   if let Some(map) = map {
     let res: Cow<str> = reg().replace_all(&i18n_lbl, |caps: &Captures| {
       let key = caps.get(1).map(|m| m.as_str().to_owned()).unwrap_or_default();
-      let value = map.get(&key).unwrap_or(&"".to_owned()).clone();
-      value
+      
+      map.get(&key).unwrap_or(&"".to_owned()).clone()
     });
     i18n_lbl = res.to_string();
   }

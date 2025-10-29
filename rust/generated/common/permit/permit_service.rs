@@ -81,7 +81,7 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
   // 切分成多个批次查询
   let batch_size = 100;
   let mut batch_count = permit_len / batch_size;
-  if permit_len % batch_size != 0 {
+  if !permit_len.is_multiple_of(batch_size) {
     batch_count += 1;
   }
   let batch_count = batch_count;
