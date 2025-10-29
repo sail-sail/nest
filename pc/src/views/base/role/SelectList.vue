@@ -65,13 +65,13 @@ import type {
 } from "vue";
 
 import {
-  findByIdsUsr,
+  findByIdsRole,
 } from "./Api.ts";
 
 import List from "./List.vue";
 
 const emit = defineEmits<{
-  (e: "change", value?: UsrModel | UsrModel[] | null): void,
+  (e: "change", value?: RoleModel | RoleModel[] | null): void,
 }>();
 
 let inited = $ref(false);
@@ -80,11 +80,11 @@ let dialogAction = $ref("select");
 
 export type OnCloseResolveType = {
   type: "ok" | "cancel";
-  selectedIds?: UsrId[];
-  selectedModels?: UsrModel[];
+  selectedIds?: RoleId[];
+  selectedModels?: RoleModel[];
 };
 export type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
-export type OnBeforeChangeFnType = (value: UsrModel[]) => Promise<boolean | undefined>;
+export type OnBeforeChangeFnType = (value: RoleModel[]) => Promise<boolean | undefined>;
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
@@ -93,7 +93,7 @@ let onBeforeChange: OnBeforeChangeFnType | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let selectedIds = $ref<UsrId[]>([ ]);
+let selectedIds = $ref<RoleId[]>([ ]);
 
 let multiple = $ref(false);
 
@@ -108,7 +108,7 @@ async function showDialog(
     multiple?: boolean;
     isReadonly?: MaybeRefOrGetter<boolean>;
     model?: {
-      ids?: UsrId[];
+      ids?: RoleId[];
     };
     action?: typeof dialogAction;
     onBeforeClose?: OnBeforeCloseFnType;
@@ -145,18 +145,18 @@ async function showDialog(
   return await dialogRes.dialogPrm;
 }
 
-function selectedIdsChg(value: UsrId[]) {
+function selectedIdsChg(value: RoleId[]) {
   selectedIds = value;
 }
 
-async function getModelsByIds(ids: UsrId[]) {
-  const usr_models = await findByIdsUsr(
+async function getModelsByIds(ids: RoleId[]) {
+  const role_models = await findByIdsRole(
     ids,
     {
       notLoading: true,
     },
   );
-  return usr_models;
+  return role_models;
 }
 
 /** 键盘回车按键 */
@@ -169,7 +169,7 @@ async function onRowEnter(e?: KeyboardEvent) {
 }
 
 /** 双击行 */
-async function onRowDblclick(row: { id: UsrId }) {
+async function onRowDblclick(row: { id: RoleId }) {
   selectedIds = [ row.id ];
   await onSave();
 }

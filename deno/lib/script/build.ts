@@ -75,15 +75,16 @@ async function copyEnv() {
 
 async function codegen() {
   console.log("codegen");
-  const command = new Deno.Command(pnpmCmd, {
-    cwd: denoDir,
-    args: [
-      "run",
-      "codegen",
-    ],
-    stderr: "inherit",
-    stdout: "inherit",
-  });
+  const isWindows = Deno.build.os === "windows";
+  const command = new Deno.Command(
+    isWindows ? "cmd" : pnpmCmd,
+    {
+      cwd: denoDir,
+      args: isWindows ? ["/c", pnpmCmd, "run", "codegen"] : ["run", "codegen"],
+      stderr: "inherit",
+      stdout: "inherit",
+    }
+  );
   const output = await command.output();
   if (output.code == 1) {
     Deno.exit(1);
@@ -92,15 +93,16 @@ async function codegen() {
 
 async function gqlgen() {
   console.log("gqlgen");
-  const command = new Deno.Command(pnpmCmd, {
-    cwd: denoDir,
-    args: [
-      "run",
-      "gqlgen",
-    ],
-    stderr: "inherit",
-    stdout: "inherit",
-  });
+  const isWindows = Deno.build.os === "windows";
+  const command = new Deno.Command(
+    isWindows ? "cmd" : pnpmCmd,
+    {
+      cwd: denoDir,
+      args: isWindows ? ["/c", pnpmCmd, "run", "gqlgen"] : ["run", "gqlgen"],
+      stderr: "inherit",
+      stdout: "inherit",
+    }
+  );
   const output = await command.output();
   if (output.code == 1) {
     Deno.exit(1);
@@ -238,16 +240,17 @@ async function compile() {
 
 async function pc() {
   console.log("pc");
-  const args = [
-    "run",
-  ];
-  args.push(`build-${ env }`);
-  const command = new Deno.Command(pnpmCmd, {
-    cwd: pcDir,
-    args,
-    stderr: "inherit",
-    stdout: "inherit",
-  });
+  const isWindows = Deno.build.os === "windows";
+  const args = isWindows ? ["/c", pnpmCmd, "run", `build-${ env }`] : ["run", `build-${ env }`];
+  const command = new Deno.Command(
+    isWindows ? "cmd" : pnpmCmd,
+    {
+      cwd: pcDir,
+      args,
+      stderr: "inherit",
+      stdout: "inherit",
+    }
+  );
   const output = await command.output();
   if (output.code == 1) {
     Deno.exit(1);
@@ -264,15 +267,16 @@ async function pc() {
 
 async function uni() {
   console.log("uni");
-  const command = new Deno.Command(pnpmCmd, {
-    cwd: uniDir,
-    args: [
-      "run",
-      `build:h5-${ env }`,
-    ],
-    stderr: "inherit",
-    stdout: "inherit",
-  });
+  const isWindows = Deno.build.os === "windows";
+  const command = new Deno.Command(
+    isWindows ? "cmd" : pnpmCmd,
+    {
+      cwd: uniDir,
+      args: isWindows ? ["/c", pnpmCmd, "run", `build:h5-${ env }`] : ["run", `build:h5-${ env }`],
+      stderr: "inherit",
+      stdout: "inherit",
+    }
+  );
   const output = await command.output();
   if (output.code == 1) {
     Deno.exit(1);
@@ -322,15 +326,16 @@ async function nuxt() {
 
 async function docs() {
   console.log("docs");
-  const command = new Deno.Command(pnpmCmd, {
-    cwd: docsDir,
-    args: [
-      "run",
-      `build-${ env }`,
-    ],
-    stderr: "inherit",
-    stdout: "inherit",
-  });
+  const isWindows = Deno.build.os === "windows";
+  const command = new Deno.Command(
+    isWindows ? "cmd" : pnpmCmd,
+    {
+      cwd: docsDir,
+      args: isWindows ? ["/c", pnpmCmd, "run", `build-${ env }`] : ["run", `build-${ env }`],
+      stderr: "inherit",
+      stdout: "inherit",
+    }
+  );
   const output = await command.output();
   if (output.code == 1) {
     Deno.exit(1);
@@ -346,21 +351,23 @@ async function docs() {
 
 async function publish() {
   console.log("publish");
-  const args = [
-    "run",
-    "publish",
-  ];
+  const isWindows = Deno.build.os === "windows";
+  const args = isWindows ? ["/c", pnpmCmd] : [];
+  args.push("run", "publish");
   if (pnpmCmd === "npm") {
     args.push("--");
   }
   args.push(`--env=${ env }`);
   args.push(`--command=${ commands.join(",") }`);
-  const command = new Deno.Command(pnpmCmd, {
-    cwd: denoDir,
-    args,
-    stderr: "inherit",
-    stdout: "inherit",
-  });
+  const command = new Deno.Command(
+    isWindows ? "cmd" : pnpmCmd,
+    {
+      cwd: denoDir,
+      args,
+      stderr: "inherit",
+      stdout: "inherit",
+    }
+  );
   const output = await command.output();
   if (output.code == 1) {
     Deno.exit(1);

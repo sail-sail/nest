@@ -567,6 +567,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
+  usr_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }
@@ -937,7 +938,7 @@ async function onSave() {
 }
 
 const default_org_idRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("default_org_idRef"));
-let old_default_org_id: OrgId | null | undefined = undefined;
+let old_default_org_id: InputMaybe<OrgId> | undefined = undefined;
 
 async function getListOrgApi() {
   const org_ids = dialogModel.org_ids || [ ];
