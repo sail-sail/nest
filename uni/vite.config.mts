@@ -4,16 +4,12 @@ import {
 } from "vite";
 
 import uni from "@dcloudio/vite-plugin-uni";
-
 import AutoImport from "unplugin-auto-import/vite";
 // import Components from "unplugin-vue-components/vite";
-
 import Unocss from "unocss/vite";
-
+import { webUpdateNotice } from "@plugin-web-update-notification/vite";
 import Inspector from "vite-plugin-vue-inspector";
-
-import reactivityTransform from "@vue-macros/reactivity-transform/vite";
-
+import ReactivityTransform from "@vue-macros/reactivity-transform/vite";
 import TurboConsole from "unplugin-turbo-console/vite";
 
 const pluginsH5: PluginOption[] = [ ];
@@ -21,11 +17,20 @@ const pluginsH5: PluginOption[] = [ ];
 const isH5 = process.env.UNI_PLATFORM === "h5";
 
 if (isH5) {
-  pluginsH5.push(TurboConsole() as any);
+  pluginsH5.push(
+    TurboConsole({
+      inspector: false,
+    }) as any,
+  );
   pluginsH5.push(
     Inspector({
       toggleButtonPos: "top-left",
     }) as any,
+  );
+  pluginsH5.push(
+    webUpdateNotice({
+      versionType: "build_timestamp",
+    }),
   );
 }
 
@@ -40,8 +45,12 @@ export default defineConfig({
     },
   },
   plugins: [
+    Unocss({
+      mode: "vue-scoped",
+      configFile: "./uno_uni.config.ts",
+    }),
     (uni as any).default(),
-    reactivityTransform(),
+    ReactivityTransform(),
     ...pluginsH5,
     AutoImport({
       imports: [
@@ -113,9 +122,6 @@ export default defineConfig({
     //   ],
     //   dts: "./src/typings/components.d.ts",
     // }),
-    Unocss({
-      configFile: "./uno_uni.config.ts",
-    }),
   ],
   resolve: {
     alias: {

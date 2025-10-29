@@ -190,6 +190,30 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&code_like)).into());
     }
   }
+  // 编码
+  {
+    let codes: Option<Vec<String>> = match search {
+      Some(item) => item.codes.clone(),
+      None => None,
+    };
+    if let Some(codes) = codes {
+      let arg = {
+        if codes.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(codes.len());
+          for item in codes {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.code in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
   // 名称
   {
     let lbl = match search {
@@ -851,6 +875,20 @@ pub async fn find_all_role(
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
+  // 编码
+  if let Some(search) = &search && search.codes.is_some() {
+    let len = search.codes.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.codes.length > {ids_limit}"));
+    }
+  }
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
@@ -1087,6 +1125,20 @@ pub async fn find_count_role(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
+    }
+  }
+  // 编码
+  if let Some(search) = &search && search.codes.is_some() {
+    let len = search.codes.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.codes.length > {ids_limit}"));
     }
   }
   

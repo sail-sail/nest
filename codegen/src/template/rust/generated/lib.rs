@@ -1,3 +1,6 @@
+#![forbid(unsafe_code)]
+#![recursion_limit = "512"]
+
 pub mod common;<#
 const mods = [ ];
 for (let i = 0; i < allTables.length; i++) {

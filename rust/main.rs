@@ -107,8 +107,8 @@ pub async fn graphql_handler_get(
     };
     gql_req = gql_req.variables(variables);
   }
-  let gql_res = schema.execute(gql_req).await;
-  let data = match serde_json::to_vec(&gql_res) {
+  let gql_response = schema.execute(gql_req).await;
+  let data = match serde_json::to_vec(&gql_response) {
     Ok(data) => data,
     Err(err) => {
       error!("{}", err);
@@ -168,13 +168,13 @@ pub async fn graphql_handler(
   //   query = gql_req.query,
   // );
   // let query = gql_req.query.clone();
-  let gql_res = schema.execute(gql_req).await;
-  // if gql_res.is_err() {
-  //   for err in &gql_res.errors {
+  let gql_response = schema.execute(gql_req).await;
+  // if gql_response.is_err() {
+  //   for err in &gql_response.errors {
   //     error!("{}: {}", query, err);
   //   }
   // }
-  let data = match serde_json::to_vec(&gql_res) {
+  let data = match serde_json::to_vec(&gql_response) {
     Ok(data) => data,
     Err(err) => {
       error!("{}", err);
@@ -187,7 +187,7 @@ pub async fn graphql_handler(
     .header(header::CONTENT_TYPE, "application/json; charset=utf-8")
     .body(data);
   let headers = response.headers_mut();
-  for (key, value) in gql_res.http_headers.iter() {
+  for (key, value) in &gql_response.http_headers {
     headers.insert(key, value.to_owned());
   }
   let now1 = Instant::now();
@@ -218,6 +218,7 @@ pub fn graphql_playground(
 }
 
 #[tokio::main]
+#[allow(clippy::too_many_lines)]
 async fn main() -> Result<(), std::io::Error> {
   dotenv().unwrap();
   let server_title = std::env::var_os("server_title").expect("server_title not found in .env");
@@ -336,19 +337,19 @@ async fn main() -> Result<(), std::io::Error> {
         }
       }
     };
-    if size != schema.len() as u64 {
-      is_equal = false;
-    } else {
+    if size == schema.len() as u64 {
       let old_schema = {
         if std::path::Path::new(file_path).exists() {
           std::fs::read_to_string(file_path).unwrap()
         } else {
-          "".to_string()
+          String::new()
         }
       };
       if old_schema != schema {
         is_equal = false;
       }
+    } else {
+      is_equal = false;
     }
     if !is_equal {
       use std::io::Write;
