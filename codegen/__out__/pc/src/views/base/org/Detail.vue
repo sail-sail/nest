@@ -379,6 +379,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
+  org_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }
