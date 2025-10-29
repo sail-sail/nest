@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import "uno.css";
 
 // #ifdef H5
 import {
