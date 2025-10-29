@@ -429,6 +429,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
+  icon_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }

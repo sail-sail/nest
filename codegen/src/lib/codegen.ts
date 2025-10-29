@@ -84,39 +84,6 @@ function mysqlKeyEscape(key: string) {
   return key;
 }
 
-/**
- * 检查此表是否有selectInput
- * @param table 
- */
-function hasSelectInputFn(
-  mod: string,
-  table_name: string,
-) {
-  let hasSelectInput = tables[mod + "_" + table_name].opts?.hasSelectInput;
-  if (hasSelectInput != null) {
-    return hasSelectInput;
-  }
-  const keys = Object.keys(tables);
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-    const columns = tables[key].columns;
-    let hasSelectInput = false;
-    for (const column of columns) {
-      if (!column.foreignKey) continue;
-      if (column.foreignKey.table === table_name) {
-        if (column.foreignKey.selectType === "selectInput" || column.foreignKey.isSearchBySelectInput) {
-          hasSelectInput = true;
-          break;
-        }
-      }
-    }
-    if (hasSelectInput) {
-      return true;
-    }
-  }
-  return false;
-}
-
 export async function codegen(context: Context, schema: TablesConfigItem, table_names: string[]) {
   const opts = schema.opts;
   let {
@@ -180,7 +147,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     const fileTng = `${rootPh}${dir}`;
     const stats = await stat(fileTng);
     const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
-    const hasSelectInput = hasSelectInputFn(mod, table);
     // 审核
     const hasAudit = !!opts?.audit;
     if (stats.isFile()) {
@@ -426,12 +392,12 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
         }
       }
       if (dir === "/pc/src/views/[[mod_slash_table]]/SelectInput.vue") {
-        if (!hasSelectInput) {
+        if (opts.isGenSelectList !== true) {
           return;
         }
       }
       if (dir === "/pc/src/views/[[mod_slash_table]]/SelectList.vue") {
-        if (!hasSelectInput) {
+        if (opts.isGenSelectList !== true) {
           return;
         }
       }
