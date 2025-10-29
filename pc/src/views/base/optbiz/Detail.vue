@@ -407,6 +407,7 @@ async function showDialog(
   dialogModel = {
     version: 0,
   };
+  optbiz_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }

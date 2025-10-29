@@ -1,45 +1,59 @@
 <template>
 <div
   v-if="!props.readonly"
+  ref="wrapperRef"
   class="select_input_wrapper"
+  :tabindex="!props.labelReadonly || props.disabled ? -1 : 0"
   :class="{
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
+    'select_input_isShowModelLabel': props.pageInited && !modelLabelRefreshing && hasModelLabel && modelLabel != inputValue,
   }"
   @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
+  @keydown.enter="onEnter"
 >
   <CustomInput
     v-bind="$attrs"
-    ref="inputRef"
-    :model-value="inputValue || props.modelLabel"
+    :model-value="hasModelLabel ? modelLabel : inputValue"
     :readonly="props.labelReadonly"
     :clearable="false"
     class="select_input"
     :placeholder="props.placeholder"
     :readonly-placeholder="props.placeholder"
+    @update:model-value="inputValue = $event"
+    @change="onInputChange"
     @click="onInput('input')"
     @clear="onClear"
-    @keydown.enter="onEnter"
+    @focus="onFocus"
+    @blur="onBlur"
   >
+    
     <template
-      v-for="key in $slots"
-      :key="key"
-      #[key]
+      v-for="(_, name) of $slots"
+      :key="name"
+      #[name]="slotProps"
     >
+      
       <slot
-        :name="key"
+        :name="name"
+        v-bind="slotProps"
       ></slot>
+      
     </template>
+    
     <template
       v-if="!$slots.suffix"
       #suffix
     >
-      <template
+      <div
         v-if="!props.disabled"
+        un-flex="~"
+        un-items="center"
+        un-gap="x-1"
       >
         <template
-          v-if="modelValue && modelValue.length > 0 && props.labelReadonly"
+          v-if="inputValue && inputValue.length > 0 && (isFocus || isHover)"
         >
           <el-icon
             un-cursor="pointer"
@@ -47,41 +61,36 @@
             size="14"
             @click="onClear"
           >
-            <ElIconCircleClose
-              v-if="isHover"
-            />
-            <ElIconArrowDown
-              v-else
-            />
+            <ElIconCircleClose />
           </el-icon>
         </template>
-        <template
-          v-else
+        
+        <el-icon
+          un-cursor="pointer"
+          un-m="r-0.5"
+          size="14"
+          @click="onInput('icon')"
         >
-          <el-icon
-            un-cursor="pointer"
-            un-m="r-0.5"
-            size="14"
-            @click="onInput('icon')"
-          >
-            <ElIconArrowDown />
-          </el-icon>
-        </template>
-      </template>
+          <ElIconArrowDown />
+        </el-icon>
+      </div>
+      
     </template>
   </CustomInput>
+  
   <SelectList
     v-bind="$attrs"
     ref="selectListRef"
     @change="onSelectList"
   ></SelectList>
+  
 </div>
 <template
   v-else
 >
   <div
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.75 y-1"
+    un-p="x-2.5 y-1"
     un-box-border
     un-rounded
     un-w="full"
@@ -89,9 +98,14 @@
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly select_input_readonly"
+    :class="{
+      label_readonly_1: props.labelReadonly,
+      label_readonly_0: !props.labelReadonly,
+      'select_input_isShowModelLabel': props.pageInited && !modelLabelRefreshing && hasModelLabel && modelLabel != inputValue,
+    }"
     v-bind="$attrs"
   >
-    {{ inputValue || props.modelLabel }}
+    {{ hasModelLabel ? modelLabel : inputValue }}
   </div>
 </template>
 </template>
@@ -104,9 +118,9 @@ import {
 import SelectList from "./SelectList.vue";
 
 import {
-  findAll,
-  getPagePath,
-} from "./Api";
+  findByIdsUsr,
+  getPagePathUsr,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: UsrId | UsrId[] | null): void,
@@ -119,7 +133,7 @@ const {
   formItem,
 } = useFormItem();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathUsr();
 
 const props = withDefaults(
   defineProps<{
@@ -130,17 +144,21 @@ const props = withDefaults(
     disabled?: boolean;
     readonly?: boolean;
     labelReadonly?: boolean;
+    selectListReadonly?: boolean;
     validateEvent?: boolean;
+    pageInited?: boolean;
   }>(),
   {
     modelValue: undefined,
-    modelLabel: "",
+    modelLabel: undefined,
     multiple: false,
     placeholder: undefined,
     disabled: false,
     readonly: false,
     labelReadonly: true,
+    selectListReadonly: true,
     validateEvent: undefined,
+    pageInited: false,
   },
 );
 
@@ -150,6 +168,21 @@ let oldInputValue = $ref("");
 let modelValue = $ref(props.modelValue);
 let selectedValue: UsrModel | (UsrModel | undefined)[] | null | undefined = undefined;
 
+let modelLabel = $ref(props.modelLabel);
+let hasModelLabel = $ref(false);
+
+let modelLabelRefreshing = $ref(false);
+
+let isInputChanging = false;
+
+watch(
+  () => props.modelLabel,
+  () => {
+    hasModelLabel = true;
+    modelLabel = props.modelLabel;
+  },
+);
+
 watch(
   () => props.modelValue,
   () => {
@@ -157,11 +190,14 @@ watch(
   },
   {
     immediate: true,
-  }
+  },
 );
 
 watch(
-  () => modelValue,
+  () => [
+    modelValue,
+    props.multiple,
+  ],
   async () => {
     await refreshInputValue();
   },
@@ -169,6 +205,23 @@ watch(
     immediate: true,
   },
 );
+
+watch(
+  () => props.pageInited,
+  () => {
+    formItem?.clearValidate();
+  },
+);
+
+let isFocus = $ref(false);
+
+function onFocus() {
+  isFocus = true;
+}
+
+function onBlur() {
+  isFocus = false;
+}
 
 let isHover = $ref(false);
 
@@ -181,9 +234,10 @@ function onMouseLeave() {
 }
 
 async function onEnter(e: KeyboardEvent) {
-  if (e.ctrlKey) {
+  if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
     return;
   }
+  e.stopImmediatePropagation();
   await onInput("icon");
 }
 
@@ -203,12 +257,13 @@ async function getModelsByIds(ids: UsrId[]) {
   if (ids.length === 0) {
     return [ ];
   }
-  const res = await findAll(
+  const usr_models = await findByIdsUsr(
+    ids,
     {
-      ids,
+      notLoading: true,
     },
   );
-  return res;
+  return usr_models;
 }
 
 async function validateField() {
@@ -223,6 +278,12 @@ async function validateField() {
 
 /** 根据modelValue刷新输入框的值 */
 async function refreshInputValue() {
+  if (isInputChanging) {
+    isInputChanging = false;
+    modelLabel = inputValue || "";
+    emit("update:modelLabel", modelLabel);
+    return;
+  }
   const modelValueArr = getModelValueArr();
   if (modelValueArr.length === 0) {
     inputValue = "";
@@ -235,9 +296,12 @@ async function refreshInputValue() {
   } else if (selectedValue) {
     models = [ selectedValue ];
   } else {
+    modelLabelRefreshing = true;
     models = await getModelsByIds(modelValueArr);
+    modelLabelRefreshing = false;
   }
-  inputValue = models.map((item) => item?.lbl || "").join(", ");
+  selectedValue = undefined;
+  inputValue = models.map((item) => item?.lbl || "").join(",");
   oldInputValue = inputValue;
 }
 
@@ -247,6 +311,7 @@ async function onClear(e?: PointerEvent) {
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  modelLabel = inputValue;
   emit("update:modelLabel", inputValue);
   emit("change");
   emit("clear");
@@ -273,18 +338,19 @@ async function onInput(
   const {
     type,
     selectedIds,
+    selectedModels,
   } = await selectListRef.showDialog({
     title: `选择 用户`,
     action: "select",
     multiple: props.multiple,
-    isReadonly: () => props.readonly,
+    isReadonly: () => props.selectListReadonly,
     model: {
       ids: modelValueArr,
     },
   });
   formItem?.clearValidate();
   focus();
-  if (type === "cancel") {
+  if (type === "cancel" || !selectedIds || !selectedModels) {
     return;
   }
   if (props.multiple) {
@@ -292,56 +358,63 @@ async function onInput(
   } else {
     modelValue = selectedIds[0];
   }
+  inputValue = selectedModels.map((item) => item.lbl || "").join(",");
+  oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  modelLabel = inputValue;
   emit("update:modelLabel", inputValue);
 }
 
-const inputRef = $(useTemplateRef<InstanceType<typeof CustomInput>>("inputRef"));
-
-function focus() {
-  if (!inputRef) {
+async function onInputChange() {
+  isInputChanging = true;
+  if (props.multiple) {
+    modelValue = [ ];
+    emit("update:modelValue", modelValue);
     return;
   }
-  inputRef.focus();
+  modelValue = "" as UsrId;
+  emit("update:modelValue", modelValue);
+}
+
+const wrapperRef = $(useTemplateRef<InstanceType<typeof HTMLDivElement>>("wrapperRef"));
+
+function focus() {
+  if (!wrapperRef) {
+    return;
+  }
+  wrapperRef.focus();
 }
 
 function blur() {
-  if (!inputRef) {
+  if (!wrapperRef) {
     return;
   }
-  inputRef.blur();
+  wrapperRef.focus();
 }
 
 async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) {
   selectedValue = value;
-  await nextTick();
   if (props.multiple) {
-    emit("change", value);
-    await nextTick();
-    await nextTick();
-    await validateField();
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
+    emit("update:modelLabel", modelLabel || "");
+    emit("change", value);
     return;
   }
   if (!Array.isArray(value)) {
-    emit("change", value);
-    await nextTick();
-    await nextTick();
-    await validateField();
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
+    emit("update:modelLabel", modelLabel || "");
+    emit("change", value);
     return;
   }
-  emit("change", value[0]);
-  await nextTick();
-  await nextTick();
-  await validateField();
   if (oldInputValue !== inputValue) {
     await refreshInputValue();
   }
+  emit("update:modelLabel", modelLabel || "");
+  emit("change", value[0]);
 }
 
 defineExpose({
