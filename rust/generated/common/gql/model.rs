@@ -35,13 +35,17 @@ pub struct SortInput {
 #[derive(Enum, Default, Copy, Clone, Eq, PartialEq, Debug, Serialize, Deserialize)]
 pub enum SortOrderEnum {
   #[graphql(name = "asc")]
+  #[serde(rename = "asc")]
   #[default]
   Asc,
   #[graphql(name = "ascending")]
+  #[serde(rename = "ascending")]
   Ascending,
   #[graphql(name = "desc")]
+  #[serde(rename = "desc")]
   Desc,
   #[graphql(name = "descending")]
+  #[serde(rename = "descending")]
   Descending,
 }
 
