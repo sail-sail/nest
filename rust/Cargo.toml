@@ -75,6 +75,7 @@ csv = "1.3.1"
 docx-handlebars = "0.3.2"
 xlsx-handlebars = "0.2.1"
 tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"] }
+rust-embed = { version = "8.8.0", features = ["include-exclude"] }
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.2.0"
@@ -152,6 +153,8 @@ serde_with.workspace = true
 csv.workspace = true
 docx-handlebars.workspace = true
 xlsx-handlebars.workspace = true
+tokio-tungstenite.workspace = true
+rust-embed.workspace = true
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"
