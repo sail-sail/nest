@@ -198,26 +198,6 @@ impl MenuGenQuery {
       }).await
   }
   
-  /// 根据 id 查找菜单是否已锁定
-  /// 已锁定的记录不能修改和删除
-  /// 记录不存在则返回 false
-  #[graphql(name = "getIsLockedByIdMenu")]
-  async fn get_is_locked_by_id_menu(
-    &self,
-    ctx: &Context<'_>,
-    id: MenuId,
-  ) -> Result<bool> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .build()
-      .scope({
-        menu_resolver::get_is_locked_by_id_menu(
-          id,
-          None,
-        )
-      }).await
-  }
-  
   /// 获取菜单字段注释
   #[graphql(name = "getFieldCommentsMenu")]
   async fn get_field_comments_menu(
@@ -338,27 +318,6 @@ impl MenuGenMutation {
         menu_resolver::enable_by_ids_menu(
           ids,
           is_enabled,
-          None,
-        )
-      }).await
-  }
-  
-  /// 根据 ids 锁定或解锁数据
-  #[graphql(name = "lockByIdsMenu")]
-  async fn lock_by_ids_menu(
-    &self,
-    ctx: &Context<'_>,
-    ids: Vec<MenuId>,
-    is_locked: u8,
-  ) -> Result<u64> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()
-      .build()
-      .scope({
-        menu_resolver::lock_by_ids_menu(
-          ids,
-          is_locked,
           None,
         )
       }).await

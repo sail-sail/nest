@@ -251,28 +251,15 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
-  // 锁定
+  // 
   {
-    let is_locked: Option<Vec<u8>> = match search {
-      Some(item) => item.is_locked.clone(),
+    let is_dyn_page = match search {
+      Some(item) => item.is_dyn_page.clone(),
       None => None,
     };
-    if let Some(is_locked) = is_locked {
-      let arg = {
-        if is_locked.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(is_locked.len());
-          for item in is_locked {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and t.is_locked in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
+    if let Some(is_dyn_page) = is_dyn_page {
+      where_query.push_str(" and t.is_dyn_page=?");
+      args.push(is_dyn_page.into());
     }
   }
   // 启用
@@ -615,20 +602,6 @@ pub async fn find_all_menu(
       return Err(eyre!("search.is_home_hide.length > {ids_limit}"));
     }
   }
-  // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(vec![]);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.is_locked.length > {ids_limit}"));
-    }
-  }
   // 启用
   if let Some(search) = &search && search.is_enabled.is_some() {
     let len = search.is_enabled.as_ref().unwrap().len();
@@ -736,14 +709,12 @@ pub async fn find_all_menu(
   
   let dict_vec = get_dict(&[
     "yes_no",
-    "is_locked",
     "is_enabled",
   ]).await?;
   let [
     is_home_hide_dict,
-    is_locked_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 3] = dict_vec
+  ]: [Vec<_>; 2] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -757,15 +728,6 @@ pub async fn find_all_menu(
         .find(|item| item.val == model.is_home_hide.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_home_hide.to_string())
-    };
-    
-    // 锁定
-    model.is_locked_lbl = {
-      is_locked_dict
-        .iter()
-        .find(|item| item.val == model.is_locked.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string())
     };
     
     // 启用
@@ -842,20 +804,6 @@ pub async fn find_count_menu(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_home_hide.length > {ids_limit}"));
-    }
-  }
-  // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(0);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.is_locked.length > {ids_limit}"));
     }
   }
   // 启用
@@ -966,8 +914,7 @@ pub async fn get_field_comments_menu(
     route_query: "参数".into(),
     is_home_hide: "首页隐藏".into(),
     is_home_hide_lbl: "首页隐藏".into(),
-    is_locked: "锁定".into(),
-    is_locked_lbl: "锁定".into(),
+    is_dyn_page: "".into(),
     is_enabled: "启用".into(),
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
@@ -1390,20 +1337,6 @@ pub async fn exists_menu(
       return Err(eyre!("search.is_home_hide.length > {ids_limit}"));
     }
   }
-  // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(false);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.is_locked.length > {ids_limit}"));
-    }
-  }
   // 启用
   if let Some(search) = &search && search.is_enabled.is_some() {
     let len = search.is_enabled.as_ref().unwrap().len();
@@ -1695,7 +1628,6 @@ pub async fn set_id_by_lbl_menu(
   
   let dict_vec = get_dict(&[
     "yes_no",
-    "is_locked",
     "is_enabled",
   ]).await?;
   
@@ -1714,24 +1646,9 @@ pub async fn set_id_by_lbl_menu(
     }
   }
   
-  // 锁定
-  if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[1];
-    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
-      input.is_locked = is_locked_dict
-        .iter()
-        .find(|item| {
-          item.lbl == is_locked_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        });
-    }
-  }
-  
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[1];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -1805,37 +1722,12 @@ pub async fn set_id_by_lbl_menu(
     input.is_home_hide_lbl = lbl;
   }
   
-  // 锁定
-  if
-    input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
-    && input.is_locked.is_none()
-  {
-    let is_locked_dict = &dict_vec[1];
-    let dict_model = is_locked_dict.iter().find(|item| {
-      item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
-    });
-    let val = dict_model.map(|item| item.val.to_string());
-    if let Some(val) = val {
-      input.is_locked = val.parse::<u8>()?.into();
-    }
-  } else if
-    (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
-    && input.is_locked.is_some()
-  {
-    let is_locked_dict = &dict_vec[1];
-    let dict_model = is_locked_dict.iter().find(|item| {
-      item.val == input.is_locked.unwrap_or_default().to_string()
-    });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
-    input.is_locked_lbl = lbl;
-  }
-  
   // 启用
   if
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[1];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
@@ -1847,7 +1739,7 @@ pub async fn set_id_by_lbl_menu(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[1];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
@@ -2012,8 +1904,8 @@ async fn _creates(
   sql_fields += ",route_query";
   // 首页隐藏
   sql_fields += ",is_home_hide";
-  // 锁定
-  sql_fields += ",is_locked";
+  // 
+  sql_fields += ",is_dyn_page";
   // 启用
   sql_fields += ",is_enabled";
   // 排序
@@ -2175,10 +2067,10 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 锁定
-    if let Some(is_locked) = input.is_locked {
+    // 
+    if let Some(is_dyn_page) = input.is_dyn_page {
       sql_values += ",?";
-      args.push(is_locked.into());
+      args.push(is_dyn_page.into());
     } else {
       sql_values += ",default";
     }
@@ -2443,11 +2335,11 @@ pub async fn update_by_id_menu(
     sql_fields += "is_home_hide=?,";
     args.push(is_home_hide.into());
   }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
+  // 
+  if let Some(is_dyn_page) = input.is_dyn_page {
     field_num += 1;
-    sql_fields += "is_locked=?,";
-    args.push(is_locked.into());
+    sql_fields += "is_dyn_page=?,";
+    args.push(is_dyn_page.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
@@ -2844,100 +2736,6 @@ pub async fn enable_by_ids_menu(
     let sql = format!("update {table} set is_enabled=? where id=? limit 1");
     
     args.push(is_enabled.into());
-    args.push(id.into());
-    
-    let args: Vec<_> = args.into();
-    
-    let options = options.clone().into();
-    
-    num += execute(
-      sql,
-      args,
-      options,
-    ).await?;
-  }
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
-  Ok(num)
-}
-
-// MARK: get_is_locked_by_id_menu
-/// 根据 id 查找菜单是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-pub async fn get_is_locked_by_id_menu(
-  id: MenuId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let model = find_by_id_menu(
-    id,
-    options,
-  ).await?;
-  
-  let is_locked = {
-    if let Some(model) = model {
-      model.is_locked == 1
-    } else {
-      false
-    }
-  };
-  
-  Ok(is_locked)
-}
-
-// MARK: lock_by_ids_menu
-/// 根据 ids 锁定或者解锁菜单
-pub async fn lock_by_ids_menu(
-  ids: Vec<MenuId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let table = "base_menu";
-  let method = "lock_by_ids_menu";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
-    msg += &format!(" is_locked: {:?}", &is_locked);
-    if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  if ids.is_empty() {
-    return Ok(0);
-  }
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  let mut num = 0;
-  for id in ids {
-    let mut args = QueryArgs::new();
-    
-    let sql = format!("update {table} set is_locked=? where id=? limit 1");
-    
-    args.push(is_locked.into());
     args.push(id.into());
     
     let args: Vec<_> = args.into();

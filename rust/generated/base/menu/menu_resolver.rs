@@ -384,59 +384,6 @@ pub async fn enable_by_ids_menu(
   Ok(num)
 }
 
-/// 根据 id 查找菜单是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-#[allow(dead_code)]
-#[function_name::named]
-pub async fn get_is_locked_by_id_menu(
-  id: MenuId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  info!(
-    "{req_id} {function_name}: id: {id:?}",
-    req_id = get_req_id(),
-    function_name = function_name!(),
-  );
-  
-  let is_locked = menu_service::get_is_locked_by_id_menu(
-    id,
-    options,
-  ).await?;
-  
-  Ok(is_locked)
-}
-
-/// 根据 ids 锁定或者解锁菜单
-#[allow(dead_code)]
-#[function_name::named]
-pub async fn lock_by_ids_menu(
-  ids: Vec<MenuId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  info!(
-    "{req_id} {function_name}: ids: {ids:?} is_locked: {is_locked:?}",
-    req_id = get_req_id(),
-    function_name = function_name!(),
-  );
-  
-  use_permit(
-    get_route_path_menu(),
-    "edit".to_owned(),
-  ).await?;
-  
-  let num = menu_service::lock_by_ids_menu(
-    ids,
-    is_locked,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 获取菜单字段注释
 #[function_name::named]
 pub async fn get_field_comments_menu(
