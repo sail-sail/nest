@@ -713,7 +713,7 @@ export async function checkByUniqueBackgroundTask(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 后台任务 已经存在");
+      throw new UniqueException("后台任务 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: BackgroundTaskId = await updateByIdBackgroundTask(
@@ -1642,7 +1642,7 @@ export async function updateByIdBackgroundTask(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 后台任务 已经存在";
+        throw "后台任务 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1929,7 +1929,7 @@ export async function revertByIdsBackgroundTask(
         if (model.id === id) {
           continue;
         }
-        throw "此 后台任务 已经存在";
+        throw "后台任务 重复";
       }
     }
     const args = new QueryArgs();

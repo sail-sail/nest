@@ -663,7 +663,7 @@ export async function checkByUniqueDictDetail(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 系统字典明细 已经存在");
+      throw new UniqueException("系统字典明细 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: DictDetailId = await updateByIdDictDetail(
@@ -1555,7 +1555,7 @@ export async function updateByIdDictDetail(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 系统字典明细 已经存在";
+        throw "系统字典明细 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1918,7 +1918,7 @@ export async function revertByIdsDictDetail(
         if (model.id === id) {
           continue;
         }
-        throw "此 系统字典明细 已经存在";
+        throw "系统字典明细 重复";
       }
     }
     const args = new QueryArgs();

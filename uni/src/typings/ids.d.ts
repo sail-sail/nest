@@ -31,6 +31,14 @@ declare const domainId: unique symbol;
 /** 域名 */
 type DomainId = Distinct<string, typeof domainId>;
 
+declare const dyn_pageId: unique symbol;
+/** 动态页面 */
+type DynPageId = Distinct<string, typeof dyn_pageId>;
+
+declare const dyn_page_fieldId: unique symbol;
+/** 动态页面字段 */
+type DynPageFieldId = Distinct<string, typeof dyn_page_fieldId>;
+
 declare const field_permitId: unique symbol;
 /** 字段权限 */
 type FieldPermitId = Distinct<string, typeof field_permitId>;

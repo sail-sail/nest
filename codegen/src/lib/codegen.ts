@@ -380,6 +380,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       if (dir === "/pc/src/router/gen.ts") {
         return;
       }
+      if (dir === "/pc/src/components/ComponentMapSelectInput.ts") {
+        return;
+      }
       if (dir === "/pc/src/typings/ids.d.ts") {
         return;
       }
@@ -392,12 +395,12 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
         }
       }
       if (dir === "/pc/src/views/[[mod_slash_table]]/SelectInput.vue") {
-        if (opts.isGenSelectList !== true) {
+        if (opts.hasSelectInput !== true) {
           return;
         }
       }
       if (dir === "/pc/src/views/[[mod_slash_table]]/SelectList.vue") {
-        if (opts.isGenSelectList !== true) {
+        if (opts.hasSelectInput !== true) {
           return;
         }
       }
@@ -549,6 +552,7 @@ export async function genRouter(context: Context) {
     "deno/lib/script/graphql_pc_ids.ts",
     "pc/src/typings/ids.d.ts",
     "uni/src/typings/ids.d.ts",
+    "pc/src/components/ComponentMapSelectInput.ts",
   ];
   for (let i = 0; i < files.length; i++) {
     const file = files[i];

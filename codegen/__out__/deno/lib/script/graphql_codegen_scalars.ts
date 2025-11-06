@@ -49,6 +49,18 @@ export function getScalars() {
       "output": "DomainId",
     },
     
+    // 动态页面
+    "DynPageId": {
+      "input": "DynPageId",
+      "output": "DynPageId",
+    },
+    
+    // 动态页面字段
+    "DynPageFieldId": {
+      "input": "DynPageFieldId",
+      "output": "DynPageFieldId",
+    },
+    
     // 字段权限
     "FieldPermitId": {
       "input": "FieldPermitId",

@@ -891,7 +891,7 @@ export async function checkByUniqueDept(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 部门 已经存在");
+      throw new UniqueException("部门 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: DeptId = await updateByIdDept(
@@ -1867,7 +1867,7 @@ export async function updateByIdDept(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 部门 已经存在";
+        throw "部门 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -2333,7 +2333,7 @@ export async function revertByIdsDept(
         if (model.id === id) {
           continue;
         }
-        throw "此 部门 已经存在";
+        throw "部门 重复";
       }
     }
     const args = new QueryArgs();

@@ -29,8 +29,8 @@ declare global {
     route_query_like?: string;
     /** 首页隐藏 */
     is_home_hide?: number[];
-    /** 锁定 */
-    is_locked?: number[];
+    /** 动态页面 */
+    is_dyn_page?: number[];
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */

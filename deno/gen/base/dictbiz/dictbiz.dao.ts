@@ -708,7 +708,7 @@ export async function checkByUniqueDictbiz(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 业务字典 已经存在");
+      throw new UniqueException("业务字典 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: DictbizId = await updateByIdDictbiz(
@@ -1675,7 +1675,7 @@ export async function updateByIdDictbiz(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 业务字典 已经存在";
+        throw "业务字典 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -2109,7 +2109,7 @@ export async function revertByIdsDictbiz(
         if (model.id === id) {
           continue;
         }
-        throw "此 业务字典 已经存在";
+        throw "业务字典 重复";
       }
     }
     const args = new QueryArgs();

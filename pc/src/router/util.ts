@@ -8,8 +8,6 @@ import type {
   RouteRecordRaw,
 } from "vue-router";
 
-import cfg from "@/utils/config";
-
 import router0 from "./index";
 
 export function getRouter(path0?: string) {
@@ -35,6 +33,18 @@ export function getRouter(path0?: string) {
       return router;
     }
   }
+}
+
+export function getRoutersMap() {
+  const routers = getRouters();
+  const routesMap: {
+    [key: string]: RouteRecordRaw;
+  } = { };
+  for (let i = 0; i < routers.length; i++) {
+    const router = routers[i];
+    routesMap[router.path] = router;
+  }
+  return routesMap;
 }
 
 export function getRouters() {

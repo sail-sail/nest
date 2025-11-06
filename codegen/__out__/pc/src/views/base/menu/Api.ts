@@ -40,9 +40,9 @@ export function intoInputMenu(
     // 首页隐藏
     is_home_hide: model?.is_home_hide,
     is_home_hide_lbl: model?.is_home_hide_lbl,
-    // 锁定
-    is_locked: model?.is_locked,
-    is_locked_lbl: model?.is_locked_lbl,
+    // 动态页面
+    is_dyn_page: model?.is_dyn_page,
+    is_dyn_page_lbl: model?.is_dyn_page_lbl,
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
@@ -458,34 +458,6 @@ export async function enableByIdsMenu(
 }
 
 /**
- * 根据 ids 锁定或解锁 菜单
- */
-export async function lockByIdsMenu(
-  ids: MenuId[],
-  is_locked: 0 | 1,
-  opt?: GqlOpt,
-): Promise<number> {
-  if (ids.length === 0) {
-    return 0;
-  }
-  const data: {
-    lockByIdsMenu: Mutation["lockByIdsMenu"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [MenuId!]!, $is_locked: Int!) {
-        lockByIdsMenu(ids: $ids, is_locked: $is_locked)
-      }
-    `,
-    variables: {
-      ids,
-      is_locked,
-    },
-  }, opt);
-  const res = data.lockByIdsMenu;
-  return res;
-}
-
-/**
  * 根据 ids 还原 菜单
  */
 export async function revertByIdsMenu(
@@ -602,6 +574,7 @@ export function useDownloadImportTemplateMenu() {
             route_path
             route_query
             is_home_hide_lbl
+            is_dyn_page_lbl
             order_by
             rem
           }
@@ -610,6 +583,7 @@ export function useDownloadImportTemplateMenu() {
             lbl
           }
           getDict(codes: [
+            "yes_no",
             "yes_no",
           ]) {
             code
@@ -673,7 +647,7 @@ export function useExportExcelMenu() {
             }
             getDict(codes: [
               "yes_no",
-              "is_locked",
+              "yes_no",
               "is_enabled",
             ]) {
               code
@@ -790,7 +764,7 @@ export function getPagePathMenu() {
 export async function getDefaultInputMenu() {
   const defaultInput: MenuInput = {
     is_home_hide: 0,
-    is_locked: 0,
+    is_dyn_page: 0,
     is_enabled: 1,
     order_by: 1,
   };

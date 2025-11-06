@@ -665,7 +665,7 @@ export async function checkByUniqueI18n(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 国际化 已经存在");
+      throw new UniqueException("国际化 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: I18nId = await updateByIdI18n(
@@ -1544,7 +1544,7 @@ export async function updateByIdI18n(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 国际化 已经存在";
+        throw "国际化 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1825,7 +1825,7 @@ export async function revertByIdsI18n(
         if (model.id === id) {
           continue;
         }
-        throw "此 国际化 已经存在";
+        throw "国际化 重复";
       }
     }
     const args = new QueryArgs();
