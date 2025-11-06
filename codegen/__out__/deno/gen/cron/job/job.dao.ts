@@ -670,7 +670,7 @@ export async function checkByUniqueJob(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 任务 已经存在");
+      throw new UniqueException("任务 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: JobId = await updateByIdJob(
@@ -1618,7 +1618,7 @@ export async function updateByIdJob(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 任务 已经存在";
+        throw "任务 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -2049,7 +2049,7 @@ export async function revertByIdsJob(
         if (model.id === id) {
           continue;
         }
-        throw "此 任务 已经存在";
+        throw "任务 重复";
       }
     }
     const args = new QueryArgs();
