@@ -716,7 +716,7 @@ export async function checkByUniqueWxUsr(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 小程序用户 已经存在");
+      throw new UniqueException("小程序用户 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxUsrId = await updateByIdWxUsr(
@@ -1759,7 +1759,7 @@ export async function updateByIdWxUsr(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 小程序用户 已经存在";
+        throw "小程序用户 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -2094,7 +2094,7 @@ export async function revertByIdsWxUsr(
         if (model.id === id) {
           continue;
         }
-        throw "此 小程序用户 已经存在";
+        throw "小程序用户 重复";
       }
     }
     const args = new QueryArgs();

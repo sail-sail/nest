@@ -832,7 +832,7 @@ export async function checkByUniqueWxPayNotice(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 微信支付通知 已经存在");
+      throw new UniqueException("微信支付通知 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxPayNoticeId = await updateByIdWxPayNotice(
@@ -1848,7 +1848,7 @@ export async function updateByIdWxPayNotice(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 微信支付通知 已经存在";
+        throw "微信支付通知 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -2189,7 +2189,7 @@ export async function revertByIdsWxPayNotice(
         if (model.id === id) {
           continue;
         }
-        throw "此 微信支付通知 已经存在";
+        throw "微信支付通知 重复";
       }
     }
     const args = new QueryArgs();

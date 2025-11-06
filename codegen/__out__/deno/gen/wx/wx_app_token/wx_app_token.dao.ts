@@ -625,7 +625,7 @@ export async function checkByUniqueWxAppToken(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 小程序接口凭据 已经存在");
+      throw new UniqueException("小程序接口凭据 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxAppTokenId = await updateByIdWxAppToken(
@@ -1488,7 +1488,7 @@ export async function updateByIdWxAppToken(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 小程序接口凭据 已经存在";
+        throw "小程序接口凭据 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1775,7 +1775,7 @@ export async function revertByIdsWxAppToken(
         if (model.id === id) {
           continue;
         }
-        throw "此 小程序接口凭据 已经存在";
+        throw "小程序接口凭据 重复";
       }
     }
     const args = new QueryArgs();
