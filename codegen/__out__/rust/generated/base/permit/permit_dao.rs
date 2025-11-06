@@ -1065,7 +1065,7 @@ pub async fn check_by_unique_permit(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 按钮权限 已经存在";
+    let err_msg = "按钮权限 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1500,7 +1500,7 @@ pub async fn update_by_id_permit(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 按钮权限 已经存在";
+        let err_msg = "按钮权限 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);

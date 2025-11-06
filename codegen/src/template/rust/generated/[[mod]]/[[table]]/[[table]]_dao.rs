@@ -3439,12 +3439,12 @@ pub async fn check_by_unique_<#=table#>(
       ("0".to_owned(), table_comment),
     ]);
     let err_msg = i18n_dao::ns(
-      "此 {0} 已经存在".to_owned(),
+      "{0} 重复".to_owned(),
       map.into(),
     ).await?;<#
     } else {
     #>
-    let err_msg = "此 <#=table_comment#> 已经存在";<#
+    let err_msg = "<#=table_comment#> 重复";<#
     }
     #>
     return Err(eyre!(err_msg));
@@ -5969,12 +5969,12 @@ pub async fn update_by_id_<#=table#>(
           ("0".to_owned(), table_comment),
         ]);
         let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
+          "{0} 重复".to_owned(),
           map.into(),
         ).await?;<#
         } else {
         #>
-        let err_msg = "此 <#=table_comment#> 已经存在";<#
+        let err_msg = "<#=table_comment#> 重复";<#
         }
         #>
         return Err(eyre!(err_msg));
@@ -7928,12 +7928,12 @@ pub async fn revert_by_ids_<#=table#>(
           ("0".to_owned(), table_comment),
         ]);
         let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
+          "{0} 重复".to_owned(),
           map.into(),
         ).await?;<#
         } else {
         #>
-        let err_msg = "此 <#=table_comment#> 已经存在";<#
+        let err_msg = "<#=table_comment#> 重复";<#
         }
         #>
         return Err(eyre!(err_msg));

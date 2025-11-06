@@ -77,9 +77,12 @@ pub struct MenuModel {
   /// 首页隐藏
   #[graphql(name = "is_home_hide_lbl")]
   pub is_home_hide_lbl: String,
-  /// 
+  /// 动态页面
   #[graphql(name = "is_dyn_page")]
-  pub is_dyn_page: String,
+  pub is_dyn_page: u8,
+  /// 动态页面
+  #[graphql(name = "is_dyn_page_lbl")]
+  pub is_dyn_page_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
@@ -131,8 +134,9 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     // 首页隐藏
     let is_home_hide: u8 = row.try_get("is_home_hide")?;
     let is_home_hide_lbl: String = is_home_hide.to_string();
-    // 
-    let is_dyn_page: String = row.try_get("is_dyn_page")?;
+    // 动态页面
+    let is_dyn_page: u8 = row.try_get("is_dyn_page")?;
+    let is_dyn_page_lbl: String = is_dyn_page.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -175,6 +179,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       is_home_hide,
       is_home_hide_lbl,
       is_dyn_page,
+      is_dyn_page_lbl,
       is_enabled,
       is_enabled_lbl,
       order_by,
@@ -221,9 +226,12 @@ pub struct MenuFieldComment {
   /// 首页隐藏
   #[graphql(name = "is_home_hide_lbl")]
   pub is_home_hide_lbl: String,
-  /// 
+  /// 动态页面
   #[graphql(name = "is_dyn_page")]
   pub is_dyn_page: String,
+  /// 动态页面
+  #[graphql(name = "is_dyn_page_lbl")]
+  pub is_dyn_page_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: String,
@@ -306,9 +314,9 @@ pub struct MenuSearch {
   /// 首页隐藏
   #[graphql(skip)]
   pub is_home_hide: Option<Vec<u8>>,
-  /// 
+  /// 动态页面
   #[graphql(skip)]
-  pub is_dyn_page: Option<String>,
+  pub is_dyn_page: Option<Vec<u8>>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
@@ -408,7 +416,7 @@ impl std::fmt::Debug for MenuSearch {
     if let Some(ref is_home_hide) = self.is_home_hide {
       item = item.field("is_home_hide", is_home_hide);
     }
-    // 
+    // 动态页面
     if let Some(ref is_dyn_page) = self.is_dyn_page {
       item = item.field("is_dyn_page", is_dyn_page);
     }
@@ -498,9 +506,12 @@ pub struct MenuInput {
   /// 首页隐藏
   #[graphql(name = "is_home_hide_lbl")]
   pub is_home_hide_lbl: Option<String>,
-  /// 
+  /// 动态页面
   #[graphql(name = "is_dyn_page")]
-  pub is_dyn_page: Option<String>,
+  pub is_dyn_page: Option<u8>,
+  /// 动态页面
+  #[graphql(name = "is_dyn_page_lbl")]
+  pub is_dyn_page_lbl: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
@@ -563,8 +574,9 @@ impl From<MenuModel> for MenuInput {
       // 首页隐藏
       is_home_hide: model.is_home_hide.into(),
       is_home_hide_lbl: model.is_home_hide_lbl.into(),
-      // 
+      // 动态页面
       is_dyn_page: model.is_dyn_page.into(),
+      is_dyn_page_lbl: model.is_dyn_page_lbl.into(),
       // 启用
       is_enabled: model.is_enabled.into(),
       is_enabled_lbl: model.is_enabled_lbl.into(),
@@ -608,8 +620,8 @@ impl From<MenuInput> for MenuSearch {
       route_query: input.route_query,
       // 首页隐藏
       is_home_hide: input.is_home_hide.map(|x| vec![x]),
-      // 
-      is_dyn_page: input.is_dyn_page,
+      // 动态页面
+      is_dyn_page: input.is_dyn_page.map(|x| vec![x]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序

@@ -72,8 +72,8 @@ aes-gcm = "0.10.3"
 pkcs8 = "0.10.2"
 serde_with = "3.15.1"
 csv = "1.4.0"
-docx-handlebars = "0.3.2"
-xlsx-handlebars = "0.2.1"
+docx-handlebars = "0.3.3"
+xlsx-handlebars = "0.2.2"
 tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"] }
 rust-embed = { version = "8.9.0", features = ["include-exclude"] }
 

@@ -1397,7 +1397,7 @@ pub async fn check_by_unique_domain(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 域名 已经存在";
+    let err_msg = "域名 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1999,7 +1999,7 @@ pub async fn update_by_id_domain(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 域名 已经存在";
+        let err_msg = "域名 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2573,7 +2573,7 @@ pub async fn revert_by_ids_domain(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 域名 已经存在";
+        let err_msg = "域名 重复";
         return Err(eyre!(err_msg));
       }
     }

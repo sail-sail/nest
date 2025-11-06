@@ -6,6 +6,8 @@ pub mod dict_detail;
 pub mod dictbiz;
 pub mod dictbiz_detail;
 pub mod domain;
+pub mod dyn_page;
+pub mod dyn_page_field;
 pub mod field_permit;
 pub mod i18n;
 pub mod icon;

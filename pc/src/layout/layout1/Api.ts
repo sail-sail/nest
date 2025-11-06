@@ -2,9 +2,16 @@ import type {
   GetLoginInfo,
   Mutation,
   Query,
-  GetMenus,
   MenuModel as MenuModel0,
-} from "#/types";
+} from "#/types.ts";
+
+import {
+  getRoutersMap,
+} from "@/router/util.ts";
+
+import Layout1 from "@/layout/layout1/index.vue";
+
+import router from "@/router/index.ts";
 
 export type MenuModel = MenuModel0 & {
   children?: MenuModel[];
@@ -47,8 +54,84 @@ export async function getMenus(
       }
     `,
   }, opt);
-  const data = res.getMenus;
-  const dataTree = list2tree(data);
+  const menu_models = res.getMenus;
+  const routersMap = getRoutersMap();
+  // const routersKeys = Object.keys(routersMap);
+  for (let i = 0; i < menu_models.length; i++) {
+    const menu_model = menu_models[i];
+    if (
+      !menu_model.route_path ||
+      !menu_model.route_path.startsWith("/") ||
+      menu_model.route_path === "/" ||
+      menu_model.route_path === "/index"
+    ) {
+      continue;
+    }
+    const routerItem = routersMap[menu_model.route_path || ""];
+    if (!routerItem) {
+      let name = "";
+      if (menu_model.parent_id_lbl) {
+        name = menu_model.parent_id_lbl + "/" + menu_model.lbl;
+      } else {
+        name = menu_model.lbl;
+      }
+      router.addRoute({
+        path: menu_model.route_path,
+        component: Layout1,
+        children: [
+          {
+            path: "",
+            name,
+            component: () => import("@/components/CustomDynList.vue"),
+            props: (route) => {
+              const query = route.query || { };
+              if (menu_model.route_query) {
+                try {
+                  const queryObj = JSON.parse(menu_model.route_query);
+                  Object.assign(query, queryObj);
+                } catch (e) {
+                  console.error("菜单路由参数解析错误:", e);
+                }
+              }
+              return query;
+            },
+            meta: {
+              name: menu_model.lbl,
+            },
+          },
+        ],
+      });
+    }
+  }
+  // 移除无用路由
+  // for (const keys of routersKeys) {
+  //   const routerItem = routersMap[keys];
+  //   if (
+  //     !routerItem.path ||
+  //     !routerItem.path.startsWith("/") ||
+  //     routerItem.path === "/" ||
+  //     routerItem.path === "/index"
+  //   ) {
+  //     continue;
+  //   }
+  //   let hasMenu = false;
+  //   for (let i = 0; i < menu_models.length; i++) {
+  //     const menu_model = menu_models[i];
+  //     if (menu_model.route_path === routerItem.path) {
+  //       hasMenu = true;
+  //       break;
+  //     }
+  //   }
+  //   if (hasMenu) {
+  //     continue;
+  //   }
+  //   const name = routerItem.name || routerItem.children?.[0]?.name;
+  //   if (!name) {
+  //     continue;
+  //   }
+  //   router.removeRoute(name);
+  // }
+  const dataTree = list2tree(menu_models);
   treeMenusUrl(dataTree);
   return dataTree;
 }

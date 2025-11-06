@@ -14,7 +14,7 @@ export default defineConfig({
         lbl: "关键字",
         placeholder: "编码/名称/备注",
       },
-      isGenSelectList: true,
+      hasSelectInput: true,
     },
     columns: [
       {
@@ -254,7 +254,7 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
-      isGenSelectList: true,
+      hasSelectInput: true,
     },
     columns: [
       {
@@ -447,7 +447,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "route_path",
         align: "left",
-        width: 240,
+        width: 280,
       },
       {
         COLUMN_NAME: "route_query",
@@ -456,9 +456,11 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_home_hide",
+        isSwitch: false,
       },
       {
-        COLUMN_NAME: "is_locked",
+        COLUMN_NAME: "is_dyn_page",
+        isSwitch: false,
       },
       {
         COLUMN_NAME: "is_enabled",
@@ -1469,6 +1471,110 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+  // 动态页面
+  base_dyn_page: {
+    opts: {
+      cache: true,
+      uniques: [
+        [ "lbl" ],
+      ],
+      inlineForeignTabs: [
+        {
+          mod: "base",
+          table: "dyn_page_field",
+          label: "动态页面字段",
+          column: "dyn_page_id",
+        },
+      ],
+      hasSelectInput: true,
+    },
+    columns: [
+      {
+        COLUMN_NAME: "code_seq",
+        onlyCodegenDeno: true,
+      },
+      {
+        COLUMN_NAME: "code",
+        width: 140,
+        readonly: true,
+        readonlyPlaceholder: "(自动生成)",
+        autoCode: {
+          prefix: "DP",
+          seqPadStart0: 3,
+          seq: "code_seq",
+        },
+        fixed: "left",
+      },
+      {
+        COLUMN_NAME: "lbl",
+      },
+      {
+        COLUMN_NAME: "order_by",
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+  // 动态页面字段
+  base_dyn_page_field: {
+    opts: {
+      uniques: [
+        [ "dyn_page_id", "lbl" ],
+      ],
+      defaultSort: {
+        prop: "order_by",
+        order: "ascending",
+      },
+    },
+    columns: [
+      {
+        COLUMN_NAME: "dyn_page_id",
+        require: true,
+        search: true,
+        foreignKey: {
+          selectType: "selectInput",
+          isSearchByLbl: true,
+        },
+      },
+      {
+        COLUMN_NAME: "lbl",
+      },
+      {
+        COLUMN_NAME: "type",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "attrs",
+        align: "left",
+        width: 200,
+      },
+      {
+        COLUMN_NAME: "is_required",
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "order_by",
       },
     ],
   },

@@ -251,15 +251,28 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
-  // 
+  // 动态页面
   {
-    let is_dyn_page = match search {
+    let is_dyn_page: Option<Vec<u8>> = match search {
       Some(item) => item.is_dyn_page.clone(),
       None => None,
     };
     if let Some(is_dyn_page) = is_dyn_page {
-      where_query.push_str(" and t.is_dyn_page=?");
-      args.push(is_dyn_page.into());
+      let arg = {
+        if is_dyn_page.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(is_dyn_page.len());
+          for item in is_dyn_page {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.is_dyn_page in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   // 启用
@@ -602,6 +615,20 @@ pub async fn find_all_menu(
       return Err(eyre!("search.is_home_hide.length > {ids_limit}"));
     }
   }
+  // 动态页面
+  if let Some(search) = &search && search.is_dyn_page.is_some() {
+    let len = search.is_dyn_page.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_dyn_page.length > {ids_limit}"));
+    }
+  }
   // 启用
   if let Some(search) = &search && search.is_enabled.is_some() {
     let len = search.is_enabled.as_ref().unwrap().len();
@@ -709,12 +736,14 @@ pub async fn find_all_menu(
   
   let dict_vec = get_dict(&[
     "yes_no",
+    "yes_no",
     "is_enabled",
   ]).await?;
   let [
     is_home_hide_dict,
+    is_dyn_page_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 2] = dict_vec
+  ]: [Vec<_>; 3] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -728,6 +757,15 @@ pub async fn find_all_menu(
         .find(|item| item.val == model.is_home_hide.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_home_hide.to_string())
+    };
+    
+    // 动态页面
+    model.is_dyn_page_lbl = {
+      is_dyn_page_dict
+        .iter()
+        .find(|item| item.val == model.is_dyn_page.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_dyn_page.to_string())
     };
     
     // 启用
@@ -804,6 +842,20 @@ pub async fn find_count_menu(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_home_hide.length > {ids_limit}"));
+    }
+  }
+  // 动态页面
+  if let Some(search) = &search && search.is_dyn_page.is_some() {
+    let len = search.is_dyn_page.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_dyn_page.length > {ids_limit}"));
     }
   }
   // 启用
@@ -914,7 +966,8 @@ pub async fn get_field_comments_menu(
     route_query: "参数".into(),
     is_home_hide: "首页隐藏".into(),
     is_home_hide_lbl: "首页隐藏".into(),
-    is_dyn_page: "".into(),
+    is_dyn_page: "动态页面".into(),
+    is_dyn_page_lbl: "动态页面".into(),
     is_enabled: "启用".into(),
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
@@ -1337,6 +1390,20 @@ pub async fn exists_menu(
       return Err(eyre!("search.is_home_hide.length > {ids_limit}"));
     }
   }
+  // 动态页面
+  if let Some(search) = &search && search.is_dyn_page.is_some() {
+    let len = search.is_dyn_page.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_dyn_page.length > {ids_limit}"));
+    }
+  }
   // 启用
   if let Some(search) = &search && search.is_enabled.is_some() {
     let len = search.is_enabled.as_ref().unwrap().len();
@@ -1610,7 +1677,7 @@ pub async fn check_by_unique_menu(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 菜单 已经存在";
+    let err_msg = "菜单 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1627,6 +1694,7 @@ pub async fn set_id_by_lbl_menu(
   let mut input = input;
   
   let dict_vec = get_dict(&[
+    "yes_no",
     "yes_no",
     "is_enabled",
   ]).await?;
@@ -1646,9 +1714,24 @@ pub async fn set_id_by_lbl_menu(
     }
   }
   
+  // 动态页面
+  if input.is_dyn_page.is_none() {
+    let is_dyn_page_dict = &dict_vec[1];
+    if let Some(is_dyn_page_lbl) = input.is_dyn_page_lbl.clone() {
+      input.is_dyn_page = is_dyn_page_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_dyn_page_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[2];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -1722,12 +1805,37 @@ pub async fn set_id_by_lbl_menu(
     input.is_home_hide_lbl = lbl;
   }
   
+  // 动态页面
+  if
+    input.is_dyn_page_lbl.is_some() && !input.is_dyn_page_lbl.as_ref().unwrap().is_empty()
+    && input.is_dyn_page.is_none()
+  {
+    let is_dyn_page_dict = &dict_vec[1];
+    let dict_model = is_dyn_page_dict.iter().find(|item| {
+      item.lbl == input.is_dyn_page_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_dyn_page = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_dyn_page_lbl.is_none() || input.is_dyn_page_lbl.as_ref().unwrap().is_empty())
+    && input.is_dyn_page.is_some()
+  {
+    let is_dyn_page_dict = &dict_vec[1];
+    let dict_model = is_dyn_page_dict.iter().find(|item| {
+      item.val == input.is_dyn_page.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_dyn_page_lbl = lbl;
+  }
+  
   // 启用
   if
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[2];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
@@ -1739,7 +1847,7 @@ pub async fn set_id_by_lbl_menu(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[2];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
@@ -1904,7 +2012,7 @@ async fn _creates(
   sql_fields += ",route_query";
   // 首页隐藏
   sql_fields += ",is_home_hide";
-  // 
+  // 动态页面
   sql_fields += ",is_dyn_page";
   // 启用
   sql_fields += ",is_enabled";
@@ -2067,7 +2175,7 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 
+    // 动态页面
     if let Some(is_dyn_page) = input.is_dyn_page {
       sql_values += ",?";
       args.push(is_dyn_page.into());
@@ -2292,7 +2400,7 @@ pub async fn update_by_id_menu(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 菜单 已经存在";
+        let err_msg = "菜单 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2335,7 +2443,7 @@ pub async fn update_by_id_menu(
     sql_fields += "is_home_hide=?,";
     args.push(is_home_hide.into());
   }
-  // 
+  // 动态页面
   if let Some(is_dyn_page) = input.is_dyn_page {
     field_num += 1;
     sql_fields += "is_dyn_page=?,";
@@ -2843,7 +2951,7 @@ pub async fn revert_by_ids_menu(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 菜单 已经存在";
+        let err_msg = "菜单 重复";
         return Err(eyre!(err_msg));
       }
     }

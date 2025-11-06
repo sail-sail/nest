@@ -1,0 +1,679 @@
+
+import {
+  UniqueType,
+} from "#/types.ts";
+
+import type {
+  Query,
+  Mutation,
+  PageInput,
+} from "#/types.ts";
+
+import {
+  dynPageQueryField,
+} from "./Model.ts";
+
+import {
+  intoInputDynPageField,
+} from "@/views/base/dyn_page_field/Api.ts";
+
+async function setLblById(
+  model?: DynPageModel | null,
+  isExcelExport = false,
+) {
+  if (!model) {
+    return;
+  }
+}
+
+export function intoInputDynPage(
+  model?: DynPageInput,
+) {
+  const input: DynPageInput = {
+    // ID
+    id: model?.id,
+    // 编码
+    code: model?.code,
+    // 名称
+    lbl: model?.lbl,
+    // 排序
+    order_by: model?.order_by,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 备注
+    rem: model?.rem,
+    // 动态页面字段
+    dyn_page_field: model?.dyn_page_field?.map(intoInputDynPageField),
+  };
+  return input;
+}
+
+/**
+ * 根据搜索条件查找 动态页面 列表
+ */
+export async function findAllDynPage(
+  search?: DynPageSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllDynPage: DynPageModel[];
+  } = await query({
+    query: `
+      query($search: DynPageSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllDynPage(search: $search, page: $page, sort: $sort) {
+          ${ dynPageQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const models = data.findAllDynPage;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
+ * 根据条件查找第一个 动态页面
+ */
+export async function findOneDynPage(
+  search?: DynPageSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneDynPage?: DynPageModel;
+  } = await query({
+    query: `
+      query($search: DynPageSearch, $sort: [SortInput!]) {
+        findOneDynPage(search: $search, sort: $sort) {
+          ${ dynPageQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneDynPage;
+  
+  await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 动态页面, 如果不存在则抛错
+ */
+export async function findOneOkDynPage(
+  search?: DynPageSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkDynPage?: DynPageModel;
+  } = await query({
+    query: `
+      query($search: DynPageSearch, $sort: [SortInput!]) {
+        findOneOkDynPage(search: $search, sort: $sort) {
+          ${ dynPageQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkDynPage;
+  
+  await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据搜索条件查找 动态页面 总数
+ */
+export async function findCountDynPage(
+  search?: DynPageSearch,
+  opt?: GqlOpt,
+) {
+  const data: {
+    findCountDynPage: Query["findCountDynPage"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DynPageSearch) {
+        findCountDynPage(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  const count = data.findCountDynPage;
+  return count;
+}
+
+/**
+ * 创建 动态页面
+ */
+export async function createDynPage(
+  input: DynPageInput,
+  unique_type?: UniqueType,
+  opt?: GqlOpt,
+): Promise<DynPageId> {
+  const ids = await createsDynPage(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
+  return id;
+}
+
+/**
+ * 批量创建 动态页面
+ */
+export async function createsDynPage(
+  inputs: DynPageInput[],
+  unique_type?: UniqueType,
+  opt?: GqlOpt,
+): Promise<DynPageId[]> {
+  inputs = inputs.map(intoInputDynPage);
+  const data: {
+    createsDynPage: Mutation["createsDynPage"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($inputs: [DynPageInput!]!, $unique_type: UniqueType) {
+        createsDynPage(inputs: $inputs, unique_type: $unique_type)
+      }
+    `,
+    variables: {
+      inputs,
+      unique_type,
+    },
+  }, opt);
+  const ids = data.createsDynPage;
+  return ids;
+}
+
+/**
+ * 根据 id 修改 动态页面
+ */
+export async function updateByIdDynPage(
+  id: DynPageId,
+  input: DynPageInput,
+  opt?: GqlOpt,
+): Promise<DynPageId> {
+  input = intoInputDynPage(input);
+  const data: {
+    updateByIdDynPage: Mutation["updateByIdDynPage"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: DynPageId!, $input: DynPageInput!) {
+        updateByIdDynPage(id: $id, input: $input)
+      }
+    `,
+    variables: {
+      id,
+      input,
+    },
+  }, opt);
+  const id2: DynPageId = data.updateByIdDynPage;
+  return id2;
+}
+
+/**
+ * 根据 id 查找 动态页面
+ */
+export async function findByIdDynPage(
+  id: DynPageId,
+  opt?: GqlOpt,
+): Promise<DynPageModel | undefined> {
+  
+  if (!id) {
+    return;
+  }
+  
+  const data: {
+    findByIdDynPage?: DynPageModel;
+  } = await query({
+    query: `
+      query($id: DynPageId!) {
+        findByIdDynPage(id: $id) {
+          ${ dynPageQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdDynPage;
+  
+  await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 动态页面, 如果不存在则抛错
+ */
+export async function findByIdOkDynPage(
+  id: DynPageId,
+  opt?: GqlOpt,
+): Promise<DynPageModel> {
+  
+  const data: {
+    findByIdOkDynPage: DynPageModel;
+  } = await query({
+    query: `
+      query($id: DynPageId!) {
+        findByIdOkDynPage(id: $id) {
+          ${ dynPageQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkDynPage;
+  
+  await setLblById(model);
+  
+  return model;
+}
+
+/**
+ * 根据 ids 查找 动态页面
+ */
+export async function findByIdsDynPage(
+  ids: DynPageId[],
+  opt?: GqlOpt,
+): Promise<DynPageModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsDynPage: DynPageModel[];
+  } = await query({
+    query: `
+      query($ids: [DynPageId!]!) {
+        findByIdsDynPage(ids: $ids) {
+          ${ dynPageQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsDynPage;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 动态页面, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkDynPage(
+  ids: DynPageId[],
+  opt?: GqlOpt,
+): Promise<DynPageModel[]> {
+  
+  if (ids.length === 0) {
+    return [ ];
+  }
+  
+  const data: {
+    findByIdsOkDynPage: DynPageModel[];
+  } = await query({
+    query: `
+      query($ids: [DynPageId!]!) {
+        findByIdsOkDynPage(ids: $ids) {
+          ${ dynPageQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkDynPage;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 删除 动态页面
+ */
+export async function deleteByIdsDynPage(
+  ids: DynPageId[],
+  opt?: GqlOpt,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+  const data: {
+    deleteByIdsDynPage: Mutation["deleteByIdsDynPage"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [DynPageId!]!) {
+        deleteByIdsDynPage(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const res = data.deleteByIdsDynPage;
+  return res;
+}
+
+/**
+ * 根据 ids 启用或禁用 动态页面
+ */
+export async function enableByIdsDynPage(
+  ids: DynPageId[],
+  is_enabled: 0 | 1,
+  opt?: GqlOpt,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+  const data: {
+    enableByIdsDynPage: Mutation["enableByIdsDynPage"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [DynPageId!]!, $is_enabled: Int!) {
+        enableByIdsDynPage(ids: $ids, is_enabled: $is_enabled)
+      }
+    `,
+    variables: {
+      ids,
+      is_enabled,
+    },
+  }, opt);
+  const res = data.enableByIdsDynPage;
+  return res;
+}
+
+/**
+ * 根据 ids 还原 动态页面
+ */
+export async function revertByIdsDynPage(
+  ids: DynPageId[],
+  opt?: GqlOpt,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+  const data: {
+    revertByIdsDynPage: Mutation["revertByIdsDynPage"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [DynPageId!]!) {
+        revertByIdsDynPage(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const res = data.revertByIdsDynPage;
+  return res;
+}
+
+/**
+ * 根据 ids 彻底删除 动态页面
+ */
+export async function forceDeleteByIdsDynPage(
+  ids: DynPageId[],
+  opt?: GqlOpt,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+  const data: {
+    forceDeleteByIdsDynPage: Mutation["forceDeleteByIdsDynPage"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [DynPageId!]!) {
+        forceDeleteByIdsDynPage(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const res = data.forceDeleteByIdsDynPage;
+  return res;
+}
+
+/**
+ * 下载 动态页面 导入模板
+ */
+export function useDownloadImportTemplateDynPage() {
+  const {
+    workerFn,
+    workerStatus,
+    workerTerminate,
+  } = useRenderExcel();
+  async function workerFn2() {
+    const data = await query({
+      query: /* GraphQL */ `
+        query {
+          getFieldCommentsDynPage {
+            lbl
+            order_by
+            rem
+          }
+        }
+      `,
+      variables: {
+      },
+    });
+    try {
+      const sheetName = "动态页面";
+      const buffer = await workerFn(
+        `${ location.origin }/import_template/base/dyn_page.xlsx`,
+        {
+          sheetName,
+          data,
+        },
+      );
+      saveAsExcel(buffer, `${ sheetName}导入`);
+    } catch (err) {
+      ElMessage.error("下载失败");
+      throw err;
+    }
+  }
+  return {
+    workerFn: workerFn2,
+    workerStatus,
+    workerTerminate,
+  };
+}
+
+/**
+ * 导出Excel
+ */
+export function useExportExcelDynPage() {
+  const {
+    workerFn,
+    workerStatus,
+    workerTerminate,
+  } = useRenderExcel();
+  
+  const loading = ref(false);
+  
+  async function workerFn2(
+    columns: ExcelColumnType[],
+    search?: DynPageSearch,
+    sort?: Sort[],
+    opt?: GqlOpt,
+  ) {
+    workerStatus.value = "PENDING";
+    
+    loading.value = true;
+    
+    try {
+      const data = await query({
+        query: `
+          query($search: DynPageSearch, $sort: [SortInput!]) {
+            findAllDynPage(search: $search, page: null, sort: $sort) {
+              ${ dynPageQueryField }
+            }
+            getDict(codes: [
+              "is_enabled",
+            ]) {
+              code
+              lbl
+            }
+          }
+        `,
+        variables: {
+          search,
+          sort,
+        },
+      }, opt);
+      for (const model of data.findAllDynPage) {
+        await setLblById(model, true);
+      }
+      try {
+        const sheetName = "动态页面";
+        const buffer = await workerFn(
+          `${ location.origin }/excel_template/base/dyn_page.xlsx`,
+          {
+            sheetName,
+            columns,
+            data,
+          },
+        );
+        saveAsExcel(buffer, sheetName);
+      } catch (err) {
+        ElMessage.error("导出失败");
+        throw err;
+      }
+    } finally {
+      loading.value = false;
+    }
+  }
+  return {
+    loading,
+    workerFn: workerFn2,
+    workerStatus,
+    workerTerminate,
+  };
+}
+
+/**
+ * 批量导入 动态页面
+ */
+export async function importModelsDynPage(
+  inputs: DynPageInput[],
+  percentage: Ref<number>,
+  isCancel: Ref<boolean>,
+  opt?: GqlOpt,
+) {
+  opt = opt || { };
+  opt.showErrMsg = false;
+  opt.notLoading = true;
+  
+  let succNum = 0;
+  let failNum = 0;
+  const failErrMsgs: string[] = [ ];
+  percentage.value = 0;
+  
+  const len = inputs.length;
+  const inputsArr = splitCreateArr(inputs);
+  
+  let i = 0;
+  for (const inputs of inputsArr) {
+    if (isCancel.value) {
+      break;
+    }
+    
+    i += inputs.length;
+    
+    try {
+      await createsDynPage(
+        inputs,
+        UniqueType.Update,
+        opt,
+      );
+      succNum += inputs.length;
+    } catch (err) {
+      failNum += inputs.length;
+      failErrMsgs.push(`批量导入第 ${ i + 1 - inputs.length } 至 ${ i + 1 } 行时失败: ${ err }`);
+    }
+    
+    percentage.value = Math.floor((i + 1) / len * 100);
+  }
+  
+  return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/**
+ * 查找 动态页面 order_by 字段的最大值
+ */
+export async function findLastOrderByDynPage(
+  opt?: GqlOpt,
+) {
+  const data: {
+    findLastOrderByDynPage: Query["findLastOrderByDynPage"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        findLastOrderByDynPage
+      }
+    `,
+  }, opt);
+  const res = data.findLastOrderByDynPage;
+  return res;
+}
+
+export function getPagePathDynPage() {
+  return "/base/dyn_page";
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInputDynPage() {
+  const defaultInput: DynPageInput = {
+    order_by: 1,
+    is_enabled: 1,
+  };
+  return defaultInput;
+}
