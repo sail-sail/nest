@@ -142,6 +142,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_dyn_page == null)">
+          <el-form-item
+            label="动态页面"
+            prop="is_dyn_page"
+          >
+            <DictSelect
+              v-model="dialogModel.is_dyn_page"
+              :set="dialogModel.is_dyn_page = dialogModel.is_dyn_page ?? undefined"
+              code="yes_no"
+              placeholder="请选择 动态页面"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"
@@ -346,6 +361,13 @@ watchEffect(async () => {
         message: "请选择 首页隐藏",
       },
     ],
+    // 动态页面
+    is_dyn_page: [
+      {
+        required: true,
+        message: "请选择 动态页面",
+      },
+    ],
     // 排序
     order_by: [
       {
@@ -431,14 +453,10 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (dialogAction === "add") {
-      isLocked = false;
+    if (!permit("edit")) {
+      isLocked = true;
     } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
+      isLocked = toValue(arg?.isLocked) ?? isLocked;
     }
   });
   dialogAction = action || "add";
@@ -487,8 +505,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        is_locked: undefined,
-        is_locked_lbl: undefined,
         order_by: order_by + 1,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
@@ -516,27 +532,6 @@ async function showDialog(
   inited = true;
   return await dialogRes.dialogPrm;
 }
-
-watch(
-  () => [ inited, isLocked, is_deleted, dialogNotice ],
-  async () => {
-    if (!inited) {
-      return;
-    }
-    if (oldDialogNotice != null) {
-      return;
-    }
-    if (is_deleted) {
-      dialogNotice = "(已删除)";
-      return;
-    }
-    if (isLocked) {
-      dialogNotice = "(已锁定)";
-      return;
-    }
-    dialogNotice = "";
-  },
-);
 
 /** 键盘按 Insert */
 async function onInsert() {
@@ -704,6 +699,7 @@ watch(
   () => [
     dialogModel.parent_id,
     dialogModel.is_home_hide,
+    dialogModel.is_dyn_page,
   ],
   () => {
     if (!inited) {
@@ -714,6 +710,9 @@ watch(
     }
     if (!dialogModel.is_home_hide) {
       dialogModel.is_home_hide_lbl = "";
+    }
+    if (!dialogModel.is_dyn_page) {
+      dialogModel.is_dyn_page_lbl = "";
     }
   },
 );

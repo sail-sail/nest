@@ -643,7 +643,7 @@ export async function checkByUniqueOrg(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 组织 已经存在");
+      throw new UniqueException("组织 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: OrgId = await updateByIdOrg(
@@ -1574,7 +1574,7 @@ export async function updateByIdOrg(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 组织 已经存在";
+        throw "组织 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1998,7 +1998,7 @@ export async function revertByIdsOrg(
         if (model.id === id) {
           continue;
         }
-        throw "此 组织 已经存在";
+        throw "组织 重复";
       }
     }
     const args = new QueryArgs();

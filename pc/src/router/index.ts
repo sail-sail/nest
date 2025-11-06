@@ -33,6 +33,7 @@ const routes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
   history: createWebHashHistory(),
+  strict: true,
   routes,
 });
 

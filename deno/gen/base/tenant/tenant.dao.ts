@@ -941,7 +941,7 @@ export async function checkByUniqueTenant(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 租户 已经存在");
+      throw new UniqueException("租户 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: TenantId = await updateByIdTenant(
@@ -1972,7 +1972,7 @@ export async function updateByIdTenant(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 租户 已经存在";
+        throw "租户 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -2482,7 +2482,7 @@ export async function revertByIdsTenant(
         if (model.id === id) {
           continue;
         }
-        throw "此 租户 已经存在";
+        throw "租户 重复";
       }
     }
     const args = new QueryArgs();

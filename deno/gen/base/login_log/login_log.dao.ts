@@ -591,7 +591,7 @@ export async function checkByUniqueLoginLog(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 登录日志 已经存在");
+      throw new UniqueException("登录日志 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: LoginLogId = await updateByIdLoginLog(
@@ -1472,7 +1472,7 @@ export async function updateByIdLoginLog(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 登录日志 已经存在";
+        throw "登录日志 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1735,7 +1735,7 @@ export async function revertByIdsLoginLog(
         if (model.id === id) {
           continue;
         }
-        throw "此 登录日志 已经存在";
+        throw "登录日志 重复";
       }
     }
     const args = new QueryArgs();

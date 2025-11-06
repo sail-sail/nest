@@ -196,11 +196,6 @@ export async function updateByIdMenu(
   input: MenuInput,
 ): Promise<MenuId> {
   
-  const is_locked = await menuDao.getIsLockedByIdMenu(menu_id);
-  if (is_locked) {
-    throw "不能修改已经锁定的 菜单";
-  }
-  
   const menu_id2 = await menuDao.updateByIdMenu(menu_id, input);
   
   return menu_id2;
@@ -221,14 +216,6 @@ export async function deleteByIdsMenu(
   menu_ids: MenuId[],
 ): Promise<number> {
   
-  const old_models = await menuDao.findByIdsMenu(menu_ids);
-  
-  for (const old_model of old_models) {
-    if (old_model.is_locked === 1) {
-      throw "不能删除已经锁定的 菜单";
-    }
-  }
-  
   const menu_num = await menuDao.deleteByIdsMenu(menu_ids);
   return menu_num;
 }
@@ -241,17 +228,6 @@ export async function enableByIdsMenu(
   is_enabled: 0 | 1,
 ): Promise<number> {
   const menu_num = await menuDao.enableByIdsMenu(ids, is_enabled);
-  return menu_num;
-}
-
-/**
- * 根据 ids 锁定或者解锁菜单
- */
-export async function lockByIdsMenu(
-  menu_ids: MenuId[],
-  is_locked: 0 | 1,
-): Promise<number> {
-  const menu_num = await menuDao.lockByIdsMenu(menu_ids, is_locked);
   return menu_num;
 }
 

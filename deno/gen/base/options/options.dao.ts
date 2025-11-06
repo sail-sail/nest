@@ -657,7 +657,7 @@ export async function checkByUniqueOptions(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 系统选项 已经存在");
+      throw new UniqueException("系统选项 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: OptionsId = await updateByIdOptions(
@@ -1574,7 +1574,7 @@ export async function updateByIdOptions(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 系统选项 已经存在";
+        throw "系统选项 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -2024,7 +2024,7 @@ export async function revertByIdsOptions(
         if (model.id === id) {
           continue;
         }
-        throw "此 系统选项 已经存在";
+        throw "系统选项 重复";
       }
     }
     const args = new QueryArgs();

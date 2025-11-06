@@ -42,7 +42,7 @@ export default defineConfig({
   },
   plugins: [
     Unocss({
-      mode: "vue-scoped",
+      // mode: "vue-scoped",
       configFile: "./uno.config.ts",
     }),
     TurboConsole({
