@@ -242,7 +242,7 @@ async function menuSelect(id: MenuId) {
   }, 0);
 }
 
-async function getMenusEfc() {
+async function onGetMenus() {
   inited = false;
   const result = await getMenus();
   menuStore.menus = result;
@@ -252,7 +252,7 @@ async function getMenusEfc() {
 
 async function initFrame() {
   if (usrStore.authorization) {
-    await getMenusEfc();
+    await onGetMenus();
   } else {
     menuStore.menus = [ ];
   }

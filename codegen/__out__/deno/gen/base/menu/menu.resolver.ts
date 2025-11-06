@@ -302,34 +302,6 @@ export async function enableByIdsMenu(
 }
 
 /**
- * 根据 ids 锁定或者解锁菜单
- */
-export async function lockByIdsMenu(
-  ids: MenuId[],
-  is_locked: 0 | 1,
-): Promise<number> {
-  
-  const {
-    lockByIdsMenu,
-  } = await import("./menu.service.ts");
-  
-  if (is_locked !== 0 && is_locked !== 1) {
-    throw new Error(`lockByIdsMenu.is_locked expect 0 or 1 but got ${ is_locked }`);
-  }
-  
-  set_is_tran(true);
-  
-  await usePermit(
-    route_path,
-    "edit",
-  );
-  
-  const res = await lockByIdsMenu(ids, is_locked);
-  
-  return res;
-}
-
-/**
  * 根据 ids 还原菜单
  */
 export async function revertByIdsMenu(

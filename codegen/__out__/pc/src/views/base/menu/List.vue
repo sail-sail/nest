@@ -327,22 +327,6 @@
               <span>禁用</span>
             </el-dropdown-item>
             
-            <el-dropdown-item
-              v-if="permit('edit', '编辑') && !isLocked"
-              un-justify-center
-              @click="onLockByIds(1)"
-            >
-              <span>锁定</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('edit', '编辑') && !isLocked"
-              un-justify-center
-              @click="onLockByIds(0)"
-            >
-              <span>解锁</span>
-            </el-dropdown-item>
-            
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -560,29 +544,15 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_home_hide"
-                  @change="onIs_home_hide(row.id, row.is_home_hide)"
-                ></CustomSwitch>
-              </template>
             </el-table-column>
           </template>
           
-          <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop">
+          <!-- 动态页面 -->
+          <template v-else-if="'is_dyn_page_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_locked"
-                  @change="onIs_locked(row.id, row.is_locked)"
-                ></CustomSwitch>
-              </template>
             </el-table-column>
           </template>
           
@@ -594,7 +564,7 @@
             >
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_enabled"
                   @change="onIs_enabled(row.id, row.is_enabled)"
                 ></CustomSwitch>
@@ -610,7 +580,7 @@
             >
               <template #default="{ row }">
                 <CustomInputNumber
-                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
                   @change="updateByIdMenu(
@@ -738,7 +708,6 @@ import {
   deleteByIdsMenu,
   forceDeleteByIdsMenu,
   enableByIdsMenu,
-  lockByIdsMenu,
   useExportExcelMenu,
   updateByIdMenu,
   importModelsMenu,
@@ -1070,7 +1039,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "路由",
       prop: "route_path",
-      width: 240,
+      width: 280,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1093,9 +1062,9 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
-      label: "锁定",
-      prop: "is_locked_lbl",
-      sortBy: "is_locked",
+      label: "动态页面",
+      prop: "is_dyn_page_lbl",
+      sortBy: "is_dyn_page",
       width: 85,
       align: "center",
       headerAlign: "center",
@@ -1438,7 +1407,7 @@ async function onImportExcel() {
     [ "路由" ]: "route_path",
     [ "参数" ]: "route_query",
     [ "首页隐藏" ]: "is_home_hide_lbl",
-    [ "锁定" ]: "is_locked_lbl",
+    [ "动态页面" ]: "is_dyn_page_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
     [ "备注" ]: "rem",
@@ -1468,7 +1437,7 @@ async function onImportExcel() {
           "route_path": "string",
           "route_query": "string",
           "is_home_hide_lbl": "string",
-          "is_locked_lbl": "string",
+          "is_dyn_page_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
           "rem": "string",
@@ -1499,52 +1468,6 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
-}
-
-/** 首页隐藏 */
-async function onIs_home_hide(id: MenuId, is_home_hide: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await updateByIdMenu(
-    id,
-    {
-      is_home_hide,
-    },
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
-}
-
-/** 锁定 */
-async function onIs_locked(id: MenuId, is_locked: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await lockByIdsMenu(
-    [ id ],
-    is_locked,
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
 }
 
 /** 启用 */
@@ -1767,40 +1690,6 @@ async function onEnableByIds(is_enabled: 0 | 1) {
       msg = `启用 ${ num } 菜单 成功`;
     } else {
       msg = `禁用 ${ num } 菜单 成功`;
-    }
-    ElMessage.success(msg);
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
-/** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (permit("edit") === false) {
-    ElMessage.warning("无权限");
-    return;
-  }
-  if (selectedIds.length === 0) {
-    let msg = "";
-    if (is_locked === 1) {
-      msg = "请选择需要 锁定 的 菜单";
-    } else {
-      msg = "请选择需要 解锁 的 菜单";
-    }
-    ElMessage.warning(msg);
-    return;
-  }
-  const num = await lockByIdsMenu(selectedIds, is_locked);
-  if (num > 0) {
-    let msg = "";
-    if (is_locked === 1) {
-      msg = `锁定 ${ num } 菜单 成功`;
-    } else {
-      msg = `解锋 ${ num } 菜单 成功`;
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);

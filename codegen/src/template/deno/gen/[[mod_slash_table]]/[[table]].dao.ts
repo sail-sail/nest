@@ -3054,10 +3054,10 @@ export async function checkByUnique<#=Table_Up#>(
     if (uniqueType === UniqueType.Throw) {<#
       if (isUseI18n) {
       #>
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("<#=table_comment#>")));<#
+      throw new UniqueException(await ns("{0} 重复", await ns("<#=table_comment#>")));<#
       } else {
       #>
-      throw new UniqueException("此 <#=table_comment#> 已经存在");<#
+      throw new UniqueException("<#=table_comment#> 重复");<#
       }
       #>
     }
@@ -5331,10 +5331,10 @@ export async function updateById<#=Table_Up#>(
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {<#
         if (isUseI18n) {
         #>
-        throw await ns("此 {0} 已经存在", await ns("<#=table_comment#>"));<#
+        throw await ns("{0} 重复", await ns("<#=table_comment#>"));<#
         } else {
         #>
-        throw "此 <#=table_comment#> 已经存在";<#
+        throw "<#=table_comment#> 重复";<#
         }
         #>
       } else if (options.uniqueType === UniqueType.Ignore) {
@@ -6862,10 +6862,10 @@ export async function revertByIds<#=Table_Up#>(
         }<#
         if (isUseI18n) {
         #>
-        throw await ns("此 {0} 已经存在", await ns("<#=table_comment#>"));<#
+        throw await ns("{0} 重复", await ns("<#=table_comment#>"));<#
         } else {
         #>
-        throw "此 <#=table_comment#> 已经存在";<#
+        throw "<#=table_comment#> 重复";<#
         }
         #>
       }

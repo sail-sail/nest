@@ -23,10 +23,10 @@ type MenuModel {
   is_home_hide: Int!
   "首页隐藏"
   is_home_hide_lbl: String!
-  "锁定"
-  is_locked: Int!
-  "锁定"
-  is_locked_lbl: String!
+  "动态页面"
+  is_dyn_page: Int!
+  "动态页面"
+  is_dyn_page_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
@@ -71,10 +71,10 @@ type MenuFieldComment {
   is_home_hide: String!
   "首页隐藏"
   is_home_hide_lbl: String!
-  "锁定"
-  is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
+  "动态页面"
+  is_dyn_page: String!
+  "动态页面"
+  is_dyn_page_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -117,10 +117,10 @@ input MenuInput {
   is_home_hide: Int
   "首页隐藏"
   is_home_hide_lbl: String
-  "锁定"
-  is_locked: Int
-  "锁定"
-  is_locked_lbl: String
+  "动态页面"
+  is_dyn_page: Int
+  "动态页面"
+  is_dyn_page_lbl: String
   "启用"
   is_enabled: Int
   "启用"
@@ -192,8 +192,6 @@ type Mutation {
   deleteByIdsMenu(ids: [MenuId!]!): Int!
   "根据 ids 启用或者禁用菜单"
   enableByIdsMenu(ids: [MenuId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁菜单"
-  lockByIdsMenu(ids: [MenuId!]!, is_locked: Int!): Int!
   "根据 ids 还原菜单"
   revertByIdsMenu(ids: [MenuId!]!): Int!
   "根据 ids 彻底删除菜单"

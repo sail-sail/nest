@@ -42,9 +42,9 @@ export const menuFields = [
   // 首页隐藏
   "is_home_hide",
   "is_home_hide_lbl",
-  // 锁定
-  "is_locked",
-  "is_locked_lbl",
+  // 动态页面
+  "is_dyn_page",
+  "is_dyn_page_lbl",
   // 启用
   "is_enabled",
   "is_enabled_lbl",
