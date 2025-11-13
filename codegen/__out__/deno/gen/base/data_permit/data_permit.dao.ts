@@ -194,7 +194,7 @@ export async function findCountDataPermit(
   },
 ): Promise<number> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findCountDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -294,6 +294,16 @@ export async function findCountDataPermit(
   return result;
 }
 
+// MARK: getPagePathDataPermit
+export function getPagePathDataPermit() {
+  return "/base/data_permit";
+}
+
+// MARK: getTableNameDataPermit
+export function getTableNameDataPermit() {
+  return "base_data_permit";
+}
+
 // MARK: findAllDataPermit
 /** 根据搜索条件和分页查找数据权限列表 */
 export async function findAllDataPermit(
@@ -306,7 +316,7 @@ export async function findAllDataPermit(
   },
 ): Promise<DataPermitModel[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findAllDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -607,7 +617,7 @@ export async function findByUniqueDataPermit(
   },
 ): Promise<DataPermitModel[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findByUniqueDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -739,7 +749,7 @@ export async function findOneDataPermit(
   },
 ): Promise<DataPermitModel | undefined> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findOneDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -787,7 +797,7 @@ export async function findOneOkDataPermit(
   },
 ): Promise<DataPermitModel> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findOneOkDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -839,7 +849,7 @@ export async function findByIdDataPermit(
   },
 ): Promise<DataPermitModel | undefined> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -881,7 +891,7 @@ export async function findByIdOkDataPermit(
   },
 ): Promise<DataPermitModel> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findByIdOkDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -922,7 +932,7 @@ export async function findByIdsDataPermit(
   },
 ): Promise<DataPermitModel[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findByIdsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -969,7 +979,7 @@ export async function findByIdsOkDataPermit(
   },
 ): Promise<DataPermitModel[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findByIdsOkDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1018,7 +1028,7 @@ export async function existDataPermit(
   },
 ): Promise<boolean> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "existDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1050,7 +1060,7 @@ export async function existByIdDataPermit(
   },
 ) {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "existByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1162,7 +1172,7 @@ export async function createReturnDataPermit(
   },
 ): Promise<DataPermitModel> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "createReturnDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1213,7 +1223,7 @@ export async function createDataPermit(
   },
 ): Promise<DataPermitId> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "createDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1254,7 +1264,7 @@ export async function createsReturnDataPermit(
   },
 ): Promise<DataPermitModel[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "createsReturnDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1291,7 +1301,7 @@ export async function createsDataPermit(
   },
 ): Promise<DataPermitId[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "createsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1328,7 +1338,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1538,7 +1548,7 @@ export async function updateTenantByIdDataPermit(
   },
 ): Promise<number> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "updateTenantByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1586,7 +1596,7 @@ export async function updateByIdDataPermit(
   },
 ): Promise<DataPermitId> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "updateByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1781,7 +1791,7 @@ export async function deleteByIdsDataPermit(
   },
 ): Promise<number> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "deleteByIdsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1862,7 +1872,7 @@ export async function revertByIdsDataPermit(
   },
 ): Promise<number> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "revertByIdsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1940,7 +1950,7 @@ export async function forceDeleteByIdsDataPermit(
   },
 ): Promise<number> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "forceDeleteByIdsDataPermit";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);

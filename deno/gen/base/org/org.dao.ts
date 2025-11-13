@@ -189,7 +189,7 @@ export async function findCountOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findCountOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -278,6 +278,16 @@ export async function findCountOrg(
   return result;
 }
 
+// MARK: getPagePathOrg
+export function getPagePathOrg() {
+  return "/base/org";
+}
+
+// MARK: getTableNameOrg
+export function getTableNameOrg() {
+  return "base_org";
+}
+
 // MARK: findAllOrg
 /** 根据搜索条件和分页查找组织列表 */
 export async function findAllOrg(
@@ -290,7 +300,7 @@ export async function findAllOrg(
   },
 ): Promise<OrgModel[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findAllOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -557,7 +567,7 @@ export async function findByUniqueOrg(
   },
 ): Promise<OrgModel[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findByUniqueOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -673,7 +683,7 @@ export async function findOneOrg(
   },
 ): Promise<OrgModel | undefined> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findOneOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -721,7 +731,7 @@ export async function findOneOkOrg(
   },
 ): Promise<OrgModel> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findOneOkOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -773,7 +783,7 @@ export async function findByIdOrg(
   },
 ): Promise<OrgModel | undefined> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findByIdOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -815,7 +825,7 @@ export async function findByIdOkOrg(
   },
 ): Promise<OrgModel> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findByIdOkOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -856,7 +866,7 @@ export async function findByIdsOrg(
   },
 ): Promise<OrgModel[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findByIdsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -903,7 +913,7 @@ export async function findByIdsOkOrg(
   },
 ): Promise<OrgModel[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findByIdsOkOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -952,7 +962,7 @@ export async function existOrg(
   },
 ): Promise<boolean> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "existOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -984,7 +994,7 @@ export async function existByIdOrg(
   },
 ) {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "existByIdOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1106,7 +1116,7 @@ export async function createReturnOrg(
   },
 ): Promise<OrgModel> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "createReturnOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1157,7 +1167,7 @@ export async function createOrg(
   },
 ): Promise<OrgId> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "createOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1198,7 +1208,7 @@ export async function createsReturnOrg(
   },
 ): Promise<OrgModel[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "createsReturnOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1235,7 +1245,7 @@ export async function createsOrg(
   },
 ): Promise<OrgId[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "createsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1272,7 +1282,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1482,7 +1492,7 @@ export async function updateTenantByIdOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "updateTenantByIdOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1530,7 +1540,7 @@ export async function updateByIdOrg(
   },
 ): Promise<OrgId> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "updateByIdOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1725,7 +1735,7 @@ export async function deleteByIdsOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "deleteByIdsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1828,7 +1838,7 @@ export async function enableByIdsOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "enableByIdsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1898,7 +1908,7 @@ export async function lockByIdsOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "lockByIdsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1944,7 +1954,7 @@ export async function revertByIdsOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "revertByIdsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2022,7 +2032,7 @@ export async function forceDeleteByIdsOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "forceDeleteByIdsOrg";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2085,7 +2095,7 @@ export async function findLastOrderByOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findLastOrderByOrg";
   
   const is_debug = get_is_debug(options?.is_debug);

@@ -76,14 +76,13 @@
         
         <template v-if="(showBuildIn || builtInModel?.code == null)">
           <el-form-item
-            label="编码"
+            label="路由"
             prop="code"
           >
             <CustomInput
               v-model="dialogModel.code"
-              placeholder="请输入 编码"
-              :readonly="true"
-              :readonly-placeholder="inited ? '(自动生成)' : ''"
+              placeholder="自动生成 或 手动输入"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -167,6 +166,25 @@
               </el-table-column>
               
               <el-table-column
+                prop="code"
+                label="编码"
+                width="150"
+                header-align="center"
+                align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomInput
+                      v-model="row.code"
+                      placeholder=" "
+                      :readonly="true"
+                      :readonly-placeholder="inited ? '(自动生成)' : ''"
+                    ></CustomInput>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
                 prop="lbl"
                 label="名称"
                 width="210"
@@ -200,6 +218,7 @@
                         label: item.label,
                         value: item.value,
                       })"
+                      @change="row.attrs = undefined"
                     ></CustomSelect>
                   </template>
                 </template>
@@ -208,16 +227,22 @@
               <el-table-column
                 prop="attrs"
                 label="属性"
-                width="210"
+                width="100"
                 header-align="center"
+                align="center"
               >
                 <template #default="{ row }">
                   <template v-if="row._type !== 'add'">
-                    <CustomInput
-                      v-model="row.attrs"
-                      placeholder=" "
-                      :readonly="isLocked || isReadonly"
-                    ></CustomInput>
+                    <el-link
+                      v-if="!isLocked && !isReadonly"
+                      type="primary"
+                      @click="onEditAttrs(row)"
+                    >
+                      {{ getAttrsCount(row.attrs) }}
+                    </el-link>
+                    <span v-else>
+                      {{ getAttrsCount(row.attrs) }}
+                    </span>
                   </template>
                 </template>
               </el-table-column>
@@ -227,13 +252,52 @@
                 label="必填"
                 width="95"
                 header-align="center"
+                align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomCheckbox
+                      v-model="row.is_required"
+                      placeholder=" "
+                      :readonly="isLocked || isReadonly"
+                    ></CustomCheckbox>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
+                prop="width"
+                label="宽度"
+                width="190"
+                header-align="center"
+                align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomInputNumber
+                      v-model="row.width"
+                      un-text="right"
+                      placeholder=" "
+                      :readonly="isLocked || isReadonly"
+                      align="center"
+                      :is-hide-zero="true"
+                    ></CustomInputNumber>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
+                prop="align"
+                label="对齐方式"
+                width="110"
+                header-align="center"
               >
                 <template #default="{ row }">
                   <template v-if="row._type !== 'add'">
                     <DictSelect
-                      v-model="row.is_required"
-                      :set="row.is_required = row.is_required ?? undefined"
-                      code="yes_no"
+                      v-model="row.align"
+                      :set="row.align = row.align ?? undefined"
+                      code="dyn_page_field_align"
                       placeholder=" "
                       :readonly="isLocked || isReadonly"
                     ></DictSelect>
@@ -368,6 +432,10 @@
     </div>
   </div>
 </CustomDialog>
+
+<AttrsDialog
+  ref="attrsDialogRef"
+></AttrsDialog>
 </template>
 
 <script lang="ts" setup>
@@ -389,6 +457,8 @@ import {
 import {
   getDefaultInputDynPageField,
 } from "@/views/base/dyn_page_field/Api";
+
+import AttrsDialog from "@/views/base/dyn_page_field/AttrsDialog.vue";
 
 import {
   getComponentKeys,
@@ -511,7 +581,7 @@ async function showDialog(
   oldDialogNotice = notice;
   dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
-    type: "default",
+    type: "medium",
     title: $$(dialogTitle),
     pointerPierce: true,
     notice: $$(dialogNotice),
@@ -574,11 +644,9 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
-      defaultInput,
       data,
       order_by,
     ] = await Promise.all([
-      getDefaultInputDynPage(),
       findOneModel({
         id,
         is_deleted,
@@ -591,7 +659,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        code: defaultInput.code,
         order_by: order_by + 1,
         dyn_page_field: data.dyn_page_field?.map((item) => ({
           ...item,
@@ -894,6 +961,9 @@ const inlineForeignTabLabel = $ref("动态页面字段");
 // 动态页面字段
 const dyn_page_fieldRef = $(useTemplateRef<InstanceType<typeof ElTable>>("dyn_page_fieldRef"));
 
+// AttrsDialog 引用
+const attrsDialogRef = $ref<InstanceType<typeof AttrsDialog>>();
+
 const dyn_page_fieldData = $computed(() => {
   if (!isLocked && !isReadonly) {
     return [
@@ -941,6 +1011,37 @@ watch(
     }
   },
 );
+
+/** 获取 attrs 中的属性数量 */
+function getAttrsCount(attrs?: string): string {
+  if (!attrs) {
+    return "0";
+  }
+  try {
+    const attrsObj = JSON.parse(attrs);
+    const count = Object.keys(attrsObj).length;
+    return String(count);
+  } catch {
+    return "0";
+  }
+}
+
+/** 编辑属性 */
+async function onEditAttrs(row: DynPageFieldInput) {
+  if (!row.type) {
+    ElMessage.warning("请先选择组件类型");
+    return;
+  }
+  
+  const result = await attrsDialogRef?.showDialog({
+    componentType: row.type,
+    attrs: row.attrs || undefined,
+  });
+  
+  if (result?.type === "ok") {
+    row.attrs = result.attrs || "";
+  }
+}
 
 async function onDialogOpen() {
 }

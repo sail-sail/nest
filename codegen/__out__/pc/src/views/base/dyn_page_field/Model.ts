@@ -30,6 +30,8 @@ declare global {
 export const dynPageFieldFields = [
   // ID
   "id",
+  // 编码
+  "code",
   // 动态页面
   "dyn_page_id",
   "dyn_page_id_lbl",
@@ -42,6 +44,11 @@ export const dynPageFieldFields = [
   // 必填
   "is_required",
   "is_required_lbl",
+  // 宽度
+  "width",
+  // 对齐方式
+  "align",
+  "align_lbl",
   // 启用
   "is_enabled",
   "is_enabled_lbl",

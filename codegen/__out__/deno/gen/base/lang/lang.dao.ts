@@ -175,7 +175,7 @@ export async function findCountLang(
   },
 ): Promise<number> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "findCountLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -253,6 +253,16 @@ export async function findCountLang(
   return result;
 }
 
+// MARK: getPagePathLang
+export function getPagePathLang() {
+  return "/base/lang";
+}
+
+// MARK: getTableNameLang
+export function getTableNameLang() {
+  return "base_lang";
+}
+
 // MARK: findAllLang
 /** 根据搜索条件和分页查找语言列表 */
 export async function findAllLang(
@@ -265,7 +275,7 @@ export async function findAllLang(
   },
 ): Promise<LangModel[]> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "findAllLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -495,7 +505,7 @@ export async function findByUniqueLang(
   },
 ): Promise<LangModel[]> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "findByUniqueLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -631,7 +641,7 @@ export async function findOneLang(
   },
 ): Promise<LangModel | undefined> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "findOneLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -679,7 +689,7 @@ export async function findOneOkLang(
   },
 ): Promise<LangModel> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "findOneOkLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -731,7 +741,7 @@ export async function findByIdLang(
   },
 ): Promise<LangModel | undefined> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "findByIdLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -773,7 +783,7 @@ export async function findByIdOkLang(
   },
 ): Promise<LangModel> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "findByIdOkLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -814,7 +824,7 @@ export async function findByIdsLang(
   },
 ): Promise<LangModel[]> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "findByIdsLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -861,7 +871,7 @@ export async function findByIdsOkLang(
   },
 ): Promise<LangModel[]> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "findByIdsOkLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -910,7 +920,7 @@ export async function existLang(
   },
 ): Promise<boolean> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "existLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -942,7 +952,7 @@ export async function existByIdLang(
   },
 ) {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "existByIdLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1071,7 +1081,7 @@ export async function createReturnLang(
   },
 ): Promise<LangModel> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "createReturnLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1122,7 +1132,7 @@ export async function createLang(
   },
 ): Promise<LangId> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "createLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1163,7 +1173,7 @@ export async function createsReturnLang(
   },
 ): Promise<LangModel[]> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "createsReturnLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1200,7 +1210,7 @@ export async function createsLang(
   },
 ): Promise<LangId[]> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "createsLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1237,7 +1247,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1442,7 +1452,7 @@ export async function updateByIdLang(
   },
 ): Promise<LangId> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "updateByIdLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1638,7 +1648,7 @@ export async function deleteByIdsLang(
   },
 ): Promise<number> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "deleteByIdsLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1736,7 +1746,7 @@ export async function enableByIdsLang(
   },
 ): Promise<number> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "enableByIdsLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1784,7 +1794,7 @@ export async function revertByIdsLang(
   },
 ): Promise<number> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "revertByIdsLang";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1862,7 +1872,7 @@ export async function forceDeleteByIdsLang(
   },
 ): Promise<number> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "forceDeleteByIdsLang";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1920,7 +1930,7 @@ export async function findLastOrderByLang(
   },
 ): Promise<number> {
   
-  const table = "base_lang";
+  const table = getTableNameLang();
   const method = "findLastOrderByLang";
   
   const is_debug = get_is_debug(options?.is_debug);

@@ -34,7 +34,7 @@ declare global {
 export const dynPageFields = [
   // ID
   "id",
-  // 编码
+  // 路由
   "code",
   // 名称
   "lbl",

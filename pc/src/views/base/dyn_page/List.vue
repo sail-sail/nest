@@ -30,12 +30,12 @@
       
       <template v-if="(builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null))">
         <el-form-item
-          label="编码"
+          label="路由"
           prop="code_like"
         >
           <CustomInput
             v-model="search.code_like"
-            placeholder="请输入 编码"
+            placeholder="请输入 路由"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -494,7 +494,7 @@
           :key="col.prop"
         >
           
-          <!-- 编码 -->
+          <!-- 路由 -->
           <template v-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -599,7 +599,7 @@
             </el-table-column>
           </template>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -710,8 +710,8 @@ const props = defineProps<{
   selectedIds?: DynPageId[]; //已选择行的id列表
   isMultiple?: string; //是否多选
   id?: DynPageId; // ID
-  code?: string; // 编码
-  code_like?: string; // 编码
+  code?: string; // 路由
+  code_like?: string; // 路由
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   is_enabled?: string|string[]; // 启用
@@ -953,7 +953,7 @@ let tableData = $ref<DynPageModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "编码",
+      label: "路由",
       prop: "code",
       width: 140,
       align: "left",
@@ -1302,6 +1302,7 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
+    [ "路由" ]: "code",
     [ "名称" ]: "lbl",
     [ "排序" ]: "order_by",
     [ "启用" ]: "is_enabled_lbl",
@@ -1327,6 +1328,7 @@ async function onImportExcel() {
       header,
       {
         key_types: {
+          "code": "string",
           "lbl": "string",
           "order_by": "number",
           "is_enabled_lbl": "string",

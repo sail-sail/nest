@@ -268,7 +268,7 @@ export async function findCountTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findCountTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -390,6 +390,16 @@ export async function findCountTenant(
   return result;
 }
 
+// MARK: getPagePathTenant
+export function getPagePathTenant() {
+  return "/base/tenant";
+}
+
+// MARK: getTableNameTenant
+export function getTableNameTenant() {
+  return "base_tenant";
+}
+
 // MARK: findAllTenant
 /** 根据搜索条件和分页查找租户列表 */
 export async function findAllTenant(
@@ -402,7 +412,7 @@ export async function findAllTenant(
   },
 ): Promise<TenantModel[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findAllTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -835,7 +845,7 @@ export async function findByUniqueTenant(
   },
 ): Promise<TenantModel[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findByUniqueTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -971,7 +981,7 @@ export async function findOneTenant(
   },
 ): Promise<TenantModel | undefined> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findOneTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1019,7 +1029,7 @@ export async function findOneOkTenant(
   },
 ): Promise<TenantModel> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findOneOkTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1071,7 +1081,7 @@ export async function findByIdTenant(
   },
 ): Promise<TenantModel | undefined> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findByIdTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1113,7 +1123,7 @@ export async function findByIdOkTenant(
   },
 ): Promise<TenantModel> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findByIdOkTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1154,7 +1164,7 @@ export async function findByIdsTenant(
   },
 ): Promise<TenantModel[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1201,7 +1211,7 @@ export async function findByIdsOkTenant(
   },
 ): Promise<TenantModel[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findByIdsOkTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1250,7 +1260,7 @@ export async function existTenant(
   },
 ): Promise<boolean> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "existTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1282,7 +1292,7 @@ export async function existByIdTenant(
   },
 ) {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "existByIdTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1428,7 +1438,7 @@ export async function findAutoCodeTenant(
   },
 ) {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findAutoCodeTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1490,7 +1500,7 @@ export async function createReturnTenant(
   },
 ): Promise<TenantModel> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "createReturnTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1541,7 +1551,7 @@ export async function createTenant(
   },
 ): Promise<TenantId> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "createTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1582,7 +1592,7 @@ export async function createsReturnTenant(
   },
 ): Promise<TenantModel[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "createsReturnTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1619,7 +1629,7 @@ export async function createsTenant(
   },
 ): Promise<TenantId[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "createsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1669,7 +1679,7 @@ async function _creates(
     input.code = code;
   }
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1933,7 +1943,7 @@ export async function updateByIdTenant(
   },
 ): Promise<TenantId> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "updateByIdTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2198,7 +2208,7 @@ export async function deleteByIdsTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "deleteByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2312,7 +2322,7 @@ export async function enableByIdsTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "enableByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2382,7 +2392,7 @@ export async function lockByIdsTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "lockByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2428,7 +2438,7 @@ export async function revertByIdsTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "revertByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2522,7 +2532,7 @@ export async function forceDeleteByIdsTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "forceDeleteByIdsTenant";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2596,7 +2606,7 @@ export async function findLastOrderByTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findLastOrderByTenant";
   
   const is_debug = get_is_debug(options?.is_debug);

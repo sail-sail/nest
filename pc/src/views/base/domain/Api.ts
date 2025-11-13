@@ -13,7 +13,7 @@ import {
   domainQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdDomain(
   model?: DomainModel | null,
   isExcelExport = false,
 ) {
@@ -74,7 +74,7 @@ export async function findAllDomain(
   const models = data.findAllDomain;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDomain(model);
   }
   return models;
 }
@@ -106,7 +106,7 @@ export async function findOneDomain(
   
   const model = data.findOneDomain;
   
-  await setLblById(model);
+  await setLblByIdDomain(model);
   
   return model;
 }
@@ -138,7 +138,7 @@ export async function findOneOkDomain(
   
   const model = data.findOneOkDomain;
   
-  await setLblById(model);
+  await setLblByIdDomain(model);
   
   return model;
 }
@@ -264,7 +264,7 @@ export async function findByIdDomain(
   
   const model = data.findByIdDomain;
   
-  await setLblById(model);
+  await setLblByIdDomain(model);
   
   return model;
 }
@@ -294,7 +294,7 @@ export async function findByIdOkDomain(
   
   const model = data.findByIdOkDomain;
   
-  await setLblById(model);
+  await setLblByIdDomain(model);
   
   return model;
 }
@@ -330,7 +330,7 @@ export async function findByIdsDomain(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDomain(model);
   }
   
   return models;
@@ -367,7 +367,7 @@ export async function findByIdsOkDomain(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDomain(model);
   }
   
   return models;
@@ -597,7 +597,7 @@ export function useExportExcelDomain() {
         },
       }, opt);
       for (const model of data.findAllDomain) {
-        await setLblById(model, true);
+        await setLblByIdDomain(model, true);
       }
       try {
         const sheetName = "域名";

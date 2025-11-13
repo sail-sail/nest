@@ -55,6 +55,7 @@ declare global {
     sortable?: "custom" | boolean;
     showOverflowTooltip?: boolean;
     fixed?: boolean | "left" | "right";
+    isDynField?: boolean;
   }
   
   interface ExcelColumnType {

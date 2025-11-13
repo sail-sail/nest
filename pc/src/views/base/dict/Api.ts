@@ -19,14 +19,21 @@ import {
 
 import {
   intoInputDictDetail,
+  setLblByIdDictDetail,
 } from "@/views/base/dict_detail/Api.ts";
 
-async function setLblById(
+export async function setLblByIdDict(
   model?: DictModel | null,
   isExcelExport = false,
 ) {
   if (!model) {
     return;
+  }
+  // 系统字典明细
+  model.dict_detail = model.dict_detail ?? [ ];
+  for (let i = 0; i < model.dict_detail.length; i++) {
+    const dict_detail_model = model.dict_detail[i] as DictDetailModel;
+    await setLblByIdDictDetail(dict_detail_model, isExcelExport);
   }
 }
 
@@ -86,7 +93,7 @@ export async function findAllDict(
   const models = data.findAllDict;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDict(model);
   }
   return models;
 }
@@ -118,7 +125,7 @@ export async function findOneDict(
   
   const model = data.findOneDict;
   
-  await setLblById(model);
+  await setLblByIdDict(model);
   
   return model;
 }
@@ -150,7 +157,7 @@ export async function findOneOkDict(
   
   const model = data.findOneOkDict;
   
-  await setLblById(model);
+  await setLblByIdDict(model);
   
   return model;
 }
@@ -276,7 +283,7 @@ export async function findByIdDict(
   
   const model = data.findByIdDict;
   
-  await setLblById(model);
+  await setLblByIdDict(model);
   
   return model;
 }
@@ -306,7 +313,7 @@ export async function findByIdOkDict(
   
   const model = data.findByIdOkDict;
   
-  await setLblById(model);
+  await setLblByIdDict(model);
   
   return model;
 }
@@ -342,7 +349,7 @@ export async function findByIdsDict(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDict(model);
   }
   
   return models;
@@ -379,7 +386,7 @@ export async function findByIdsOkDict(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDict(model);
   }
   
   return models;
@@ -589,7 +596,7 @@ export function useExportExcelDict() {
         },
       }, opt);
       for (const model of data.findAllDict) {
-        await setLblById(model, true);
+        await setLblByIdDict(model, true);
       }
       try {
         const sheetName = "系统字典";

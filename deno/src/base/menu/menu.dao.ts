@@ -50,6 +50,7 @@ async function _getMenus(
       t.lbl,
       t.route_path,
       t.route_query,
+      t.is_dyn_page,
       ${ lang_select }
       t.order_by
     from base_menu t

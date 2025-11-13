@@ -369,6 +369,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 import {
   intoInput<#=Table_Up#>,
+  setLblById<#=Table_Up#>,
 } from "@/pages/<#=table#>/Api.ts";<#
   }
 #><#
@@ -460,12 +461,62 @@ import {
 }
 #>
 
-async function setLblById(
+export async function setLblById<#=Table_Up#>(
   model?: <#=modelName#> | null,
 ) {
   if (!model) {
     return;
   }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let modelName = "";
+    let fieldCommentName = "";
+    let inputName = "";
+    let searchName = "";
+    if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+    ) {
+      Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+      modelName = Table_Up + "model";
+      fieldCommentName = Table_Up + "fieldComment";
+      inputName = Table_Up + "input";
+      searchName = Table_Up + "search";
+    } else {
+      modelName = Table_Up + "Model";
+      fieldCommentName = Table_Up + "FieldComment";
+      inputName = Table_Up + "Input";
+      searchName = Table_Up + "Search";
+    }
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
+  #>
+  // <#=inlineForeignTab.label#>
+  model.<#=inline_column_name#> = model.<#=inline_column_name#> ?? [ ];
+  for (let i = 0; i < model.<#=inline_column_name#>.length; i++) {
+    const <#=inline_column_name#>_model = model.<#=inline_column_name#>[i] as <#=Table_Up#>Model;
+    await setLblById<#=Table_Up#>(<#=inline_column_name#>_model, isExcelExport);
+  }<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  // <#=inlineForeignTab.label#>
+  await setLblById<#=Table_Up#>(model.<#=inline_column_name#>, isExcelExport);<#
+    }
+  #><#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -679,6 +730,12 @@ export function intoInput<#=Table_Up#>(
     #>
     <#=column_name#>_<#=table#>_models: model?.<#=column_name#>_<#=table#>_models?.map(intoInput<#=Table_Up#>),<#
     }
+    #><#
+    if (opts.isUseDynPageFields) {
+    #>
+    // 动态页面数据
+    dyn_page_data: model?.dyn_page_data,<#
+    }
     #>
   };
   return input;
@@ -724,7 +781,7 @@ export async function findAll<#=Table_Up#>(
   const models = data.findAll<#=Table_Up2#>;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblById<#=Table_Up#>(model);
   }
   return models;
 }
@@ -768,7 +825,7 @@ export async function findOne<#=Table_Up#>(
   
   const model = data.findOne<#=Table_Up2#>;
   
-  await setLblById(model);
+  await setLblById<#=Table_Up#>(model);
   
   return model;
 }
@@ -812,7 +869,7 @@ export async function findOneOk<#=Table_Up#>(
   
   const model = data.findOneOk<#=Table_Up2#>;
   
-  await setLblById(model);
+  await setLblById<#=Table_Up#>(model);
   
   return model;
 }<#
@@ -1159,7 +1216,7 @@ export async function findById<#=Table_Up#>(
   
   const model = data.findById<#=Table_Up2#>;
   
-  await setLblById(model);
+  await setLblById<#=Table_Up#>(model);
   
   return model;
 }
@@ -1201,7 +1258,7 @@ export async function findByIdOk<#=Table_Up#>(
   
   const model = data.findByIdOk<#=Table_Up2#>;
   
-  await setLblById(model);
+  await setLblById<#=Table_Up#>(model);
   
   return model;
 }
@@ -1249,7 +1306,7 @@ export async function findByIds<#=Table_Up#>(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblById<#=Table_Up#>(model);
   }
   
   return models;
@@ -1298,7 +1355,7 @@ export async function findByIdsOk<#=Table_Up#>(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblById<#=Table_Up#>(model);
   }
   
   return models;

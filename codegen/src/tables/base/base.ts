@@ -1490,6 +1490,7 @@ export default defineConfig({
         },
       ],
       hasSelectInput: true,
+      detailCustomDialogType: "medium",
     },
     columns: [
       {
@@ -1499,13 +1500,12 @@ export default defineConfig({
       {
         COLUMN_NAME: "code",
         width: 140,
-        readonly: true,
-        readonlyPlaceholder: "(自动生成)",
         autoCode: {
-          prefix: "DP",
-          seqPadStart0: 3,
+          prefix: "/dyn/pg",
+          seqPadStart0: 0,
           seq: "code_seq",
         },
+        require: false,
         fixed: "left",
       },
       {
@@ -1547,6 +1547,23 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "code_seq",
+        onlyCodegenDeno: true,
+      },
+      {
+        COLUMN_NAME: "code",
+        width: 140,
+        readonly: true,
+        readonlyPlaceholder: "(自动生成)",
+        autoCode: {
+          prefix: "fld_",
+          seqPadStart0: 0,
+          seq: "code_seq",
+        },
+        align: "center",
+        fixed: "left",
+      },
+      {
         COLUMN_NAME: "dyn_page_id",
         require: true,
         search: true,
@@ -1564,17 +1581,51 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "attrs",
-        align: "left",
+        align: "center",
         width: 200,
       },
       {
         COLUMN_NAME: "is_required",
+        isCheckbox: true,
+      },
+      {
+        COLUMN_NAME: "width",
+      },
+      {
+        COLUMN_NAME: "align",
+        width: 100,
       },
       {
         COLUMN_NAME: "is_enabled",
+        isCheckbox: true,
       },
       {
         COLUMN_NAME: "order_by",
+      },
+    ],
+  },
+  // 动态页面值
+  base_dyn_page_val: {
+    opts: {
+      uniques: [
+        [ "ref_code", "ref_id", "code" ],
+      ],
+      onlyCodegenDeno: true,
+    },
+    columns: [
+      {
+        COLUMN_NAME: "ref_code",
+      },
+      {
+        COLUMN_NAME: "ref_id",
+        notForeignKeyById: true,
+        canSearch: true,
+      },
+      {
+        COLUMN_NAME: "code",
+      },
+      {
+        COLUMN_NAME: "lbl",
       },
     ],
   },

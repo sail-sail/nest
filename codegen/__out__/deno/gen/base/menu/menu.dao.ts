@@ -203,7 +203,7 @@ export async function findCountMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findCountMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -325,6 +325,16 @@ export async function findCountMenu(
   return result;
 }
 
+// MARK: getPagePathMenu
+export function getPagePathMenu() {
+  return "/base/menu";
+}
+
+// MARK: getTableNameMenu
+export function getTableNameMenu() {
+  return "base_menu";
+}
+
 // MARK: findAllMenu
 /** 根据搜索条件和分页查找菜单列表 */
 export async function findAllMenu(
@@ -337,7 +347,7 @@ export async function findAllMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findAllMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -698,7 +708,7 @@ export async function findByUniqueMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByUniqueMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -825,7 +835,7 @@ export async function findOneMenu(
   },
 ): Promise<MenuModel | undefined> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findOneMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -873,7 +883,7 @@ export async function findOneOkMenu(
   },
 ): Promise<MenuModel> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findOneOkMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -925,7 +935,7 @@ export async function findByIdMenu(
   },
 ): Promise<MenuModel | undefined> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -967,7 +977,7 @@ export async function findByIdOkMenu(
   },
 ): Promise<MenuModel> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdOkMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1008,7 +1018,7 @@ export async function findByIdsMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1055,7 +1065,7 @@ export async function findByIdsOkMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdsOkMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1104,7 +1114,7 @@ export async function existMenu(
   },
 ): Promise<boolean> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "existMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1136,7 +1146,7 @@ export async function existByIdMenu(
   },
 ) {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "existByIdMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1279,7 +1289,7 @@ export async function createReturnMenu(
   },
 ): Promise<MenuModel> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createReturnMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1330,7 +1340,7 @@ export async function createMenu(
   },
 ): Promise<MenuId> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1371,7 +1381,7 @@ export async function createsReturnMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createsReturnMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1408,7 +1418,7 @@ export async function createsMenu(
   },
 ): Promise<MenuId[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1445,7 +1455,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1671,7 +1681,7 @@ export async function updateByIdMenu(
   },
 ): Promise<MenuId> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "updateByIdMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1891,7 +1901,7 @@ export async function deleteByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "deleteByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1999,7 +2009,7 @@ export async function enableByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "enableByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2047,7 +2057,7 @@ export async function revertByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "revertByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2125,7 +2135,7 @@ export async function forceDeleteByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "forceDeleteByIdsMenu";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2193,7 +2203,7 @@ export async function findLastOrderByMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findLastOrderByMenu";
   
   const is_debug = get_is_debug(options?.is_debug);

@@ -248,7 +248,7 @@ export async function findCountDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findCountDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -370,6 +370,16 @@ export async function findCountDept(
   return result;
 }
 
+// MARK: getPagePathDept
+export function getPagePathDept() {
+  return "/base/dept";
+}
+
+// MARK: getTableNameDept
+export function getTableNameDept() {
+  return "base_dept";
+}
+
 // MARK: findAllDept
 /** 根据搜索条件和分页查找部门列表 */
 export async function findAllDept(
@@ -382,7 +392,7 @@ export async function findAllDept(
   },
 ): Promise<DeptModel[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findAllDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -794,7 +804,7 @@ export async function findByUniqueDept(
   },
 ): Promise<DeptModel[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findByUniqueDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -921,7 +931,7 @@ export async function findOneDept(
   },
 ): Promise<DeptModel | undefined> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findOneDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -969,7 +979,7 @@ export async function findOneOkDept(
   },
 ): Promise<DeptModel> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findOneOkDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1021,7 +1031,7 @@ export async function findByIdDept(
   },
 ): Promise<DeptModel | undefined> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1063,7 +1073,7 @@ export async function findByIdOkDept(
   },
 ): Promise<DeptModel> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findByIdOkDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1104,7 +1114,7 @@ export async function findByIdsDept(
   },
 ): Promise<DeptModel[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1151,7 +1161,7 @@ export async function findByIdsOkDept(
   },
 ): Promise<DeptModel[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findByIdsOkDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1200,7 +1210,7 @@ export async function existDept(
   },
 ): Promise<boolean> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "existDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1232,7 +1242,7 @@ export async function existByIdDept(
   },
 ) {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "existByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1368,7 +1378,7 @@ export async function createReturnDept(
   },
 ): Promise<DeptModel> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "createReturnDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1419,7 +1429,7 @@ export async function createDept(
   },
 ): Promise<DeptId> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "createDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1460,7 +1470,7 @@ export async function createsReturnDept(
   },
 ): Promise<DeptModel[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "createsReturnDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1497,7 +1507,7 @@ export async function createsDept(
   },
 ): Promise<DeptId[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "createsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1534,7 +1544,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1775,7 +1785,7 @@ export async function updateTenantByIdDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "updateTenantByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1823,7 +1833,7 @@ export async function updateByIdDept(
   },
 ): Promise<DeptId> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "updateByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2052,7 +2062,7 @@ export async function deleteByIdsDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "deleteByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2163,7 +2173,7 @@ export async function enableByIdsDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "enableByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2233,7 +2243,7 @@ export async function lockByIdsDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "lockByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2279,7 +2289,7 @@ export async function revertByIdsDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "revertByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2365,7 +2375,7 @@ export async function forceDeleteByIdsDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "forceDeleteByIdsDept";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2436,7 +2446,7 @@ export async function findLastOrderByDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findLastOrderByDept";
   
   const is_debug = get_is_debug(options?.is_debug);

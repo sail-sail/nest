@@ -3,6 +3,10 @@ import {
   UniqueType,
 } from "#/types.ts";
 
+import {
+  DynPageFieldAlign,
+} from "#/types.ts";
+
 import type {
   Query,
   Mutation,
@@ -13,7 +17,7 @@ import {
   dynPageFieldQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdDynPageField(
   model?: DynPageFieldModel | null,
   isExcelExport = false,
 ) {
@@ -28,6 +32,8 @@ export function intoInputDynPageField(
   const input: DynPageFieldInput = {
     // ID
     id: model?.id,
+    // 编码
+    code: model?.code,
     // 动态页面
     dyn_page_id: model?.dyn_page_id,
     dyn_page_id_lbl: model?.dyn_page_id_lbl,
@@ -40,6 +46,11 @@ export function intoInputDynPageField(
     // 必填
     is_required: model?.is_required,
     is_required_lbl: model?.is_required_lbl,
+    // 宽度
+    width: model?.width,
+    // 对齐方式
+    align: model?.align,
+    align_lbl: model?.align_lbl,
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
@@ -77,7 +88,7 @@ export async function findAllDynPageField(
   const models = data.findAllDynPageField;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPageField(model);
   }
   return models;
 }
@@ -109,7 +120,7 @@ export async function findOneDynPageField(
   
   const model = data.findOneDynPageField;
   
-  await setLblById(model);
+  await setLblByIdDynPageField(model);
   
   return model;
 }
@@ -141,7 +152,7 @@ export async function findOneOkDynPageField(
   
   const model = data.findOneOkDynPageField;
   
-  await setLblById(model);
+  await setLblByIdDynPageField(model);
   
   return model;
 }
@@ -267,7 +278,7 @@ export async function findByIdDynPageField(
   
   const model = data.findByIdDynPageField;
   
-  await setLblById(model);
+  await setLblByIdDynPageField(model);
   
   return model;
 }
@@ -297,7 +308,7 @@ export async function findByIdOkDynPageField(
   
   const model = data.findByIdOkDynPageField;
   
-  await setLblById(model);
+  await setLblByIdDynPageField(model);
   
   return model;
 }
@@ -333,7 +344,7 @@ export async function findByIdsDynPageField(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPageField(model);
   }
   
   return models;
@@ -370,7 +381,7 @@ export async function findByIdsOkDynPageField(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPageField(model);
   }
   
   return models;
@@ -547,6 +558,8 @@ export function useDownloadImportTemplateDynPageField() {
             type
             attrs
             is_required_lbl
+            width
+            align_lbl
             order_by
           }
           findAllDynPage {
@@ -555,6 +568,7 @@ export function useDownloadImportTemplateDynPageField() {
           }
           getDict(codes: [
             "yes_no",
+            "dyn_page_field_align",
           ]) {
             code
             lbl
@@ -620,6 +634,7 @@ export function useExportExcelDynPageField() {
             }
             getDict(codes: [
               "yes_no",
+              "dyn_page_field_align",
               "is_enabled",
             ]) {
               code
@@ -633,7 +648,7 @@ export function useExportExcelDynPageField() {
         },
       }, opt);
       for (const model of data.findAllDynPageField) {
-        await setLblById(model, true);
+        await setLblByIdDynPageField(model, true);
       }
       try {
         const sheetName = "动态页面字段";
@@ -736,6 +751,8 @@ export function getPagePathDynPageField() {
 export async function getDefaultInputDynPageField() {
   const defaultInput: DynPageFieldInput = {
     is_required: 0,
+    width: 0,
+    align: DynPageFieldAlign.Center,
     is_enabled: 1,
     order_by: 1,
   };

@@ -449,6 +449,12 @@ type <#=modelName#> {<#
   "<#=comment#>"
   <#=column_name#>_<#=table#>_models: [<#=modelName#>!]!<#
   }
+  #><#
+  if (opts.isUseDynPageFields) {
+  #>
+  "动态页面数据"
+  dyn_page_data: JSONObject!<#
+  }
   #>
 }
 type <#=fieldCommentName#> {<#
@@ -768,6 +774,12 @@ input <#=inputName#> {<#
   "<#=comment#>"
   <#=column_name#>_<#=table#>_models: [<#=inputName#>!]<#
   }
+  #><#
+  if (opts.isUseDynPageFields) {
+  #>
+  "动态页面数据"
+  dyn_page_data: JSONObject<#
+  }
   #>
 }
 input <#=searchName#> {<#
@@ -927,6 +939,12 @@ input <#=searchName#> {<#
   <#=column_name#>_like: <#=data_type#><#
     }
   #><#
+  }
+  #><#
+  if (opts.isUseDynPageFields) {
+  #>
+  "动态页面数据"
+  dyn_page_data: JSONObject<#
   }
   #>
 }<#

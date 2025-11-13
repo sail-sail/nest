@@ -17,7 +17,7 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-async function setLblById(
+export async function setLblByIdPermit(
   model?: PermitModel | null,
   isExcelExport = false,
 ) {
@@ -75,7 +75,7 @@ export async function findAllPermit(
   const models = data.findAllPermit;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdPermit(model);
   }
   return models;
 }
@@ -107,7 +107,7 @@ export async function findOnePermit(
   
   const model = data.findOnePermit;
   
-  await setLblById(model);
+  await setLblByIdPermit(model);
   
   return model;
 }
@@ -139,7 +139,7 @@ export async function findOneOkPermit(
   
   const model = data.findOneOkPermit;
   
-  await setLblById(model);
+  await setLblByIdPermit(model);
   
   return model;
 }
@@ -222,7 +222,7 @@ export async function findByIdPermit(
   
   const model = data.findByIdPermit;
   
-  await setLblById(model);
+  await setLblByIdPermit(model);
   
   return model;
 }
@@ -252,7 +252,7 @@ export async function findByIdOkPermit(
   
   const model = data.findByIdOkPermit;
   
-  await setLblById(model);
+  await setLblByIdPermit(model);
   
   return model;
 }
@@ -288,7 +288,7 @@ export async function findByIdsPermit(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdPermit(model);
   }
   
   return models;
@@ -325,7 +325,7 @@ export async function findByIdsOkPermit(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdPermit(model);
   }
   
   return models;

@@ -212,7 +212,7 @@ export async function findCountOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findCountOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -301,6 +301,16 @@ export async function findCountOptbiz(
   return result;
 }
 
+// MARK: getPagePathOptbiz
+export function getPagePathOptbiz() {
+  return "/base/optbiz";
+}
+
+// MARK: getTableNameOptbiz
+export function getTableNameOptbiz() {
+  return "base_optbiz";
+}
+
 // MARK: findAllOptbiz
 /** 根据搜索条件和分页查找业务选项列表 */
 export async function findAllOptbiz(
@@ -313,7 +323,7 @@ export async function findAllOptbiz(
   },
 ): Promise<OptbizModel[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findAllOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -582,7 +592,7 @@ export async function findByUniqueOptbiz(
   },
 ): Promise<OptbizModel[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findByUniqueOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -704,7 +714,7 @@ export async function findOneOptbiz(
   },
 ): Promise<OptbizModel | undefined> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findOneOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -752,7 +762,7 @@ export async function findOneOkOptbiz(
   },
 ): Promise<OptbizModel> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findOneOkOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -804,7 +814,7 @@ export async function findByIdOptbiz(
   },
 ): Promise<OptbizModel | undefined> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -846,7 +856,7 @@ export async function findByIdOkOptbiz(
   },
 ): Promise<OptbizModel> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findByIdOkOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -887,7 +897,7 @@ export async function findByIdsOptbiz(
   },
 ): Promise<OptbizModel[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -934,7 +944,7 @@ export async function findByIdsOkOptbiz(
   },
 ): Promise<OptbizModel[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findByIdsOkOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -983,7 +993,7 @@ export async function existOptbiz(
   },
 ): Promise<boolean> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "existOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1015,7 +1025,7 @@ export async function existByIdOptbiz(
   },
 ) {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "existByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1151,7 +1161,7 @@ export async function createReturnOptbiz(
   },
 ): Promise<OptbizModel> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "createReturnOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1202,7 +1212,7 @@ export async function createOptbiz(
   },
 ): Promise<OptbizId> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "createOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1243,7 +1253,7 @@ export async function createsReturnOptbiz(
   },
 ): Promise<OptbizModel[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "createsReturnOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1280,7 +1290,7 @@ export async function createsOptbiz(
   },
 ): Promise<OptbizId[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "createsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1317,7 +1327,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1542,7 +1552,7 @@ export async function updateTenantByIdOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "updateTenantByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1610,7 +1620,7 @@ export async function updateByIdOptbiz(
   },
 ): Promise<OptbizId> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "updateByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1836,7 +1846,7 @@ export async function deleteByIdsOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "deleteByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1934,7 +1944,7 @@ export async function enableByIdsOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "enableByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2004,7 +2014,7 @@ export async function lockByIdsOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "lockByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2050,7 +2060,7 @@ export async function revertByIdsOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "revertByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2128,7 +2138,7 @@ export async function forceDeleteByIdsOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "forceDeleteByIdsOptbiz";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2186,7 +2196,7 @@ export async function findLastOrderByOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findLastOrderByOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);

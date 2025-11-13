@@ -8,6 +8,7 @@ import "/gen/base/dictbiz_detail/dictbiz_detail.graphql.ts";
 import "/gen/base/domain/domain.graphql.ts";
 import "/gen/base/dyn_page/dyn_page.graphql.ts";
 import "/gen/base/dyn_page_field/dyn_page_field.graphql.ts";
+import "/gen/base/dyn_page_val/dyn_page_val.graphql.ts";
 import "/gen/base/field_permit/field_permit.graphql.ts";
 import "/gen/base/i18n/i18n.graphql.ts";
 import "/gen/base/icon/icon.graphql.ts";

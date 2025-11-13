@@ -62,6 +62,12 @@ export function getScalars() {
       "output": "DynPageFieldId",
     },
     
+    // 动态页面值
+    "DynPageValId": {
+      "input": "DynPageValId",
+      "output": "DynPageValId",
+    },
+    
     // 字段权限
     "FieldPermitId": {
       "input": "FieldPermitId",

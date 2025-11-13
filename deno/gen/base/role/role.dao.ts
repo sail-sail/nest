@@ -317,7 +317,7 @@ export async function findCountRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findCountRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -461,6 +461,16 @@ export async function findCountRole(
   return result;
 }
 
+// MARK: getPagePathRole
+export function getPagePathRole() {
+  return "/base/role";
+}
+
+// MARK: getTableNameRole
+export function getTableNameRole() {
+  return "base_role";
+}
+
 // MARK: findAllRole
 /** 根据搜索条件和分页查找角色列表 */
 export async function findAllRole(
@@ -473,7 +483,7 @@ export async function findAllRole(
   },
 ): Promise<RoleModel[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findAllRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -965,7 +975,7 @@ export async function findByUniqueRole(
   },
 ): Promise<RoleModel[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findByUniqueRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1101,7 +1111,7 @@ export async function findOneRole(
   },
 ): Promise<RoleModel | undefined> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findOneRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1149,7 +1159,7 @@ export async function findOneOkRole(
   },
 ): Promise<RoleModel> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findOneOkRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1201,7 +1211,7 @@ export async function findByIdRole(
   },
 ): Promise<RoleModel | undefined> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findByIdRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1243,7 +1253,7 @@ export async function findByIdOkRole(
   },
 ): Promise<RoleModel> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findByIdOkRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1284,7 +1294,7 @@ export async function findByIdsRole(
   },
 ): Promise<RoleModel[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findByIdsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1331,7 +1341,7 @@ export async function findByIdsOkRole(
   },
 ): Promise<RoleModel[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findByIdsOkRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1380,7 +1390,7 @@ export async function existRole(
   },
 ): Promise<boolean> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "existRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1412,7 +1422,7 @@ export async function existByIdRole(
   },
 ) {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "existByIdRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1544,7 +1554,7 @@ export async function findAutoCodeRole(
   },
 ) {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findAutoCodeRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1606,7 +1616,7 @@ export async function createReturnRole(
   },
 ): Promise<RoleModel> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "createReturnRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1657,7 +1667,7 @@ export async function createRole(
   },
 ): Promise<RoleId> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "createRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1698,7 +1708,7 @@ export async function createsReturnRole(
   },
 ): Promise<RoleModel[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "createsReturnRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1735,7 +1745,7 @@ export async function createsRole(
   },
 ): Promise<RoleId[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "createsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1785,7 +1795,7 @@ async function _creates(
     input.code = code;
   }
   
-  const table = "base_role";
+  const table = getTableNameRole();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -2076,7 +2086,7 @@ export async function updateTenantByIdRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "updateTenantByIdRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2124,7 +2134,7 @@ export async function updateByIdRole(
   },
 ): Promise<RoleId> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "updateByIdRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2419,7 +2429,7 @@ export async function deleteByIdsRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "deleteByIdsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2554,7 +2564,7 @@ export async function enableByIdsRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "enableByIdsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2624,7 +2634,7 @@ export async function lockByIdsRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "lockByIdsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2670,7 +2680,7 @@ export async function revertByIdsRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "revertByIdsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2780,7 +2790,7 @@ export async function forceDeleteByIdsRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "forceDeleteByIdsRole";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2875,7 +2885,7 @@ export async function findLastOrderByRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findLastOrderByRole";
   
   const is_debug = get_is_debug(options?.is_debug);

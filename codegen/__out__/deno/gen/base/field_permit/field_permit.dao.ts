@@ -141,7 +141,7 @@ export async function findCountFieldPermit(
   },
 ): Promise<number> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findCountFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -197,6 +197,16 @@ export async function findCountFieldPermit(
   return result;
 }
 
+// MARK: getPagePathFieldPermit
+export function getPagePathFieldPermit() {
+  return "/base/field_permit";
+}
+
+// MARK: getTableNameFieldPermit
+export function getTableNameFieldPermit() {
+  return "base_field_permit";
+}
+
 // MARK: findAllFieldPermit
 /** 根据搜索条件和分页查找字段权限列表 */
 export async function findAllFieldPermit(
@@ -209,7 +219,7 @@ export async function findAllFieldPermit(
   },
 ): Promise<FieldPermitModel[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findAllFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -373,7 +383,7 @@ export async function findByUniqueFieldPermit(
   },
 ): Promise<FieldPermitModel[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findByUniqueFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -500,7 +510,7 @@ export async function findOneFieldPermit(
   },
 ): Promise<FieldPermitModel | undefined> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findOneFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -548,7 +558,7 @@ export async function findOneOkFieldPermit(
   },
 ): Promise<FieldPermitModel> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findOneOkFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -600,7 +610,7 @@ export async function findByIdFieldPermit(
   },
 ): Promise<FieldPermitModel | undefined> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findByIdFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -642,7 +652,7 @@ export async function findByIdOkFieldPermit(
   },
 ): Promise<FieldPermitModel> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findByIdOkFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -683,7 +693,7 @@ export async function findByIdsFieldPermit(
   },
 ): Promise<FieldPermitModel[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findByIdsFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -730,7 +740,7 @@ export async function findByIdsOkFieldPermit(
   },
 ): Promise<FieldPermitModel[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findByIdsOkFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -779,7 +789,7 @@ export async function existFieldPermit(
   },
 ): Promise<boolean> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "existFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -811,7 +821,7 @@ export async function existByIdFieldPermit(
   },
 ) {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "existByIdFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -923,7 +933,7 @@ export async function createReturnFieldPermit(
   },
 ): Promise<FieldPermitModel> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "createReturnFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -974,7 +984,7 @@ export async function createFieldPermit(
   },
 ): Promise<FieldPermitId> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "createFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1015,7 +1025,7 @@ export async function createsReturnFieldPermit(
   },
 ): Promise<FieldPermitModel[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "createsReturnFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1052,7 +1062,7 @@ export async function createsFieldPermit(
   },
 ): Promise<FieldPermitId[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "createsFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1089,7 +1099,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1216,7 +1226,7 @@ export async function updateByIdFieldPermit(
   },
 ): Promise<FieldPermitId> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "updateByIdFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1344,7 +1354,7 @@ export async function deleteByIdsFieldPermit(
   },
 ): Promise<number> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "deleteByIdsFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1404,7 +1414,7 @@ export async function findLastOrderByFieldPermit(
   },
 ): Promise<number> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findLastOrderByFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);

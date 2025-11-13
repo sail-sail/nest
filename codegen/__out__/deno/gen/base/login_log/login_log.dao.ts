@@ -180,7 +180,7 @@ export async function findCountLoginLog(
   },
 ): Promise<number> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findCountLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -266,6 +266,16 @@ export async function findCountLoginLog(
   return result;
 }
 
+// MARK: getPagePathLoginLog
+export function getPagePathLoginLog() {
+  return "/base/login_log";
+}
+
+// MARK: getTableNameLoginLog
+export function getTableNameLoginLog() {
+  return "base_login_log";
+}
+
 // MARK: findAllLoginLog
 /** 根据搜索条件和分页查找登录日志列表 */
 export async function findAllLoginLog(
@@ -278,7 +288,7 @@ export async function findAllLoginLog(
   },
 ): Promise<LoginLogModel[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findAllLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -525,7 +535,7 @@ export async function findByUniqueLoginLog(
   },
 ): Promise<LoginLogModel[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findByUniqueLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -621,7 +631,7 @@ export async function findOneLoginLog(
   },
 ): Promise<LoginLogModel | undefined> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findOneLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -669,7 +679,7 @@ export async function findOneOkLoginLog(
   },
 ): Promise<LoginLogModel> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findOneOkLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -721,7 +731,7 @@ export async function findByIdLoginLog(
   },
 ): Promise<LoginLogModel | undefined> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -763,7 +773,7 @@ export async function findByIdOkLoginLog(
   },
 ): Promise<LoginLogModel> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findByIdOkLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -804,7 +814,7 @@ export async function findByIdsLoginLog(
   },
 ): Promise<LoginLogModel[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findByIdsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -851,7 +861,7 @@ export async function findByIdsOkLoginLog(
   },
 ): Promise<LoginLogModel[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findByIdsOkLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -900,7 +910,7 @@ export async function existLoginLog(
   },
 ): Promise<boolean> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "existLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -932,7 +942,7 @@ export async function existByIdLoginLog(
   },
 ) {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "existByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1021,7 +1031,7 @@ export async function createReturnLoginLog(
   },
 ): Promise<LoginLogModel> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "createReturnLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1072,7 +1082,7 @@ export async function createLoginLog(
   },
 ): Promise<LoginLogId> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "createLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1113,7 +1123,7 @@ export async function createsReturnLoginLog(
   },
 ): Promise<LoginLogModel[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "createsReturnLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1150,7 +1160,7 @@ export async function createsLoginLog(
   },
 ): Promise<LoginLogId[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "createsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1187,7 +1197,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1382,7 +1392,7 @@ export async function updateTenantByIdLoginLog(
   },
 ): Promise<number> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "updateTenantByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1428,7 +1438,7 @@ export async function updateByIdLoginLog(
   },
 ): Promise<LoginLogId> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "updateByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1611,7 +1621,7 @@ export async function deleteByIdsLoginLog(
   },
 ): Promise<number> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "deleteByIdsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1683,7 +1693,7 @@ export async function revertByIdsLoginLog(
   },
 ): Promise<number> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "revertByIdsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1757,7 +1767,7 @@ export async function forceDeleteByIdsLoginLog(
   },
 ): Promise<number> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "forceDeleteByIdsLoginLog";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);

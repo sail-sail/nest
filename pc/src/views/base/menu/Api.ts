@@ -13,7 +13,7 @@ import {
   menuQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdMenu(
   model?: MenuModel | null,
   isExcelExport = false,
 ) {
@@ -82,7 +82,7 @@ export async function findAllMenu(
   const models = data.findAllMenu;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdMenu(model);
   }
   return models;
 }
@@ -114,7 +114,7 @@ export async function findOneMenu(
   
   const model = data.findOneMenu;
   
-  await setLblById(model);
+  await setLblByIdMenu(model);
   
   return model;
 }
@@ -146,7 +146,7 @@ export async function findOneOkMenu(
   
   const model = data.findOneOkMenu;
   
-  await setLblById(model);
+  await setLblByIdMenu(model);
   
   return model;
 }
@@ -294,7 +294,7 @@ export async function findByIdMenu(
   
   const model = data.findByIdMenu;
   
-  await setLblById(model);
+  await setLblByIdMenu(model);
   
   return model;
 }
@@ -324,7 +324,7 @@ export async function findByIdOkMenu(
   
   const model = data.findByIdOkMenu;
   
-  await setLblById(model);
+  await setLblByIdMenu(model);
   
   return model;
 }
@@ -360,7 +360,7 @@ export async function findByIdsMenu(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdMenu(model);
   }
   
   return models;
@@ -397,7 +397,7 @@ export async function findByIdsOkMenu(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdMenu(model);
   }
   
   return models;
@@ -661,7 +661,7 @@ export function useExportExcelMenu() {
         },
       }, opt);
       for (const model of data.findAllMenu) {
-        await setLblById(model, true);
+        await setLblByIdMenu(model, true);
       }
       try {
         const sheetName = "菜单";

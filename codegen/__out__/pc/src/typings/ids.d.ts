@@ -39,6 +39,10 @@ declare const dyn_page_fieldId: unique symbol;
 /** 动态页面字段 */
 type DynPageFieldId = Distinct<string, typeof dyn_page_fieldId>;
 
+declare const dyn_page_valId: unique symbol;
+/** 动态页面值 */
+type DynPageValId = Distinct<string, typeof dyn_page_valId>;
+
 declare const field_permitId: unique symbol;
 /** 字段权限 */
 type FieldPermitId = Distinct<string, typeof field_permitId>;

@@ -17,7 +17,7 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-async function setLblById(
+export async function setLblByIdI18n(
   model?: I18nModel | null,
   isExcelExport = false,
 ) {
@@ -76,7 +76,7 @@ export async function findAllI18n(
   const models = data.findAllI18n;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdI18n(model);
   }
   return models;
 }
@@ -108,7 +108,7 @@ export async function findOneI18n(
   
   const model = data.findOneI18n;
   
-  await setLblById(model);
+  await setLblByIdI18n(model);
   
   return model;
 }
@@ -140,7 +140,7 @@ export async function findOneOkI18n(
   
   const model = data.findOneOkI18n;
   
-  await setLblById(model);
+  await setLblByIdI18n(model);
   
   return model;
 }
@@ -266,7 +266,7 @@ export async function findByIdI18n(
   
   const model = data.findByIdI18n;
   
-  await setLblById(model);
+  await setLblByIdI18n(model);
   
   return model;
 }
@@ -296,7 +296,7 @@ export async function findByIdOkI18n(
   
   const model = data.findByIdOkI18n;
   
-  await setLblById(model);
+  await setLblByIdI18n(model);
   
   return model;
 }
@@ -332,7 +332,7 @@ export async function findByIdsI18n(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdI18n(model);
   }
   
   return models;
@@ -369,7 +369,7 @@ export async function findByIdsOkI18n(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdI18n(model);
   }
   
   return models;
@@ -661,7 +661,7 @@ export function useExportExcelI18n() {
         },
       }, opt);
       for (const model of data.findAllI18n) {
-        await setLblById(model, true);
+        await setLblByIdI18n(model, true);
       }
       try {
         const sheetName = "国际化";

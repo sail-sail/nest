@@ -195,7 +195,7 @@ export async function findCountOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findCountOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -284,6 +284,16 @@ export async function findCountOptions(
   return result;
 }
 
+// MARK: getPagePathOptions
+export function getPagePathOptions() {
+  return "/base/options";
+}
+
+// MARK: getTableNameOptions
+export function getTableNameOptions() {
+  return "base_options";
+}
+
 // MARK: findAllOptions
 /** 根据搜索条件和分页查找系统选项列表 */
 export async function findAllOptions(
@@ -296,7 +306,7 @@ export async function findAllOptions(
   },
 ): Promise<OptionsModel[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findAllOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -565,7 +575,7 @@ export async function findByUniqueOptions(
   },
 ): Promise<OptionsModel[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findByUniqueOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -687,7 +697,7 @@ export async function findOneOptions(
   },
 ): Promise<OptionsModel | undefined> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findOneOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -735,7 +745,7 @@ export async function findOneOkOptions(
   },
 ): Promise<OptionsModel> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findOneOkOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -787,7 +797,7 @@ export async function findByIdOptions(
   },
 ): Promise<OptionsModel | undefined> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findByIdOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -829,7 +839,7 @@ export async function findByIdOkOptions(
   },
 ): Promise<OptionsModel> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findByIdOkOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -870,7 +880,7 @@ export async function findByIdsOptions(
   },
 ): Promise<OptionsModel[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findByIdsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -917,7 +927,7 @@ export async function findByIdsOkOptions(
   },
 ): Promise<OptionsModel[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findByIdsOkOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -966,7 +976,7 @@ export async function existOptions(
   },
 ): Promise<boolean> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "existOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -998,7 +1008,7 @@ export async function existByIdOptions(
   },
 ) {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "existByIdOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1134,7 +1144,7 @@ export async function createReturnOptions(
   },
 ): Promise<OptionsModel> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "createReturnOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1185,7 +1195,7 @@ export async function createOptions(
   },
 ): Promise<OptionsId> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "createOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1226,7 +1236,7 @@ export async function createsReturnOptions(
   },
 ): Promise<OptionsModel[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "createsReturnOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1263,7 +1273,7 @@ export async function createsOptions(
   },
 ): Promise<OptionsId[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "createsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1300,7 +1310,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1535,7 +1545,7 @@ export async function updateByIdOptions(
   },
 ): Promise<OptionsId> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "updateByIdOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1756,7 +1766,7 @@ export async function deleteByIdsOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "deleteByIdsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1854,7 +1864,7 @@ export async function enableByIdsOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "enableByIdsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1924,7 +1934,7 @@ export async function lockByIdsOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "lockByIdsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1970,7 +1980,7 @@ export async function revertByIdsOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "revertByIdsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2048,7 +2058,7 @@ export async function forceDeleteByIdsOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "forceDeleteByIdsOptions";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2106,7 +2116,7 @@ export async function findLastOrderByOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findLastOrderByOptions";
   
   const is_debug = get_is_debug(options?.is_debug);

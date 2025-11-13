@@ -15,7 +15,7 @@ import {
   backgroundTaskQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdBackgroundTask(
   model?: BackgroundTaskModel | null,
   isExcelExport = false,
 ) {
@@ -84,7 +84,7 @@ export async function findAllBackgroundTask(
   const models = data.findAllBackgroundTask;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdBackgroundTask(model);
   }
   return models;
 }
@@ -116,7 +116,7 @@ export async function findOneBackgroundTask(
   
   const model = data.findOneBackgroundTask;
   
-  await setLblById(model);
+  await setLblByIdBackgroundTask(model);
   
   return model;
 }
@@ -148,7 +148,7 @@ export async function findOneOkBackgroundTask(
   
   const model = data.findOneOkBackgroundTask;
   
-  await setLblById(model);
+  await setLblByIdBackgroundTask(model);
   
   return model;
 }
@@ -205,7 +205,7 @@ export async function findByIdBackgroundTask(
   
   const model = data.findByIdBackgroundTask;
   
-  await setLblById(model);
+  await setLblByIdBackgroundTask(model);
   
   return model;
 }
@@ -235,7 +235,7 @@ export async function findByIdOkBackgroundTask(
   
   const model = data.findByIdOkBackgroundTask;
   
-  await setLblById(model);
+  await setLblByIdBackgroundTask(model);
   
   return model;
 }
@@ -271,7 +271,7 @@ export async function findByIdsBackgroundTask(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdBackgroundTask(model);
   }
   
   return models;
@@ -308,7 +308,7 @@ export async function findByIdsOkBackgroundTask(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdBackgroundTask(model);
   }
   
   return models;

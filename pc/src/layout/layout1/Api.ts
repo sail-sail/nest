@@ -46,6 +46,7 @@ export async function getMenus(
         lbl
         route_path
         route_query
+        is_dyn_page
       }
       query {
         getMenus {
@@ -65,6 +66,10 @@ export async function getMenus(
       menu_model.route_path === "/" ||
       menu_model.route_path === "/index"
     ) {
+      continue;
+    }
+    // 只为动态页面创建路由
+    if (!menu_model.is_dyn_page) {
       continue;
     }
     const routerItem = routersMap[menu_model.route_path || ""];
@@ -97,6 +102,7 @@ export async function getMenus(
             },
             meta: {
               name: menu_model.lbl,
+              is_dyn_page: true,
             },
           },
         ],

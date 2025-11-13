@@ -2311,7 +2311,7 @@ if (searchByKeyword) {
           }
           #>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -5243,7 +5243,15 @@ async function initFrame() {<#
     initI18nsEfc(),<#
     }
     #>
-    dataGrid(true),
+    dataGrid(true),<#
+    if (opts?.isUseDynPageFields) {
+    #>
+    useDynPageFieldsList(
+      pagePath,
+      $$(tableColumns),
+    ),<#
+    }
+    #>
   ]);
   inited = true;
 }

@@ -553,6 +553,8 @@ async function showDialog(
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
+    domain_ids: [ ],
+    menu_ids: [ ],
   };
   tenant_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {

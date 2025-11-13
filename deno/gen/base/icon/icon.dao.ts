@@ -181,7 +181,7 @@ export async function findCountIcon(
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findCountIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -259,6 +259,16 @@ export async function findCountIcon(
   return result;
 }
 
+// MARK: getPagePathIcon
+export function getPagePathIcon() {
+  return "/base/icon";
+}
+
+// MARK: getTableNameIcon
+export function getTableNameIcon() {
+  return "base_icon";
+}
+
 // MARK: findAllIcon
 /** 根据搜索条件和分页查找图标库列表 */
 export async function findAllIcon(
@@ -271,7 +281,7 @@ export async function findAllIcon(
   },
 ): Promise<IconModel[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findAllIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -515,7 +525,7 @@ export async function findByUniqueIcon(
   },
 ): Promise<IconModel[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findByUniqueIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -651,7 +661,7 @@ export async function findOneIcon(
   },
 ): Promise<IconModel | undefined> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findOneIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -699,7 +709,7 @@ export async function findOneOkIcon(
   },
 ): Promise<IconModel> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findOneOkIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -751,7 +761,7 @@ export async function findByIdIcon(
   },
 ): Promise<IconModel | undefined> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findByIdIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -793,7 +803,7 @@ export async function findByIdOkIcon(
   },
 ): Promise<IconModel> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findByIdOkIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -834,7 +844,7 @@ export async function findByIdsIcon(
   },
 ): Promise<IconModel[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -881,7 +891,7 @@ export async function findByIdsOkIcon(
   },
 ): Promise<IconModel[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findByIdsOkIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -930,7 +940,7 @@ export async function existIcon(
   },
 ): Promise<boolean> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "existIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -962,7 +972,7 @@ export async function existByIdIcon(
   },
 ) {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "existByIdIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1098,7 +1108,7 @@ export async function createReturnIcon(
   },
 ): Promise<IconModel> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "createReturnIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1149,7 +1159,7 @@ export async function createIcon(
   },
 ): Promise<IconId> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "createIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1190,7 +1200,7 @@ export async function createsReturnIcon(
   },
 ): Promise<IconModel[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "createsReturnIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1227,7 +1237,7 @@ export async function createsIcon(
   },
 ): Promise<IconId[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "createsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1264,7 +1274,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1469,7 +1479,7 @@ export async function updateByIdIcon(
   },
 ): Promise<IconId> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "updateByIdIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1665,7 +1675,7 @@ export async function deleteByIdsIcon(
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "deleteByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1763,7 +1773,7 @@ export async function enableByIdsIcon(
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "enableByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1811,7 +1821,7 @@ export async function revertByIdsIcon(
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "revertByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1889,7 +1899,7 @@ export async function forceDeleteByIdsIcon(
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "forceDeleteByIdsIcon";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1947,7 +1957,7 @@ export async function findLastOrderByIcon(
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findLastOrderByIcon";
   
   const is_debug = get_is_debug(options?.is_debug);

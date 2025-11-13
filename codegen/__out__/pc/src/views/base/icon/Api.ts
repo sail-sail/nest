@@ -13,7 +13,7 @@ import {
   iconQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdIcon(
   model?: IconModel | null,
   isExcelExport = false,
 ) {
@@ -81,7 +81,7 @@ export async function findAllIcon(
   const models = data.findAllIcon;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdIcon(model);
   }
   return models;
 }
@@ -113,7 +113,7 @@ export async function findOneIcon(
   
   const model = data.findOneIcon;
   
-  await setLblById(model);
+  await setLblByIdIcon(model);
   
   return model;
 }
@@ -145,7 +145,7 @@ export async function findOneOkIcon(
   
   const model = data.findOneOkIcon;
   
-  await setLblById(model);
+  await setLblByIdIcon(model);
   
   return model;
 }
@@ -271,7 +271,7 @@ export async function findByIdIcon(
   
   const model = data.findByIdIcon;
   
-  await setLblById(model);
+  await setLblByIdIcon(model);
   
   return model;
 }
@@ -301,7 +301,7 @@ export async function findByIdOkIcon(
   
   const model = data.findByIdOkIcon;
   
-  await setLblById(model);
+  await setLblByIdIcon(model);
   
   return model;
 }
@@ -337,7 +337,7 @@ export async function findByIdsIcon(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdIcon(model);
   }
   
   return models;
@@ -374,7 +374,7 @@ export async function findByIdsOkIcon(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdIcon(model);
   }
   
   return models;
@@ -576,7 +576,7 @@ export function useExportExcelIcon() {
         },
       }, opt);
       for (const model of data.findAllIcon) {
-        await setLblById(model, true);
+        await setLblByIdIcon(model, true);
       }
       try {
         const sheetName = "图标库";

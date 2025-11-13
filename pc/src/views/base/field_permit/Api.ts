@@ -17,7 +17,7 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-async function setLblById(
+export async function setLblByIdFieldPermit(
   model?: FieldPermitModel | null,
   isExcelExport = false,
 ) {
@@ -75,7 +75,7 @@ export async function findAllFieldPermit(
   const models = data.findAllFieldPermit;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdFieldPermit(model);
   }
   return models;
 }
@@ -107,7 +107,7 @@ export async function findOneFieldPermit(
   
   const model = data.findOneFieldPermit;
   
-  await setLblById(model);
+  await setLblByIdFieldPermit(model);
   
   return model;
 }
@@ -139,7 +139,7 @@ export async function findOneOkFieldPermit(
   
   const model = data.findOneOkFieldPermit;
   
-  await setLblById(model);
+  await setLblByIdFieldPermit(model);
   
   return model;
 }
@@ -222,7 +222,7 @@ export async function findByIdFieldPermit(
   
   const model = data.findByIdFieldPermit;
   
-  await setLblById(model);
+  await setLblByIdFieldPermit(model);
   
   return model;
 }
@@ -252,7 +252,7 @@ export async function findByIdOkFieldPermit(
   
   const model = data.findByIdOkFieldPermit;
   
-  await setLblById(model);
+  await setLblByIdFieldPermit(model);
   
   return model;
 }
@@ -288,7 +288,7 @@ export async function findByIdsFieldPermit(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdFieldPermit(model);
   }
   
   return models;
@@ -325,7 +325,7 @@ export async function findByIdsOkFieldPermit(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdFieldPermit(model);
   }
   
   return models;

@@ -566,6 +566,9 @@ async function showDialog(
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
+    role_ids: [ ],
+    dept_ids: [ ],
+    org_ids: [ ],
   };
   usr_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {

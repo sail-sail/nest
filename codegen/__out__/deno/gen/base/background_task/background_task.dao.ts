@@ -209,7 +209,7 @@ export async function findCountBackgroundTask(
   },
 ): Promise<number> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "findCountBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -295,6 +295,16 @@ export async function findCountBackgroundTask(
   return result;
 }
 
+// MARK: getPagePathBackgroundTask
+export function getPagePathBackgroundTask() {
+  return "/base/background_task";
+}
+
+// MARK: getTableNameBackgroundTask
+export function getTableNameBackgroundTask() {
+  return "base_background_task";
+}
+
 // MARK: findAllBackgroundTask
 /** 根据搜索条件和分页查找后台任务列表 */
 export async function findAllBackgroundTask(
@@ -307,7 +317,7 @@ export async function findAllBackgroundTask(
   },
 ): Promise<BackgroundTaskModel[]> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "findAllBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -647,7 +657,7 @@ export async function findByUniqueBackgroundTask(
   },
 ): Promise<BackgroundTaskModel[]> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "findByUniqueBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -743,7 +753,7 @@ export async function findOneBackgroundTask(
   },
 ): Promise<BackgroundTaskModel | undefined> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "findOneBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -791,7 +801,7 @@ export async function findOneOkBackgroundTask(
   },
 ): Promise<BackgroundTaskModel> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "findOneOkBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -843,7 +853,7 @@ export async function findByIdBackgroundTask(
   },
 ): Promise<BackgroundTaskModel | undefined> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "findByIdBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -885,7 +895,7 @@ export async function findByIdOkBackgroundTask(
   },
 ): Promise<BackgroundTaskModel> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "findByIdOkBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -926,7 +936,7 @@ export async function findByIdsBackgroundTask(
   },
 ): Promise<BackgroundTaskModel[]> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "findByIdsBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -973,7 +983,7 @@ export async function findByIdsOkBackgroundTask(
   },
 ): Promise<BackgroundTaskModel[]> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "findByIdsOkBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1022,7 +1032,7 @@ export async function existBackgroundTask(
   },
 ): Promise<boolean> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "existBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1054,7 +1064,7 @@ export async function existByIdBackgroundTask(
   },
 ) {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "existByIdBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1171,7 +1181,7 @@ export async function createReturnBackgroundTask(
   },
 ): Promise<BackgroundTaskModel> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "createReturnBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1222,7 +1232,7 @@ export async function createBackgroundTask(
   },
 ): Promise<BackgroundTaskId> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "createBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1263,7 +1273,7 @@ export async function createsReturnBackgroundTask(
   },
 ): Promise<BackgroundTaskModel[]> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "createsReturnBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1300,7 +1310,7 @@ export async function createsBackgroundTask(
   },
 ): Promise<BackgroundTaskId[]> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "createsBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1337,7 +1347,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1552,7 +1562,7 @@ export async function updateTenantByIdBackgroundTask(
   },
 ): Promise<number> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "updateTenantByIdBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1598,7 +1608,7 @@ export async function updateByIdBackgroundTask(
   },
 ): Promise<BackgroundTaskId> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "updateByIdBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1805,7 +1815,7 @@ export async function deleteByIdsBackgroundTask(
   },
 ): Promise<number> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "deleteByIdsBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1877,7 +1887,7 @@ export async function revertByIdsBackgroundTask(
   },
 ): Promise<number> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "revertByIdsBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1951,7 +1961,7 @@ export async function forceDeleteByIdsBackgroundTask(
   },
 ): Promise<number> {
   
-  const table = "base_background_task";
+  const table = getTableNameBackgroundTask();
   const method = "forceDeleteByIdsBackgroundTask";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);

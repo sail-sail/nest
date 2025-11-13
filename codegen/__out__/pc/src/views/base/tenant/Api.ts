@@ -17,7 +17,7 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-async function setLblById(
+export async function setLblByIdTenant(
   model?: TenantModel | null,
   isExcelExport = false,
 ) {
@@ -91,7 +91,7 @@ export async function findAllTenant(
   const models = data.findAllTenant;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdTenant(model);
   }
   return models;
 }
@@ -123,7 +123,7 @@ export async function findOneTenant(
   
   const model = data.findOneTenant;
   
-  await setLblById(model);
+  await setLblByIdTenant(model);
   
   return model;
 }
@@ -155,7 +155,7 @@ export async function findOneOkTenant(
   
   const model = data.findOneOkTenant;
   
-  await setLblById(model);
+  await setLblByIdTenant(model);
   
   return model;
 }
@@ -281,7 +281,7 @@ export async function findByIdTenant(
   
   const model = data.findByIdTenant;
   
-  await setLblById(model);
+  await setLblByIdTenant(model);
   
   return model;
 }
@@ -311,7 +311,7 @@ export async function findByIdOkTenant(
   
   const model = data.findByIdOkTenant;
   
-  await setLblById(model);
+  await setLblByIdTenant(model);
   
   return model;
 }
@@ -347,7 +347,7 @@ export async function findByIdsTenant(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdTenant(model);
   }
   
   return models;
@@ -384,7 +384,7 @@ export async function findByIdsOkTenant(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdTenant(model);
   }
   
   return models;
@@ -793,7 +793,7 @@ export function useExportExcelTenant() {
         },
       }, opt);
       for (const model of data.findAllTenant) {
-        await setLblById(model, true);
+        await setLblByIdTenant(model, true);
       }
       try {
         const sheetName = "租户";

@@ -41,6 +41,8 @@ const gqlRouter = new Router();
 
 const _gqlSchemaStr = /* GraphQL */ `
 scalar JSON
+scalar JSONObject
+scalar JSONArray
 scalar NaiveDateTime
 scalar NaiveDate
 scalar NaiveTime

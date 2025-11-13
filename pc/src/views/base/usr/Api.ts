@@ -21,7 +21,7 @@ import {
   findTreeDept,
 } from "@/views/base/dept/Api.ts";
 
-async function setLblById(
+export async function setLblByIdUsr(
   model?: UsrModel | null,
   isExcelExport = false,
 ) {
@@ -109,7 +109,7 @@ export async function findAllUsr(
   const models = data.findAllUsr;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdUsr(model);
   }
   return models;
 }
@@ -141,7 +141,7 @@ export async function findOneUsr(
   
   const model = data.findOneUsr;
   
-  await setLblById(model);
+  await setLblByIdUsr(model);
   
   return model;
 }
@@ -173,7 +173,7 @@ export async function findOneOkUsr(
   
   const model = data.findOneOkUsr;
   
-  await setLblById(model);
+  await setLblByIdUsr(model);
   
   return model;
 }
@@ -299,7 +299,7 @@ export async function findByIdUsr(
   
   const model = data.findByIdUsr;
   
-  await setLblById(model);
+  await setLblByIdUsr(model);
   
   return model;
 }
@@ -329,7 +329,7 @@ export async function findByIdOkUsr(
   
   const model = data.findByIdOkUsr;
   
-  await setLblById(model);
+  await setLblByIdUsr(model);
   
   return model;
 }
@@ -365,7 +365,7 @@ export async function findByIdsUsr(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdUsr(model);
   }
   
   return models;
@@ -402,7 +402,7 @@ export async function findByIdsOkUsr(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdUsr(model);
   }
   
   return models;
@@ -820,7 +820,7 @@ export function useExportExcelUsr() {
         },
       }, opt);
       for (const model of data.findAllUsr) {
-        await setLblById(model, true);
+        await setLblByIdUsr(model, true);
       }
       try {
         const sheetName = "用户";

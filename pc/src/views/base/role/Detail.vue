@@ -423,6 +423,10 @@ async function showDialog(
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
+    menu_ids: [ ],
+    permit_ids: [ ],
+    data_permit_ids: [ ],
+    field_permit_ids: [ ],
   };
   role_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {

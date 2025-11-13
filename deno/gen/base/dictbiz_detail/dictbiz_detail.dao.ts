@@ -209,7 +209,7 @@ export async function findCountDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findCountDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -298,6 +298,16 @@ export async function findCountDictbizDetail(
   return result;
 }
 
+// MARK: getPagePathDictbizDetail
+export function getPagePathDictbizDetail() {
+  return "/base/dictbiz_detail";
+}
+
+// MARK: getTableNameDictbizDetail
+export function getTableNameDictbizDetail() {
+  return "base_dictbiz_detail";
+}
+
 // MARK: findAllDictbizDetail
 /** 根据搜索条件和分页查找业务字典明细列表 */
 export async function findAllDictbizDetail(
@@ -310,7 +320,7 @@ export async function findAllDictbizDetail(
   },
 ): Promise<DictbizDetailModel[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findAllDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -583,7 +593,7 @@ export async function findByUniqueDictbizDetail(
   },
 ): Promise<DictbizDetailModel[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findByUniqueDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -710,7 +720,7 @@ export async function findOneDictbizDetail(
   },
 ): Promise<DictbizDetailModel | undefined> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findOneDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -758,7 +768,7 @@ export async function findOneOkDictbizDetail(
   },
 ): Promise<DictbizDetailModel> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findOneOkDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -810,7 +820,7 @@ export async function findByIdDictbizDetail(
   },
 ): Promise<DictbizDetailModel | undefined> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findByIdDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -852,7 +862,7 @@ export async function findByIdOkDictbizDetail(
   },
 ): Promise<DictbizDetailModel> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findByIdOkDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -893,7 +903,7 @@ export async function findByIdsDictbizDetail(
   },
 ): Promise<DictbizDetailModel[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findByIdsDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -940,7 +950,7 @@ export async function findByIdsOkDictbizDetail(
   },
 ): Promise<DictbizDetailModel[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findByIdsOkDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -989,7 +999,7 @@ export async function existDictbizDetail(
   },
 ): Promise<boolean> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "existDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1021,7 +1031,7 @@ export async function existByIdDictbizDetail(
   },
 ) {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "existByIdDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1157,7 +1167,7 @@ export async function createReturnDictbizDetail(
   },
 ): Promise<DictbizDetailModel> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "createReturnDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1208,7 +1218,7 @@ export async function createDictbizDetail(
   },
 ): Promise<DictbizDetailId> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "createDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1249,7 +1259,7 @@ export async function createsReturnDictbizDetail(
   },
 ): Promise<DictbizDetailModel[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "createsReturnDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1286,7 +1296,7 @@ export async function createsDictbizDetail(
   },
 ): Promise<DictbizDetailId[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "createsDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1323,7 +1333,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1543,7 +1553,7 @@ export async function updateTenantByIdDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "updateTenantByIdDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1591,7 +1601,7 @@ export async function updateByIdDictbizDetail(
   },
 ): Promise<DictbizDetailId> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "updateByIdDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1798,7 +1808,7 @@ export async function deleteByIdsDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "deleteByIdsDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1896,7 +1906,7 @@ export async function enableByIdsDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "enableByIdsDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1944,7 +1954,7 @@ export async function revertByIdsDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "revertByIdsDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2022,7 +2032,7 @@ export async function forceDeleteByIdsDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "forceDeleteByIdsDictbizDetail";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2080,7 +2090,7 @@ export async function findLastOrderByDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findLastOrderByDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);

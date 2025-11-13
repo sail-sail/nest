@@ -300,7 +300,7 @@ export async function findCountUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findCountUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -455,6 +455,16 @@ export async function findCountUsr(
   return result;
 }
 
+// MARK: getPagePathUsr
+export function getPagePathUsr() {
+  return "/base/usr";
+}
+
+// MARK: getTableNameUsr
+export function getTableNameUsr() {
+  return "base_usr";
+}
+
 // MARK: findAllUsr
 /** 根据搜索条件和分页查找用户列表 */
 export async function findAllUsr(
@@ -467,7 +477,7 @@ export async function findAllUsr(
   },
 ): Promise<UsrModel[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findAllUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1013,7 +1023,7 @@ export async function findByUniqueUsr(
   },
 ): Promise<UsrModel[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findByUniqueUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1149,7 +1159,7 @@ export async function findOneUsr(
   },
 ): Promise<UsrModel | undefined> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findOneUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1197,7 +1207,7 @@ export async function findOneOkUsr(
   },
 ): Promise<UsrModel> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findOneOkUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1249,7 +1259,7 @@ export async function findByIdUsr(
   },
 ): Promise<UsrModel | undefined> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1291,7 +1301,7 @@ export async function findByIdOkUsr(
   },
 ): Promise<UsrModel> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findByIdOkUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1332,7 +1342,7 @@ export async function findByIdsUsr(
   },
 ): Promise<UsrModel[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1379,7 +1389,7 @@ export async function findByIdsOkUsr(
   },
 ): Promise<UsrModel[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findByIdsOkUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1428,7 +1438,7 @@ export async function existUsr(
   },
 ): Promise<boolean> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "existUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1460,7 +1470,7 @@ export async function existByIdUsr(
   },
 ) {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "existByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1603,7 +1613,7 @@ export async function createReturnUsr(
   },
 ): Promise<UsrModel> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "createReturnUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1654,7 +1664,7 @@ export async function createUsr(
   },
 ): Promise<UsrId> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "createUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1695,7 +1705,7 @@ export async function createsReturnUsr(
   },
 ): Promise<UsrModel[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "createsReturnUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1732,7 +1742,7 @@ export async function createsUsr(
   },
 ): Promise<UsrId[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "createsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1769,7 +1779,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -2050,7 +2060,7 @@ export async function updateTenantByIdUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "updateTenantByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2098,7 +2108,7 @@ export async function updateByIdUsr(
   },
 ): Promise<UsrId> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "updateByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2379,7 +2389,7 @@ export async function deleteByIdsUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "deleteByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2506,7 +2516,7 @@ export async function enableByIdsUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "enableByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2576,7 +2586,7 @@ export async function lockByIdsUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "lockByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2622,7 +2632,7 @@ export async function revertByIdsUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "revertByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2724,7 +2734,7 @@ export async function forceDeleteByIdsUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "forceDeleteByIdsUsr";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2811,7 +2821,7 @@ export async function findLastOrderByUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findLastOrderByUsr";
   
   const is_debug = get_is_debug(options?.is_debug);

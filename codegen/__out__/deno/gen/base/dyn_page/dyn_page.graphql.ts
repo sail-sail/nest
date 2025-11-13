@@ -9,7 +9,7 @@ scalar DynPageId
 type DynPageModel {
   "ID"
   id: DynPageId!
-  "编码"
+  "路由"
   code: String!
   "名称"
   lbl: String!
@@ -45,7 +45,7 @@ type DynPageModel {
 type DynPageFieldComment {
   "ID"
   id: String!
-  "编码"
+  "路由"
   code: String!
   "名称"
   lbl: String!
@@ -77,7 +77,7 @@ type DynPageFieldComment {
 input DynPageInput {
   "ID"
   id: DynPageId
-  "编码"
+  "路由"
   code: String
   "名称"
   lbl: String
@@ -99,7 +99,7 @@ input DynPageSearch {
   ids: [DynPageId!]
   "ID"
   id: DynPageId
-  "编码"
+  "路由"
   code: String
   code_like: String
   "名称"

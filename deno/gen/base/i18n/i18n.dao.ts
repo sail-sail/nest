@@ -194,7 +194,7 @@ export async function findCountI18n(
   },
 ): Promise<number> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findCountI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -283,6 +283,16 @@ export async function findCountI18n(
   return result;
 }
 
+// MARK: getPagePathI18n
+export function getPagePathI18n() {
+  return "/base/i18n";
+}
+
+// MARK: getTableNameI18n
+export function getTableNameI18n() {
+  return "base_i18n";
+}
+
 // MARK: findAllI18n
 /** 根据搜索条件和分页查找国际化列表 */
 export async function findAllI18n(
@@ -295,7 +305,7 @@ export async function findAllI18n(
   },
 ): Promise<I18nModel[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findAllI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -557,7 +567,7 @@ export async function findByUniqueI18n(
   },
 ): Promise<I18nModel[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findByUniqueI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -695,7 +705,7 @@ export async function findOneI18n(
   },
 ): Promise<I18nModel | undefined> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findOneI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -743,7 +753,7 @@ export async function findOneOkI18n(
   },
 ): Promise<I18nModel> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findOneOkI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -795,7 +805,7 @@ export async function findByIdI18n(
   },
 ): Promise<I18nModel | undefined> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findByIdI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -837,7 +847,7 @@ export async function findByIdOkI18n(
   },
 ): Promise<I18nModel> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findByIdOkI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -878,7 +888,7 @@ export async function findByIdsI18n(
   },
 ): Promise<I18nModel[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findByIdsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -925,7 +935,7 @@ export async function findByIdsOkI18n(
   },
 ): Promise<I18nModel[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findByIdsOkI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -974,7 +984,7 @@ export async function existI18n(
   },
 ): Promise<boolean> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "existI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1006,7 +1016,7 @@ export async function existByIdI18n(
   },
 ) {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "existByIdI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1139,7 +1149,7 @@ export async function createReturnI18n(
   },
 ): Promise<I18nModel> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "createReturnI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1190,7 +1200,7 @@ export async function createI18n(
   },
 ): Promise<I18nId> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "createI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1231,7 +1241,7 @@ export async function createsReturnI18n(
   },
 ): Promise<I18nModel[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "createsReturnI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1268,7 +1278,7 @@ export async function createsI18n(
   },
 ): Promise<I18nId[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "createsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1305,7 +1315,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1505,7 +1515,7 @@ export async function updateByIdI18n(
   },
 ): Promise<I18nId> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "updateByIdI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1695,7 +1705,7 @@ export async function deleteByIdsI18n(
   },
 ): Promise<number> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "deleteByIdsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1771,7 +1781,7 @@ export async function revertByIdsI18n(
   },
 ): Promise<number> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "revertByIdsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1849,7 +1859,7 @@ export async function forceDeleteByIdsI18n(
   },
 ): Promise<number> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "forceDeleteByIdsI18n";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);

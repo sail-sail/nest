@@ -74,6 +74,20 @@
         @submit.prevent
       >
         
+        <template v-if="(showBuildIn || builtInModel?.code == null)">
+          <el-form-item
+            label="编码"
+            prop="code"
+          >
+            <CustomInput
+              v-model="dialogModel.code"
+              placeholder="请输入 编码"
+              :readonly="true"
+              :readonly-placeholder="inited ? '(自动生成)' : ''"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.dyn_page_id == null)">
           <el-form-item
             label="动态页面"
@@ -137,6 +151,34 @@
               :set="dialogModel.is_required = dialogModel.is_required ?? undefined"
               code="yes_no"
               placeholder="请选择 必填"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.width == null)">
+          <el-form-item
+            label="宽度"
+            prop="width"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.width"
+              placeholder="请输入 宽度"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.align == null)">
+          <el-form-item
+            label="对齐方式"
+            prop="align"
+          >
+            <DictSelect
+              v-model="dialogModel.align"
+              :set="dialogModel.align = dialogModel.align ?? undefined"
+              code="dyn_page_field_align"
+              placeholder="请选择 对齐方式"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -334,6 +376,13 @@ watchEffect(async () => {
         message: "请选择 必填",
       },
     ],
+    // 对齐方式
+    align: [
+      {
+        required: true,
+        message: "请选择 对齐方式",
+      },
+    ],
     // 排序
     order_by: [
       {
@@ -456,9 +505,11 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
+      defaultInput,
       data,
       order_by,
     ] = await Promise.all([
+      getDefaultInputDynPageField(),
       findOneModel({
         id,
         is_deleted,
@@ -471,6 +522,7 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
+        code: defaultInput.code,
         order_by: order_by + 1,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
@@ -665,6 +717,7 @@ watch(
   () => [
     dialogModel.dyn_page_id,
     dialogModel.is_required,
+    dialogModel.align,
   ],
   () => {
     if (!inited) {
@@ -675,6 +728,9 @@ watch(
     }
     if (!dialogModel.is_required) {
       dialogModel.is_required_lbl = "";
+    }
+    if (!dialogModel.align) {
+      dialogModel.align_lbl = "";
     }
   },
 );

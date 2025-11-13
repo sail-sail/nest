@@ -14,7 +14,7 @@ import {
   loginLogQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdLoginLog(
   model?: LoginLogModel | null,
   isExcelExport = false,
 ) {
@@ -71,7 +71,7 @@ export async function findAllLoginLog(
   const models = data.findAllLoginLog;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdLoginLog(model);
   }
   return models;
 }
@@ -103,7 +103,7 @@ export async function findOneLoginLog(
   
   const model = data.findOneLoginLog;
   
-  await setLblById(model);
+  await setLblByIdLoginLog(model);
   
   return model;
 }
@@ -135,7 +135,7 @@ export async function findOneOkLoginLog(
   
   const model = data.findOneOkLoginLog;
   
-  await setLblById(model);
+  await setLblByIdLoginLog(model);
   
   return model;
 }
@@ -192,7 +192,7 @@ export async function findByIdLoginLog(
   
   const model = data.findByIdLoginLog;
   
-  await setLblById(model);
+  await setLblByIdLoginLog(model);
   
   return model;
 }
@@ -222,7 +222,7 @@ export async function findByIdOkLoginLog(
   
   const model = data.findByIdOkLoginLog;
   
-  await setLblById(model);
+  await setLblByIdLoginLog(model);
   
   return model;
 }
@@ -258,7 +258,7 @@ export async function findByIdsLoginLog(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdLoginLog(model);
   }
   
   return models;
@@ -295,7 +295,7 @@ export async function findByIdsOkLoginLog(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdLoginLog(model);
   }
   
   return models;

@@ -13,7 +13,7 @@ import {
   langQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdLang(
   model?: LangModel | null,
   isExcelExport = false,
 ) {
@@ -71,7 +71,7 @@ export async function findAllLang(
   const models = data.findAllLang;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdLang(model);
   }
   return models;
 }
@@ -103,7 +103,7 @@ export async function findOneLang(
   
   const model = data.findOneLang;
   
-  await setLblById(model);
+  await setLblByIdLang(model);
   
   return model;
 }
@@ -135,7 +135,7 @@ export async function findOneOkLang(
   
   const model = data.findOneOkLang;
   
-  await setLblById(model);
+  await setLblByIdLang(model);
   
   return model;
 }
@@ -261,7 +261,7 @@ export async function findByIdLang(
   
   const model = data.findByIdLang;
   
-  await setLblById(model);
+  await setLblByIdLang(model);
   
   return model;
 }
@@ -291,7 +291,7 @@ export async function findByIdOkLang(
   
   const model = data.findByIdOkLang;
   
-  await setLblById(model);
+  await setLblByIdLang(model);
   
   return model;
 }
@@ -327,7 +327,7 @@ export async function findByIdsLang(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdLang(model);
   }
   
   return models;
@@ -364,7 +364,7 @@ export async function findByIdsOkLang(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdLang(model);
   }
   
   return models;
@@ -565,7 +565,7 @@ export function useExportExcelLang() {
         },
       }, opt);
       for (const model of data.findAllLang) {
-        await setLblById(model, true);
+        await setLblByIdLang(model, true);
       }
       try {
         const sheetName = "语言";

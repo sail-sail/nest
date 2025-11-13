@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   useI18n,
-} from "@/locales/i18n";
+} from "@/locales/i18n.ts";
 
 import type {
   MaybeRefOrGetter,
@@ -10,7 +10,11 @@ import type {
 import {
   subscribe,
   unSubscribe,
-} from "@/compositions/websocket";
+} from "@/compositions/websocket.ts";
+
+import {
+  findOneDynPage,
+} from "@/views/base/dyn_page/Api.ts";
 
 /** 初始化内置搜索条件 */
 export function initBuiltInSearch<T>(
@@ -1444,4 +1448,110 @@ export function useSubscribeList<T>(
     }),
     forceDeleteFn,
   );
+}
+
+function getDynPageTableColumns(
+  dyn_page_fields: DynPageFieldModel[],
+): ColumnType[] {
+  
+  const columns: ColumnType[] = [ ];
+  
+  for (const field of dyn_page_fields) {
+    const column: ColumnType = {
+      label: field.lbl,
+      prop: "dyn_page_data." + field.code,
+      width: field.width > 0 ? field.width : undefined,
+      align: field.align,
+      isDynField: true,
+    };
+    columns.push(column);
+  }
+  
+  return columns;
+}
+
+/** 初始化动态页面表单字段 */
+export function useDynPageFields(
+  pagePath: string,
+) {
+  const dyn_page_field_ref = ref<DynPageFieldModel[]>([ ]);
+  const store_key = "useDynPageFields.dyn_page_model:" + pagePath;
+  let dyn_page_model: DynPageModel | undefined;
+  try {
+    const str = localStorage.getItem(store_key);
+    if (str) {
+      dyn_page_model = JSON.parse(str) as DynPageModel;
+    }
+  } catch (err) {
+    console.error(err);
+    localStorage.removeItem(store_key);
+    dyn_page_model = undefined;
+  }
+  if (dyn_page_model) {
+    const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
+    dyn_page_field_ref.value = dyn_page_field;
+  }
+  
+  (async function() {
+    dyn_page_model = await findOneDynPage({
+      code: pagePath,
+      is_enabled: [ 1 ],
+    });
+    if (!dyn_page_model) {
+      localStorage.removeItem(store_key);
+      dyn_page_field_ref.value = [ ];
+      return;
+    }
+    localStorage.setItem(store_key, JSON.stringify(dyn_page_model));
+    const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
+    dyn_page_field_ref.value = dyn_page_field;
+  })();
+  
+  return dyn_page_field_ref;
+}
+
+/** 初始化动态页面列表字段 */
+export async function useDynPageFieldsList(
+  pagePath: string,
+  tableColumns: Ref<ColumnType[]>,
+) {
+  const store_key = "useDynPageFieldsList.dyn_page_model:" + pagePath;
+  let dyn_page_model: DynPageModel | undefined;
+  try {
+    const str = localStorage.getItem(store_key);
+    if (str) {
+      dyn_page_model = JSON.parse(str) as DynPageModel;
+    }
+  } catch (err) {
+    console.error(err);
+    localStorage.removeItem(store_key);
+    dyn_page_model = undefined;
+  }
+  if (dyn_page_model) {
+    const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
+    if (dyn_page_field.length > 0) {
+      tableColumns.value = [
+        ...tableColumns.value,
+        ...getDynPageTableColumns(dyn_page_field),
+      ];
+    }
+  }
+  dyn_page_model = await findOneDynPage({
+    code: pagePath,
+    is_enabled: [ 1 ],
+  });
+  tableColumns.value = tableColumns.value.filter((item) => !item.isDynField);
+  if (!dyn_page_model) {
+    localStorage.removeItem(store_key);
+    return;
+  }
+  localStorage.setItem(store_key, JSON.stringify(dyn_page_model));
+  const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
+  if (dyn_page_field.length === 0) {
+    return;
+  }
+  tableColumns.value = [
+    ...tableColumns.value,
+    ...getDynPageTableColumns(dyn_page_field),
+  ];
 }

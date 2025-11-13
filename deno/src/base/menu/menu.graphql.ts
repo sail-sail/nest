@@ -10,6 +10,7 @@ defineGraphql(menuResolver, /* GraphQL */ `
     lbl: String!
     route_path: String!
     route_query: String!
+    is_dyn_page: Int!
   }
 
   type Query {

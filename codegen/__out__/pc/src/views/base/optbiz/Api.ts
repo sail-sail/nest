@@ -13,7 +13,7 @@ import {
   optbizQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdOptbiz(
   model?: OptbizModel | null,
   isExcelExport = false,
 ) {
@@ -77,7 +77,7 @@ export async function findAllOptbiz(
   const models = data.findAllOptbiz;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptbiz(model);
   }
   return models;
 }
@@ -109,7 +109,7 @@ export async function findOneOptbiz(
   
   const model = data.findOneOptbiz;
   
-  await setLblById(model);
+  await setLblByIdOptbiz(model);
   
   return model;
 }
@@ -141,7 +141,7 @@ export async function findOneOkOptbiz(
   
   const model = data.findOneOkOptbiz;
   
-  await setLblById(model);
+  await setLblByIdOptbiz(model);
   
   return model;
 }
@@ -267,7 +267,7 @@ export async function findByIdOptbiz(
   
   const model = data.findByIdOptbiz;
   
-  await setLblById(model);
+  await setLblByIdOptbiz(model);
   
   return model;
 }
@@ -297,7 +297,7 @@ export async function findByIdOkOptbiz(
   
   const model = data.findByIdOkOptbiz;
   
-  await setLblById(model);
+  await setLblByIdOptbiz(model);
   
   return model;
 }
@@ -333,7 +333,7 @@ export async function findByIdsOptbiz(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptbiz(model);
   }
   
   return models;
@@ -370,7 +370,7 @@ export async function findByIdsOkOptbiz(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptbiz(model);
   }
   
   return models;
@@ -601,7 +601,7 @@ export function useExportExcelOptbiz() {
         },
       }, opt);
       for (const model of data.findAllOptbiz) {
-        await setLblById(model, true);
+        await setLblByIdOptbiz(model, true);
       }
       try {
         const sheetName = "业务选项";

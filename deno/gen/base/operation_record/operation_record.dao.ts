@@ -207,7 +207,7 @@ export async function findCountOperationRecord(
   },
 ): Promise<number> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findCountOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -271,6 +271,16 @@ export async function findCountOperationRecord(
   return result;
 }
 
+// MARK: getPagePathOperationRecord
+export function getPagePathOperationRecord() {
+  return "/base/operation_record";
+}
+
+// MARK: getTableNameOperationRecord
+export function getTableNameOperationRecord() {
+  return "base_operation_record";
+}
+
 // MARK: findAllOperationRecord
 /** 根据搜索条件和分页查找操作记录列表 */
 export async function findAllOperationRecord(
@@ -283,7 +293,7 @@ export async function findAllOperationRecord(
   },
 ): Promise<OperationRecordModel[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findAllOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -454,7 +464,7 @@ export async function findByUniqueOperationRecord(
   },
 ): Promise<OperationRecordModel[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findByUniqueOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -550,7 +560,7 @@ export async function findOneOperationRecord(
   },
 ): Promise<OperationRecordModel | undefined> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findOneOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -598,7 +608,7 @@ export async function findOneOkOperationRecord(
   },
 ): Promise<OperationRecordModel> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findOneOkOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -650,7 +660,7 @@ export async function findByIdOperationRecord(
   },
 ): Promise<OperationRecordModel | undefined> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findByIdOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -692,7 +702,7 @@ export async function findByIdOkOperationRecord(
   },
 ): Promise<OperationRecordModel> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findByIdOkOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -733,7 +743,7 @@ export async function findByIdsOperationRecord(
   },
 ): Promise<OperationRecordModel[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findByIdsOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -780,7 +790,7 @@ export async function findByIdsOkOperationRecord(
   },
 ): Promise<OperationRecordModel[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findByIdsOkOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -829,7 +839,7 @@ export async function existOperationRecord(
   },
 ): Promise<boolean> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "existOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -861,7 +871,7 @@ export async function existByIdOperationRecord(
   },
 ) {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "existByIdOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -978,7 +988,7 @@ export async function createReturnOperationRecord(
   },
 ): Promise<OperationRecordModel> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "createReturnOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1029,7 +1039,7 @@ export async function createOperationRecord(
   },
 ): Promise<OperationRecordId> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "createOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1070,7 +1080,7 @@ export async function createsReturnOperationRecord(
   },
 ): Promise<OperationRecordModel[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "createsReturnOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1107,7 +1117,7 @@ export async function createsOperationRecord(
   },
 ): Promise<OperationRecordId[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "createsOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1144,7 +1154,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1359,7 +1369,7 @@ export async function updateTenantByIdOperationRecord(
   },
 ): Promise<number> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "updateTenantByIdOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1405,7 +1415,7 @@ export async function updateByIdOperationRecord(
   },
 ): Promise<OperationRecordId> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "updateByIdOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1612,7 +1622,7 @@ export async function deleteByIdsOperationRecord(
   },
 ): Promise<number> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "deleteByIdsOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1684,7 +1694,7 @@ export async function revertByIdsOperationRecord(
   },
 ): Promise<number> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "revertByIdsOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1758,7 +1768,7 @@ export async function forceDeleteByIdsOperationRecord(
   },
 ): Promise<number> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "forceDeleteByIdsOperationRecord";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);

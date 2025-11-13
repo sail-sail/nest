@@ -15,14 +15,21 @@ import {
 
 import {
   intoInputDynPageField,
+  setLblByIdDynPageField,
 } from "@/views/base/dyn_page_field/Api.ts";
 
-async function setLblById(
+export async function setLblByIdDynPage(
   model?: DynPageModel | null,
   isExcelExport = false,
 ) {
   if (!model) {
     return;
+  }
+  // 动态页面字段
+  model.dyn_page_field = model.dyn_page_field ?? [ ];
+  for (let i = 0; i < model.dyn_page_field.length; i++) {
+    const dyn_page_field_model = model.dyn_page_field[i] as DynPageFieldModel;
+    await setLblByIdDynPageField(dyn_page_field_model, isExcelExport);
   }
 }
 
@@ -32,7 +39,7 @@ export function intoInputDynPage(
   const input: DynPageInput = {
     // ID
     id: model?.id,
-    // 编码
+    // 路由
     code: model?.code,
     // 名称
     lbl: model?.lbl,
@@ -77,7 +84,7 @@ export async function findAllDynPage(
   const models = data.findAllDynPage;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPage(model);
   }
   return models;
 }
@@ -109,7 +116,7 @@ export async function findOneDynPage(
   
   const model = data.findOneDynPage;
   
-  await setLblById(model);
+  await setLblByIdDynPage(model);
   
   return model;
 }
@@ -141,7 +148,7 @@ export async function findOneOkDynPage(
   
   const model = data.findOneOkDynPage;
   
-  await setLblById(model);
+  await setLblByIdDynPage(model);
   
   return model;
 }
@@ -267,7 +274,7 @@ export async function findByIdDynPage(
   
   const model = data.findByIdDynPage;
   
-  await setLblById(model);
+  await setLblByIdDynPage(model);
   
   return model;
 }
@@ -297,7 +304,7 @@ export async function findByIdOkDynPage(
   
   const model = data.findByIdOkDynPage;
   
-  await setLblById(model);
+  await setLblByIdDynPage(model);
   
   return model;
 }
@@ -333,7 +340,7 @@ export async function findByIdsDynPage(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPage(model);
   }
   
   return models;
@@ -370,7 +377,7 @@ export async function findByIdsOkDynPage(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPage(model);
   }
   
   return models;
@@ -496,6 +503,7 @@ export function useDownloadImportTemplateDynPage() {
       query: /* GraphQL */ `
         query {
           getFieldCommentsDynPage {
+            code
             lbl
             order_by
             rem
@@ -570,7 +578,7 @@ export function useExportExcelDynPage() {
         },
       }, opt);
       for (const model of data.findAllDynPage) {
-        await setLblById(model, true);
+        await setLblByIdDynPage(model, true);
       }
       try {
         const sheetName = "动态页面";

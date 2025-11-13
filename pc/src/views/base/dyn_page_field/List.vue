@@ -28,6 +28,19 @@
       @keydown.enter="onSearch(true)"
     >
       
+      <template v-if="(builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null))">
+        <el-form-item
+          label="编码"
+          prop="code_like"
+        >
+          <CustomInput
+            v-model="search.code_like"
+            placeholder="请输入 编码"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <template v-if="(showBuildIn || builtInSearch?.dyn_page_id == null)">
         <el-form-item
           label="动态页面"
@@ -494,8 +507,17 @@
           :key="col.prop"
         >
           
+          <!-- 编码 -->
+          <template v-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 动态页面 -->
-          <template v-if="'dyn_page_id_lbl' === col.prop && (showBuildIn || builtInSearch?.dyn_page_id == null)">
+          <template v-else-if="'dyn_page_id_lbl' === col.prop && (showBuildIn || builtInSearch?.dyn_page_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -546,6 +568,24 @@
             </el-table-column>
           </template>
           
+          <!-- 宽度 -->
+          <template v-else-if="'width' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 对齐方式 -->
+          <template v-else-if="'align_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
@@ -588,7 +628,7 @@
             </el-table-column>
           </template>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -699,6 +739,8 @@ const props = defineProps<{
   selectedIds?: DynPageFieldId[]; //已选择行的id列表
   isMultiple?: string; //是否多选
   id?: DynPageFieldId; // ID
+  code?: string; // 编码
+  code_like?: string; // 编码
   dyn_page_id?: string|string[]; // 动态页面
   dyn_page_id_lbl?: string; // 动态页面
   lbl?: string; // 名称
@@ -954,6 +996,15 @@ let tableData = $ref<DynPageFieldModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
+      label: "编码",
+      prop: "code",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+      fixed: "left",
+    },
+    {
       label: "动态页面",
       prop: "dyn_page_id_lbl",
       sortBy: "dyn_page_id_lbl",
@@ -983,7 +1034,7 @@ function getTableColumns(): ColumnType[] {
       label: "属性",
       prop: "attrs",
       width: 200,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -995,6 +1046,23 @@ function getTableColumns(): ColumnType[] {
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
+    },
+    {
+      label: "宽度",
+      prop: "width",
+      width: 100,
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "对齐方式",
+      prop: "align_lbl",
+      sortBy: "align",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "启用",
@@ -1287,6 +1355,8 @@ async function onImportExcel() {
     [ "类型" ]: "type",
     [ "属性" ]: "attrs",
     [ "必填" ]: "is_required_lbl",
+    [ "宽度" ]: "width",
+    [ "对齐方式" ]: "align_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
   };
@@ -1315,6 +1385,8 @@ async function onImportExcel() {
           "type": "string",
           "attrs": "string",
           "is_required_lbl": "string",
+          "width": "number",
+          "align_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
         },

@@ -484,6 +484,11 @@ export interface TableCloumn {
   isSwitch?: boolean,
   
   /**
+   * 是否为复选框
+   */
+  isCheckbox?: boolean,
+  
+  /**
    * 是否为附件
    * 如果字段名是 att 或者 _att 结尾, 并且 isAtt == null，则认 isAtt 默认为true,并且此时width默认为80
    */
@@ -742,6 +747,11 @@ export type Validator = {
 
 export interface TablesConfigItem {
   opts?: {
+    
+    /**
+     * 页面是否启用动态字段, 默认为 false
+     */
+    isUseDynPageFields?: boolean;
     
     /**
      * 用于显示的字段

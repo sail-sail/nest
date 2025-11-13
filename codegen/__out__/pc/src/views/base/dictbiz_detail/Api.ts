@@ -13,7 +13,7 @@ import {
   dictbizDetailQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdDictbizDetail(
   model?: DictbizDetailModel | null,
   isExcelExport = false,
 ) {
@@ -74,7 +74,7 @@ export async function findAllDictbizDetail(
   const models = data.findAllDictbizDetail;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictbizDetail(model);
   }
   return models;
 }
@@ -106,7 +106,7 @@ export async function findOneDictbizDetail(
   
   const model = data.findOneDictbizDetail;
   
-  await setLblById(model);
+  await setLblByIdDictbizDetail(model);
   
   return model;
 }
@@ -138,7 +138,7 @@ export async function findOneOkDictbizDetail(
   
   const model = data.findOneOkDictbizDetail;
   
-  await setLblById(model);
+  await setLblByIdDictbizDetail(model);
   
   return model;
 }
@@ -264,7 +264,7 @@ export async function findByIdDictbizDetail(
   
   const model = data.findByIdDictbizDetail;
   
-  await setLblById(model);
+  await setLblByIdDictbizDetail(model);
   
   return model;
 }
@@ -294,7 +294,7 @@ export async function findByIdOkDictbizDetail(
   
   const model = data.findByIdOkDictbizDetail;
   
-  await setLblById(model);
+  await setLblByIdDictbizDetail(model);
   
   return model;
 }
@@ -330,7 +330,7 @@ export async function findByIdsDictbizDetail(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictbizDetail(model);
   }
   
   return models;
@@ -367,7 +367,7 @@ export async function findByIdsOkDictbizDetail(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictbizDetail(model);
   }
   
   return models;
@@ -622,7 +622,7 @@ export function useExportExcelDictbizDetail() {
         },
       }, opt);
       for (const model of data.findAllDictbizDetail) {
-        await setLblById(model, true);
+        await setLblByIdDictbizDetail(model, true);
       }
       try {
         const sheetName = "业务字典明细";

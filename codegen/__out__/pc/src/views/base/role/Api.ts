@@ -17,7 +17,7 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-async function setLblById(
+export async function setLblByIdRole(
   model?: RoleModel | null,
   isExcelExport = false,
 ) {
@@ -91,7 +91,7 @@ export async function findAllRole(
   const models = data.findAllRole;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdRole(model);
   }
   return models;
 }
@@ -123,7 +123,7 @@ export async function findOneRole(
   
   const model = data.findOneRole;
   
-  await setLblById(model);
+  await setLblByIdRole(model);
   
   return model;
 }
@@ -155,7 +155,7 @@ export async function findOneOkRole(
   
   const model = data.findOneOkRole;
   
-  await setLblById(model);
+  await setLblByIdRole(model);
   
   return model;
 }
@@ -281,7 +281,7 @@ export async function findByIdRole(
   
   const model = data.findByIdRole;
   
-  await setLblById(model);
+  await setLblByIdRole(model);
   
   return model;
 }
@@ -311,7 +311,7 @@ export async function findByIdOkRole(
   
   const model = data.findByIdOkRole;
   
-  await setLblById(model);
+  await setLblByIdRole(model);
   
   return model;
 }
@@ -347,7 +347,7 @@ export async function findByIdsRole(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdRole(model);
   }
   
   return models;
@@ -384,7 +384,7 @@ export async function findByIdsOkRole(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdRole(model);
   }
   
   return models;
@@ -837,7 +837,7 @@ export function useExportExcelRole() {
         },
       }, opt);
       for (const model of data.findAllRole) {
-        await setLblById(model, true);
+        await setLblByIdRole(model, true);
       }
       try {
         const sheetName = "角色";

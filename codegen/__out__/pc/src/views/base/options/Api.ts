@@ -13,7 +13,7 @@ import {
   optionsQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdOptions(
   model?: OptionsModel | null,
   isExcelExport = false,
 ) {
@@ -77,7 +77,7 @@ export async function findAllOptions(
   const models = data.findAllOptions;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptions(model);
   }
   return models;
 }
@@ -109,7 +109,7 @@ export async function findOneOptions(
   
   const model = data.findOneOptions;
   
-  await setLblById(model);
+  await setLblByIdOptions(model);
   
   return model;
 }
@@ -141,7 +141,7 @@ export async function findOneOkOptions(
   
   const model = data.findOneOkOptions;
   
-  await setLblById(model);
+  await setLblByIdOptions(model);
   
   return model;
 }
@@ -267,7 +267,7 @@ export async function findByIdOptions(
   
   const model = data.findByIdOptions;
   
-  await setLblById(model);
+  await setLblByIdOptions(model);
   
   return model;
 }
@@ -297,7 +297,7 @@ export async function findByIdOkOptions(
   
   const model = data.findByIdOkOptions;
   
-  await setLblById(model);
+  await setLblByIdOptions(model);
   
   return model;
 }
@@ -333,7 +333,7 @@ export async function findByIdsOptions(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptions(model);
   }
   
   return models;
@@ -370,7 +370,7 @@ export async function findByIdsOkOptions(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptions(model);
   }
   
   return models;
@@ -601,7 +601,7 @@ export function useExportExcelOptions() {
         },
       }, opt);
       for (const model of data.findAllOptions) {
-        await setLblById(model, true);
+        await setLblByIdOptions(model, true);
       }
       try {
         const sheetName = "系统选项";

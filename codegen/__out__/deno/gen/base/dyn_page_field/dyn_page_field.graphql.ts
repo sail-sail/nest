@@ -6,9 +6,21 @@ import * as resolver from "./dyn_page_field.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar DynPageFieldId
 
+"动态页面字段对齐方式"
+enum DynPageFieldAlign {
+  "靠左"
+  left
+  "居中"
+  center
+  "靠右"
+  right
+}
+
 type DynPageFieldModel {
   "ID"
   id: DynPageFieldId!
+  "编码"
+  code: String!
   "动态页面"
   dyn_page_id: DynPageId!
   "动态页面"
@@ -23,6 +35,12 @@ type DynPageFieldModel {
   is_required: Int!
   "必填"
   is_required_lbl: String!
+  "宽度"
+  width: Int!
+  "对齐方式"
+  align: DynPageFieldAlign!
+  "对齐方式"
+  align_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
@@ -35,6 +53,8 @@ type DynPageFieldModel {
 type DynPageFieldFieldComment {
   "ID"
   id: String!
+  "编码"
+  code: String!
   "动态页面"
   dyn_page_id: String!
   "动态页面"
@@ -49,6 +69,12 @@ type DynPageFieldFieldComment {
   is_required: String!
   "必填"
   is_required_lbl: String!
+  "宽度"
+  width: String!
+  "对齐方式"
+  align: String!
+  "对齐方式"
+  align_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -59,6 +85,8 @@ type DynPageFieldFieldComment {
 input DynPageFieldInput {
   "ID"
   id: DynPageFieldId
+  "编码"
+  code: String
   "动态页面"
   dyn_page_id: DynPageId
   "动态页面"
@@ -73,6 +101,12 @@ input DynPageFieldInput {
   is_required: Int
   "必填"
   is_required_lbl: String
+  "宽度"
+  width: Int
+  "对齐方式"
+  align: DynPageFieldAlign
+  "对齐方式"
+  align_lbl: String
   "启用"
   is_enabled: Int
   "启用"
@@ -87,6 +121,9 @@ input DynPageFieldSearch {
   ids: [DynPageFieldId!]
   "ID"
   id: DynPageFieldId
+  "编码"
+  code: String
+  code_like: String
   "动态页面"
   dyn_page_id: [DynPageId!]
   "动态页面"

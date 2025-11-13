@@ -178,7 +178,7 @@ export async function findCountDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findCountDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -267,6 +267,16 @@ export async function findCountDomain(
   return result;
 }
 
+// MARK: getPagePathDomain
+export function getPagePathDomain() {
+  return "/base/domain";
+}
+
+// MARK: getTableNameDomain
+export function getTableNameDomain() {
+  return "base_domain";
+}
+
 // MARK: findAllDomain
 /** 根据搜索条件和分页查找域名列表 */
 export async function findAllDomain(
@@ -279,7 +289,7 @@ export async function findAllDomain(
   },
 ): Promise<DomainModel[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findAllDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -547,7 +557,7 @@ export async function findByUniqueDomain(
   },
 ): Promise<DomainModel[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findByUniqueDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -663,7 +673,7 @@ export async function findOneDomain(
   },
 ): Promise<DomainModel | undefined> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findOneDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -711,7 +721,7 @@ export async function findOneOkDomain(
   },
 ): Promise<DomainModel> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findOneOkDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -763,7 +773,7 @@ export async function findByIdDomain(
   },
 ): Promise<DomainModel | undefined> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findByIdDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -805,7 +815,7 @@ export async function findByIdOkDomain(
   },
 ): Promise<DomainModel> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findByIdOkDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -846,7 +856,7 @@ export async function findByIdsDomain(
   },
 ): Promise<DomainModel[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -893,7 +903,7 @@ export async function findByIdsOkDomain(
   },
 ): Promise<DomainModel[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findByIdsOkDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -942,7 +952,7 @@ export async function existDomain(
   },
 ): Promise<boolean> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "existDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -974,7 +984,7 @@ export async function existByIdDomain(
   },
 ) {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "existByIdDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1103,7 +1113,7 @@ export async function createReturnDomain(
   },
 ): Promise<DomainModel> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "createReturnDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1154,7 +1164,7 @@ export async function createDomain(
   },
 ): Promise<DomainId> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "createDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1195,7 +1205,7 @@ export async function createsReturnDomain(
   },
 ): Promise<DomainModel[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "createsReturnDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1232,7 +1242,7 @@ export async function createsDomain(
   },
 ): Promise<DomainId[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "createsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1269,7 +1279,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1474,7 +1484,7 @@ export async function updateByIdDomain(
   },
 ): Promise<DomainId> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "updateByIdDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1670,7 +1680,7 @@ export async function deleteByIdsDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "deleteByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1773,7 +1783,7 @@ export async function enableByIdsDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "enableByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1843,7 +1853,7 @@ export async function lockByIdsDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "lockByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1889,7 +1899,7 @@ export async function revertByIdsDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "revertByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1967,7 +1977,7 @@ export async function forceDeleteByIdsDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "forceDeleteByIdsDomain";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2030,7 +2040,7 @@ export async function findLastOrderByDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findLastOrderByDomain";
   
   const is_debug = get_is_debug(options?.is_debug);

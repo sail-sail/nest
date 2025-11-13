@@ -141,7 +141,7 @@ export async function findCountPermit(
   },
 ): Promise<number> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findCountPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -197,6 +197,16 @@ export async function findCountPermit(
   return result;
 }
 
+// MARK: getPagePathPermit
+export function getPagePathPermit() {
+  return "/base/permit";
+}
+
+// MARK: getTableNamePermit
+export function getTableNamePermit() {
+  return "base_permit";
+}
+
 // MARK: findAllPermit
 /** 根据搜索条件和分页查找按钮权限列表 */
 export async function findAllPermit(
@@ -209,7 +219,7 @@ export async function findAllPermit(
   },
 ): Promise<PermitModel[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findAllPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -373,7 +383,7 @@ export async function findByUniquePermit(
   },
 ): Promise<PermitModel[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findByUniquePermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -500,7 +510,7 @@ export async function findOnePermit(
   },
 ): Promise<PermitModel | undefined> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findOnePermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -548,7 +558,7 @@ export async function findOneOkPermit(
   },
 ): Promise<PermitModel> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findOneOkPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -600,7 +610,7 @@ export async function findByIdPermit(
   },
 ): Promise<PermitModel | undefined> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findByIdPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -642,7 +652,7 @@ export async function findByIdOkPermit(
   },
 ): Promise<PermitModel> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findByIdOkPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -683,7 +693,7 @@ export async function findByIdsPermit(
   },
 ): Promise<PermitModel[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findByIdsPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -730,7 +740,7 @@ export async function findByIdsOkPermit(
   },
 ): Promise<PermitModel[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findByIdsOkPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -779,7 +789,7 @@ export async function existPermit(
   },
 ): Promise<boolean> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "existPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -811,7 +821,7 @@ export async function existByIdPermit(
   },
 ) {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "existByIdPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -923,7 +933,7 @@ export async function createReturnPermit(
   },
 ): Promise<PermitModel> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "createReturnPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -974,7 +984,7 @@ export async function createPermit(
   },
 ): Promise<PermitId> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "createPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1015,7 +1025,7 @@ export async function createsReturnPermit(
   },
 ): Promise<PermitModel[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "createsReturnPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1052,7 +1062,7 @@ export async function createsPermit(
   },
 ): Promise<PermitId[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "createsPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1089,7 +1099,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1216,7 +1226,7 @@ export async function updateByIdPermit(
   },
 ): Promise<PermitId> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "updateByIdPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1344,7 +1354,7 @@ export async function deleteByIdsPermit(
   },
 ): Promise<number> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "deleteByIdsPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1404,7 +1414,7 @@ export async function findLastOrderByPermit(
   },
 ): Promise<number> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findLastOrderByPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
