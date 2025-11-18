@@ -146,8 +146,17 @@ async function getWhereQuery(
   if (isNotEmpty(search?.attrs_like)) {
     whereQuery += ` and t.attrs like ${ args.push("%" + sqlLike(search?.attrs_like) + "%") }`;
   }
+  if (search?.formula != null) {
+    whereQuery += ` and t.formula=${ args.push(search.formula) }`;
+  }
+  if (isNotEmpty(search?.formula_like)) {
+    whereQuery += ` and t.formula like ${ args.push("%" + sqlLike(search?.formula_like) + "%") }`;
+  }
   if (search?.is_required != null) {
     whereQuery += ` and t.is_required in (${ args.push(search.is_required) })`;
+  }
+  if (search?.is_search != null) {
+    whereQuery += ` and t.is_search in (${ args.push(search.is_search) })`;
   }
   if (search?.width != null) {
     if (search.width[0] != null) {
@@ -280,6 +289,17 @@ export async function findCountDynPageField(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.is_required.length > ${ ids_limit }`);
+    }
+  }
+  // 查询条件
+  if (search && search.is_search != null) {
+    const len = search.is_search.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_search.length > ${ ids_limit }`);
     }
   }
   // 对齐方式
@@ -418,6 +438,17 @@ export async function findAllDynPageField(
       throw new Error(`search.is_required.length > ${ ids_limit }`);
     }
   }
+  // 查询条件
+  if (search && search.is_search != null) {
+    const len = search.is_search.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_search.length > ${ ids_limit }`);
+    }
+  }
   // 对齐方式
   if (search && search.align != null) {
     const len = search.align.length;
@@ -517,9 +548,11 @@ export async function findAllDynPageField(
   
   const [
     is_requiredDict, // 必填
+    is_searchDict, // 查询条件
     alignDict, // 对齐方式
     is_enabledDict, // 启用
   ] = await getDict([
+    "yes_no",
     "yes_no",
     "dyn_page_field_align",
     "is_enabled",
@@ -540,6 +573,16 @@ export async function findAllDynPageField(
       }
     }
     model.is_required_lbl = is_required_lbl || "";
+    
+    // 查询条件
+    let is_search_lbl = model.is_search?.toString() || "";
+    if (model.is_search != null) {
+      const dictItem = is_searchDict.find((dictItem) => dictItem.val === String(model.is_search));
+      if (dictItem) {
+        is_search_lbl = dictItem.lbl;
+      }
+    }
+    model.is_search_lbl = is_search_lbl || "";
     
     // 对齐方式
     let align_lbl = model.align as string;
@@ -603,9 +646,11 @@ export async function setIdByLblDynPageField(
   
   const [
     is_requiredDict, // 必填
+    is_searchDict, // 查询条件
     alignDict, // 对齐方式
     is_enabledDict, // 启用
   ] = await getDict([
+    "yes_no",
     "yes_no",
     "dyn_page_field_align",
     "is_enabled",
@@ -648,6 +693,17 @@ export async function setIdByLblDynPageField(
     input.is_required_lbl = lbl;
   }
   
+  // 查询条件
+  if (isNotEmpty(input.is_search_lbl) && input.is_search == null) {
+    const val = is_searchDict.find((itemTmp) => itemTmp.lbl === input.is_search_lbl)?.val;
+    if (val != null) {
+      input.is_search = Number(val);
+    }
+  } else if (isEmpty(input.is_search_lbl) && input.is_search != null) {
+    const lbl = is_searchDict.find((itemTmp) => itemTmp.val === String(input.is_search))?.lbl || "";
+    input.is_search_lbl = lbl;
+  }
+  
   // 对齐方式
   if (isNotEmpty(input.align_lbl) && input.align == null) {
     const val = alignDict.find((itemTmp) => itemTmp.lbl === input.align_lbl)?.val;
@@ -682,8 +738,11 @@ export async function getFieldCommentsDynPageField(): Promise<DynPageFieldFieldC
     lbl: "名称",
     type: "类型",
     attrs: "属性",
+    formula: "计算公式",
     is_required: "必填",
     is_required_lbl: "必填",
+    is_search: "查询条件",
+    is_search_lbl: "查询条件",
     width: "宽度",
     align: "对齐方式",
     align_lbl: "对齐方式",
@@ -1260,6 +1319,13 @@ export async function validateDynPageField(
     fieldComments.type,
   );
   
+  // 计算公式
+  await validators.chars_max_length(
+    input.formula,
+    200,
+    fieldComments.formula,
+  );
+  
 }
 
 // MARK: findAutoCodeDynPageField
@@ -1559,7 +1625,7 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into base_dyn_page_field(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,dyn_page_id,lbl,type,attrs,is_required,width,align,is_enabled,order_by)values";
+  let sql = "insert into base_dyn_page_field(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,dyn_page_id,lbl,type,attrs,formula,is_required,is_search,width,align,is_enabled,order_by)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1687,8 +1753,18 @@ async function _creates(
       } else {
         sql += ",default";
       }
+      if (input.formula != null) {
+        sql += `,${ args.push(input.formula) }`;
+      } else {
+        sql += ",default";
+      }
       if (input.is_required != null) {
         sql += `,${ args.push(input.is_required) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_search != null) {
+        sql += `,${ args.push(input.is_search) }`;
       } else {
         sql += ",default";
       }
@@ -1883,9 +1959,21 @@ export async function updateByIdDynPageField(
       updateFldNum++;
     }
   }
+  if (input.formula != null) {
+    if (input.formula != oldModel.formula) {
+      sql += `formula=${ args.push(input.formula) },`;
+      updateFldNum++;
+    }
+  }
   if (input.is_required != null) {
     if (input.is_required != oldModel.is_required) {
       sql += `is_required=${ args.push(input.is_required) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_search != null) {
+    if (input.is_search != oldModel.is_search) {
+      sql += `is_search=${ args.push(input.is_search) },`;
       updateFldNum++;
     }
   }
@@ -1990,7 +2078,14 @@ export async function updateByIdDynPageField(
     sql += ` where id=${ args.push(id) } limit 1`;
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -2036,6 +2131,8 @@ export async function deleteByIdsDynPageField(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -2068,7 +2165,13 @@ export async function deleteByIdsDynPageField(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -2245,6 +2348,8 @@ export async function forceDeleteByIdsDynPageField(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -2291,6 +2396,8 @@ export async function findLastOrderByDynPageField(
     options.is_debug = false;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let sql = `select t.order_by order_by from base_dyn_page_field t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
@@ -2308,7 +2415,13 @@ export async function findLastOrderByDynPageField(
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

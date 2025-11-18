@@ -31,10 +31,16 @@ type DynPageFieldModel {
   type: String!
   "属性"
   attrs: String
+  "计算公式"
+  formula: String!
   "必填"
   is_required: Int!
   "必填"
   is_required_lbl: String!
+  "查询条件"
+  is_search: Int!
+  "查询条件"
+  is_search_lbl: String!
   "宽度"
   width: Int!
   "对齐方式"
@@ -65,10 +71,16 @@ type DynPageFieldFieldComment {
   type: String!
   "属性"
   attrs: String!
+  "计算公式"
+  formula: String!
   "必填"
   is_required: String!
   "必填"
   is_required_lbl: String!
+  "查询条件"
+  is_search: String!
+  "查询条件"
+  is_search_lbl: String!
   "宽度"
   width: String!
   "对齐方式"
@@ -97,10 +109,16 @@ input DynPageFieldInput {
   type: String
   "属性"
   attrs: String
+  "计算公式"
+  formula: String
   "必填"
   is_required: Int
   "必填"
   is_required_lbl: String
+  "查询条件"
+  is_search: Int
+  "查询条件"
+  is_search_lbl: String
   "宽度"
   width: Int
   "对齐方式"

@@ -1887,7 +1887,14 @@ export async function updateByIdMenu(
     await delCacheMenu();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1937,6 +1944,8 @@ export async function deleteByIdsMenu(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheMenu();
   
   let affectedRows = 0;
@@ -1971,17 +1980,35 @@ export async function deleteByIdsMenu(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
       const sql = `update base_role_menu set is_deleted=1 where menu_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
     {
       const args = new QueryArgs();
       const sql = `update base_tenant_menu set is_deleted=1 where menu_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2170,6 +2197,8 @@ export async function forceDeleteByIdsMenu(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheMenu();
   
   let num = 0;
@@ -2193,12 +2222,24 @@ export async function forceDeleteByIdsMenu(
     {
       const args = new QueryArgs();
       const sql = `delete from base_role_menu where menu_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
     {
       const args = new QueryArgs();
       const sql = `delete from base_tenant_menu where menu_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2230,6 +2271,8 @@ export async function findLastOrderByMenu(
     options.is_debug = false;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let sql = `select t.order_by order_by from base_menu t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
@@ -2242,7 +2285,13 @@ export async function findLastOrderByMenu(
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

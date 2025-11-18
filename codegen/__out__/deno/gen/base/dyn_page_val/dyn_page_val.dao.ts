@@ -64,6 +64,10 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<DynPageValSearch>,
@@ -113,6 +117,46 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
+  if (search?.create_usr_id != null) {
+    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
+  }
+  if (search?.create_usr_id_is_null) {
+    whereQuery += ` and t.create_usr_id is null`;
+  }
+  if (search?.create_usr_id_lbl != null) {
+    whereQuery += ` and t.create_usr_id_lbl in (${ args.push(search.create_usr_id_lbl) })`;
+  }
+  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
+    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
+  }
+  if (search?.create_time != null) {
+    if (search.create_time[0] != null) {
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
+    }
+    if (search.create_time[1] != null) {
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
+    }
+  }
+  if (search?.update_usr_id != null) {
+    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
+  }
+  if (search?.update_usr_id_is_null) {
+    whereQuery += ` and t.update_usr_id is null`;
+  }
+  if (search?.update_usr_id_lbl != null) {
+    whereQuery += ` and t.update_usr_id_lbl in (${ args.push(search.update_usr_id_lbl) })`;
+  }
+  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
+    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
+  }
+  if (search?.update_time != null) {
+    if (search.update_time[0] != null) {
+      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
+    }
+    if (search.update_time[1] != null) {
+      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
+    }
+  }
   return whereQuery;
 }
 
@@ -160,6 +204,28 @@ export async function findCountDynPageVal(
   }
   if (search && search.ids && search.ids.length === 0) {
     return 0;
+  }
+  // 创建人
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  // 更新人
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
   }
   
   const args = new QueryArgs();
@@ -231,6 +297,28 @@ export async function findAllDynPageVal(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
+  // 创建人
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  // 更新人
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
+  }
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
@@ -245,6 +333,11 @@ export async function findAllDynPageVal(
   
   sort = sort ?? [ ];
   sort = sort.filter((item) => item.prop);
+  
+  sort.push({
+    prop: "create_time",
+    order: SortOrderEnum.Desc,
+  });
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
@@ -273,6 +366,32 @@ export async function findAllDynPageVal(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 创建时间
+    if (model.create_time) {
+      const create_time = dayjs(model.create_time);
+      if (create_time.isValid()) {
+        model.create_time = create_time.format("YYYY-MM-DDTHH:mm:ss");
+        model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.create_time_lbl = (model.create_time || "").toString();
+      }
+    } else {
+      model.create_time_lbl = "";
+    }
+    
+    // 更新时间
+    if (model.update_time) {
+      const update_time = dayjs(model.update_time);
+      if (update_time.isValid()) {
+        model.update_time = update_time.format("YYYY-MM-DDTHH:mm:ss");
+        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.update_time_lbl = (model.update_time || "").toString();
+      }
+    } else {
+      model.update_time_lbl = "";
+    }
   }
   
   return result;
@@ -298,6 +417,14 @@ export async function getFieldCommentsDynPageVal(): Promise<DynPageValFieldComme
     ref_id: "关联数据ID",
     code: "字段编码",
     lbl: "值",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -839,6 +966,20 @@ export async function validateDynPageVal(
     fieldComments.lbl,
   );
   
+  // 创建人
+  await validators.chars_max_length(
+    input.create_usr_id,
+    22,
+    fieldComments.create_usr_id,
+  );
+  
+  // 更新人
+  await validators.chars_max_length(
+    input.update_usr_id,
+    22,
+    fieldComments.update_usr_id,
+  );
+  
 }
 
 // MARK: createReturnDynPageVal
@@ -1067,13 +1208,31 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into base_dyn_page_val(id,tenant_id,ref_code,ref_id,code,lbl)values";
+  let sql = "insert into base_dyn_page_val(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,ref_code,ref_id,code,lbl)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
+      if (!is_silent_mode) {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,${ args.push(reqDate()) }`;
+        }
+      } else {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,null`;
+        }
+      }
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
+      }
       if (input.tenant_id == null) {
         const usr_id = await get_usr_id();
         const tenant_id = await getTenant_id(usr_id);
@@ -1086,6 +1245,66 @@ async function _creates(
         sql += ",default";
       } else {
         sql += `,${ args.push(input.tenant_id) }`;
+      }
+      if (!is_silent_mode) {
+        if (input.create_usr_id == null) {
+          let usr_id = await get_usr_id();
+          let usr_lbl = "";
+          if (usr_id) {
+            const usr_model = await findByIdUsr(usr_id, options);
+            if (!usr_model) {
+              usr_id = undefined;
+            } else {
+              usr_lbl = usr_model.lbl;
+            }
+          }
+          if (usr_id != null) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
+        } else if (input.create_usr_id as unknown as string === "-") {
+          sql += ",default";
+          sql += ",default";
+        } else {
+          let usr_id: UsrId | undefined = input.create_usr_id;
+          let usr_lbl = "";
+          const usr_model = await findByIdUsr(usr_id, options);
+          if (!usr_model) {
+            usr_id = undefined;
+            usr_lbl = "";
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+          if (usr_id) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
+        }
+      } else {
+        if (input.create_usr_id == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
+        if (input.create_usr_id_lbl == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id_lbl) }`;
+        }
+      }
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
       }
       if (input.ref_code != null) {
         sql += `,${ args.push(input.ref_code) }`;
@@ -1266,16 +1485,91 @@ export async function updateByIdDynPageVal(
       updateFldNum++;
     }
   }
+  if (isNotEmpty(input.create_usr_id_lbl)) {
+    sql += `create_usr_id_lbl=?,`;
+    args.push(input.create_usr_id_lbl);
+    updateFldNum++;
+  }
+  if (input.create_usr_id != null) {
+    if (input.create_usr_id != oldModel.create_usr_id) {
+      sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.create_time != null || input.create_time_save_null) {
+    if (input.create_time != oldModel.create_time) {
+      sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
   let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
+    if (!is_silent_mode && !is_creating) {
+      if (input.update_usr_id == null) {
+        let usr_id = await get_usr_id();
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id, options);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id != null) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
+        }
+        if (usr_lbl) {
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+        let usr_id: UsrId | undefined = input.update_usr_id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id, options);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      }
+    } else {
+      if (input.update_usr_id != null) {
+        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
+      }
+    }
+    if (!is_silent_mode && !is_creating) {
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `update_time=${ args.push(input.update_time) },`;
+      } else {
+        sql += `update_time=${ args.push(reqDate()) },`;
+      }
+    } else if (input.update_time != null || input.update_time_save_null) {
+      sql += `update_time=${ args.push(input.update_time) },`;
+    }
     if (sql.endsWith(",")) {
       sql = sql.substring(0, sql.length - 1);
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1321,6 +1615,8 @@ export async function deleteByIdsDynPageVal(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -1334,9 +1630,32 @@ export async function deleteByIdsDynPageVal(
     const args = new QueryArgs();
     let sql = `update base_dyn_page_val set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
+      let usr_id = await get_usr_id();
+      if (usr_id != null) {
+        sql += `,delete_usr_id=${ args.push(usr_id) }`;
+      }
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id, options);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_lbl) {
+        sql += `,delete_usr_id_lbl=${ args.push(usr_lbl) }`;
+      }
+      sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1448,6 +1767,8 @@ export async function forceDeleteByIdsDynPageVal(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {

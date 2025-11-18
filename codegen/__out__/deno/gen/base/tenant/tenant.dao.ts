@@ -2182,7 +2182,14 @@ export async function updateByIdTenant(
     await delCacheTenant();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -2232,6 +2239,8 @@ export async function deleteByIdsTenant(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheTenant();
   
   let affectedRows = 0;
@@ -2266,7 +2275,13 @@ export async function deleteByIdsTenant(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const domain_ids = oldModel.domain_ids;
@@ -2417,11 +2432,19 @@ export async function lockByIdsTenant(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheTenant();
   
   const args = new QueryArgs();
   let sql = `update base_tenant set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheTenant();
@@ -2555,6 +2578,8 @@ export async function forceDeleteByIdsTenant(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheTenant();
   
   let num = 0;
@@ -2580,7 +2605,13 @@ export async function forceDeleteByIdsTenant(
       if (domain_ids && domain_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_tenant_domain where tenant_id=${ args.push(id) } and domain_id in (${ args.push(domain_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2588,7 +2619,13 @@ export async function forceDeleteByIdsTenant(
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_tenant_menu where tenant_id=${ args.push(id) } and menu_id in (${ args.push(menu_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
   }
@@ -2621,6 +2658,8 @@ export async function findLastOrderByTenant(
     options.is_debug = false;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let sql = `select t.order_by order_by from base_tenant t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
@@ -2633,7 +2672,13 @@ export async function findLastOrderByTenant(
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

@@ -17,6 +17,22 @@ type DynPageValModel {
   code: String!
   "值"
   lbl: String!
+  "创建人"
+  create_usr_id: UsrId!
+  "创建人"
+  create_usr_id_lbl: String!
+  "创建时间"
+  create_time: NaiveDateTime
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: UsrId!
+  "更新人"
+  update_usr_id_lbl: String!
+  "更新时间"
+  update_time: NaiveDateTime
+  "更新时间"
+  update_time_lbl: String!
   "已删除"
   is_deleted: Int!
 }
@@ -31,6 +47,22 @@ type DynPageValFieldComment {
   code: String!
   "值"
   lbl: String!
+  "创建人"
+  create_usr_id: String!
+  "创建人"
+  create_usr_id_lbl: String!
+  "创建时间"
+  create_time: String!
+  "创建时间"
+  create_time_lbl: String!
+  "更新人"
+  update_usr_id: String!
+  "更新人"
+  update_usr_id_lbl: String!
+  "更新时间"
+  update_time: String!
+  "更新时间"
+  update_time_lbl: String!
 }
 input DynPageValInput {
   "ID"
@@ -61,6 +93,22 @@ input DynPageValSearch {
   "值"
   lbl: String
   lbl_like: String
+  "创建人"
+  create_usr_id: [UsrId!]
+  "创建人"
+  create_usr_id_is_null: Boolean
+  "创建人"
+  create_usr_id_lbl: [String!]
+  "创建人"
+  create_usr_id_lbl_like: String
+  "更新人"
+  update_usr_id: [UsrId!]
+  "更新人"
+  update_usr_id_is_null: Boolean
+  "更新人"
+  update_usr_id_lbl: [String!]
+  "更新人"
+  update_usr_id_lbl_like: String
 }
 type Query {
   "根据条件查找动态页面值总数"

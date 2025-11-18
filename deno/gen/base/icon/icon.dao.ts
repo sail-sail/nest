@@ -1649,7 +1649,14 @@ export async function updateByIdIcon(
     await delCacheIcon();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1699,6 +1706,8 @@ export async function deleteByIdsIcon(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheIcon();
   
   let affectedRows = 0;
@@ -1733,7 +1742,13 @@ export async function deleteByIdsIcon(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1922,6 +1937,8 @@ export async function forceDeleteByIdsIcon(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheIcon();
   
   let num = 0;
@@ -1972,6 +1989,8 @@ export async function findLastOrderByIcon(
     options.is_debug = false;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let sql = `select t.order_by order_by from base_icon t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
@@ -1984,7 +2003,13 @@ export async function findLastOrderByIcon(
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

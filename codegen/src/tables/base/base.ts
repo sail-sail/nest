@@ -255,6 +255,7 @@ export default defineConfig({
         order: "ascending",
       },
       hasSelectInput: true,
+      isUseDynPageFields: true,
     },
     columns: [
       {
@@ -1553,8 +1554,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "code",
         width: 140,
-        readonly: true,
-        readonlyPlaceholder: "(自动生成)",
         autoCode: {
           prefix: "fld_",
           seqPadStart0: 0,
@@ -1585,7 +1584,15 @@ export default defineConfig({
         width: 200,
       },
       {
+        COLUMN_NAME: "formula",
+        width: 180,
+      },
+      {
         COLUMN_NAME: "is_required",
+        isCheckbox: true,
+      },
+      {
+        COLUMN_NAME: "is_search",
         isCheckbox: true,
       },
       {
@@ -1626,6 +1633,44 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "lbl",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+  // 动态页面数据
+  base_dyn_page_data: {
+    opts: {
+      isUseDynPageFields: true,
+    },
+    columns: [
+      {
+        COLUMN_NAME: "ref_code",
+        canSearch: true,
+        noDetail: true,
+        noList: true,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ],
   },

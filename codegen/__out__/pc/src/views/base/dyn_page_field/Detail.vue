@@ -82,8 +82,7 @@
             <CustomInput
               v-model="dialogModel.code"
               placeholder="请输入 编码"
-              :readonly="true"
-              :readonly-placeholder="inited ? '(自动生成)' : ''"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -141,6 +140,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.formula == null)">
+          <el-form-item
+            label="计算公式"
+            prop="formula"
+          >
+            <CustomInput
+              v-model="dialogModel.formula"
+              placeholder="请输入 计算公式"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.is_required == null)">
           <el-form-item
             label="必填"
@@ -151,6 +163,21 @@
               :set="dialogModel.is_required = dialogModel.is_required ?? undefined"
               code="yes_no"
               placeholder="请选择 必填"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.is_search == null)">
+          <el-form-item
+            label="查询条件"
+            prop="is_search"
+          >
+            <DictSelect
+              v-model="dialogModel.is_search"
+              :set="dialogModel.is_search = dialogModel.is_search ?? undefined"
+              code="yes_no"
+              placeholder="请选择 查询条件"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -350,6 +377,18 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 编码
+    code: [
+      {
+        required: true,
+        message: "请输入 编码",
+      },
+      {
+        type: "string",
+        max: 20,
+        message: "编码 长度不能超过 20",
+      },
+    ],
     // 动态页面
     dyn_page_id: [
       {
@@ -374,6 +413,13 @@ watchEffect(async () => {
       {
         required: true,
         message: "请选择 必填",
+      },
+    ],
+    // 查询条件
+    is_search: [
+      {
+        required: true,
+        message: "请选择 查询条件",
       },
     ],
     // 对齐方式
@@ -505,11 +551,9 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
-      defaultInput,
       data,
       order_by,
     ] = await Promise.all([
-      getDefaultInputDynPageField(),
       findOneModel({
         id,
         is_deleted,
@@ -522,7 +566,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        code: defaultInput.code,
         order_by: order_by + 1,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
@@ -717,6 +760,7 @@ watch(
   () => [
     dialogModel.dyn_page_id,
     dialogModel.is_required,
+    dialogModel.is_search,
     dialogModel.align,
   ],
   () => {
@@ -728,6 +772,9 @@ watch(
     }
     if (!dialogModel.is_required) {
       dialogModel.is_required_lbl = "";
+    }
+    if (!dialogModel.is_search) {
+      dialogModel.is_search_lbl = "";
     }
     if (!dialogModel.align) {
       dialogModel.align_lbl = "";

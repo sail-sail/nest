@@ -75,6 +75,8 @@ type UsrModel {
   update_time_lbl: String!
   "已删除"
   is_deleted: Int!
+  "动态页面数据"
+  dyn_page_data: JSONObject!
 }
 type UsrFieldComment {
   "ID"
@@ -177,6 +179,8 @@ input UsrInput {
   order_by: Int
   "备注"
   rem: String
+  "动态页面数据"
+  dyn_page_data: JSONObject
 }
 input UsrSearch {
   "已删除"
@@ -242,6 +246,8 @@ input UsrSearch {
   update_usr_id_lbl: [String!]
   "更新人"
   update_usr_id_lbl_like: String
+  "动态页面数据"
+  dyn_page_data: JSONObject
 }
 type Query {
   "根据条件查找用户总数"

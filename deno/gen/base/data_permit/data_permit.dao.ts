@@ -1765,7 +1765,14 @@ export async function updateByIdDataPermit(
     await delCacheDataPermit();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1815,6 +1822,8 @@ export async function deleteByIdsDataPermit(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheDataPermit();
   
   let affectedRows = 0;
@@ -1849,12 +1858,24 @@ export async function deleteByIdsDataPermit(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
       const sql = `update base_role_data_permit set is_deleted=1 where data_permit_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -1973,6 +1994,8 @@ export async function forceDeleteByIdsDataPermit(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheDataPermit();
   
   let num = 0;
@@ -1996,7 +2019,13 @@ export async function forceDeleteByIdsDataPermit(
     {
       const args = new QueryArgs();
       const sql = `delete from base_role_data_permit where data_permit_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   

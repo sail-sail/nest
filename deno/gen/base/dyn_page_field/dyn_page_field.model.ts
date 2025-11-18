@@ -31,8 +31,13 @@ declare global {
     /** 属性 */
     attrs?: string;
     attrs_like?: string;
+    /** 计算公式 */
+    formula?: string;
+    formula_like?: string;
     /** 必填 */
     is_required?: number[];
+    /** 查询条件 */
+    is_search?: number[];
     /** 宽度 */
     width?: [(number|undefined|null), (number|undefined|null)];
     /** 对齐方式 */

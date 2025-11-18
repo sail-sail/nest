@@ -39,6 +39,16 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import {
+  findOneDynPage,
+} from "/gen/base/dyn_page/dyn_page.dao.ts";
+
+import {
+  findAllDynPageVal,
+  updateByIdDynPageVal,
+  createDynPageVal,
+} from "/gen/base/dyn_page_val/dyn_page_val.dao.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -233,6 +243,61 @@ async function getWhereQuery(
   }
   if (search?.is_hidden != null) {
     whereQuery += ` and t.is_hidden in (${ args.push(search?.is_hidden) })`;
+  }
+  
+  if (search?.dyn_page_data != null) {
+    
+    const pagePath = getPagePathDynPageData(search.ref_code);
+    
+    const dyn_page_model = await findOneDynPage(
+      {
+        code: pagePath,
+        is_enabled: [ 1 ],
+      },
+      undefined,
+      options,
+    );
+    
+    const dyn_page_field_models = dyn_page_model?.dyn_page_field;
+    
+    if (dyn_page_field_models && dyn_page_field_models.length > 0) {
+      whereQuery += ` and t.id in (select v.ref_id from base_dyn_page_val v where
+        v.ref_code=${ args.push(pagePath) }`;
+      for (let i = 0; i < dyn_page_field_models.length; i++) {
+        const field = dyn_page_field_models[i];
+        const field_code = field.code;
+        const field_type = field.type;
+        const val = (search.dyn_page_data as any)[field_code];
+        if (
+          [
+            "CustomCheckbox",
+            "CustomInputNumber",
+            "CustomSwitch",
+            "CustomDatePicker",
+          ].includes(field_type)
+        ) {
+          if (val != null) {
+            if (val[0] != null) {
+              whereQuery += ` and v.code=${ args.push(field_code) } and v.lbl<=${ args.push(val[0]) }`;
+            }
+            if (val[1] != null) {
+              whereQuery += ` and v.code=${ args.push(field_code) } and v.lbl>=${ args.push(val[1]) }`;
+            }
+          }
+        } else {
+          if (val != null) {
+            whereQuery += ` and v.code=${ args.push(field_code) } and v.lbl=${ args.push(val) }`;
+          }
+          const field_code_like = field.code + "_like";
+          const val_like = (search.dyn_page_data as any)[field_code_like];
+          if (isNotEmpty(val_like)) {
+            whereQuery += ` and v.code=${ args.push(field_code) } and v.lbl like ${ args.push("%" + sqlLike(val_like) + "%") }`;
+          }
+        }
+      }
+      whereQuery += `)`;
+    }
+    
   }
   return whereQuery;
 }
@@ -459,6 +524,80 @@ export async function findCountUsr(
   let result = Number(model?.total || 0);
   
   return result;
+}
+
+// MARK: setDynPageDataUsr
+/** 设置动态页面数据 */
+export async function setDynPageDataUsr(
+  models: UsrModel[],
+  is_deleted?: InputMaybe<number>,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<void> {
+  
+  if (models.length === 0) {
+    return;
+  }
+  
+  const pagePath = getPagePathUsr();
+  
+  const dyn_page_model = await findOneDynPage(
+    {
+      code: pagePath,
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    options,
+  );
+  
+  const dyn_page_field_models = dyn_page_model?.dyn_page_field ?? [ ];
+  
+  const ids = models.map((item) => item.id);
+  
+  const dyn_page_val_models = await findAllDynPageVal(
+    {
+      ref_code: pagePath,
+      ref_ids: ids as string[],
+      is_deleted,
+    },
+    undefined,
+    undefined,
+    options,
+  );
+  
+  for (const model of models) {
+    
+    model.dyn_page_data = model.dyn_page_data ?? { };
+    
+    for (const field of dyn_page_field_models) {
+      
+      const val_model = dyn_page_val_models.find((item) => item.ref_id === model.id && item.code === field.code);
+      
+      let val: any = null;
+      if (val_model) {
+        val = val_model.lbl;
+      }
+      if (
+        [
+          "CustomCheckbox",
+          "CustomInputNumber",
+          "CustomSwitch",
+        ].includes(field.type)
+      ) {
+        if (val != null) {
+          val = Number(val);
+        }
+      }
+      if (val == null) {
+        val = "";
+      }
+      
+      model.dyn_page_data[field.code] = val;
+    }
+    
+  }
+  
 }
 
 // MARK: getPagePathUsr
@@ -698,6 +837,13 @@ export async function findAllUsr(
       debug: is_debug_sql,
     },
   );
+  
+  await setDynPageDataUsr(
+    result,
+    search?.is_deleted,
+    options,
+  );
+  
   for (const item of result) {
     
     // 所属角色
@@ -2015,6 +2161,93 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
+  // 更新动态字段
+  const pagePath = getPagePathUsr();
+  
+  const dyn_page_model = await findOneDynPage(
+    {
+      code: pagePath,
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    options,
+  );
+  
+  if (dyn_page_model) {
+    
+    const dyn_page_field_models = dyn_page_model.dyn_page_field;
+    
+    const dyn_page_val_models = await findAllDynPageVal(
+      {
+        ref_code: pagePath,
+        ref_ids: ids2 as string[],
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    
+    for (let i = 0; i < inputs2.length; i++) {
+      const id = ids2[i];
+      const input = inputs2[i];
+      const dyn_page_data = input.dyn_page_data;
+      
+      if (!dyn_page_data) {
+        continue;
+      }
+      
+      for (const dyn_page_field_model of dyn_page_field_models) {
+        const field_code = dyn_page_field_model.code;
+        const field_type = dyn_page_field_model.type;
+        const newValue0 = dyn_page_data[field_code];
+        let newValue: any = undefined;
+        if (
+          [
+            "CustomCheckbox",
+            "CustomInputNumber",
+            "CustomSwitch",
+          ].includes(field_type)
+        ) {
+          if (newValue0 != null) {
+            newValue = Number(newValue0);
+          }
+        }
+        if (newValue0 != null) {
+          newValue = newValue0;
+        } else {
+          newValue = "";
+        }
+        const oldValueModel = dyn_page_val_models.find((m) => m.code === field_code);
+        if (oldValueModel) {
+          const oldValue = oldValueModel?.lbl;
+          if (newValue !== oldValue) {
+            await updateByIdDynPageVal(
+              oldValueModel.id,
+              {
+                lbl: newValue,
+              },
+              {
+                is_debug: options?.is_debug,
+                is_silent_mode: options?.is_silent_mode,
+              },
+            );
+          }
+        } else {
+          await createDynPageVal(
+            {
+              ref_code: pagePath,
+              ref_id: id as unknown as string,
+              code: field_code,
+              lbl: newValue,
+            },
+            options,
+          );
+        }
+      }
+    }
+    
+  }
+  
   for (let i = 0; i < inputs2.length; i++) {
     const input = inputs2[i];
     
@@ -2269,6 +2502,89 @@ export async function updateByIdUsr(
   }
   let sqlSetFldNum = updateFldNum;
   
+  // 更新动态字段
+  const dyn_page_data = input.dyn_page_data;
+  if (dyn_page_data) {
+    
+    const pagePath = getPagePathUsr();
+  
+    const dyn_page_model = await findOneDynPage(
+      {
+        code: pagePath,
+        is_enabled: [ 1 ],
+      },
+      undefined,
+      options,
+    );
+    
+    if (dyn_page_model) {
+      
+      const dyn_page_field_models = dyn_page_model.dyn_page_field;
+      
+      const dyn_page_val_models = await findAllDynPageVal(
+        {
+          ref_code: pagePath,
+          ref_ids: [ id ] as string[],
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      
+      for (const dyn_page_field_model of dyn_page_field_models) {
+        const field_code = dyn_page_field_model.code;
+        const field_type = dyn_page_field_model.type;
+        const newValue0 = dyn_page_data[field_code];
+        let newValue: any = undefined;
+        if (
+          [
+            "CustomCheckbox",
+            "CustomInputNumber",
+            "CustomSwitch",
+          ].includes(field_type)
+        ) {
+          if (newValue0 != null) {
+            newValue = Number(newValue0);
+          }
+        }
+        if (newValue0 != null) {
+          newValue = newValue0;
+        } else {
+          newValue = "";
+        }
+        const oldValueModel = dyn_page_val_models.find((m) => m.code === field_code);
+        if (oldValueModel) {
+          const oldValue = oldValueModel?.lbl;
+          if (newValue !== oldValue) {
+            await updateByIdDynPageVal(
+              oldValueModel.id,
+              {
+                lbl: newValue,
+              },
+              options,
+            );
+            updateFldNum++;
+            sqlSetFldNum++;
+          }
+        } else {
+          await createDynPageVal(
+            {
+              ref_code: pagePath,
+              ref_id: id as unknown as string,
+              code: field_code,
+              lbl: newValue,
+            },
+            options,
+          );
+          updateFldNum++;
+          sqlSetFldNum++;
+        }
+      }
+      
+    }
+    
+  }
+  
   updateFldNum++;
   
   // 所属角色
@@ -2380,7 +2696,14 @@ export async function updateByIdUsr(
     await delCacheUsr();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -2430,6 +2753,8 @@ export async function deleteByIdsUsr(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheUsr();
   
   let affectedRows = 0;
@@ -2464,8 +2789,20 @@ export async function deleteByIdsUsr(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
+    // 删除动态页面值
+    {
+      const args = new QueryArgs();
+      const sql = `update base_dyn_page_val set is_deleted=1 where ref_id=${ args.push(id) } and is_deleted=0`;
+      await execute(sql, args);
+    }
     {
       const role_ids = oldModel.role_ids;
       if (role_ids && role_ids.length > 0) {
@@ -2493,7 +2830,13 @@ export async function deleteByIdsUsr(
     {
       const args = new QueryArgs();
       const sql = `update base_dept_usr set is_deleted=1 where usr_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2628,11 +2971,19 @@ export async function lockByIdsUsr(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheUsr();
   
   const args = new QueryArgs();
   let sql = `update base_usr set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheUsr();
@@ -2710,6 +3061,12 @@ export async function revertByIdsUsr(
     const sql = `update base_usr set is_deleted=0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    // 还原动态页面值
+    {
+      const args = new QueryArgs();
+      const sql = `update base_dyn_page_val set is_deleted=0 where ref_id=${ args.push(id) } and is_deleted=1`;
+      await execute(sql, args);
+    }
     {
       const role_ids = old_model.role_ids;
       if (role_ids && role_ids.length > 0) {
@@ -2774,6 +3131,8 @@ export async function forceDeleteByIdsUsr(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheUsr();
   
   let num = 0;
@@ -2794,12 +3153,30 @@ export async function forceDeleteByIdsUsr(
     const sql = `delete from base_usr where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    // 彻底删除动态页面值
+    {
+      const args = new QueryArgs();
+      const sql = `delete from base_dyn_page_val where ref_id=${ args.push(id) }`;
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
+    }
     if (oldModel) {
       const role_ids = oldModel.role_ids;
       if (role_ids && role_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_usr_role where usr_id=${ args.push(id) } and role_id in (${ args.push(role_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2807,7 +3184,13 @@ export async function forceDeleteByIdsUsr(
       if (dept_ids && dept_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_usr_dept where usr_id=${ args.push(id) } and dept_id in (${ args.push(dept_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2815,13 +3198,25 @@ export async function forceDeleteByIdsUsr(
       if (org_ids && org_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_usr_org where usr_id=${ args.push(id) } and org_id in (${ args.push(org_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     {
       const args = new QueryArgs();
       const sql = `delete from base_dept_usr where usr_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2853,6 +3248,8 @@ export async function findLastOrderByUsr(
     options.is_debug = false;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let sql = `select t.order_by order_by from base_usr t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
@@ -2870,7 +3267,13 @@ export async function findLastOrderByUsr(
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

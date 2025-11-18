@@ -132,6 +132,28 @@
         </el-form-item>
       </template>
       
+      <template
+        v-for="field_model in dyn_page_field_models"
+        :key="field_model.id"
+      >
+        <el-form-item
+          v-if="field_model.is_search"
+          :label="field_model.lbl"
+          :prop="field_model.code"
+        >
+          <CustomDynComp
+            :model-value="search.dyn_page_data?.[field_model.code + '_like']"
+            :name="field_model.type"
+            :placeholder="`请输入 ${ field_model.lbl }`"
+            v-bind="field_model._attrs"
+            @update:model-value="(val: any) => {
+              search.dyn_page_data = search.dyn_page_data ?? { };
+              search.dyn_page_data[field_model.code + '_like'] = val;
+            }"
+          ></CustomDynComp>
+        </el-form-item>
+      </template>
+      
       <div
         class="search-ids-checked"
       >
@@ -1346,6 +1368,7 @@ const {
   resetColumns,
   storeColumns,
   initColumns,
+  useDynPageFieldsList,
 } = $(useTableColumns<UsrModel>(
   $$(tableColumns),
   {
@@ -2016,6 +2039,7 @@ async function initFrame() {
   initColumns(tableColumns);
   await Promise.all([
     dataGrid(true),
+    useDynPageFieldsList(),
   ]);
   inited = true;
 }

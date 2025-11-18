@@ -35,6 +35,10 @@ declare const dyn_pageId: unique symbol;
 /** 动态页面 */
 type DynPageId = Distinct<string, typeof dyn_pageId>;
 
+declare const dyn_page_dataId: unique symbol;
+/** 动态页面数据 */
+type DynPageDataId = Distinct<string, typeof dyn_page_dataId>;
+
 declare const dyn_page_fieldId: unique symbol;
 /** 动态页面字段 */
 type DynPageFieldId = Distinct<string, typeof dyn_page_fieldId>;

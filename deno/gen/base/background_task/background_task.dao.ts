@@ -1793,7 +1793,14 @@ export async function updateByIdBackgroundTask(
     sql += ` where id=${ args.push(id) } limit 1`;
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1839,6 +1846,8 @@ export async function deleteByIdsBackgroundTask(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -1871,7 +1880,13 @@ export async function deleteByIdsBackgroundTask(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1983,6 +1998,8 @@ export async function forceDeleteByIdsBackgroundTask(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {

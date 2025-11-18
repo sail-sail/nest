@@ -1799,7 +1799,14 @@ export async function updateByIdDict(
     await delCacheDict();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1849,6 +1856,8 @@ export async function deleteByIdsDict(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheDict();
   
   let affectedRows = 0;
@@ -1883,7 +1892,13 @@ export async function deleteByIdsDict(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -2101,6 +2116,8 @@ export async function forceDeleteByIdsDict(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheDict();
   
   let num = 0;
@@ -2166,6 +2183,8 @@ export async function findLastOrderByDict(
     options.is_debug = false;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let sql = `select t.order_by order_by from base_dict t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
@@ -2178,7 +2197,13 @@ export async function findLastOrderByDict(
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

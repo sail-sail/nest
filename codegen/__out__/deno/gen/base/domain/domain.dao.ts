@@ -1654,7 +1654,14 @@ export async function updateByIdDomain(
     await delCacheDomain();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1704,6 +1711,8 @@ export async function deleteByIdsDomain(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheDomain();
   
   let affectedRows = 0;
@@ -1738,12 +1747,24 @@ export async function deleteByIdsDomain(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
       const sql = `update base_tenant_domain set is_deleted=1 where domain_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -1878,11 +1899,19 @@ export async function lockByIdsDomain(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheDomain();
   
   const args = new QueryArgs();
   let sql = `update base_domain set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheDomain();
@@ -2000,6 +2029,8 @@ export async function forceDeleteByIdsDomain(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheDomain();
   
   let num = 0;
@@ -2023,7 +2054,13 @@ export async function forceDeleteByIdsDomain(
     {
       const args = new QueryArgs();
       const sql = `delete from base_tenant_domain where domain_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2055,6 +2092,8 @@ export async function findLastOrderByDomain(
     options.is_debug = false;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let sql = `select t.order_by order_by from base_domain t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
@@ -2067,7 +2106,13 @@ export async function findLastOrderByDomain(
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

@@ -1153,7 +1153,7 @@ for (let i = 0; i < columns.length; i++) {
             }"
           >
             <CustomDynComp
-              v-model="dialogModel.dyn_page_data[field_model.code]"
+              :model-value="dialogModel.dyn_page_data?.[field_model.code]"
               :name="field_model.type"
               v-bind="field_model._attrs"
               :autosize="
@@ -1164,6 +1164,10 @@ for (let i = 0; i < columns.length; i++) {
                   }
               "
               :readonly="field_model._attrs.readonly || isLocked || isReadonly"
+              @update:model-value="(val: any) => {
+                dialogModel.dyn_page_data = dialogModel.dyn_page_data ?? { };
+                dialogModel.dyn_page_data[field_model.code] = val;
+              }"
             ></CustomDynComp>
           </el-form-item>
         </template><#

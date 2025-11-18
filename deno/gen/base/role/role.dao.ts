@@ -2403,7 +2403,14 @@ export async function updateByIdRole(
     await delCacheRole();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -2453,6 +2460,8 @@ export async function deleteByIdsRole(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheRole();
   
   let affectedRows = 0;
@@ -2487,7 +2496,13 @@ export async function deleteByIdsRole(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const menu_ids = oldModel.menu_ids;
@@ -2524,7 +2539,13 @@ export async function deleteByIdsRole(
     {
       const args = new QueryArgs();
       const sql = `update base_usr_role set is_deleted=1 where role_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2659,11 +2680,19 @@ export async function lockByIdsRole(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheRole();
   
   const args = new QueryArgs();
   let sql = `update base_role set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheRole();
@@ -2813,6 +2842,8 @@ export async function forceDeleteByIdsRole(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheRole();
   
   let num = 0;
@@ -2838,7 +2869,13 @@ export async function forceDeleteByIdsRole(
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_role_menu where role_id=${ args.push(id) } and menu_id in (${ args.push(menu_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2846,7 +2883,13 @@ export async function forceDeleteByIdsRole(
       if (permit_ids && permit_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_role_permit where role_id=${ args.push(id) } and permit_id in (${ args.push(permit_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2854,7 +2897,13 @@ export async function forceDeleteByIdsRole(
       if (data_permit_ids && data_permit_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_role_data_permit where role_id=${ args.push(id) } and data_permit_id in (${ args.push(data_permit_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2862,13 +2911,25 @@ export async function forceDeleteByIdsRole(
       if (field_permit_ids && field_permit_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_role_field_permit where role_id=${ args.push(id) } and field_permit_id in (${ args.push(field_permit_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     {
       const args = new QueryArgs();
       const sql = `delete from base_usr_role where role_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2900,6 +2961,8 @@ export async function findLastOrderByRole(
     options.is_debug = false;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let sql = `select t.order_by order_by from base_role t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
@@ -2917,7 +2980,13 @@ export async function findLastOrderByRole(
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

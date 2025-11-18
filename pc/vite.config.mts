@@ -151,7 +151,6 @@ export default defineConfig({
             "initListI18ns",
             "initBuiltInSearch",
             "initBuiltInModel",
-            "useDynPageFieldsList",
             "useDynPageFields",
           ],
           "@/compositions/Detail.ts": [

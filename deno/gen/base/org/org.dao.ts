@@ -1709,7 +1709,14 @@ export async function updateByIdOrg(
     await delCacheOrg();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1759,6 +1766,8 @@ export async function deleteByIdsOrg(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheOrg();
   
   let affectedRows = 0;
@@ -1793,12 +1802,24 @@ export async function deleteByIdsOrg(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
       const sql = `update base_usr_org set is_deleted=1 where org_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -1933,11 +1954,19 @@ export async function lockByIdsOrg(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheOrg();
   
   const args = new QueryArgs();
   let sql = `update base_org set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheOrg();
@@ -2055,6 +2084,8 @@ export async function forceDeleteByIdsOrg(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheOrg();
   
   let num = 0;
@@ -2078,7 +2109,13 @@ export async function forceDeleteByIdsOrg(
     {
       const args = new QueryArgs();
       const sql = `delete from base_usr_org where org_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2110,6 +2147,8 @@ export async function findLastOrderByOrg(
     options.is_debug = false;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let sql = `select t.order_by order_by from base_org t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
@@ -2127,7 +2166,13 @@ export async function findLastOrderByOrg(
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

@@ -798,6 +798,32 @@ if (searchByKeyword) {
       #><#
         }
       }
+      #><#
+      if (opts?.isUseDynPageFields) {
+      #>
+      
+      <template
+        v-for="field_model in dyn_page_field_models"
+        :key="field_model.id"
+      >
+        <el-form-item
+          v-if="field_model.is_search"
+          :label="field_model.lbl"
+          :prop="field_model.code"
+        >
+          <CustomDynComp
+            :model-value="search.dyn_page_data?.[field_model.code + '_like']"
+            :name="field_model.type"
+            :placeholder="`请输入 ${ field_model.lbl }`"
+            v-bind="field_model._attrs"
+            @update:model-value="(val: any) => {
+              search.dyn_page_data = search.dyn_page_data ?? { };
+              search.dyn_page_data[field_model.code + '_like'] = val;
+            }"
+          ></CustomDynComp>
+        </el-form-item>
+      </template><#
+      }
       #>
       
       <div
@@ -3652,7 +3678,12 @@ const {
   headerDragend,
   resetColumns,
   storeColumns,
-  initColumns,
+  initColumns,<#
+  if (opts?.isUseDynPageFields) {
+  #>
+  useDynPageFieldsList,<#
+  }
+  #>
 } = $(useTableColumns<<#=modelName#>>(
   $$(tableColumns),
   {
@@ -5246,10 +5277,7 @@ async function initFrame() {<#
     dataGrid(true),<#
     if (opts?.isUseDynPageFields) {
     #>
-    useDynPageFieldsList(
-      pagePath,
-      $$(tableColumns),
-    ),<#
+    useDynPageFieldsList(),<#
     }
     #>
   ]);

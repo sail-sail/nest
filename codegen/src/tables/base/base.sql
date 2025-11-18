@@ -773,7 +773,9 @@ CREATE TABLE if not exists `base_dyn_page_field` (
   `lbl` varchar(40) NOT NULL DEFAULT '' COMMENT '名称',
   `type` varchar(40) NOT NULL DEFAULT '' COMMENT '类型',
   `attrs` text COMMENT '属性',
+  `formula` varchar(200) NOT NULL DEFAULT '' COMMENT '计算公式',
   `is_required` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '必填,dict:yes_no',
+  `is_search` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '查询条件,dict:yes_no',
   `width` int unsigned NOT NULL DEFAULT 0 COMMENT '宽度',
   `align` ENUM('left', 'center', 'right') NOT NULL DEFAULT 'center' COMMENT '对齐方式,dict:dyn_page_field_align',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
@@ -802,7 +804,36 @@ CREATE TABLE if not exists `base_dyn_page_val` (
   `code` varchar(20) NOT NULL DEFAULT '' COMMENT '字段编码',
   `lbl` varchar(200) NOT NULL DEFAULT '' COMMENT '值',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`ref_code`, `ref_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='动态页面值';
+
+------------------------------------------------------------------------ 动态页面数据
+drop table if exists `base_dyn_page_data`;
+CREATE TABLE if not exists `base_dyn_page_data` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `ref_code` varchar(100) NOT NULL DEFAULT '' COMMENT '关联页面路由',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`ref_code`, `tenant_id`, `is_deleted`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='动态页面数据';

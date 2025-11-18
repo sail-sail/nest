@@ -1134,7 +1134,7 @@ export function useTableColumns<T>(
   let persistKey = "";
       
   let tableColumn0s = [ ...tableColumns.value ];
-      
+  
   let tableColumn1s: ColumnType[] | undefined = undefined;
   
   function initColumns(
@@ -1181,6 +1181,46 @@ export function useTableColumns<T>(
       }
     }
     tableColumns.value = tableColumn1s || [ ...tableColumn0s ];
+  }
+  
+  async function useDynPageFieldsList() {
+    const store_key = "useDynPageFieldsList.dyn_page_model:" + routePath;
+    let dyn_page_model: DynPageModel | undefined;
+    try {
+      const str = localStorage.getItem(store_key);
+      if (str) {
+        dyn_page_model = JSON.parse(str) as DynPageModel;
+      }
+    } catch (err) {
+      console.error(err);
+      localStorage.removeItem(store_key);
+      dyn_page_model = undefined;
+    }
+    if (dyn_page_model) {
+      const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
+      if (dyn_page_field.length > 0) {
+        const dynColumns = getDynPageTableColumns(dyn_page_field);
+        tableColumns.value = mergeDynPageTableColumns(tableColumns.value, dynColumns);
+        initColumns(tableColumns.value);
+      }
+    }
+    dyn_page_model = await findOneDynPage({
+      code: routePath,
+      is_enabled: [ 1 ],
+    });
+    tableColumns.value = tableColumns.value.filter((item) => !item.isDynField);
+    if (!dyn_page_model) {
+      localStorage.removeItem(store_key);
+      return;
+    }
+    localStorage.setItem(store_key, JSON.stringify(dyn_page_model));
+    const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
+    if (dyn_page_field.length === 0) {
+      return;
+    }
+    const dynColumns = getDynPageTableColumns(dyn_page_field);
+    tableColumns.value = mergeDynPageTableColumns(tableColumns.value, dynColumns);
+    initColumns(tableColumns.value);
   }
   
   // watch(
@@ -1238,6 +1278,7 @@ export function useTableColumns<T>(
     resetColumns,
     storeColumns,
     deleteColumns,
+    useDynPageFieldsList,
   });
 }
 
@@ -1470,6 +1511,31 @@ function getDynPageTableColumns(
   return columns;
 }
 
+/** 合并动态字段和静态字段 */
+function mergeDynPageTableColumns(
+  staticColumns: ColumnType[],
+  dynColumns: ColumnType[],
+): ColumnType[] {
+  if (dynColumns.length === 0) {
+    return staticColumns;
+  }
+  
+  // 查找 create_usr_id_lbl 字段的索引
+  const insertIndex = staticColumns.findIndex((col) => col.prop === 'create_usr_id_lbl');
+  
+  if (insertIndex === -1) {
+    // 没找到,放在最后
+    return [...staticColumns, ...dynColumns];
+  }
+  
+  // 找到了,插入到该字段前面
+  return [
+    ...staticColumns.slice(0, insertIndex),
+    ...dynColumns,
+    ...staticColumns.slice(insertIndex),
+  ];
+}
+
 /** 初始化动态页面表单字段 */
 export function useDynPageFields(
   pagePath: string,
@@ -1510,48 +1576,3 @@ export function useDynPageFields(
   return dyn_page_field_ref;
 }
 
-/** 初始化动态页面列表字段 */
-export async function useDynPageFieldsList(
-  pagePath: string,
-  tableColumns: Ref<ColumnType[]>,
-) {
-  const store_key = "useDynPageFieldsList.dyn_page_model:" + pagePath;
-  let dyn_page_model: DynPageModel | undefined;
-  try {
-    const str = localStorage.getItem(store_key);
-    if (str) {
-      dyn_page_model = JSON.parse(str) as DynPageModel;
-    }
-  } catch (err) {
-    console.error(err);
-    localStorage.removeItem(store_key);
-    dyn_page_model = undefined;
-  }
-  if (dyn_page_model) {
-    const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
-    if (dyn_page_field.length > 0) {
-      tableColumns.value = [
-        ...tableColumns.value,
-        ...getDynPageTableColumns(dyn_page_field),
-      ];
-    }
-  }
-  dyn_page_model = await findOneDynPage({
-    code: pagePath,
-    is_enabled: [ 1 ],
-  });
-  tableColumns.value = tableColumns.value.filter((item) => !item.isDynField);
-  if (!dyn_page_model) {
-    localStorage.removeItem(store_key);
-    return;
-  }
-  localStorage.setItem(store_key, JSON.stringify(dyn_page_model));
-  const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
-  if (dyn_page_field.length === 0) {
-    return;
-  }
-  tableColumns.value = [
-    ...tableColumns.value,
-    ...getDynPageTableColumns(dyn_page_field),
-  ];
-}

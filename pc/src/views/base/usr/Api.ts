@@ -77,6 +77,8 @@ export function intoInputUsr(
     order_by: model?.order_by,
     // 备注
     rem: model?.rem,
+    // 动态页面数据
+    dyn_page_data: model?.dyn_page_data,
   };
   return input;
 }

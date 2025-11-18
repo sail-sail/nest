@@ -43,9 +43,14 @@ export function intoInputDynPageField(
     type: model?.type,
     // 属性
     attrs: model?.attrs,
+    // 计算公式
+    formula: model?.formula,
     // 必填
     is_required: model?.is_required,
     is_required_lbl: model?.is_required_lbl,
+    // 查询条件
+    is_search: model?.is_search,
+    is_search_lbl: model?.is_search_lbl,
     // 宽度
     width: model?.width,
     // 对齐方式
@@ -553,11 +558,14 @@ export function useDownloadImportTemplateDynPageField() {
       query: /* GraphQL */ `
         query {
           getFieldCommentsDynPageField {
+            code
             dyn_page_id_lbl
             lbl
             type
             attrs
+            formula
             is_required_lbl
+            is_search_lbl
             width
             align_lbl
             order_by
@@ -567,6 +575,7 @@ export function useDownloadImportTemplateDynPageField() {
             lbl
           }
           getDict(codes: [
+            "yes_no",
             "yes_no",
             "dyn_page_field_align",
           ]) {
@@ -633,6 +642,7 @@ export function useExportExcelDynPageField() {
               lbl
             }
             getDict(codes: [
+              "yes_no",
               "yes_no",
               "dyn_page_field_align",
               "is_enabled",
@@ -751,6 +761,7 @@ export function getPagePathDynPageField() {
 export async function getDefaultInputDynPageField() {
   const defaultInput: DynPageFieldInput = {
     is_required: 0,
+    is_search: 0,
     width: 0,
     align: DynPageFieldAlign.Center,
     is_enabled: 1,

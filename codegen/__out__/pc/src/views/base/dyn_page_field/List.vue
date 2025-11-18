@@ -552,6 +552,15 @@
             </el-table-column>
           </template>
           
+          <!-- 计算公式 -->
+          <template v-else-if="'formula' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 必填 -->
           <template v-else-if="'is_required_lbl' === col.prop">
             <el-table-column
@@ -563,6 +572,22 @@
                   v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_required"
                   @change="onIs_required(row.id, row.is_required)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 查询条件 -->
+          <template v-else-if="'is_search_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_search"
+                  @change="onIs_search(row.id, row.is_search)"
                 ></CustomSwitch>
               </template>
             </el-table-column>
@@ -1039,9 +1064,26 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "计算公式",
+      prop: "formula",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "必填",
       prop: "is_required_lbl",
       sortBy: "is_required",
+      width: 85,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "查询条件",
+      prop: "is_search_lbl",
+      sortBy: "is_search",
       width: 85,
       align: "center",
       headerAlign: "center",
@@ -1350,11 +1392,14 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
+    [ "编码" ]: "code",
     [ "动态页面" ]: "dyn_page_id_lbl",
     [ "名称" ]: "lbl",
     [ "类型" ]: "type",
     [ "属性" ]: "attrs",
+    [ "计算公式" ]: "formula",
     [ "必填" ]: "is_required_lbl",
+    [ "查询条件" ]: "is_search_lbl",
     [ "宽度" ]: "width",
     [ "对齐方式" ]: "align_lbl",
     [ "启用" ]: "is_enabled_lbl",
@@ -1380,11 +1425,14 @@ async function onImportExcel() {
       header,
       {
         key_types: {
+          "code": "string",
           "dyn_page_id_lbl": "string",
           "lbl": "string",
           "type": "string",
           "attrs": "string",
+          "formula": "string",
           "is_required_lbl": "string",
+          "is_search_lbl": "string",
           "width": "number",
           "align_lbl": "string",
           "is_enabled_lbl": "string",
@@ -1428,6 +1476,30 @@ async function onIs_required(id: DynPageFieldId, is_required: 0 | 1) {
     id,
     {
       is_required,
+    },
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}
+
+/** 查询条件 */
+async function onIs_search(id: DynPageFieldId, is_search: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateByIdDynPageField(
+    id,
+    {
+      is_search,
     },
     {
       notLoading,

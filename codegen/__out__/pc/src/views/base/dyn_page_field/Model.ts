@@ -41,9 +41,14 @@ export const dynPageFieldFields = [
   "type",
   // 属性
   "attrs",
+  // 计算公式
+  "formula",
   // 必填
   "is_required",
   "is_required_lbl",
+  // 查询条件
+  "is_search",
+  "is_search_lbl",
   // 宽度
   "width",
   // 对齐方式

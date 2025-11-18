@@ -1820,7 +1820,14 @@ export async function updateByIdOptbiz(
     await delCacheOptbiz();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1870,6 +1877,8 @@ export async function deleteByIdsOptbiz(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheOptbiz();
   
   let affectedRows = 0;
@@ -1904,7 +1913,13 @@ export async function deleteByIdsOptbiz(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -2039,11 +2054,19 @@ export async function lockByIdsOptbiz(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheOptbiz();
   
   const args = new QueryArgs();
   let sql = `update base_optbiz set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheOptbiz();
@@ -2161,6 +2184,8 @@ export async function forceDeleteByIdsOptbiz(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheOptbiz();
   
   let num = 0;
@@ -2211,6 +2236,8 @@ export async function findLastOrderByOptbiz(
     options.is_debug = false;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   let sql = `select t.order_by order_by from base_optbiz t`;
   const whereQuery: string[] = [ ];
   const args = new QueryArgs();
@@ -2228,7 +2255,13 @@ export async function findLastOrderByOptbiz(
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

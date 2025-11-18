@@ -87,7 +87,11 @@ export async function getMenus(
           {
             path: "",
             name,
-            component: () => import("@/components/CustomDynList.vue"),
+            component: async () => {
+              const com = await import("@/views/base/dyn_page_data/List.vue");
+              com.default.name = name;
+              return com;
+            },
             props: (route) => {
               const query = route.query || { };
               if (menu_model.route_query) {

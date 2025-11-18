@@ -177,8 +177,7 @@
                     <CustomInput
                       v-model="row.code"
                       placeholder=" "
-                      :readonly="true"
-                      :readonly-placeholder="inited ? '(自动生成)' : ''"
+                      :readonly="isLocked || isReadonly"
                     ></CustomInput>
                   </template>
                 </template>
@@ -237,6 +236,23 @@
               </el-table-column>
               
               <el-table-column
+                prop="formula"
+                label="计算公式"
+                width="190"
+                header-align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomInput
+                      v-model="row.formula"
+                      placeholder=" "
+                      :readonly="isLocked || isReadonly"
+                    ></CustomInput>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
                 prop="is_required"
                 label="必填"
                 width="95"
@@ -247,6 +263,24 @@
                   <template v-if="row._type !== 'add'">
                     <CustomCheckbox
                       v-model="row.is_required"
+                      placeholder=" "
+                      :readonly="isLocked || isReadonly"
+                    ></CustomCheckbox>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
+                prop="is_search"
+                label="查询条件"
+                width="95"
+                header-align="center"
+                align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomCheckbox
+                      v-model="row.is_search"
                       placeholder=" "
                       :readonly="isLocked || isReadonly"
                     ></CustomCheckbox>
