@@ -77,8 +77,6 @@ export function intoInputUsr(
     order_by: model?.order_by,
     // 备注
     rem: model?.rem,
-    // 动态页面数据
-    dyn_page_data: model?.dyn_page_data,
   };
   return input;
 }
@@ -915,6 +913,59 @@ export async function findLastOrderByUsr(
   }, opt);
   const res = data.findLastOrderByUsr;
   return res;
+}
+
+/**
+ * 获取 用户 字段注释
+ */
+export async function getFieldCommentsUsr(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsUsr: Query["getFieldCommentsUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsUsr {
+          id,
+          img,
+          lbl,
+          username,
+          role_ids,
+          role_ids_lbl,
+          dept_ids,
+          dept_ids_lbl,
+          org_ids,
+          org_ids_lbl,
+          default_org_id,
+          default_org_id_lbl,
+          type,
+          type_lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsUsr as UsrFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathUsr() {

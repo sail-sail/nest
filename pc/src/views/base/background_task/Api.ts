@@ -392,6 +392,52 @@ export async function forceDeleteByIdsBackgroundTask(
   return res;
 }
 
+/**
+ * 获取 后台任务 字段注释
+ */
+export async function getFieldCommentsBackgroundTask(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsBackgroundTask: Query["getFieldCommentsBackgroundTask"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsBackgroundTask {
+          id,
+          lbl,
+          state,
+          state_lbl,
+          type,
+          type_lbl,
+          result,
+          err_msg,
+          begin_time,
+          begin_time_lbl,
+          end_time,
+          end_time_lbl,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsBackgroundTask as BackgroundTaskFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathBackgroundTask() {
   return "/base/background_task";
 }

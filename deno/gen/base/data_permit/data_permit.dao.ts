@@ -587,7 +587,7 @@ export async function setIdByLblDataPermit(
 // MARK: getFieldCommentsDataPermit
 /** 获取数据权限字段注释 */
 export async function getFieldCommentsDataPermit(): Promise<DataPermitFieldComment> {
-  const fieldComments: DataPermitFieldComment = {
+  const field_comments: DataPermitFieldComment = {
     id: "ID",
     menu_id: "菜单",
     menu_id_lbl: "菜单",
@@ -605,7 +605,8 @@ export async function getFieldCommentsDataPermit(): Promise<DataPermitFieldComme
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDataPermit

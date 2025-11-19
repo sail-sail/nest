@@ -379,6 +379,40 @@ export async function forceDeleteByIdsLoginLog(
   return res;
 }
 
+/**
+ * 获取 登录日志 字段注释
+ */
+export async function getFieldCommentsLoginLog(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsLoginLog: Query["getFieldCommentsLoginLog"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsLoginLog {
+          id,
+          type,
+          type_lbl,
+          username,
+          is_succ,
+          is_succ_lbl,
+          ip,
+          create_time,
+          create_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsLoginLog as LoginLogFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathLoginLog() {
   return "/base/login_log";
 }

@@ -689,6 +689,47 @@ export async function findLastOrderByOrg(
   return res;
 }
 
+/**
+ * 获取 组织 字段注释
+ */
+export async function getFieldCommentsOrg(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsOrg: Query["getFieldCommentsOrg"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsOrg {
+          id,
+          lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsOrg as OrgFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathOrg() {
   return "/base/org";
 }

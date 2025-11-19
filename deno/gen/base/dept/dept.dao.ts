@@ -768,7 +768,7 @@ export async function setIdByLblDept(
 // MARK: getFieldCommentsDept
 /** 获取部门字段注释 */
 export async function getFieldCommentsDept(): Promise<DeptFieldComment> {
-  const fieldComments: DeptFieldComment = {
+  const field_comments: DeptFieldComment = {
     id: "ID",
     parent_id: "父部门",
     parent_id_lbl: "父部门",
@@ -792,7 +792,8 @@ export async function getFieldCommentsDept(): Promise<DeptFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDept

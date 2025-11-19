@@ -14,6 +14,10 @@ import {
 } from "./Model.ts";
 
 import {
+  findTreeMenu,
+} from "@/views/base/menu/Api.ts";
+
+import {
   intoInputDynPageField,
   setLblByIdDynPageField,
 } from "@/views/base/dyn_page_field/Api.ts";
@@ -43,6 +47,12 @@ export function intoInputDynPage(
     code: model?.code,
     // 名称
     lbl: model?.lbl,
+    // 父菜单
+    menu_id: model?.menu_id,
+    menu_id_lbl: model?.menu_id_lbl,
+    // 所属角色
+    role_ids: model?.role_ids,
+    role_ids_lbl: model?.role_ids_lbl,
     // 排序
     order_by: model?.order_by,
     // 启用
@@ -489,6 +499,114 @@ export async function forceDeleteByIdsDynPage(
   return res;
 }
 
+export async function findAllMenu(
+  search?: MenuSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllMenu: MenuModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllMenu(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const menu_models = data.findAllMenu;
+  return menu_models;
+}
+
+export async function getListMenu() {
+  const data = await findAllMenu(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function findAllRole(
+  search?: RoleSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllRole: RoleModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllRole(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const role_models = data.findAllRole;
+  return role_models;
+}
+
+export async function getListRole() {
+  const data = await findAllRole(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function getTreeMenu() {
+  const data = await findTreeMenu(
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载 动态页面 导入模板
  */
@@ -505,8 +623,18 @@ export function useDownloadImportTemplateDynPage() {
           getFieldCommentsDynPage {
             code
             lbl
+            menu_id_lbl
+            role_ids_lbl
             order_by
             rem
+          }
+          findAllMenu {
+            id
+            lbl
+          }
+          findAllRole {
+            id
+            lbl
           }
         }
       `,
@@ -563,6 +691,12 @@ export function useExportExcelDynPage() {
           query($search: DynPageSearch, $sort: [SortInput!]) {
             findAllDynPage(search: $search, page: null, sort: $sort) {
               ${ dynPageQueryField }
+            }
+            findAllMenu {
+              lbl
+            }
+            findAllRole {
+              lbl
             }
             getDict(codes: [
               "is_enabled",
@@ -671,6 +805,50 @@ export async function findLastOrderByDynPage(
   }, opt);
   const res = data.findLastOrderByDynPage;
   return res;
+}
+
+/**
+ * 获取 动态页面 字段注释
+ */
+export async function getFieldCommentsDynPage(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDynPage: Query["getFieldCommentsDynPage"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDynPage {
+          id,
+          code,
+          lbl,
+          menu_id,
+          menu_id_lbl,
+          role_ids,
+          role_ids_lbl,
+          order_by,
+          is_enabled,
+          is_enabled_lbl,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDynPage as DynPageFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathDynPage() {

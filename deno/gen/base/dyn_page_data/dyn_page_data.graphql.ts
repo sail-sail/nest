@@ -53,6 +53,8 @@ type DynPageDataFieldComment {
   update_time: String!
   "更新时间"
   update_time_lbl: String!
+  "动态页面数据"
+  dyn_page_data: JSONObject!
 }
 input DynPageDataInput {
   "ID"
@@ -97,7 +99,7 @@ type Query {
   "根据搜索条件和分页查找动态页面数据列表"
   findAllDynPageData(search: DynPageDataSearch, page: PageInput, sort: [SortInput!]): [DynPageDataModel!]!
   "获取动态页面数据字段注释"
-  getFieldCommentsDynPageData: DynPageDataFieldComment!
+  getFieldCommentsDynPageData(ref_code: String): DynPageDataFieldComment!
   "根据条件查找第一个动态页面数据"
   findOneDynPageData(search: DynPageDataSearch, sort: [SortInput!]): DynPageDataModel
   "根据 id 查找动态页面数据"

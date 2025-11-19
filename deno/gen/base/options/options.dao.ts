@@ -543,7 +543,7 @@ export async function setIdByLblOptions(
 // MARK: getFieldCommentsOptions
 /** 获取系统选项字段注释 */
 export async function getFieldCommentsOptions(): Promise<OptionsFieldComment> {
-  const fieldComments: OptionsFieldComment = {
+  const field_comments: OptionsFieldComment = {
     id: "ID",
     lbl: "名称",
     ky: "键",
@@ -563,7 +563,8 @@ export async function getFieldCommentsOptions(): Promise<OptionsFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueOptions

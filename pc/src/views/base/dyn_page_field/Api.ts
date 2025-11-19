@@ -762,6 +762,49 @@ export async function findLastOrderByDynPageField(
   return res;
 }
 
+/**
+ * 获取 动态页面字段 字段注释
+ */
+export async function getFieldCommentsDynPageField(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDynPageField: Query["getFieldCommentsDynPageField"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDynPageField {
+          id,
+          code,
+          dyn_page_id,
+          dyn_page_id_lbl,
+          lbl,
+          type,
+          attrs,
+          formula,
+          is_required,
+          is_required_lbl,
+          is_search,
+          is_search_lbl,
+          width,
+          align,
+          align_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDynPageField as DynPageFieldFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathDynPageField() {
   return "/base/dyn_page_field";
 }

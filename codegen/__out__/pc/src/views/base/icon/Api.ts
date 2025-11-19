@@ -671,6 +671,47 @@ export async function findLastOrderByIcon(
   return res;
 }
 
+/**
+ * 获取 图标库 字段注释
+ */
+export async function getFieldCommentsIcon(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsIcon: Query["getFieldCommentsIcon"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsIcon {
+          id,
+          img,
+          code,
+          lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsIcon as IconFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathIcon() {
   return "/base/icon";
 }

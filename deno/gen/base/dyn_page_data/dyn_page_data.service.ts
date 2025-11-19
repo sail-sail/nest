@@ -247,7 +247,9 @@ export async function forceDeleteByIdsDynPageData(
 /**
  * 获取动态页面数据字段注释
  */
-export async function getFieldCommentsDynPageData(): Promise<DynPageDataFieldComment> {
-  const dyn_page_data_fields = await dyn_page_dataDao.getFieldCommentsDynPageData();
+export async function getFieldCommentsDynPageData(
+  ref_code?: string | null,
+): Promise<DynPageDataFieldComment> {
+  const dyn_page_data_fields = await dyn_page_dataDao.getFieldCommentsDynPageData(ref_code);
   return dyn_page_data_fields;
 }

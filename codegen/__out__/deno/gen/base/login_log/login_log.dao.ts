@@ -512,7 +512,7 @@ export async function setIdByLblLoginLog(
 // MARK: getFieldCommentsLoginLog
 /** 获取登录日志字段注释 */
 export async function getFieldCommentsLoginLog(): Promise<LoginLogFieldComment> {
-  const fieldComments: LoginLogFieldComment = {
+  const field_comments: LoginLogFieldComment = {
     id: "ID",
     type: "类型",
     type_lbl: "类型",
@@ -523,7 +523,8 @@ export async function getFieldCommentsLoginLog(): Promise<LoginLogFieldComment> 
     create_time: "登录时间",
     create_time_lbl: "登录时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueLoginLog

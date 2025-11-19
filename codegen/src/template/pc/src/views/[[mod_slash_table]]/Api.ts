@@ -2545,6 +2545,77 @@ export async function findLastOrderBy<#=Table_Up#>(
 }
 #>
 
+/**
+ * 获取 <#=table_comment#> 字段注释
+ */
+export async function getFieldComments<#=Table_Up#>(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldComments<#=Table_Up2#>: Query["getFieldComments<#=Table_Up2#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldComments<#=Table_Up2#> {<#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+            const column_name = column.COLUMN_NAME;
+            let data_type = column.DATA_TYPE;
+            let column_type = column.COLUMN_TYPE;
+            let column_comment = column.COLUMN_COMMENT || "";
+            if (column_name === "is_sys") {
+              continue;
+            }
+            if (column_name === "is_deleted") {
+              continue;
+            }
+            if (column_name === "tenant_id") {
+              continue;
+            }
+            if (column_name === "is_hidden") {
+              continue;
+            }
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
+            const foreignKey = column.foreignKey;
+          #><#
+            if (foreignKey || column.dict || column.dictbiz
+              || data_type === "datetime" || data_type === "date"
+            ) {
+          #>
+          <#=column_name#>,<#
+              if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
+          #>
+          <#=column_name#>_lbl,<#
+              }
+          #><#
+            } else {
+          #>
+          <#=column_name#>,<#
+            }
+          #><#
+          }
+          #><#
+          if (opts.isUseDynPageFields) {
+          #>
+          dyn_page_data<#
+          }
+          #>
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldComments<#=Table_Up2#> as <#=fieldCommentName#>;
+  
+  return field_comments;
+}
+
 export function getPagePath<#=Table_Up#>() {
   return "/<#=mod#>/<#=table#>";
 }

@@ -90,6 +90,7 @@
             <CustomDynComp
               :model-value="dialogModel.dyn_page_data?.[field_model.code]"
               :name="field_model.type"
+              :placeholder="`请输入 ${ field_model.lbl }`"
               v-bind="field_model._attrs"
               :autosize="
                 (field_model._attrs.minRows || field_model._attrs.maxRows) && 
@@ -436,20 +437,8 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
-    const [
-      defaultModel,
-    ] = await Promise.all([
-      getDefaultInputDynPageData(),
-    ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,
-    };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
   ElMessage({
     message: "表单重置完毕",
     type: "success",
@@ -460,6 +449,15 @@ async function onReset() {
 async function onRefresh() {
   const id = dialogModel.id;
   if (!id) {
+    const [
+      defaultModel,
+    ] = await Promise.all([
+      getDefaultInputDynPageData(),
+    ]);
+    dialogModel = {
+      ...defaultModel,
+      ...builtInModel,
+    };
     return;
   }
   const [

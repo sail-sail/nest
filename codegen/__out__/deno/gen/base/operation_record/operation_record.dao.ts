@@ -437,7 +437,7 @@ export async function setIdByLblOperationRecord(
 // MARK: getFieldCommentsOperationRecord
 /** 获取操作记录字段注释 */
 export async function getFieldCommentsOperationRecord(): Promise<OperationRecordFieldComment> {
-  const fieldComments: OperationRecordFieldComment = {
+  const field_comments: OperationRecordFieldComment = {
     id: "ID",
     module: "模块",
     module_lbl: "模块名称",
@@ -452,7 +452,8 @@ export async function getFieldCommentsOperationRecord(): Promise<OperationRecord
     create_time: "操作时间",
     create_time_lbl: "操作时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueOperationRecord

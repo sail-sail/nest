@@ -1155,6 +1155,7 @@ for (let i = 0; i < columns.length; i++) {
             <CustomDynComp
               :model-value="dialogModel.dyn_page_data?.[field_model.code]"
               :name="field_model.type"
+              :placeholder="`请输入 ${ field_model.lbl }`"
               v-bind="field_model._attrs"
               :autosize="
                 (field_model._attrs.minRows || field_model._attrs.maxRows) && 
@@ -6195,37 +6196,8 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
-    const [
-      defaultModel,<#
-      if (hasOrderBy) {
-      #>
-      order_by,<#
-      }
-      #>
-    ] = await Promise.all([
-      getDefaultInput<#=Table_Up#>(),<#
-      if (hasOrderBy) {
-      #>
-      findLastOrderBy<#=Table_Up#>({
-        notLoading: !inited,
-      }),<#
-      }
-      #>
-    ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,<#
-      if (hasOrderBy) {
-      #>
-      order_by: order_by + 1,<#
-      }
-      #>
-    };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
   ElMessage({<#
     if (isUseI18n) {
     #>
@@ -6345,6 +6317,32 @@ async function subscribeDeleteCallback(ids?: <#=Table_Up#>Id[]) {
 async function onRefresh() {
   const id = dialogModel.id;
   if (!id) {
+    const [
+      defaultModel,<#
+      if (hasOrderBy) {
+      #>
+      order_by,<#
+      }
+      #>
+    ] = await Promise.all([
+      getDefaultInput<#=Table_Up#>(),<#
+      if (hasOrderBy) {
+      #>
+      findLastOrderBy<#=Table_Up#>({
+        notLoading: !inited,
+      }),<#
+      }
+      #>
+    ]);
+    dialogModel = {
+      ...defaultModel,
+      ...builtInModel,<#
+      if (hasOrderBy) {
+      #>
+      order_by: order_by + 1,<#
+      }
+      #>
+    };
     return;
   }
   const [

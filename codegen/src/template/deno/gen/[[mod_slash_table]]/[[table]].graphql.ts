@@ -510,6 +510,12 @@ type <#=fieldCommentName#> {<#
   <#=column_name#>: String!<#
     }
   }
+  #><#
+  if (opts.isUseDynPageFields) {
+  #>
+  "动态页面数据"
+  dyn_page_data: JSONObject!<#
+  }
   #>
 }
 input <#=inputName#> {<#
@@ -802,6 +808,7 @@ input <#=searchName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     if (
       column.onlyCodegenDeno
       || column.canSearch !== true

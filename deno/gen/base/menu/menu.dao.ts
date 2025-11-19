@@ -684,7 +684,7 @@ export async function setIdByLblMenu(
 // MARK: getFieldCommentsMenu
 /** 获取菜单字段注释 */
 export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
-  const fieldComments: MenuFieldComment = {
+  const field_comments: MenuFieldComment = {
     id: "ID",
     parent_id: "父菜单",
     parent_id_lbl: "父菜单",
@@ -708,7 +708,8 @@ export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueMenu

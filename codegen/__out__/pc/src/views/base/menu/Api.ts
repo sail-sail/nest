@@ -756,6 +756,53 @@ export async function findLastOrderByMenu(
   return res;
 }
 
+/**
+ * 获取 菜单 字段注释
+ */
+export async function getFieldCommentsMenu(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsMenu: Query["getFieldCommentsMenu"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsMenu {
+          id,
+          parent_id,
+          parent_id_lbl,
+          lbl,
+          route_path,
+          route_query,
+          is_home_hide,
+          is_home_hide_lbl,
+          is_dyn_page,
+          is_dyn_page_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsMenu as MenuFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathMenu() {
   return "/base/menu";
 }

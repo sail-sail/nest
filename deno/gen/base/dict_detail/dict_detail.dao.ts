@@ -545,7 +545,7 @@ export async function setIdByLblDictDetail(
 // MARK: getFieldCommentsDictDetail
 /** 获取系统字典明细字段注释 */
 export async function getFieldCommentsDictDetail(): Promise<DictDetailFieldComment> {
-  const fieldComments: DictDetailFieldComment = {
+  const field_comments: DictDetailFieldComment = {
     id: "ID",
     dict_id: "系统字典",
     dict_id_lbl: "系统字典",
@@ -564,7 +564,8 @@ export async function getFieldCommentsDictDetail(): Promise<DictDetailFieldComme
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDictDetail

@@ -737,6 +737,47 @@ export async function importModelsI18n(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
+/**
+ * 获取 国际化 字段注释
+ */
+export async function getFieldCommentsI18n(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsI18n: Query["getFieldCommentsI18n"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsI18n {
+          id,
+          lang_id,
+          lang_id_lbl,
+          menu_id,
+          menu_id_lbl,
+          code,
+          lbl,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsI18n as I18nFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathI18n() {
   return "/base/i18n";
 }

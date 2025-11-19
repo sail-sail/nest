@@ -691,6 +691,49 @@ export async function findLastOrderByDictbiz(
   return res;
 }
 
+/**
+ * 获取 业务字典 字段注释
+ */
+export async function getFieldCommentsDictbiz(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDictbiz: Query["getFieldCommentsDictbiz"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDictbiz {
+          id,
+          code,
+          lbl,
+          is_add,
+          type,
+          type_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDictbiz as DictbizFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathDictbiz() {
   return "/base/dictbiz";
 }

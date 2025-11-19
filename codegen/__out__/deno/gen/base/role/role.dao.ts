@@ -910,7 +910,7 @@ export async function setIdByLblRole(
 // MARK: getFieldCommentsRole
 /** 获取角色字段注释 */
 export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
-  const fieldComments: RoleFieldComment = {
+  const field_comments: RoleFieldComment = {
     id: "ID",
     code: "编码",
     lbl: "名称",
@@ -938,7 +938,8 @@ export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueRole

@@ -53,6 +53,8 @@ type DynPageDataFieldComment {
   update_time: String!
   "更新时间"
   update_time_lbl: String!
+  "动态页面数据"
+  dyn_page_data: JSONObject!
 }
 input DynPageDataInput {
   "ID"

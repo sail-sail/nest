@@ -261,39 +261,6 @@
           </el-form-item>
         </template>
         
-        <template
-          v-for="field_model in dyn_page_field_models"
-          :key="field_model.id"
-        >
-          <el-form-item
-            :label="field_model.lbl"
-            :prop="field_model.code"
-            :class="{
-              'col-span-full':
-                field_model.type === 'CustomInput' &&
-                field_model._attrs.type === 'textarea',
-            }"
-          >
-            <CustomDynComp
-              :model-value="dialogModel.dyn_page_data?.[field_model.code]"
-              :name="field_model.type"
-              v-bind="field_model._attrs"
-              :autosize="
-                (field_model._attrs.minRows || field_model._attrs.maxRows) && 
-                  {
-                    minRows: field_model._attrs.minRows,
-                    maxRows: field_model._attrs.maxRows,
-                  }
-              "
-              :readonly="field_model._attrs.readonly || isLocked || isReadonly"
-              @update:model-value="(val: any) => {
-                dialogModel.dyn_page_data = dialogModel.dyn_page_data ?? { };
-                dialogModel.dyn_page_data[field_model.code] = val;
-              }"
-            ></CustomDynComp>
-          </el-form-item>
-        </template>
-        
       </el-form>
     </div>
     <div
@@ -449,7 +416,6 @@ let dialogModel: UsrInput = $ref({
   role_ids: [ ],
   dept_ids: [ ],
   org_ids: [ ],
-  dyn_page_data: { },
 } as UsrInput);
 
 let usr_model = $ref<UsrModel>();
@@ -530,9 +496,6 @@ let isReadonly = $ref(false);
 /** 是否锁定 */
 let isLocked = $ref(false);
 
-/** 动态页面表单字段 */
-const dyn_page_field_models = $(useDynPageFields(pagePath));
-
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
@@ -606,7 +569,6 @@ async function showDialog(
     role_ids: [ ],
     dept_ids: [ ],
     org_ids: [ ],
-    dyn_page_data: { },
   };
   usr_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
@@ -726,7 +688,18 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
+  ElMessage({
+    message: "表单重置完毕",
+    type: "success",
+  });
+}
+
+/** 刷新 */
+async function onRefresh() {
+  const id = dialogModel.id;
+  if (!id) {
     const [
       defaultModel,
       order_by,
@@ -741,20 +714,6 @@ async function onReset() {
       ...builtInModel,
       order_by: order_by + 1,
     };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
-  ElMessage({
-    message: "表单重置完毕",
-    type: "success",
-  });
-}
-
-/** 刷新 */
-async function onRefresh() {
-  const id = dialogModel.id;
-  if (!id) {
     return;
   }
   const [

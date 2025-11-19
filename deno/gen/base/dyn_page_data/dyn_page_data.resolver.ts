@@ -61,13 +61,15 @@ export async function findAllDynPageData(
 /**
  * 获取动态页面数据字段注释
  */
-export async function getFieldCommentsDynPageData(): Promise<DynPageDataFieldComment> {
+export async function getFieldCommentsDynPageData(
+  ref_code?: string | null,
+): Promise<DynPageDataFieldComment> {
   
   const {
     getFieldCommentsDynPageData,
   } = await import("./dyn_page_data.service.ts");
   
-  const field_comment = await getFieldCommentsDynPageData();
+  const field_comment = await getFieldCommentsDynPageData(ref_code);
   
   return field_comment;
 }

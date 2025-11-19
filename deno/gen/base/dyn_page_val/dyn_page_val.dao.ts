@@ -422,7 +422,7 @@ export async function setIdByLblDynPageVal(
 // MARK: getFieldCommentsDynPageVal
 /** 获取动态页面值字段注释 */
 export async function getFieldCommentsDynPageVal(): Promise<DynPageValFieldComment> {
-  const fieldComments: DynPageValFieldComment = {
+  const field_comments: DynPageValFieldComment = {
     id: "ID",
     ref_code: "关联页面路由",
     ref_id: "关联数据ID",
@@ -437,7 +437,8 @@ export async function getFieldCommentsDynPageVal(): Promise<DynPageValFieldComme
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDynPageVal

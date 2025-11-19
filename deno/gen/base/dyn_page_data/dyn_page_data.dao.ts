@@ -543,8 +543,12 @@ export async function setIdByLblDynPageData(
 
 // MARK: getFieldCommentsDynPageData
 /** 获取动态页面数据字段注释 */
-export async function getFieldCommentsDynPageData(): Promise<DynPageDataFieldComment> {
-  const fieldComments: DynPageDataFieldComment = {
+export async function getFieldCommentsDynPageData(
+  ref_code?: string | null,
+): Promise<DynPageDataFieldComment> {
+  
+  const pagePath = getPagePathDynPageData(ref_code);
+  const field_comments: DynPageDataFieldComment = {
     id: "ID",
     ref_code: "关联页面路由",
     create_usr_id: "创建人",
@@ -555,8 +559,29 @@ export async function getFieldCommentsDynPageData(): Promise<DynPageDataFieldCom
     update_usr_id_lbl: "更新人",
     update_time: "更新时间",
     update_time_lbl: "更新时间",
+    dyn_page_data: { },
   };
-  return fieldComments;
+  
+  const dyn_page_model = await findOneDynPage(
+    {
+      code: pagePath,
+      is_enabled: [ 1 ],
+    },
+  );
+  
+  if (dyn_page_model) {
+    
+    const dyn_page_field_models = dyn_page_model.dyn_page_field;
+    
+    for (const dyn_page_field_model of dyn_page_field_models) {
+      const field_code = dyn_page_field_model.code;
+      const field_lbl = dyn_page_field_model.lbl;
+      field_comments.dyn_page_data[field_code] = field_lbl;
+    }
+    
+  }
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDynPageData
@@ -1027,7 +1052,7 @@ export async function validateOptionDynPageData(
 export async function validateDynPageData(
   input: Readonly<DynPageDataInput>,
 ) {
-  const fieldComments = await getFieldCommentsDynPageData();
+  const fieldComments = await getFieldCommentsDynPageData(input.ref_code);
   
   // ID
   await validators.chars_max_length(

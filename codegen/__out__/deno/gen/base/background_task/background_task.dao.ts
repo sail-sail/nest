@@ -622,7 +622,7 @@ export async function setIdByLblBackgroundTask(
 // MARK: getFieldCommentsBackgroundTask
 /** 获取后台任务字段注释 */
 export async function getFieldCommentsBackgroundTask(): Promise<BackgroundTaskFieldComment> {
-  const fieldComments: BackgroundTaskFieldComment = {
+  const field_comments: BackgroundTaskFieldComment = {
     id: "ID",
     lbl: "名称",
     state: "状态",
@@ -645,7 +645,8 @@ export async function getFieldCommentsBackgroundTask(): Promise<BackgroundTaskFi
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueBackgroundTask

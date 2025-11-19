@@ -691,6 +691,49 @@ export async function findLastOrderByDict(
   return res;
 }
 
+/**
+ * 获取 系统字典 字段注释
+ */
+export async function getFieldCommentsDict(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDict: Query["getFieldCommentsDict"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDict {
+          id,
+          code,
+          lbl,
+          type,
+          type_lbl,
+          is_add,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDict as DictFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathDict() {
   return "/base/dict";
 }

@@ -451,17 +451,7 @@ export function useDownloadImportTemplateDynPageData() {
     workerTerminate,
   } = useRenderExcel();
   async function workerFn2() {
-    const data = await query({
-      query: /* GraphQL */ `
-        query {
-          getFieldCommentsDynPageData {
-            ref_code
-          }
-        }
-      `,
-      variables: {
-      },
-    });
+    const data = await getFieldCommentsDynPageData();
     try {
       const sheetName = "动态页面数据";
       const buffer = await workerFn(
@@ -595,6 +585,44 @@ export async function importModelsDynPageData(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/**
+ * 获取 动态页面数据 字段注释
+ */
+export async function getFieldCommentsDynPageData(
+  ref_code?: string | null,
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDynPageData: Query["getFieldCommentsDynPageData"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($ref_code: String) {
+        getFieldCommentsDynPageData(ref_code: $ref_code) {
+          id,
+          ref_code,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+          dyn_page_data
+        }
+      }
+    `,
+    variables: {
+      ref_code,
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDynPageData as DynPageDataFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathDynPageData() {

@@ -537,7 +537,7 @@ export async function setIdByLblOrg(
 // MARK: getFieldCommentsOrg
 /** 获取组织字段注释 */
 export async function getFieldCommentsOrg(): Promise<OrgFieldComment> {
-  const fieldComments: OrgFieldComment = {
+  const field_comments: OrgFieldComment = {
     id: "ID",
     lbl: "名称",
     is_locked: "锁定",
@@ -555,7 +555,8 @@ export async function getFieldCommentsOrg(): Promise<OrgFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueOrg

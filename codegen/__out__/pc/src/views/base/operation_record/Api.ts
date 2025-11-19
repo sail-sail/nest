@@ -381,6 +381,44 @@ export async function forceDeleteByIdsOperationRecord(
   return res;
 }
 
+/**
+ * 获取 操作记录 字段注释
+ */
+export async function getFieldCommentsOperationRecord(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsOperationRecord: Query["getFieldCommentsOperationRecord"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsOperationRecord {
+          id,
+          module,
+          module_lbl,
+          method,
+          method_lbl,
+          lbl,
+          time,
+          old_data,
+          new_data,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsOperationRecord as OperationRecordFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathOperationRecord() {
   return "/base/operation_record";
 }

@@ -696,6 +696,49 @@ export async function findLastOrderByOptions(
   return res;
 }
 
+/**
+ * 获取 系统选项 字段注释
+ */
+export async function getFieldCommentsOptions(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsOptions: Query["getFieldCommentsOptions"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsOptions {
+          id,
+          lbl,
+          ky,
+          val,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsOptions as OptionsFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathOptions() {
   return "/base/options";
 }

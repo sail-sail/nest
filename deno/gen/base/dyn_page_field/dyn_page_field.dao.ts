@@ -730,7 +730,7 @@ export async function setIdByLblDynPageField(
 // MARK: getFieldCommentsDynPageField
 /** 获取动态页面字段字段注释 */
 export async function getFieldCommentsDynPageField(): Promise<DynPageFieldFieldComment> {
-  const fieldComments: DynPageFieldFieldComment = {
+  const field_comments: DynPageFieldFieldComment = {
     id: "ID",
     code: "编码",
     dyn_page_id: "动态页面",
@@ -750,7 +750,8 @@ export async function getFieldCommentsDynPageField(): Promise<DynPageFieldFieldC
     is_enabled_lbl: "启用",
     order_by: "排序",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDynPageField

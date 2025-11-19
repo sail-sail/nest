@@ -255,7 +255,6 @@ export default defineConfig({
         order: "ascending",
       },
       hasSelectInput: true,
-      isUseDynPageFields: true,
     },
     columns: [
       {
@@ -1511,6 +1510,17 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "lbl",
+      },
+      {
+        COLUMN_NAME: "menu_id",
+        COLUMN_COMMENT: "父菜单",
+        isVirtual: true,
+      },
+      {
+        COLUMN_NAME: "role_ids",
+        COLUMN_COMMENT: "所属角色",
+        require: false,
+        isVirtual: true,
       },
       {
         COLUMN_NAME: "order_by",

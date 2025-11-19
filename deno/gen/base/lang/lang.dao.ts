@@ -476,7 +476,7 @@ export async function setIdByLblLang(
 // MARK: getFieldCommentsLang
 /** 获取语言字段注释 */
 export async function getFieldCommentsLang(): Promise<LangFieldComment> {
-  const fieldComments: LangFieldComment = {
+  const field_comments: LangFieldComment = {
     id: "ID",
     code: "编码",
     lbl: "名称",
@@ -493,7 +493,8 @@ export async function getFieldCommentsLang(): Promise<LangFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueLang

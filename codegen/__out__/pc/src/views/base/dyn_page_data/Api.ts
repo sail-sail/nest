@@ -597,6 +597,42 @@ export async function importModelsDynPageData(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
+/**
+ * 获取 动态页面数据 字段注释
+ */
+export async function getFieldCommentsDynPageData(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDynPageData: Query["getFieldCommentsDynPageData"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDynPageData {
+          id,
+          ref_code,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+          dyn_page_data
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDynPageData as DynPageDataFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathDynPageData() {
   return "/base/dyn_page_data";
 }

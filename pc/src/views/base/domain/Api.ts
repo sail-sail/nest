@@ -692,6 +692,48 @@ export async function findLastOrderByDomain(
   return res;
 }
 
+/**
+ * 获取 域名 字段注释
+ */
+export async function getFieldCommentsDomain(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDomain: Query["getFieldCommentsDomain"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDomain {
+          id,
+          protocol,
+          lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDomain as DomainFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathDomain() {
   return "/base/domain";
 }

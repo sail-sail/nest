@@ -562,7 +562,7 @@ export async function setIdByLblDictbizDetail(
 // MARK: getFieldCommentsDictbizDetail
 /** 获取业务字典明细字段注释 */
 export async function getFieldCommentsDictbizDetail(): Promise<DictbizDetailFieldComment> {
-  const fieldComments: DictbizDetailFieldComment = {
+  const field_comments: DictbizDetailFieldComment = {
     id: "ID",
     dictbiz_id: "业务字典",
     dictbiz_id_lbl: "业务字典",
@@ -581,7 +581,8 @@ export async function getFieldCommentsDictbizDetail(): Promise<DictbizDetailFiel
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDictbizDetail

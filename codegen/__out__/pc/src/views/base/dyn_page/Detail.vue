@@ -62,7 +62,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -100,6 +100,43 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.menu_id == null)">
+          <el-form-item
+            label="父菜单"
+            prop="menu_id"
+          >
+            <CustomTreeSelect
+              v-model="dialogModel.menu_id"
+              :method="getTreeMenu"
+              placeholder="请选择 父菜单"
+              :readonly="isLocked || isReadonly"
+            ></CustomTreeSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.role_ids == null)">
+          <el-form-item
+            label="所属角色"
+            prop="role_ids"
+          >
+            <CustomSelect
+              v-model="dialogModel.role_ids"
+              :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
+              :method="getListRole"
+              :find-by-values="findByIdsRole"
+              :options-map="((item: RoleModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              placeholder="请选择 所属角色"
+              multiple
+              :readonly="isLocked || isReadonly"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"
@@ -117,6 +154,7 @@
           <el-form-item
             label="备注"
             prop="rem"
+            un-grid="col-span-full"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -474,6 +512,18 @@ import {
 } from "./Api.ts";
 
 import {
+  getListRole,
+} from "./Api.ts";
+
+import {
+  findByIdsRole,
+} from "@/views/base/role/Api.ts";
+
+import {
+  getTreeMenu,
+} from "@/views/base/menu/Api.ts";
+
+import {
   getDefaultInputDynPageField,
 } from "@/views/base/dyn_page_field/Api";
 
@@ -503,6 +553,7 @@ let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
 let dialogModel: DynPageInput = $ref({
+  role_ids: [ ],
 } as DynPageInput);
 
 let dyn_page_model = $ref<DynPageModel>();
@@ -630,6 +681,7 @@ async function showDialog(
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
+    role_ids: [ ],
   };
   dyn_page_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
@@ -730,7 +782,18 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
+  ElMessage({
+    message: "表单重置完毕",
+    type: "success",
+  });
+}
+
+/** 刷新 */
+async function onRefresh() {
+  const id = dialogModel.id;
+  if (!id) {
     const [
       defaultModel,
       order_by,
@@ -745,20 +808,6 @@ async function onReset() {
       ...builtInModel,
       order_by: order_by + 1,
     };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
-  ElMessage({
-    message: "表单重置完毕",
-    type: "success",
-  });
-}
-
-/** 刷新 */
-async function onRefresh() {
-  const id = dialogModel.id;
-  if (!id) {
     return;
   }
   const [
@@ -865,6 +914,24 @@ async function nextId() {
   );
   return true;
 }
+
+watch(
+  () => [
+    dialogModel.menu_id,
+    dialogModel.role_ids,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.menu_id) {
+      dialogModel.menu_id_lbl = "";
+    }
+    if (!dialogModel.role_ids || dialogModel.role_ids.length === 0) {
+      dialogModel.role_ids_lbl = [ ];
+    }
+  },
+);
 
 /** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {

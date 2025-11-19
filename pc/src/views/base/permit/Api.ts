@@ -414,6 +414,38 @@ export async function findLastOrderByPermit(
   return res;
 }
 
+/**
+ * 获取 按钮权限 字段注释
+ */
+export async function getFieldCommentsPermit(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsPermit: Query["getFieldCommentsPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsPermit {
+          id,
+          menu_id,
+          menu_id_lbl,
+          code,
+          lbl,
+          order_by,
+          rem,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsPermit as PermitFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathPermit() {
   return "/base/permit";
 }

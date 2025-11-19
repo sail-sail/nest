@@ -660,6 +660,46 @@ export async function findLastOrderByLang(
   return res;
 }
 
+/**
+ * 获取 语言 字段注释
+ */
+export async function getFieldCommentsLang(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsLang: Query["getFieldCommentsLang"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsLang {
+          id,
+          code,
+          lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsLang as LangFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathLang() {
   return "/base/lang";
 }

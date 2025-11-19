@@ -482,7 +482,7 @@ export async function setIdByLblIcon(
 // MARK: getFieldCommentsIcon
 /** 获取图标库字段注释 */
 export async function getFieldCommentsIcon(): Promise<IconFieldComment> {
-  const fieldComments: IconFieldComment = {
+  const field_comments: IconFieldComment = {
     id: "ID",
     img: "图标",
     code: "编码",
@@ -500,7 +500,8 @@ export async function getFieldCommentsIcon(): Promise<IconFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueIcon

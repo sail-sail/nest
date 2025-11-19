@@ -537,7 +537,7 @@ export async function setIdByLblI18n(
 // MARK: getFieldCommentsI18n
 /** 获取国际化字段注释 */
 export async function getFieldCommentsI18n(): Promise<I18nFieldComment> {
-  const fieldComments: I18nFieldComment = {
+  const field_comments: I18nFieldComment = {
     id: "ID",
     lang_id: "语言",
     lang_id_lbl: "语言",
@@ -555,7 +555,8 @@ export async function getFieldCommentsI18n(): Promise<I18nFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueI18n

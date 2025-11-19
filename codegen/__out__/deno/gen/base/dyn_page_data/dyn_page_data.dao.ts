@@ -539,7 +539,9 @@ export async function setIdByLblDynPageData(
 // MARK: getFieldCommentsDynPageData
 /** 获取动态页面数据字段注释 */
 export async function getFieldCommentsDynPageData(): Promise<DynPageDataFieldComment> {
-  const fieldComments: DynPageDataFieldComment = {
+  
+  const pagePath = getPagePathDynPageData();
+  const field_comments: DynPageDataFieldComment = {
     id: "ID",
     ref_code: "关联页面路由",
     create_usr_id: "创建人",
@@ -551,7 +553,27 @@ export async function getFieldCommentsDynPageData(): Promise<DynPageDataFieldCom
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  const dyn_page_model = await findOneDynPage(
+    {
+      code: pagePath,
+      is_enabled: [ 1 ],
+    },
+  );
+  
+  if (dyn_page_model) {
+    
+    const dyn_page_field_models = dyn_page_model.dyn_page_field;
+    
+    for (const dyn_page_field_model of dyn_page_field_models) {
+      const field_code = dyn_page_field_model.code;
+      const field_lbl = dyn_page_field_model.lbl;
+      field_comments[field_code] = field_lbl;
+    }
+    
+  }
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDynPageData

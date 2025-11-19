@@ -451,20 +451,8 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
-    const [
-      defaultModel,
-    ] = await Promise.all([
-      getDefaultInputOperationRecord(),
-    ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,
-    };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
   ElMessage({
     message: "表单重置完毕",
     type: "success",
@@ -475,6 +463,15 @@ async function onReset() {
 async function onRefresh() {
   const id = dialogModel.id;
   if (!id) {
+    const [
+      defaultModel,
+    ] = await Promise.all([
+      getDefaultInputOperationRecord(),
+    ]);
+    dialogModel = {
+      ...defaultModel,
+      ...builtInModel,
+    };
     return;
   }
   const [

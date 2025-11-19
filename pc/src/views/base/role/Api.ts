@@ -939,6 +939,57 @@ export async function findLastOrderByRole(
   return res;
 }
 
+/**
+ * 获取 角色 字段注释
+ */
+export async function getFieldCommentsRole(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsRole: Query["getFieldCommentsRole"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsRole {
+          id,
+          code,
+          lbl,
+          home_url,
+          menu_ids,
+          menu_ids_lbl,
+          permit_ids,
+          permit_ids_lbl,
+          data_permit_ids,
+          data_permit_ids_lbl,
+          field_permit_ids,
+          field_permit_ids_lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsRole as RoleFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathRole() {
   return "/base/role";
 }

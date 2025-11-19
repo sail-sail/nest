@@ -526,7 +526,7 @@ export async function setIdByLblDomain(
 // MARK: getFieldCommentsDomain
 /** 获取域名字段注释 */
 export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
-  const fieldComments: DomainFieldComment = {
+  const field_comments: DomainFieldComment = {
     id: "ID",
     protocol: "协议",
     lbl: "名称",
@@ -545,7 +545,8 @@ export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDomain

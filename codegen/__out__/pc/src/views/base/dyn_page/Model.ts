@@ -38,6 +38,12 @@ export const dynPageFields = [
   "code",
   // 名称
   "lbl",
+  // 父菜单
+  "menu_id",
+  "menu_id_lbl",
+  // 所属角色
+  "role_ids",
+  "role_ids_lbl",
   // 排序
   "order_by",
   // 启用

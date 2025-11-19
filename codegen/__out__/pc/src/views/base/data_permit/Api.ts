@@ -701,6 +701,47 @@ export async function importModelsDataPermit(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
+/**
+ * 获取 数据权限 字段注释
+ */
+export async function getFieldCommentsDataPermit(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDataPermit: Query["getFieldCommentsDataPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDataPermit {
+          id,
+          menu_id,
+          menu_id_lbl,
+          scope,
+          scope_lbl,
+          type,
+          type_lbl,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDataPermit as DataPermitFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathDataPermit() {
   return "/base/data_permit";
 }

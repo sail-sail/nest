@@ -84,6 +84,9 @@ const hasMany2manyNotInline = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
   }
+  if (column.isVirtual) {
+    return false;
+  }
   const foreignKey = column.foreignKey;
   if (foreignKey && foreignKey.type === "many2many" && !column.inlineMany2manyTab) {
     return true;
@@ -92,6 +95,9 @@ const hasMany2manyNotInline = columns.some((column) => {
 });
 const hasMany2many = columns.some((column) => {
   if (column.ignoreCodegen) {
+    return false;
+  }
+  if (column.isVirtual) {
     return false;
   }
   const foreignKey = column.foreignKey;
@@ -2130,6 +2136,7 @@ export async function findAll<#=Table_Up#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
@@ -2178,6 +2185,7 @@ export async function findAll<#=Table_Up#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
@@ -2898,6 +2906,12 @@ export async function setIdByLbl<#=Table_Up#>(
 // MARK: getFieldComments<#=Table_Up#>
 /** 获取<#=table_comment#>字段注释 */
 export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentName#>> {<#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  const pagePath = getPagePath<#=Table_Up#>();<#
+  }
+  #><#
   if (isUseI18n) {
   #>
   const n = initN(route_path);
@@ -2946,7 +2960,7 @@ export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentNa
   };<#
   } else {
   #>
-  const fieldComments: <#=fieldCommentName#> = {<#
+  const field_comments: <#=fieldCommentName#> = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -2990,8 +3004,32 @@ export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentNa
     #>
   };<#
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
   #>
-  return fieldComments;
+  
+  const dyn_page_model = await findOneDynPage(
+    {
+      code: pagePath,
+      is_enabled: [ 1 ],
+    },
+  );
+  
+  if (dyn_page_model) {
+    
+    const dyn_page_field_models = dyn_page_model.dyn_page_field;
+    
+    for (const dyn_page_field_model of dyn_page_field_models) {
+      const field_code = dyn_page_field_model.code;
+      const field_lbl = dyn_page_field_model.lbl;
+      field_comments[field_code] = field_lbl;
+    }
+    
+  }<#
+  }
+  #>
+  
+  return field_comments;
 }
 
 // MARK: findByUnique<#=Table_Up#>
@@ -6788,6 +6826,7 @@ export async function deleteByIds<#=Table_Up#>(
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       if (column.inlineMany2manyTab) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
@@ -6845,6 +6884,7 @@ export async function deleteByIds<#=Table_Up#>(
     const hasIsDeleted = optTable.columns.some((column) => column.COLUMN_NAME === "is_deleted");
     for (const column of optTable.columns) {
       if (column.inlineMany2manyTab) continue;
+      if (column.isVirtual) continue;
       const foreignKey = column.foreignKey;
       const many2many = column.many2many;
       if (!many2many || !foreignKey) continue;
@@ -6920,6 +6960,7 @@ export async function deleteByIds<#=Table_Up#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     const foreignKey = column.foreignKey;
@@ -7330,6 +7371,7 @@ export async function revertByIds<#=Table_Up#>(
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       if (column.inlineMany2manyTab) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
@@ -7417,6 +7459,7 @@ export async function revertByIds<#=Table_Up#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -7588,6 +7631,7 @@ export async function forceDeleteByIds<#=Table_Up#>(
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       if (column.inlineMany2manyTab) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
@@ -7626,6 +7670,7 @@ export async function forceDeleteByIds<#=Table_Up#>(
     const hasIsDeleted = optTable.columns.some((column) => column.COLUMN_NAME === "is_deleted");
     for (const column of optTable.columns) {
       if (column.inlineMany2manyTab) continue;
+      if (column.isVirtual) continue;
       const foreignKey = column.foreignKey;
       const many2many = column.many2many;
       if (!many2many || !foreignKey) continue;
@@ -7677,6 +7722,7 @@ export async function forceDeleteByIds<#=Table_Up#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";

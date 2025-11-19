@@ -362,7 +362,7 @@ export async function setIdByLblPermit(
 // MARK: getFieldCommentsPermit
 /** 获取按钮权限字段注释 */
 export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
-  const fieldComments: PermitFieldComment = {
+  const field_comments: PermitFieldComment = {
     id: "ID",
     menu_id: "菜单",
     menu_id_lbl: "菜单",
@@ -371,7 +371,8 @@ export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
     order_by: "排序",
     rem: "备注",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniquePermit

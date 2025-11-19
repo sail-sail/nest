@@ -13,6 +13,14 @@ type DynPageModel {
   code: String!
   "名称"
   lbl: String!
+  "父菜单"
+  menu_id: MenuId!
+  "父菜单"
+  menu_id_lbl: String!
+  "所属角色"
+  role_ids: [RoleId!]!
+  "所属角色"
+  role_ids_lbl: [String!]!
   "排序"
   order_by: Int!
   "启用"
@@ -49,6 +57,14 @@ type DynPageFieldComment {
   code: String!
   "名称"
   lbl: String!
+  "父菜单"
+  menu_id: String!
+  "父菜单"
+  menu_id_lbl: String!
+  "所属角色"
+  role_ids: String!
+  "所属角色"
+  role_ids_lbl: String!
   "排序"
   order_by: String!
   "启用"
@@ -81,6 +97,14 @@ input DynPageInput {
   code: String
   "名称"
   lbl: String
+  "父菜单"
+  menu_id: MenuId
+  "父菜单"
+  menu_id_lbl: String
+  "所属角色"
+  role_ids: [RoleId!]
+  "所属角色"
+  role_ids_lbl: [String!]
   "排序"
   order_by: Int
   "启用"

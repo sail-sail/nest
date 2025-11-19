@@ -806,7 +806,7 @@ export async function setIdByLblTenant(
 // MARK: getFieldCommentsTenant
 /** 获取租户字段注释 */
 export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
-  const fieldComments: TenantFieldComment = {
+  const field_comments: TenantFieldComment = {
     id: "ID",
     code: "编码",
     lbl: "名称",
@@ -833,7 +833,8 @@ export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueTenant

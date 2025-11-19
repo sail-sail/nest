@@ -867,6 +867,53 @@ export async function findLastOrderByDept(
   return res;
 }
 
+/**
+ * 获取 部门 字段注释
+ */
+export async function getFieldCommentsDept(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDept: Query["getFieldCommentsDept"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDept {
+          id,
+          parent_id,
+          parent_id_lbl,
+          lbl,
+          usr_ids,
+          usr_ids_lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          org_id,
+          org_id_lbl,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDept as DeptFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathDept() {
   return "/base/dept";
 }

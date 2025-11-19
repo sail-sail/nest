@@ -888,6 +888,56 @@ export async function findLastOrderByTenant(
   return res;
 }
 
+/**
+ * 获取 租户 字段注释
+ */
+export async function getFieldCommentsTenant(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsTenant: Query["getFieldCommentsTenant"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsTenant {
+          id,
+          code,
+          lbl,
+          domain_ids,
+          domain_ids_lbl,
+          menu_ids,
+          menu_ids_lbl,
+          title,
+          info,
+          lang_id,
+          lang_id_lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsTenant as TenantFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathTenant() {
   return "/base/tenant";
 }

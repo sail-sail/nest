@@ -76,8 +76,6 @@ export const usrFields = [
   "update_time",
   "update_time_lbl",
   "is_deleted",
-  // 动态页面数据
-  "dyn_page_data",
 ];
 
 export const usrQueryField = `

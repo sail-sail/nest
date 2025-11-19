@@ -717,6 +717,48 @@ export async function findLastOrderByDictbizDetail(
   return res;
 }
 
+/**
+ * 获取 业务字典明细 字段注释
+ */
+export async function getFieldCommentsDictbizDetail(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDictbizDetail: Query["getFieldCommentsDictbizDetail"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDictbizDetail {
+          id,
+          dictbiz_id,
+          dictbiz_id_lbl,
+          lbl,
+          val,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDictbizDetail as DictbizDetailFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathDictbizDetail() {
   return "/base/dictbiz_detail";
 }

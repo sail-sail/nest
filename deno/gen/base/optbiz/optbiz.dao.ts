@@ -560,7 +560,7 @@ export async function setIdByLblOptbiz(
 // MARK: getFieldCommentsOptbiz
 /** 获取业务选项字段注释 */
 export async function getFieldCommentsOptbiz(): Promise<OptbizFieldComment> {
-  const fieldComments: OptbizFieldComment = {
+  const field_comments: OptbizFieldComment = {
     id: "ID",
     lbl: "名称",
     ky: "键",
@@ -580,7 +580,8 @@ export async function getFieldCommentsOptbiz(): Promise<OptbizFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueOptbiz

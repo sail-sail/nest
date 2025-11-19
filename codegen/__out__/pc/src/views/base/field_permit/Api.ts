@@ -414,6 +414,38 @@ export async function findLastOrderByFieldPermit(
   return res;
 }
 
+/**
+ * 获取 字段权限 字段注释
+ */
+export async function getFieldCommentsFieldPermit(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsFieldPermit: Query["getFieldCommentsFieldPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsFieldPermit {
+          id,
+          menu_id,
+          menu_id_lbl,
+          code,
+          lbl,
+          order_by,
+          rem,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsFieldPermit as FieldPermitFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathFieldPermit() {
   return "/base/field_permit";
 }

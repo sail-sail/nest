@@ -450,6 +450,12 @@ export async function findAllDynPage(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
+    model.menu_id = "" as MenuId;
+    model.menu_id_lbl = "";
+    
+    model.role_ids = [ ];
+    model.role_ids_lbl = [ ];
+    
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
     if (model.is_enabled != null) {
@@ -525,10 +531,14 @@ export async function setIdByLblDynPage(
 // MARK: getFieldCommentsDynPage
 /** 获取动态页面字段注释 */
 export async function getFieldCommentsDynPage(): Promise<DynPageFieldComment> {
-  const fieldComments: DynPageFieldComment = {
+  const field_comments: DynPageFieldComment = {
     id: "ID",
     code: "路由",
     lbl: "名称",
+    menu_id: "父菜单",
+    menu_id_lbl: "父菜单",
+    role_ids: "所属角色",
+    role_ids_lbl: "所属角色",
     order_by: "排序",
     is_enabled: "启用",
     is_enabled_lbl: "启用",
@@ -542,7 +552,8 @@ export async function getFieldCommentsDynPage(): Promise<DynPageFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDynPage

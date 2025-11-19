@@ -696,6 +696,49 @@ export async function findLastOrderByOptbiz(
   return res;
 }
 
+/**
+ * 获取 业务选项 字段注释
+ */
+export async function getFieldCommentsOptbiz(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsOptbiz: Query["getFieldCommentsOptbiz"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsOptbiz {
+          id,
+          lbl,
+          ky,
+          val,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsOptbiz as OptbizFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathOptbiz() {
   return "/base/optbiz";
 }
