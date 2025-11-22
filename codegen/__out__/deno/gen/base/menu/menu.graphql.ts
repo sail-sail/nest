@@ -148,6 +148,9 @@ input MenuSearch {
   "名称"
   lbl: String
   lbl_like: String
+  "路由"
+  route_path: String
+  route_path_like: String
   "启用"
   is_enabled: [Int!]
   "创建人"

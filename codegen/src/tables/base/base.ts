@@ -448,6 +448,7 @@ export default defineConfig({
         COLUMN_NAME: "route_path",
         align: "left",
         width: 280,
+        canSearch: true,
       },
       {
         COLUMN_NAME: "route_query",

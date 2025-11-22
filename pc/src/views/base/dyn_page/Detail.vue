@@ -79,11 +79,30 @@
             label="路由"
             prop="code"
           >
-            <CustomInput
-              v-model="dialogModel.code"
-              placeholder="自动生成 或 手动输入"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
+            <div
+              un-flex="~"
+              un-gap="x-1"
+              un-items="center"
+              un-w="full"
+            >
+              
+              <CustomInput
+                v-model="dialogModel.code"
+                placeholder="自动生成 或 手动输入"
+                :readonly="isLocked || isReadonly"
+              ></CustomInput>
+              
+              <el-link
+                v-if="!isLocked && !isReadonly"
+                type="primary"
+                un-whitespace="nowrap"
+                @click="onCodeSelect"
+              >
+                选择
+              </el-link>
+              
+            </div>
+            
           </el-form-item>
         </template>
         
@@ -503,6 +522,24 @@
       
     </div>
   </div>
+  
+  <!-- 选择菜单 -->
+  <ListSelectDialog
+    ref="menu_idsListSelectDialogRef"
+    v-slot="listSelectProps"
+    :is-locked="isLocked"
+  >
+    <MenuTreeList
+      :tenant_ids="[ usrStore.tenant_id ]"
+      :is_current_tenant="1"
+      is_enabled="1"
+      :props-not-reset="[ 'is_enabled' ]"
+      v-bind="listSelectProps"
+      :readonly="true"
+      is-multiple="0"
+    ></MenuTreeList>
+  </ListSelectDialog>
+  
 </CustomDialog>
 
 <AttrsDialog
@@ -546,7 +583,14 @@ import AttrsDialog from "@/views/base/dyn_page_field/AttrsDialog.vue";
 
 import {
   getComponentKeys,
-} from "@/components/ComponentMap";
+} from "@/components/ComponentMap.ts";
+
+import MenuTreeList from "@/views/base/menu/TreeList.vue";
+
+import {
+  findOneMenu,
+  findByIdMenu,
+} from "@/views/base/menu/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -558,7 +602,7 @@ const emit = defineEmits<{
 }>();
 
 const pagePath = getPagePathDynPage();
-
+const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit(pagePath);
@@ -1142,6 +1186,63 @@ async function onEditAttrs(row: DynPageFieldInput) {
   if (result?.type === "ok") {
     row.attrs = result.attrs || "";
   }
+}
+
+const menu_idsListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("menu_idsListSelectDialogRef"));
+
+/** 选择路由 */
+async function onCodeSelect() {
+  if (!menu_idsListSelectDialogRef) {
+    return;
+  }
+  let menu_ids: MenuId[] = [ ];
+  if (dialogModel.code) {
+    const menu_model = await findOneMenu({
+      route_path: dialogModel.code,
+    });
+    if (menu_model) {
+      menu_ids = [ menu_model.id ];
+    }
+  }
+  const res = await menu_idsListSelectDialogRef.showDialog({
+    title: "选择 菜单",
+    selectedIds: menu_ids,
+  });
+  if (isLocked) {
+    return;
+  }
+  const action = res.action;
+  if (action !== "select") {
+    return;
+  }
+  const selectedIds2 = res.selectedIds || [ ];
+  let isEqual = true;
+  if (selectedIds2.length === menu_ids.length) {
+    for (let i = 0; i < selectedIds2.length; i++) {
+      const item = selectedIds2[i];
+      if (!menu_ids.includes(item)) {
+        isEqual = false;
+        break;
+      }
+    }
+  } else {
+    isEqual = false;
+  }
+  if (isEqual) {
+    return;
+  }
+  menu_ids = selectedIds2;
+  const menu_id = menu_ids[0];
+  if (!menu_id) {
+    dialogModel.code = "";
+    return;
+  }
+  const menu_model = await findByIdMenu(menu_id);
+  if (!menu_model) {
+    dialogModel.code = "";
+    return;
+  }
+  dialogModel.code = menu_model.route_path || "";
 }
 
 async function onDialogOpen() {

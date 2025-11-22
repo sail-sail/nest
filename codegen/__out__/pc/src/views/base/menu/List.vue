@@ -521,7 +521,7 @@
           </template>
           
           <!-- 路由 -->
-          <template v-else-if="'route_path' === col.prop">
+          <template v-else-if="'route_path' === col.prop && (showBuildIn || builtInSearch?.route_path == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -762,6 +762,8 @@ const props = defineProps<{
   parent_id_lbl?: string; // 父菜单
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  route_path?: string; // 路由
+  route_path_like?: string; // 路由
   is_enabled?: string|string[]; // 启用
 }>();
 
