@@ -513,7 +513,7 @@
           </template>
           
           <!-- 父菜单 -->
-          <template v-else-if="'menu_id_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_id == null)">
+          <template v-else-if="'parent_menu_id_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -522,7 +522,7 @@
           </template>
           
           <!-- 所属角色 -->
-          <template v-else-if="'role_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.role_ids == null)">
+          <template v-else-if="'role_ids_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -737,8 +737,8 @@ const props = defineProps<{
   code_like?: string; // 路由
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  menu_id?: string|string[]; // 父菜单
-  menu_id_lbl?: string; // 父菜单
+  parent_menu_id?: string|string[]; // 父菜单
+  parent_menu_id_lbl?: string; // 父菜单
   role_ids?: string|string[]; // 所属角色
   role_ids_lbl?: string[]; // 所属角色
   is_enabled?: string|string[]; // 启用
@@ -753,8 +753,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  menu_id: "string[]",
-  menu_id_lbl: "string[]",
+  parent_menu_id: "string[]",
+  parent_menu_id_lbl: "string[]",
   role_ids: "string[]",
   role_ids_lbl: "string[]",
   is_enabled: "number[]",
@@ -1003,9 +1003,9 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "父菜单",
-      prop: "menu_id_lbl",
-      sortBy: "menu_id_lbl",
-      width: 180,
+      prop: "parent_menu_id_lbl",
+      sortBy: "parent_menu_id_lbl",
+      width: 200,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1014,6 +1014,7 @@ function getTableColumns(): ColumnType[] {
       label: "所属角色",
       prop: "role_ids_lbl",
       sortBy: "role_ids_lbl",
+      width: 200,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -1352,7 +1353,7 @@ async function onImportExcel() {
   const header: { [key: string]: string } = {
     [ "路由" ]: "code",
     [ "名称" ]: "lbl",
-    [ "父菜单" ]: "menu_id_lbl",
+    [ "父菜单" ]: "parent_menu_id_lbl",
     [ "所属角色" ]: "role_ids_lbl",
     [ "排序" ]: "order_by",
     [ "启用" ]: "is_enabled_lbl",
@@ -1380,7 +1381,7 @@ async function onImportExcel() {
         key_types: {
           "code": "string",
           "lbl": "string",
-          "menu_id_lbl": "string",
+          "parent_menu_id_lbl": "string",
           "role_ids_lbl": "string[]",
           "order_by": "number",
           "is_enabled_lbl": "string",

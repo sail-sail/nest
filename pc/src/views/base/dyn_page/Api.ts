@@ -48,8 +48,8 @@ export function intoInputDynPage(
     // 名称
     lbl: model?.lbl,
     // 父菜单
-    menu_id: model?.menu_id,
-    menu_id_lbl: model?.menu_id_lbl,
+    parent_menu_id: model?.parent_menu_id,
+    parent_menu_id_lbl: model?.parent_menu_id_lbl,
     // 所属角色
     role_ids: model?.role_ids,
     role_ids_lbl: model?.role_ids_lbl,
@@ -623,7 +623,7 @@ export function useDownloadImportTemplateDynPage() {
           getFieldCommentsDynPage {
             code
             lbl
-            menu_id_lbl
+            parent_menu_id_lbl
             role_ids_lbl
             order_by
             rem
@@ -823,8 +823,8 @@ export async function getFieldCommentsDynPage(
           id,
           code,
           lbl,
-          menu_id,
-          menu_id_lbl,
+          parent_menu_id,
+          parent_menu_id_lbl,
           role_ids,
           role_ids_lbl,
           order_by,

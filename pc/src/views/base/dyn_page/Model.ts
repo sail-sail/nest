@@ -39,8 +39,8 @@ export const dynPageFields = [
   // 名称
   "lbl",
   // 父菜单
-  "menu_id",
-  "menu_id_lbl",
+  "parent_menu_id",
+  "parent_menu_id_lbl",
   // 所属角色
   "role_ids",
   "role_ids_lbl",

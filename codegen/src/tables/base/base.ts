@@ -1513,13 +1513,19 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
       },
       {
-        COLUMN_NAME: "menu_id",
+        COLUMN_NAME: "parent_menu_id",
         COLUMN_COMMENT: "父菜单",
+        width: 200,
         isVirtual: true,
+        foreignKey: {
+          mod: "base",
+          table: "menu",
+        },
       },
       {
         COLUMN_NAME: "role_ids",
         COLUMN_COMMENT: "所属角色",
+        width: 200,
         require: false,
         isVirtual: true,
       },

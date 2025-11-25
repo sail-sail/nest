@@ -100,13 +100,13 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.menu_id == null)">
+        <template v-if="true">
           <el-form-item
             label="父菜单"
-            prop="menu_id"
+            prop="parent_menu_id"
           >
             <CustomTreeSelect
-              v-model="dialogModel.menu_id"
+              v-model="dialogModel.parent_menu_id"
               :method="getTreeMenu"
               placeholder="请选择 父菜单"
               :readonly="isLocked || isReadonly"
@@ -114,7 +114,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.role_ids == null)">
+        <template v-if="true">
           <el-form-item
             label="所属角色"
             prop="role_ids"
@@ -917,15 +917,15 @@ async function nextId() {
 
 watch(
   () => [
-    dialogModel.menu_id,
+    dialogModel.parent_menu_id,
     dialogModel.role_ids,
   ],
   () => {
     if (!inited) {
       return;
     }
-    if (!dialogModel.menu_id) {
-      dialogModel.menu_id_lbl = "";
+    if (!dialogModel.parent_menu_id) {
+      dialogModel.parent_menu_id_lbl = "";
     }
     if (!dialogModel.role_ids || dialogModel.role_ids.length === 0) {
       dialogModel.role_ids_lbl = [ ];

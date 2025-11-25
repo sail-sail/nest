@@ -324,13 +324,24 @@ for (let i = 0; i < columns.length; i++) {
           const isPassword = column.isPassword;
           form_item_index++;
           const fieldPermit = column.fieldPermit;
+          const isVirtual = column.isVirtual;
         #>
         
-        <template v-if="<#
+        <template<#
+          if (fieldPermit || !isVirtual || vIfStr) {
+        #> v-if="<#
           if (fieldPermit) {
         #>field_permit('<#=column_name#>') && <#
           }
-        #>(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
+        #><#
+          if (!isVirtual) {
+        #>(showBuildIn || builtInModel?.<#=column_name#> == null)<#
+          }
+        #><#=vIfStr ? ' && '+vIfStr : ''#>"<#
+          } else {
+        #> v-if="true"<#
+          }
+        #>>
           <el-form-item<#
             if (isUseI18n) {
             #>

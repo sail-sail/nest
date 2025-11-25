@@ -14,9 +14,9 @@ type DynPageModel {
   "名称"
   lbl: String!
   "父菜单"
-  menu_id: MenuId!
+  parent_menu_id: MenuId!
   "父菜单"
-  menu_id_lbl: String!
+  parent_menu_id_lbl: String!
   "所属角色"
   role_ids: [RoleId!]!
   "所属角色"
@@ -58,9 +58,9 @@ type DynPageFieldComment {
   "名称"
   lbl: String!
   "父菜单"
-  menu_id: String!
+  parent_menu_id: String!
   "父菜单"
-  menu_id_lbl: String!
+  parent_menu_id_lbl: String!
   "所属角色"
   role_ids: String!
   "所属角色"
@@ -98,9 +98,9 @@ input DynPageInput {
   "名称"
   lbl: String
   "父菜单"
-  menu_id: MenuId
+  parent_menu_id: MenuId
   "父菜单"
-  menu_id_lbl: String
+  parent_menu_id_lbl: String
   "所属角色"
   role_ids: [RoleId!]
   "所属角色"
