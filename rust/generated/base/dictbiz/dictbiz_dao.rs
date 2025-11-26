@@ -498,7 +498,7 @@ pub async fn find_all_dictbiz(
   options: Option<Options>,
 ) -> Result<Vec<DictbizModel>> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "find_all_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -704,7 +704,7 @@ pub async fn find_count_dictbiz(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "find_count_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -826,11 +826,12 @@ pub async fn find_count_dictbiz(
 
 // MARK: get_field_comments_dictbiz
 /// 获取业务字典字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_dictbiz(
   _options: Option<Options>,
 ) -> Result<DictbizFieldComment> {
   
-  let field_comments = DictbizFieldComment {
+  let mut field_comments = DictbizFieldComment {
     id: "ID".into(),
     code: "编码".into(),
     lbl: "名称".into(),
@@ -862,7 +863,7 @@ pub async fn find_one_ok_dictbiz(
   options: Option<Options>,
 ) -> Result<DictbizModel> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "find_one_ok_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -911,7 +912,7 @@ pub async fn find_one_dictbiz(
   options: Option<Options>,
 ) -> Result<Option<DictbizModel>> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "find_one_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -966,7 +967,7 @@ pub async fn find_by_id_ok_dictbiz(
   options: Option<Options>,
 ) -> Result<DictbizModel> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "find_by_id_ok_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1015,7 +1016,7 @@ pub async fn find_by_id_dictbiz(
   options: Option<Options>,
 ) -> Result<Option<DictbizModel>> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "find_by_id_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1062,7 +1063,7 @@ pub async fn find_by_ids_ok_dictbiz(
   options: Option<Options>,
 ) -> Result<Vec<DictbizModel>> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "find_by_ids_ok_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1134,7 +1135,7 @@ pub async fn find_by_ids_dictbiz(
   options: Option<Options>,
 ) -> Result<Vec<DictbizModel>> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "find_by_ids_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1204,7 +1205,7 @@ pub async fn exists_dictbiz(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "exists_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1326,7 +1327,7 @@ pub async fn exists_by_id_dictbiz(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "exists_by_id_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1369,7 +1370,7 @@ pub async fn find_by_unique_dictbiz(
   options: Option<Options>,
 ) -> Result<Vec<DictbizModel>> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "find_by_unique_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1481,7 +1482,7 @@ pub async fn check_by_unique_dictbiz(
   options: Option<Options>,
 ) -> Result<Option<DictbizId>> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "check_by_unique_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1640,7 +1641,7 @@ pub async fn creates_return_dictbiz(
   options: Option<Options>,
 ) -> Result<Vec<DictbizModel>> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "creates_return_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1677,7 +1678,7 @@ pub async fn creates_dictbiz(
   options: Option<Options>,
 ) -> Result<Vec<DictbizId>> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "creates_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1709,7 +1710,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<DictbizId>> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -2069,7 +2070,7 @@ pub async fn create_dictbiz(
   options: Option<Options>,
 ) -> Result<DictbizId> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "create_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2106,7 +2107,7 @@ pub async fn update_tenant_by_id_dictbiz(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "update_tenant_by_id_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2155,7 +2156,7 @@ pub async fn update_by_id_dictbiz(
   options: Option<Options>,
 ) -> Result<DictbizId> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "update_by_id_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2464,7 +2465,7 @@ pub async fn update_by_id_dictbiz(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   vec![
     table,
   ]
@@ -2489,7 +2490,7 @@ pub async fn delete_by_ids_dictbiz(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "delete_by_ids_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2661,7 +2662,7 @@ pub async fn enable_by_ids_dictbiz(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "enable_by_ids_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2718,7 +2719,7 @@ pub async fn revert_by_ids_dictbiz(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "revert_by_ids_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2838,7 +2839,7 @@ pub async fn force_delete_by_ids_dictbiz(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "force_delete_by_ids_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2943,7 +2944,7 @@ pub async fn find_last_order_by_dictbiz(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_dictbiz";
+  let table = get_table_name_dictbiz();
   let method = "find_last_order_by_dictbiz";
   
   let is_debug = get_is_debug(options.as_ref());

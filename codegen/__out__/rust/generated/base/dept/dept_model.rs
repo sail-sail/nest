@@ -716,8 +716,12 @@ pub fn check_sort_dept(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_dept() -> String {
-  "/base/dept".to_owned()
+// MARK: get_page_path_dept
+pub fn get_page_path_dept() -> &'static str {
+  "/base/dept"
+}
+
+// MARK: get_table_name_dept
+pub fn get_table_name_dept() -> &'static str {
+  "base_dept"
 }

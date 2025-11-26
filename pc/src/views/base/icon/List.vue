@@ -500,14 +500,11 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <CustomIcon
-                  :model-value="row.img"
-                  :model-lbl="row.img_lbl_svg"
-                  :readonly="true"
-                  un-justify-center
-                  un-items-center
-                ></CustomIcon>
+              <template #default="{ row, column }">
+                <LinkImage
+                  v-model="row[column.property]"
+                  un-h="8"
+                ></LinkImage>
               </template>
             </el-table-column>
           </template>
@@ -617,7 +614,7 @@
             </el-table-column>
           </template>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"

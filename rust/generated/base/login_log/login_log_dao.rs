@@ -404,7 +404,7 @@ pub async fn find_all_login_log(
   options: Option<Options>,
 ) -> Result<Vec<LoginLogModel>> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "find_all_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -576,7 +576,7 @@ pub async fn find_count_login_log(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "find_count_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -692,11 +692,12 @@ pub async fn find_count_login_log(
 
 // MARK: get_field_comments_login_log
 /// 获取登录日志字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_login_log(
   _options: Option<Options>,
 ) -> Result<LoginLogFieldComment> {
   
-  let field_comments = LoginLogFieldComment {
+  let mut field_comments = LoginLogFieldComment {
     id: "ID".into(),
     r#type: "类型".into(),
     type_lbl: "类型".into(),
@@ -719,7 +720,7 @@ pub async fn find_one_ok_login_log(
   options: Option<Options>,
 ) -> Result<LoginLogModel> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "find_one_ok_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -768,7 +769,7 @@ pub async fn find_one_login_log(
   options: Option<Options>,
 ) -> Result<Option<LoginLogModel>> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "find_one_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -823,7 +824,7 @@ pub async fn find_by_id_ok_login_log(
   options: Option<Options>,
 ) -> Result<LoginLogModel> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "find_by_id_ok_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -872,7 +873,7 @@ pub async fn find_by_id_login_log(
   options: Option<Options>,
 ) -> Result<Option<LoginLogModel>> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "find_by_id_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -919,7 +920,7 @@ pub async fn find_by_ids_ok_login_log(
   options: Option<Options>,
 ) -> Result<Vec<LoginLogModel>> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "find_by_ids_ok_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -991,7 +992,7 @@ pub async fn find_by_ids_login_log(
   options: Option<Options>,
 ) -> Result<Vec<LoginLogModel>> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "find_by_ids_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1061,7 +1062,7 @@ pub async fn exists_login_log(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "exists_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1177,7 +1178,7 @@ pub async fn exists_by_id_login_log(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "exists_by_id_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1220,7 +1221,7 @@ pub async fn find_by_unique_login_log(
   options: Option<Options>,
 ) -> Result<Vec<LoginLogModel>> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "find_by_unique_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1276,7 +1277,7 @@ pub async fn check_by_unique_login_log(
   options: Option<Options>,
 ) -> Result<Option<LoginLogId>> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "check_by_unique_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1435,7 +1436,7 @@ pub async fn creates_return_login_log(
   options: Option<Options>,
 ) -> Result<Vec<LoginLogModel>> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "creates_return_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1472,7 +1473,7 @@ pub async fn creates_login_log(
   options: Option<Options>,
 ) -> Result<Vec<LoginLogId>> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "creates_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1504,7 +1505,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<LoginLogId>> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1808,7 +1809,7 @@ pub async fn create_login_log(
   options: Option<Options>,
 ) -> Result<LoginLogId> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "create_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1845,7 +1846,7 @@ pub async fn update_tenant_by_id_login_log(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "update_tenant_by_id_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1894,7 +1895,7 @@ pub async fn update_by_id_login_log(
   options: Option<Options>,
 ) -> Result<LoginLogId> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "update_by_id_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2106,7 +2107,7 @@ pub async fn update_by_id_login_log(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   vec![
     table,
   ]
@@ -2131,7 +2132,7 @@ pub async fn delete_by_ids_login_log(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "delete_by_ids_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2253,7 +2254,7 @@ pub async fn revert_by_ids_login_log(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "revert_by_ids_login_log";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2352,7 +2353,7 @@ pub async fn force_delete_by_ids_login_log(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_login_log";
+  let table = get_table_name_login_log();
   let method = "force_delete_by_ids_login_log";
   
   let is_debug = get_is_debug(options.as_ref());

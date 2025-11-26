@@ -707,8 +707,12 @@ pub fn check_sort_dict(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_dict() -> String {
-  "/base/dict".to_owned()
+// MARK: get_page_path_dict
+pub fn get_page_path_dict() -> &'static str {
+  "/base/dict"
+}
+
+// MARK: get_table_name_dict
+pub fn get_table_name_dict() -> &'static str {
+  "base_dict"
 }

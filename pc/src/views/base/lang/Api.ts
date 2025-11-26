@@ -13,7 +13,7 @@ import {
   langQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdLang(
   model?: LangModel | null,
   isExcelExport = false,
 ) {
@@ -71,7 +71,7 @@ export async function findAllLang(
   const models = data.findAllLang;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdLang(model);
   }
   return models;
 }
@@ -103,7 +103,7 @@ export async function findOneLang(
   
   const model = data.findOneLang;
   
-  await setLblById(model);
+  await setLblByIdLang(model);
   
   return model;
 }
@@ -135,7 +135,7 @@ export async function findOneOkLang(
   
   const model = data.findOneOkLang;
   
-  await setLblById(model);
+  await setLblByIdLang(model);
   
   return model;
 }
@@ -261,7 +261,7 @@ export async function findByIdLang(
   
   const model = data.findByIdLang;
   
-  await setLblById(model);
+  await setLblByIdLang(model);
   
   return model;
 }
@@ -291,7 +291,7 @@ export async function findByIdOkLang(
   
   const model = data.findByIdOkLang;
   
-  await setLblById(model);
+  await setLblByIdLang(model);
   
   return model;
 }
@@ -327,7 +327,7 @@ export async function findByIdsLang(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdLang(model);
   }
   
   return models;
@@ -364,7 +364,7 @@ export async function findByIdsOkLang(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdLang(model);
   }
   
   return models;
@@ -565,7 +565,7 @@ export function useExportExcelLang() {
         },
       }, opt);
       for (const model of data.findAllLang) {
-        await setLblById(model, true);
+        await setLblByIdLang(model, true);
       }
       try {
         const sheetName = "语言";
@@ -658,6 +658,46 @@ export async function findLastOrderByLang(
   }, opt);
   const res = data.findLastOrderByLang;
   return res;
+}
+
+/**
+ * 获取 语言 字段注释
+ */
+export async function getFieldCommentsLang(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsLang: Query["getFieldCommentsLang"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsLang {
+          id,
+          code,
+          lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsLang as LangFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathLang() {

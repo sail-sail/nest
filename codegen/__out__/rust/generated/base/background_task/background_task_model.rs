@@ -852,8 +852,12 @@ pub fn check_sort_background_task(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_background_task() -> String {
-  "/base/background_task".to_owned()
+// MARK: get_page_path_background_task
+pub fn get_page_path_background_task() -> &'static str {
+  "/base/background_task"
+}
+
+// MARK: get_table_name_background_task
+pub fn get_table_name_background_task() -> &'static str {
+  "base_background_task"
 }

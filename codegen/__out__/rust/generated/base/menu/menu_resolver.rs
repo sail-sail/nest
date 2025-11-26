@@ -256,7 +256,7 @@ pub async fn creates_menu(
   let inputs = inputs2;
   
   use_permit(
-    get_route_path_menu(),
+    get_page_path_menu().to_string(),
     "add".to_owned(),
   ).await?;
   
@@ -292,7 +292,7 @@ pub async fn update_by_id_menu(
   ).await?;
   
   use_permit(
-    get_route_path_menu(),
+    get_page_path_menu().to_string(),
     "edit".to_owned(),
   ).await?;
   
@@ -320,7 +320,7 @@ pub async fn delete_by_ids_menu(
   );
   
   use_permit(
-    get_route_path_menu(),
+    get_page_path_menu().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -371,7 +371,7 @@ pub async fn enable_by_ids_menu(
   );
   
   use_permit(
-    get_route_path_menu(),
+    get_page_path_menu().to_string(),
     "edit".to_owned(),
   ).await?;
   
@@ -418,7 +418,7 @@ pub async fn revert_by_ids_menu(
   );
   
   use_permit(
-    get_route_path_menu(),
+    get_page_path_menu().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -445,7 +445,7 @@ pub async fn force_delete_by_ids_menu(
   );
   
   use_permit(
-    get_route_path_menu(),
+    get_page_path_menu().to_string(),
     "force_delete".to_owned(),
   ).await?;
   

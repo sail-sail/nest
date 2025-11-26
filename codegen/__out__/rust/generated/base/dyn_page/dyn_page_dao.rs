@@ -82,7 +82,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 13 * 2);
+  let mut where_query = String::with_capacity(80 * 15 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -155,7 +155,7 @@ async fn get_where_query(
       args.push(code_seq_lt.into());
     }
   }
-  // 编码
+  // 路由
   {
     let code = match search {
       Some(item) => item.code.clone(),
@@ -447,7 +447,7 @@ pub async fn find_all_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_all_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -628,7 +628,7 @@ pub async fn find_count_dyn_page(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_count_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -736,14 +736,19 @@ pub async fn find_count_dyn_page(
 
 // MARK: get_field_comments_dyn_page
 /// 获取动态页面字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_dyn_page(
   _options: Option<Options>,
 ) -> Result<DynPageFieldComment> {
   
-  let field_comments = DynPageFieldComment {
+  let mut field_comments = DynPageFieldComment {
     id: "ID".into(),
-    code: "编码".into(),
+    code: "路由".into(),
     lbl: "名称".into(),
+    parent_menu_id: "父菜单".into(),
+    parent_menu_id_lbl: "父菜单".into(),
+    role_ids: "所属角色".into(),
+    role_ids_lbl: "所属角色".into(),
     order_by: "排序".into(),
     is_enabled: "启用".into(),
     is_enabled_lbl: "启用".into(),
@@ -769,7 +774,7 @@ pub async fn find_one_ok_dyn_page(
   options: Option<Options>,
 ) -> Result<DynPageModel> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_one_ok_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -818,7 +823,7 @@ pub async fn find_one_dyn_page(
   options: Option<Options>,
 ) -> Result<Option<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_one_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -873,7 +878,7 @@ pub async fn find_by_id_ok_dyn_page(
   options: Option<Options>,
 ) -> Result<DynPageModel> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_by_id_ok_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -922,7 +927,7 @@ pub async fn find_by_id_dyn_page(
   options: Option<Options>,
 ) -> Result<Option<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_by_id_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -969,7 +974,7 @@ pub async fn find_by_ids_ok_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_by_ids_ok_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1041,7 +1046,7 @@ pub async fn find_by_ids_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_by_ids_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1111,7 +1116,7 @@ pub async fn exists_dyn_page(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "exists_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1219,7 +1224,7 @@ pub async fn exists_by_id_dyn_page(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "exists_by_id_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1262,7 +1267,7 @@ pub async fn find_by_unique_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_by_unique_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1374,7 +1379,7 @@ pub async fn check_by_unique_dyn_page(
   options: Option<Options>,
 ) -> Result<Option<DynPageId>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "check_by_unique_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1492,7 +1497,7 @@ pub async fn creates_return_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "creates_return_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1529,7 +1534,7 @@ pub async fn creates_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageId>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "creates_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1561,7 +1566,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<DynPageId>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1633,7 +1638,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 13 + 20);
+  let mut sql_fields = String::with_capacity(80 * 15 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1645,7 +1650,7 @@ async fn _creates(
   sql_fields += ",tenant_id";
   // 编码-序列号
   sql_fields += ",code_seq";
-  // 编码
+  // 路由
   sql_fields += ",code";
   // 名称
   sql_fields += ",lbl";
@@ -1657,7 +1662,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 13 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 15 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1790,7 +1795,7 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 编码
+    // 路由
     if let Some(code) = input.code {
       sql_values += ",?";
       args.push(code.into());
@@ -1880,7 +1885,7 @@ pub async fn find_auto_code_dyn_page(
   options: Option<Options>,
 ) -> Result<(u32, String)> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_auto_code_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1935,7 +1940,7 @@ pub async fn find_auto_code_dyn_page(
     code_seq
   };
   
-  let code = format!("DP{code_seq:03}");
+  let code = format!("/dyn/pg{code_seq:0}");
   
   Ok((code_seq, code))
 }
@@ -1983,7 +1988,7 @@ pub async fn create_dyn_page(
   options: Option<Options>,
 ) -> Result<DynPageId> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "create_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2020,7 +2025,7 @@ pub async fn update_tenant_by_id_dyn_page(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "update_tenant_by_id_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2069,7 +2074,7 @@ pub async fn update_by_id_dyn_page(
   options: Option<Options>,
 ) -> Result<DynPageId> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "update_by_id_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2147,7 +2152,7 @@ pub async fn update_by_id_dyn_page(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 13 + 20);
+  let mut sql_fields = String::with_capacity(80 * 15 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2162,7 +2167,7 @@ pub async fn update_by_id_dyn_page(
     sql_fields += "code_seq=?,";
     args.push(code_seq.into());
   }
-  // 编码
+  // 路由
   if let Some(code) = input.code {
     field_num += 1;
     sql_fields += "code=?,";
@@ -2366,7 +2371,7 @@ pub async fn update_by_id_dyn_page(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   vec![
     table,
   ]
@@ -2391,7 +2396,7 @@ pub async fn delete_by_ids_dyn_page(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "delete_by_ids_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2563,7 +2568,7 @@ pub async fn enable_by_ids_dyn_page(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "enable_by_ids_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2620,7 +2625,7 @@ pub async fn revert_by_ids_dyn_page(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "revert_by_ids_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2740,7 +2745,7 @@ pub async fn force_delete_by_ids_dyn_page(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "force_delete_by_ids_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2845,7 +2850,7 @@ pub async fn find_last_order_by_dyn_page(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_last_order_by_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());

@@ -299,18 +299,6 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
-  // 仅当前租户
-  {
-    let is_current_tenant: Option<u8> = match search {
-      Some(item) => item.is_current_tenant,
-      None => None,
-    };
-    if let Some(is_current_tenant) = is_current_tenant && is_current_tenant == 1 {
-      let auth_tenant_id = get_auth_tenant_id();
-      where_query.push_str(" and base_tenant_menu.tenant_id=?");
-      args.push(auth_tenant_id.unwrap_or_default().into());
-    }
-  }
   // 排序
   {
     let mut order_by = match search {
@@ -552,9 +540,7 @@ async fn get_from_query(
 ) -> Result<String> {
   
   let from_query = r#"base_menu t
-  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id
-  left join base_tenant_menu on base_tenant_menu.menu_id=t.id and base_tenant_menu.is_deleted=0
-  "#.to_owned();
+  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id"#.to_owned();
   Ok(from_query)
 }
 
@@ -568,7 +554,7 @@ pub async fn find_all_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_all_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -803,7 +789,7 @@ pub async fn find_count_menu(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_count_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -967,11 +953,12 @@ pub async fn find_count_menu(
 
 // MARK: get_field_comments_menu
 /// 获取菜单字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_menu(
   _options: Option<Options>,
 ) -> Result<MenuFieldComment> {
   
-  let field_comments = MenuFieldComment {
+  let mut field_comments = MenuFieldComment {
     id: "ID".into(),
     parent_id: "父菜单".into(),
     parent_id_lbl: "父菜单".into(),
@@ -1007,7 +994,7 @@ pub async fn find_one_ok_menu(
   options: Option<Options>,
 ) -> Result<MenuModel> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_one_ok_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1056,7 +1043,7 @@ pub async fn find_one_menu(
   options: Option<Options>,
 ) -> Result<Option<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_one_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1111,7 +1098,7 @@ pub async fn find_by_id_ok_menu(
   options: Option<Options>,
 ) -> Result<MenuModel> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_by_id_ok_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1160,7 +1147,7 @@ pub async fn find_by_id_menu(
   options: Option<Options>,
 ) -> Result<Option<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_by_id_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1207,7 +1194,7 @@ pub async fn find_by_ids_ok_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_by_ids_ok_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1279,7 +1266,7 @@ pub async fn find_by_ids_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1349,7 +1336,7 @@ pub async fn exists_menu(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "exists_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1513,7 +1500,7 @@ pub async fn exists_by_id_menu(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "exists_by_id_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1556,7 +1543,7 @@ pub async fn find_by_unique_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_by_unique_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1644,7 +1631,7 @@ pub async fn check_by_unique_menu(
   options: Option<Options>,
 ) -> Result<Option<MenuId>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "check_by_unique_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1880,7 +1867,7 @@ pub async fn creates_return_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "creates_return_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1917,7 +1904,7 @@ pub async fn creates_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuId>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "creates_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1949,7 +1936,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<MenuId>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -2306,7 +2293,7 @@ pub async fn create_menu(
   options: Option<Options>,
 ) -> Result<MenuId> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "create_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2346,7 +2333,7 @@ pub async fn update_by_id_menu(
   options: Option<Options>,
 ) -> Result<MenuId> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "update_by_id_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2612,7 +2599,7 @@ pub async fn update_by_id_menu(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_menu";
+  let table = get_table_name_menu();
   vec![
     table,
   ]
@@ -2637,7 +2624,7 @@ pub async fn delete_by_ids_menu(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "delete_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2820,7 +2807,7 @@ pub async fn enable_by_ids_menu(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "enable_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2885,7 +2872,7 @@ pub async fn revert_by_ids_menu(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "revert_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2993,7 +2980,7 @@ pub async fn force_delete_by_ids_menu(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "force_delete_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3109,7 +3096,7 @@ pub async fn find_last_order_by_menu(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_last_order_by_menu";
   
   let is_debug = get_is_debug(options.as_ref());

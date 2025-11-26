@@ -30,12 +30,12 @@
       
       <template v-if="(builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null))">
         <el-form-item
-          label="编码"
+          label="路由"
           prop="code_like"
         >
           <CustomInput
             v-model="search.code_like"
-            placeholder="请输入 编码"
+            placeholder="请输入 路由"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -494,7 +494,7 @@
           :key="col.prop"
         >
           
-          <!-- 编码 -->
+          <!-- 路由 -->
           <template v-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -509,6 +509,29 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+            </el-table-column>
+          </template>
+          
+          <!-- 父菜单 -->
+          <template v-else-if="'parent_menu_id_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 所属角色 -->
+          <template v-else-if="'role_ids_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
             </el-table-column>
           </template>
           
@@ -599,7 +622,7 @@
             </el-table-column>
           </template>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -710,10 +733,14 @@ const props = defineProps<{
   selectedIds?: DynPageId[]; //已选择行的id列表
   isMultiple?: string; //是否多选
   id?: DynPageId; // ID
-  code?: string; // 编码
-  code_like?: string; // 编码
+  code?: string; // 路由
+  code_like?: string; // 路由
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  parent_menu_id?: string|string[]; // 父菜单
+  parent_menu_id_lbl?: string; // 父菜单
+  role_ids?: string|string[]; // 所属角色
+  role_ids_lbl?: string[]; // 所属角色
   is_enabled?: string|string[]; // 启用
 }>();
 
@@ -726,6 +753,10 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
+  parent_menu_id: "string[]",
+  parent_menu_id_lbl: "string[]",
+  role_ids: "string[]",
+  role_ids_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   create_usr_id: "string[]",
@@ -953,7 +984,7 @@ let tableData = $ref<DynPageModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "编码",
+      label: "路由",
       prop: "code",
       width: 140,
       align: "left",
@@ -969,6 +1000,24 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
+    },
+    {
+      label: "父菜单",
+      prop: "parent_menu_id_lbl",
+      sortBy: "parent_menu_id_lbl",
+      width: 200,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "所属角色",
+      prop: "role_ids_lbl",
+      sortBy: "role_ids_lbl",
+      width: 200,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
     },
     {
       label: "排序",
@@ -1302,7 +1351,10 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
+    [ "路由" ]: "code",
     [ "名称" ]: "lbl",
+    [ "父菜单" ]: "parent_menu_id_lbl",
+    [ "所属角色" ]: "role_ids_lbl",
     [ "排序" ]: "order_by",
     [ "启用" ]: "is_enabled_lbl",
     [ "备注" ]: "rem",
@@ -1327,7 +1379,10 @@ async function onImportExcel() {
       header,
       {
         key_types: {
+          "code": "string",
           "lbl": "string",
+          "parent_menu_id_lbl": "string",
+          "role_ids_lbl": "string[]",
           "order_by": "number",
           "is_enabled_lbl": "string",
           "rem": "string",

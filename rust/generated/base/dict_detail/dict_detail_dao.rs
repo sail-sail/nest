@@ -464,7 +464,7 @@ pub async fn find_all_dict_detail(
   options: Option<Options>,
 ) -> Result<Vec<DictDetailModel>> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "find_all_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -635,7 +635,7 @@ pub async fn find_count_dict_detail(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "find_count_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -757,11 +757,12 @@ pub async fn find_count_dict_detail(
 
 // MARK: get_field_comments_dict_detail
 /// 获取系统字典明细字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_dict_detail(
   _options: Option<Options>,
 ) -> Result<DictDetailFieldComment> {
   
-  let field_comments = DictDetailFieldComment {
+  let mut field_comments = DictDetailFieldComment {
     id: "ID".into(),
     dict_id: "系统字典".into(),
     dict_id_lbl: "系统字典".into(),
@@ -792,7 +793,7 @@ pub async fn find_one_ok_dict_detail(
   options: Option<Options>,
 ) -> Result<DictDetailModel> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "find_one_ok_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -841,7 +842,7 @@ pub async fn find_one_dict_detail(
   options: Option<Options>,
 ) -> Result<Option<DictDetailModel>> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "find_one_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -896,7 +897,7 @@ pub async fn find_by_id_ok_dict_detail(
   options: Option<Options>,
 ) -> Result<DictDetailModel> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "find_by_id_ok_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -945,7 +946,7 @@ pub async fn find_by_id_dict_detail(
   options: Option<Options>,
 ) -> Result<Option<DictDetailModel>> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "find_by_id_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -992,7 +993,7 @@ pub async fn find_by_ids_ok_dict_detail(
   options: Option<Options>,
 ) -> Result<Vec<DictDetailModel>> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "find_by_ids_ok_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1064,7 +1065,7 @@ pub async fn find_by_ids_dict_detail(
   options: Option<Options>,
 ) -> Result<Vec<DictDetailModel>> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "find_by_ids_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1134,7 +1135,7 @@ pub async fn exists_dict_detail(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "exists_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1256,7 +1257,7 @@ pub async fn exists_by_id_dict_detail(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "exists_by_id_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1299,7 +1300,7 @@ pub async fn find_by_unique_dict_detail(
   options: Option<Options>,
 ) -> Result<Vec<DictDetailModel>> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "find_by_unique_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1387,7 +1388,7 @@ pub async fn check_by_unique_dict_detail(
   options: Option<Options>,
 ) -> Result<Option<DictDetailId>> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "check_by_unique_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1541,7 +1542,7 @@ pub async fn creates_return_dict_detail(
   options: Option<Options>,
 ) -> Result<Vec<DictDetailModel>> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "creates_return_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1578,7 +1579,7 @@ pub async fn creates_dict_detail(
   options: Option<Options>,
 ) -> Result<Vec<DictDetailId>> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "creates_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1610,7 +1611,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<DictDetailId>> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1932,7 +1933,7 @@ pub async fn create_dict_detail(
   options: Option<Options>,
 ) -> Result<DictDetailId> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "create_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1972,7 +1973,7 @@ pub async fn update_by_id_dict_detail(
   options: Option<Options>,
 ) -> Result<DictDetailId> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "update_by_id_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2212,7 +2213,7 @@ pub async fn update_by_id_dict_detail(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   vec![
     table,
   ]
@@ -2237,7 +2238,7 @@ pub async fn delete_by_ids_dict_detail(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "delete_by_ids_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2390,7 +2391,7 @@ pub async fn enable_by_ids_dict_detail(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "enable_by_ids_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2447,7 +2448,7 @@ pub async fn revert_by_ids_dict_detail(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "revert_by_ids_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2547,7 +2548,7 @@ pub async fn force_delete_by_ids_dict_detail(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "force_delete_by_ids_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2633,7 +2634,7 @@ pub async fn find_last_order_by_dict_detail(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_dict_detail";
+  let table = get_table_name_dict_detail();
   let method = "find_last_order_by_dict_detail";
   
   let is_debug = get_is_debug(options.as_ref());

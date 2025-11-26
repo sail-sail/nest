@@ -602,8 +602,12 @@ pub fn check_sort_optbiz(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_optbiz() -> String {
-  "/base/optbiz".to_owned()
+// MARK: get_page_path_optbiz
+pub fn get_page_path_optbiz() -> &'static str {
+  "/base/optbiz"
+}
+
+// MARK: get_table_name_optbiz
+pub fn get_table_name_optbiz() -> &'static str {
+  "base_optbiz"
 }

@@ -552,8 +552,12 @@ pub fn check_sort_i18n(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_i18n() -> String {
-  "/base/i18n".to_owned()
+// MARK: get_page_path_i18n
+pub fn get_page_path_i18n() -> &'static str {
+  "/base/i18n"
+}
+
+// MARK: get_table_name_i18n
+pub fn get_table_name_i18n() -> &'static str {
+  "base_i18n"
 }

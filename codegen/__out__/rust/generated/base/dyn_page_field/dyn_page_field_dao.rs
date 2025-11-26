@@ -70,7 +70,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 14 * 2);
+  let mut where_query = String::with_capacity(80 * 20 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -124,6 +124,42 @@ async fn get_where_query(
     if let Some(tenant_id) = tenant_id {
       where_query.push_str(" and t.tenant_id=?");
       args.push(tenant_id.into());
+    }
+  }
+  // 编码-序列号
+  {
+    let mut code_seq = match search {
+      Some(item) => item.code_seq.unwrap_or_default(),
+      None => Default::default(),
+    };
+    let code_seq_gt = code_seq[0].take();
+    let code_seq_lt = code_seq[1].take();
+    if let Some(code_seq_gt) = code_seq_gt {
+      where_query.push_str(" and t.code_seq >= ?");
+      args.push(code_seq_gt.into());
+    }
+    if let Some(code_seq_lt) = code_seq_lt {
+      where_query.push_str(" and t.code_seq <= ?");
+      args.push(code_seq_lt.into());
+    }
+  }
+  // 编码
+  {
+    let code = match search {
+      Some(item) => item.code.clone(),
+      None => None,
+    };
+    if let Some(code) = code {
+      where_query.push_str(" and t.code=?");
+      args.push(code.into());
+    }
+    let code_like = match search {
+      Some(item) => item.code_like.clone(),
+      None => None,
+    };
+    if let Some(code_like) = code_like && !code_like.is_empty() {
+      where_query.push_str(" and t.code like ?");
+      args.push(format!("%{}%", sql_like(&code_like)).into());
     }
   }
   // 动态页面
@@ -249,6 +285,25 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&attrs_like)).into());
     }
   }
+  // 计算公式
+  {
+    let formula = match search {
+      Some(item) => item.formula.clone(),
+      None => None,
+    };
+    if let Some(formula) = formula {
+      where_query.push_str(" and t.formula=?");
+      args.push(formula.into());
+    }
+    let formula_like = match search {
+      Some(item) => item.formula_like.clone(),
+      None => None,
+    };
+    if let Some(formula_like) = formula_like && !formula_like.is_empty() {
+      where_query.push_str(" and t.formula like ?");
+      args.push(format!("%{}%", sql_like(&formula_like)).into());
+    }
+  }
   // 必填
   {
     let is_required: Option<Vec<u8>> = match search {
@@ -269,6 +324,71 @@ async fn get_where_query(
         }
       };
       where_query.push_str(" and t.is_required in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  // 查询条件
+  {
+    let is_search: Option<Vec<u8>> = match search {
+      Some(item) => item.is_search.clone(),
+      None => None,
+    };
+    if let Some(is_search) = is_search {
+      let arg = {
+        if is_search.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(is_search.len());
+          for item in is_search {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.is_search in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  // 宽度
+  {
+    let mut width = match search {
+      Some(item) => item.width.unwrap_or_default(),
+      None => Default::default(),
+    };
+    let width_gt = width[0].take();
+    let width_lt = width[1].take();
+    if let Some(width_gt) = width_gt {
+      where_query.push_str(" and t.width >= ?");
+      args.push(width_gt.into());
+    }
+    if let Some(width_lt) = width_lt {
+      where_query.push_str(" and t.width <= ?");
+      args.push(width_lt.into());
+    }
+  }
+  // 对齐方式
+  {
+    let align: Option<Vec<DynPageFieldAlign>> = match search {
+      Some(item) => item.align.clone(),
+      None => None,
+    };
+    if let Some(align) = align {
+      let arg = {
+        if align.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(align.len());
+          for item in align {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.align in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
@@ -509,7 +629,7 @@ pub async fn find_all_dyn_page_field(
   options: Option<Options>,
 ) -> Result<Vec<DynPageFieldModel>> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "find_all_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -568,6 +688,34 @@ pub async fn find_all_dyn_page_field(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_required.length > {ids_limit}"));
+    }
+  }
+  // 查询条件
+  if let Some(search) = &search && search.is_search.is_some() {
+    let len = search.is_search.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_search.length > {ids_limit}"));
+    }
+  }
+  // 对齐方式
+  if let Some(search) = &search && search.align.is_some() {
+    let len = search.align.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.align.length > {ids_limit}"));
     }
   }
   // 启用
@@ -661,12 +809,16 @@ pub async fn find_all_dyn_page_field(
   
   let dict_vec = get_dict(&[
     "yes_no",
+    "yes_no",
+    "dyn_page_field_align",
     "is_enabled",
   ]).await?;
   let [
     is_required_dict,
+    is_search_dict,
+    align_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 2] = dict_vec
+  ]: [Vec<_>; 4] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -680,6 +832,24 @@ pub async fn find_all_dyn_page_field(
         .find(|item| item.val == model.is_required.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_required.to_string())
+    };
+    
+    // 查询条件
+    model.is_search_lbl = {
+      is_search_dict
+        .iter()
+        .find(|item| item.val == model.is_search.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_search.to_string())
+    };
+    
+    // 对齐方式
+    model.align_lbl = {
+      align_dict
+        .iter()
+        .find(|item| item.val == model.align.as_str())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.align.to_string())
     };
     
     // 启用
@@ -703,7 +873,7 @@ pub async fn find_count_dyn_page_field(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "find_count_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -756,6 +926,34 @@ pub async fn find_count_dyn_page_field(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_required.length > {ids_limit}"));
+    }
+  }
+  // 查询条件
+  if let Some(search) = &search && search.is_search.is_some() {
+    let len = search.is_search.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_search.length > {ids_limit}"));
+    }
+  }
+  // 对齐方式
+  if let Some(search) = &search && search.align.is_some() {
+    let len = search.align.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.align.length > {ids_limit}"));
     }
   }
   // 启用
@@ -833,19 +1031,27 @@ pub async fn find_count_dyn_page_field(
 
 // MARK: get_field_comments_dyn_page_field
 /// 获取动态页面字段字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_dyn_page_field(
   _options: Option<Options>,
 ) -> Result<DynPageFieldFieldComment> {
   
-  let field_comments = DynPageFieldFieldComment {
+  let mut field_comments = DynPageFieldFieldComment {
     id: "ID".into(),
+    code: "编码".into(),
     dyn_page_id: "动态页面".into(),
     dyn_page_id_lbl: "动态页面".into(),
     lbl: "名称".into(),
     r#type: "类型".into(),
     attrs: "属性".into(),
+    formula: "计算公式".into(),
     is_required: "必填".into(),
     is_required_lbl: "必填".into(),
+    is_search: "查询条件".into(),
+    is_search_lbl: "查询条件".into(),
+    width: "宽度".into(),
+    align: "对齐方式".into(),
+    align_lbl: "对齐方式".into(),
     is_enabled: "启用".into(),
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
@@ -862,7 +1068,7 @@ pub async fn find_one_ok_dyn_page_field(
   options: Option<Options>,
 ) -> Result<DynPageFieldModel> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "find_one_ok_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -911,7 +1117,7 @@ pub async fn find_one_dyn_page_field(
   options: Option<Options>,
 ) -> Result<Option<DynPageFieldModel>> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "find_one_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -966,7 +1172,7 @@ pub async fn find_by_id_ok_dyn_page_field(
   options: Option<Options>,
 ) -> Result<DynPageFieldModel> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "find_by_id_ok_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1015,7 +1221,7 @@ pub async fn find_by_id_dyn_page_field(
   options: Option<Options>,
 ) -> Result<Option<DynPageFieldModel>> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "find_by_id_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1062,7 +1268,7 @@ pub async fn find_by_ids_ok_dyn_page_field(
   options: Option<Options>,
 ) -> Result<Vec<DynPageFieldModel>> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "find_by_ids_ok_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1134,7 +1340,7 @@ pub async fn find_by_ids_dyn_page_field(
   options: Option<Options>,
 ) -> Result<Vec<DynPageFieldModel>> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "find_by_ids_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1204,7 +1410,7 @@ pub async fn exists_dyn_page_field(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "exists_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1257,6 +1463,34 @@ pub async fn exists_dyn_page_field(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_required.length > {ids_limit}"));
+    }
+  }
+  // 查询条件
+  if let Some(search) = &search && search.is_search.is_some() {
+    let len = search.is_search.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_search.length > {ids_limit}"));
+    }
+  }
+  // 对齐方式
+  if let Some(search) = &search && search.align.is_some() {
+    let len = search.align.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.align.length > {ids_limit}"));
     }
   }
   // 启用
@@ -1334,7 +1568,7 @@ pub async fn exists_by_id_dyn_page_field(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "exists_by_id_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1377,7 +1611,7 @@ pub async fn find_by_unique_dyn_page_field(
   options: Option<Options>,
 ) -> Result<Vec<DynPageFieldModel>> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "find_by_unique_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1434,6 +1668,27 @@ pub async fn find_by_unique_dyn_page_field(
   };
   models.append(&mut models_tmp);
   
+  let mut models_tmp = {
+    if
+      search.code.is_none()
+    {
+      return Ok(vec![]);
+    }
+    
+    let search = DynPageFieldSearch {
+      code: search.code.clone(),
+      ..Default::default()
+    };
+    
+    find_all_dyn_page_field(
+      search.into(),
+      None,
+      sort.clone(),
+      options.clone(),
+    ).await?
+  };
+  models.append(&mut models_tmp);
+  
   Ok(models)
 }
 
@@ -1453,6 +1708,12 @@ pub fn equals_by_unique(
   {
     return true;
   }
+  
+  if
+    input.code.as_ref().is_some() && input.code.as_ref().unwrap() == &model.code
+  {
+    return true;
+  }
   false
 }
 
@@ -1465,7 +1726,7 @@ pub async fn check_by_unique_dyn_page_field(
   options: Option<Options>,
 ) -> Result<Option<DynPageFieldId>> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "check_by_unique_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1530,6 +1791,8 @@ pub async fn set_id_by_lbl_dyn_page_field(
   
   let dict_vec = get_dict(&[
     "yes_no",
+    "yes_no",
+    "dyn_page_field_align",
     "is_enabled",
   ]).await?;
   
@@ -1548,9 +1811,39 @@ pub async fn set_id_by_lbl_dyn_page_field(
     }
   }
   
+  // 查询条件
+  if input.is_search.is_none() {
+    let is_search_dict = &dict_vec[1];
+    if let Some(is_search_lbl) = input.is_search_lbl.clone() {
+      input.is_search = is_search_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_search_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
+  // 对齐方式
+  if input.align.is_none() {
+    let align_dict = &dict_vec[2];
+    if let Some(align_lbl) = input.align_lbl.clone() {
+      input.align = align_dict
+        .iter()
+        .find(|item| {
+          item.lbl == align_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[3];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -1624,12 +1917,62 @@ pub async fn set_id_by_lbl_dyn_page_field(
     input.is_required_lbl = lbl;
   }
   
+  // 查询条件
+  if
+    input.is_search_lbl.is_some() && !input.is_search_lbl.as_ref().unwrap().is_empty()
+    && input.is_search.is_none()
+  {
+    let is_search_dict = &dict_vec[1];
+    let dict_model = is_search_dict.iter().find(|item| {
+      item.lbl == input.is_search_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_search = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_search_lbl.is_none() || input.is_search_lbl.as_ref().unwrap().is_empty())
+    && input.is_search.is_some()
+  {
+    let is_search_dict = &dict_vec[1];
+    let dict_model = is_search_dict.iter().find(|item| {
+      item.val == input.is_search.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_search_lbl = lbl;
+  }
+  
+  // 对齐方式
+  if
+    input.align_lbl.is_some() && !input.align_lbl.as_ref().unwrap().is_empty()
+    && input.align.is_none()
+  {
+    let align_dict = &dict_vec[2];
+    let dict_model = align_dict.iter().find(|item| {
+      item.lbl == input.align_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.align = val.parse::<DynPageFieldAlign>()?.into();
+    }
+  } else if
+    (input.align_lbl.is_none() || input.align_lbl.as_ref().unwrap().is_empty())
+    && input.align.is_some()
+  {
+    let align_dict = &dict_vec[2];
+    let dict_model = align_dict.iter().find(|item| {
+      item.val == input.align.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.align_lbl = lbl;
+  }
+  
   // 启用
   if
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[3];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
@@ -1641,7 +1984,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[3];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
@@ -1660,7 +2003,7 @@ pub async fn creates_return_dyn_page_field(
   options: Option<Options>,
 ) -> Result<Vec<DynPageFieldModel>> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "creates_return_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1697,7 +2040,7 @@ pub async fn creates_dyn_page_field(
   options: Option<Options>,
 ) -> Result<Vec<DynPageFieldId>> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "creates_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1729,7 +2072,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<DynPageFieldId>> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1738,6 +2081,20 @@ async fn _creates(
       item.get_unique_type()
     )
     .unwrap_or_default();
+  
+  // 设置自动编码
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    if input.code.is_some() && !input.code.as_ref().unwrap().is_empty() {
+      continue;
+    }
+    let (
+      code_seq,
+      code,
+    ) = find_auto_code_dyn_page_field(options.clone()).await?;
+    input.code_seq = Some(code_seq);
+    input.code = Some(code);
+  }
   
   let mut ids2: Vec<DynPageFieldId> = vec![];
   let mut inputs2: Vec<DynPageFieldInput> = vec![];
@@ -1787,7 +2144,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  let mut sql_fields = String::with_capacity(80 * 20 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1797,6 +2154,10 @@ async fn _creates(
   sql_fields += ",update_usr_id";
   sql_fields += ",update_usr_id_lbl";
   sql_fields += ",tenant_id";
+  // 编码-序列号
+  sql_fields += ",code_seq";
+  // 编码
+  sql_fields += ",code";
   // 动态页面
   sql_fields += ",dyn_page_id";
   // 名称
@@ -1805,15 +2166,23 @@ async fn _creates(
   sql_fields += ",type";
   // 属性
   sql_fields += ",attrs";
+  // 计算公式
+  sql_fields += ",formula";
   // 必填
   sql_fields += ",is_required";
+  // 查询条件
+  sql_fields += ",is_search";
+  // 宽度
+  sql_fields += ",width";
+  // 对齐方式
+  sql_fields += ",align";
   // 启用
   sql_fields += ",is_enabled";
   // 排序
   sql_fields += ",order_by";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 14 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 20 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1939,6 +2308,20 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
+    // 编码-序列号
+    if let Some(code_seq) = input.code_seq {
+      sql_values += ",?";
+      args.push(code_seq.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 编码
+    if let Some(code) = input.code {
+      sql_values += ",?";
+      args.push(code.into());
+    } else {
+      sql_values += ",default";
+    }
     // 动态页面
     if let Some(dyn_page_id) = input.dyn_page_id {
       sql_values += ",?";
@@ -1967,10 +2350,38 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
+    // 计算公式
+    if let Some(formula) = input.formula {
+      sql_values += ",?";
+      args.push(formula.into());
+    } else {
+      sql_values += ",default";
+    }
     // 必填
     if let Some(is_required) = input.is_required {
       sql_values += ",?";
       args.push(is_required.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 查询条件
+    if let Some(is_search) = input.is_search {
+      sql_values += ",?";
+      args.push(is_search.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 宽度
+    if let Some(width) = input.width {
+      sql_values += ",?";
+      args.push(width.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 对齐方式
+    if let Some(align) = input.align {
+      sql_values += ",?";
+      args.push(align.into());
     } else {
       sql_values += ",default";
     }
@@ -2017,6 +2428,72 @@ async fn _creates(
   Ok(ids2)
 }
 
+// MARK: find_auto_code_dyn_page_field
+/// 获得 动态页面字段 自动编码
+pub async fn find_auto_code_dyn_page_field(
+  options: Option<Options>,
+) -> Result<(u32, String)> {
+  
+  let table = get_table_name_dyn_page_field();
+  let method = "find_auto_code_dyn_page_field";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let model = find_one_dyn_page_field(
+    None,
+    Some(vec![
+      SortInput {
+        prop: "code_seq".to_owned(),
+        order: SortOrderEnum::Desc,
+      },
+    ]),
+    options.clone(),
+  ).await?;
+  
+  let code_seq = model
+    .as_ref()
+    .map_or(0, |item| item.code_seq) + 1;
+  
+  let model_deleted = find_one_dyn_page_field(
+    Some(DynPageFieldSearch {
+      is_deleted: Some(1),
+      ..Default::default()
+    }),
+    Some(vec![
+      SortInput {
+        prop: "code_seq".to_owned(),
+        order: SortOrderEnum::Desc,
+      },
+    ]),
+    options.clone(),
+  ).await?;
+  
+  let code_seq_deleted = model_deleted
+    .as_ref()
+    .map_or(0, |item| item.code_seq) + 1;
+  
+  let code_seq = if code_seq_deleted > code_seq {
+    code_seq_deleted
+  } else {
+    code_seq
+  };
+  
+  let code = format!("fld_{code_seq:0}");
+  
+  Ok((code_seq, code))
+}
+
 // MARK: create_return_dyn_page_field
 /// 创建动态页面字段并返回
 #[allow(dead_code)]
@@ -2060,7 +2537,7 @@ pub async fn create_dyn_page_field(
   options: Option<Options>,
 ) -> Result<DynPageFieldId> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "create_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2097,7 +2574,7 @@ pub async fn update_tenant_by_id_dyn_page_field(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "update_tenant_by_id_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2146,7 +2623,7 @@ pub async fn update_by_id_dyn_page_field(
   options: Option<Options>,
 ) -> Result<DynPageFieldId> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "update_by_id_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2224,7 +2701,7 @@ pub async fn update_by_id_dyn_page_field(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  let mut sql_fields = String::with_capacity(80 * 20 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2232,6 +2709,18 @@ pub async fn update_by_id_dyn_page_field(
     field_num += 1;
     sql_fields += "tenant_id=?,";
     args.push(tenant_id.into());
+  }
+  // 编码-序列号
+  if let Some(code_seq) = input.code_seq {
+    field_num += 1;
+    sql_fields += "code_seq=?,";
+    args.push(code_seq.into());
+  }
+  // 编码
+  if let Some(code) = input.code {
+    field_num += 1;
+    sql_fields += "code=?,";
+    args.push(code.into());
   }
   // 动态页面
   if let Some(dyn_page_id) = input.dyn_page_id {
@@ -2257,11 +2746,35 @@ pub async fn update_by_id_dyn_page_field(
     sql_fields += "attrs=?,";
     args.push(attrs.into());
   }
+  // 计算公式
+  if let Some(formula) = input.formula {
+    field_num += 1;
+    sql_fields += "formula=?,";
+    args.push(formula.into());
+  }
   // 必填
   if let Some(is_required) = input.is_required {
     field_num += 1;
     sql_fields += "is_required=?,";
     args.push(is_required.into());
+  }
+  // 查询条件
+  if let Some(is_search) = input.is_search {
+    field_num += 1;
+    sql_fields += "is_search=?,";
+    args.push(is_search.into());
+  }
+  // 宽度
+  if let Some(width) = input.width {
+    field_num += 1;
+    sql_fields += "width=?,";
+    args.push(width.into());
+  }
+  // 对齐方式
+  if let Some(align) = input.align {
+    field_num += 1;
+    sql_fields += "align=?,";
+    args.push(align.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
@@ -2376,7 +2889,7 @@ pub async fn update_by_id_dyn_page_field(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   vec![
     table,
   ]
@@ -2401,7 +2914,7 @@ pub async fn delete_by_ids_dyn_page_field(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "delete_by_ids_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2552,7 +3065,7 @@ pub async fn enable_by_ids_dyn_page_field(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "enable_by_ids_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2609,7 +3122,7 @@ pub async fn revert_by_ids_dyn_page_field(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "revert_by_ids_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2708,7 +3221,7 @@ pub async fn force_delete_by_ids_dyn_page_field(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "force_delete_by_ids_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2792,7 +3305,7 @@ pub async fn find_last_order_by_dyn_page_field(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_dyn_page_field";
+  let table = get_table_name_dyn_page_field();
   let method = "find_last_order_by_dyn_page_field";
   
   let is_debug = get_is_debug(options.as_ref());

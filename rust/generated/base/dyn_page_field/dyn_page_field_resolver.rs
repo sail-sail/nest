@@ -234,7 +234,7 @@ pub async fn creates_dyn_page_field(
   let inputs = inputs2;
   
   use_permit(
-    get_route_path_dyn_page_field(),
+    get_page_path_dyn_page_field().to_string(),
     "add".to_owned(),
   ).await?;
   
@@ -294,7 +294,7 @@ pub async fn update_by_id_dyn_page_field(
   ).await?;
   
   use_permit(
-    get_route_path_dyn_page_field(),
+    get_page_path_dyn_page_field().to_string(),
     "edit".to_owned(),
   ).await?;
   
@@ -322,7 +322,7 @@ pub async fn delete_by_ids_dyn_page_field(
   );
   
   use_permit(
-    get_route_path_dyn_page_field(),
+    get_page_path_dyn_page_field().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -373,7 +373,7 @@ pub async fn enable_by_ids_dyn_page_field(
   );
   
   use_permit(
-    get_route_path_dyn_page_field(),
+    get_page_path_dyn_page_field().to_string(),
     "edit".to_owned(),
   ).await?;
   
@@ -420,7 +420,7 @@ pub async fn revert_by_ids_dyn_page_field(
   );
   
   use_permit(
-    get_route_path_dyn_page_field(),
+    get_page_path_dyn_page_field().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -447,7 +447,7 @@ pub async fn force_delete_by_ids_dyn_page_field(
   );
   
   use_permit(
-    get_route_path_dyn_page_field(),
+    get_page_path_dyn_page_field().to_string(),
     "force_delete".to_owned(),
   ).await?;
   

@@ -300,10 +300,10 @@ pub struct MenuSearch {
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 路由
-  #[graphql(skip)]
+  #[graphql(name = "route_path")]
   pub route_path: Option<String>,
   /// 路由
-  #[graphql(skip)]
+  #[graphql(name = "route_path_like")]
   pub route_path_like: Option<String>,
   /// 参数
   #[graphql(skip)]
@@ -672,8 +672,12 @@ pub fn check_sort_menu(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_menu() -> String {
-  "/base/menu".to_owned()
+// MARK: get_page_path_menu
+pub fn get_page_path_menu() -> &'static str {
+  "/base/menu"
+}
+
+// MARK: get_table_name_menu
+pub fn get_table_name_menu() -> &'static str {
+  "base_menu"
 }

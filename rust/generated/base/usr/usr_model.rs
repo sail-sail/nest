@@ -1041,8 +1041,12 @@ pub fn check_sort_usr(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_usr() -> String {
-  "/base/usr".to_owned()
+// MARK: get_page_path_usr
+pub fn get_page_path_usr() -> &'static str {
+  "/base/usr"
+}
+
+// MARK: get_table_name_usr
+pub fn get_table_name_usr() -> &'static str {
+  "base_usr"
 }

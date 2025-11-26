@@ -40,6 +40,8 @@ use crate::base::dyn_page_field::dyn_page_field_model::{
 };
 
 use crate::base::tenant::tenant_model::TenantId;
+use crate::base::menu::menu_model::MenuId;
+use crate::base::role::role_model::RoleId;
 use crate::base::usr::usr_model::UsrId;
 
 static CAN_SORT_IN_API_DYN_PAGE: OnceLock<[&'static str; 3]> = OnceLock::new();
@@ -65,12 +67,24 @@ pub struct DynPageModel {
   /// 编码-序列号
   #[graphql(skip)]
   pub code_seq: u32,
-  /// 编码
+  /// 路由
   #[graphql(name = "code")]
   pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
+  /// 父菜单
+  #[graphql(name = "parent_menu_id")]
+  pub parent_menu_id: MenuId,
+  /// 父菜单
+  #[graphql(name = "parent_menu_id_lbl")]
+  pub parent_menu_id_lbl: String,
+  /// 所属角色
+  #[graphql(name = "role_ids")]
+  pub role_ids: Vec<RoleId>,
+  /// 所属角色
+  #[graphql(name = "role_ids_lbl")]
+  pub role_ids_lbl: Vec<String>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
@@ -113,10 +127,16 @@ impl FromRow<'_, MySqlRow> for DynPageModel {
     let id: DynPageId = row.try_get("id")?;
     // 编码-序列号
     let code_seq: u32 = row.try_get("code_seq")?;
-    // 编码
+    // 路由
     let code: String = row.try_get("code")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
+    // 父菜单
+    let parent_menu_id: MenuId = MenuId::default();
+    let parent_menu_id_lbl = String::new();
+    // 所属角色
+    let role_ids: Vec<RoleId> = vec![];
+    let role_ids_lbl: Vec<String> = vec![];
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 启用
@@ -154,6 +174,10 @@ impl FromRow<'_, MySqlRow> for DynPageModel {
       code_seq,
       code,
       lbl,
+      parent_menu_id,
+      parent_menu_id_lbl,
+      role_ids,
+      role_ids_lbl,
       order_by,
       is_enabled,
       is_enabled_lbl,
@@ -181,12 +205,24 @@ pub struct DynPageFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 编码
+  /// 路由
   #[graphql(name = "code")]
   pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
+  /// 父菜单
+  #[graphql(name = "parent_menu_id")]
+  pub parent_menu_id: String,
+  /// 父菜单
+  #[graphql(name = "parent_menu_id_lbl")]
+  pub parent_menu_id_lbl: String,
+  /// 所属角色
+  #[graphql(name = "role_ids")]
+  pub role_ids: String,
+  /// 所属角色
+  #[graphql(name = "role_ids_lbl")]
+  pub role_ids_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: String,
@@ -239,10 +275,10 @@ pub struct DynPageSearch {
   /// 编码-序列号
   #[graphql(skip)]
   pub code_seq: Option<[Option<u32>; 2]>,
-  /// 编码
+  /// 路由
   #[graphql(name = "code")]
   pub code: Option<String>,
-  /// 编码
+  /// 路由
   #[graphql(name = "code_like")]
   pub code_like: Option<String>,
   /// 名称
@@ -251,6 +287,27 @@ pub struct DynPageSearch {
   /// 名称
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
+  /// 父菜单
+  #[graphql(name = "parent_menu_id")]
+  pub parent_menu_id: Option<Vec<MenuId>>,
+  /// 父菜单
+  #[graphql(name = "parent_menu_id_save_null")]
+  pub parent_menu_id_is_null: Option<bool>,
+  /// 父菜单
+  #[graphql(name = "parent_menu_id_lbl")]
+  pub parent_menu_id_lbl: Option<Vec<String>>,
+  /// 父菜单
+  #[graphql(name = "parent_menu_id_lbl_like")]
+  pub parent_menu_id_lbl_like: Option<String>,
+  /// 所属角色
+  #[graphql(name = "role_ids")]
+  pub role_ids: Option<Vec<RoleId>>,
+  /// 所属角色
+  #[graphql(name = "role_ids_save_null")]
+  pub role_ids_is_null: Option<bool>,
+  /// 所属角色
+  #[graphql(name = "role_ids_lbl_like")]
+  pub role_ids_lbl_like: Option<String>,
   /// 排序
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
@@ -316,7 +373,7 @@ impl std::fmt::Debug for DynPageSearch {
     if let Some(ref code_seq) = self.code_seq {
       item = item.field("code_seq", code_seq);
     }
-    // 编码
+    // 路由
     if let Some(ref code) = self.code {
       item = item.field("code", code);
     }
@@ -398,12 +455,24 @@ pub struct DynPageInput {
   /// 编码-序列号
   #[graphql(skip)]
   pub code_seq: Option<u32>,
-  /// 编码
+  /// 路由
   #[graphql(name = "code")]
   pub code: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
+  /// 父菜单
+  #[graphql(name = "parent_menu_id")]
+  pub parent_menu_id: Option<MenuId>,
+  /// 父菜单
+  #[graphql(name = "parent_menu_id_lbl")]
+  pub parent_menu_id_lbl: Option<String>,
+  /// 所属角色
+  #[graphql(name = "role_ids")]
+  pub role_ids: Option<Vec<RoleId>>,
+  /// 所属角色
+  #[graphql(name = "role_ids_lbl")]
+  pub role_ids_lbl: Option<Vec<String>>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
@@ -458,10 +527,16 @@ impl From<DynPageModel> for DynPageInput {
       tenant_id: model.tenant_id.into(),
       // 编码-序列号
       code_seq: model.code_seq.into(),
-      // 编码
+      // 路由
       code: model.code.into(),
       // 名称
       lbl: model.lbl.into(),
+      // 父菜单
+      parent_menu_id: model.parent_menu_id.into(),
+      parent_menu_id_lbl: model.parent_menu_id_lbl.into(),
+      // 所属角色
+      role_ids: model.role_ids.into(),
+      role_ids_lbl: model.role_ids_lbl.into(),
       // 排序
       order_by: model.order_by.into(),
       // 启用
@@ -503,10 +578,14 @@ impl From<DynPageInput> for DynPageSearch {
       is_deleted: None,
       // 编码-序列号
       code_seq: input.code_seq.map(|x| [Some(x), Some(x)]),
-      // 编码
+      // 路由
       code: input.code,
       // 名称
       lbl: input.lbl,
+      // 父菜单
+      parent_menu_id: input.parent_menu_id.map(|x| vec![x]),
+      // 所属角色
+      role_ids: input.role_ids,
       // 排序
       order_by: input.order_by.map(|x| [Some(x), Some(x)]),
       // 启用
@@ -557,8 +636,12 @@ pub fn check_sort_dyn_page(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_dyn_page() -> String {
-  "/base/dyn_page".to_owned()
+// MARK: get_page_path_dyn_page
+pub fn get_page_path_dyn_page() -> &'static str {
+  "/base/dyn_page"
+}
+
+// MARK: get_table_name_dyn_page
+pub fn get_table_name_dyn_page() -> &'static str {
+  "base_dyn_page"
 }

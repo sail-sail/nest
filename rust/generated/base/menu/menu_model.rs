@@ -300,10 +300,10 @@ pub struct MenuSearch {
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 路由
-  #[graphql(skip)]
+  #[graphql(name = "route_path")]
   pub route_path: Option<String>,
   /// 路由
-  #[graphql(skip)]
+  #[graphql(name = "route_path_like")]
   pub route_path_like: Option<String>,
   /// 参数
   #[graphql(skip)]
@@ -320,9 +320,6 @@ pub struct MenuSearch {
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
-  /// 仅当前租户
-  #[graphql(name = "is_current_tenant")]
-  pub is_current_tenant: Option<u8>,
   /// 排序
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
@@ -675,8 +672,12 @@ pub fn check_sort_menu(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_menu() -> String {
-  "/base/menu".to_owned()
+// MARK: get_page_path_menu
+pub fn get_page_path_menu() -> &'static str {
+  "/base/menu"
+}
+
+// MARK: get_table_name_menu
+pub fn get_table_name_menu() -> &'static str {
+  "base_menu"
 }

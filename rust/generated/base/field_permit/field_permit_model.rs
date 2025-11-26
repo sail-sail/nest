@@ -322,8 +322,12 @@ pub fn check_sort_field_permit(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_field_permit() -> String {
-  "/base/field_permit".to_owned()
+// MARK: get_page_path_field_permit
+pub fn get_page_path_field_permit() -> &'static str {
+  "/base/field_permit"
+}
+
+// MARK: get_table_name_field_permit
+pub fn get_table_name_field_permit() -> &'static str {
+  "base_field_permit"
 }

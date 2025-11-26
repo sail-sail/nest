@@ -660,7 +660,7 @@ pub async fn find_all_tenant(
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "find_all_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -887,7 +887,7 @@ pub async fn find_count_tenant(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "find_count_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1051,11 +1051,12 @@ pub async fn find_count_tenant(
 
 // MARK: get_field_comments_tenant
 /// 获取租户字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_tenant(
   _options: Option<Options>,
 ) -> Result<TenantFieldComment> {
   
-  let field_comments = TenantFieldComment {
+  let mut field_comments = TenantFieldComment {
     id: "ID".into(),
     code: "编码".into(),
     lbl: "名称".into(),
@@ -1094,7 +1095,7 @@ pub async fn find_one_ok_tenant(
   options: Option<Options>,
 ) -> Result<TenantModel> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "find_one_ok_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1143,7 +1144,7 @@ pub async fn find_one_tenant(
   options: Option<Options>,
 ) -> Result<Option<TenantModel>> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "find_one_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1198,7 +1199,7 @@ pub async fn find_by_id_ok_tenant(
   options: Option<Options>,
 ) -> Result<TenantModel> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "find_by_id_ok_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1247,7 +1248,7 @@ pub async fn find_by_id_tenant(
   options: Option<Options>,
 ) -> Result<Option<TenantModel>> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "find_by_id_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1294,7 +1295,7 @@ pub async fn find_by_ids_ok_tenant(
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "find_by_ids_ok_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1366,7 +1367,7 @@ pub async fn find_by_ids_tenant(
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "find_by_ids_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1436,7 +1437,7 @@ pub async fn exists_tenant(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "exists_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1600,7 +1601,7 @@ pub async fn exists_by_id_tenant(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "exists_by_id_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1643,7 +1644,7 @@ pub async fn find_by_unique_tenant(
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "find_by_unique_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1755,7 +1756,7 @@ pub async fn check_by_unique_tenant(
   options: Option<Options>,
 ) -> Result<Option<TenantId>> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "check_by_unique_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2018,7 +2019,7 @@ pub async fn creates_return_tenant(
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "creates_return_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2055,7 +2056,7 @@ pub async fn creates_tenant(
   options: Option<Options>,
 ) -> Result<Vec<TenantId>> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "creates_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2087,7 +2088,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<TenantId>> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -2484,7 +2485,7 @@ pub async fn find_auto_code_tenant(
   options: Option<Options>,
 ) -> Result<(u32, String)> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "find_auto_code_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2587,7 +2588,7 @@ pub async fn create_tenant(
   options: Option<Options>,
 ) -> Result<TenantId> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "create_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2627,7 +2628,7 @@ pub async fn update_by_id_tenant(
   options: Option<Options>,
 ) -> Result<TenantId> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "update_by_id_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2951,7 +2952,7 @@ pub async fn update_by_id_tenant(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   vec![
     table,
   ]
@@ -2976,7 +2977,7 @@ pub async fn delete_by_ids_tenant(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "delete_by_ids_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3191,7 +3192,7 @@ pub async fn enable_by_ids_tenant(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "enable_by_ids_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3286,7 +3287,7 @@ pub async fn lock_by_ids_tenant(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "lock_by_ids_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3350,7 +3351,7 @@ pub async fn revert_by_ids_tenant(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "revert_by_ids_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3512,7 +3513,7 @@ pub async fn force_delete_by_ids_tenant(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "force_delete_by_ids_tenant";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3650,7 +3651,7 @@ pub async fn find_last_order_by_tenant(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_tenant";
+  let table = get_table_name_tenant();
   let method = "find_last_order_by_tenant";
   
   let is_debug = get_is_debug(options.as_ref());

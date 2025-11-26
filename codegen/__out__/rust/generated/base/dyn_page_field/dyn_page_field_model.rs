@@ -58,6 +58,12 @@ pub struct DynPageFieldModel {
   pub tenant_id: TenantId,
   /// ID
   pub id: DynPageFieldId,
+  /// 编码-序列号
+  #[graphql(skip)]
+  pub code_seq: u32,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: String,
   /// 动态页面
   #[graphql(name = "dyn_page_id")]
   pub dyn_page_id: DynPageId,
@@ -73,12 +79,30 @@ pub struct DynPageFieldModel {
   /// 属性
   #[graphql(name = "attrs")]
   pub attrs: Option<String>,
+  /// 计算公式
+  #[graphql(name = "formula")]
+  pub formula: String,
   /// 必填
   #[graphql(name = "is_required")]
   pub is_required: u8,
   /// 必填
   #[graphql(name = "is_required_lbl")]
   pub is_required_lbl: String,
+  /// 查询条件
+  #[graphql(name = "is_search")]
+  pub is_search: u8,
+  /// 查询条件
+  #[graphql(name = "is_search_lbl")]
+  pub is_search_lbl: String,
+  /// 宽度
+  #[graphql(name = "width")]
+  pub width: u32,
+  /// 对齐方式
+  #[graphql(name = "align")]
+  pub align: DynPageFieldAlign,
+  /// 对齐方式
+  #[graphql(name = "align_lbl")]
+  pub align_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
@@ -122,6 +146,10 @@ impl FromRow<'_, MySqlRow> for DynPageFieldModel {
     let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: DynPageFieldId = row.try_get("id")?;
+    // 编码-序列号
+    let code_seq: u32 = row.try_get("code_seq")?;
+    // 编码
+    let code: String = row.try_get("code")?;
     // 动态页面
     let dyn_page_id: DynPageId = row.try_get("dyn_page_id")?;
     let dyn_page_id_lbl: Option<String> = row.try_get("dyn_page_id_lbl")?;
@@ -132,9 +160,19 @@ impl FromRow<'_, MySqlRow> for DynPageFieldModel {
     let r#type: String = row.try_get("type")?;
     // 属性
     let attrs: Option<String> = row.try_get("attrs")?;
+    // 计算公式
+    let formula: String = row.try_get("formula")?;
     // 必填
     let is_required: u8 = row.try_get("is_required")?;
     let is_required_lbl: String = is_required.to_string();
+    // 查询条件
+    let is_search: u8 = row.try_get("is_search")?;
+    let is_search_lbl: String = is_search.to_string();
+    // 宽度
+    let width: u32 = row.try_get("width")?;
+    // 对齐方式
+    let align_lbl: String = row.try_get("align")?;
+    let align: DynPageFieldAlign = align_lbl.clone().try_into()?;
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -167,13 +205,21 @@ impl FromRow<'_, MySqlRow> for DynPageFieldModel {
       tenant_id,
       is_deleted,
       id,
+      code_seq,
+      code,
       dyn_page_id,
       dyn_page_id_lbl,
       lbl,
       r#type,
       attrs,
+      formula,
       is_required,
       is_required_lbl,
+      is_search,
+      is_search_lbl,
+      width,
+      align,
+      align_lbl,
       is_enabled,
       is_enabled_lbl,
       order_by,
@@ -198,6 +244,9 @@ pub struct DynPageFieldFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: String,
   /// 动态页面
   #[graphql(name = "dyn_page_id")]
   pub dyn_page_id: String,
@@ -213,12 +262,30 @@ pub struct DynPageFieldFieldComment {
   /// 属性
   #[graphql(name = "attrs")]
   pub attrs: String,
+  /// 计算公式
+  #[graphql(name = "formula")]
+  pub formula: String,
   /// 必填
   #[graphql(name = "is_required")]
   pub is_required: String,
   /// 必填
   #[graphql(name = "is_required_lbl")]
   pub is_required_lbl: String,
+  /// 查询条件
+  #[graphql(name = "is_search")]
+  pub is_search: String,
+  /// 查询条件
+  #[graphql(name = "is_search_lbl")]
+  pub is_search_lbl: String,
+  /// 宽度
+  #[graphql(name = "width")]
+  pub width: String,
+  /// 对齐方式
+  #[graphql(name = "align")]
+  pub align: String,
+  /// 对齐方式
+  #[graphql(name = "align_lbl")]
+  pub align_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: String,
@@ -241,6 +308,15 @@ pub struct DynPageFieldSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
+  /// 编码-序列号
+  #[graphql(skip)]
+  pub code_seq: Option<[Option<u32>; 2]>,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: Option<String>,
+  /// 编码
+  #[graphql(name = "code_like")]
+  pub code_like: Option<String>,
   /// 动态页面
   #[graphql(name = "dyn_page_id")]
   pub dyn_page_id: Option<Vec<DynPageId>>,
@@ -271,9 +347,24 @@ pub struct DynPageFieldSearch {
   /// 属性
   #[graphql(skip)]
   pub attrs_like: Option<String>,
+  /// 计算公式
+  #[graphql(skip)]
+  pub formula: Option<String>,
+  /// 计算公式
+  #[graphql(skip)]
+  pub formula_like: Option<String>,
   /// 必填
   #[graphql(skip)]
   pub is_required: Option<Vec<u8>>,
+  /// 查询条件
+  #[graphql(skip)]
+  pub is_search: Option<Vec<u8>>,
+  /// 宽度
+  #[graphql(skip)]
+  pub width: Option<[Option<u32>; 2]>,
+  /// 对齐方式
+  #[graphql(skip)]
+  pub align: Option<Vec<DynPageFieldAlign>>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
@@ -329,6 +420,17 @@ impl std::fmt::Debug for DynPageFieldSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
+    // 编码-序列号
+    if let Some(ref code_seq) = self.code_seq {
+      item = item.field("code_seq", code_seq);
+    }
+    // 编码
+    if let Some(ref code) = self.code {
+      item = item.field("code", code);
+    }
+    if let Some(ref code_like) = self.code_like {
+      item = item.field("code_like", code_like);
+    }
     // 动态页面
     if let Some(ref dyn_page_id) = self.dyn_page_id {
       item = item.field("dyn_page_id", dyn_page_id);
@@ -363,9 +465,28 @@ impl std::fmt::Debug for DynPageFieldSearch {
     if let Some(ref attrs_like) = self.attrs_like {
       item = item.field("attrs_like", attrs_like);
     }
+    // 计算公式
+    if let Some(ref formula) = self.formula {
+      item = item.field("formula", formula);
+    }
+    if let Some(ref formula_like) = self.formula_like {
+      item = item.field("formula_like", formula_like);
+    }
     // 必填
     if let Some(ref is_required) = self.is_required {
       item = item.field("is_required", is_required);
+    }
+    // 查询条件
+    if let Some(ref is_search) = self.is_search {
+      item = item.field("is_search", is_search);
+    }
+    // 宽度
+    if let Some(ref width) = self.width {
+      item = item.field("width", width);
+    }
+    // 对齐方式
+    if let Some(ref align) = self.align {
+      item = item.field("align", align);
     }
     // 启用
     if let Some(ref is_enabled) = self.is_enabled {
@@ -425,6 +546,12 @@ pub struct DynPageFieldInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
+  /// 编码-序列号
+  #[graphql(skip)]
+  pub code_seq: Option<u32>,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: Option<String>,
   /// 动态页面
   #[graphql(name = "dyn_page_id")]
   pub dyn_page_id: Option<DynPageId>,
@@ -440,12 +567,30 @@ pub struct DynPageFieldInput {
   /// 属性
   #[graphql(name = "attrs")]
   pub attrs: Option<String>,
+  /// 计算公式
+  #[graphql(name = "formula")]
+  pub formula: Option<String>,
   /// 必填
   #[graphql(name = "is_required")]
   pub is_required: Option<u8>,
   /// 必填
   #[graphql(name = "is_required_lbl")]
   pub is_required_lbl: Option<String>,
+  /// 查询条件
+  #[graphql(name = "is_search")]
+  pub is_search: Option<u8>,
+  /// 查询条件
+  #[graphql(name = "is_search_lbl")]
+  pub is_search_lbl: Option<String>,
+  /// 宽度
+  #[graphql(name = "width")]
+  pub width: Option<u32>,
+  /// 对齐方式
+  #[graphql(name = "align")]
+  pub align: Option<DynPageFieldAlign>,
+  /// 对齐方式
+  #[graphql(name = "align_lbl")]
+  pub align_lbl: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
@@ -493,6 +638,10 @@ impl From<DynPageFieldModel> for DynPageFieldInput {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
+      // 编码-序列号
+      code_seq: model.code_seq.into(),
+      // 编码
+      code: model.code.into(),
       // 动态页面
       dyn_page_id: model.dyn_page_id.into(),
       dyn_page_id_lbl: model.dyn_page_id_lbl.into(),
@@ -502,9 +651,19 @@ impl From<DynPageFieldModel> for DynPageFieldInput {
       r#type: model.r#type.into(),
       // 属性
       attrs: model.attrs,
+      // 计算公式
+      formula: model.formula.into(),
       // 必填
       is_required: model.is_required.into(),
       is_required_lbl: model.is_required_lbl.into(),
+      // 查询条件
+      is_search: model.is_search.into(),
+      is_search_lbl: model.is_search_lbl.into(),
+      // 宽度
+      width: model.width.into(),
+      // 对齐方式
+      align: model.align.into(),
+      align_lbl: model.align_lbl.into(),
       // 启用
       is_enabled: model.is_enabled.into(),
       is_enabled_lbl: model.is_enabled_lbl.into(),
@@ -536,6 +695,10 @@ impl From<DynPageFieldInput> for DynPageFieldSearch {
       // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
+      // 编码-序列号
+      code_seq: input.code_seq.map(|x| [Some(x), Some(x)]),
+      // 编码
+      code: input.code,
       // 动态页面
       dyn_page_id: input.dyn_page_id.map(|x| vec![x]),
       // 名称
@@ -544,8 +707,16 @@ impl From<DynPageFieldInput> for DynPageFieldSearch {
       r#type: input.r#type,
       // 属性
       attrs: input.attrs,
+      // 计算公式
+      formula: input.formula,
       // 必填
       is_required: input.is_required.map(|x| vec![x]),
+      // 查询条件
+      is_search: input.is_search.map(|x| vec![x]),
+      // 宽度
+      width: input.width.map(|x| [Some(x), Some(x)]),
+      // 对齐方式
+      align: input.align.map(|x| vec![x]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
@@ -568,6 +739,100 @@ impl From<DynPageFieldInput> for DynPageFieldSearch {
 }
 
 impl_id!(DynPageFieldId);
+
+/// 动态页面字段对齐方式
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum DynPageFieldAlign {
+  /// 靠左
+  #[graphql(name="left")]
+  Left,
+  /// 居中
+  #[default]
+  #[graphql(name="center")]
+  Center,
+  /// 靠右
+  #[graphql(name="right")]
+  Right,
+}
+
+impl fmt::Display for DynPageFieldAlign {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Left => write!(f, "left"),
+      Self::Center => write!(f, "center"),
+      Self::Right => write!(f, "right"),
+    }
+  }
+}
+
+impl From<DynPageFieldAlign> for SmolStr {
+  fn from(value: DynPageFieldAlign) -> Self {
+    match value {
+      DynPageFieldAlign::Left => "left".into(),
+      DynPageFieldAlign::Center => "center".into(),
+      DynPageFieldAlign::Right => "right".into(),
+    }
+  }
+}
+
+impl From<DynPageFieldAlign> for String {
+  fn from(value: DynPageFieldAlign) -> Self {
+    match value {
+      DynPageFieldAlign::Left => "left".into(),
+      DynPageFieldAlign::Center => "center".into(),
+      DynPageFieldAlign::Right => "right".into(),
+    }
+  }
+}
+
+impl From<DynPageFieldAlign> for ArgType {
+  fn from(value: DynPageFieldAlign) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl FromStr for DynPageFieldAlign {
+  type Err = color_eyre::eyre::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "left" => Ok(Self::Left),
+      "center" => Ok(Self::Center),
+      "right" => Ok(Self::Right),
+      _ => Err(eyre!("DynPageFieldAlign can't convert from {s}")),
+    }
+  }
+}
+
+impl DynPageFieldAlign {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Left => "left",
+      Self::Center => "center",
+      Self::Right => "right",
+    }
+  }
+}
+
+impl TryFrom<String> for DynPageFieldAlign {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "left" => Ok(Self::Left),
+      "center" => Ok(Self::Center),
+      "right" => Ok(Self::Right),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "align".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "DynPageFieldAlign can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
 
 /// 动态页面字段 检测字段是否允许前端排序
 pub fn check_sort_dyn_page_field(
@@ -594,8 +859,12 @@ pub fn check_sort_dyn_page_field(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_dyn_page_field() -> String {
-  "/base/dyn_page_field".to_owned()
+// MARK: get_page_path_dyn_page_field
+pub fn get_page_path_dyn_page_field() -> &'static str {
+  "/base/dyn_page_field"
+}
+
+// MARK: get_table_name_dyn_page_field
+pub fn get_table_name_dyn_page_field() -> &'static str {
+  "base_dyn_page_field"
 }

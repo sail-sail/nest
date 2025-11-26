@@ -422,7 +422,7 @@ pub async fn find_all_org(
   options: Option<Options>,
 ) -> Result<Vec<OrgModel>> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "find_all_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -603,7 +603,7 @@ pub async fn find_count_org(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "find_count_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -725,11 +725,12 @@ pub async fn find_count_org(
 
 // MARK: get_field_comments_org
 /// 获取组织字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_org(
   _options: Option<Options>,
 ) -> Result<OrgFieldComment> {
   
-  let field_comments = OrgFieldComment {
+  let mut field_comments = OrgFieldComment {
     id: "ID".into(),
     lbl: "名称".into(),
     is_locked: "锁定".into(),
@@ -759,7 +760,7 @@ pub async fn find_one_ok_org(
   options: Option<Options>,
 ) -> Result<OrgModel> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "find_one_ok_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -808,7 +809,7 @@ pub async fn find_one_org(
   options: Option<Options>,
 ) -> Result<Option<OrgModel>> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "find_one_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -863,7 +864,7 @@ pub async fn find_by_id_ok_org(
   options: Option<Options>,
 ) -> Result<OrgModel> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "find_by_id_ok_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -912,7 +913,7 @@ pub async fn find_by_id_org(
   options: Option<Options>,
 ) -> Result<Option<OrgModel>> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "find_by_id_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -959,7 +960,7 @@ pub async fn find_by_ids_ok_org(
   options: Option<Options>,
 ) -> Result<Vec<OrgModel>> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "find_by_ids_ok_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1031,7 +1032,7 @@ pub async fn find_by_ids_org(
   options: Option<Options>,
 ) -> Result<Vec<OrgModel>> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "find_by_ids_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1101,7 +1102,7 @@ pub async fn exists_org(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "exists_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1223,7 +1224,7 @@ pub async fn exists_by_id_org(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "exists_by_id_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1266,7 +1267,7 @@ pub async fn find_by_unique_org(
   options: Option<Options>,
 ) -> Result<Vec<OrgModel>> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "find_by_unique_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1351,7 +1352,7 @@ pub async fn check_by_unique_org(
   options: Option<Options>,
 ) -> Result<Option<OrgId>> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "check_by_unique_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1510,7 +1511,7 @@ pub async fn creates_return_org(
   options: Option<Options>,
 ) -> Result<Vec<OrgModel>> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "creates_return_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1547,7 +1548,7 @@ pub async fn creates_org(
   options: Option<Options>,
 ) -> Result<Vec<OrgId>> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "creates_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1579,7 +1580,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<OrgId>> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1894,7 +1895,7 @@ pub async fn create_org(
   options: Option<Options>,
 ) -> Result<OrgId> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "create_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1931,7 +1932,7 @@ pub async fn update_tenant_by_id_org(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "update_tenant_by_id_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1980,7 +1981,7 @@ pub async fn update_by_id_org(
   options: Option<Options>,
 ) -> Result<OrgId> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "update_by_id_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2214,7 +2215,7 @@ pub async fn update_by_id_org(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_org";
+  let table = get_table_name_org();
   vec![
     table,
   ]
@@ -2239,7 +2240,7 @@ pub async fn delete_by_ids_org(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "delete_by_ids_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2403,7 +2404,7 @@ pub async fn enable_by_ids_org(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "enable_by_ids_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2490,7 +2491,7 @@ pub async fn lock_by_ids_org(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "lock_by_ids_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2546,7 +2547,7 @@ pub async fn revert_by_ids_org(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "revert_by_ids_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2646,7 +2647,7 @@ pub async fn force_delete_by_ids_org(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "force_delete_by_ids_org";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2743,7 +2744,7 @@ pub async fn find_last_order_by_org(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_org";
+  let table = get_table_name_org();
   let method = "find_last_order_by_org";
   
   let is_debug = get_is_debug(options.as_ref());

@@ -260,7 +260,7 @@ pub async fn find_all_permit(
   options: Option<Options>,
 ) -> Result<Vec<PermitModel>> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "find_all_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -360,7 +360,7 @@ pub async fn find_count_permit(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "find_count_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -440,11 +440,12 @@ pub async fn find_count_permit(
 
 // MARK: get_field_comments_permit
 /// 获取按钮权限字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_permit(
   _options: Option<Options>,
 ) -> Result<PermitFieldComment> {
   
-  let field_comments = PermitFieldComment {
+  let mut field_comments = PermitFieldComment {
     id: "ID".into(),
     menu_id: "菜单".into(),
     menu_id_lbl: "菜单".into(),
@@ -465,7 +466,7 @@ pub async fn find_one_ok_permit(
   options: Option<Options>,
 ) -> Result<PermitModel> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "find_one_ok_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -514,7 +515,7 @@ pub async fn find_one_permit(
   options: Option<Options>,
 ) -> Result<Option<PermitModel>> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "find_one_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -569,7 +570,7 @@ pub async fn find_by_id_ok_permit(
   options: Option<Options>,
 ) -> Result<PermitModel> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "find_by_id_ok_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -618,7 +619,7 @@ pub async fn find_by_id_permit(
   options: Option<Options>,
 ) -> Result<Option<PermitModel>> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "find_by_id_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -665,7 +666,7 @@ pub async fn find_by_ids_ok_permit(
   options: Option<Options>,
 ) -> Result<Vec<PermitModel>> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "find_by_ids_ok_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -737,7 +738,7 @@ pub async fn find_by_ids_permit(
   options: Option<Options>,
 ) -> Result<Vec<PermitModel>> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "find_by_ids_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -807,7 +808,7 @@ pub async fn exists_permit(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "exists_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -887,7 +888,7 @@ pub async fn exists_by_id_permit(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "exists_by_id_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -930,7 +931,7 @@ pub async fn find_by_unique_permit(
   options: Option<Options>,
 ) -> Result<Vec<PermitModel>> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "find_by_unique_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1018,7 +1019,7 @@ pub async fn check_by_unique_permit(
   options: Option<Options>,
 ) -> Result<Option<PermitId>> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "check_by_unique_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1128,7 +1129,7 @@ pub async fn creates_return_permit(
   options: Option<Options>,
 ) -> Result<Vec<PermitModel>> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "creates_return_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1165,7 +1166,7 @@ pub async fn creates_permit(
   options: Option<Options>,
 ) -> Result<Vec<PermitId>> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "creates_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1197,7 +1198,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<PermitId>> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1404,7 +1405,7 @@ pub async fn create_permit(
   options: Option<Options>,
 ) -> Result<PermitId> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "create_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1444,7 +1445,7 @@ pub async fn update_by_id_permit(
   options: Option<Options>,
 ) -> Result<PermitId> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "update_by_id_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1597,7 +1598,7 @@ pub async fn update_by_id_permit(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_permit";
+  let table = get_table_name_permit();
   vec![
     table,
   ]
@@ -1622,7 +1623,7 @@ pub async fn delete_by_ids_permit(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "delete_by_ids_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1721,7 +1722,7 @@ pub async fn find_last_order_by_permit(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_permit";
+  let table = get_table_name_permit();
   let method = "find_last_order_by_permit";
   
   let is_debug = get_is_debug(options.as_ref());

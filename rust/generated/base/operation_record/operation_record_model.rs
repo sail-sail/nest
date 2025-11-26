@@ -592,8 +592,12 @@ pub fn check_sort_operation_record(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_operation_record() -> String {
-  "/base/operation_record".to_owned()
+// MARK: get_page_path_operation_record
+pub fn get_page_path_operation_record() -> &'static str {
+  "/base/operation_record"
+}
+
+// MARK: get_table_name_operation_record
+pub fn get_table_name_operation_record() -> &'static str {
+  "base_operation_record"
 }

@@ -142,7 +142,7 @@ export default defineConfig({
           "dayjs": [
             [ "default", "dayjs" ]
           ],
-          "@/compositions/List": [
+          "@/compositions/List.ts": [
             "usePage",
             "useSubscribeList",
             "useSelect",
@@ -151,8 +151,9 @@ export default defineConfig({
             "initListI18ns",
             "initBuiltInSearch",
             "initBuiltInModel",
+            "useDynPageFields",
           ],
-          "@/compositions/Detail": [
+          "@/compositions/Detail.ts": [
             "initDetailI18ns",
           ],
           "@/components/UploadFileDialog.vue": [

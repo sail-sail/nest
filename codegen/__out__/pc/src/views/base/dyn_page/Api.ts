@@ -14,15 +14,26 @@ import {
 } from "./Model.ts";
 
 import {
+  findTreeMenu,
+} from "@/views/base/menu/Api.ts";
+
+import {
   intoInputDynPageField,
+  setLblByIdDynPageField,
 } from "@/views/base/dyn_page_field/Api.ts";
 
-async function setLblById(
+export async function setLblByIdDynPage(
   model?: DynPageModel | null,
   isExcelExport = false,
 ) {
   if (!model) {
     return;
+  }
+  // 动态页面字段
+  model.dyn_page_field = model.dyn_page_field ?? [ ];
+  for (let i = 0; i < model.dyn_page_field.length; i++) {
+    const dyn_page_field_model = model.dyn_page_field[i] as DynPageFieldModel;
+    await setLblByIdDynPageField(dyn_page_field_model, isExcelExport);
   }
 }
 
@@ -32,10 +43,16 @@ export function intoInputDynPage(
   const input: DynPageInput = {
     // ID
     id: model?.id,
-    // 编码
+    // 路由
     code: model?.code,
     // 名称
     lbl: model?.lbl,
+    // 父菜单
+    parent_menu_id: model?.parent_menu_id,
+    parent_menu_id_lbl: model?.parent_menu_id_lbl,
+    // 所属角色
+    role_ids: model?.role_ids,
+    role_ids_lbl: model?.role_ids_lbl,
     // 排序
     order_by: model?.order_by,
     // 启用
@@ -77,7 +94,7 @@ export async function findAllDynPage(
   const models = data.findAllDynPage;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPage(model);
   }
   return models;
 }
@@ -109,7 +126,7 @@ export async function findOneDynPage(
   
   const model = data.findOneDynPage;
   
-  await setLblById(model);
+  await setLblByIdDynPage(model);
   
   return model;
 }
@@ -141,7 +158,7 @@ export async function findOneOkDynPage(
   
   const model = data.findOneOkDynPage;
   
-  await setLblById(model);
+  await setLblByIdDynPage(model);
   
   return model;
 }
@@ -267,7 +284,7 @@ export async function findByIdDynPage(
   
   const model = data.findByIdDynPage;
   
-  await setLblById(model);
+  await setLblByIdDynPage(model);
   
   return model;
 }
@@ -297,7 +314,7 @@ export async function findByIdOkDynPage(
   
   const model = data.findByIdOkDynPage;
   
-  await setLblById(model);
+  await setLblByIdDynPage(model);
   
   return model;
 }
@@ -333,7 +350,7 @@ export async function findByIdsDynPage(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPage(model);
   }
   
   return models;
@@ -370,7 +387,7 @@ export async function findByIdsOkDynPage(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPage(model);
   }
   
   return models;
@@ -482,6 +499,114 @@ export async function forceDeleteByIdsDynPage(
   return res;
 }
 
+export async function findAllMenu(
+  search?: MenuSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllMenu: MenuModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllMenu(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const menu_models = data.findAllMenu;
+  return menu_models;
+}
+
+export async function getListMenu() {
+  const data = await findAllMenu(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function findAllRole(
+  search?: RoleSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllRole: RoleModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllRole(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const role_models = data.findAllRole;
+  return role_models;
+}
+
+export async function getListRole() {
+  const data = await findAllRole(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function getTreeMenu() {
+  const data = await findTreeMenu(
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载 动态页面 导入模板
  */
@@ -496,9 +621,20 @@ export function useDownloadImportTemplateDynPage() {
       query: /* GraphQL */ `
         query {
           getFieldCommentsDynPage {
+            code
             lbl
+            parent_menu_id_lbl
+            role_ids_lbl
             order_by
             rem
+          }
+          findAllMenu {
+            id
+            lbl
+          }
+          findAllRole {
+            id
+            lbl
           }
         }
       `,
@@ -556,6 +692,12 @@ export function useExportExcelDynPage() {
             findAllDynPage(search: $search, page: null, sort: $sort) {
               ${ dynPageQueryField }
             }
+            findAllMenu {
+              lbl
+            }
+            findAllRole {
+              lbl
+            }
             getDict(codes: [
               "is_enabled",
             ]) {
@@ -570,7 +712,7 @@ export function useExportExcelDynPage() {
         },
       }, opt);
       for (const model of data.findAllDynPage) {
-        await setLblById(model, true);
+        await setLblByIdDynPage(model, true);
       }
       try {
         const sheetName = "动态页面";
@@ -663,6 +805,50 @@ export async function findLastOrderByDynPage(
   }, opt);
   const res = data.findLastOrderByDynPage;
   return res;
+}
+
+/**
+ * 获取 动态页面 字段注释
+ */
+export async function getFieldCommentsDynPage(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDynPage: Query["getFieldCommentsDynPage"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDynPage {
+          id,
+          code,
+          lbl,
+          parent_menu_id,
+          parent_menu_id_lbl,
+          role_ids,
+          role_ids_lbl,
+          order_by,
+          is_enabled,
+          is_enabled_lbl,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDynPage as DynPageFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathDynPage() {

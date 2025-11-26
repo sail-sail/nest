@@ -399,6 +399,13 @@ export interface TableCloumn {
   canSearch?: boolean,
   
   /**
+   * 是否通过数组来搜索
+   * 例如: id IN (1,2,3)
+   * 默认为 false
+   */
+  searchByArray?: boolean,
+  
+  /**
    * 是否图片
    * 如果字段名是img或者_img结尾, 并且isImg == null，则认isImg默认为true,并且此时width默认为80
    */
@@ -482,6 +489,11 @@ export interface TableCloumn {
    * 是否为开关
    */
   isSwitch?: boolean,
+  
+  /**
+   * 是否为复选框
+   */
+  isCheckbox?: boolean,
   
   /**
    * 是否为附件
@@ -742,6 +754,11 @@ export type Validator = {
 
 export interface TablesConfigItem {
   opts?: {
+    
+    /**
+     * 页面是否启用动态字段, 默认为 false
+     */
+    isUseDynPageFields?: boolean;
     
     /**
      * 用于显示的字段

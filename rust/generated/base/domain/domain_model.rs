@@ -536,8 +536,12 @@ pub fn check_sort_domain(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_domain() -> String {
-  "/base/domain".to_owned()
+// MARK: get_page_path_domain
+pub fn get_page_path_domain() -> &'static str {
+  "/base/domain"
+}
+
+// MARK: get_table_name_domain
+pub fn get_table_name_domain() -> &'static str {
+  "base_domain"
 }

@@ -839,8 +839,12 @@ pub fn check_sort_tenant(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_tenant() -> String {
-  "/base/tenant".to_owned()
+// MARK: get_page_path_tenant
+pub fn get_page_path_tenant() -> &'static str {
+  "/base/tenant"
+}
+
+// MARK: get_table_name_tenant
+pub fn get_table_name_tenant() -> &'static str {
+  "base_tenant"
 }

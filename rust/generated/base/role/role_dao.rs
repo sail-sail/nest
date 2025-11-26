@@ -190,30 +190,6 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&code_like)).into());
     }
   }
-  // 编码
-  {
-    let codes: Option<Vec<String>> = match search {
-      Some(item) => item.codes.clone(),
-      None => None,
-    };
-    if let Some(codes) = codes {
-      let arg = {
-        if codes.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(codes.len());
-          for item in codes {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and t.code in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
   // 名称
   {
     let lbl = match search {
@@ -730,7 +706,7 @@ pub async fn find_all_role(
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "find_all_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -875,20 +851,6 @@ pub async fn find_all_role(
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
-  // 编码
-  if let Some(search) = &search && search.codes.is_some() {
-    let len = search.codes.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(vec![]);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.codes.length > {ids_limit}"));
-    }
-  }
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
@@ -988,7 +950,7 @@ pub async fn find_count_role(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "find_count_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1127,20 +1089,6 @@ pub async fn find_count_role(
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
-  // 编码
-  if let Some(search) = &search && search.codes.is_some() {
-    let len = search.codes.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(0);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.codes.length > {ids_limit}"));
-    }
-  }
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
@@ -1180,11 +1128,12 @@ pub async fn find_count_role(
 
 // MARK: get_field_comments_role
 /// 获取角色字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_role(
   _options: Option<Options>,
 ) -> Result<RoleFieldComment> {
   
-  let field_comments = RoleFieldComment {
+  let mut field_comments = RoleFieldComment {
     id: "ID".into(),
     code: "编码".into(),
     lbl: "名称".into(),
@@ -1224,7 +1173,7 @@ pub async fn find_one_ok_role(
   options: Option<Options>,
 ) -> Result<RoleModel> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "find_one_ok_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1273,7 +1222,7 @@ pub async fn find_one_role(
   options: Option<Options>,
 ) -> Result<Option<RoleModel>> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "find_one_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1328,7 +1277,7 @@ pub async fn find_by_id_ok_role(
   options: Option<Options>,
 ) -> Result<RoleModel> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "find_by_id_ok_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1377,7 +1326,7 @@ pub async fn find_by_id_role(
   options: Option<Options>,
 ) -> Result<Option<RoleModel>> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "find_by_id_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1424,7 +1373,7 @@ pub async fn find_by_ids_ok_role(
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "find_by_ids_ok_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1496,7 +1445,7 @@ pub async fn find_by_ids_role(
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "find_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1566,7 +1515,7 @@ pub async fn exists_role(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "exists_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1744,7 +1693,7 @@ pub async fn exists_by_id_role(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "exists_by_id_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1787,7 +1736,7 @@ pub async fn find_by_unique_role(
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "find_by_unique_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1899,7 +1848,7 @@ pub async fn check_by_unique_role(
   options: Option<Options>,
 ) -> Result<Option<RoleId>> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "check_by_unique_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2160,7 +2109,7 @@ pub async fn creates_return_role(
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "creates_return_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2197,7 +2146,7 @@ pub async fn creates_role(
   options: Option<Options>,
 ) -> Result<Vec<RoleId>> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "creates_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2229,7 +2178,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<RoleId>> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -2648,7 +2597,7 @@ pub async fn find_auto_code_role(
   options: Option<Options>,
 ) -> Result<(u32, String)> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "find_auto_code_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2751,7 +2700,7 @@ pub async fn create_role(
   options: Option<Options>,
 ) -> Result<RoleId> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "create_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2788,7 +2737,7 @@ pub async fn update_tenant_by_id_role(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "update_tenant_by_id_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2837,7 +2786,7 @@ pub async fn update_by_id_role(
   options: Option<Options>,
 ) -> Result<RoleId> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "update_by_id_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3197,7 +3146,7 @@ pub async fn update_by_id_role(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_role";
+  let table = get_table_name_role();
   vec![
     table,
   ]
@@ -3222,7 +3171,7 @@ pub async fn delete_by_ids_role(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "delete_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3453,6 +3402,17 @@ pub async fn delete_by_ids_role(
         options.clone(),
       ).await?;
     }
+    {
+      let mut args = QueryArgs::new();
+      let sql = "update base_dyn_page_role set is_deleted=1 where role_id=? and is_deleted=0".to_owned();
+      args.push(id.into());
+      let args: Vec<_> = args.into();
+      execute(
+        sql,
+        args,
+        options.clone(),
+      ).await?;
+    }
   }
   
   if num > MAX_SAFE_INTEGER {
@@ -3502,7 +3462,7 @@ pub async fn enable_by_ids_role(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "enable_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3597,7 +3557,7 @@ pub async fn lock_by_ids_role(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "lock_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3661,7 +3621,7 @@ pub async fn revert_by_ids_role(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "revert_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3877,7 +3837,7 @@ pub async fn force_delete_by_ids_role(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "force_delete_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -4055,6 +4015,17 @@ pub async fn force_delete_by_ids_role(
         options.clone(),
       ).await?;
     }
+    {
+      let mut args = QueryArgs::new();
+      let sql = "delete from base_dyn_page_role where role_id=?".to_owned();
+      args.push(id.into());
+      let args: Vec<_> = args.into();
+      execute(
+        sql,
+        args,
+        options.clone(),
+      ).await?;
+    }
     
     del_caches(
       vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
@@ -4070,7 +4041,7 @@ pub async fn find_last_order_by_role(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_role";
+  let table = get_table_name_role();
   let method = "find_last_order_by_role";
   
   let is_debug = get_is_debug(options.as_ref());

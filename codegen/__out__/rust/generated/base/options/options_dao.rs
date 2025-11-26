@@ -463,7 +463,7 @@ pub async fn find_all_options(
   options: Option<Options>,
 ) -> Result<Vec<OptionsModel>> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "find_all_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -644,7 +644,7 @@ pub async fn find_count_options(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "find_count_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -766,11 +766,12 @@ pub async fn find_count_options(
 
 // MARK: get_field_comments_options
 /// 获取系统选项字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_options(
   _options: Option<Options>,
 ) -> Result<OptionsFieldComment> {
   
-  let field_comments = OptionsFieldComment {
+  let mut field_comments = OptionsFieldComment {
     id: "ID".into(),
     lbl: "名称".into(),
     ky: "键".into(),
@@ -802,7 +803,7 @@ pub async fn find_one_ok_options(
   options: Option<Options>,
 ) -> Result<OptionsModel> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "find_one_ok_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -851,7 +852,7 @@ pub async fn find_one_options(
   options: Option<Options>,
 ) -> Result<Option<OptionsModel>> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "find_one_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -906,7 +907,7 @@ pub async fn find_by_id_ok_options(
   options: Option<Options>,
 ) -> Result<OptionsModel> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "find_by_id_ok_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -955,7 +956,7 @@ pub async fn find_by_id_options(
   options: Option<Options>,
 ) -> Result<Option<OptionsModel>> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "find_by_id_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1002,7 +1003,7 @@ pub async fn find_by_ids_ok_options(
   options: Option<Options>,
 ) -> Result<Vec<OptionsModel>> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "find_by_ids_ok_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1074,7 +1075,7 @@ pub async fn find_by_ids_options(
   options: Option<Options>,
 ) -> Result<Vec<OptionsModel>> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "find_by_ids_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1144,7 +1145,7 @@ pub async fn exists_options(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "exists_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1266,7 +1267,7 @@ pub async fn exists_by_id_options(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "exists_by_id_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1309,7 +1310,7 @@ pub async fn find_by_unique_options(
   options: Option<Options>,
 ) -> Result<Vec<OptionsModel>> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "find_by_unique_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1397,7 +1398,7 @@ pub async fn check_by_unique_options(
   options: Option<Options>,
 ) -> Result<Option<OptionsId>> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "check_by_unique_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1556,7 +1557,7 @@ pub async fn creates_return_options(
   options: Option<Options>,
 ) -> Result<Vec<OptionsModel>> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "creates_return_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1593,7 +1594,7 @@ pub async fn creates_options(
   options: Option<Options>,
 ) -> Result<Vec<OptionsId>> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "creates_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1625,7 +1626,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<OptionsId>> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1956,7 +1957,7 @@ pub async fn create_options(
   options: Option<Options>,
 ) -> Result<OptionsId> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "create_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2014,7 +2015,7 @@ pub async fn update_by_id_options(
   options: Option<Options>,
 ) -> Result<OptionsId> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "update_by_id_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2278,7 +2279,7 @@ pub async fn update_by_id_options(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_options";
+  let table = get_table_name_options();
   vec![
     table,
   ]
@@ -2303,7 +2304,7 @@ pub async fn delete_by_ids_options(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "delete_by_ids_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2456,7 +2457,7 @@ pub async fn enable_by_ids_options(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "enable_by_ids_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2543,7 +2544,7 @@ pub async fn lock_by_ids_options(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "lock_by_ids_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2599,7 +2600,7 @@ pub async fn revert_by_ids_options(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "revert_by_ids_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2699,7 +2700,7 @@ pub async fn force_delete_by_ids_options(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "force_delete_by_ids_options";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2785,7 +2786,7 @@ pub async fn find_last_order_by_options(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_options";
+  let table = get_table_name_options();
   let method = "find_last_order_by_options";
   
   let is_debug = get_is_debug(options.as_ref());

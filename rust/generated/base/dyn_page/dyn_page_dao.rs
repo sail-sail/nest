@@ -71,6 +71,32 @@ use crate::base::usr::usr_model::UsrId;
 
 use crate::base::usr::usr_dao::find_by_id_usr;
 
+use crate::base::menu::menu_dao::{
+  find_one_menu,
+  create_menu,
+  update_by_id_menu,
+  delete_by_ids_menu,
+  revert_by_ids_menu,
+};
+
+use crate::base::menu::menu_model::{
+  MenuId,
+  MenuInput,
+  MenuSearch,
+};
+
+use crate::base::role::role_dao::{
+  find_all_role,
+  find_by_ids_role,
+  update_by_id_role,
+};
+
+use crate::base::role::role_model::{
+  RoleId,
+  RoleSearch,
+  RoleInput,
+};
+
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
@@ -82,7 +108,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 13 * 2);
+  let mut where_query = String::with_capacity(80 * 15 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -155,7 +181,7 @@ async fn get_where_query(
       args.push(code_seq_lt.into());
     }
   }
-  // 编码
+  // 路由
   {
     let code = match search {
       Some(item) => item.code.clone(),
@@ -447,7 +473,7 @@ pub async fn find_all_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_all_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -567,7 +593,7 @@ pub async fn find_all_dyn_page(
   let mut res: Vec<DynPageModel> = query(
     sql,
     args,
-    Some(options),
+    Some(options.clone()),
   ).await?;
   
   let dict_vec = get_dict(&[
@@ -597,6 +623,40 @@ pub async fn find_all_dyn_page(
   
   #[allow(unused_variables)]
   for model in &mut res {
+    
+    // 根据路由获取菜单及其角色列表
+    {
+      let menu_model = find_one_menu(
+        Some(MenuSearch {
+          route_path: Some(model.code.clone()),
+          is_deleted: search.as_ref().and_then(|s| s.is_deleted),
+          ..Default::default()
+        }),
+        None,
+        Some(options.clone()),
+      ).await?;
+      
+      if let Some(menu_model) = menu_model {
+        // 获取父菜单ID
+        model.parent_menu_id = menu_model.parent_id.clone();
+        model.parent_menu_id_lbl = menu_model.parent_id_lbl.clone();
+        
+        // 获取拥有此菜单权限的角色列表
+        let role_models = find_all_role(
+          Some(RoleSearch {
+            menu_ids: Some(vec![menu_model.id.clone()]),
+            is_deleted: search.as_ref().and_then(|s| s.is_deleted),
+            ..Default::default()
+          }),
+          None,
+          None,
+          Some(options.clone()),
+        ).await?;
+        
+        model.role_ids = role_models.iter().map(|item| item.id.clone()).collect();
+        model.role_ids_lbl = role_models.iter().map(|item| item.lbl.clone()).collect();
+      }
+    }
     
     // 启用
     model.is_enabled_lbl = {
@@ -628,7 +688,7 @@ pub async fn find_count_dyn_page(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_count_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -736,14 +796,19 @@ pub async fn find_count_dyn_page(
 
 // MARK: get_field_comments_dyn_page
 /// 获取动态页面字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_dyn_page(
   _options: Option<Options>,
 ) -> Result<DynPageFieldComment> {
   
-  let field_comments = DynPageFieldComment {
+  let mut field_comments = DynPageFieldComment {
     id: "ID".into(),
-    code: "编码".into(),
+    code: "路由".into(),
     lbl: "名称".into(),
+    parent_menu_id: "父菜单".into(),
+    parent_menu_id_lbl: "父菜单".into(),
+    role_ids: "所属角色".into(),
+    role_ids_lbl: "所属角色".into(),
     order_by: "排序".into(),
     is_enabled: "启用".into(),
     is_enabled_lbl: "启用".into(),
@@ -769,7 +834,7 @@ pub async fn find_one_ok_dyn_page(
   options: Option<Options>,
 ) -> Result<DynPageModel> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_one_ok_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -818,7 +883,7 @@ pub async fn find_one_dyn_page(
   options: Option<Options>,
 ) -> Result<Option<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_one_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -873,7 +938,7 @@ pub async fn find_by_id_ok_dyn_page(
   options: Option<Options>,
 ) -> Result<DynPageModel> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_by_id_ok_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -922,7 +987,7 @@ pub async fn find_by_id_dyn_page(
   options: Option<Options>,
 ) -> Result<Option<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_by_id_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -969,7 +1034,7 @@ pub async fn find_by_ids_ok_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_by_ids_ok_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1041,7 +1106,7 @@ pub async fn find_by_ids_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_by_ids_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1111,7 +1176,7 @@ pub async fn exists_dyn_page(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "exists_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1219,7 +1284,7 @@ pub async fn exists_by_id_dyn_page(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "exists_by_id_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1262,7 +1327,7 @@ pub async fn find_by_unique_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_by_unique_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1374,7 +1439,7 @@ pub async fn check_by_unique_dyn_page(
   options: Option<Options>,
 ) -> Result<Option<DynPageId>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "check_by_unique_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1492,7 +1557,7 @@ pub async fn creates_return_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageModel>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "creates_return_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1529,7 +1594,7 @@ pub async fn creates_dyn_page(
   options: Option<Options>,
 ) -> Result<Vec<DynPageId>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "creates_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1561,7 +1626,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<DynPageId>> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1633,7 +1698,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 13 + 20);
+  let mut sql_fields = String::with_capacity(80 * 15 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1645,7 +1710,7 @@ async fn _creates(
   sql_fields += ",tenant_id";
   // 编码-序列号
   sql_fields += ",code_seq";
-  // 编码
+  // 路由
   sql_fields += ",code";
   // 名称
   sql_fields += ",lbl";
@@ -1657,7 +1722,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 13 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 15 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1790,7 +1855,7 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 编码
+    // 路由
     if let Some(code) = input.code {
       sql_values += ",?";
       args.push(code.into());
@@ -1854,6 +1919,7 @@ async fn _creates(
   }
   
   for (i, input) in inputs2
+    .clone()
     .into_iter()
     .enumerate()
   {
@@ -1871,6 +1937,124 @@ async fn _creates(
     }
   }
   
+  // 根据 code 路由查找菜单, 如果菜单不存在则创建菜单, 否则更新菜单名称
+  for input in &inputs2 {
+    if input.code.is_none() {
+      continue;
+    }
+    let code = input.code.as_ref().unwrap();
+    let menu_model = find_one_menu(
+      Some(MenuSearch {
+        route_path: Some(code.clone()),
+        ..Default::default()
+      }),
+      None,
+      options.clone(),
+    ).await?;
+    let menu_id = if let Some(menu_model) = menu_model {
+      // 更新菜单名称
+      let menu_options = Options::from(options.clone())
+        .set_is_creating(Some(true));
+      update_by_id_menu(
+        menu_model.id.clone(),
+        MenuInput {
+          parent_id: input.parent_menu_id.clone(),
+          lbl: input.lbl.clone(),
+          is_enabled: input.is_enabled,
+          ..Default::default()
+        },
+        Some(menu_options),
+      ).await?;
+      menu_model.id
+    } else {
+      // 创建菜单
+      create_menu(
+        MenuInput {
+          parent_id: input.parent_menu_id.clone(),
+          route_path: Some(code.clone()),
+          lbl: input.lbl.clone(),
+          is_dyn_page: Some(1),
+          is_enabled: input.is_enabled,
+          ..Default::default()
+        },
+        options.clone(),
+      ).await?
+    };
+    
+    // 菜单所属角色
+    let new_role_ids = input.role_ids.clone().unwrap_or_default();
+    
+    // 查找旧的角色列表(拥有此菜单的角色)
+    let old_role_models = find_all_role(
+      Some(RoleSearch {
+        menu_ids: Some(vec![menu_id.clone()]),
+        ..Default::default()
+      }),
+      None,
+      None,
+      options.clone(),
+    ).await?;
+    let old_role_ids: Vec<RoleId> = old_role_models.iter().map(|item| item.id.clone()).collect();
+    
+    // 找出需要删除此菜单的角色(在旧列表中但不在新列表中)
+    let remove_role_ids: Vec<RoleId> = old_role_ids
+      .iter()
+      .filter(|role_id| !new_role_ids.contains(role_id))
+      .cloned()
+      .collect();
+    for role_id in remove_role_ids {
+      let role_model = old_role_models.iter().find(|item| item.id == role_id);
+      if let Some(role_model) = role_model {
+        let menu_ids: Vec<MenuId> = role_model.menu_ids
+          .iter()
+          .filter(|id| *id != &menu_id)
+          .cloned()
+          .collect();
+        let role_options = Options::from(options.clone())
+          .set_is_creating(Some(true));
+        update_by_id_role(
+          role_id,
+          RoleInput {
+            menu_ids: Some(menu_ids),
+            ..Default::default()
+          },
+          Some(role_options),
+        ).await?;
+      }
+    }
+    
+    // 找出需要添加此菜单的角色(在新列表中但不在旧列表中)
+    let add_role_ids: Vec<RoleId> = new_role_ids
+      .iter()
+      .filter(|role_id| !old_role_ids.contains(role_id))
+      .cloned()
+      .collect();
+    if !add_role_ids.is_empty() {
+      let add_role_models = find_by_ids_role(
+        add_role_ids,
+        options.clone(),
+      ).await?;
+      for role_model in add_role_models {
+        let role_id = role_model.id.clone();
+        let mut menu_ids = role_model.menu_ids.clone();
+        if menu_ids.contains(&menu_id) {
+          continue;
+        }
+        menu_ids.push(menu_id.clone());
+        let role_options = Options::from(options.clone())
+          .set_is_creating(Some(true));
+        update_by_id_role(
+          role_id,
+          RoleInput {
+            menu_ids: Some(menu_ids),
+            ..Default::default()
+          },
+          Some(role_options),
+        ).await?;
+      }
+    }
+  }
+  
   Ok(ids2)
 }
 
@@ -1880,7 +2064,7 @@ pub async fn find_auto_code_dyn_page(
   options: Option<Options>,
 ) -> Result<(u32, String)> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_auto_code_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1935,7 +2119,7 @@ pub async fn find_auto_code_dyn_page(
     code_seq
   };
   
-  let code = format!("DP{code_seq:03}");
+  let code = format!("/dyn/pg{code_seq:0}");
   
   Ok((code_seq, code))
 }
@@ -1983,7 +2167,7 @@ pub async fn create_dyn_page(
   options: Option<Options>,
 ) -> Result<DynPageId> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "create_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2020,7 +2204,7 @@ pub async fn update_tenant_by_id_dyn_page(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "update_tenant_by_id_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2069,7 +2253,7 @@ pub async fn update_by_id_dyn_page(
   options: Option<Options>,
 ) -> Result<DynPageId> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "update_by_id_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2147,7 +2331,7 @@ pub async fn update_by_id_dyn_page(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 13 + 20);
+  let mut sql_fields = String::with_capacity(80 * 15 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2162,14 +2346,14 @@ pub async fn update_by_id_dyn_page(
     sql_fields += "code_seq=?,";
     args.push(code_seq.into());
   }
-  // 编码
-  if let Some(code) = input.code {
+  // 路由
+  if let Some(code) = input.code.clone() {
     field_num += 1;
     sql_fields += "code=?,";
     args.push(code.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
@@ -2347,7 +2531,7 @@ pub async fn update_by_id_dyn_page(
   }
   
   if field_num > 0 {
-    let options = Options::from(options);
+    let options = Options::from(options.clone());
     let options = options.set_del_cache_key1s(get_cache_tables());
     if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
       del_caches(
@@ -2360,13 +2544,128 @@ pub async fn update_by_id_dyn_page(
     }
   }
   
+  // 根据 code 路由查找菜单, 如果菜单不存在则创建菜单, 否则更新菜单名称
+  if input.code.is_some() {
+    let code = input.code.as_ref().unwrap();
+    let menu_model = find_one_menu(
+      Some(MenuSearch {
+        route_path: Some(code.clone()),
+        ..Default::default()
+      }),
+      None,
+      options.clone(),
+    ).await?;
+    let menu_id = if let Some(menu_model) = menu_model {
+      // 更新菜单名称
+      let menu_options = Options::from(options.clone())
+        .set_is_creating(Some(true));
+      update_by_id_menu(
+        menu_model.id.clone(),
+        MenuInput {
+          parent_id: input.parent_menu_id.clone(),
+          lbl: input.lbl.clone(),
+          is_enabled: input.is_enabled,
+          ..Default::default()
+        },
+        Some(menu_options),
+      ).await?;
+      menu_model.id
+    } else {
+      // 创建菜单
+      create_menu(
+        MenuInput {
+          parent_id: input.parent_menu_id.clone(),
+          route_path: Some(code.clone()),
+          lbl: input.lbl.clone(),
+          is_dyn_page: Some(1),
+          is_enabled: input.is_enabled,
+          ..Default::default()
+        },
+        options.clone(),
+      ).await?
+    };
+    
+    // 菜单所属角色
+    let new_role_ids = input.role_ids.clone().unwrap_or_default();
+    
+    // 查找旧的角色列表(拥有此菜单的角色)
+    let old_role_models = find_all_role(
+      Some(RoleSearch {
+        menu_ids: Some(vec![menu_id.clone()]),
+        ..Default::default()
+      }),
+      None,
+      None,
+      options.clone(),
+    ).await?;
+    let old_role_ids: Vec<RoleId> = old_role_models.iter().map(|item| item.id.clone()).collect();
+    
+    // 找出需要删除此菜单的角色(在旧列表中但不在新列表中)
+    let remove_role_ids: Vec<RoleId> = old_role_ids
+      .iter()
+      .filter(|role_id| !new_role_ids.contains(role_id))
+      .cloned()
+      .collect();
+    for role_id in remove_role_ids {
+      let role_model = old_role_models.iter().find(|item| item.id == role_id);
+      if let Some(role_model) = role_model {
+        let menu_ids: Vec<MenuId> = role_model.menu_ids
+          .iter()
+          .filter(|id| *id != &menu_id)
+          .cloned()
+          .collect();
+        let role_options = Options::from(options.clone())
+          .set_is_creating(Some(true));
+        update_by_id_role(
+          role_id,
+          RoleInput {
+            menu_ids: Some(menu_ids),
+            ..Default::default()
+          },
+          Some(role_options),
+        ).await?;
+      }
+    }
+    
+    // 找出需要添加此菜单的角色(在新列表中但不在旧列表中)
+    let add_role_ids: Vec<RoleId> = new_role_ids
+      .iter()
+      .filter(|role_id| !old_role_ids.contains(role_id))
+      .cloned()
+      .collect();
+    if !add_role_ids.is_empty() {
+      let add_role_models = find_by_ids_role(
+        add_role_ids,
+        options.clone(),
+      ).await?;
+      for role_model in add_role_models {
+        let role_id = role_model.id.clone();
+        let mut menu_ids = role_model.menu_ids.clone();
+        if menu_ids.contains(&menu_id) {
+          continue;
+        }
+        menu_ids.push(menu_id.clone());
+        let role_options = Options::from(options.clone())
+          .set_is_creating(Some(true));
+        update_by_id_role(
+          role_id,
+          RoleInput {
+            menu_ids: Some(menu_ids),
+            ..Default::default()
+          },
+          Some(role_options),
+        ).await?;
+      }
+    }
+  }
+  
   Ok(id)
 }
 
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   vec![
     table,
   ]
@@ -2391,7 +2690,7 @@ pub async fn delete_by_ids_dyn_page(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "delete_by_ids_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2424,6 +2723,8 @@ pub async fn delete_by_ids_dyn_page(
   let options = Some(options);
   
   let mut num = 0;
+  let mut menu_ids_to_delete: Vec<MenuId> = vec![];
+  
   for id in ids.clone() {
     
     let old_model = find_by_id_dyn_page(
@@ -2443,6 +2744,24 @@ pub async fn delete_by_ids_dyn_page(
         method,
         serde_json::to_string(&old_model)?,
       );
+    }
+    
+    // 检查是否需要级联删除菜单
+    if !old_model.code.is_empty() {
+      let code = &old_model.code;
+      let menu_model = find_one_menu(
+        Some(MenuSearch {
+          route_path: Some(code.clone()),
+          ..Default::default()
+        }),
+        None,
+        options.clone(),
+      ).await?;
+      if let Some(menu_model) = menu_model {
+        if menu_model.is_dyn_page == 1 {
+          menu_ids_to_delete.push(menu_model.id);
+        }
+      }
     }
     
     let mut args = QueryArgs::new();
@@ -2524,6 +2843,14 @@ pub async fn delete_by_ids_dyn_page(
     options.clone(),
   ).await?;
   
+  // 级联删除菜单
+  if !menu_ids_to_delete.is_empty() {
+    delete_by_ids_menu(
+      menu_ids_to_delete,
+      options.clone(),
+    ).await?;
+  }
+  
   Ok(num)
 }
 
@@ -2563,7 +2890,7 @@ pub async fn enable_by_ids_dyn_page(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "enable_by_ids_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2620,7 +2947,7 @@ pub async fn revert_by_ids_dyn_page(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "revert_by_ids_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2647,6 +2974,8 @@ pub async fn revert_by_ids_dyn_page(
   let options = Some(options);
   
   let mut num = 0;
+  let mut menu_ids_to_revert: Vec<MenuId> = vec![];
+  
   for id in ids.clone() {
     let mut args = QueryArgs::new();
     
@@ -2701,6 +3030,25 @@ pub async fn revert_by_ids_dyn_page(
       }
     }
     
+    // 检查是否需要级联还原菜单
+    if !old_model.code.is_empty() {
+      let code = &old_model.code;
+      let menu_model = find_one_menu(
+        Some(MenuSearch {
+          route_path: Some(code.clone()),
+          is_deleted: Some(1),
+          ..Default::default()
+        }),
+        None,
+        options.clone(),
+      ).await?;
+      if let Some(menu_model) = menu_model {
+        if menu_model.is_dyn_page == 1 {
+          menu_ids_to_revert.push(menu_model.id);
+        }
+      }
+    }
+    
     num += execute(
       sql,
       args,
@@ -2729,6 +3077,14 @@ pub async fn revert_by_ids_dyn_page(
     options.clone(),
   ).await?;
   
+  // 级联还原菜单
+  if !menu_ids_to_revert.is_empty() {
+    revert_by_ids_menu(
+      menu_ids_to_revert,
+      options.clone(),
+    ).await?;
+  }
+  
   Ok(num)
 }
 
@@ -2740,7 +3096,7 @@ pub async fn force_delete_by_ids_dyn_page(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "force_delete_by_ids_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2768,6 +3124,8 @@ pub async fn force_delete_by_ids_dyn_page(
   let options = Some(options);
   
   let mut num = 0;
+  let mut menu_ids_to_force_delete: Vec<MenuId> = vec![];
+  
   for id in ids.clone() {
     
     let old_model = find_all_dyn_page(
@@ -2794,6 +3152,25 @@ pub async fn force_delete_by_ids_dyn_page(
         method,
         serde_json::to_string(&old_model)?,
       );
+    }
+    
+    // 检查是否需要级联彻底删除菜单
+    if !old_model.code.is_empty() {
+      let code = &old_model.code;
+      let menu_model = find_one_menu(
+        Some(MenuSearch {
+          route_path: Some(code.clone()),
+          is_deleted: Some(1),
+          ..Default::default()
+        }),
+        None,
+        options.clone(),
+      ).await?;
+      if let Some(menu_model) = menu_model {
+        if menu_model.is_dyn_page == 1 {
+          menu_ids_to_force_delete.push(menu_model.id);
+        }
+      }
     }
     
     let mut args = QueryArgs::new();
@@ -2845,7 +3222,7 @@ pub async fn find_last_order_by_dyn_page(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_dyn_page";
+  let table = get_table_name_dyn_page();
   let method = "find_last_order_by_dyn_page";
   
   let is_debug = get_is_debug(options.as_ref());

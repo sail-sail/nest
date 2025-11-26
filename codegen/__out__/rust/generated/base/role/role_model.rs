@@ -900,8 +900,12 @@ pub fn check_sort_role(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_role() -> String {
-  "/base/role".to_owned()
+// MARK: get_page_path_role
+pub fn get_page_path_role() -> &'static str {
+  "/base/role"
+}
+
+// MARK: get_table_name_role
+pub fn get_table_name_role() -> &'static str {
+  "base_role"
 }

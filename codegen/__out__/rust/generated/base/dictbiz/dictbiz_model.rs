@@ -726,8 +726,12 @@ pub fn check_sort_dictbiz(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_dictbiz() -> String {
-  "/base/dictbiz".to_owned()
+// MARK: get_page_path_dictbiz
+pub fn get_page_path_dictbiz() -> &'static str {
+  "/base/dictbiz"
+}
+
+// MARK: get_table_name_dictbiz
+pub fn get_table_name_dictbiz() -> &'static str {
+  "base_dictbiz"
 }
