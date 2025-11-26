@@ -102,6 +102,9 @@ async function getWhereQuery(
   if (search?.ref_id != null) {
     whereQuery += ` and t.ref_id=${ args.push(search.ref_id) }`;
   }
+  if (search?.ref_ids != null) {
+    whereQuery += ` and t.ref_id in (${ args.push(search.ref_ids) })`;
+  }
   if (isNotEmpty(search?.ref_id_like)) {
     whereQuery += ` and t.ref_id like ${ args.push("%" + sqlLike(search?.ref_id_like) + "%") }`;
   }
@@ -205,6 +208,13 @@ export async function findCountDynPageVal(
   if (search && search.ids && search.ids.length === 0) {
     return 0;
   }
+  // 关联数据ID
+  if (search && search.ref_ids != null) {
+    const len = search.ref_ids.length;
+    if (len === 0) {
+      return 0;
+    }
+  }
   // 创建人
   if (search && search.create_usr_id != null) {
     const len = search.create_usr_id.length;
@@ -296,6 +306,13 @@ export async function findAllDynPageVal(
   }
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
+  }
+  // 关联数据ID
+  if (search && search.ref_ids != null) {
+    const len = search.ref_ids.length;
+    if (len === 0) {
+      return [ ];
+    }
   }
   // 创建人
   if (search && search.create_usr_id != null) {

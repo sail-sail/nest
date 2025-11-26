@@ -808,12 +808,10 @@ input <#=searchName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
     if (
       column.onlyCodegenDeno
       || column.canSearch !== true
     ) continue;
-    // if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
@@ -942,7 +940,12 @@ input <#=searchName#> {<#
     } else if (!column.isEncrypt) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=data_type#>
+  <#=column_name#>: <#=data_type#><#
+  if (column.searchByArray) {
+  #>
+  <#=column_name#>s: [String!]<#
+  }
+  #>
   <#=column_name#>_like: <#=data_type#><#
     }
   #><#
@@ -961,7 +964,6 @@ type <#=Table_Up2#>Summary {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    // if (column.isVirtual) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;

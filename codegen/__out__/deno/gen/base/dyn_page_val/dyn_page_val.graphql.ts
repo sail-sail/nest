@@ -85,6 +85,7 @@ input DynPageValSearch {
   id: DynPageValId
   "关联数据ID"
   ref_id: String
+  ref_ids: [String!]
   ref_id_like: String
   "字段编码"
   code: String

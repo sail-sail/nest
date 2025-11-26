@@ -1644,6 +1644,7 @@ export default defineConfig({
         COLUMN_NAME: "ref_id",
         notForeignKeyById: true,
         canSearch: true,
+        searchByArray: true,
       },
       {
         COLUMN_NAME: "code",

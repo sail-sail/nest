@@ -208,9 +208,12 @@ export async function findCountDynPageVal(
   if (search && search.ids && search.ids.length === 0) {
     return 0;
   }
-  // ref_ids
-  if (search?.ref_ids != null && search?.ref_ids.length === 0) {
-    return 0;
+  // 关联数据ID
+  if (search && search.ref_ids != null) {
+    const len = search.ref_ids.length;
+    if (len === 0) {
+      return 0;
+    }
   }
   // 创建人
   if (search && search.create_usr_id != null) {
@@ -304,9 +307,12 @@ export async function findAllDynPageVal(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
-  // ref_ids
-  if (search?.ref_ids != null && search?.ref_ids.length === 0) {
-    return [ ];
+  // 关联数据ID
+  if (search && search.ref_ids != null) {
+    const len = search.ref_ids.length;
+    if (len === 0) {
+      return [ ];
+    }
   }
   // 创建人
   if (search && search.create_usr_id != null) {

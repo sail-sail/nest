@@ -1099,7 +1099,32 @@ async function getWhereQuery(
     #><#
     }
     #>
+  }<#
+  if (column.searchByArray) {
+  #>
+  if (search?.<#=column_name#>s != null) {<#
+    if (!langTableRecords.some((record) => record.COLUMN_NAME === column_name)) {
+    #>
+    whereQuery += ` and t.<#=column_name#> in (${ args.push(search.<#=column_name#>s) })`;<#
+    } else {
+    #><#
+    if (isUseI18n) {
+    #>
+    if (server_i18n_enable) {
+      whereQuery += ` and (t.<#=column_name#> in (${ args.push(search.<#=column_name#>s) }) or <#=opts?.langTable.opts.table_name#>.<#=column_name#> in (${ args.push(search.<#=column_name#>s) }))`;
+    } else {
+      whereQuery += ` and t.<#=column_name#> in (${ args.push(search.<#=column_name#>s) })`;
+    }<#
+    } else {
+    #>
+    whereQuery += ` and t.<#=column_name#> in (${ args.push(search.<#=column_name#>s) })`;<#
+    }
+    #><#
+    }
+    #>
+  }<#
   }
+  #>
   if (isNotEmpty(search?.<#=column_name#>_like)) {<#
     if (!langTableRecords.some((record) => record.COLUMN_NAME === column_name)) {
     #>
@@ -1367,6 +1392,33 @@ export async function findCount<#=Table_Up#>(
       column_name === "is_sys" ||
       column_name === "is_deleted"
     ) continue;
+    const data_type = column.DATA_TYPE;
+    const foreignKey = column.foreignKey;
+  #><#
+    if (column.searchByArray && !foreignKey && !column.dict && !column.dictbiz) {
+  #>
+  // <#=column.COLUMN_COMMENT#>
+  if (search && search.<#=column_name#>s != null) {
+    const len = search.<#=column_name#>s.length;
+    if (len === 0) {
+      return 0;
+    }
+  }<#
+    }
+  #><#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -1573,6 +1625,33 @@ export async function findAll<#=Table_Up#>(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const data_type = column.DATA_TYPE;
+    const foreignKey = column.foreignKey;
+  #><#
+    if (column.searchByArray && !foreignKey && !column.dict && !column.dictbiz) {
+  #>
+  // <#=column.COLUMN_COMMENT#>
+  if (search && search.<#=column_name#>s != null) {
+    const len = search.<#=column_name#>s.length;
+    if (len === 0) {
+      return [ ];
+    }
+  }<#
+    }
+  #><#
+  }
+  #><#
   if (opts?.langTable && isUseI18n) {
   #>
   
