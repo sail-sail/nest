@@ -320,6 +320,9 @@ pub struct MenuSearch {
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
+  /// 仅当前租户
+  #[graphql(name = "is_current_tenant")]
+  pub is_current_tenant: Option<u8>,
   /// 排序
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,

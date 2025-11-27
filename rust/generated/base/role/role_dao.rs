@@ -3214,10 +3214,11 @@ pub async fn delete_by_ids_role(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -3678,10 +3679,10 @@ pub async fn revert_by_ids_role(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: RoleInput = old_model.clone().into();
@@ -3867,21 +3868,20 @@ pub async fn force_delete_by_ids_role(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_role(
-      RoleSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_role(
+      Some(RoleSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(

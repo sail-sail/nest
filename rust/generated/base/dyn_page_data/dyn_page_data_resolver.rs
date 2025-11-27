@@ -234,7 +234,7 @@ pub async fn creates_dyn_page_data(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_dyn_page_data().to_string(),
+    get_page_path_dyn_page_data(None).to_string(),
     "add".to_owned(),
   ).await?;
   
@@ -294,7 +294,7 @@ pub async fn update_by_id_dyn_page_data(
   ).await?;
   
   use_permit(
-    get_page_path_dyn_page_data().to_string(),
+    get_page_path_dyn_page_data(None).to_string(),
     "edit".to_owned(),
   ).await?;
   
@@ -322,7 +322,7 @@ pub async fn delete_by_ids_dyn_page_data(
   );
   
   use_permit(
-    get_page_path_dyn_page_data().to_string(),
+    get_page_path_dyn_page_data(None).to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -337,6 +337,7 @@ pub async fn delete_by_ids_dyn_page_data(
 /// 获取动态页面数据字段注释
 #[function_name::named]
 pub async fn get_field_comments_dyn_page_data(
+  ref_code: Option<String>,
   options: Option<Options>,
 ) -> Result<DynPageDataFieldComment> {
   
@@ -347,6 +348,7 @@ pub async fn get_field_comments_dyn_page_data(
   );
   
   let comments = dyn_page_data_service::get_field_comments_dyn_page_data(
+    ref_code,
     options,
   ).await?;
   
@@ -368,7 +370,7 @@ pub async fn revert_by_ids_dyn_page_data(
   );
   
   use_permit(
-    get_page_path_dyn_page_data().to_string(),
+    get_page_path_dyn_page_data(None).to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -395,7 +397,7 @@ pub async fn force_delete_by_ids_dyn_page_data(
   );
   
   use_permit(
-    get_page_path_dyn_page_data().to_string(),
+    get_page_path_dyn_page_data(None).to_string(),
     "force_delete".to_owned(),
   ).await?;
   

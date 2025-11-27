@@ -10,12 +10,17 @@ declare global {
   
   /** 图标库 */
   interface IconModel extends IconModelType {
+    /** 类型 */
+    _type?: "add";
     /** 图标 */
     img_lbl: string;
+    img_lbl_svg: string;
   }
   
   /** 图标库 */
   interface IconInput extends IconInputType {
+    /** 图标 */
+    img_lbl_svg?: string;
   }
   
   /** 图标库 */
@@ -34,6 +39,8 @@ export const iconFields = [
   "id",
   // 图标
   "img",
+  // svg
+  "img_lbl_svg",
   // 编码
   "code",
   // 名称

@@ -186,11 +186,13 @@ impl DynPageDataGenQuery {
   async fn get_field_comments_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    ref_code: Option<String>,
   ) -> Result<DynPageDataFieldComment> {
     Ctx::builder(ctx)
       .build()
       .scope({
         dyn_page_data_resolver::get_field_comments_dyn_page_data(
+          ref_code,
           None,
         )
       }).await

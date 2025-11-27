@@ -497,6 +497,9 @@ pub struct UsrSearch {
   /// 所属角色
   #[graphql(name = "role_ids_lbl_like")]
   pub role_ids_lbl_like: Option<String>,
+  /// 所属角色
+  #[graphql(name = "role_codes")]
+  pub role_codes: Option<Vec<String>>,
   /// 所属部门
   #[graphql(name = "dept_ids")]
   pub dept_ids: Option<Vec<DeptId>>,

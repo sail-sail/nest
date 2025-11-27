@@ -215,6 +215,14 @@ const emit = defineEmits<{
 
 const pagePath = getPagePathLoginLog();
 
+const {
+  n,
+  ns,
+  nsAsync,
+  initI18ns,
+  initSysI18ns,
+} = useI18n(pagePath);
+
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit(pagePath);

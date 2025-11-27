@@ -24,6 +24,15 @@ export async function setLblByIdDynPageField(
   if (!model) {
     return;
   }
+  
+  model._attrs = model._attrs || { };
+  if (model.attrs) {
+    try {
+      model._attrs = JSON.parse(model.attrs);
+    } catch (err) { 
+      console.error("解析 attrs 字段失败", err);
+    }
+  }
 }
 
 export function intoInputDynPageField(

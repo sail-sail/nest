@@ -1662,10 +1662,11 @@ pub async fn delete_by_ids_permit(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(

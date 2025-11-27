@@ -540,6 +540,9 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                {{ row.home_url_lbl }}
+              </template>
             </el-table-column>
           </template>
           
@@ -762,6 +765,7 @@
   >
     <MenuTreeList
       :tenant_ids="[ usrStore.tenant_id ]"
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
@@ -775,6 +779,7 @@
     :is-locked="isLocked"
   >
     <PermitTreeList
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
@@ -788,6 +793,7 @@
     :is-locked="isLocked"
   >
     <DataPermitTreeList
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
@@ -801,6 +807,7 @@
     :is-locked="isLocked"
   >
     <FieldPermitTreeList
+      :is_current_tenant="1"
       is_enabled="1"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"

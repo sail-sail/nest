@@ -210,7 +210,12 @@ import {
   getDefaultInputDynPageData,
   getPagePathDynPageData,
   intoInputDynPageData,
+  getFieldCommentsDynPageData,
 } from "./Api.ts";
+
+import {
+  Parser as ExprParser,
+} from "expr-eval";
 
 const emit = defineEmits<{
   nextId: [
@@ -226,6 +231,9 @@ const pagePath = getPagePathDynPageData();
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit(pagePath);
+
+// 创建公式解析器
+const exprParser = new ExprParser();
 
 let inited = $ref(false);
 
@@ -283,6 +291,101 @@ let isLocked = $ref(false);
 
 /** 动态页面表单字段 */
 const dyn_page_field_models = $(useDynPageFields(pagePath));
+
+/** 有公式的字段 */
+const dyn_page_field_formula_models = $computed(() => {
+  return dyn_page_field_models.filter((fm) => fm.formula);
+});
+
+let field_comments = $ref<DynPageDataFieldComment>();
+
+// 深度监听 dialogModel 的变化，根据公式字段修改其他字段的值, 同时避免循环引用
+watch(
+  () => dialogModel,
+  (value, oldValue) => {
+    if (!inited || dyn_page_field_formula_models.length === 0) {
+      return;
+    }
+    if (!field_comments) {
+      return;
+    }
+    // 把 field_comments 的key跟value颠倒过来，方便查找
+    const comment_to_code: Record<string, string> = { };
+    for (const [code, comment] of Object.entries(field_comments)) {
+      if (!comment) {
+        continue;
+      }
+      if (code === "dyn_page_data") {
+        for (const [code2, comment2] of Object.entries(comment)) {
+          if (!comment2) {
+            continue;
+          }
+          comment_to_code[comment2 as string] = code2;
+        }
+      } else {
+        comment_to_code[comment] = code;
+      }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const model2: Record<string, any> = { };
+    for (const [key, val] of Object.entries(value)) {
+      if (key === "dyn_page_data" && val && typeof val === "object") {
+        for (const [k2, v2] of Object.entries(val)) {
+          model2[k2] = v2;
+          if (field_comments[k2]) {
+            model2[field_comments[k2]] = v2;
+          }
+        }
+      } else {
+        model2[key] = val;
+        if (field_comments[key]) {
+          model2[field_comments[key]] = val;
+        }
+      }
+    }
+    // 计算公式字段的值
+    for (const field_model of dyn_page_field_formula_models) {
+      const formula = field_model.formula;
+      if (!formula || formula.trim() === "") {
+        continue;
+      }
+      try {
+        // 转义正则特殊字符并按长度降序排列，避免短词先替换导致长词匹配失败
+        const comment_keys = Object.keys(comment_to_code)
+          .sort((a, b) => b.length - a.length)
+          .map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        
+        const formula2 = formula.replace(
+          new RegExp(comment_keys.join('|'), 'g'),
+          (matched) => comment_to_code[matched],
+        );
+        
+        const expr = exprParser.parse(formula2);
+        try {
+          const newVal = expr.evaluate(model2);
+          const oldVal = oldValue?.dyn_page_data
+            ? oldValue.dyn_page_data[field_model.code]
+            : undefined;
+          if (newVal !== oldVal) {
+            dialogModel.dyn_page_data = dialogModel.dyn_page_data || { };
+            dialogModel.dyn_page_data[field_model.code] = newVal;
+          }
+        } catch (_err) { /* empty */ }
+      } catch (err) {
+        ElMessage.error(
+          `计算字段 ${field_model.code} 的公式时出错: ${ err }`,
+        );
+        console.error(
+          `计算字段 ${field_model.code} 的公式时出错: `,
+          err,
+        );
+      }
+    }
+  },
+  {
+    deep: true,
+  },
+);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
@@ -353,6 +456,9 @@ async function showDialog(
     dyn_page_data: { },
   };
   dyn_page_data_model = undefined;
+  
+  field_comments = await getFieldCommentsDynPageData(pagePath);
+  
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }
@@ -601,6 +707,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
+    dialogModel2.ref_code = pagePath;
     id = await createDynPageData(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
@@ -616,6 +723,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
+    dialogModel2.ref_code = pagePath;
     id = await updateByIdDynPageData(
       dialogModel.id,
       dialogModel2,

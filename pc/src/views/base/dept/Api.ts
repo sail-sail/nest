@@ -920,7 +920,7 @@ export function getPagePathDept() {
 
 /** 新增时的默认值 */
 export async function getDefaultInputDept() {
-  const usrStore = useUsrStore(cfg.pinia);
+  const usrStore = useUsrStore();
   const defaultInput: DeptInput = {
     is_locked: 0,
     is_enabled: 1,

@@ -19,7 +19,9 @@ use crate::common::util::string::sql_like;
 use crate::common::gql::model::SortOrderEnum;
 
 
-use crate::base::dyn_page::dyn_page_model::DynPageSearch;
+use crate::base::dyn_page::dyn_page_model::{
+  DynPageSearch,
+};
 use crate::base::dyn_page::dyn_page_dao::{
   find_one_dyn_page,
 };
@@ -327,6 +329,82 @@ async fn get_where_query(
     if let Some(update_time_lt) = update_time_lt {
       where_query.push_str(" and t.update_time <= ?");
       args.push(update_time_lt.into());
+    }
+  }
+  
+  // 动态页面字段查询
+  if let Some(search) = search {
+    if let Some(ref dyn_page_data) = search.dyn_page_data {
+      let page_path = get_page_path_dyn_page_data();
+      
+      let dyn_page_search = DynPageSearch {
+        code: Some(page_path.clone()),
+        is_enabled: Some(vec![1]),
+        ..Default::default()
+      };
+      
+      let dyn_page_model = find_one_dyn_page(
+        Some(dyn_page_search),
+        None,
+        options.cloned(),
+      ).await?;
+      
+      if let Some(dyn_page_model) = dyn_page_model {
+        let dyn_page_field_models = dyn_page_model.dyn_page_field;
+        if !dyn_page_field_models.is_empty() {
+          where_query.push_str(" and t.id in (select v.ref_id from base_dyn_page_val v where v.ref_code=?");
+          args.push(page_path.into());
+          
+          for field in dyn_page_field_models {
+            let field_code = &field.code;
+            let field_type = &field.r#type;
+            
+            if let Some(val) = dyn_page_data.0.get(field_code) {
+              let range_types = ["CustomCheckbox", "CustomInputNumber", "CustomSwitch", "CustomDatePicker"];
+              
+              if range_types.contains(&field_type.as_str()) {
+                // 范围查询字段
+                if let serde_json::Value::Array(arr) = val {
+                  if arr.len() >= 2 {
+                    if !arr[0].is_null() {
+                      where_query.push_str(" and v.code=? and v.lbl>=?");
+                      args.push(field_code.clone().into());
+                      args.push(arr[0].clone().into());
+                    }
+                    if !arr[1].is_null() {
+                      where_query.push_str(" and v.code=? and v.lbl<=?");
+                      args.push(field_code.clone().into());
+                      args.push(arr[1].clone().into());
+                    }
+                  }
+                }
+              } else {
+                // 精确匹配
+                if !val.is_null() {
+                  where_query.push_str(" and v.code=? and v.lbl=?");
+                  args.push(field_code.clone().into());
+                  args.push(val.clone().into());
+                }
+              }
+            }
+            
+            // 模糊查询
+            let field_code_like = format!("{}_like", field_code);
+            if let Some(val_like) = dyn_page_data.0.get(&field_code_like) {
+              if let serde_json::Value::String(val_like_str) = val_like {
+                if !val_like_str.is_empty() {
+                  where_query.push_str(" and v.code=? and v.lbl like ?");
+                  args.push(field_code.clone().into());
+                  args.push(format!("%{}%", sql_like(val_like_str)).into());
+                }
+              }
+            }
+            
+          }
+          
+          where_query.push(')');
+        }
+      }
     }
   }
   Ok(where_query)
@@ -1436,65 +1514,6 @@ async fn _creates(
   if inputs2.is_empty() {
     return Ok(ids2);
   }
-  
-  // 重新获取动态字段
-  let page_path = get_page_path_dyn_page_data();
-  
-  let dyn_page_model = find_one_dyn_page(
-    Some(DynPageSearch {
-      code: Some(page_path.to_string()),
-      is_enabled: Some(vec![1]),
-      ..Default::default()
-    }),
-    None,
-    options.clone(),
-  ).await?;
-  
-  if let Some(dyn_page_model) = dyn_page_model {
-    
-    let dyn_page_field_models = dyn_page_model.dyn_page_field;
-    
-    let dyn_page_val_models = find_all_dyn_page_val(
-      Some(DynPageValSearch {
-        ref_code: Some(page_path.to_string()),
-        ref_ids: Some(ids2.iter().map(|id| id.to_string()).collect()),
-        ..Default::default()
-      }),
-      None,
-      None,
-      options.clone(),
-    ).await?;
-    
-    for (i, id) in ids2.iter().enumerate() {
-      let input = &mut inputs2[i];
-      let mut dyn_page_data: JSONObject = JSONObject::default();
-      
-      for dyn_page_field_model in &dyn_page_field_models {
-        let field_code = &dyn_page_field_model.code;
-        let field_type = &dyn_page_field_model.r#type;
-        let dyn_page_val_model_opt = dyn_page_val_models
-          .iter()
-          .find(|m| m.code == *field_code && m.ref_id == id.as_str());
-        if let Some(dyn_page_val_model) = dyn_page_val_model_opt {
-          let lbl = &dyn_page_val_model.lbl;
-          if [
-            "CustomCheckbox",
-            "CustomInputNumber",
-            "CustomSwitch",
-          ].contains(&field_type.as_str()) {
-            if let Ok(num) = lbl.parse::<i32>() {
-              dyn_page_data.insert(field_code.clone(), serde_json::Value::Number(num.into()));
-            }
-          } else {
-            dyn_page_data.insert(field_code.clone(), serde_json::Value::String(lbl.clone()));
-          }
-        }
-      }
-      
-      input.dyn_page_data = Some(dyn_page_data);
-    }
-    
-  }
     
   let mut args = QueryArgs::new();
   let mut sql_fields = String::with_capacity(80 * 8 + 20);
@@ -1665,6 +1684,125 @@ async fn _creates(
     args,
     options.clone(),
   ).await?;
+  
+  // 更新动态字段
+  let page_path = get_page_path_dyn_page_data();
+  
+  let dyn_page_model = find_one_dyn_page(
+    Some(DynPageSearch {
+      code: Some(page_path.to_string()),
+      is_enabled: Some(vec![1]),
+      ..Default::default()
+    }),
+    None,
+    options.clone(),
+  ).await?;
+  
+  if let Some(dyn_page_model) = dyn_page_model {
+    let dyn_page_field_models = dyn_page_model.dyn_page_field;
+    
+    if !dyn_page_field_models.is_empty() {
+      // 查询所有已存在的动态字段值
+      let dyn_page_val_models = find_all_dyn_page_val(
+        Some(DynPageValSearch {
+          ref_code: Some(page_path.to_string()),
+          ref_ids: Some(
+            inputs2_ids
+              .iter()
+              .map(|id| id.to_string())
+              .collect::<Vec<String>>()
+          ),
+          ..Default::default()
+        }),
+        None,
+        None,
+        options.clone(),
+      ).await?;
+      
+      for (i, input) in inputs2.clone()
+        .into_iter()
+        .enumerate()
+      {
+        let id = inputs2_ids[i];
+        let dyn_page_data = input.dyn_page_data.clone();
+        
+        if dyn_page_data.is_none() {
+          continue;
+        }
+        
+        let dyn_page_data = dyn_page_data.unwrap();
+        
+        for dyn_page_field_model in dyn_page_field_models.clone() {
+          
+          let field_code = dyn_page_field_model.code;
+          let field_type = dyn_page_field_model.r#type;
+          let new_value0 = dyn_page_data.0.get(&field_code);
+          let new_value: String = if [
+            "CustomCheckbox",
+            "CustomInputNumber",
+            "CustomSwitch",
+          ].contains(&field_type.as_str()) {
+            // 数字类型字段
+            if let Some(new_value0) = new_value0 && !new_value0.is_null() {
+              if let Some(num) = new_value0.as_i64() {
+                num.to_string()
+              } else if let Some(num) = new_value0.as_u64() {
+                num.to_string()
+              } else if let Some(num) = new_value0.as_f64() {
+                num.to_string()
+              } else if let Some(s) = new_value0.as_str() {
+                s.parse::<i64>().unwrap_or_default().to_string()
+              } else {
+                String::new()
+              }
+            } else {
+              String::new()
+            }
+          } else {
+            // 字符串类型字段
+            if let Some(new_value0) = new_value0 && !new_value0.is_null() {
+              if let Some(s) = new_value0.as_str() {
+                s.to_string()
+              } else {
+                new_value0.to_string()
+              }
+            } else {
+              String::new()
+            }
+          };
+          
+          let old_value_model = dyn_page_val_models.iter()
+            .find(|m| m.ref_id == id.as_str() && m.code == field_code);
+          
+          if let Some(old_value_model) = old_value_model {
+            let old_value = old_value_model.lbl.as_str();
+            if new_value.as_str() != old_value {
+              update_by_id_dyn_page_val(
+                old_value_model.id,
+                DynPageValInput {
+                  lbl: Some(new_value.clone()),
+                  ..Default::default()
+                },
+                options.clone(),
+              ).await?;
+            }
+          } else {
+            create_dyn_page_val(
+              DynPageValInput {
+                ref_code: Some(page_path.to_string()),
+                ref_id: Some(id.to_string()),
+                code: Some(field_code),
+                lbl: Some(new_value.clone()),
+                ..Default::default()
+              },
+              options.clone(),
+            ).await?;
+          }
+          
+        }
+      }
+    }
+  }
   
   if affected_rows != inputs2_len as u64 {
     return Err(eyre!("affectedRows: {affected_rows} != {inputs2_len}"));
@@ -1932,24 +2070,39 @@ pub async fn update_by_id_dyn_page_data(
         let field_code = dyn_page_field_model.code;
         let field_type = dyn_page_field_model.r#type;
         let new_value0 = dyn_page_data.0.get(&field_code);
-        let mut new_value: Option<serde_json::Value> = None;
-        if [
+        let new_value: String = if [
           "CustomCheckbox",
           "CustomInputNumber",
           "CustomSwitch",
         ].contains(&field_type.as_str()) {
+          // 数字类型字段
           if let Some(new_value0) = new_value0 && !new_value0.is_null() {
-            new_value = Some(serde_json::json!(new_value0.as_str().unwrap_or_default().parse::<i64>().unwrap_or_default()));
-          }
-        }
-        if new_value.is_none() {
-          if let Some(new_value0) = new_value0 && !new_value0.is_null() {
-            new_value = Some(new_value0.to_owned());
+            if let Some(num) = new_value0.as_i64() {
+              num.to_string()
+            } else if let Some(num) = new_value0.as_u64() {
+              num.to_string()
+            } else if let Some(num) = new_value0.as_f64() {
+              num.to_string()
+            } else if let Some(s) = new_value0.as_str() {
+              s.parse::<i64>().unwrap_or_default().to_string()
+            } else {
+              String::new()
+            }
           } else {
-            new_value = Some(serde_json::json!(""));
+            String::new()
           }
-        }
-        let new_value = new_value.unwrap_or_default().to_string();
+        } else {
+          // 字符串类型字段
+          if let Some(new_value0) = new_value0 && !new_value0.is_null() {
+            if let Some(s) = new_value0.as_str() {
+              s.to_string()
+            } else {
+              new_value0.to_string()
+            }
+          } else {
+            String::new()
+          }
+        };
         
         let old_value_model = dyn_page_val_models.iter()
           .find(|m| m.code == field_code);
@@ -2151,10 +2304,11 @@ pub async fn delete_by_ids_dyn_page_data(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2221,11 +2375,9 @@ pub async fn delete_by_ids_dyn_page_data(
     
     // 删除动态页面值
     {
-      let page_path = get_page_path_dyn_page_data();
       let mut args = QueryArgs::new();
-      args.push(page_path.into());
       args.push(id.into());
-      let sql = "update base_dyn_page_val set is_deleted=1 where ref_code=? and ref_id=? and is_deleted=0".to_owned();
+      let sql = "update base_dyn_page_val set is_deleted=1 where ref_id=? and is_deleted=0".to_owned();
       execute(
         sql,
         args.into(),
@@ -2300,10 +2452,10 @@ pub async fn revert_by_ids_dyn_page_data(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: DynPageDataInput = old_model.clone().into();
@@ -2335,11 +2487,9 @@ pub async fn revert_by_ids_dyn_page_data(
     ).await?;
     // 还原动态页面值
     {
-      let page_path = get_page_path_dyn_page_data();
       let mut args = QueryArgs::new();
-      args.push(page_path.into());
       args.push(id.into());
-      let sql = "update base_dyn_page_val set is_deleted=0 where ref_code=? and ref_id=? and is_deleted=1".to_owned();
+      let sql = "update base_dyn_page_val set is_deleted=0 where ref_id=? and is_deleted=1".to_owned();
       execute(
         sql,
         args.into(),
@@ -2390,21 +2540,20 @@ pub async fn force_delete_by_ids_dyn_page_data(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_dyn_page_data(
-      DynPageDataSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_dyn_page_data(
+      Some(DynPageDataSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2435,11 +2584,9 @@ pub async fn force_delete_by_ids_dyn_page_data(
     ).await?;
     // 彻底删除动态页面值
     {
-      let page_path = get_page_path_dyn_page_data();
       let mut args = QueryArgs::new();
-      args.push(page_path.into());
       args.push(id.into());
-      let sql = "delete from base_dyn_page_val where ref_code=? and ref_id=?".to_owned();
+      let sql = "delete from base_dyn_page_val where ref_id=?".to_owned();
       execute(
         sql,
         args.into(),

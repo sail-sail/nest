@@ -425,8 +425,13 @@ pub fn check_sort_dyn_page_data(
 }
 
 // MARK: get_page_path_dyn_page_data
-pub fn get_page_path_dyn_page_data() -> &'static str {
-  "/base/dyn_page_data"
+pub fn get_page_path_dyn_page_data(
+  ref_code: Option<String>,
+) -> String {
+  if let Some(ref_code) = ref_code {
+    return ref_code;
+  }
+  "/base/dyn_page_data".to_string()
 }
 
 // MARK: get_table_name_dyn_page_data

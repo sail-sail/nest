@@ -2099,10 +2099,11 @@ pub async fn delete_by_ids_operation_record(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2234,10 +2235,10 @@ pub async fn revert_by_ids_operation_record(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: OperationRecordInput = old_model.clone().into();
@@ -2311,21 +2312,20 @@ pub async fn force_delete_by_ids_operation_record(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_operation_record(
-      OperationRecordSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_operation_record(
+      Some(OperationRecordSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(

@@ -267,10 +267,12 @@ pub async fn delete_by_ids_dyn_page_data(
 
 /// 获取动态页面数据字段注释
 pub async fn get_field_comments_dyn_page_data(
+  ref_code: Option<String>,
   options: Option<Options>,
 ) -> Result<DynPageDataFieldComment> {
   
   let comments = dyn_page_data_dao::get_field_comments_dyn_page_data(
+    ref_code,
     options,
   ).await?;
   

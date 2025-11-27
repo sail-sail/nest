@@ -299,6 +299,20 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
+  // 仅当前租户 is_current_tenant
+  {
+    let is_current_tenant = match search {
+      Some(item) => item.is_current_tenant,
+      None => None,
+    };
+    if let Some(is_current_tenant) = is_current_tenant && is_current_tenant == 1 {
+      let tenant_id = get_auth_tenant_id();
+      if let Some(tenant_id) = tenant_id {
+        args.push(tenant_id.into());
+        where_query.push_str(" and base_tenant_menu.tenant_id=?");
+      }
+    }
+  }
   // 排序
   {
     let mut order_by = match search {
@@ -540,7 +554,9 @@ async fn get_from_query(
 ) -> Result<String> {
   
   let from_query = r#"base_menu t
-  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id"#.to_owned();
+  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id
+  left join base_tenant_menu on base_tenant_menu.menu_id=t.id and base_tenant_menu.is_deleted=0
+  "#.to_owned();
   Ok(from_query)
 }
 
@@ -2667,10 +2683,11 @@ pub async fn delete_by_ids_menu(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2929,10 +2946,10 @@ pub async fn revert_by_ids_menu(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: MenuInput = old_model.clone().into();
@@ -3010,21 +3027,20 @@ pub async fn force_delete_by_ids_menu(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_menu(
-      MenuSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_menu(
+      Some(MenuSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(

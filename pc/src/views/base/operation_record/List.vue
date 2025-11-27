@@ -380,6 +380,15 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-link
+                  v-if="row.old_data"
+                  type="primary"
+                  @click="openDataDialog(row.id, row.lbl, 'old_data')"
+                >
+                  查看
+                </el-link>
+              </template>
             </el-table-column>
           </template>
           
@@ -389,6 +398,15 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-link
+                  v-if="row.new_data"
+                  type="primary"
+                  @click="openDataDialog(row.id, row.lbl, 'new_data')"
+                >
+                  查看
+                </el-link>
+              </template>
             </el-table-column>
           </template>
           
@@ -450,6 +468,12 @@
     ref="detailRef"
   ></Detail>
   
+  <component
+    :is="moduleComponent"
+    v-if="moduleComponent"
+    :ref="(el: any) => moduleComponentRef = el"
+  ></component>
+  
 </div>
 </template>
 
@@ -472,6 +496,15 @@ defineOptions({
 const pagePath = getPagePathOperationRecord();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
+
+const {
+  n,
+  ns,
+  nsAsync,
+  initI18ns,
+  initSysI18ns,
+} = useI18n(pagePath);
+
 const permitStore = usePermitStore();
 const dirtyStore = useDirtyStore();
 
@@ -783,17 +816,15 @@ function getTableColumns(): ColumnType[] {
       label: "操作前数据",
       prop: "old_data",
       width: 100,
-      align: "left",
+      align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
     },
     {
       label: "操作后数据",
       prop: "new_data",
       width: 100,
-      align: "left",
+      align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
     },
     {
       label: "操作人",
@@ -1116,6 +1147,123 @@ async function onRevertByIds() {
     await dataGrid(true);
     ElMessage.success(`还原 ${ num } 操作记录 成功`);
     emit("revert", num);
+  }
+}
+
+const moduleComponent = shallowRef<Component>();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const moduleComponentRef = shallowRef<any>();
+
+/** 打开操作前数据对话框 */
+async function openDataDialog(
+  id: OperationRecordId,
+  lbl: string,
+  type: "old_data" | "new_data",
+) {
+  tableFocus();
+  const model = tableData.find((item) => item.id === id);
+  if (!model) {
+    return;
+  }
+  const module = model.module;
+  if (!module) {
+    return;
+  }
+  const module_lbl = model.module_lbl;
+  let title = "";
+  if (type === "old_data") {
+    title = lbl + " - " + await nsAsync("操作前数据");
+  } else if (type === "new_data") {
+    title += lbl + " - " + await nsAsync("操作后数据");
+  }
+  moduleComponent.value = (await getDetailByModule(module))?.["default"];
+  if (!moduleComponent.value) {
+    ElMessage.warning(await nsAsync("模块 {0} 未找到", module_lbl));
+    return;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let dataObj: any = undefined;
+  if (model[type]) {
+    try {
+      dataObj = JSON.parse(model[type] as string);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  if (!dataObj) {
+    return;
+  }
+  await nextTick();
+  const method = model.method;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if ((moduleComponentRef.value as any).showDialog) {
+    if ([ "creates" ].includes(method)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (moduleComponentRef.value as any).showDialog({
+        title,
+        notice: "",
+        action: "view",
+        isLocked: true,
+        model: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ids: dataObj.map((item: any) => item.id),
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        findOne: ({ id }: any) => dataObj.find((item: any) => item.id === id),
+      });
+      tableFocus();
+    } else if ([ "updateById" ].includes(method)) {
+      if (!dataObj.id) {
+        return;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (moduleComponentRef.value as any).showDialog({
+        title,
+        notice: "",
+        action: "view",
+        isLocked: true,
+        model: {
+          ids: [ dataObj.id ],
+        },
+        findOne: () => dataObj,
+      });
+      tableFocus();
+    } else if ([ "deleteByIds", "forceDeleteByIds" ].includes(method)) {
+      if (!Array.isArray(dataObj) || dataObj.length === 0) {
+        ElMessage.warning(await nsAsync("未找到数据"));
+        return;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (moduleComponentRef.value as any).showDialog({
+        title,
+        notice: "",
+        action: "view",
+        isLocked: true,
+        model: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ids: dataObj.map((item: any) => item.id),
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        findOne: ({ id }: { id: string }) => dataObj.find((item: any) => item.id === id),
+      });
+      tableFocus();
+    } else if ([ "lockByIds", "revertByIds", "enableByIds", "disableByIds" ].includes(method)) {
+      if (!Array.isArray(dataObj) || dataObj.length === 0) {
+        ElMessage.warning(await nsAsync("未找到数据"));
+        return;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (moduleComponentRef.value as any).showDialog({
+        title,
+        notice: "",
+        action: "view",
+        isLocked: true,
+        model: {
+          ids: dataObj,
+        },
+      });
+      tableFocus();
+    }
   }
 }
 

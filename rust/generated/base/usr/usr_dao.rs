@@ -231,6 +231,30 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&role_ids_lbl_like)).into());
     }
   }
+  // role_codes
+  {
+    let role_codes: Option<Vec<String>> = match search {
+      Some(item) => item.role_codes.clone(),
+      None => None,
+    };
+    if let Some(role_codes) = role_codes {
+      let arg = {
+        if role_codes.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(role_codes.len());
+          for item in role_codes {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and base_role.code in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
   // 所属部门
   {
     let dept_ids: Option<Vec<DeptId>> = match search {
@@ -3326,10 +3350,11 @@ pub async fn delete_by_ids_usr(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -3752,10 +3777,10 @@ pub async fn revert_by_ids_usr(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: UsrInput = old_model.clone().into();
@@ -3914,21 +3939,20 @@ pub async fn force_delete_by_ids_usr(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_usr(
-      UsrSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_usr(
+      Some(UsrSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
