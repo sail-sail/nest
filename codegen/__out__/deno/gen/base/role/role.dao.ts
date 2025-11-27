@@ -78,6 +78,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathRole,
+  getTableNameRole,
+} from "./role.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<RoleSearch>,
@@ -445,16 +450,6 @@ export async function findCountRole(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathRole
-export function getPagePathRole() {
-  return "/base/role";
-}
-
-// MARK: getTableNameRole
-export function getTableNameRole() {
-  return "base_role";
 }
 
 // MARK: findAllRole

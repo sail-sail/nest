@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./domain.model.ts";
-
 /**
  * 根据条件查找域名总数
  */
@@ -188,11 +184,15 @@ export async function createsDomain(
     createsDomain,
   } = await import("./domain.service.ts");
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathDomain(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdDomain(
     updateByIdDomain,
   } = await import("./domain.service.ts");
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblDomain(input);
   
   await usePermit(
-    route_path,
+    getPagePathDomain(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsDomain(
     deleteByIdsDomain,
   } = await import("./domain.service.ts");
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDomain(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsDomain(
     throw new Error(`enableByIdsDomain.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDomain(),
     "edit",
   );
   const res = await enableByIdsDomain(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsDomain(
     throw new Error(`lockByIdsDomain.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDomain(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsDomain(
     revertByIdsDomain,
   } = await import("./domain.service.ts");
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDomain(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsDomain(
     forceDeleteByIdsDomain,
   } = await import("./domain.service.ts");
   
+  const {
+    getPagePathDomain,
+  } = await import("./domain.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDomain(),
     "force_delete",
   );
   

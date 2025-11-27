@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./dept.model.ts";
-
 /**
  * 根据条件查找部门总数
  */
@@ -188,11 +184,15 @@ export async function createsDept(
     createsDept,
   } = await import("./dept.service.ts");
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathDept(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdDept(
     updateByIdDept,
   } = await import("./dept.service.ts");
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblDept(input);
   
   await usePermit(
-    route_path,
+    getPagePathDept(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsDept(
     deleteByIdsDept,
   } = await import("./dept.service.ts");
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDept(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsDept(
     throw new Error(`enableByIdsDept.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDept(),
     "edit",
   );
   const res = await enableByIdsDept(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsDept(
     throw new Error(`lockByIdsDept.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDept(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsDept(
     revertByIdsDept,
   } = await import("./dept.service.ts");
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDept(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsDept(
     forceDeleteByIdsDept,
   } = await import("./dept.service.ts");
   
+  const {
+    getPagePathDept,
+  } = await import("./dept.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDept(),
     "force_delete",
   );
   

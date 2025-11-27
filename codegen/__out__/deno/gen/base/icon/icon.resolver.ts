@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./icon.model.ts";
-
 /**
  * 根据条件查找图标库总数
  */
@@ -188,11 +184,15 @@ export async function createsIcon(
     createsIcon,
   } = await import("./icon.service.ts");
   
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathIcon(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdIcon(
     updateByIdIcon,
   } = await import("./icon.service.ts");
   
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblIcon(input);
   
   await usePermit(
-    route_path,
+    getPagePathIcon(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsIcon(
     deleteByIdsIcon,
   } = await import("./icon.service.ts");
   
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathIcon(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsIcon(
     throw new Error(`enableByIdsIcon.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathIcon(),
     "edit",
   );
   const res = await enableByIdsIcon(ids, is_enabled);
@@ -300,10 +312,14 @@ export async function revertByIdsIcon(
     revertByIdsIcon,
   } = await import("./icon.service.ts");
   
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathIcon(),
     "delete",
   );
   
@@ -323,10 +339,14 @@ export async function forceDeleteByIdsIcon(
     forceDeleteByIdsIcon,
   } = await import("./icon.service.ts");
   
+  const {
+    getPagePathIcon,
+  } = await import("./icon.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathIcon(),
     "force_delete",
   );
   

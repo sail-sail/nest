@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./usr.model.ts";
-
 /**
  * 根据条件查找用户总数
  */
@@ -231,11 +227,15 @@ export async function createsUsr(
     createsUsr,
   } = await import("./usr.service.ts");
   
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathUsr(),
     "add",
   );
   
@@ -268,12 +268,16 @@ export async function updateByIdUsr(
     updateByIdUsr,
   } = await import("./usr.service.ts");
   
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblUsr(input);
   
   await usePermit(
-    route_path,
+    getPagePathUsr(),
     "edit",
   );
   
@@ -293,10 +297,14 @@ export async function deleteByIdsUsr(
     deleteByIdsUsr,
   } = await import("./usr.service.ts");
   
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathUsr(),
     "delete",
   );
   
@@ -321,10 +329,14 @@ export async function enableByIdsUsr(
     throw new Error(`enableByIdsUsr.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathUsr(),
     "edit",
   );
   const res = await enableByIdsUsr(ids, is_enabled);
@@ -348,10 +360,14 @@ export async function lockByIdsUsr(
     throw new Error(`lockByIdsUsr.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathUsr(),
     "edit",
   );
   
@@ -371,10 +387,14 @@ export async function revertByIdsUsr(
     revertByIdsUsr,
   } = await import("./usr.service.ts");
   
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathUsr(),
     "delete",
   );
   
@@ -394,10 +414,14 @@ export async function forceDeleteByIdsUsr(
     forceDeleteByIdsUsr,
   } = await import("./usr.service.ts");
   
+  const {
+    getPagePathUsr,
+  } = await import("./usr.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathUsr(),
     "force_delete",
   );
   

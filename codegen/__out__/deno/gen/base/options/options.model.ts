@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/options";
+export function getPagePathOptions() {
+  return "/base/options";
+}
+
+export function getTableNameOptions() {
+  return "base_options";
+}
 
 declare const optionsId: unique symbol;
 

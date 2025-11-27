@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/menu";
+export function getPagePathMenu() {
+  return "/base/menu";
+}
+
+export function getTableNameMenu() {
+  return "base_menu";
+}
 
 declare const menuId: unique symbol;
 

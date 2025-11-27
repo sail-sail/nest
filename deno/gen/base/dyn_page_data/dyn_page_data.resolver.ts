@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./dyn_page_data.model.ts";
-
 /**
  * 根据条件查找动态页面数据总数
  */
@@ -190,11 +186,15 @@ export async function createsDynPageData(
     createsDynPageData,
   } = await import("./dyn_page_data.service.ts");
   
+  const {
+    getPagePathDynPageData,
+  } = await import("./dyn_page_data.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageData(),
     "add",
   );
   
@@ -227,12 +227,16 @@ export async function updateByIdDynPageData(
     updateByIdDynPageData,
   } = await import("./dyn_page_data.service.ts");
   
+  const {
+    getPagePathDynPageData,
+  } = await import("./dyn_page_data.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblDynPageData(input);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageData(),
     "edit",
   );
   
@@ -252,10 +256,14 @@ export async function deleteByIdsDynPageData(
     deleteByIdsDynPageData,
   } = await import("./dyn_page_data.service.ts");
   
+  const {
+    getPagePathDynPageData,
+  } = await import("./dyn_page_data.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageData(),
     "delete",
   );
   
@@ -275,10 +283,14 @@ export async function revertByIdsDynPageData(
     revertByIdsDynPageData,
   } = await import("./dyn_page_data.service.ts");
   
+  const {
+    getPagePathDynPageData,
+  } = await import("./dyn_page_data.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageData(),
     "delete",
   );
   
@@ -298,10 +310,14 @@ export async function forceDeleteByIdsDynPageData(
     forceDeleteByIdsDynPageData,
   } = await import("./dyn_page_data.service.ts");
   
+  const {
+    getPagePathDynPageData,
+  } = await import("./dyn_page_data.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageData(),
     "force_delete",
   );
   

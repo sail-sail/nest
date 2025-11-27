@@ -66,6 +66,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathDomain,
+  getTableNameDomain,
+} from "./domain.model.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -265,16 +270,6 @@ export async function findCountDomain(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathDomain
-export function getPagePathDomain() {
-  return "/base/domain";
-}
-
-// MARK: getTableNameDomain
-export function getTableNameDomain() {
-  return "base_domain";
 }
 
 // MARK: findAllDomain

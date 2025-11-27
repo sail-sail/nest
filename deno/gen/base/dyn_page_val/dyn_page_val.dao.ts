@@ -68,6 +68,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathDynPageVal,
+  getTableNameDynPageVal,
+} from "./dyn_page_val.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<DynPageValSearch>,
@@ -253,16 +258,6 @@ export async function findCountDynPageVal(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathDynPageVal
-export function getPagePathDynPageVal() {
-  return "/base/dyn_page_val";
-}
-
-// MARK: getTableNameDynPageVal
-export function getTableNameDynPageVal() {
-  return "base_dyn_page_val";
 }
 
 // MARK: findAllDynPageVal

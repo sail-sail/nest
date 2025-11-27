@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./dyn_page_val.model.ts";
-
 /**
  * 根据条件查找动态页面值总数
  */
@@ -188,11 +184,15 @@ export async function createsDynPageVal(
     createsDynPageVal,
   } = await import("./dyn_page_val.service.ts");
   
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageVal(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdDynPageVal(
     updateByIdDynPageVal,
   } = await import("./dyn_page_val.service.ts");
   
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblDynPageVal(input);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageVal(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsDynPageVal(
     deleteByIdsDynPageVal,
   } = await import("./dyn_page_val.service.ts");
   
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageVal(),
     "delete",
   );
   
@@ -273,10 +281,14 @@ export async function revertByIdsDynPageVal(
     revertByIdsDynPageVal,
   } = await import("./dyn_page_val.service.ts");
   
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageVal(),
     "delete",
   );
   
@@ -296,10 +308,14 @@ export async function forceDeleteByIdsDynPageVal(
     forceDeleteByIdsDynPageVal,
   } = await import("./dyn_page_val.service.ts");
   
+  const {
+    getPagePathDynPageVal,
+  } = await import("./dyn_page_val.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageVal(),
     "force_delete",
   );
   

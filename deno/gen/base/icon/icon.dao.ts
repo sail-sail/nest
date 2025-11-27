@@ -66,6 +66,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathIcon,
+  getTableNameIcon,
+} from "./icon.model.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -257,16 +262,6 @@ export async function findCountIcon(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathIcon
-export function getPagePathIcon() {
-  return "/base/icon";
-}
-
-// MARK: getTableNameIcon
-export function getTableNameIcon() {
-  return "base_icon";
 }
 
 // MARK: findAllIcon

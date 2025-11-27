@@ -76,6 +76,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathDict,
+  getTableNameDict,
+} from "./dict.model.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -287,16 +292,6 @@ export async function findCountDict(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathDict
-export function getPagePathDict() {
-  return "/base/dict";
-}
-
-// MARK: getTableNameDict
-export function getTableNameDict() {
-  return "base_dict";
 }
 
 // MARK: findAllDict
