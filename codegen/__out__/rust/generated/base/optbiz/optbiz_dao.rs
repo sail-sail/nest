@@ -484,7 +484,7 @@ pub async fn find_all_optbiz(
   options: Option<Options>,
 ) -> Result<Vec<OptbizModel>> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "find_all_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -665,7 +665,7 @@ pub async fn find_count_optbiz(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "find_count_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -787,11 +787,12 @@ pub async fn find_count_optbiz(
 
 // MARK: get_field_comments_optbiz
 /// 获取业务选项字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_optbiz(
   _options: Option<Options>,
 ) -> Result<OptbizFieldComment> {
   
-  let field_comments = OptbizFieldComment {
+  let mut field_comments = OptbizFieldComment {
     id: "ID".into(),
     lbl: "名称".into(),
     ky: "键".into(),
@@ -823,7 +824,7 @@ pub async fn find_one_ok_optbiz(
   options: Option<Options>,
 ) -> Result<OptbizModel> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "find_one_ok_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -872,7 +873,7 @@ pub async fn find_one_optbiz(
   options: Option<Options>,
 ) -> Result<Option<OptbizModel>> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "find_one_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -927,7 +928,7 @@ pub async fn find_by_id_ok_optbiz(
   options: Option<Options>,
 ) -> Result<OptbizModel> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "find_by_id_ok_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -976,7 +977,7 @@ pub async fn find_by_id_optbiz(
   options: Option<Options>,
 ) -> Result<Option<OptbizModel>> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "find_by_id_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1023,7 +1024,7 @@ pub async fn find_by_ids_ok_optbiz(
   options: Option<Options>,
 ) -> Result<Vec<OptbizModel>> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "find_by_ids_ok_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1095,7 +1096,7 @@ pub async fn find_by_ids_optbiz(
   options: Option<Options>,
 ) -> Result<Vec<OptbizModel>> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "find_by_ids_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1165,7 +1166,7 @@ pub async fn exists_optbiz(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "exists_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1287,7 +1288,7 @@ pub async fn exists_by_id_optbiz(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "exists_by_id_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1330,7 +1331,7 @@ pub async fn find_by_unique_optbiz(
   options: Option<Options>,
 ) -> Result<Vec<OptbizModel>> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "find_by_unique_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1418,7 +1419,7 @@ pub async fn check_by_unique_optbiz(
   options: Option<Options>,
 ) -> Result<Option<OptbizId>> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "check_by_unique_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1465,7 +1466,7 @@ pub async fn check_by_unique_optbiz(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 业务选项 已经存在";
+    let err_msg = "业务选项 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1577,7 +1578,7 @@ pub async fn creates_return_optbiz(
   options: Option<Options>,
 ) -> Result<Vec<OptbizModel>> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "creates_return_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1614,7 +1615,7 @@ pub async fn creates_optbiz(
   options: Option<Options>,
 ) -> Result<Vec<OptbizId>> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "creates_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1646,7 +1647,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<OptbizId>> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1988,7 +1989,7 @@ pub async fn create_optbiz(
   options: Option<Options>,
 ) -> Result<OptbizId> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "create_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2025,7 +2026,7 @@ pub async fn update_tenant_by_id_optbiz(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "update_tenant_by_id_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2092,7 +2093,7 @@ pub async fn update_by_id_optbiz(
   options: Option<Options>,
 ) -> Result<OptbizId> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "update_by_id_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2160,7 +2161,7 @@ pub async fn update_by_id_optbiz(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 业务选项 已经存在";
+        let err_msg = "业务选项 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2362,7 +2363,7 @@ pub async fn update_by_id_optbiz(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   vec![
     table,
   ]
@@ -2387,7 +2388,7 @@ pub async fn delete_by_ids_optbiz(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "delete_by_ids_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2426,10 +2427,11 @@ pub async fn delete_by_ids_optbiz(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2540,7 +2542,7 @@ pub async fn enable_by_ids_optbiz(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "enable_by_ids_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2627,7 +2629,7 @@ pub async fn lock_by_ids_optbiz(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "lock_by_ids_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2683,7 +2685,7 @@ pub async fn revert_by_ids_optbiz(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "revert_by_ids_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2736,10 +2738,10 @@ pub async fn revert_by_ids_optbiz(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: OptbizInput = old_model.clone().into();
@@ -2759,7 +2761,7 @@ pub async fn revert_by_ids_optbiz(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 业务选项 已经存在";
+        let err_msg = "业务选项 重复";
         return Err(eyre!(err_msg));
       }
     }
@@ -2783,7 +2785,7 @@ pub async fn force_delete_by_ids_optbiz(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "force_delete_by_ids_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2813,21 +2815,20 @@ pub async fn force_delete_by_ids_optbiz(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_optbiz(
-      OptbizSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_optbiz(
+      Some(OptbizSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2869,7 +2870,7 @@ pub async fn find_last_order_by_optbiz(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_optbiz";
+  let table = get_table_name_optbiz();
   let method = "find_last_order_by_optbiz";
   
   let is_debug = get_is_debug(options.as_ref());

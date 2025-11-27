@@ -14,6 +14,7 @@ pub struct OrgMutation;
 impl OrgMutation {
   
   /// 切换组织
+  #[graphql(name = "orgLoginSelect")]
   async fn org_login_select(
     &self,
     ctx: &Context<'_>,

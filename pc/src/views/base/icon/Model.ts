@@ -14,6 +14,7 @@ declare global {
     _type?: "add";
     /** 图标 */
     img_lbl: string;
+    img_lbl_svg: string;
   }
   
   /** 图标库 */

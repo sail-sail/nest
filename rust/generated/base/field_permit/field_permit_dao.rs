@@ -260,7 +260,7 @@ pub async fn find_all_field_permit(
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitModel>> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "find_all_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -360,7 +360,7 @@ pub async fn find_count_field_permit(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "find_count_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -440,11 +440,12 @@ pub async fn find_count_field_permit(
 
 // MARK: get_field_comments_field_permit
 /// 获取字段权限字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_field_permit(
   _options: Option<Options>,
 ) -> Result<FieldPermitFieldComment> {
   
-  let field_comments = FieldPermitFieldComment {
+  let mut field_comments = FieldPermitFieldComment {
     id: "ID".into(),
     menu_id: "菜单".into(),
     menu_id_lbl: "菜单".into(),
@@ -465,7 +466,7 @@ pub async fn find_one_ok_field_permit(
   options: Option<Options>,
 ) -> Result<FieldPermitModel> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "find_one_ok_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -514,7 +515,7 @@ pub async fn find_one_field_permit(
   options: Option<Options>,
 ) -> Result<Option<FieldPermitModel>> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "find_one_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -569,7 +570,7 @@ pub async fn find_by_id_ok_field_permit(
   options: Option<Options>,
 ) -> Result<FieldPermitModel> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "find_by_id_ok_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -618,7 +619,7 @@ pub async fn find_by_id_field_permit(
   options: Option<Options>,
 ) -> Result<Option<FieldPermitModel>> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "find_by_id_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -665,7 +666,7 @@ pub async fn find_by_ids_ok_field_permit(
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitModel>> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "find_by_ids_ok_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -737,7 +738,7 @@ pub async fn find_by_ids_field_permit(
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitModel>> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "find_by_ids_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -807,7 +808,7 @@ pub async fn exists_field_permit(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "exists_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -887,7 +888,7 @@ pub async fn exists_by_id_field_permit(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "exists_by_id_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -930,7 +931,7 @@ pub async fn find_by_unique_field_permit(
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitModel>> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "find_by_unique_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1018,7 +1019,7 @@ pub async fn check_by_unique_field_permit(
   options: Option<Options>,
 ) -> Result<Option<FieldPermitId>> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "check_by_unique_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1065,7 +1066,7 @@ pub async fn check_by_unique_field_permit(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 字段权限 已经存在";
+    let err_msg = "字段权限 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1128,7 +1129,7 @@ pub async fn creates_return_field_permit(
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitModel>> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "creates_return_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1165,7 +1166,7 @@ pub async fn creates_field_permit(
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitId>> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "creates_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1197,7 +1198,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitId>> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1404,7 +1405,7 @@ pub async fn create_field_permit(
   options: Option<Options>,
 ) -> Result<FieldPermitId> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "create_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1444,7 +1445,7 @@ pub async fn update_by_id_field_permit(
   options: Option<Options>,
 ) -> Result<FieldPermitId> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "update_by_id_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1500,7 +1501,7 @@ pub async fn update_by_id_field_permit(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 字段权限 已经存在";
+        let err_msg = "字段权限 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -1597,7 +1598,7 @@ pub async fn update_by_id_field_permit(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   vec![
     table,
   ]
@@ -1622,7 +1623,7 @@ pub async fn delete_by_ids_field_permit(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "delete_by_ids_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1661,10 +1662,11 @@ pub async fn delete_by_ids_field_permit(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -1721,7 +1723,7 @@ pub async fn find_last_order_by_field_permit(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_field_permit";
+  let table = get_table_name_field_permit();
   let method = "find_last_order_by_field_permit";
   
   let is_debug = get_is_debug(options.as_ref());

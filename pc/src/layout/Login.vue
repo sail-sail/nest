@@ -2,7 +2,8 @@
 <div
   ref="loginRef"
   class="wrap_login_div"
-  un-z="10000"
+  tabindex="0"
+  @keyup.enter.stop="onLogin"
 >
   <div
     un-pos-absolute
@@ -26,7 +27,7 @@
       :validate-on-rule-change="false"
       class="login_form"
       size="large"
-      @keyup.enter="onLogin"
+      @keyup.enter.stop="onLogin"
     >
       <el-form-item prop="tenant_id">
         <el-select
@@ -83,6 +84,7 @@
         type="primary"
         style="width: 100%;margin-top: 20px;opacity: .7;"
         :loading="!usrStore.isLogining"
+        @keyup.enter.stop
         @click="onLogin"
       >
         <span
@@ -401,6 +403,10 @@ async function initFrame() {
 }
 
 initFrame();
+
+onMounted(() => {
+  loginRef?.focus();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -410,13 +416,18 @@ initFrame();
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 2000;
+  z-index: 10000;
   background-color: #072540;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1440' height='560' preserveAspectRatio='none' viewBox='0 0 1440 560'%3e%3cg clip-path='url(%26quot%3b%23SvgjsClipPath1041%26quot%3b)' fill='none'%3e%3crect width='1440' height='560' x='0' y='0' fill='%2332325d'%3e%3c/rect%3e%3ccircle r='35.605' cx='185.1' cy='286.35' fill='url(%26quot%3b%23SvgjsLinearGradient1042%26quot%3b)'%3e%3c/circle%3e%3ccircle r='17.8' cx='57.44' cy='151.68' fill='%2343468b'%3e%3c/circle%3e%3ccircle r='27.595' cx='843.22' cy='195.61' fill='url(%26quot%3b%23SvgjsLinearGradient1043%26quot%3b)'%3e%3c/circle%3e%3ccircle r='55.4' cx='79.95' cy='304.45' fill='url(%26quot%3b%23SvgjsLinearGradient1044%26quot%3b)'%3e%3c/circle%3e%3ccircle r='17.2' cx='419.65' cy='331.62' fill='url(%26quot%3b%23SvgjsLinearGradient1045%26quot%3b)'%3e%3c/circle%3e%3ccircle r='33.66' cx='1110.51' cy='176.8' fill='url(%26quot%3b%23SvgjsLinearGradient1046%26quot%3b)'%3e%3c/circle%3e%3ccircle r='24.325' cx='51.8' cy='349.83' fill='url(%26quot%3b%23SvgjsLinearGradient1047%26quot%3b)'%3e%3c/circle%3e%3ccircle r='43.22' cx='693.82' cy='50.84' fill='%2343468b'%3e%3c/circle%3e%3c/g%3e%3cdefs%3e%3cclipPath id='SvgjsClipPath1041'%3e%3crect width='1440' height='560' x='0' y='0'%3e%3c/rect%3e%3c/clipPath%3e%3clinearGradient x1='113.89' y1='286.35' x2='256.31' y2='286.35' gradientUnits='userSpaceOnUse' id='SvgjsLinearGradient1042'%3e%3cstop stop-color='%23ab3c51' offset='0.1'%3e%3c/stop%3e%3cstop stop-color='%234f4484' offset='0.9'%3e%3c/stop%3e%3c/linearGradient%3e%3clinearGradient x1='788.03' y1='195.61' x2='898.41' y2='195.61' gradientUnits='userSpaceOnUse' id='SvgjsLinearGradient1043'%3e%3cstop stop-color='%2384b6e0' offset='0.1'%3e%3c/stop%3e%3cstop stop-color='%23464a8f' offset='0.9'%3e%3c/stop%3e%3c/linearGradient%3e%3clinearGradient x1='-30.849999999999994' y1='304.45' x2='190.75' y2='304.45' gradientUnits='userSpaceOnUse' id='SvgjsLinearGradient1044'%3e%3cstop stop-color='%23f29b7c' offset='0.1'%3e%3c/stop%3e%3cstop stop-color='%237e6286' offset='0.9'%3e%3c/stop%3e%3c/linearGradient%3e%3clinearGradient x1='385.25' y1='331.62' x2='454.05' y2='331.62' gradientUnits='userSpaceOnUse' id='SvgjsLinearGradient1045'%3e%3cstop stop-color='%23e298de' offset='0.1'%3e%3c/stop%3e%3cstop stop-color='%23484687' offset='0.9'%3e%3c/stop%3e%3c/linearGradient%3e%3clinearGradient x1='1043.19' y1='176.8' x2='1177.83' y2='176.8' gradientUnits='userSpaceOnUse' id='SvgjsLinearGradient1046'%3e%3cstop stop-color='%23ab3c51' offset='0.1'%3e%3c/stop%3e%3cstop stop-color='%234f4484' offset='0.9'%3e%3c/stop%3e%3c/linearGradient%3e%3clinearGradient x1='3.1499999999999986' y1='349.83' x2='100.44999999999999' y2='349.83' gradientUnits='userSpaceOnUse' id='SvgjsLinearGradient1047'%3e%3cstop stop-color='%23f29b7c' offset='0.1'%3e%3c/stop%3e%3cstop stop-color='%237e6286' offset='0.9'%3e%3c/stop%3e%3c/linearGradient%3e%3c/defs%3e%3c/svg%3e");
+  
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
 }
 .login_div {
   min-width: 500px;

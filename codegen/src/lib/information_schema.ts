@@ -1296,14 +1296,6 @@ ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
     }
   }
   
-  // isGenSelectList
-  if (tables[table_name].opts.isGenSelectList == null) {
-    const hasSelectInput = hasSelectInputFn(mod, table);
-    if (hasSelectInput) {
-      tables[table_name].opts.isGenSelectList = true;
-    }
-  }
-  
   tablesConfigItemMap[table_name] = tables[table_name];
   return tablesConfigItemMap[table_name];
 }
@@ -1483,13 +1475,11 @@ export async function getDictbizHeadModels(context: Context) {
 
 /**
  * 检查此表是否有selectInput
- * @param table 
  */
-function hasSelectInputFn(
-  mod: string,
+export function hasSelectInputFn(
   table_name: string,
 ) {
-  let hasSelectInput = tables[mod + "_" + table_name].opts?.hasSelectInput;
+  let hasSelectInput = tables[table_name].opts?.hasSelectInput;
   if (hasSelectInput != null) {
     return hasSelectInput;
   }
@@ -1500,7 +1490,7 @@ function hasSelectInputFn(
     let hasSelectInput = false;
     for (const column of columns) {
       if (!column.foreignKey) continue;
-      if (column.foreignKey.table === table_name) {
+      if (column.foreignKey.mod + "_" + column.foreignKey.table === table_name) {
         if (column.foreignKey.selectType === "selectInput" || column.foreignKey.isSearchBySelectInput) {
           hasSelectInput = true;
           break;

@@ -488,7 +488,7 @@ pub async fn find_all_i18n(
   options: Option<Options>,
 ) -> Result<Vec<I18nModel>> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "find_all_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -635,7 +635,7 @@ pub async fn find_count_i18n(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "find_count_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -757,11 +757,12 @@ pub async fn find_count_i18n(
 
 // MARK: get_field_comments_i18n
 /// 获取国际化字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_i18n(
   _options: Option<Options>,
 ) -> Result<I18nFieldComment> {
   
-  let field_comments = I18nFieldComment {
+  let mut field_comments = I18nFieldComment {
     id: "ID".into(),
     lang_id: "语言".into(),
     lang_id_lbl: "语言".into(),
@@ -791,7 +792,7 @@ pub async fn find_one_ok_i18n(
   options: Option<Options>,
 ) -> Result<I18nModel> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "find_one_ok_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -840,7 +841,7 @@ pub async fn find_one_i18n(
   options: Option<Options>,
 ) -> Result<Option<I18nModel>> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "find_one_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -895,7 +896,7 @@ pub async fn find_by_id_ok_i18n(
   options: Option<Options>,
 ) -> Result<I18nModel> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "find_by_id_ok_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -944,7 +945,7 @@ pub async fn find_by_id_i18n(
   options: Option<Options>,
 ) -> Result<Option<I18nModel>> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "find_by_id_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -991,7 +992,7 @@ pub async fn find_by_ids_ok_i18n(
   options: Option<Options>,
 ) -> Result<Vec<I18nModel>> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "find_by_ids_ok_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1063,7 +1064,7 @@ pub async fn find_by_ids_i18n(
   options: Option<Options>,
 ) -> Result<Vec<I18nModel>> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "find_by_ids_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1133,7 +1134,7 @@ pub async fn exists_i18n(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "exists_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1255,7 +1256,7 @@ pub async fn exists_by_id_i18n(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "exists_by_id_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1298,7 +1299,7 @@ pub async fn find_by_unique_i18n(
   options: Option<Options>,
 ) -> Result<Vec<I18nModel>> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "find_by_unique_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1389,7 +1390,7 @@ pub async fn check_by_unique_i18n(
   options: Option<Options>,
 ) -> Result<Option<I18nId>> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "check_by_unique_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1436,7 +1437,7 @@ pub async fn check_by_unique_i18n(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 国际化 已经存在";
+    let err_msg = "国际化 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1535,7 +1536,7 @@ pub async fn creates_return_i18n(
   options: Option<Options>,
 ) -> Result<Vec<I18nModel>> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "creates_return_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1572,7 +1573,7 @@ pub async fn creates_i18n(
   options: Option<Options>,
 ) -> Result<Vec<I18nId>> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "creates_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1604,7 +1605,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<I18nId>> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1908,7 +1909,7 @@ pub async fn create_i18n(
   options: Option<Options>,
 ) -> Result<I18nId> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "create_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1948,7 +1949,7 @@ pub async fn update_by_id_i18n(
   options: Option<Options>,
 ) -> Result<I18nId> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "update_by_id_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2016,7 +2017,7 @@ pub async fn update_by_id_i18n(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 国际化 已经存在";
+        let err_msg = "国际化 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2176,7 +2177,7 @@ pub async fn update_by_id_i18n(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   vec![
     table,
   ]
@@ -2201,7 +2202,7 @@ pub async fn delete_by_ids_i18n(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "delete_by_ids_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2240,10 +2241,11 @@ pub async fn delete_by_ids_i18n(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2325,7 +2327,7 @@ pub async fn revert_by_ids_i18n(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "revert_by_ids_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2378,10 +2380,10 @@ pub async fn revert_by_ids_i18n(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: I18nInput = old_model.clone().into();
@@ -2401,7 +2403,7 @@ pub async fn revert_by_ids_i18n(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 国际化 已经存在";
+        let err_msg = "国际化 重复";
         return Err(eyre!(err_msg));
       }
     }
@@ -2425,7 +2427,7 @@ pub async fn force_delete_by_ids_i18n(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_i18n";
+  let table = get_table_name_i18n();
   let method = "force_delete_by_ids_i18n";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2455,21 +2457,20 @@ pub async fn force_delete_by_ids_i18n(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_i18n(
-      I18nSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_i18n(
+      Some(I18nSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(

@@ -466,9 +466,6 @@ pub struct RoleSearch {
   /// 编码
   #[graphql(name = "code_like")]
   pub code_like: Option<String>,
-  /// 编码
-  #[graphql(name = "codes")]
-  pub codes: Option<Vec<String>>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
@@ -903,8 +900,12 @@ pub fn check_sort_role(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_role() -> String {
-  "/base/role".to_owned()
+// MARK: get_page_path_role
+pub fn get_page_path_role() -> &'static str {
+  "/base/role"
+}
+
+// MARK: get_table_name_role
+pub fn get_table_name_role() -> &'static str {
+  "base_role"
 }

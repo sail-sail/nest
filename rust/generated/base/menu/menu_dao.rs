@@ -251,26 +251,26 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
-  // 锁定
+  // 动态页面
   {
-    let is_locked: Option<Vec<u8>> = match search {
-      Some(item) => item.is_locked.clone(),
+    let is_dyn_page: Option<Vec<u8>> = match search {
+      Some(item) => item.is_dyn_page.clone(),
       None => None,
     };
-    if let Some(is_locked) = is_locked {
+    if let Some(is_dyn_page) = is_dyn_page {
       let arg = {
-        if is_locked.is_empty() {
+        if is_dyn_page.is_empty() {
           "null".to_string()
         } else {
-          let mut items = Vec::with_capacity(is_locked.len());
-          for item in is_locked {
+          let mut items = Vec::with_capacity(is_dyn_page.len());
+          for item in is_dyn_page {
             args.push(item.into());
             items.push("?");
           }
           items.join(",")
         }
       };
-      where_query.push_str(" and t.is_locked in (");
+      where_query.push_str(" and t.is_dyn_page in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
@@ -299,16 +299,18 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
-  // 仅当前租户
+  // 仅当前租户 is_current_tenant
   {
-    let is_current_tenant: Option<u8> = match search {
+    let is_current_tenant = match search {
       Some(item) => item.is_current_tenant,
       None => None,
     };
     if let Some(is_current_tenant) = is_current_tenant && is_current_tenant == 1 {
-      let auth_tenant_id = get_auth_tenant_id();
-      where_query.push_str(" and base_tenant_menu.tenant_id=?");
-      args.push(auth_tenant_id.unwrap_or_default().into());
+      let tenant_id = get_auth_tenant_id();
+      if let Some(tenant_id) = tenant_id {
+        args.push(tenant_id.into());
+        where_query.push_str(" and base_tenant_menu.tenant_id=?");
+      }
     }
   }
   // 排序
@@ -568,7 +570,7 @@ pub async fn find_all_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_all_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -629,9 +631,9 @@ pub async fn find_all_menu(
       return Err(eyre!("search.is_home_hide.length > {ids_limit}"));
     }
   }
-  // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
+  // 动态页面
+  if let Some(search) = &search && search.is_dyn_page.is_some() {
+    let len = search.is_dyn_page.as_ref().unwrap().len();
     if len == 0 {
       return Ok(vec![]);
     }
@@ -640,7 +642,7 @@ pub async fn find_all_menu(
       .and_then(|x| x.get_ids_limit())
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
-      return Err(eyre!("search.is_locked.length > {ids_limit}"));
+      return Err(eyre!("search.is_dyn_page.length > {ids_limit}"));
     }
   }
   // 启用
@@ -750,12 +752,12 @@ pub async fn find_all_menu(
   
   let dict_vec = get_dict(&[
     "yes_no",
-    "is_locked",
+    "yes_no",
     "is_enabled",
   ]).await?;
   let [
     is_home_hide_dict,
-    is_locked_dict,
+    is_dyn_page_dict,
     is_enabled_dict,
   ]: [Vec<_>; 3] = dict_vec
     .try_into()
@@ -773,13 +775,13 @@ pub async fn find_all_menu(
         .unwrap_or_else(|| model.is_home_hide.to_string())
     };
     
-    // 锁定
-    model.is_locked_lbl = {
-      is_locked_dict
+    // 动态页面
+    model.is_dyn_page_lbl = {
+      is_dyn_page_dict
         .iter()
-        .find(|item| item.val == model.is_locked.to_string())
+        .find(|item| item.val == model.is_dyn_page.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string())
+        .unwrap_or_else(|| model.is_dyn_page.to_string())
     };
     
     // 启用
@@ -803,7 +805,7 @@ pub async fn find_count_menu(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_count_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -858,9 +860,9 @@ pub async fn find_count_menu(
       return Err(eyre!("search.is_home_hide.length > {ids_limit}"));
     }
   }
-  // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
+  // 动态页面
+  if let Some(search) = &search && search.is_dyn_page.is_some() {
+    let len = search.is_dyn_page.as_ref().unwrap().len();
     if len == 0 {
       return Ok(0);
     }
@@ -869,7 +871,7 @@ pub async fn find_count_menu(
       .and_then(|x| x.get_ids_limit())
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
-      return Err(eyre!("search.is_locked.length > {ids_limit}"));
+      return Err(eyre!("search.is_dyn_page.length > {ids_limit}"));
     }
   }
   // 启用
@@ -967,11 +969,12 @@ pub async fn find_count_menu(
 
 // MARK: get_field_comments_menu
 /// 获取菜单字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_menu(
   _options: Option<Options>,
 ) -> Result<MenuFieldComment> {
   
-  let field_comments = MenuFieldComment {
+  let mut field_comments = MenuFieldComment {
     id: "ID".into(),
     parent_id: "父菜单".into(),
     parent_id_lbl: "父菜单".into(),
@@ -980,8 +983,8 @@ pub async fn get_field_comments_menu(
     route_query: "参数".into(),
     is_home_hide: "首页隐藏".into(),
     is_home_hide_lbl: "首页隐藏".into(),
-    is_locked: "锁定".into(),
-    is_locked_lbl: "锁定".into(),
+    is_dyn_page: "动态页面".into(),
+    is_dyn_page_lbl: "动态页面".into(),
     is_enabled: "启用".into(),
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
@@ -1007,7 +1010,7 @@ pub async fn find_one_ok_menu(
   options: Option<Options>,
 ) -> Result<MenuModel> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_one_ok_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1056,7 +1059,7 @@ pub async fn find_one_menu(
   options: Option<Options>,
 ) -> Result<Option<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_one_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1111,7 +1114,7 @@ pub async fn find_by_id_ok_menu(
   options: Option<Options>,
 ) -> Result<MenuModel> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_by_id_ok_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1160,7 +1163,7 @@ pub async fn find_by_id_menu(
   options: Option<Options>,
 ) -> Result<Option<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_by_id_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1207,7 +1210,7 @@ pub async fn find_by_ids_ok_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_by_ids_ok_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1279,7 +1282,7 @@ pub async fn find_by_ids_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1349,7 +1352,7 @@ pub async fn exists_menu(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "exists_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1404,9 +1407,9 @@ pub async fn exists_menu(
       return Err(eyre!("search.is_home_hide.length > {ids_limit}"));
     }
   }
-  // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
+  // 动态页面
+  if let Some(search) = &search && search.is_dyn_page.is_some() {
+    let len = search.is_dyn_page.as_ref().unwrap().len();
     if len == 0 {
       return Ok(false);
     }
@@ -1415,7 +1418,7 @@ pub async fn exists_menu(
       .and_then(|x| x.get_ids_limit())
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
-      return Err(eyre!("search.is_locked.length > {ids_limit}"));
+      return Err(eyre!("search.is_dyn_page.length > {ids_limit}"));
     }
   }
   // 启用
@@ -1513,7 +1516,7 @@ pub async fn exists_by_id_menu(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "exists_by_id_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1556,7 +1559,7 @@ pub async fn find_by_unique_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_by_unique_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1644,7 +1647,7 @@ pub async fn check_by_unique_menu(
   options: Option<Options>,
 ) -> Result<Option<MenuId>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "check_by_unique_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1691,7 +1694,7 @@ pub async fn check_by_unique_menu(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 菜单 已经存在";
+    let err_msg = "菜单 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1709,7 +1712,7 @@ pub async fn set_id_by_lbl_menu(
   
   let dict_vec = get_dict(&[
     "yes_no",
-    "is_locked",
+    "yes_no",
     "is_enabled",
   ]).await?;
   
@@ -1728,14 +1731,14 @@ pub async fn set_id_by_lbl_menu(
     }
   }
   
-  // 锁定
-  if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[1];
-    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
-      input.is_locked = is_locked_dict
+  // 动态页面
+  if input.is_dyn_page.is_none() {
+    let is_dyn_page_dict = &dict_vec[1];
+    if let Some(is_dyn_page_lbl) = input.is_dyn_page_lbl.clone() {
+      input.is_dyn_page = is_dyn_page_dict
         .iter()
         .find(|item| {
-          item.lbl == is_locked_lbl
+          item.lbl == is_dyn_page_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -1819,29 +1822,29 @@ pub async fn set_id_by_lbl_menu(
     input.is_home_hide_lbl = lbl;
   }
   
-  // 锁定
+  // 动态页面
   if
-    input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
-    && input.is_locked.is_none()
+    input.is_dyn_page_lbl.is_some() && !input.is_dyn_page_lbl.as_ref().unwrap().is_empty()
+    && input.is_dyn_page.is_none()
   {
-    let is_locked_dict = &dict_vec[1];
-    let dict_model = is_locked_dict.iter().find(|item| {
-      item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
+    let is_dyn_page_dict = &dict_vec[1];
+    let dict_model = is_dyn_page_dict.iter().find(|item| {
+      item.lbl == input.is_dyn_page_lbl.clone().unwrap_or_default()
     });
     let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
-      input.is_locked = val.parse::<u8>()?.into();
+      input.is_dyn_page = val.parse::<u8>()?.into();
     }
   } else if
-    (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
-    && input.is_locked.is_some()
+    (input.is_dyn_page_lbl.is_none() || input.is_dyn_page_lbl.as_ref().unwrap().is_empty())
+    && input.is_dyn_page.is_some()
   {
-    let is_locked_dict = &dict_vec[1];
-    let dict_model = is_locked_dict.iter().find(|item| {
-      item.val == input.is_locked.unwrap_or_default().to_string()
+    let is_dyn_page_dict = &dict_vec[1];
+    let dict_model = is_dyn_page_dict.iter().find(|item| {
+      item.val == input.is_dyn_page.unwrap_or_default().to_string()
     });
     let lbl = dict_model.map(|item| item.lbl.to_string());
-    input.is_locked_lbl = lbl;
+    input.is_dyn_page_lbl = lbl;
   }
   
   // 启用
@@ -1880,7 +1883,7 @@ pub async fn creates_return_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "creates_return_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1917,7 +1920,7 @@ pub async fn creates_menu(
   options: Option<Options>,
 ) -> Result<Vec<MenuId>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "creates_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1949,7 +1952,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<MenuId>> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -2026,8 +2029,8 @@ async fn _creates(
   sql_fields += ",route_query";
   // 首页隐藏
   sql_fields += ",is_home_hide";
-  // 锁定
-  sql_fields += ",is_locked";
+  // 动态页面
+  sql_fields += ",is_dyn_page";
   // 启用
   sql_fields += ",is_enabled";
   // 排序
@@ -2189,10 +2192,10 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 锁定
-    if let Some(is_locked) = input.is_locked {
+    // 动态页面
+    if let Some(is_dyn_page) = input.is_dyn_page {
       sql_values += ",?";
-      args.push(is_locked.into());
+      args.push(is_dyn_page.into());
     } else {
       sql_values += ",default";
     }
@@ -2306,7 +2309,7 @@ pub async fn create_menu(
   options: Option<Options>,
 ) -> Result<MenuId> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "create_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2346,7 +2349,7 @@ pub async fn update_by_id_menu(
   options: Option<Options>,
 ) -> Result<MenuId> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "update_by_id_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2414,7 +2417,7 @@ pub async fn update_by_id_menu(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 菜单 已经存在";
+        let err_msg = "菜单 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2457,11 +2460,11 @@ pub async fn update_by_id_menu(
     sql_fields += "is_home_hide=?,";
     args.push(is_home_hide.into());
   }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
+  // 动态页面
+  if let Some(is_dyn_page) = input.is_dyn_page {
     field_num += 1;
-    sql_fields += "is_locked=?,";
-    args.push(is_locked.into());
+    sql_fields += "is_dyn_page=?,";
+    args.push(is_dyn_page.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
@@ -2612,7 +2615,7 @@ pub async fn update_by_id_menu(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_menu";
+  let table = get_table_name_menu();
   vec![
     table,
   ]
@@ -2637,7 +2640,7 @@ pub async fn delete_by_ids_menu(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "delete_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2680,10 +2683,11 @@ pub async fn delete_by_ids_menu(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2820,7 +2824,7 @@ pub async fn enable_by_ids_menu(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "enable_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2878,100 +2882,6 @@ pub async fn enable_by_ids_menu(
   Ok(num)
 }
 
-// MARK: get_is_locked_by_id_menu
-/// 根据 id 查找菜单是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-pub async fn get_is_locked_by_id_menu(
-  id: MenuId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let model = find_by_id_menu(
-    id,
-    options,
-  ).await?;
-  
-  let is_locked = {
-    if let Some(model) = model {
-      model.is_locked == 1
-    } else {
-      false
-    }
-  };
-  
-  Ok(is_locked)
-}
-
-// MARK: lock_by_ids_menu
-/// 根据 ids 锁定或者解锁菜单
-pub async fn lock_by_ids_menu(
-  ids: Vec<MenuId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let table = "base_menu";
-  let method = "lock_by_ids_menu";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
-    msg += &format!(" is_locked: {:?}", &is_locked);
-    if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  if ids.is_empty() {
-    return Ok(0);
-  }
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  let mut num = 0;
-  for id in ids {
-    let mut args = QueryArgs::new();
-    
-    let sql = format!("update {table} set is_locked=? where id=? limit 1");
-    
-    args.push(is_locked.into());
-    args.push(id.into());
-    
-    let args: Vec<_> = args.into();
-    
-    let options = options.clone().into();
-    
-    num += execute(
-      sql,
-      args,
-      options,
-    ).await?;
-  }
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
-  Ok(num)
-}
-
 // MARK: revert_by_ids_menu
 /// 根据 ids 还原菜单
 pub async fn revert_by_ids_menu(
@@ -2979,7 +2889,7 @@ pub async fn revert_by_ids_menu(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "revert_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3036,10 +2946,10 @@ pub async fn revert_by_ids_menu(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: MenuInput = old_model.clone().into();
@@ -3059,7 +2969,7 @@ pub async fn revert_by_ids_menu(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 菜单 已经存在";
+        let err_msg = "菜单 重复";
         return Err(eyre!(err_msg));
       }
     }
@@ -3087,7 +2997,7 @@ pub async fn force_delete_by_ids_menu(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "force_delete_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3117,21 +3027,20 @@ pub async fn force_delete_by_ids_menu(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_menu(
-      MenuSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_menu(
+      Some(MenuSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -3203,7 +3112,7 @@ pub async fn find_last_order_by_menu(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_menu";
+  let table = get_table_name_menu();
   let method = "find_last_order_by_menu";
   
   let is_debug = get_is_debug(options.as_ref());

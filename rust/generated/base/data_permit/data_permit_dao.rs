@@ -453,7 +453,7 @@ pub async fn find_all_data_permit(
   options: Option<Options>,
 ) -> Result<Vec<DataPermitModel>> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "find_all_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -642,7 +642,7 @@ pub async fn find_count_data_permit(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "find_count_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -778,11 +778,12 @@ pub async fn find_count_data_permit(
 
 // MARK: get_field_comments_data_permit
 /// 获取数据权限字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_data_permit(
   _options: Option<Options>,
 ) -> Result<DataPermitFieldComment> {
   
-  let field_comments = DataPermitFieldComment {
+  let mut field_comments = DataPermitFieldComment {
     id: "ID".into(),
     menu_id: "菜单".into(),
     menu_id_lbl: "菜单".into(),
@@ -812,7 +813,7 @@ pub async fn find_one_ok_data_permit(
   options: Option<Options>,
 ) -> Result<DataPermitModel> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "find_one_ok_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -861,7 +862,7 @@ pub async fn find_one_data_permit(
   options: Option<Options>,
 ) -> Result<Option<DataPermitModel>> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "find_one_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -916,7 +917,7 @@ pub async fn find_by_id_ok_data_permit(
   options: Option<Options>,
 ) -> Result<DataPermitModel> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "find_by_id_ok_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -965,7 +966,7 @@ pub async fn find_by_id_data_permit(
   options: Option<Options>,
 ) -> Result<Option<DataPermitModel>> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "find_by_id_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1012,7 +1013,7 @@ pub async fn find_by_ids_ok_data_permit(
   options: Option<Options>,
 ) -> Result<Vec<DataPermitModel>> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "find_by_ids_ok_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1084,7 +1085,7 @@ pub async fn find_by_ids_data_permit(
   options: Option<Options>,
 ) -> Result<Vec<DataPermitModel>> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "find_by_ids_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1154,7 +1155,7 @@ pub async fn exists_data_permit(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "exists_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1290,7 +1291,7 @@ pub async fn exists_by_id_data_permit(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "exists_by_id_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1333,7 +1334,7 @@ pub async fn find_by_unique_data_permit(
   options: Option<Options>,
 ) -> Result<Vec<DataPermitModel>> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "find_by_unique_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1421,7 +1422,7 @@ pub async fn check_by_unique_data_permit(
   options: Option<Options>,
 ) -> Result<Option<DataPermitId>> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "check_by_unique_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1468,7 +1469,7 @@ pub async fn check_by_unique_data_permit(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 数据权限 已经存在";
+    let err_msg = "数据权限 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1616,7 +1617,7 @@ pub async fn creates_return_data_permit(
   options: Option<Options>,
 ) -> Result<Vec<DataPermitModel>> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "creates_return_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1653,7 +1654,7 @@ pub async fn creates_data_permit(
   options: Option<Options>,
 ) -> Result<Vec<DataPermitId>> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "creates_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1685,7 +1686,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<DataPermitId>> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -2000,7 +2001,7 @@ pub async fn create_data_permit(
   options: Option<Options>,
 ) -> Result<DataPermitId> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "create_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2037,7 +2038,7 @@ pub async fn update_tenant_by_id_data_permit(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "update_tenant_by_id_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2086,7 +2087,7 @@ pub async fn update_by_id_data_permit(
   options: Option<Options>,
 ) -> Result<DataPermitId> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "update_by_id_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2154,7 +2155,7 @@ pub async fn update_by_id_data_permit(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 数据权限 已经存在";
+        let err_msg = "数据权限 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2320,7 +2321,7 @@ pub async fn update_by_id_data_permit(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   vec![
     table,
   ]
@@ -2345,7 +2346,7 @@ pub async fn delete_by_ids_data_permit(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "delete_by_ids_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2384,10 +2385,11 @@ pub async fn delete_by_ids_data_permit(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2480,7 +2482,7 @@ pub async fn revert_by_ids_data_permit(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "revert_by_ids_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2533,10 +2535,10 @@ pub async fn revert_by_ids_data_permit(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: DataPermitInput = old_model.clone().into();
@@ -2556,7 +2558,7 @@ pub async fn revert_by_ids_data_permit(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 数据权限 已经存在";
+        let err_msg = "数据权限 重复";
         return Err(eyre!(err_msg));
       }
     }
@@ -2580,7 +2582,7 @@ pub async fn force_delete_by_ids_data_permit(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_data_permit";
+  let table = get_table_name_data_permit();
   let method = "force_delete_by_ids_data_permit";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2610,21 +2612,20 @@ pub async fn force_delete_by_ids_data_permit(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_data_permit(
-      DataPermitSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_data_permit(
+      Some(DataPermitSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(

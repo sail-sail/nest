@@ -13,7 +13,7 @@ import {
   dictbizDetailQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdDictbizDetail(
   model?: DictbizDetailModel | null,
   isExcelExport = false,
 ) {
@@ -74,7 +74,7 @@ export async function findAllDictbizDetail(
   const models = data.findAllDictbizDetail;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictbizDetail(model);
   }
   return models;
 }
@@ -106,7 +106,7 @@ export async function findOneDictbizDetail(
   
   const model = data.findOneDictbizDetail;
   
-  await setLblById(model);
+  await setLblByIdDictbizDetail(model);
   
   return model;
 }
@@ -138,7 +138,7 @@ export async function findOneOkDictbizDetail(
   
   const model = data.findOneOkDictbizDetail;
   
-  await setLblById(model);
+  await setLblByIdDictbizDetail(model);
   
   return model;
 }
@@ -264,7 +264,7 @@ export async function findByIdDictbizDetail(
   
   const model = data.findByIdDictbizDetail;
   
-  await setLblById(model);
+  await setLblByIdDictbizDetail(model);
   
   return model;
 }
@@ -294,7 +294,7 @@ export async function findByIdOkDictbizDetail(
   
   const model = data.findByIdOkDictbizDetail;
   
-  await setLblById(model);
+  await setLblByIdDictbizDetail(model);
   
   return model;
 }
@@ -330,7 +330,7 @@ export async function findByIdsDictbizDetail(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictbizDetail(model);
   }
   
   return models;
@@ -367,7 +367,7 @@ export async function findByIdsOkDictbizDetail(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictbizDetail(model);
   }
   
   return models;
@@ -622,7 +622,7 @@ export function useExportExcelDictbizDetail() {
         },
       }, opt);
       for (const model of data.findAllDictbizDetail) {
-        await setLblById(model, true);
+        await setLblByIdDictbizDetail(model, true);
       }
       try {
         const sheetName = "业务字典明细";
@@ -715,6 +715,48 @@ export async function findLastOrderByDictbizDetail(
   }, opt);
   const res = data.findLastOrderByDictbizDetail;
   return res;
+}
+
+/**
+ * 获取 业务字典明细 字段注释
+ */
+export async function getFieldCommentsDictbizDetail(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDictbizDetail: Query["getFieldCommentsDictbizDetail"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDictbizDetail {
+          id,
+          dictbiz_id,
+          dictbiz_id_lbl,
+          lbl,
+          val,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDictbizDetail as DictbizDetailFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathDictbizDetail() {

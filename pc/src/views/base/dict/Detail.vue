@@ -653,7 +653,18 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
+  ElMessage({
+    message: "表单重置完毕",
+    type: "success",
+  });
+}
+
+/** 刷新 */
+async function onRefresh() {
+  const id = dialogModel.id;
+  if (!id) {
     const [
       defaultModel,
       order_by,
@@ -668,20 +679,6 @@ async function onReset() {
       ...builtInModel,
       order_by: order_by + 1,
     };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
-  ElMessage({
-    message: "表单重置完毕",
-    type: "success",
-  });
-}
-
-/** 刷新 */
-async function onRefresh() {
-  const id = dialogModel.id;
-  if (!id) {
     return;
   }
   const [
@@ -912,6 +909,9 @@ const inlineForeignTabLabel = $ref("系统字典明细");
 const dict_detailRef = $(useTemplateRef<InstanceType<typeof ElTable>>("dict_detailRef"));
 
 const dict_detailData = $computed(() => {
+  if (dialogAction === "edit" && !dialogModel.is_add) {
+    return dialogModel.dict_detail ?? [ ];
+  }
   if (!isLocked && !isReadonly) {
     return [
       ...dialogModel.dict_detail ?? [ ],

@@ -13,7 +13,7 @@ import {
   menuQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdMenu(
   model?: MenuModel | null,
   isExcelExport = false,
 ) {
@@ -40,9 +40,9 @@ export function intoInputMenu(
     // 首页隐藏
     is_home_hide: model?.is_home_hide,
     is_home_hide_lbl: model?.is_home_hide_lbl,
-    // 锁定
-    is_locked: model?.is_locked,
-    is_locked_lbl: model?.is_locked_lbl,
+    // 动态页面
+    is_dyn_page: model?.is_dyn_page,
+    is_dyn_page_lbl: model?.is_dyn_page_lbl,
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
@@ -82,7 +82,7 @@ export async function findAllMenu(
   const models = data.findAllMenu;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdMenu(model);
   }
   return models;
 }
@@ -114,7 +114,7 @@ export async function findOneMenu(
   
   const model = data.findOneMenu;
   
-  await setLblById(model);
+  await setLblByIdMenu(model);
   
   return model;
 }
@@ -146,7 +146,7 @@ export async function findOneOkMenu(
   
   const model = data.findOneOkMenu;
   
-  await setLblById(model);
+  await setLblByIdMenu(model);
   
   return model;
 }
@@ -294,7 +294,7 @@ export async function findByIdMenu(
   
   const model = data.findByIdMenu;
   
-  await setLblById(model);
+  await setLblByIdMenu(model);
   
   return model;
 }
@@ -324,7 +324,7 @@ export async function findByIdOkMenu(
   
   const model = data.findByIdOkMenu;
   
-  await setLblById(model);
+  await setLblByIdMenu(model);
   
   return model;
 }
@@ -360,7 +360,7 @@ export async function findByIdsMenu(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdMenu(model);
   }
   
   return models;
@@ -397,7 +397,7 @@ export async function findByIdsOkMenu(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdMenu(model);
   }
   
   return models;
@@ -454,34 +454,6 @@ export async function enableByIdsMenu(
     },
   }, opt);
   const res = data.enableByIdsMenu;
-  return res;
-}
-
-/**
- * 根据 ids 锁定或解锁 菜单
- */
-export async function lockByIdsMenu(
-  ids: MenuId[],
-  is_locked: 0 | 1,
-  opt?: GqlOpt,
-): Promise<number> {
-  if (ids.length === 0) {
-    return 0;
-  }
-  const data: {
-    lockByIdsMenu: Mutation["lockByIdsMenu"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [MenuId!]!, $is_locked: Int!) {
-        lockByIdsMenu(ids: $ids, is_locked: $is_locked)
-      }
-    `,
-    variables: {
-      ids,
-      is_locked,
-    },
-  }, opt);
-  const res = data.lockByIdsMenu;
   return res;
 }
 
@@ -602,6 +574,7 @@ export function useDownloadImportTemplateMenu() {
             route_path
             route_query
             is_home_hide_lbl
+            is_dyn_page_lbl
             order_by
             rem
           }
@@ -610,6 +583,7 @@ export function useDownloadImportTemplateMenu() {
             lbl
           }
           getDict(codes: [
+            "yes_no",
             "yes_no",
           ]) {
             code
@@ -673,7 +647,7 @@ export function useExportExcelMenu() {
             }
             getDict(codes: [
               "yes_no",
-              "is_locked",
+              "yes_no",
               "is_enabled",
             ]) {
               code
@@ -687,7 +661,7 @@ export function useExportExcelMenu() {
         },
       }, opt);
       for (const model of data.findAllMenu) {
-        await setLblById(model, true);
+        await setLblByIdMenu(model, true);
       }
       try {
         const sheetName = "菜单";
@@ -782,6 +756,53 @@ export async function findLastOrderByMenu(
   return res;
 }
 
+/**
+ * 获取 菜单 字段注释
+ */
+export async function getFieldCommentsMenu(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsMenu: Query["getFieldCommentsMenu"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsMenu {
+          id,
+          parent_id,
+          parent_id_lbl,
+          lbl,
+          route_path,
+          route_query,
+          is_home_hide,
+          is_home_hide_lbl,
+          is_dyn_page,
+          is_dyn_page_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsMenu as MenuFieldComment;
+  
+  return field_comments;
+}
+
 export function getPagePathMenu() {
   return "/base/menu";
 }
@@ -790,7 +811,7 @@ export function getPagePathMenu() {
 export async function getDefaultInputMenu() {
   const defaultInput: MenuInput = {
     is_home_hide: 0,
-    is_locked: 0,
+    is_dyn_page: 0,
     is_enabled: 1,
     order_by: 1,
   };

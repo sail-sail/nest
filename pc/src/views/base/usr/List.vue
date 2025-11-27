@@ -54,7 +54,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn || builtInSearch?.role_ids == null)">
+      <template v-if="(showBuildIn || (builtInSearch?.role_ids == null && builtInSearch?.role_codes == null))">
         <el-form-item
           label="所属角色"
           prop="role_ids"
@@ -769,7 +769,7 @@
             </el-table-column>
           </template>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -895,6 +895,7 @@ const props = defineProps<{
   username?: string; // 用户名
   username_like?: string; // 用户名
   role_ids?: string|string[]; // 所属角色
+  role_codes?: string|string[]; // 所属角色
   role_ids_lbl?: string[]; // 所属角色
   dept_ids?: string|string[]; // 所属部门
   dept_ids_lbl?: string[]; // 所属部门
@@ -915,6 +916,7 @@ const builtInSearchType: { [key: string]: string } = {
   isListSelectDialog: "0|1",
   ids: "string[]",
   role_ids: "string[]",
+  role_codes: "string[]",
   role_ids_lbl: "string[]",
   dept_ids: "string[]",
   dept_ids_lbl: "string[]",

@@ -62,6 +62,11 @@
     "vue.inlayHints.inlineHandlerLeading": false,
     "vue.inlayHints.missingProps": true,
     "rust-analyzer.checkOnSave": true,
+    // "rust-analyzer.server.extraEnv": {
+    //   "HTTP_PROXY": "http://127.0.0.1:7890",
+    //   "HTTPS_PROXY": "http://127.0.0.1:7890",
+    //   "ALL_PROXY": "http://127.0.0.1:7890"
+    // },
     "typescript.tsdk": "pc\\node_modules\\typescript\\lib"
   }
 }

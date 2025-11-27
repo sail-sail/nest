@@ -42,7 +42,7 @@ export default defineConfig({
   },
   plugins: [
     Unocss({
-      mode: "vue-scoped",
+      // mode: "vue-scoped",
       configFile: "./uno.config.ts",
     }),
     TurboConsole({
@@ -142,7 +142,7 @@ export default defineConfig({
           "dayjs": [
             [ "default", "dayjs" ]
           ],
-          "@/compositions/List": [
+          "@/compositions/List.ts": [
             "usePage",
             "useSubscribeList",
             "useSelect",
@@ -151,8 +151,9 @@ export default defineConfig({
             "initListI18ns",
             "initBuiltInSearch",
             "initBuiltInModel",
+            "useDynPageFields",
           ],
-          "@/compositions/Detail": [
+          "@/compositions/Detail.ts": [
             "initDetailI18ns",
           ],
           "@/components/UploadFileDialog.vue": [

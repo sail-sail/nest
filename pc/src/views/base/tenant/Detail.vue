@@ -171,7 +171,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.lang_id == null)">
+        <template v-if="isI18n && (showBuildIn || builtInModel?.lang_id == null)">
           <el-form-item
             label="语言"
             prop="lang_id"
@@ -369,6 +369,8 @@ const domainPermit = permitStore.getPermit("/base/domain");
 
 let inited = $ref(false);
 
+const isI18n = import.meta.env.VITE_SERVER_I18N_ENABLE !== "false";
+
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
@@ -434,6 +436,9 @@ watchEffect(async () => {
       },
     ],
   };
+  if (!isI18n) {
+    delete form_rules.lang_id;
+  }
 });
 
 // 域名
@@ -553,6 +558,8 @@ async function showDialog(
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
+    domain_ids: [ ],
+    menu_ids: [ ],
   };
   tenant_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
@@ -675,7 +682,18 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
+  ElMessage({
+    message: "表单重置完毕",
+    type: "success",
+  });
+}
+
+/** 刷新 */
+async function onRefresh() {
+  const id = dialogModel.id;
+  if (!id) {
     const [
       defaultModel,
       order_by,
@@ -690,20 +708,6 @@ async function onReset() {
       ...builtInModel,
       order_by: order_by + 1,
     };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
-  ElMessage({
-    message: "表单重置完毕",
-    type: "success",
-  });
-}
-
-/** 刷新 */
-async function onRefresh() {
-  const id = dialogModel.id;
-  if (!id) {
     return;
   }
   const [

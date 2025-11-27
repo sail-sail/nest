@@ -235,6 +235,7 @@ if (searchByKeyword) {
           foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
         }
         const fieldPermit = column.fieldPermit;
+        const isVirtual = column.isVirtual;
       #><#
         if (search) {
       #>
@@ -247,11 +248,21 @@ if (searchByKeyword) {
         && typeof opts?.list_tree !== "string"
       ) {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -291,11 +302,21 @@ if (searchByKeyword) {
         && typeof opts?.list_tree === "string"
       ) {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -331,11 +352,21 @@ if (searchByKeyword) {
       </template><#
       } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.isSearchByLbl && !foreignKey.isSearchBySelectInput) {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -371,11 +402,21 @@ if (searchByKeyword) {
       </template><#
       } else if (foreignKey && foreignKey.type !== "many2many" && foreignKey.isSearchByLbl && !foreignKey.isSearchBySelectInput) {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -403,11 +444,21 @@ if (searchByKeyword) {
       </template><#
       } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.isSearchByLbl && foreignKey.isSearchBySelectInput) {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -438,11 +489,21 @@ if (searchByKeyword) {
       </template><#
       } else if (foreignKey && foreignKey.type === "many2many" && !foreignKey.isSearchBySelectInput) {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -478,11 +539,21 @@ if (searchByKeyword) {
       </template><#
       } else if (foreignKey && foreignKey.type === "many2many" && foreignKey.isSearchBySelectInput) {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -513,11 +584,21 @@ if (searchByKeyword) {
       </template><#
       } else if (column.dict) {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -567,11 +648,21 @@ if (searchByKeyword) {
       </template><#
       } else if (column.dictbiz) {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -621,11 +712,21 @@ if (searchByKeyword) {
       </template><#
       } else if (data_type === "datetime" || data_type === "date") {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -664,11 +765,21 @@ if (searchByKeyword) {
       </template><#
       } else if (column_type === "int(1)") {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -698,11 +809,21 @@ if (searchByKeyword) {
       } else if (column_type.startsWith("int")) {
         searchIntColumns.push(column);
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -764,11 +885,21 @@ if (searchByKeyword) {
       </template><#
       } else {
       #>
-      <template v-if="<#
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
         if (fieldPermit) {
       #>field_permit('<#=column_name#>') && <#
         }
-      #>(builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      #><#
+        if (!isVirtual) {
+      #>(builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
         <el-form-item<#
           if (isUseI18n) {
           #>
@@ -797,6 +928,32 @@ if (searchByKeyword) {
       }
       #><#
         }
+      }
+      #><#
+      if (opts?.isUseDynPageFields) {
+      #>
+      
+      <template
+        v-for="field_model in dyn_page_field_models"
+        :key="field_model.id"
+      >
+        <el-form-item
+          v-if="field_model.is_search"
+          :label="field_model.lbl"
+          :prop="field_model.code"
+        >
+          <CustomDynComp
+            :model-value="search.dyn_page_data?.[field_model.code + '_like']"
+            :name="field_model.type"
+            :placeholder="`请输入 ${ field_model.lbl }`"
+            v-bind="field_model._attrs"
+            @update:model-value="(val: any) => {
+              search.dyn_page_data = search.dyn_page_data ?? { };
+              search.dyn_page_data[field_model.code + '_like'] = val;
+            }"
+          ></CustomDynComp>
+        </el-form-item>
+      </template><#
       }
       #>
       
@@ -1698,13 +1855,14 @@ if (searchByKeyword) {
             const canSearch = column.canSearch;
             const isAuditColumn = hasAudit && auditColumn === column_name;
             const isIcon = column.isIcon;
+            const isVirtual = column.isVirtual;
           #><#
           if (isIcon) {
           #>
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
-          if (canSearch) {
+          if (canSearch && !isVirtual) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1734,7 +1892,7 @@ if (searchByKeyword) {
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (canSearch) {
+          if (canSearch && !isVirtual) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1755,7 +1913,7 @@ if (searchByKeyword) {
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (canSearch) {
+          if (canSearch && !isVirtual) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1848,7 +2006,7 @@ if (searchByKeyword) {
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (canSearch) {
+          if (canSearch && !isVirtual) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1900,7 +2058,7 @@ if (searchByKeyword) {
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (canSearch) {
+          if (canSearch && !isVirtual) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1950,7 +2108,7 @@ if (searchByKeyword) {
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (canSearch) {
+          if (canSearch && !isVirtual) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1974,7 +2132,7 @@ if (searchByKeyword) {
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
-          if (canSearch) {
+          if (canSearch && !isVirtual) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -2087,7 +2245,7 @@ if (searchByKeyword) {
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (canSearch) {
+          if (canSearch && !isVirtual) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -2186,7 +2344,7 @@ if (searchByKeyword) {
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
-          if (canSearch) {
+          if (canSearch && !isVirtual) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -2311,7 +2469,7 @@ if (searchByKeyword) {
           }
           #>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -3652,7 +3810,12 @@ const {
   headerDragend,
   resetColumns,
   storeColumns,
-  initColumns,
+  initColumns,<#
+  if (opts?.isUseDynPageFields) {
+  #>
+  useDynPageFieldsList,<#
+  }
+  #>
 } = $(useTableColumns<<#=modelName#>>(
   $$(tableColumns),
   {
@@ -5243,7 +5406,12 @@ async function initFrame() {<#
     initI18nsEfc(),<#
     }
     #>
-    dataGrid(true),
+    dataGrid(true),<#
+    if (opts?.isUseDynPageFields) {
+    #>
+    useDynPageFieldsList(),<#
+    }
+    #>
   ]);
   inited = true;
 }
