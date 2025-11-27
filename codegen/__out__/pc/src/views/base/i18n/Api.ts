@@ -17,7 +17,7 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-async function setLblById(
+export async function setLblByIdI18n(
   model?: I18nModel | null,
   isExcelExport = false,
 ) {
@@ -76,7 +76,7 @@ export async function findAllI18n(
   const models = data.findAllI18n;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdI18n(model);
   }
   return models;
 }
@@ -108,7 +108,7 @@ export async function findOneI18n(
   
   const model = data.findOneI18n;
   
-  await setLblById(model);
+  await setLblByIdI18n(model);
   
   return model;
 }
@@ -140,7 +140,7 @@ export async function findOneOkI18n(
   
   const model = data.findOneOkI18n;
   
-  await setLblById(model);
+  await setLblByIdI18n(model);
   
   return model;
 }
@@ -266,7 +266,7 @@ export async function findByIdI18n(
   
   const model = data.findByIdI18n;
   
-  await setLblById(model);
+  await setLblByIdI18n(model);
   
   return model;
 }
@@ -296,7 +296,7 @@ export async function findByIdOkI18n(
   
   const model = data.findByIdOkI18n;
   
-  await setLblById(model);
+  await setLblByIdI18n(model);
   
   return model;
 }
@@ -332,7 +332,7 @@ export async function findByIdsI18n(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdI18n(model);
   }
   
   return models;
@@ -369,7 +369,7 @@ export async function findByIdsOkI18n(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdI18n(model);
   }
   
   return models;
@@ -661,7 +661,7 @@ export function useExportExcelI18n() {
         },
       }, opt);
       for (const model of data.findAllI18n) {
-        await setLblById(model, true);
+        await setLblByIdI18n(model, true);
       }
       try {
         const sheetName = "国际化";
@@ -735,6 +735,47 @@ export async function importModelsI18n(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/**
+ * 获取 国际化 字段注释
+ */
+export async function getFieldCommentsI18n(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsI18n: Query["getFieldCommentsI18n"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsI18n {
+          id,
+          lang_id,
+          lang_id_lbl,
+          menu_id,
+          menu_id_lbl,
+          code,
+          lbl,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsI18n as I18nFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathI18n() {

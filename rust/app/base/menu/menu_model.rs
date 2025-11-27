@@ -11,6 +11,7 @@ pub struct GetMenus {
   pub lbl_lang: String,
   pub route_path: String,
   pub route_query: String,
+  pub is_dyn_page: u8,
   pub order_by: u32,
 }
 
@@ -26,6 +27,7 @@ impl FromRow<'_, MySqlRow> for GetMenus {
     let lbl_lang = lbl_lang.unwrap_or_default();
     let route_path: String = row.try_get("route_path")?;
     let route_query: String = row.try_get("route_query")?;
+    let is_dyn_page: u8 = row.try_get("is_dyn_page")?;
     let order_by: u32 = row.try_get("order_by")?;
     
     let model = Self {
@@ -35,6 +37,7 @@ impl FromRow<'_, MySqlRow> for GetMenus {
       lbl_lang,
       route_path,
       route_query,
+      is_dyn_page,
       order_by,
     };
     

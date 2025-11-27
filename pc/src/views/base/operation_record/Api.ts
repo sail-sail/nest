@@ -10,7 +10,7 @@ import {
   operationRecordQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdOperationRecord(
   model?: OperationRecordModel | null,
   isExcelExport = false,
 ) {
@@ -73,7 +73,7 @@ export async function findAllOperationRecord(
   const models = data.findAllOperationRecord;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOperationRecord(model);
   }
   return models;
 }
@@ -105,7 +105,7 @@ export async function findOneOperationRecord(
   
   const model = data.findOneOperationRecord;
   
-  await setLblById(model);
+  await setLblByIdOperationRecord(model);
   
   return model;
 }
@@ -137,7 +137,7 @@ export async function findOneOkOperationRecord(
   
   const model = data.findOneOkOperationRecord;
   
-  await setLblById(model);
+  await setLblByIdOperationRecord(model);
   
   return model;
 }
@@ -194,7 +194,7 @@ export async function findByIdOperationRecord(
   
   const model = data.findByIdOperationRecord;
   
-  await setLblById(model);
+  await setLblByIdOperationRecord(model);
   
   return model;
 }
@@ -224,7 +224,7 @@ export async function findByIdOkOperationRecord(
   
   const model = data.findByIdOkOperationRecord;
   
-  await setLblById(model);
+  await setLblByIdOperationRecord(model);
   
   return model;
 }
@@ -260,7 +260,7 @@ export async function findByIdsOperationRecord(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOperationRecord(model);
   }
   
   return models;
@@ -297,7 +297,7 @@ export async function findByIdsOkOperationRecord(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOperationRecord(model);
   }
   
   return models;
@@ -379,6 +379,44 @@ export async function forceDeleteByIdsOperationRecord(
   }, opt);
   const res = data.forceDeleteByIdsOperationRecord;
   return res;
+}
+
+/**
+ * 获取 操作记录 字段注释
+ */
+export async function getFieldCommentsOperationRecord(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsOperationRecord: Query["getFieldCommentsOperationRecord"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsOperationRecord {
+          id,
+          module,
+          module_lbl,
+          method,
+          method_lbl,
+          lbl,
+          time,
+          old_data,
+          new_data,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsOperationRecord as OperationRecordFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathOperationRecord() {

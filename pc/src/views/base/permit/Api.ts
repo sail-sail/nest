@@ -17,7 +17,7 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-async function setLblById(
+export async function setLblByIdPermit(
   model?: PermitModel | null,
   isExcelExport = false,
 ) {
@@ -75,7 +75,7 @@ export async function findAllPermit(
   const models = data.findAllPermit;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdPermit(model);
   }
   return models;
 }
@@ -107,7 +107,7 @@ export async function findOnePermit(
   
   const model = data.findOnePermit;
   
-  await setLblById(model);
+  await setLblByIdPermit(model);
   
   return model;
 }
@@ -139,7 +139,7 @@ export async function findOneOkPermit(
   
   const model = data.findOneOkPermit;
   
-  await setLblById(model);
+  await setLblByIdPermit(model);
   
   return model;
 }
@@ -222,7 +222,7 @@ export async function findByIdPermit(
   
   const model = data.findByIdPermit;
   
-  await setLblById(model);
+  await setLblByIdPermit(model);
   
   return model;
 }
@@ -252,7 +252,7 @@ export async function findByIdOkPermit(
   
   const model = data.findByIdOkPermit;
   
-  await setLblById(model);
+  await setLblByIdPermit(model);
   
   return model;
 }
@@ -288,7 +288,7 @@ export async function findByIdsPermit(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdPermit(model);
   }
   
   return models;
@@ -325,7 +325,7 @@ export async function findByIdsOkPermit(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdPermit(model);
   }
   
   return models;
@@ -412,6 +412,38 @@ export async function findLastOrderByPermit(
   }, opt);
   const res = data.findLastOrderByPermit;
   return res;
+}
+
+/**
+ * 获取 按钮权限 字段注释
+ */
+export async function getFieldCommentsPermit(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsPermit: Query["getFieldCommentsPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsPermit {
+          id,
+          menu_id,
+          menu_id_lbl,
+          code,
+          lbl,
+          order_by,
+          rem,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsPermit as PermitFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathPermit() {

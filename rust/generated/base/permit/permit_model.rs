@@ -322,8 +322,12 @@ pub fn check_sort_permit(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_permit() -> String {
-  "/base/permit".to_owned()
+// MARK: get_page_path_permit
+pub fn get_page_path_permit() -> &'static str {
+  "/base/permit"
+}
+
+// MARK: get_table_name_permit
+pub fn get_table_name_permit() -> &'static str {
+  "base_permit"
 }

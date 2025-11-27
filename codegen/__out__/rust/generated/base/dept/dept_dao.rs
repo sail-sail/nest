@@ -621,7 +621,7 @@ pub async fn find_all_dept(
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "find_all_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -847,7 +847,7 @@ pub async fn find_count_dept(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "find_count_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1011,11 +1011,12 @@ pub async fn find_count_dept(
 
 // MARK: get_field_comments_dept
 /// 获取部门字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_dept(
   _options: Option<Options>,
 ) -> Result<DeptFieldComment> {
   
-  let field_comments = DeptFieldComment {
+  let mut field_comments = DeptFieldComment {
     id: "ID".into(),
     parent_id: "父部门".into(),
     parent_id_lbl: "父部门".into(),
@@ -1051,7 +1052,7 @@ pub async fn find_one_ok_dept(
   options: Option<Options>,
 ) -> Result<DeptModel> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "find_one_ok_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1100,7 +1101,7 @@ pub async fn find_one_dept(
   options: Option<Options>,
 ) -> Result<Option<DeptModel>> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "find_one_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1155,7 +1156,7 @@ pub async fn find_by_id_ok_dept(
   options: Option<Options>,
 ) -> Result<DeptModel> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "find_by_id_ok_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1204,7 +1205,7 @@ pub async fn find_by_id_dept(
   options: Option<Options>,
 ) -> Result<Option<DeptModel>> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "find_by_id_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1251,7 +1252,7 @@ pub async fn find_by_ids_ok_dept(
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "find_by_ids_ok_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1323,7 +1324,7 @@ pub async fn find_by_ids_dept(
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "find_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1393,7 +1394,7 @@ pub async fn exists_dept(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "exists_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1557,7 +1558,7 @@ pub async fn exists_by_id_dept(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "exists_by_id_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1600,7 +1601,7 @@ pub async fn find_by_unique_dept(
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "find_by_unique_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1688,7 +1689,7 @@ pub async fn check_by_unique_dept(
   options: Option<Options>,
 ) -> Result<Option<DeptId>> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "check_by_unique_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1735,7 +1736,7 @@ pub async fn check_by_unique_dept(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 部门 已经存在";
+    let err_msg = "部门 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1953,7 +1954,7 @@ pub async fn creates_return_dept(
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "creates_return_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1990,7 +1991,7 @@ pub async fn creates_dept(
   options: Option<Options>,
 ) -> Result<Vec<DeptId>> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "creates_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2022,7 +2023,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<DeptId>> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -2392,7 +2393,7 @@ pub async fn create_dept(
   options: Option<Options>,
 ) -> Result<DeptId> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "create_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2429,7 +2430,7 @@ pub async fn update_tenant_by_id_dept(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "update_tenant_by_id_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2478,7 +2479,7 @@ pub async fn update_by_id_dept(
   options: Option<Options>,
 ) -> Result<DeptId> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "update_by_id_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2546,7 +2547,7 @@ pub async fn update_by_id_dept(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 部门 已经存在";
+        let err_msg = "部门 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2754,7 +2755,7 @@ pub async fn update_by_id_dept(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_dept";
+  let table = get_table_name_dept();
   vec![
     table,
   ]
@@ -2779,7 +2780,7 @@ pub async fn delete_by_ids_dept(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "delete_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2818,10 +2819,11 @@ pub async fn delete_by_ids_dept(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2970,7 +2972,7 @@ pub async fn enable_by_ids_dept(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "enable_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3057,7 +3059,7 @@ pub async fn lock_by_ids_dept(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "lock_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3113,7 +3115,7 @@ pub async fn revert_by_ids_dept(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "revert_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3166,10 +3168,10 @@ pub async fn revert_by_ids_dept(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: DeptInput = old_model.clone().into();
@@ -3189,7 +3191,7 @@ pub async fn revert_by_ids_dept(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 部门 已经存在";
+        let err_msg = "部门 重复";
         return Err(eyre!(err_msg));
       }
     }
@@ -3240,7 +3242,7 @@ pub async fn force_delete_by_ids_dept(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "force_delete_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3270,21 +3272,20 @@ pub async fn force_delete_by_ids_dept(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_dept(
-      DeptSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_dept(
+      Some(DeptSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -3359,7 +3360,7 @@ pub async fn find_last_order_by_dept(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_dept";
+  let table = get_table_name_dept();
   let method = "find_last_order_by_dept";
   
   let is_debug = get_is_debug(options.as_ref());

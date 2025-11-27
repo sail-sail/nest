@@ -564,8 +564,12 @@ pub fn check_sort_dict_detail(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_dict_detail() -> String {
-  "/base/dict_detail".to_owned()
+// MARK: get_page_path_dict_detail
+pub fn get_page_path_dict_detail() -> &'static str {
+  "/base/dict_detail"
+}
+
+// MARK: get_table_name_dict_detail
+pub fn get_table_name_dict_detail() -> &'static str {
+  "base_dict_detail"
 }

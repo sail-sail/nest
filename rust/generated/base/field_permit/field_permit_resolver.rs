@@ -226,7 +226,7 @@ pub async fn update_by_id_field_permit(
   ).await?;
   
   use_permit(
-    get_route_path_field_permit(),
+    get_page_path_field_permit().to_string(),
     "edit".to_owned(),
   ).await?;
   

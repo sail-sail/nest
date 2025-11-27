@@ -583,8 +583,12 @@ pub fn check_sort_dictbiz_detail(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_dictbiz_detail() -> String {
-  "/base/dictbiz_detail".to_owned()
+// MARK: get_page_path_dictbiz_detail
+pub fn get_page_path_dictbiz_detail() -> &'static str {
+  "/base/dictbiz_detail"
+}
+
+// MARK: get_table_name_dictbiz_detail
+pub fn get_table_name_dictbiz_detail() -> &'static str {
+  "base_dictbiz_detail"
 }

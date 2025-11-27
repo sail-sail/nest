@@ -234,6 +234,18 @@
       </el-button>
       
       <el-button
+        v-if="permit('pwd') && !isLocked"
+        plain
+        type="primary"
+        @click="openPwd"
+      >
+        <template #icon>
+          <ElIconUser />
+        </template>
+        <span>{{ ns('租户管理员密码') }}</span>
+      </el-button>
+      
+      <el-button
         v-if="permit('delete') && !isLocked"
         plain
         type="danger"
@@ -600,7 +612,7 @@
           </template>
           
           <!-- 语言 -->
-          <template v-else-if="'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
+          <template v-else-if="isI18n && 'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -711,7 +723,7 @@
             </el-table-column>
           </template>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -775,11 +787,19 @@
     @stop="stopImport"
   ></ImportPercentageDialog>
   
+  <!-- 设置租户管理员密码 -->
+  <PwdDialog
+    ref="pwdDialogRef"
+  ></PwdDialog>
+  
 </div>
 </template>
 
 <script lang="ts" setup>
 import Detail from "./Detail.vue";
+
+// 设置租户管理员密码
+import PwdDialog from "./PwdDialog.vue";
 
 import MenuTreeList from "../menu/TreeList.vue";
 
@@ -809,6 +829,15 @@ defineOptions({
 const pagePath = getPagePathTenant();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
+
+const {
+  n,
+  ns,
+  nsAsync,
+  initI18ns,
+  initSysI18ns,
+} = useI18n(pagePath);
+
 const permitStore = usePermitStore();
 const dirtyStore = useDirtyStore();
 
@@ -914,6 +943,8 @@ const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
+
+const isI18n = import.meta.env.VITE_SERVER_I18N_ENABLE !== "false";
 
 /** 表格 */
 const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
@@ -1264,6 +1295,9 @@ const {
 ));
 
 const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
+
+// 设置租户管理员密码
+const pwdDialogRef = $(useTemplateRef<InstanceType<typeof PwdDialog>>("pwdDialogRef"));
 
 /** 当前表格数据对应的搜索条件 */
 let currentSearch = $ref<TenantSearch>({ });
@@ -1660,6 +1694,37 @@ async function openEdit() {
   if (changedIds.length === 0) {
     return;
   }
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
+  emit("edit", changedIds);
+}
+
+/** 租户管理员密码 */
+async function openPwd() {
+  if (!pwdDialogRef) {
+    return;
+  }
+  if (!permit("pwd")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
+  if (selectedIds.length === 0) {
+    ElMessage.warning(await nsAsync("请选择需要设置租户管理员密码的 {0}", await nsAsync("租户")));
+    return;
+  }
+  const {
+    changedIds,
+  } = await pwdDialogRef.showDialog({
+    title: await nsAsync("租户管理员密码"),
+    model: {
+      ids: selectedIds,
+    },
+  });
+  tableFocus();
+  if (changedIds.length === 0) {
+    return;
+  }
+  ElMessage.success(await nsAsync("设置租户管理员密码成功"));
   dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);

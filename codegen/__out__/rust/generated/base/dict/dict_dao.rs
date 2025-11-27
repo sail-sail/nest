@@ -477,7 +477,7 @@ pub async fn find_all_dict(
   options: Option<Options>,
 ) -> Result<Vec<DictModel>> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "find_all_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -683,7 +683,7 @@ pub async fn find_count_dict(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "find_count_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -805,11 +805,12 @@ pub async fn find_count_dict(
 
 // MARK: get_field_comments_dict
 /// 获取系统字典字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_dict(
   _options: Option<Options>,
 ) -> Result<DictFieldComment> {
   
-  let field_comments = DictFieldComment {
+  let mut field_comments = DictFieldComment {
     id: "ID".into(),
     code: "编码".into(),
     lbl: "名称".into(),
@@ -841,7 +842,7 @@ pub async fn find_one_ok_dict(
   options: Option<Options>,
 ) -> Result<DictModel> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "find_one_ok_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -890,7 +891,7 @@ pub async fn find_one_dict(
   options: Option<Options>,
 ) -> Result<Option<DictModel>> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "find_one_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -945,7 +946,7 @@ pub async fn find_by_id_ok_dict(
   options: Option<Options>,
 ) -> Result<DictModel> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "find_by_id_ok_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -994,7 +995,7 @@ pub async fn find_by_id_dict(
   options: Option<Options>,
 ) -> Result<Option<DictModel>> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "find_by_id_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1041,7 +1042,7 @@ pub async fn find_by_ids_ok_dict(
   options: Option<Options>,
 ) -> Result<Vec<DictModel>> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "find_by_ids_ok_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1113,7 +1114,7 @@ pub async fn find_by_ids_dict(
   options: Option<Options>,
 ) -> Result<Vec<DictModel>> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "find_by_ids_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1183,7 +1184,7 @@ pub async fn exists_dict(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "exists_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1305,7 +1306,7 @@ pub async fn exists_by_id_dict(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "exists_by_id_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1348,7 +1349,7 @@ pub async fn find_by_unique_dict(
   options: Option<Options>,
 ) -> Result<Vec<DictModel>> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "find_by_unique_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1460,7 +1461,7 @@ pub async fn check_by_unique_dict(
   options: Option<Options>,
 ) -> Result<Option<DictId>> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "check_by_unique_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1507,7 +1508,7 @@ pub async fn check_by_unique_dict(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 系统字典 已经存在";
+    let err_msg = "系统字典 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1619,7 +1620,7 @@ pub async fn creates_return_dict(
   options: Option<Options>,
 ) -> Result<Vec<DictModel>> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "creates_return_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1656,7 +1657,7 @@ pub async fn creates_dict(
   options: Option<Options>,
 ) -> Result<Vec<DictId>> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "creates_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1688,7 +1689,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<DictId>> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -2037,7 +2038,7 @@ pub async fn create_dict(
   options: Option<Options>,
 ) -> Result<DictId> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "create_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2077,7 +2078,7 @@ pub async fn update_by_id_dict(
   options: Option<Options>,
 ) -> Result<DictId> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "update_by_id_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2145,7 +2146,7 @@ pub async fn update_by_id_dict(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 系统字典 已经存在";
+        let err_msg = "系统字典 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2380,7 +2381,7 @@ pub async fn update_by_id_dict(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_dict";
+  let table = get_table_name_dict();
   vec![
     table,
   ]
@@ -2405,7 +2406,7 @@ pub async fn delete_by_ids_dict(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "delete_by_ids_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2444,10 +2445,11 @@ pub async fn delete_by_ids_dict(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2577,7 +2579,7 @@ pub async fn enable_by_ids_dict(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "enable_by_ids_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2634,7 +2636,7 @@ pub async fn revert_by_ids_dict(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "revert_by_ids_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2687,10 +2689,10 @@ pub async fn revert_by_ids_dict(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: DictInput = old_model.clone().into();
@@ -2710,7 +2712,7 @@ pub async fn revert_by_ids_dict(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 系统字典 已经存在";
+        let err_msg = "系统字典 重复";
         return Err(eyre!(err_msg));
       }
     }
@@ -2754,7 +2756,7 @@ pub async fn force_delete_by_ids_dict(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "force_delete_by_ids_dict";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2784,21 +2786,20 @@ pub async fn force_delete_by_ids_dict(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_dict(
-      DictSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_dict(
+      Some(DictSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2859,7 +2860,7 @@ pub async fn find_last_order_by_dict(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "base_dict";
+  let table = get_table_name_dict();
   let method = "find_last_order_by_dict";
   
   let is_debug = get_is_debug(options.as_ref());

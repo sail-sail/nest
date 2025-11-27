@@ -198,7 +198,7 @@ pub async fn find_all_<#=table#>(
   let mut models = models;
   {
     let fields = get_field_permit_<#=table#>(
-      get_route_path_<#=table#>(),
+      get_page_path_<#=table#>().to_string(),
     ).await?;
     for model in &mut models {
       field_permit_model_<#=table#>(
@@ -308,7 +308,7 @@ pub async fn find_one_<#=table#>(
   let mut model = model;
   {
     let fields = get_field_permit_<#=table#>(
-      get_route_path_<#=table#>(),
+      get_page_path_<#=table#>().to_string(),
     ).await?;
     
     if let Some(model) = &mut model {
@@ -386,7 +386,7 @@ pub async fn find_one_ok_<#=table#>(
   let mut model = model;
   {
     let fields = get_field_permit_<#=table#>(
-      get_route_path_<#=table#>(),
+      get_page_path_<#=table#>().to_string(),
     ).await?;
     
     field_permit_model_<#=table#>(
@@ -450,7 +450,7 @@ pub async fn find_by_id_<#=table#>(
   let mut model = model;
   {
     let fields = get_field_permit_<#=table#>(
-      get_route_path_<#=table#>(),
+      get_page_path_<#=table#>().to_string(),
     ).await?;
     
     if let Some(model) = &mut model {
@@ -514,7 +514,7 @@ pub async fn find_by_id_ok_<#=table#>(
   let mut model = model;
   {
     let fields = get_field_permit_<#=table#>(
-      get_route_path_<#=table#>(),
+      get_page_path_<#=table#>().to_string(),
     ).await?;
     
     field_permit_model_<#=table#>(
@@ -578,7 +578,7 @@ pub async fn find_by_ids_<#=table#>(
   let mut models = models;
   {
     let fields = get_field_permit_<#=table#>(
-      get_route_path_<#=table#>(),
+      get_page_path_<#=table#>().to_string(),
     ).await?;
     
     for model in models.iter_mut() {
@@ -644,7 +644,7 @@ pub async fn find_by_ids_ok_<#=table#>(
   let mut models = models;
   {
     let fields = get_field_permit_<#=table#>(
-      get_route_path_<#=table#>(),
+      get_page_path_<#=table#>().to_string(),
     ).await?;
     
     for model in models.iter_mut() {
@@ -724,7 +724,7 @@ pub async fn creates_<#=table#>(
   let inputs = inputs2;
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "add".to_owned(),
   ).await?;<#
   if (tableFieldPermit) {
@@ -733,7 +733,7 @@ pub async fn creates_<#=table#>(
   let mut inputs = inputs;
   {
     let fields = get_field_permit_<#=table#>(
-      get_route_path_<#=table#>(),
+      get_page_path_<#=table#>().to_string(),
     ).await?;
     for input in &mut inputs {
       field_permit_input_<#=table#>(
@@ -866,7 +866,7 @@ pub async fn update_by_id_<#=table#>(
   ).await?;
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "edit".to_owned(),
   ).await?;<#
   if (tableFieldPermit) {
@@ -875,7 +875,7 @@ pub async fn update_by_id_<#=table#>(
   let mut input = input;
   {
     let fields = get_field_permit_<#=table#>(
-      get_route_path_<#=table#>(),
+      get_page_path_<#=table#>().to_string(),
     ).await?;
     field_permit_input_<#=table#>(
       &mut input,
@@ -974,7 +974,7 @@ pub async fn audit_submit_<#=table#>(
   #>
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "audit_submit".to_owned(),
   ).await?;<#
   if (log) {
@@ -1052,7 +1052,7 @@ pub async fn audit_pass_<#=table#>(
   #>
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "audit_pass".to_owned(),
   ).await?;<#
   if (log) {
@@ -1131,7 +1131,7 @@ pub async fn audit_reject_<#=table#>(
   #>
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "audit_reject".to_owned(),
   ).await?;<#
   if (log) {
@@ -1212,7 +1212,7 @@ pub async fn audit_review_<#=table#>(
   #>
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "audit_review".to_owned(),
   ).await?;<#
   if (log) {
@@ -1297,7 +1297,7 @@ pub async fn delete_by_ids_<#=table#>(
   #>
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "delete".to_owned(),
   ).await?;<#
   if (log) {
@@ -1388,7 +1388,7 @@ pub async fn default_by_id_<#=table#>(
   #>
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "edit".to_owned(),
   ).await?;<#
   if (log) {
@@ -1495,7 +1495,7 @@ pub async fn enable_by_ids_<#=table#>(
   #>
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "edit".to_owned(),
   ).await?;<#
   if (log) {
@@ -1629,7 +1629,7 @@ pub async fn lock_by_ids_<#=table#>(
   #>
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "edit".to_owned(),
   ).await?;<#
   if (log) {
@@ -1743,7 +1743,7 @@ pub async fn revert_by_ids_<#=table#>(
   #>
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "delete".to_owned(),
   ).await?;<#
   if (log) {
@@ -1826,7 +1826,7 @@ pub async fn force_delete_by_ids_<#=table#>(
   #>
   
   use_permit(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>().to_string(),
     "force_delete".to_owned(),
   ).await?;<#
   if (log) {

@@ -16,18 +16,18 @@ tracing-attributes = "0.1.30"
 tokio = { version = "1.48.0", features = ["rt-multi-thread", "macros", "net", "fs"] }
 poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
 async-graphql = { version = "7.0.17", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
-smol_str = { version = "0.3.2", features = ["serde"] }
+smol_str = { version = "0.3.4", features = ["serde"] }
 slab = "0.4.11"
 chrono = { version = "0.4.42", features = ["serde"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15.0"
-rust-s3 = { version = "0.37.0", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
+rust-s3 = { version = "0.36.0", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
 imstr = { version = "0.2.0", features = ["serde"] }
 jwt = "0.16.0"
 sha2 = "0.10.9"
 sha1 = "0.10.6"
 hmac = { version = "0.12.1", features = ["reset"] }
-hex-literal = "1.0.0"
+hex-literal = "1.1.0"
 hex = "0.4.3"
 base64 = "0.22.1"
 utf8_slice = "1.0.0"
@@ -42,20 +42,20 @@ uuid = { version = "1.18.1", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12.3"
 deadpool-redis = "0.22.0"
 redis = { version = "0.32.7", features = ["tokio-comp"], default-features = false }
-bigdecimal = "0.4.8"
+bigdecimal = "0.4.9"
 time = "0.3.44"
 rust_decimal = { version = "1.39.0", features = ["maths"]}
 rust_decimal_macros = "1.39.0"
 # enum_dispatch = "0.3.13"
 # pin-project-lite = "0.2.16"
 # rayon = "1.11.0"
-regex = "1.11.3"
+regex = "1.12.2"
 # yarte = "0.15.7"
-image = { version = "0.25.8", features = ["webp"] }
+image = { version = "0.25.9", features = ["webp"] }
 delay_timer = "0.11.6"
 num-traits = "0.2.19"
 fast_chemail = "0.9.6"
-http = "1.3.1"
+http = "1.4.0"
 futures = "0.3.31"
 aes = "0.8.4"
 cbc = { version = "0.1.2", features = ["alloc"]}
@@ -67,14 +67,15 @@ strum = { version = "0.27.2", features = ["derive"] }
 itertools = "0.14.0"
 color-eyre = "0.6.5"
 rand = "0.9.2"
-rsa = { version = "0.9.8", features = ["sha2"] }
+rsa = { version = "0.9.9", features = ["sha2"] }
 aes-gcm = "0.10.3"
 pkcs8 = "0.10.2"
-serde_with = "3.15.0"
-csv = "1.3.1"
-docx-handlebars = "0.3.2"
-xlsx-handlebars = "0.2.1"
+serde_with = "3.16.0"
+csv = "1.4.0"
+docx-handlebars = "0.3.3"
+xlsx-handlebars = "0.2.2"
 tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"] }
+rust-embed = { version = "8.9.0", features = ["include-exclude"] }
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.2.0"
@@ -152,6 +153,8 @@ serde_with.workspace = true
 csv.workspace = true
 docx-handlebars.workspace = true
 xlsx-handlebars.workspace = true
+tokio-tungstenite.workspace = true
+rust-embed.workspace = true
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"

@@ -9,6 +9,9 @@ const hasMany2manyNotInline = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
   }
+  if (column.isVirtual) {
+    return false;
+  }
   const foreignKey = column.foreignKey;
   if (foreignKey && foreignKey.type === "many2many" && !column.inlineMany2manyTab) {
     return true;
@@ -17,6 +20,9 @@ const hasMany2manyNotInline = columns.some((column) => {
 });
 const hasMany2many = columns.some((column) => {
   if (column.ignoreCodegen) {
+    return false;
+  }
+  if (column.isVirtual) {
     return false;
   }
   const foreignKey = column.foreignKey;
@@ -39,6 +45,7 @@ const tableUP = tableUp.split("_").map(function(item) {
 }).join("");
 const hasDict = columns.some((column) => {
   if (column.ignoreCodegen) return false;
+  if (column.isVirtual) return false;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") return false;
   if (
@@ -53,6 +60,7 @@ const hasDict = columns.some((column) => {
 });
 const hasDictbiz = columns.some((column) => {
   if (column.ignoreCodegen) return false;
+  if (column.isVirtual) return false;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") return false;
   if (
@@ -69,6 +77,9 @@ const hasDictModelLabel = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
   }
+  if (column.isVirtual) {
+    return false;
+  }
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
@@ -82,6 +93,9 @@ const hasDictbizModelLabel = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
   }
+  if (column.isVirtual) {
+    return false;
+  }
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
@@ -93,6 +107,9 @@ const hasDictbizModelLabel = columns.some((column) => {
 });
 const hasEncrypt = columns.some((column) => {
   if (column.ignoreCodegen) {
+    return false;
+  }
+  if (column.isVirtual) {
     return false;
   }
   return !!column.isEncrypt;
@@ -227,6 +244,28 @@ use crate::common::role::role_dao::{
   get_auth_role_ids,
 };<#
 }
+#><#
+if (opts?.isUseDynPageFields) {
+#>
+
+
+use crate::base::dyn_page::dyn_page_model::{
+  DynPageSearch,
+};
+use crate::base::dyn_page::dyn_page_dao::{
+  find_one_dyn_page,
+};
+
+use crate::base::dyn_page_val::dyn_page_val_model::{
+  DynPageValInput,
+  DynPageValSearch,
+};
+use crate::base::dyn_page_val::dyn_page_val_dao::{
+  find_all_dyn_page_val,
+  update_by_id_dyn_page_val,
+  create_dyn_page_val,
+};<#
+}
 #>
 
 #[allow(unused_imports)]
@@ -302,7 +341,7 @@ use crate::common::dict_detail::dict_detail_dao::get_dict;<#
 use crate::common::dictbiz_detail::dictbiz_detail_dao::get_dictbiz;<#
   }
 #><#
-if (opts.langTable && isUseI18n) {
+if (opts?.langTable && isUseI18n) {
 #>
 
 use crate::common::lang::lang_dao::get_lang_id;
@@ -406,6 +445,7 @@ use crate::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
+  if (column.isVirtual) continue;
   const column_name = column.COLUMN_NAME;
   const table_comment = column.COLUMN_COMMENT;
   let is_nullable = column.IS_NULLABLE === "YES";
@@ -608,6 +648,7 @@ use crate::<#=mod#>::<#=table#>::<#=table#>_model::*;<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
+  if (column.isVirtual) continue;
   const column_name = column.COLUMN_NAME;
   const table_comment = column.COLUMN_COMMENT;
   let is_nullable = column.IS_NULLABLE === "YES";
@@ -711,6 +752,12 @@ use crate::base::usr::usr_dao::find_by_id_usr;<#
 }
 #><#
 }
+#><#
+if (opts?.isUseDynPageFields) {
+#>
+
+use crate::common::gql::model::JSONObject;<#
+}
 #>
 
 #[allow(unused_variables)]
@@ -719,7 +766,7 @@ async fn get_where_query(
   search: Option<&<#=tableUP#>Search>,
   options: Option<&Options>,
 ) -> Result<String> {<#
-  if (opts.langTable && isUseI18n) {
+  if (opts?.langTable && isUseI18n) {
   #>
   
   let server_i18n_enable = get_server_i18n_enable();<#
@@ -737,7 +784,7 @@ async fn get_where_query(
   #>
   
   let data_permit_models = get_data_permits(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>(),
     options,
   ).await?;
   let has_create_permit = data_permit_models.iter()
@@ -976,8 +1023,8 @@ async fn get_where_query(
     const foreignLangTableRecords = [ ];
     if (foreignKey) {
       foreignSchema = optTables[foreignKey.mod + "_" + foreignKey.table];
-      for (let i = 0; i < (foreignSchema.opts.langTable?.records?.length || 0); i++) {
-        const record = foreignSchema.opts.langTable.records[i];
+      for (let i = 0; i < (foreignSchema.opts?.langTable?.records?.length || 0); i++) {
+        const record = foreignSchema.opts?.langTable.records[i];
         const column_name = record.COLUMN_NAME;
         if (
           langTableExcludeArr.includes(column_name)
@@ -1102,7 +1149,7 @@ async fn get_where_query(
       if (isUseI18n) {
       #>
       if server_i18n_enable {
-        where_query.push_str(" or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in (");
+        where_query.push_str(" or <#=opts?.langTable.opts.table_name#>.<#=modelLabel#> in (");
         where_query.push_str(&arg);
         where_query.push(')');
       }<#
@@ -1130,7 +1177,7 @@ async fn get_where_query(
           if (isUseI18n) {
           #>
           if server_i18n_enable {
-            where_query.push_str(" and (<#=modelLabel#> like ? or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ?)");
+            where_query.push_str(" and (<#=modelLabel#> like ? or <#=opts?.langTable.opts.table_name#>.<#=modelLabel#> like ?)");
             let like_str = format!("%{}%", sql_like(&<#=modelLabel#>_like));
             args.push(like_str.as_str().into());
             args.push(like_str.as_str().into());
@@ -1187,7 +1234,7 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&<#=column_name#>_<#=foreignKey.lbl#>_like)).into());<#
       } else {
       #>
-      where_query.push_str(" and (<#=column_name#>_lbl.<#=foreignKey.lbl#> like ? or <#=foreignSchema.opts.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> like ?)");
+      where_query.push_str(" and (<#=column_name#>_lbl.<#=foreignKey.lbl#> like ? or <#=foreignSchema.opts?.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> like ?)");
       let like_str = format!("%{}%", sql_like(&<#=column_name#>_<#=foreignKey.lbl#>_like));
       args.push(like_str.as_str().into());
       args.push(like_str.as_str().into());<#
@@ -1364,7 +1411,7 @@ async fn get_where_query(
       if (isUseI18n) {
       #>
       if server_i18n_enable {
-        where_query.push_str(" and (t.<#=column_name#>=? or <#=opts.langTable.opts.table_name#>.<#=column_name#>=?)");
+        where_query.push_str(" and (t.<#=column_name#>=? or <#=opts?.langTable.opts.table_name#>.<#=column_name#>=?)");
         args.push(<#=column_name_rust#>.as_str().into());
         args.push(<#=column_name_rust#>.as_str().into());
       } else {
@@ -1379,7 +1426,32 @@ async fn get_where_query(
       #><#
       }
       #>
+    }<#
+    if (column.searchByArray) {
+    #>
+    let <#=column_name#>s: Option<Vec<<#=_data_type#>>> = match search {
+      Some(item) => item.<#=column_name#>s.clone(),
+      None => None,
+    };
+    if let Some(<#=column_name#>s) = <#=column_name#>s {
+      let arg = {
+        if <#=column_name#>s.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(<#=column_name#>s.len());
+          for item in <#=column_name#>s {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.<#=column_name#> in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }<#
     }
+    #>
     let <#=column_name#>_like = match search {
       Some(item) => item.<#=column_name#>_like.clone(),
       None => None,
@@ -1394,7 +1466,7 @@ async fn get_where_query(
       if (isUseI18n) {
       #>
       if server_i18n_enable {
-        where_query.push_str(" and (t.<#=column_name#> like ? or <#=opts.langTable.opts.table_name#>.<#=column_name#> like ?)");
+        where_query.push_str(" and (t.<#=column_name#> like ? or <#=opts?.langTable.opts.table_name#>.<#=column_name#> like ?)");
         let like_str = format!("%{}%", sql_like(&<#=column_name#>_like));
         args.push(like_str.as_str().into());
         args.push(like_str.as_str().into());
@@ -1430,7 +1502,7 @@ async fn get_where_query(
       if (isUseI18n) {
       #>
       if server_i18n_enable {
-        where_query.push_str(" and (t.<#=column_name#>=? or <#=opts.langTable.opts.table_name#>.<#=column_name#>=?)");
+        where_query.push_str(" and (t.<#=column_name#>=? or <#=opts?.langTable.opts.table_name#>.<#=column_name#>=?)");
         args.push(<#=column_name_rust#>.as_str().into());
         args.push(<#=column_name_rust#>.as_str().into());
       } else {
@@ -1449,6 +1521,86 @@ async fn get_where_query(
   }<#
     }
   #><#
+  }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  // 动态页面字段查询
+  if let Some(search) = search {
+    if let Some(ref dyn_page_data) = search.dyn_page_data {
+      let page_path = get_page_path_dyn_page_data();
+      
+      let dyn_page_search = DynPageSearch {
+        code: Some(page_path.clone()),
+        is_enabled: Some(vec![1]),
+        ..Default::default()
+      };
+      
+      let dyn_page_model = find_one_dyn_page(
+        Some(dyn_page_search),
+        None,
+        options.cloned(),
+      ).await?;
+      
+      if let Some(dyn_page_model) = dyn_page_model {
+        let dyn_page_field_models = dyn_page_model.dyn_page_field;
+        if !dyn_page_field_models.is_empty() {
+          where_query.push_str(" and t.id in (select v.ref_id from base_dyn_page_val v where v.ref_code=?");
+          args.push(page_path.into());
+          
+          for field in dyn_page_field_models {
+            let field_code = &field.code;
+            let field_type = &field.r#type;
+            
+            if let Some(val) = dyn_page_data.0.get(field_code) {
+              let range_types = ["CustomCheckbox", "CustomInputNumber", "CustomSwitch", "CustomDatePicker"];
+              
+              if range_types.contains(&field_type.as_str()) {
+                // 范围查询字段
+                if let serde_json::Value::Array(arr) = val {
+                  if arr.len() >= 2 {
+                    if !arr[0].is_null() {
+                      where_query.push_str(" and v.code=? and v.lbl>=?");
+                      args.push(field_code.clone().into());
+                      args.push(arr[0].clone().into());
+                    }
+                    if !arr[1].is_null() {
+                      where_query.push_str(" and v.code=? and v.lbl<=?");
+                      args.push(field_code.clone().into());
+                      args.push(arr[1].clone().into());
+                    }
+                  }
+                }
+              } else {
+                // 精确匹配
+                if !val.is_null() {
+                  where_query.push_str(" and v.code=? and v.lbl=?");
+                  args.push(field_code.clone().into());
+                  args.push(val.clone().into());
+                }
+              }
+            }
+            
+            // 模糊查询
+            let field_code_like = format!("{}_like", field_code);
+            if let Some(val_like) = dyn_page_data.0.get(&field_code_like) {
+              if let serde_json::Value::String(val_like_str) = val_like {
+                if !val_like_str.is_empty() {
+                  where_query.push_str(" and v.code=? and v.lbl like ?");
+                  args.push(field_code.clone().into());
+                  args.push(format!("%{}%", sql_like(val_like_str)).into());
+                }
+              }
+            }
+            
+          }
+          
+          where_query.push(')');
+        }
+      }
+    }
+  }<#
   }
   #>
   Ok(where_query)
@@ -1478,7 +1630,7 @@ async fn get_from_query(
   #>
   
   let data_permit_models = get_data_permits(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>(),
     options,
   ).await?;
   let has_create_permit = data_permit_models.iter()
@@ -1495,7 +1647,7 @@ async fn get_from_query(
   let<#
   if (
     (hasDataPermit() && hasCreateUsrId)
-    || (opts.langTable && isUseI18n)
+    || (opts?.langTable && isUseI18n)
   ) {
   #> mut<#
   }
@@ -1572,10 +1724,10 @@ async fn get_from_query(
   }<#
   }
   #><#
-  if (opts.langTable && isUseI18n) {
+  if (opts?.langTable && isUseI18n) {
   #>
   if server_i18n_enable {
-    from_query += " left join <#=opts.langTable.opts.table_name#> on <#=opts.langTable.opts.table_name#>.<#=table#>_id=t.id and <#=opts.langTable.opts.table_name#>.lang_id=?";
+    from_query += " left join <#=opts?.langTable.opts.table_name#> on <#=opts?.langTable.opts.table_name#>.<#=table#>_id=t.id and <#=opts?.langTable.opts.table_name#>.lang_id=?";
     args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
   }<#
   }
@@ -1591,7 +1743,99 @@ async fn get_from_query(
   }
   #>
   Ok(from_query)
+}<#
+if (opts?.isUseDynPageFields) {
+#>
+
+// MARK: set_dyn_page_data_<#=table#>
+/// 设置动态页面数据
+pub async fn set_dyn_page_data_<#=table#>(
+  models: &mut [<#=tableUP#>Model],
+  options: Option<Options>,
+) -> Result<()> {
+  
+  let page_path = get_page_path_<#=table#>();
+  
+  let dyn_page_model = find_one_dyn_page(
+    Some(DynPageSearch {
+      code: Some(page_path.to_string()),
+      is_enabled: Some(vec![1]),
+      ..Default::default()
+    }),
+    None,
+    options.clone(),
+  ).await?;
+  
+  let dyn_page_model = match dyn_page_model {
+    Some(x) => x,
+    None => return Ok(()),
+  };
+  
+  let dyn_page_field_models = dyn_page_model.dyn_page_field;
+  
+  if dyn_page_field_models.is_empty() {
+    return Ok(());
+  }
+  
+  let ids: Vec<<#=tableUP#>Id> = models
+    .iter()
+    .map(|item| item.id.clone())
+    .collect();
+  
+  let dyn_page_val_models = find_all_dyn_page_val(
+    Some(DynPageValSearch {
+      ref_code: Some(page_path.to_string()),
+      ref_ids: Some(
+        ids
+          .into_iter()
+          .map(|item| item.to_string())
+          .collect::<Vec<String>>()
+      ),
+      ..Default::default()
+    }),
+    None,
+    None,
+    options.clone(),
+  ).await?;
+  
+  for model in models.iter_mut() {
+    
+    model.dyn_page_data = JSONObject::default();
+    
+    for field in dyn_page_field_models.iter() {
+      
+      let val_model_opt = dyn_page_val_models.iter()
+        .find(|item| item.ref_id == model.id.as_str() && item.code == field.code);
+      
+      let mut val: Option<serde_json::Value> = None;
+      if let Some(val_model) = val_model_opt {
+        val = Some(serde_json::json!(val_model.lbl));
+      }
+      if [
+        "CustomCheckbox",
+        "CustomInputNumber",
+        "CustomSwitch",
+      ].contains(&field.r#type.as_str()) {
+        if let Some(v) = &val {
+          if !v.is_null() {
+            val = Some(serde_json::json!(v.as_str().unwrap_or_default().parse::<i64>().unwrap_or_default()));
+          }
+        }
+      }
+      if val.is_none() || val.as_ref().unwrap().is_null() {
+        val = Some(serde_json::json!(""));
+      }
+      
+      model
+        .dyn_page_data.0
+        .insert(field.code.clone(), val.unwrap_or_default());
+    }
+  }
+  
+  Ok(())
+}<#
 }
+#>
 
 // MARK: find_all_<#=table#>
 /// 根据搜索条件和分页查找<#=table_comment#>列表
@@ -1603,7 +1847,7 @@ pub async fn find_all_<#=table#>(
   options: Option<Options>,
 ) -> Result<Vec<<#=tableUP#>Model>> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_all_<#=table#>";<#
   if (opts.langTable && isUseI18n) {
   #>
@@ -1692,6 +1936,24 @@ pub async fn find_all_<#=table#>(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
+    }
+  }<#
+    }
+  #><#
+    if (column.searchByArray) {
+  #>
+  // <#=column_comment#>
+  if let Some(search) = &search && search.<#=column_name#>s.is_some() {
+    let len = search.<#=column_name#>s.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.<#=column_name#>s.length > {ids_limit}"));
     }
   }<#
     }
@@ -1881,8 +2143,22 @@ pub async fn find_all_<#=table#>(
   let mut res: Vec<<#=tableUP#>Model> = query(
     sql,
     args,
-    Some(options),
+    Some(options<#
+    if (opts?.isUseDynPageFields) {
+    #>.clone()<#
+    }
+    #>),
   ).await?;<#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  set_dyn_page_data_<#=table#>(
+    &mut res,
+    Some(options.clone()),
+  ).await?;
+  <#
+  }
+  #><#
     if (hasDictModelLabel) {
   #>
   
@@ -1890,6 +2166,7 @@ pub async fn find_all_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (
@@ -1912,6 +2189,7 @@ pub async fn find_all_<#=table#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (
@@ -1941,6 +2219,7 @@ pub async fn find_all_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (
@@ -1963,6 +2242,7 @@ pub async fn find_all_<#=table#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (
@@ -2024,6 +2304,7 @@ pub async fn find_all_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const table_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -2103,6 +2384,7 @@ pub async fn find_all_<#=table#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = rustKeyEscape(column.COLUMN_NAME);
       if (column_name === "id") continue;
       if (
@@ -2133,6 +2415,7 @@ pub async fn find_all_<#=table#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = rustKeyEscape(column.COLUMN_NAME);
       if (column_name === "id") continue;
       if (
@@ -2226,6 +2509,7 @@ pub async fn find_all_<#=table#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       let is_nullable = column.IS_NULLABLE === "YES";
@@ -2290,7 +2574,7 @@ pub async fn find_count_<#=table#>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_count_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2371,6 +2655,24 @@ pub async fn find_count_<#=table#>(
   }<#
     }
   #><#
+    if (column.searchByArray) {
+  #>
+  // <#=column_comment#>
+  if let Some(search) = &search && search.<#=column_name#>s.is_some() {
+    let len = search.<#=column_name#>s.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.<#=column_name#>s.length > {ids_limit}"));
+    }
+  }<#
+    }
+  #><#
   }
   #>
   
@@ -2419,7 +2721,7 @@ if (isUseI18n) {
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
   i18n_dao::NRoute {
-    route_path: get_route_path_<#=table#>().into(),
+    route_path: get_page_path_<#=table#>().into(),
   }
 }<#
 }
@@ -2427,9 +2729,23 @@ pub fn get_n_route() -> i18n_dao::NRoute {
 
 // MARK: get_field_comments_<#=table#>
 /// 获取<#=table_comment#>字段注释
-pub async fn get_field_comments_<#=table#>(
-  _options: Option<Options>,
+#[allow(unused_mut)]
+pub async fn get_field_comments_<#=table#>(<#
+  if (opts?.isUseDynPageFields) {
+  #>
+  options: Option<Options>,<#
+  } else {
+  #>
+  _options: Option<Options>,<#
+  }
+  #>
 ) -> Result<<#=tableUP#>FieldComment> {<#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  let page_path = get_page_path_<#=table#>();<#
+  }
+  #><#
   if (isUseI18n) {
   #>
   
@@ -2512,7 +2828,7 @@ pub async fn get_field_comments_<#=table#>(
     )
     .collect::<Vec<String>>();
   
-  let field_comments = <#=tableUP#>FieldComment {<#
+  let mut field_comments = <#=tableUP#>FieldComment {<#
     var num = -1;
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -2581,12 +2897,17 @@ pub async fn get_field_comments_<#=table#>(
       }
     #><#
     }
+    #><#
+    if (opts?.isUseDynPageFields) {
+    #>
+    dyn_page_data: JSONObject::default(),<#
+    }
     #>
   };<#
   } else {
   #>
   
-  let field_comments = <#=tableUP#>FieldComment {<#
+  let mut field_comments = <#=tableUP#>FieldComment {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -2641,8 +2962,43 @@ pub async fn get_field_comments_<#=table#>(
       }
     #><#
     }
+    #><#
+    if (opts?.isUseDynPageFields) {
+    #>
+    dyn_page_data: JSONObject::default(),<#
+    }
     #>
   };<#
+  }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  let dyn_page_model = find_one_dyn_page(
+    Some(DynPageSearch {
+      code: Some(page_path.to_string()),
+      is_enabled: Some(vec![1]),
+      ..Default::default()
+    }),
+    None,
+    options.clone(),
+  ).await?;
+  
+  if let Some(dyn_page_model) = dyn_page_model {
+    
+    let dyn_page_field_models = dyn_page_model.dyn_page_field;
+    
+    for dyn_page_field_model in dyn_page_field_models {
+      let field_code = &dyn_page_field_model.code;
+      let field_lbl = &dyn_page_field_model.lbl;
+      
+      field_comments
+        .dyn_page_data
+        .0
+        .insert(field_code.clone(), serde_json::json!(field_lbl));
+    }
+    
+  }<#
   }
   #>
   Ok(field_comments)
@@ -2657,7 +3013,7 @@ pub async fn find_one_ok_<#=table#>(
   options: Option<Options>,
 ) -> Result<<#=tableUP#>Model> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_one_ok_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2723,7 +3079,7 @@ pub async fn find_one_<#=table#>(
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_one_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2778,7 +3134,7 @@ pub async fn find_by_id_ok_<#=table#>(
   options: Option<Options>,
 ) -> Result<<#=tableUP#>Model> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_by_id_ok_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2844,7 +3200,7 @@ pub async fn find_by_id_<#=table#>(
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_by_id_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2891,7 +3247,7 @@ pub async fn find_by_ids_ok_<#=table#>(
   options: Option<Options>,
 ) -> Result<Vec<<#=Table_Up#>Model>> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_by_ids_ok_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2997,7 +3353,7 @@ pub async fn find_by_ids_<#=table#>(
   options: Option<Options>,
 ) -> Result<Vec<<#=Table_Up#>Model>> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3067,7 +3423,7 @@ pub async fn exists_<#=table#>(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "exists_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3193,7 +3549,7 @@ pub async fn exists_by_id_<#=table#>(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "exists_by_id_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3236,7 +3592,7 @@ pub async fn find_by_unique_<#=table#>(
   options: Option<Options>,
 ) -> Result<Vec<<#=tableUP#>Model>> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_by_unique_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3382,7 +3738,7 @@ pub async fn check_by_unique_<#=table#>(
   options: Option<Options>,
 ) -> Result<Option<<#=Table_Up#>Id>> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "check_by_unique_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3439,12 +3795,12 @@ pub async fn check_by_unique_<#=table#>(
       ("0".to_owned(), table_comment),
     ]);
     let err_msg = i18n_dao::ns(
-      "此 {0} 已经存在".to_owned(),
+      "{0} 重复".to_owned(),
       map.into(),
     ).await?;<#
     } else {
     #>
-    let err_msg = "此 <#=table_comment#> 已经存在";<#
+    let err_msg = "<#=table_comment#> 重复";<#
     }
     #>
     return Err(eyre!(err_msg));
@@ -3591,6 +3947,7 @@ pub async fn set_id_by_lbl_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (
@@ -3610,6 +3967,7 @@ pub async fn set_id_by_lbl_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === "id") continue;
@@ -3649,6 +4007,7 @@ pub async fn set_id_by_lbl_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (
@@ -3669,6 +4028,7 @@ pub async fn set_id_by_lbl_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (
@@ -3705,6 +4065,7 @@ pub async fn set_id_by_lbl_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
     if (
@@ -3962,6 +4323,7 @@ pub async fn set_id_by_lbl_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     const column_comment = column.COLUMN_COMMENT || "";
@@ -4022,6 +4384,7 @@ pub async fn set_id_by_lbl_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     const column_comment = column.COLUMN_COMMENT || "";
@@ -4074,7 +4437,7 @@ pub async fn creates_return_<#=table#>(
   options: Option<Options>,
 ) -> Result<Vec<<#=Table_Up#>Model>> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "creates_return_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -4111,7 +4474,7 @@ pub async fn creates_<#=table#>(
   options: Option<Options>,
 ) -> Result<Vec<<#=Table_Up#>Id>> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "creates_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -4143,7 +4506,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<<#=Table_Up#>Id>> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -4440,6 +4803,7 @@ async fn _creates(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     const column_comment = column.COLUMN_COMMENT || "";
@@ -4746,6 +5110,7 @@ async fn _creates(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       const column_comment = column.COLUMN_COMMENT || "";
@@ -4813,6 +5178,129 @@ async fn _creates(
     args,
     options.clone(),
   ).await?;<#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  // 更新动态字段
+  let page_path = get_page_path_<#=table#>();
+  
+  let dyn_page_model = find_one_dyn_page(
+    Some(DynPageSearch {
+      code: Some(page_path.to_string()),
+      is_enabled: Some(vec![1]),
+      ..Default::default()
+    }),
+    None,
+    options.clone(),
+  ).await?;
+  
+  if let Some(dyn_page_model) = dyn_page_model {
+    let dyn_page_field_models = dyn_page_model.dyn_page_field;
+    
+    if !dyn_page_field_models.is_empty() {
+      // 查询所有已存在的动态字段值
+      let dyn_page_val_models = find_all_dyn_page_val(
+        Some(DynPageValSearch {
+          ref_code: Some(page_path.to_string()),
+          ref_ids: Some(
+            inputs2_ids
+              .iter()
+              .map(|id| id.to_string())
+              .collect::<Vec<String>>()
+          ),
+          ..Default::default()
+        }),
+        None,
+        None,
+        options.clone(),
+      ).await?;
+      
+      for (i, input) in inputs2.clone()
+        .into_iter()
+        .enumerate()
+      {
+        let id = inputs2_ids[i];
+        let dyn_page_data = input.dyn_page_data.clone();
+        
+        if dyn_page_data.is_none() {
+          continue;
+        }
+        
+        let dyn_page_data = dyn_page_data.unwrap();
+        
+        for dyn_page_field_model in dyn_page_field_models.clone() {
+          
+          let field_code = dyn_page_field_model.code;
+          let field_type = dyn_page_field_model.r#type;
+          let new_value0 = dyn_page_data.0.get(&field_code);
+          let new_value: String = if [
+            "CustomCheckbox",
+            "CustomInputNumber",
+            "CustomSwitch",
+          ].contains(&field_type.as_str()) {
+            // 数字类型字段
+            if let Some(new_value0) = new_value0 && !new_value0.is_null() {
+              if let Some(num) = new_value0.as_i64() {
+                num.to_string()
+              } else if let Some(num) = new_value0.as_u64() {
+                num.to_string()
+              } else if let Some(num) = new_value0.as_f64() {
+                num.to_string()
+              } else if let Some(s) = new_value0.as_str() {
+                s.parse::<i64>().unwrap_or_default().to_string()
+              } else {
+                String::new()
+              }
+            } else {
+              String::new()
+            }
+          } else {
+            // 字符串类型字段
+            if let Some(new_value0) = new_value0 && !new_value0.is_null() {
+              if let Some(s) = new_value0.as_str() {
+                s.to_string()
+              } else {
+                new_value0.to_string()
+              }
+            } else {
+              String::new()
+            }
+          };
+          
+          let old_value_model = dyn_page_val_models.iter()
+            .find(|m| m.ref_id == id.as_str() && m.code == field_code);
+          
+          if let Some(old_value_model) = old_value_model {
+            let old_value = old_value_model.lbl.as_str();
+            if new_value.as_str() != old_value {
+              update_by_id_dyn_page_val(
+                old_value_model.id,
+                DynPageValInput {
+                  lbl: Some(new_value.clone()),
+                  ..Default::default()
+                },
+                options.clone(),
+              ).await?;
+            }
+          } else {
+            create_dyn_page_val(
+              DynPageValInput {
+                ref_code: Some(page_path.to_string()),
+                ref_id: Some(id.to_string()),
+                code: Some(field_code),
+                lbl: Some(new_value.clone()),
+                ..Default::default()
+              },
+              options.clone(),
+            ).await?;
+          }
+          
+        }
+      }
+    }
+  }<#
+  }
+  #><#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -4980,6 +5468,7 @@ async fn _creates(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       let is_nullable = column.IS_NULLABLE === "YES";
@@ -5041,7 +5530,7 @@ pub async fn find_auto_code_<#=table#>(
   options: Option<Options>,
 ) -> Result<(u32, String)> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_auto_code_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -5118,7 +5607,7 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
 }
 #>, u32, String)> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_auto_code_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -5252,7 +5741,7 @@ pub async fn create_<#=table#>(
   options: Option<Options>,
 ) -> Result<<#=Table_Up#>Id> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "create_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -5291,7 +5780,7 @@ pub async fn update_tenant_by_id_<#=table#>(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "update_tenant_by_id_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -5372,7 +5861,7 @@ pub async fn get_editable_data_permits_by_ids_<#=table#>(
   let options = Some(options);
   
   let data_permit_models = get_data_permits(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>(),
     options.as_ref(),
   ).await?;
   
@@ -5678,7 +6167,7 @@ pub async fn update_by_id_<#=table#>(
   options: Option<Options>,
 ) -> Result<<#=Table_Up#>Id> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "update_by_id_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());<#
@@ -5847,7 +6336,7 @@ pub async fn update_by_id_<#=table#>(
   #>
   
   let data_permit_models = get_data_permits(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>(),
     options.as_ref(),
   ).await?;
   
@@ -5969,12 +6458,12 @@ pub async fn update_by_id_<#=table#>(
           ("0".to_owned(), table_comment),
         ]);
         let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
+          "{0} 重复".to_owned(),
           map.into(),
         ).await?;<#
         } else {
         #>
-        let err_msg = "此 <#=table_comment#> 已经存在";<#
+        let err_msg = "<#=table_comment#> 重复";<#
         }
         #>
         return Err(eyre!(err_msg));
@@ -6169,9 +6658,120 @@ pub async fn update_by_id_<#=table#>(
   #><#
   }
   #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  // 更新动态字段
+  let dyn_page_data = input.dyn_page_data.clone();
+  if let Some(dyn_page_data) = dyn_page_data {
+    
+    let page_path = get_page_path_<#=table#>();
+    
+    let dyn_page_model = find_one_dyn_page(
+      Some(DynPageSearch {
+        code: Some(page_path.to_string()),
+        is_enabled: Some(vec![1]),
+        ..Default::default()
+      }),
+      None,
+      options.clone(),
+    ).await?;
+    
+    if let Some(dyn_page_model) = dyn_page_model {
+      
+      let dyn_page_field_models = dyn_page_model.dyn_page_field;
+      
+      let dyn_page_val_models = find_all_dyn_page_val(
+        Some(DynPageValSearch {
+          ref_code: Some(page_path.to_string()),
+          ref_ids: Some(vec![ id.to_string() ]),
+          ..Default::default()
+        }),
+        None,
+        None,
+        options.clone(),
+      ).await?;
+      
+      for dyn_page_field_model in dyn_page_field_models {
+        
+        let field_code = dyn_page_field_model.code;
+        let field_type = dyn_page_field_model.r#type;
+        let new_value0 = dyn_page_data.0.get(&field_code);
+        let new_value: String = if [
+          "CustomCheckbox",
+          "CustomInputNumber",
+          "CustomSwitch",
+        ].contains(&field_type.as_str()) {
+          // 数字类型字段
+          if let Some(new_value0) = new_value0 && !new_value0.is_null() {
+            if let Some(num) = new_value0.as_i64() {
+              num.to_string()
+            } else if let Some(num) = new_value0.as_u64() {
+              num.to_string()
+            } else if let Some(num) = new_value0.as_f64() {
+              num.to_string()
+            } else if let Some(s) = new_value0.as_str() {
+              s.parse::<i64>().unwrap_or_default().to_string()
+            } else {
+              String::new()
+            }
+          } else {
+            String::new()
+          }
+        } else {
+          // 字符串类型字段
+          if let Some(new_value0) = new_value0 && !new_value0.is_null() {
+            if let Some(s) = new_value0.as_str() {
+              s.to_string()
+            } else {
+              new_value0.to_string()
+            }
+          } else {
+            String::new()
+          }
+        };
+        
+        let old_value_model = dyn_page_val_models.iter()
+          .find(|m| m.code == field_code);
+        
+        if let Some(old_value_model) = old_value_model {
+          let old_value = old_value_model.lbl.as_str();
+          if new_value.as_str() != old_value {
+            update_by_id_dyn_page_val(
+              old_value_model.id,
+              DynPageValInput {
+                lbl: Some(new_value.clone()),
+                ..Default::default()
+              },
+              options.clone(),
+            ).await?;
+            field_num += 1;
+          }
+        } else {
+          create_dyn_page_val(
+            DynPageValInput {
+              ref_code: Some(page_path.to_string()),
+              ref_id: Some(id.to_string()),
+              code: Some(field_code),
+              lbl: Some(new_value.clone()),
+              ..Default::default()
+            },
+            options.clone(),
+          ).await?;
+          field_num += 1;
+        }
+        
+      }
+      
+    }
+    
+  }<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     const column_comment = column.COLUMN_COMMENT || "";
@@ -6394,6 +6994,7 @@ pub async fn update_by_id_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -6884,7 +7485,7 @@ pub async fn update_by_id_<#=table#>(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   vec![
     table,
   ]
@@ -6909,7 +7510,7 @@ pub async fn delete_by_ids_<#=table#>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "delete_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -6959,7 +7560,7 @@ pub async fn delete_by_ids_<#=table#>(
   #>
   
   let data_permit_models = get_data_permits(
-    get_route_path_<#=table#>(),
+    get_page_path_<#=table#>(),
     options.as_ref(),
   ).await?;
   
@@ -7013,10 +7614,11 @@ pub async fn delete_by_ids_<#=table#>(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -7147,6 +7749,38 @@ pub async fn delete_by_ids_<#=table#>(
       args,
       options.clone(),
     ).await?;<#
+    if (opts?.isUseDynPageFields) {
+    #>
+    
+    // 删除动态页面值<#
+      if (hasIsDeleted) {
+    #>
+    {
+      let mut args = QueryArgs::new();
+      args.push(id.into());
+      let sql = "update base_dyn_page_val set is_deleted=1 where ref_id=? and is_deleted=0".to_owned();
+      execute(
+        sql,
+        args.into(),
+        options.clone(),
+      ).await?;
+    }<#
+      } else {
+    #>
+    {
+      let mut args = QueryArgs::new();
+      args.push(id.into());
+      let sql = "delete from base_dyn_page_val where ref_id=?".to_owned();
+      execute(
+        sql,
+        args.into(),
+        options.clone(),
+      ).await?;
+    }<#
+      }
+    #><#
+    }
+    #><#
     if (opts.langTable && isUseI18n) {
     #>
     
@@ -7172,6 +7806,7 @@ pub async fn delete_by_ids_<#=table#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       if (column.inlineMany2manyTab) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
@@ -7391,6 +8026,7 @@ pub async fn delete_by_ids_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -7483,7 +8119,7 @@ pub async fn default_by_id_<#=table#>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "default_by_id_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -7612,7 +8248,7 @@ pub async fn enable_by_ids_<#=table#>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "enable_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -7731,7 +8367,7 @@ pub async fn lock_by_ids_<#=table#>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "lock_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -7819,7 +8455,7 @@ pub async fn revert_by_ids_<#=table#>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "revert_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());<#
@@ -7895,10 +8531,10 @@ pub async fn revert_by_ids_<#=table#>(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: <#=tableUP#>Input = old_model.clone().into();
@@ -7928,12 +8564,12 @@ pub async fn revert_by_ids_<#=table#>(
           ("0".to_owned(), table_comment),
         ]);
         let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
+          "{0} 重复".to_owned(),
           map.into(),
         ).await?;<#
         } else {
         #>
-        let err_msg = "此 <#=table_comment#> 已经存在";<#
+        let err_msg = "<#=table_comment#> 重复";<#
         }
         #>
         return Err(eyre!(err_msg));
@@ -7945,6 +8581,21 @@ pub async fn revert_by_ids_<#=table#>(
       args,
       options.clone(),
     ).await?;<#
+    if (opts?.isUseDynPageFields) {
+    #>
+    // 还原动态页面值
+    {
+      let mut args = QueryArgs::new();
+      args.push(id.into());
+      let sql = "update base_dyn_page_val set is_deleted=0 where ref_id=? and is_deleted=1".to_owned();
+      execute(
+        sql,
+        args.into(),
+        options.clone(),
+      ).await?;
+    }<#
+    }
+    #><#
     if (opts.langTable && isUseI18n) {
     #>
     
@@ -7964,6 +8615,7 @@ pub async fn revert_by_ids_<#=table#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       if (column.inlineMany2manyTab) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
@@ -7990,6 +8642,7 @@ pub async fn revert_by_ids_<#=table#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       if (column.inlineMany2manyTab) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
@@ -8112,6 +8765,7 @@ pub async fn revert_by_ids_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -8189,7 +8843,7 @@ pub async fn force_delete_by_ids_<#=table#>(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "force_delete_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -8224,25 +8878,24 @@ pub async fn force_delete_by_ids_<#=table#>(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_<#=table#>(
-      <#=tableUP#>Search {
-        id: id.into(),<#
+    let old_model = find_one_<#=table#>(
+      Some(<#=tableUP#>Search {
+        id: Some(id),<#
         if (hasIsDeleted) {
         #>
-        is_deleted: 1.into(),<#
+        is_deleted: Some(1),<#
         }
         #>
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -8295,6 +8948,21 @@ pub async fn force_delete_by_ids_<#=table#>(
       args,
       options.clone(),
     ).await?;<#
+    if (opts?.isUseDynPageFields) {
+    #>
+    // 彻底删除动态页面值
+    {
+      let mut args = QueryArgs::new();
+      args.push(id.into());
+      let sql = "delete from base_dyn_page_val where ref_id=?".to_owned();
+      execute(
+        sql,
+        args.into(),
+        options.clone(),
+      ).await?;
+    }<#
+    }
+    #><#
     if (opts.langTable && isUseI18n) {
     #>
     
@@ -8313,6 +8981,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       if (column.inlineMany2manyTab) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
@@ -8429,6 +9098,7 @@ pub async fn force_delete_by_ids_<#=table#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -8508,7 +9178,7 @@ pub async fn find_last_order_by_<#=table#>(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let table = get_table_name_<#=table#>();
   let method = "find_last_order_by_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());

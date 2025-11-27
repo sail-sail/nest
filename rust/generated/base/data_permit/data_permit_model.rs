@@ -733,8 +733,12 @@ pub fn check_sort_data_permit(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_data_permit() -> String {
-  "/base/data_permit".to_owned()
+// MARK: get_page_path_data_permit
+pub fn get_page_path_data_permit() -> &'static str {
+  "/base/data_permit"
+}
+
+// MARK: get_table_name_data_permit
+pub fn get_table_name_data_permit() -> &'static str {
+  "base_data_permit"
 }

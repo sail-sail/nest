@@ -201,7 +201,7 @@
               ref="default_org_idRef"
               v-model="dialogModel.default_org_id"
               :init="false"
-              :method="getOrgListApi"
+              :method="getListOrgApi"
               :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
@@ -566,6 +566,9 @@ async function showDialog(
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
+    role_ids: [ ],
+    dept_ids: [ ],
+    org_ids: [ ],
   };
   usr_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
@@ -685,7 +688,18 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
+  ElMessage({
+    message: "表单重置完毕",
+    type: "success",
+  });
+}
+
+/** 刷新 */
+async function onRefresh() {
+  const id = dialogModel.id;
+  if (!id) {
     const [
       defaultModel,
       order_by,
@@ -700,20 +714,6 @@ async function onReset() {
       ...builtInModel,
       order_by: order_by + 1,
     };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
-  ElMessage({
-    message: "表单重置完毕",
-    type: "success",
-  });
-}
-
-/** 刷新 */
-async function onRefresh() {
-  const id = dialogModel.id;
-  if (!id) {
     return;
   }
   const [
@@ -940,7 +940,7 @@ async function onSave() {
 const default_org_idRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("default_org_idRef"));
 let old_default_org_id: InputMaybe<OrgId> | undefined = undefined;
 
-async function getOrgListApi() {
+async function getListOrgApi() {
   const org_ids = dialogModel.org_ids || [ ];
   if (!dialogModel.default_org_id && old_default_org_id) {
     if (org_ids.includes(old_default_org_id)) {
@@ -950,7 +950,7 @@ async function getOrgListApi() {
   if (!dialogModel.default_org_id || !org_ids.includes(dialogModel.default_org_id)) {
     dialogModel.default_org_id = undefined;
   }
-  let data = await getOrgList();
+  let data = await getListOrg();
   data = data.filter((item) => {
     return org_ids.includes(item.id);
   });
