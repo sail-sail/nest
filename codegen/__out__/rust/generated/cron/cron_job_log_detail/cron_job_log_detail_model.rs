@@ -430,8 +430,12 @@ pub fn check_sort_cron_job_log_detail(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_cron_job_log_detail() -> String {
-  "/cron/cron_job_log_detail".to_owned()
+// MARK: get_page_path_cron_job_log_detail
+pub fn get_page_path_cron_job_log_detail() -> &'static str {
+  "/cron/cron_job_log_detail"
+}
+
+// MARK: get_table_name_cron_job_log_detail
+pub fn get_table_name_cron_job_log_detail() -> &'static str {
+  "cron_cron_job_log_detail"
 }

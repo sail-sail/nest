@@ -13,7 +13,7 @@ import {
   cronJobQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdCronJob(
   model?: CronJobModel | null,
   isExcelExport = false,
 ) {
@@ -80,7 +80,7 @@ export async function findAllCronJob(
   const models = data.findAllCronJob;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdCronJob(model);
   }
   return models;
 }
@@ -112,7 +112,7 @@ export async function findOneCronJob(
   
   const model = data.findOneCronJob;
   
-  await setLblById(model);
+  await setLblByIdCronJob(model);
   
   return model;
 }
@@ -144,7 +144,7 @@ export async function findOneOkCronJob(
   
   const model = data.findOneOkCronJob;
   
-  await setLblById(model);
+  await setLblByIdCronJob(model);
   
   return model;
 }
@@ -270,7 +270,7 @@ export async function findByIdCronJob(
   
   const model = data.findByIdCronJob;
   
-  await setLblById(model);
+  await setLblByIdCronJob(model);
   
   return model;
 }
@@ -300,7 +300,7 @@ export async function findByIdOkCronJob(
   
   const model = data.findByIdOkCronJob;
   
-  await setLblById(model);
+  await setLblByIdCronJob(model);
   
   return model;
 }
@@ -336,7 +336,7 @@ export async function findByIdsCronJob(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdCronJob(model);
   }
   
   return models;
@@ -373,7 +373,7 @@ export async function findByIdsOkCronJob(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdCronJob(model);
   }
   
   return models;
@@ -665,7 +665,7 @@ export function useExportExcelCronJob() {
         },
       }, opt);
       for (const model of data.findAllCronJob) {
-        await setLblById(model, true);
+        await setLblByIdCronJob(model, true);
       }
       try {
         const sheetName = "定时任务";
@@ -758,6 +758,52 @@ export async function findLastOrderByCronJob(
   }, opt);
   const res = data.findLastOrderByCronJob;
   return res;
+}
+
+/**
+ * 获取 定时任务 字段注释
+ */
+export async function getFieldCommentsCronJob(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsCronJob: Query["getFieldCommentsCronJob"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsCronJob {
+          id,
+          lbl,
+          job_id,
+          job_id_lbl,
+          cron,
+          timezone,
+          timezone_lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsCronJob as CronJobFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathCronJob() {

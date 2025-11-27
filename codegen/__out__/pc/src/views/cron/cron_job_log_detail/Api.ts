@@ -10,7 +10,7 @@ import {
   cronJobLogDetailQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdCronJobLogDetail(
   model?: CronJobLogDetailModel | null,
   isExcelExport = false,
 ) {
@@ -61,7 +61,7 @@ export async function findAllCronJobLogDetail(
   const models = data.findAllCronJobLogDetail;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdCronJobLogDetail(model);
   }
   return models;
 }
@@ -93,7 +93,7 @@ export async function findOneCronJobLogDetail(
   
   const model = data.findOneCronJobLogDetail;
   
-  await setLblById(model);
+  await setLblByIdCronJobLogDetail(model);
   
   return model;
 }
@@ -125,7 +125,7 @@ export async function findOneOkCronJobLogDetail(
   
   const model = data.findOneOkCronJobLogDetail;
   
-  await setLblById(model);
+  await setLblByIdCronJobLogDetail(model);
   
   return model;
 }
@@ -182,7 +182,7 @@ export async function findByIdCronJobLogDetail(
   
   const model = data.findByIdCronJobLogDetail;
   
-  await setLblById(model);
+  await setLblByIdCronJobLogDetail(model);
   
   return model;
 }
@@ -212,7 +212,7 @@ export async function findByIdOkCronJobLogDetail(
   
   const model = data.findByIdOkCronJobLogDetail;
   
-  await setLblById(model);
+  await setLblByIdCronJobLogDetail(model);
   
   return model;
 }
@@ -248,7 +248,7 @@ export async function findByIdsCronJobLogDetail(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdCronJobLogDetail(model);
   }
   
   return models;
@@ -285,7 +285,7 @@ export async function findByIdsOkCronJobLogDetail(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdCronJobLogDetail(model);
   }
   
   return models;
@@ -450,7 +450,7 @@ export function useExportExcelCronJobLogDetail() {
         },
       }, opt);
       for (const model of data.findAllCronJobLogDetail) {
-        await setLblById(model, true);
+        await setLblByIdCronJobLogDetail(model, true);
       }
       try {
         const sheetName = "定时任务日志明细";
@@ -477,6 +477,37 @@ export function useExportExcelCronJobLogDetail() {
     workerStatus,
     workerTerminate,
   };
+}
+
+/**
+ * 获取 定时任务日志明细 字段注释
+ */
+export async function getFieldCommentsCronJobLogDetail(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsCronJobLogDetail: Query["getFieldCommentsCronJobLogDetail"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsCronJobLogDetail {
+          id,
+          cron_job_log_id,
+          cron_job_log_id_lbl,
+          lbl,
+          create_time,
+          create_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsCronJobLogDetail as CronJobLogDetailFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathCronJobLogDetail() {

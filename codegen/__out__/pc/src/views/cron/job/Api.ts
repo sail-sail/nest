@@ -13,7 +13,7 @@ import {
   jobQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdJob(
   model?: JobModel | null,
   isExcelExport = false,
 ) {
@@ -74,7 +74,7 @@ export async function findAllJob(
   const models = data.findAllJob;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdJob(model);
   }
   return models;
 }
@@ -106,7 +106,7 @@ export async function findOneJob(
   
   const model = data.findOneJob;
   
-  await setLblById(model);
+  await setLblByIdJob(model);
   
   return model;
 }
@@ -138,7 +138,7 @@ export async function findOneOkJob(
   
   const model = data.findOneOkJob;
   
-  await setLblById(model);
+  await setLblByIdJob(model);
   
   return model;
 }
@@ -264,7 +264,7 @@ export async function findByIdJob(
   
   const model = data.findByIdJob;
   
-  await setLblById(model);
+  await setLblByIdJob(model);
   
   return model;
 }
@@ -294,7 +294,7 @@ export async function findByIdOkJob(
   
   const model = data.findByIdOkJob;
   
-  await setLblById(model);
+  await setLblByIdJob(model);
   
   return model;
 }
@@ -330,7 +330,7 @@ export async function findByIdsJob(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdJob(model);
   }
   
   return models;
@@ -367,7 +367,7 @@ export async function findByIdsOkJob(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdJob(model);
   }
   
   return models;
@@ -597,7 +597,7 @@ export function useExportExcelJob() {
         },
       }, opt);
       for (const model of data.findAllJob) {
-        await setLblById(model, true);
+        await setLblByIdJob(model, true);
       }
       try {
         const sheetName = "任务";
@@ -690,6 +690,48 @@ export async function findLastOrderByJob(
   }, opt);
   const res = data.findLastOrderByJob;
   return res;
+}
+
+/**
+ * 获取 任务 字段注释
+ */
+export async function getFieldCommentsJob(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsJob: Query["getFieldCommentsJob"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsJob {
+          id,
+          code,
+          lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsJob as JobFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathJob() {

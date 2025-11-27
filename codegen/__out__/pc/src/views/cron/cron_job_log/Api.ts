@@ -14,7 +14,7 @@ import {
   cronJobLogQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdCronJobLog(
   model?: CronJobLogModel | null,
   isExcelExport = false,
 ) {
@@ -79,7 +79,7 @@ export async function findAllCronJobLog(
   const models = data.findAllCronJobLog;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdCronJobLog(model);
   }
   return models;
 }
@@ -111,7 +111,7 @@ export async function findOneCronJobLog(
   
   const model = data.findOneCronJobLog;
   
-  await setLblById(model);
+  await setLblByIdCronJobLog(model);
   
   return model;
 }
@@ -143,7 +143,7 @@ export async function findOneOkCronJobLog(
   
   const model = data.findOneOkCronJobLog;
   
-  await setLblById(model);
+  await setLblByIdCronJobLog(model);
   
   return model;
 }
@@ -200,7 +200,7 @@ export async function findByIdCronJobLog(
   
   const model = data.findByIdCronJobLog;
   
-  await setLblById(model);
+  await setLblByIdCronJobLog(model);
   
   return model;
 }
@@ -230,7 +230,7 @@ export async function findByIdOkCronJobLog(
   
   const model = data.findByIdOkCronJobLog;
   
-  await setLblById(model);
+  await setLblByIdCronJobLog(model);
   
   return model;
 }
@@ -266,7 +266,7 @@ export async function findByIdsCronJobLog(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdCronJobLog(model);
   }
   
   return models;
@@ -303,7 +303,7 @@ export async function findByIdsOkCronJobLog(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdCronJobLog(model);
   }
   
   return models;
@@ -479,7 +479,7 @@ export function useExportExcelCronJobLog() {
         },
       }, opt);
       for (const model of data.findAllCronJobLog) {
-        await setLblById(model, true);
+        await setLblByIdCronJobLog(model, true);
       }
       try {
         const sheetName = "定时任务日志";
@@ -506,6 +506,44 @@ export function useExportExcelCronJobLog() {
     workerStatus,
     workerTerminate,
   };
+}
+
+/**
+ * 获取 定时任务日志 字段注释
+ */
+export async function getFieldCommentsCronJobLog(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsCronJobLog: Query["getFieldCommentsCronJobLog"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsCronJobLog {
+          id,
+          cron_job_id,
+          cron_job_id_lbl,
+          exec_state,
+          exec_state_lbl,
+          exec_result,
+          begin_time,
+          begin_time_lbl,
+          end_time,
+          end_time_lbl,
+          rem,
+          create_time,
+          create_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsCronJobLog as CronJobLogFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathCronJobLog() {

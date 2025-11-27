@@ -563,8 +563,12 @@ pub fn check_sort_job(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_job() -> String {
-  "/cron/job".to_owned()
+// MARK: get_page_path_job
+pub fn get_page_path_job() -> &'static str {
+  "/cron/job"
+}
+
+// MARK: get_table_name_job
+pub fn get_table_name_job() -> &'static str {
+  "cron_job"
 }
