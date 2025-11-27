@@ -13,7 +13,7 @@ import {
   dictDetailQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdDictDetail(
   model?: DictDetailModel | null,
   isExcelExport = false,
 ) {
@@ -74,7 +74,7 @@ export async function findAllDictDetail(
   const models = data.findAllDictDetail;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictDetail(model);
   }
   return models;
 }
@@ -106,7 +106,7 @@ export async function findOneDictDetail(
   
   const model = data.findOneDictDetail;
   
-  await setLblById(model);
+  await setLblByIdDictDetail(model);
   
   return model;
 }
@@ -138,7 +138,7 @@ export async function findOneOkDictDetail(
   
   const model = data.findOneOkDictDetail;
   
-  await setLblById(model);
+  await setLblByIdDictDetail(model);
   
   return model;
 }
@@ -264,7 +264,7 @@ export async function findByIdDictDetail(
   
   const model = data.findByIdDictDetail;
   
-  await setLblById(model);
+  await setLblByIdDictDetail(model);
   
   return model;
 }
@@ -294,7 +294,7 @@ export async function findByIdOkDictDetail(
   
   const model = data.findByIdOkDictDetail;
   
-  await setLblById(model);
+  await setLblByIdDictDetail(model);
   
   return model;
 }
@@ -330,7 +330,7 @@ export async function findByIdsDictDetail(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictDetail(model);
   }
   
   return models;
@@ -367,7 +367,7 @@ export async function findByIdsOkDictDetail(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictDetail(model);
   }
   
   return models;
@@ -622,7 +622,7 @@ export function useExportExcelDictDetail() {
         },
       }, opt);
       for (const model of data.findAllDictDetail) {
-        await setLblById(model, true);
+        await setLblByIdDictDetail(model, true);
       }
       try {
         const sheetName = "系统字典明细";
@@ -715,6 +715,48 @@ export async function findLastOrderByDictDetail(
   }, opt);
   const res = data.findLastOrderByDictDetail;
   return res;
+}
+
+/**
+ * 获取 系统字典明细 字段注释
+ */
+export async function getFieldCommentsDictDetail(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDictDetail: Query["getFieldCommentsDictDetail"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDictDetail {
+          id,
+          dict_id,
+          dict_id_lbl,
+          lbl,
+          val,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDictDetail as DictDetailFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathDictDetail() {

@@ -1,5 +1,6 @@
 import {
   getSchema,
+  hasSelectInputFn,
   initContext,
   type Context,
 } from "../lib/information_schema.ts";
@@ -50,6 +51,15 @@ async function exec(context: Context, table_names0: string[]) {
     const table_name = table_names0[i];
     if (!tables[table_name]) continue;
     await getSchema(context, table_name, table_names);
+  }
+  for (let i = 0; i < table_names0.length; i++) {
+    const table_name = table_names0[i];
+    if (!tables[table_name]) continue;
+    // hasSelectInput
+    if (tables[table_name].opts.hasSelectInput == null) {
+      const hasSelectInput = hasSelectInputFn(table_name);
+      tables[table_name].opts.hasSelectInput = hasSelectInput;
+    }
   }
   for (let i = 0; i < table_names0.length; i++) {
     const table_name = table_names0[i];

@@ -509,8 +509,12 @@ pub fn check_sort_lang(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_lang() -> String {
-  "/base/lang".to_owned()
+// MARK: get_page_path_lang
+pub fn get_page_path_lang() -> &'static str {
+  "/base/lang"
+}
+
+// MARK: get_table_name_lang
+pub fn get_table_name_lang() -> &'static str {
+  "base_lang"
 }

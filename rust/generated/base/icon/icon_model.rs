@@ -55,9 +55,6 @@ pub struct IconModel {
   /// 图标
   #[graphql(name = "img")]
   pub img: String,
-  /// 图标svg
-  #[graphql(name = "img_lbl_svg")]
-  pub img_lbl_svg: String,
   /// 编码
   #[graphql(name = "code")]
   pub code: String,
@@ -140,7 +137,6 @@ impl FromRow<'_, MySqlRow> for IconModel {
       is_deleted,
       id,
       img,
-      img_lbl_svg: String::new(),
       code,
       lbl,
       is_enabled,
@@ -534,8 +530,12 @@ pub fn check_sort_icon(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_icon() -> String {
-  "/base/icon".to_owned()
+// MARK: get_page_path_icon
+pub fn get_page_path_icon() -> &'static str {
+  "/base/icon"
+}
+
+// MARK: get_table_name_icon
+pub fn get_table_name_icon() -> &'static str {
+  "base_icon"
 }

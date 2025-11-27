@@ -526,8 +526,12 @@ pub fn check_sort_org(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_org() -> String {
-  "/base/org".to_owned()
+// MARK: get_page_path_org
+pub fn get_page_path_org() -> &'static str {
+  "/base/org"
+}
+
+// MARK: get_table_name_org
+pub fn get_table_name_org() -> &'static str {
+  "base_org"
 }

@@ -1840,6 +1840,34 @@ impl Options {
     self.ids_limit
   }
   
+  #[inline]
+  #[allow(dead_code)]
+  pub fn set_is_silent_mode(self, is_silent_mode: Option<bool>) -> Self {
+    let mut self_ = self;
+    self_.is_silent_mode = is_silent_mode;
+    self_
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn get_is_silent_mode(&self) -> Option<bool> {
+    self.is_silent_mode
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn set_is_creating(self, is_creating: Option<bool>) -> Self {
+    let mut self_ = self;
+    self_.is_creating = is_creating;
+    self_
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn get_is_creating(&self) -> Option<bool> {
+    self.is_creating
+  }
+  
 }
 
 // impl Drop for Ctx {

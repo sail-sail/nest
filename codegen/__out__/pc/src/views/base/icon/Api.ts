@@ -13,7 +13,7 @@ import {
   iconQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdIcon(
   model?: IconModel | null,
   isExcelExport = false,
 ) {
@@ -81,7 +81,7 @@ export async function findAllIcon(
   const models = data.findAllIcon;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdIcon(model);
   }
   return models;
 }
@@ -113,7 +113,7 @@ export async function findOneIcon(
   
   const model = data.findOneIcon;
   
-  await setLblById(model);
+  await setLblByIdIcon(model);
   
   return model;
 }
@@ -145,7 +145,7 @@ export async function findOneOkIcon(
   
   const model = data.findOneOkIcon;
   
-  await setLblById(model);
+  await setLblByIdIcon(model);
   
   return model;
 }
@@ -271,7 +271,7 @@ export async function findByIdIcon(
   
   const model = data.findByIdIcon;
   
-  await setLblById(model);
+  await setLblByIdIcon(model);
   
   return model;
 }
@@ -301,7 +301,7 @@ export async function findByIdOkIcon(
   
   const model = data.findByIdOkIcon;
   
-  await setLblById(model);
+  await setLblByIdIcon(model);
   
   return model;
 }
@@ -337,7 +337,7 @@ export async function findByIdsIcon(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdIcon(model);
   }
   
   return models;
@@ -374,7 +374,7 @@ export async function findByIdsOkIcon(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdIcon(model);
   }
   
   return models;
@@ -576,7 +576,7 @@ export function useExportExcelIcon() {
         },
       }, opt);
       for (const model of data.findAllIcon) {
-        await setLblById(model, true);
+        await setLblByIdIcon(model, true);
       }
       try {
         const sheetName = "图标库";
@@ -669,6 +669,47 @@ export async function findLastOrderByIcon(
   }, opt);
   const res = data.findLastOrderByIcon;
   return res;
+}
+
+/**
+ * 获取 图标库 字段注释
+ */
+export async function getFieldCommentsIcon(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsIcon: Query["getFieldCommentsIcon"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsIcon {
+          id,
+          img,
+          code,
+          lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsIcon as IconFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathIcon() {

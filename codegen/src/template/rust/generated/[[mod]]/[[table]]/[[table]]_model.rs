@@ -229,7 +229,6 @@ modelIds.push("TenantId");
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.isVirtual) continue;
   const column_name = column.COLUMN_NAME;
   if (
     column_name === "tenant_id" ||
@@ -269,6 +268,12 @@ if (tableFieldPermit) {
 #>
 
 use crate::common::field_permit::field_permit_service::get_field_permit;<#
+}
+#><#
+if (opts?.isUseDynPageFields) {
+#>
+
+use crate::common::gql::model::JSONObject;<#
 }
 #>
 
@@ -876,6 +881,13 @@ pub struct <#=tableUP#>Model {<#
   // <#=table_comment#>
   pub <#=column_name#>_<#=table#>_models: Option<Vec<<#=Table_Up#>Model>>,<#
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  // 动态页面数据
+  #[graphql(name = "dyn_page_data")]
+  pub dyn_page_data: JSONObject,<#
+  }
   #>
 }
 
@@ -1028,7 +1040,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     // ID
     let id: <#=Table_Up#>Id = row.try_get("id")?;<#
-      } else if (foreignKey && foreignKey.multiple) {
+      } else if (foreignKey && foreignKey.multiple && !isVirtual) {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: Option<sqlx::types::Json<HashMap<String, <#=foreignTable_Up#>Id>>> = row.try_get("<#=column_name#>")?;
@@ -1153,14 +1165,32 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     };<#
       }
     #><#
+      } else if (foreignKey && foreignKey.multiple && isVirtual) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#>: Vec<<#=foreignTable_Up#>Id> = vec![];
+    let <#=column_name#>_lbl: Vec<String> = vec![];<#
       } else if (foreignKey && !foreignKey.multiple) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: <#=foreignTable_Up#>Id = row.try_get("<#=column_name#>")?;<#
+    let <#=column_name_rust#>: <#=foreignTable_Up#>Id = <#
+      if (!isVirtual) {
+    #>row.try_get("<#=column_name#>")?;<#
+      } else {
+    #><#=foreignTable_Up#>Id::default();<#
+      }
+    #><#
       if (hasModelLabel) {
+    #><#
+        if (!isVirtual) {
     #>
     let <#=modelLabel#>: Option<String> = row.try_get("<#=modelLabel#>")?;
     let <#=modelLabel#> = <#=modelLabel#>.unwrap_or_default();<#
+        } else {
+    #>
+    let <#=modelLabel#> = String::new();<#
+        }
+    #><#
       }
     #><#
       for (let j = 0; j < cascade_fields.length; j++) {
@@ -1413,6 +1443,13 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;<#
     }
+    #><#
+    if (opts?.isUseDynPageFields) {
+    #>
+    
+    // 动态页面数据
+    let dyn_page_data = JSONObject::default();<#
+    }
     #>
     
     let model = Self {<#
@@ -1624,6 +1661,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       #>
       <#=column_name#>_<#=table#>_models: None,<#
       }
+      #><#
+      if (opts?.isUseDynPageFields) {
+      #>
+      dyn_page_data,<#
+      }
       #>
     };
     
@@ -1717,6 +1759,13 @@ pub struct <#=tableUP#>FieldComment {<#
     }
   #><#
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  /// 动态页面数据字段说明
+  #[graphql(name = "dyn_page_data")]
+  pub dyn_page_data: JSONObject,<#
+  }
   #>
 }
 
@@ -1754,7 +1803,6 @@ pub struct <#=tableUP#>Search {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
@@ -1991,7 +2039,21 @@ pub struct <#=tableUP#>Search {
   #[graphql(name = "<#=column_name#>")]<#
   }
   #>
-  pub <#=column_name_rust#>: Option<<#=_data_type#>>,
+  pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
+  if (column.searchByArray) {
+  #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno || !canSearch) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>s")]<#
+  }
+  #>
+  pub <#=column_name#>s: Option<Vec<<#=_data_type#>>>,<#
+  }
+  #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno || !canSearch) {
   #>
@@ -2016,6 +2078,12 @@ pub struct <#=tableUP#>Search {
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
     }
   #><#
+  }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  #[graphql(name = "dyn_page_data")]
+  pub dyn_page_data: Option<JSONObject>,<#
   }
   #>
 }
@@ -2173,7 +2241,6 @@ pub struct <#=tableUP#>Input {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if (
       column_name === "tenant_id" ||
@@ -2522,6 +2589,13 @@ pub struct <#=tableUP#>Input {
   // <#=table_comment#>
   pub <#=column_name#>_<#=table#>_models: Option<Vec<<#=Table_Up#>Input>>,<#
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  /// 动态页面数据
+  #[graphql(name = "dyn_page_data")]
+  pub dyn_page_data: Option<JSONObject>,<#
+  }
   #>
 }
 
@@ -2557,7 +2631,6 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
-        if (column.isVirtual) continue;
         const column_name = column.COLUMN_NAME;
         if (
           column_name === "tenant_id" ||
@@ -2741,6 +2814,12 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
           .collect::<Vec<_>>(),
         ),<#
       }
+      #><#
+      if (opts?.isUseDynPageFields) {
+      #>
+      // 动态页面数据
+      dyn_page_data: model.dyn_page_data.into(),<#
+      }
       #>
     }
   }
@@ -2771,7 +2850,6 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
-        if (column.isVirtual) continue;
         const column_name = rustKeyEscape(column.COLUMN_NAME);
         if (
           column_name === "tenant_id" ||
@@ -2831,6 +2909,12 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       <#=column_name#>: input.<#=column_name#>,<#
       }
       #><#
+      }
+      #><#
+      if (opts?.isUseDynPageFields) {
+      #>
+      // 动态页面数据
+      dyn_page_data: input.dyn_page_data,<#
       }
       #>
       ..Default::default()
@@ -3145,10 +3229,14 @@ pub fn check_sort_<#=table#>(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_<#=table#>() -> String {
-  "/<#=mod#>/<#=table#>".to_owned()
+// MARK: get_page_path_<#=table#>
+pub fn get_page_path_<#=table#>() -> &'static str {
+  "/<#=mod#>/<#=table#>"
+}
+
+// MARK: get_table_name_<#=table#>
+pub fn get_table_name_<#=table#>() -> &'static str {
+  "<#=mod#>_<#=table#>"
 }<#
 if (tableFieldPermit) {
 #><#
@@ -3161,10 +3249,10 @@ pub async fn field_permit_input_<#=table#>(
   mut fields: Option<Vec<String>>,
 ) -> Result<()> {
   
-  let route_path = get_route_path_<#=table#>();
+  let route_path = get_page_path_<#=table#>();
   
   if fields.is_none() {
-    fields = get_field_permit(route_path).await?;
+    fields = get_field_permit(route_path.to_string()).await?;
   }
   
   if fields.is_none() {
@@ -3274,10 +3362,10 @@ pub async fn field_permit_model_<#=table#>(
   mut fields: Option<Vec<String>>,
 ) -> Result<()> {
   
-  let route_path = get_route_path_<#=table#>();
+  let route_path = get_page_path_<#=table#>();
   
   if fields.is_none() {
-    fields = get_field_permit(route_path).await?;
+    fields = get_field_permit(route_path.to_string()).await?;
   }
   
   if fields.is_none() {

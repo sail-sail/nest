@@ -22,7 +22,7 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-async function setLblById(
+export async function setLblByIdDataPermit(
   model?: DataPermitModel | null,
   isExcelExport = false,
 ) {
@@ -80,7 +80,7 @@ export async function findAllDataPermit(
   const models = data.findAllDataPermit;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDataPermit(model);
   }
   return models;
 }
@@ -112,7 +112,7 @@ export async function findOneDataPermit(
   
   const model = data.findOneDataPermit;
   
-  await setLblById(model);
+  await setLblByIdDataPermit(model);
   
   return model;
 }
@@ -144,7 +144,7 @@ export async function findOneOkDataPermit(
   
   const model = data.findOneOkDataPermit;
   
-  await setLblById(model);
+  await setLblByIdDataPermit(model);
   
   return model;
 }
@@ -270,7 +270,7 @@ export async function findByIdDataPermit(
   
   const model = data.findByIdDataPermit;
   
-  await setLblById(model);
+  await setLblByIdDataPermit(model);
   
   return model;
 }
@@ -300,7 +300,7 @@ export async function findByIdOkDataPermit(
   
   const model = data.findByIdOkDataPermit;
   
-  await setLblById(model);
+  await setLblByIdDataPermit(model);
   
   return model;
 }
@@ -336,7 +336,7 @@ export async function findByIdsDataPermit(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDataPermit(model);
   }
   
   return models;
@@ -373,7 +373,7 @@ export async function findByIdsOkDataPermit(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDataPermit(model);
   }
   
   return models;
@@ -625,7 +625,7 @@ export function useExportExcelDataPermit() {
         },
       }, opt);
       for (const model of data.findAllDataPermit) {
-        await setLblById(model, true);
+        await setLblByIdDataPermit(model, true);
       }
       try {
         const sheetName = "数据权限";
@@ -699,6 +699,47 @@ export async function importModelsDataPermit(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/**
+ * 获取 数据权限 字段注释
+ */
+export async function getFieldCommentsDataPermit(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDataPermit: Query["getFieldCommentsDataPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDataPermit {
+          id,
+          menu_id,
+          menu_id_lbl,
+          scope,
+          scope_lbl,
+          type,
+          type_lbl,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDataPermit as DataPermitFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathDataPermit() {

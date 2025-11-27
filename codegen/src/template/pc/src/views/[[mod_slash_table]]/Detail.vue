@@ -324,13 +324,24 @@ for (let i = 0; i < columns.length; i++) {
           const isPassword = column.isPassword;
           form_item_index++;
           const fieldPermit = column.fieldPermit;
+          const isVirtual = column.isVirtual;
         #>
         
-        <template v-if="<#
+        <template<#
+          if (fieldPermit || !isVirtual || vIfStr) {
+        #> v-if="<#
           if (fieldPermit) {
         #>field_permit('<#=column_name#>') && <#
           }
-        #>(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
+        #><#
+          if (!isVirtual) {
+        #>(showBuildIn || builtInModel?.<#=column_name#> == null)<#
+          }
+        #><#=vIfStr ? ' && '+vIfStr : ''#>"<#
+          } else {
+        #> v-if="true"<#
+          }
+        #>>
           <el-form-item<#
             if (isUseI18n) {
             #>
@@ -1135,6 +1146,44 @@ for (let i = 0; i < columns.length; i++) {
           </el-form-item>
         </template><#
         }
+        #><#
+        if (opts?.isUseDynPageFields) {
+        #>
+        
+        <template
+          v-for="field_model in dyn_page_field_models"
+          :key="field_model.id"
+        >
+          <el-form-item
+            :label="field_model.lbl"
+            :prop="field_model.code"
+            :class="{
+              'col-span-full':
+                field_model.type === 'CustomInput' &&
+                field_model._attrs.type === 'textarea',
+            }"
+          >
+            <CustomDynComp
+              :model-value="dialogModel.dyn_page_data?.[field_model.code]"
+              :name="field_model.type"
+              :placeholder="`请输入 ${ field_model.lbl }`"
+              v-bind="field_model._attrs"
+              :autosize="
+                (field_model._attrs.minRows || field_model._attrs.maxRows) && 
+                  {
+                    minRows: field_model._attrs.minRows,
+                    maxRows: field_model._attrs.maxRows,
+                  }
+              "
+              :readonly="field_model._attrs.readonly || isLocked || isReadonly"
+              @update:model-value="(val: any) => {
+                dialogModel.dyn_page_data = dialogModel.dyn_page_data ?? { };
+                dialogModel.dyn_page_data[field_model.code] = val;
+              }"
+            ></CustomDynComp>
+          </el-form-item>
+        </template><#
+        }
         #>
         
       </el-form><#
@@ -1280,6 +1329,20 @@ for (let i = 0; i < columns.length; i++) {
                 const readonlyPlaceholder = column.readonlyPlaceholder;
                 const modelLabel = column.modelLabel;
                 const isPassword = column.isPassword;
+                const isSwitch = column.isSwitch;
+                const isCheckbox = column.isCheckbox;
+                let align = column.align;
+                if (!align) {
+                  if (["int", "decimal", "float", "double"].some((type) => column_type.startsWith(type))) {
+                    align = "center";
+                  } else if (data_type === "datetime" || data_type === "date") {
+                    align = "center";
+                  } else if (column.isImg || column.isColorPicker) {
+                    align = "center";
+                  } else if (isSwitch || isCheckbox) {
+                    align = "center";
+                  }
+                }
               #>
               
               <el-table-column<#
@@ -1298,7 +1361,12 @@ for (let i = 0; i < columns.length; i++) {
                 }
                 #>
                 width="<#=width#>"
-                header-align="center"
+                header-align="center"<#
+                if (align && align !== "left") {
+                #>
+                align="<#=align#>"<#
+                }
+                #>
               >
                 <template #default="{ row }">
                   <template v-if="row._type !== 'add'"><#
@@ -1522,7 +1590,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                     ></CustomTreeSelect><#
-                    } else if (column.dict) {
+                    } else if (column.dict && !isSwitch && !isCheckbox) {
                     #>
                     <DictSelect
                       v-model="row.<#=column_name#>"<#
@@ -1564,7 +1632,77 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                     ></DictSelect><#
-                    } else if (column.dictbiz) {
+                    } else if (column.dict && isSwitch && !isCheckbox) {
+                    #>
+                    <CustomSwitch
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
+                      #>
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
+                      } else {
+                      #>
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+                      }
+                      #><#
+                      }
+                      #>
+                    ></CustomSwitch><#
+                    } else if (column.dict && isCheckbox) {
+                    #>
+                    <CustomCheckbox
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
+                      #>
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
+                      } else {
+                      #>
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+                      }
+                      #><#
+                      }
+                      #>
+                    ></CustomCheckbox><#
+                    } else if (column.dictbiz && !isSwitch) {
                     #>
                     <DictbizSelect
                       v-model="row.<#=column_name#>"<#
@@ -1606,6 +1744,41 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                     ></DictbizSelect><#
+                    } else if (column.dictbiz && isSwitch) {
+                    #>
+                    <CustomSwitch
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
+                      #>
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
+                      } else {
+                      #>
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+                      }
+                      #><#
+                      }
+                      #>
+                    ></CustomSwitch><#
                     } else if (data_type === "datetime" || data_type === "date") {
                     #>
                     <CustomDatePicker
@@ -4523,6 +4696,11 @@ let dialogModel: <#=inputName#> = $ref({<#
   <#=column_name#>: [ ],<#
     }
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  dyn_page_data: { },<#
+  }
   #>
 } as <#=inputName#>);
 
@@ -5195,7 +5373,14 @@ let showBuildIn = $ref(false);
 let isReadonly = $ref(false);
 
 /** 是否锁定 */
-let isLocked = $ref(false);
+let isLocked = $ref(false);<#
+if (opts?.isUseDynPageFields) {
+#>
+
+/** 动态页面表单字段 */
+const dyn_page_field_models = $(useDynPageFields(pagePath));<# 
+}
+#>
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
@@ -5313,6 +5498,33 @@ async function showDialog(
   ids = [ ];
   changedIds = [ ];
   dialogModel = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    #><#
+      if (foreignKey && foreignKey.multiple) {
+    #>
+    <#=column_name#>: [ ],<#
+      }
+    }
+    #><#
+    if (opts?.isUseDynPageFields) {
+    #>
+    dyn_page_data: { },<#
+    }
+    #><#
     if (hasVersion) {
     #>
     version: 0,<#
@@ -5995,37 +6207,8 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
-    const [
-      defaultModel,<#
-      if (hasOrderBy) {
-      #>
-      order_by,<#
-      }
-      #>
-    ] = await Promise.all([
-      getDefaultInput<#=Table_Up#>(),<#
-      if (hasOrderBy) {
-      #>
-      findLastOrderBy<#=Table_Up#>({
-        notLoading: !inited,
-      }),<#
-      }
-      #>
-    ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,<#
-      if (hasOrderBy) {
-      #>
-      order_by: order_by + 1,<#
-      }
-      #>
-    };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
   ElMessage({<#
     if (isUseI18n) {
     #>
@@ -6145,6 +6328,32 @@ async function subscribeDeleteCallback(ids?: <#=Table_Up#>Id[]) {
 async function onRefresh() {
   const id = dialogModel.id;
   if (!id) {
+    const [
+      defaultModel,<#
+      if (hasOrderBy) {
+      #>
+      order_by,<#
+      }
+      #>
+    ] = await Promise.all([
+      getDefaultInput<#=Table_Up#>(),<#
+      if (hasOrderBy) {
+      #>
+      findLastOrderBy<#=Table_Up#>({
+        notLoading: !inited,
+      }),<#
+      }
+      #>
+    ]);
+    dialogModel = {
+      ...defaultModel,
+      ...builtInModel,<#
+      if (hasOrderBy) {
+      #>
+      order_by: order_by + 1,<#
+      }
+      #>
+    };
     return;
   }
   const [

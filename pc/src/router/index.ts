@@ -4,12 +4,17 @@ import {
   RouteRecordRaw,
 } from "vue-router";
 
-import { routesGen } from "./gen";
+import { routesGen } from "./gen.ts";
+
+import {
+  getMenuRoutesFromStorage,
+} from "./menu_routes.ts";
 
 import Layout1 from "@/layout/layout1/index.vue";
 
 const routes: Array<RouteRecordRaw> = [
   ...routesGen,
+  ...getMenuRoutesFromStorage(),
   {
     path: "",
     redirect: "/index",
@@ -33,6 +38,7 @@ const routes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
   history: createWebHashHistory(),
+  strict: true,
   routes,
 });
 

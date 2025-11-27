@@ -14,7 +14,7 @@ import {
   deptQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdDept(
   model?: DeptModel | null,
   isExcelExport = false,
 ) {
@@ -82,7 +82,7 @@ export async function findAllDept(
   const models = data.findAllDept;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDept(model);
   }
   return models;
 }
@@ -114,7 +114,7 @@ export async function findOneDept(
   
   const model = data.findOneDept;
   
-  await setLblById(model);
+  await setLblByIdDept(model);
   
   return model;
 }
@@ -146,7 +146,7 @@ export async function findOneOkDept(
   
   const model = data.findOneOkDept;
   
-  await setLblById(model);
+  await setLblByIdDept(model);
   
   return model;
 }
@@ -294,7 +294,7 @@ export async function findByIdDept(
   
   const model = data.findByIdDept;
   
-  await setLblById(model);
+  await setLblByIdDept(model);
   
   return model;
 }
@@ -324,7 +324,7 @@ export async function findByIdOkDept(
   
   const model = data.findByIdOkDept;
   
-  await setLblById(model);
+  await setLblByIdDept(model);
   
   return model;
 }
@@ -360,7 +360,7 @@ export async function findByIdsDept(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDept(model);
   }
   
   return models;
@@ -397,7 +397,7 @@ export async function findByIdsOkDept(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDept(model);
   }
   
   return models;
@@ -772,7 +772,7 @@ export function useExportExcelDept() {
         },
       }, opt);
       for (const model of data.findAllDept) {
-        await setLblById(model, true);
+        await setLblByIdDept(model, true);
       }
       try {
         const sheetName = "部门";
@@ -865,6 +865,53 @@ export async function findLastOrderByDept(
   }, opt);
   const res = data.findLastOrderByDept;
   return res;
+}
+
+/**
+ * 获取 部门 字段注释
+ */
+export async function getFieldCommentsDept(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDept: Query["getFieldCommentsDept"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDept {
+          id,
+          parent_id,
+          parent_id_lbl,
+          lbl,
+          usr_ids,
+          usr_ids_lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          org_id,
+          org_id_lbl,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDept as DeptFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathDept() {

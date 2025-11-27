@@ -530,8 +530,12 @@ pub fn check_sort_icon(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_icon() -> String {
-  "/base/icon".to_owned()
+// MARK: get_page_path_icon
+pub fn get_page_path_icon() -> &'static str {
+  "/base/icon"
+}
+
+// MARK: get_table_name_icon
+pub fn get_table_name_icon() -> &'static str {
+  "base_icon"
 }
