@@ -642,8 +642,12 @@ pub fn check_sort_wx_app(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_wx_app() -> String {
-  "/wx/wx_app".to_owned()
+// MARK: get_page_path_wx_app
+pub fn get_page_path_wx_app() -> &'static str {
+  "/wx/wx_app"
+}
+
+// MARK: get_table_name_wx_app
+pub fn get_table_name_wx_app() -> &'static str {
+  "wx_wx_app"
 }

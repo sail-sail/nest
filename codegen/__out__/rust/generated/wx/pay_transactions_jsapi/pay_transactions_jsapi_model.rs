@@ -1113,8 +1113,12 @@ pub fn check_sort_pay_transactions_jsapi(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_pay_transactions_jsapi() -> String {
-  "/wx/pay_transactions_jsapi".to_owned()
+// MARK: get_page_path_pay_transactions_jsapi
+pub fn get_page_path_pay_transactions_jsapi() -> &'static str {
+  "/wx/pay_transactions_jsapi"
+}
+
+// MARK: get_table_name_pay_transactions_jsapi
+pub fn get_table_name_pay_transactions_jsapi() -> &'static str {
+  "wx_pay_transactions_jsapi"
 }

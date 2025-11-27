@@ -666,7 +666,7 @@ pub async fn find_all_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<Vec<PayTransactionsJsapiModel>> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "find_all_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -838,7 +838,7 @@ pub async fn find_count_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "find_count_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -954,11 +954,12 @@ pub async fn find_count_pay_transactions_jsapi(
 
 // MARK: get_field_comments_pay_transactions_jsapi
 /// 获取微信JSAPI下单字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_pay_transactions_jsapi(
   _options: Option<Options>,
 ) -> Result<PayTransactionsJsapiFieldComment> {
   
-  let field_comments = PayTransactionsJsapiFieldComment {
+  let mut field_comments = PayTransactionsJsapiFieldComment {
     id: "ID".into(),
     appid: "开发者ID".into(),
     mchid: "商户号".into(),
@@ -999,7 +1000,7 @@ pub async fn find_one_ok_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<PayTransactionsJsapiModel> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "find_one_ok_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1048,7 +1049,7 @@ pub async fn find_one_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<Option<PayTransactionsJsapiModel>> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "find_one_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1103,7 +1104,7 @@ pub async fn find_by_id_ok_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<PayTransactionsJsapiModel> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "find_by_id_ok_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1152,7 +1153,7 @@ pub async fn find_by_id_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<Option<PayTransactionsJsapiModel>> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "find_by_id_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1199,7 +1200,7 @@ pub async fn find_by_ids_ok_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<Vec<PayTransactionsJsapiModel>> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "find_by_ids_ok_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1271,7 +1272,7 @@ pub async fn find_by_ids_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<Vec<PayTransactionsJsapiModel>> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "find_by_ids_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1341,7 +1342,7 @@ pub async fn exists_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "exists_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1457,7 +1458,7 @@ pub async fn exists_by_id_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "exists_by_id_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1500,7 +1501,7 @@ pub async fn find_by_unique_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<Vec<PayTransactionsJsapiModel>> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "find_by_unique_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1556,7 +1557,7 @@ pub async fn check_by_unique_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<Option<PayTransactionsJsapiId>> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "check_by_unique_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1603,7 +1604,7 @@ pub async fn check_by_unique_pay_transactions_jsapi(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 微信JSAPI下单 已经存在";
+    let err_msg = "微信JSAPI下单 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1732,7 +1733,7 @@ pub async fn creates_return_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<Vec<PayTransactionsJsapiModel>> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "creates_return_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1769,7 +1770,7 @@ pub async fn creates_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<Vec<PayTransactionsJsapiId>> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "creates_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1801,7 +1802,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<PayTransactionsJsapiId>> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -2233,7 +2234,7 @@ pub async fn create_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<PayTransactionsJsapiId> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "create_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2270,7 +2271,7 @@ pub async fn update_tenant_by_id_pay_transactions_jsapi(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "update_tenant_by_id_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2319,7 +2320,7 @@ pub async fn update_by_id_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<PayTransactionsJsapiId> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "update_by_id_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2387,7 +2388,7 @@ pub async fn update_by_id_pay_transactions_jsapi(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 微信JSAPI下单 已经存在";
+        let err_msg = "微信JSAPI下单 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2618,7 +2619,7 @@ pub async fn update_by_id_pay_transactions_jsapi(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   vec![
     table,
   ]
@@ -2643,7 +2644,7 @@ pub async fn delete_by_ids_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "delete_by_ids_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2682,10 +2683,11 @@ pub async fn delete_by_ids_pay_transactions_jsapi(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2765,7 +2767,7 @@ pub async fn revert_by_ids_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "revert_by_ids_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2817,10 +2819,10 @@ pub async fn revert_by_ids_pay_transactions_jsapi(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: PayTransactionsJsapiInput = old_model.clone().into();
@@ -2840,7 +2842,7 @@ pub async fn revert_by_ids_pay_transactions_jsapi(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 微信JSAPI下单 已经存在";
+        let err_msg = "微信JSAPI下单 重复";
         return Err(eyre!(err_msg));
       }
     }
@@ -2864,7 +2866,7 @@ pub async fn force_delete_by_ids_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_pay_transactions_jsapi";
+  let table = get_table_name_pay_transactions_jsapi();
   let method = "force_delete_by_ids_pay_transactions_jsapi";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2894,21 +2896,20 @@ pub async fn force_delete_by_ids_pay_transactions_jsapi(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_pay_transactions_jsapi(
-      PayTransactionsJsapiSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_pay_transactions_jsapi(
+      Some(PayTransactionsJsapiSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(

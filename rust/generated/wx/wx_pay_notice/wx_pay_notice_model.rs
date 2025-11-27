@@ -1296,8 +1296,12 @@ pub fn check_sort_wx_pay_notice(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_wx_pay_notice() -> String {
-  "/wx/wx_pay_notice".to_owned()
+// MARK: get_page_path_wx_pay_notice
+pub fn get_page_path_wx_pay_notice() -> &'static str {
+  "/wx/wx_pay_notice"
+}
+
+// MARK: get_table_name_wx_pay_notice
+pub fn get_table_name_wx_pay_notice() -> &'static str {
+  "wx_wx_pay_notice"
 }

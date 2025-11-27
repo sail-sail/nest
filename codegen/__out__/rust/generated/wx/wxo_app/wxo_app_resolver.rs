@@ -234,7 +234,7 @@ pub async fn creates_wxo_app(
   let inputs = inputs2;
   
   use_permit(
-    get_route_path_wxo_app(),
+    get_page_path_wxo_app().to_string(),
     "add".to_owned(),
   ).await?;
   
@@ -294,7 +294,7 @@ pub async fn update_by_id_wxo_app(
   ).await?;
   
   use_permit(
-    get_route_path_wxo_app(),
+    get_page_path_wxo_app().to_string(),
     "edit".to_owned(),
   ).await?;
   
@@ -322,7 +322,7 @@ pub async fn delete_by_ids_wxo_app(
   );
   
   use_permit(
-    get_route_path_wxo_app(),
+    get_page_path_wxo_app().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -373,7 +373,7 @@ pub async fn enable_by_ids_wxo_app(
   );
   
   use_permit(
-    get_route_path_wxo_app(),
+    get_page_path_wxo_app().to_string(),
     "edit".to_owned(),
   ).await?;
   
@@ -426,7 +426,7 @@ pub async fn lock_by_ids_wxo_app(
   );
   
   use_permit(
-    get_route_path_wxo_app(),
+    get_page_path_wxo_app().to_string(),
     "edit".to_owned(),
   ).await?;
   
@@ -473,7 +473,7 @@ pub async fn revert_by_ids_wxo_app(
   );
   
   use_permit(
-    get_route_path_wxo_app(),
+    get_page_path_wxo_app().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -500,7 +500,7 @@ pub async fn force_delete_by_ids_wxo_app(
   );
   
   use_permit(
-    get_route_path_wxo_app(),
+    get_page_path_wxo_app().to_string(),
     "force_delete".to_owned(),
   ).await?;
   

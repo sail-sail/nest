@@ -13,7 +13,7 @@ import {
   wxAppQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdWxApp(
   model?: WxAppModel | null,
   isExcelExport = false,
 ) {
@@ -82,7 +82,7 @@ export async function findAllWxApp(
   const models = data.findAllWxApp;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxApp(model);
   }
   return models;
 }
@@ -114,7 +114,7 @@ export async function findOneWxApp(
   
   const model = data.findOneWxApp;
   
-  await setLblById(model);
+  await setLblByIdWxApp(model);
   
   return model;
 }
@@ -146,7 +146,7 @@ export async function findOneOkWxApp(
   
   const model = data.findOneOkWxApp;
   
-  await setLblById(model);
+  await setLblByIdWxApp(model);
   
   return model;
 }
@@ -272,7 +272,7 @@ export async function findByIdWxApp(
   
   const model = data.findByIdWxApp;
   
-  await setLblById(model);
+  await setLblByIdWxApp(model);
   
   return model;
 }
@@ -302,7 +302,7 @@ export async function findByIdOkWxApp(
   
   const model = data.findByIdOkWxApp;
   
-  await setLblById(model);
+  await setLblByIdWxApp(model);
   
   return model;
 }
@@ -338,7 +338,7 @@ export async function findByIdsWxApp(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxApp(model);
   }
   
   return models;
@@ -375,7 +375,7 @@ export async function findByIdsOkWxApp(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxApp(model);
   }
   
   return models;
@@ -608,7 +608,7 @@ export function useExportExcelWxApp() {
         },
       }, opt);
       for (const model of data.findAllWxApp) {
-        await setLblById(model, true);
+        await setLblByIdWxApp(model, true);
       }
       try {
         const sheetName = "小程序设置";
@@ -701,6 +701,51 @@ export async function findLastOrderByWxApp(
   }, opt);
   const res = data.findLastOrderByWxApp;
   return res;
+}
+
+/**
+ * 获取 小程序设置 字段注释
+ */
+export async function getFieldCommentsWxApp(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsWxApp: Query["getFieldCommentsWxApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsWxApp {
+          id,
+          code,
+          lbl,
+          appid,
+          appsecret,
+          default_role_codes,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsWxApp as WxAppFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathWxApp() {

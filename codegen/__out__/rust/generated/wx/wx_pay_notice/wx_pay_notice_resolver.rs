@@ -262,7 +262,7 @@ pub async fn revert_by_ids_wx_pay_notice(
   );
   
   use_permit(
-    get_route_path_wx_pay_notice(),
+    get_page_path_wx_pay_notice().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -289,7 +289,7 @@ pub async fn force_delete_by_ids_wx_pay_notice(
   );
   
   use_permit(
-    get_route_path_wx_pay_notice(),
+    get_page_path_wx_pay_notice().to_string(),
     "force_delete".to_owned(),
   ).await?;
   

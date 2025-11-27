@@ -232,7 +232,7 @@ pub async fn creates_wx_app_token(
   let inputs = inputs2;
   
   use_permit(
-    get_route_path_wx_app_token(),
+    get_page_path_wx_app_token().to_string(),
     "add".to_owned(),
   ).await?;
   
@@ -268,7 +268,7 @@ pub async fn update_by_id_wx_app_token(
   ).await?;
   
   use_permit(
-    get_route_path_wx_app_token(),
+    get_page_path_wx_app_token().to_string(),
     "edit".to_owned(),
   ).await?;
   
@@ -296,7 +296,7 @@ pub async fn delete_by_ids_wx_app_token(
   );
   
   use_permit(
-    get_route_path_wx_app_token(),
+    get_page_path_wx_app_token().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -342,7 +342,7 @@ pub async fn revert_by_ids_wx_app_token(
   );
   
   use_permit(
-    get_route_path_wx_app_token(),
+    get_page_path_wx_app_token().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -369,7 +369,7 @@ pub async fn force_delete_by_ids_wx_app_token(
   );
   
   use_permit(
-    get_route_path_wx_app_token(),
+    get_page_path_wx_app_token().to_string(),
     "force_delete".to_owned(),
   ).await?;
   

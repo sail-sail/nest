@@ -234,7 +234,7 @@ pub async fn creates_wxo_usr(
   let inputs = inputs2;
   
   use_permit(
-    get_route_path_wxo_usr(),
+    get_page_path_wxo_usr().to_string(),
     "add".to_owned(),
   ).await?;
   
@@ -294,7 +294,7 @@ pub async fn update_by_id_wxo_usr(
   ).await?;
   
   use_permit(
-    get_route_path_wxo_usr(),
+    get_page_path_wxo_usr().to_string(),
     "edit".to_owned(),
   ).await?;
   
@@ -322,7 +322,7 @@ pub async fn delete_by_ids_wxo_usr(
   );
   
   use_permit(
-    get_route_path_wxo_usr(),
+    get_page_path_wxo_usr().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -368,7 +368,7 @@ pub async fn revert_by_ids_wxo_usr(
   );
   
   use_permit(
-    get_route_path_wxo_usr(),
+    get_page_path_wxo_usr().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -395,7 +395,7 @@ pub async fn force_delete_by_ids_wxo_usr(
   );
   
   use_permit(
-    get_route_path_wxo_usr(),
+    get_page_path_wxo_usr().to_string(),
     "force_delete".to_owned(),
   ).await?;
   

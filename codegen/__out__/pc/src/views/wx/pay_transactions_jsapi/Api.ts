@@ -15,7 +15,7 @@ import {
   payTransactionsJsapiQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdPayTransactionsJsapi(
   model?: PayTransactionsJsapiModel | null,
   isExcelExport = false,
 ) {
@@ -96,7 +96,7 @@ export async function findAllPayTransactionsJsapi(
   const models = data.findAllPayTransactionsJsapi;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdPayTransactionsJsapi(model);
   }
   return models;
 }
@@ -128,7 +128,7 @@ export async function findOnePayTransactionsJsapi(
   
   const model = data.findOnePayTransactionsJsapi;
   
-  await setLblById(model);
+  await setLblByIdPayTransactionsJsapi(model);
   
   return model;
 }
@@ -160,7 +160,7 @@ export async function findOneOkPayTransactionsJsapi(
   
   const model = data.findOneOkPayTransactionsJsapi;
   
-  await setLblById(model);
+  await setLblByIdPayTransactionsJsapi(model);
   
   return model;
 }
@@ -217,7 +217,7 @@ export async function findByIdPayTransactionsJsapi(
   
   const model = data.findByIdPayTransactionsJsapi;
   
-  await setLblById(model);
+  await setLblByIdPayTransactionsJsapi(model);
   
   return model;
 }
@@ -247,7 +247,7 @@ export async function findByIdOkPayTransactionsJsapi(
   
   const model = data.findByIdOkPayTransactionsJsapi;
   
-  await setLblById(model);
+  await setLblByIdPayTransactionsJsapi(model);
   
   return model;
 }
@@ -283,7 +283,7 @@ export async function findByIdsPayTransactionsJsapi(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdPayTransactionsJsapi(model);
   }
   
   return models;
@@ -320,7 +320,7 @@ export async function findByIdsOkPayTransactionsJsapi(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdPayTransactionsJsapi(model);
   }
   
   return models;
@@ -370,7 +370,7 @@ export function useExportExcelPayTransactionsJsapi() {
         },
       }, opt);
       for (const model of data.findAllPayTransactionsJsapi) {
-        await setLblById(model, true);
+        await setLblByIdPayTransactionsJsapi(model, true);
       }
       try {
         const sheetName = "微信JSAPI下单";
@@ -397,6 +397,58 @@ export function useExportExcelPayTransactionsJsapi() {
     workerStatus,
     workerTerminate,
   };
+}
+
+/**
+ * 获取 微信JSAPI下单 字段注释
+ */
+export async function getFieldCommentsPayTransactionsJsapi(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsPayTransactionsJsapi: Query["getFieldCommentsPayTransactionsJsapi"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsPayTransactionsJsapi {
+          id,
+          appid,
+          mchid,
+          description,
+          out_trade_no,
+          transaction_id,
+          trade_state,
+          trade_state_lbl,
+          trade_state_desc,
+          success_time,
+          success_time_lbl,
+          time_expire,
+          attach,
+          receipt,
+          profit_sharing,
+          total_fee,
+          currency,
+          currency_lbl,
+          openid,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsPayTransactionsJsapi as PayTransactionsJsapiFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathPayTransactionsJsapi() {

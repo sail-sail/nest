@@ -1017,8 +1017,12 @@ pub fn check_sort_wxo_app(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_wxo_app() -> String {
-  "/wx/wxo_app".to_owned()
+// MARK: get_page_path_wxo_app
+pub fn get_page_path_wxo_app() -> &'static str {
+  "/wx/wxo_app"
+}
+
+// MARK: get_table_name_wxo_app
+pub fn get_table_name_wxo_app() -> &'static str {
+  "wx_wxo_app"
 }

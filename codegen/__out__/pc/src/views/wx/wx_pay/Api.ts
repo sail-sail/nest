@@ -13,7 +13,7 @@ import {
   wxPayQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdWxPay(
   model?: WxPayModel | null,
   isExcelExport = false,
 ) {
@@ -88,7 +88,7 @@ export async function findAllWxPay(
   const models = data.findAllWxPay;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxPay(model);
   }
   return models;
 }
@@ -120,7 +120,7 @@ export async function findOneWxPay(
   
   const model = data.findOneWxPay;
   
-  await setLblById(model);
+  await setLblByIdWxPay(model);
   
   return model;
 }
@@ -152,7 +152,7 @@ export async function findOneOkWxPay(
   
   const model = data.findOneOkWxPay;
   
-  await setLblById(model);
+  await setLblByIdWxPay(model);
   
   return model;
 }
@@ -278,7 +278,7 @@ export async function findByIdWxPay(
   
   const model = data.findByIdWxPay;
   
-  await setLblById(model);
+  await setLblByIdWxPay(model);
   
   return model;
 }
@@ -308,7 +308,7 @@ export async function findByIdOkWxPay(
   
   const model = data.findByIdOkWxPay;
   
-  await setLblById(model);
+  await setLblByIdWxPay(model);
   
   return model;
 }
@@ -344,7 +344,7 @@ export async function findByIdsWxPay(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxPay(model);
   }
   
   return models;
@@ -381,7 +381,7 @@ export async function findByIdsOkWxPay(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxPay(model);
   }
   
   return models;
@@ -615,7 +615,7 @@ export function useExportExcelWxPay() {
         },
       }, opt);
       for (const model of data.findAllWxPay) {
-        await setLblById(model, true);
+        await setLblByIdWxPay(model, true);
       }
       try {
         const sheetName = "微信支付设置";
@@ -708,6 +708,55 @@ export async function findLastOrderByWxPay(
   }, opt);
   const res = data.findLastOrderByWxPay;
   return res;
+}
+
+/**
+ * 获取 微信支付设置 字段注释
+ */
+export async function getFieldCommentsWxPay(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsWxPay: Query["getFieldCommentsWxPay"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsWxPay {
+          id,
+          lbl,
+          appid,
+          mchid,
+          serial_no,
+          public_key,
+          private_key,
+          v3_key,
+          payer_client_ip,
+          notify_url,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsWxPay as WxPayFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathWxPay() {

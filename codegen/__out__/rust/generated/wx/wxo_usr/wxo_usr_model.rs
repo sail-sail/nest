@@ -750,8 +750,12 @@ pub fn check_sort_wxo_usr(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_wxo_usr() -> String {
-  "/wx/wxo_usr".to_owned()
+// MARK: get_page_path_wxo_usr
+pub fn get_page_path_wxo_usr() -> &'static str {
+  "/wx/wxo_usr"
+}
+
+// MARK: get_table_name_wxo_usr
+pub fn get_table_name_wxo_usr() -> &'static str {
+  "wx_wxo_usr"
 }

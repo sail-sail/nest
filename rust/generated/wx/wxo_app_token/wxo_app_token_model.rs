@@ -546,8 +546,12 @@ pub fn check_sort_wxo_app_token(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_wxo_app_token() -> String {
-  "/wx/wxo_app_token".to_owned()
+// MARK: get_page_path_wxo_app_token
+pub fn get_page_path_wxo_app_token() -> &'static str {
+  "/wx/wxo_app_token"
+}
+
+// MARK: get_table_name_wxo_app_token
+pub fn get_table_name_wxo_app_token() -> &'static str {
+  "wx_wxo_app_token"
 }

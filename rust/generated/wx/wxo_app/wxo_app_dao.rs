@@ -658,7 +658,7 @@ pub async fn find_all_wxo_app(
   options: Option<Options>,
 ) -> Result<Vec<WxoAppModel>> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "find_all_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -938,7 +938,7 @@ pub async fn find_count_wxo_app(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "find_count_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1102,11 +1102,12 @@ pub async fn find_count_wxo_app(
 
 // MARK: get_field_comments_wxo_app
 /// 获取公众号设置字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_wxo_app(
   _options: Option<Options>,
 ) -> Result<WxoAppFieldComment> {
   
-  let field_comments = WxoAppFieldComment {
+  let mut field_comments = WxoAppFieldComment {
     id: "ID".into(),
     code: "原始ID".into(),
     lbl: "名称".into(),
@@ -1148,7 +1149,7 @@ pub async fn find_one_ok_wxo_app(
   options: Option<Options>,
 ) -> Result<WxoAppModel> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "find_one_ok_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1197,7 +1198,7 @@ pub async fn find_one_wxo_app(
   options: Option<Options>,
 ) -> Result<Option<WxoAppModel>> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "find_one_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1252,7 +1253,7 @@ pub async fn find_by_id_ok_wxo_app(
   options: Option<Options>,
 ) -> Result<WxoAppModel> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "find_by_id_ok_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1301,7 +1302,7 @@ pub async fn find_by_id_wxo_app(
   options: Option<Options>,
 ) -> Result<Option<WxoAppModel>> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "find_by_id_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1348,7 +1349,7 @@ pub async fn find_by_ids_ok_wxo_app(
   options: Option<Options>,
 ) -> Result<Vec<WxoAppModel>> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "find_by_ids_ok_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1420,7 +1421,7 @@ pub async fn find_by_ids_wxo_app(
   options: Option<Options>,
 ) -> Result<Vec<WxoAppModel>> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "find_by_ids_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1490,7 +1491,7 @@ pub async fn exists_wxo_app(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "exists_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1654,7 +1655,7 @@ pub async fn exists_by_id_wxo_app(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "exists_by_id_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1697,7 +1698,7 @@ pub async fn find_by_unique_wxo_app(
   options: Option<Options>,
 ) -> Result<Vec<WxoAppModel>> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "find_by_unique_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1836,7 +1837,7 @@ pub async fn check_by_unique_wxo_app(
   options: Option<Options>,
 ) -> Result<Option<WxoAppId>> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "check_by_unique_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1883,7 +1884,7 @@ pub async fn check_by_unique_wxo_app(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 公众号设置 已经存在";
+    let err_msg = "公众号设置 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -2113,7 +2114,7 @@ pub async fn creates_return_wxo_app(
   options: Option<Options>,
 ) -> Result<Vec<WxoAppModel>> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "creates_return_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2150,7 +2151,7 @@ pub async fn creates_wxo_app(
   options: Option<Options>,
 ) -> Result<Vec<WxoAppId>> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "creates_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2182,7 +2183,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<WxoAppId>> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -2602,7 +2603,7 @@ pub async fn create_wxo_app(
   options: Option<Options>,
 ) -> Result<WxoAppId> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "create_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2639,7 +2640,7 @@ pub async fn update_tenant_by_id_wxo_app(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "update_tenant_by_id_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2688,7 +2689,7 @@ pub async fn update_by_id_wxo_app(
   options: Option<Options>,
 ) -> Result<WxoAppId> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "update_by_id_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2756,7 +2757,7 @@ pub async fn update_by_id_wxo_app(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 公众号设置 已经存在";
+        let err_msg = "公众号设置 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2996,7 +2997,7 @@ pub async fn update_by_id_wxo_app(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   vec![
     table,
   ]
@@ -3021,7 +3022,7 @@ pub async fn delete_by_ids_wxo_app(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "delete_by_ids_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3060,10 +3061,11 @@ pub async fn delete_by_ids_wxo_app(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -3174,7 +3176,7 @@ pub async fn enable_by_ids_wxo_app(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "enable_by_ids_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3261,7 +3263,7 @@ pub async fn lock_by_ids_wxo_app(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "lock_by_ids_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3317,7 +3319,7 @@ pub async fn revert_by_ids_wxo_app(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "revert_by_ids_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3370,10 +3372,10 @@ pub async fn revert_by_ids_wxo_app(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: WxoAppInput = old_model.clone().into();
@@ -3393,7 +3395,7 @@ pub async fn revert_by_ids_wxo_app(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 公众号设置 已经存在";
+        let err_msg = "公众号设置 重复";
         return Err(eyre!(err_msg));
       }
     }
@@ -3417,7 +3419,7 @@ pub async fn force_delete_by_ids_wxo_app(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "force_delete_by_ids_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -3447,21 +3449,20 @@ pub async fn force_delete_by_ids_wxo_app(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_wxo_app(
-      WxoAppSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_wxo_app(
+      Some(WxoAppSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -3503,7 +3504,7 @@ pub async fn find_last_order_by_wxo_app(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "wx_wxo_app";
+  let table = get_table_name_wxo_app();
   let method = "find_last_order_by_wxo_app";
   
   let is_debug = get_is_debug(options.as_ref());

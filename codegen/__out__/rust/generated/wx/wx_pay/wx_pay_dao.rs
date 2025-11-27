@@ -574,7 +574,7 @@ pub async fn find_all_wx_pay(
   options: Option<Options>,
 ) -> Result<Vec<WxPayModel>> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "find_all_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -755,7 +755,7 @@ pub async fn find_count_wx_pay(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "find_count_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -877,11 +877,12 @@ pub async fn find_count_wx_pay(
 
 // MARK: get_field_comments_wx_pay
 /// 获取微信支付设置字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_wx_pay(
   _options: Option<Options>,
 ) -> Result<WxPayFieldComment> {
   
-  let field_comments = WxPayFieldComment {
+  let mut field_comments = WxPayFieldComment {
     id: "ID".into(),
     lbl: "名称".into(),
     appid: "开发者ID".into(),
@@ -919,7 +920,7 @@ pub async fn find_one_ok_wx_pay(
   options: Option<Options>,
 ) -> Result<WxPayModel> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "find_one_ok_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -968,7 +969,7 @@ pub async fn find_one_wx_pay(
   options: Option<Options>,
 ) -> Result<Option<WxPayModel>> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "find_one_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1023,7 +1024,7 @@ pub async fn find_by_id_ok_wx_pay(
   options: Option<Options>,
 ) -> Result<WxPayModel> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "find_by_id_ok_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1072,7 +1073,7 @@ pub async fn find_by_id_wx_pay(
   options: Option<Options>,
 ) -> Result<Option<WxPayModel>> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "find_by_id_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1119,7 +1120,7 @@ pub async fn find_by_ids_ok_wx_pay(
   options: Option<Options>,
 ) -> Result<Vec<WxPayModel>> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "find_by_ids_ok_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1191,7 +1192,7 @@ pub async fn find_by_ids_wx_pay(
   options: Option<Options>,
 ) -> Result<Vec<WxPayModel>> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "find_by_ids_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1261,7 +1262,7 @@ pub async fn exists_wx_pay(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "exists_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1383,7 +1384,7 @@ pub async fn exists_by_id_wx_pay(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "exists_by_id_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1426,7 +1427,7 @@ pub async fn find_by_unique_wx_pay(
   options: Option<Options>,
 ) -> Result<Vec<WxPayModel>> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "find_by_unique_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1538,7 +1539,7 @@ pub async fn check_by_unique_wx_pay(
   options: Option<Options>,
 ) -> Result<Option<WxPayId>> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "check_by_unique_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1585,7 +1586,7 @@ pub async fn check_by_unique_wx_pay(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 微信支付设置 已经存在";
+    let err_msg = "微信支付设置 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1697,7 +1698,7 @@ pub async fn creates_return_wx_pay(
   options: Option<Options>,
 ) -> Result<Vec<WxPayModel>> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "creates_return_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1734,7 +1735,7 @@ pub async fn creates_wx_pay(
   options: Option<Options>,
 ) -> Result<Vec<WxPayId>> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "creates_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1766,7 +1767,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<WxPayId>> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -2153,7 +2154,7 @@ pub async fn create_wx_pay(
   options: Option<Options>,
 ) -> Result<WxPayId> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "create_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2190,7 +2191,7 @@ pub async fn update_tenant_by_id_wx_pay(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "update_tenant_by_id_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2239,7 +2240,7 @@ pub async fn update_by_id_wx_pay(
   options: Option<Options>,
 ) -> Result<WxPayId> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "update_by_id_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2307,7 +2308,7 @@ pub async fn update_by_id_wx_pay(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 微信支付设置 已经存在";
+        let err_msg = "微信支付设置 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2521,7 +2522,7 @@ pub async fn update_by_id_wx_pay(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   vec![
     table,
   ]
@@ -2546,7 +2547,7 @@ pub async fn delete_by_ids_wx_pay(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "delete_by_ids_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2585,10 +2586,11 @@ pub async fn delete_by_ids_wx_pay(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2699,7 +2701,7 @@ pub async fn enable_by_ids_wx_pay(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "enable_by_ids_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2786,7 +2788,7 @@ pub async fn lock_by_ids_wx_pay(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "lock_by_ids_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2842,7 +2844,7 @@ pub async fn revert_by_ids_wx_pay(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "revert_by_ids_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2895,10 +2897,10 @@ pub async fn revert_by_ids_wx_pay(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: WxPayInput = old_model.clone().into();
@@ -2918,7 +2920,7 @@ pub async fn revert_by_ids_wx_pay(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 微信支付设置 已经存在";
+        let err_msg = "微信支付设置 重复";
         return Err(eyre!(err_msg));
       }
     }
@@ -2942,7 +2944,7 @@ pub async fn force_delete_by_ids_wx_pay(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "force_delete_by_ids_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2972,21 +2974,20 @@ pub async fn force_delete_by_ids_wx_pay(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_wx_pay(
-      WxPaySearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_wx_pay(
+      Some(WxPaySearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -3028,7 +3029,7 @@ pub async fn find_last_order_by_wx_pay(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let table = "wx_wx_pay";
+  let table = get_table_name_wx_pay();
   let method = "find_last_order_by_wx_pay";
   
   let is_debug = get_is_debug(options.as_ref());
