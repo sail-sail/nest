@@ -13,7 +13,7 @@ import {
   wxwUsrQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdWxwUsr(
   model?: WxwUsrModel | null,
   isExcelExport = false,
 ) {
@@ -69,7 +69,7 @@ export async function findAllWxwUsr(
   const models = data.findAllWxwUsr;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxwUsr(model);
   }
   return models;
 }
@@ -101,7 +101,7 @@ export async function findOneWxwUsr(
   
   const model = data.findOneWxwUsr;
   
-  await setLblById(model);
+  await setLblByIdWxwUsr(model);
   
   return model;
 }
@@ -133,7 +133,7 @@ export async function findOneOkWxwUsr(
   
   const model = data.findOneOkWxwUsr;
   
-  await setLblById(model);
+  await setLblByIdWxwUsr(model);
   
   return model;
 }
@@ -259,7 +259,7 @@ export async function findByIdWxwUsr(
   
   const model = data.findByIdWxwUsr;
   
-  await setLblById(model);
+  await setLblByIdWxwUsr(model);
   
   return model;
 }
@@ -289,7 +289,7 @@ export async function findByIdOkWxwUsr(
   
   const model = data.findByIdOkWxwUsr;
   
-  await setLblById(model);
+  await setLblByIdWxwUsr(model);
   
   return model;
 }
@@ -325,7 +325,7 @@ export async function findByIdsWxwUsr(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxwUsr(model);
   }
   
   return models;
@@ -362,7 +362,7 @@ export async function findByIdsOkWxwUsr(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxwUsr(model);
   }
   
   return models;
@@ -582,7 +582,7 @@ export function useExportExcelWxwUsr() {
         },
       }, opt);
       for (const model of data.findAllWxwUsr) {
-        await setLblById(model, true);
+        await setLblByIdWxwUsr(model, true);
       }
       try {
         const sheetName = "企微用户";
@@ -656,6 +656,37 @@ export async function importModelsWxwUsr(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/**
+ * 获取 企微用户 字段注释
+ */
+export async function getFieldCommentsWxwUsr(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsWxwUsr: Query["getFieldCommentsWxwUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsWxwUsr {
+          id,
+          wxw_app_id,
+          wxw_app_id_lbl,
+          lbl,
+          userid,
+          rem,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsWxwUsr as WxwUsrFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathWxwUsr() {

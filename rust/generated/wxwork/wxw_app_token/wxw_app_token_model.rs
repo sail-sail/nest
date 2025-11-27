@@ -811,8 +811,12 @@ pub fn check_sort_wxw_app_token(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_wxw_app_token() -> String {
-  "/wxwork/wxw_app_token".to_owned()
+// MARK: get_page_path_wxw_app_token
+pub fn get_page_path_wxw_app_token() -> &'static str {
+  "/wxwork/wxw_app_token"
+}
+
+// MARK: get_table_name_wxw_app_token
+pub fn get_table_name_wxw_app_token() -> &'static str {
+  "wxwork_wxw_app_token"
 }

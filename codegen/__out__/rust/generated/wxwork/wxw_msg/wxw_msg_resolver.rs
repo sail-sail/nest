@@ -243,7 +243,7 @@ pub async fn delete_by_ids_wxw_msg(
   );
   
   use_permit(
-    get_route_path_wxw_msg(),
+    get_page_path_wxw_msg().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -289,7 +289,7 @@ pub async fn revert_by_ids_wxw_msg(
   );
   
   use_permit(
-    get_route_path_wxw_msg(),
+    get_page_path_wxw_msg().to_string(),
     "delete".to_owned(),
   ).await?;
   
@@ -316,7 +316,7 @@ pub async fn force_delete_by_ids_wxw_msg(
   );
   
   use_permit(
-    get_route_path_wxw_msg(),
+    get_page_path_wxw_msg().to_string(),
     "force_delete".to_owned(),
   ).await?;
   

@@ -516,7 +516,7 @@
             </el-table-column>
           </template>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -530,9 +530,9 @@
     </div>
     <div
       un-flex="~"
-      un-justify-end
-      un-p="y-1"
-      un-box-border
+      un-justify="end"
+      un-items="center"
+      un-h="10"
     >
       <el-pagination
         v-if="isPagination"

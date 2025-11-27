@@ -786,8 +786,12 @@ pub fn check_sort_wxw_usr(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_wxw_usr() -> String {
-  "/wxwork/wxw_usr".to_owned()
+// MARK: get_page_path_wxw_usr
+pub fn get_page_path_wxw_usr() -> &'static str {
+  "/wxwork/wxw_usr"
+}
+
+// MARK: get_table_name_wxw_usr
+pub fn get_table_name_wxw_usr() -> &'static str {
+  "wxwork_wxw_usr"
 }

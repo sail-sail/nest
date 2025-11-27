@@ -13,7 +13,7 @@ import {
   wxwAppQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdWxwApp(
   model?: WxwAppModel | null,
   isExcelExport = false,
 ) {
@@ -83,7 +83,7 @@ export async function findAllWxwApp(
   const models = data.findAllWxwApp;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxwApp(model);
   }
   return models;
 }
@@ -115,7 +115,7 @@ export async function findOneWxwApp(
   
   const model = data.findOneWxwApp;
   
-  await setLblById(model);
+  await setLblByIdWxwApp(model);
   
   return model;
 }
@@ -147,7 +147,7 @@ export async function findOneOkWxwApp(
   
   const model = data.findOneOkWxwApp;
   
-  await setLblById(model);
+  await setLblByIdWxwApp(model);
   
   return model;
 }
@@ -273,7 +273,7 @@ export async function findByIdWxwApp(
   
   const model = data.findByIdWxwApp;
   
-  await setLblById(model);
+  await setLblByIdWxwApp(model);
   
   return model;
 }
@@ -303,7 +303,7 @@ export async function findByIdOkWxwApp(
   
   const model = data.findByIdOkWxwApp;
   
-  await setLblById(model);
+  await setLblByIdWxwApp(model);
   
   return model;
 }
@@ -339,7 +339,7 @@ export async function findByIdsWxwApp(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxwApp(model);
   }
   
   return models;
@@ -376,7 +376,7 @@ export async function findByIdsOkWxwApp(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxwApp(model);
   }
   
   return models;
@@ -663,7 +663,7 @@ export function useExportExcelWxwApp() {
         },
       }, opt);
       for (const model of data.findAllWxwApp) {
-        await setLblById(model, true);
+        await setLblByIdWxwApp(model, true);
       }
       try {
         const sheetName = "企微应用";
@@ -756,6 +756,45 @@ export async function findLastOrderByWxwApp(
   }, opt);
   const res = data.findLastOrderByWxwApp;
   return res;
+}
+
+/**
+ * 获取 企微应用 字段注释
+ */
+export async function getFieldCommentsWxwApp(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsWxwApp: Query["getFieldCommentsWxwApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsWxwApp {
+          id,
+          lbl,
+          corpid,
+          agentid,
+          domain_id,
+          domain_id_lbl,
+          corpsecret,
+          contactsecret,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsWxwApp as WxwAppFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathWxwApp() {

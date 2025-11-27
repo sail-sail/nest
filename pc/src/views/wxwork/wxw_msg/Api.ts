@@ -10,7 +10,7 @@ import {
   wxwMsgQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdWxwMsg(
   model?: WxwMsgModel | null,
   isExcelExport = false,
 ) {
@@ -73,7 +73,7 @@ export async function findAllWxwMsg(
   const models = data.findAllWxwMsg;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxwMsg(model);
   }
   return models;
 }
@@ -105,7 +105,7 @@ export async function findOneWxwMsg(
   
   const model = data.findOneWxwMsg;
   
-  await setLblById(model);
+  await setLblByIdWxwMsg(model);
   
   return model;
 }
@@ -137,7 +137,7 @@ export async function findOneOkWxwMsg(
   
   const model = data.findOneOkWxwMsg;
   
-  await setLblById(model);
+  await setLblByIdWxwMsg(model);
   
   return model;
 }
@@ -194,7 +194,7 @@ export async function findByIdWxwMsg(
   
   const model = data.findByIdWxwMsg;
   
-  await setLblById(model);
+  await setLblByIdWxwMsg(model);
   
   return model;
 }
@@ -224,7 +224,7 @@ export async function findByIdOkWxwMsg(
   
   const model = data.findByIdOkWxwMsg;
   
-  await setLblById(model);
+  await setLblByIdWxwMsg(model);
   
   return model;
 }
@@ -260,7 +260,7 @@ export async function findByIdsWxwMsg(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxwMsg(model);
   }
   
   return models;
@@ -297,7 +297,7 @@ export async function findByIdsOkWxwMsg(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxwMsg(model);
   }
   
   return models;
@@ -473,7 +473,7 @@ export function useExportExcelWxwMsg() {
         },
       }, opt);
       for (const model of data.findAllWxwMsg) {
-        await setLblById(model, true);
+        await setLblByIdWxwMsg(model, true);
       }
       try {
         const sheetName = "企微消息";
@@ -500,6 +500,43 @@ export function useExportExcelWxwMsg() {
     workerStatus,
     workerTerminate,
   };
+}
+
+/**
+ * 获取 企微消息 字段注释
+ */
+export async function getFieldCommentsWxwMsg(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsWxwMsg: Query["getFieldCommentsWxwMsg"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsWxwMsg {
+          id,
+          wxw_app_id,
+          wxw_app_id_lbl,
+          errcode,
+          errcode_lbl,
+          touser,
+          title,
+          description,
+          btntxt,
+          create_time,
+          create_time_lbl,
+          errmsg,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsWxwMsg as WxwMsgFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathWxwMsg() {

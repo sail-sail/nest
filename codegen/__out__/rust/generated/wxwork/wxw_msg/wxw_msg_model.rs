@@ -649,8 +649,12 @@ pub fn check_sort_wxw_msg(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_wxw_msg() -> String {
-  "/wxwork/wxw_msg".to_owned()
+// MARK: get_page_path_wxw_msg
+pub fn get_page_path_wxw_msg() -> &'static str {
+  "/wxwork/wxw_msg"
+}
+
+// MARK: get_table_name_wxw_msg
+pub fn get_table_name_wxw_msg() -> &'static str {
+  "wxwork_wxw_msg"
 }

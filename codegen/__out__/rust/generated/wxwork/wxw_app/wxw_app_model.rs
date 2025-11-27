@@ -655,8 +655,12 @@ pub fn check_sort_wxw_app(
   Ok(())
 }
 
-/// 获取路由地址
-#[allow(dead_code)]
-pub fn get_route_path_wxw_app() -> String {
-  "/wxwork/wxw_app".to_owned()
+// MARK: get_page_path_wxw_app
+pub fn get_page_path_wxw_app() -> &'static str {
+  "/wxwork/wxw_app"
+}
+
+// MARK: get_table_name_wxw_app
+pub fn get_table_name_wxw_app() -> &'static str {
+  "wxwork_wxw_app"
 }

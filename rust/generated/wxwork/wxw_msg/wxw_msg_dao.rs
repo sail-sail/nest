@@ -543,7 +543,7 @@ pub async fn find_all_wxw_msg(
   options: Option<Options>,
 ) -> Result<Vec<WxwMsgModel>> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "find_all_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -705,7 +705,7 @@ pub async fn find_count_wxw_msg(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "find_count_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -821,11 +821,12 @@ pub async fn find_count_wxw_msg(
 
 // MARK: get_field_comments_wxw_msg
 /// 获取企微消息字段注释
+#[allow(unused_mut)]
 pub async fn get_field_comments_wxw_msg(
   _options: Option<Options>,
 ) -> Result<WxwMsgFieldComment> {
   
-  let field_comments = WxwMsgFieldComment {
+  let mut field_comments = WxwMsgFieldComment {
     id: "ID".into(),
     wxw_app_id: "企微应用".into(),
     wxw_app_id_lbl: "企微应用".into(),
@@ -851,7 +852,7 @@ pub async fn find_one_ok_wxw_msg(
   options: Option<Options>,
 ) -> Result<WxwMsgModel> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "find_one_ok_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -900,7 +901,7 @@ pub async fn find_one_wxw_msg(
   options: Option<Options>,
 ) -> Result<Option<WxwMsgModel>> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "find_one_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -955,7 +956,7 @@ pub async fn find_by_id_ok_wxw_msg(
   options: Option<Options>,
 ) -> Result<WxwMsgModel> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "find_by_id_ok_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1004,7 +1005,7 @@ pub async fn find_by_id_wxw_msg(
   options: Option<Options>,
 ) -> Result<Option<WxwMsgModel>> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "find_by_id_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1051,7 +1052,7 @@ pub async fn find_by_ids_ok_wxw_msg(
   options: Option<Options>,
 ) -> Result<Vec<WxwMsgModel>> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "find_by_ids_ok_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1123,7 +1124,7 @@ pub async fn find_by_ids_wxw_msg(
   options: Option<Options>,
 ) -> Result<Vec<WxwMsgModel>> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "find_by_ids_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1193,7 +1194,7 @@ pub async fn exists_wxw_msg(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "exists_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1309,7 +1310,7 @@ pub async fn exists_by_id_wxw_msg(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "exists_by_id_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1352,7 +1353,7 @@ pub async fn find_by_unique_wxw_msg(
   options: Option<Options>,
 ) -> Result<Vec<WxwMsgModel>> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "find_by_unique_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1408,7 +1409,7 @@ pub async fn check_by_unique_wxw_msg(
   options: Option<Options>,
 ) -> Result<Option<WxwMsgId>> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "check_by_unique_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1455,7 +1456,7 @@ pub async fn check_by_unique_wxw_msg(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 企微消息 已经存在";
+    let err_msg = "企微消息 重复";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1562,7 +1563,7 @@ pub async fn creates_return_wxw_msg(
   options: Option<Options>,
 ) -> Result<Vec<WxwMsgModel>> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "creates_return_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1599,7 +1600,7 @@ pub async fn creates_wxw_msg(
   options: Option<Options>,
 ) -> Result<Vec<WxwMsgId>> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "creates_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1631,7 +1632,7 @@ async fn _creates(
   options: Option<Options>,
 ) -> Result<Vec<WxwMsgId>> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1980,7 +1981,7 @@ pub async fn create_wxw_msg(
   options: Option<Options>,
 ) -> Result<WxwMsgId> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "create_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2017,7 +2018,7 @@ pub async fn update_tenant_by_id_wxw_msg(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "update_tenant_by_id_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2066,7 +2067,7 @@ pub async fn update_by_id_wxw_msg(
   options: Option<Options>,
 ) -> Result<WxwMsgId> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "update_by_id_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2134,7 +2135,7 @@ pub async fn update_by_id_wxw_msg(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 企微消息 已经存在";
+        let err_msg = "企微消息 重复";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2308,7 +2309,7 @@ pub async fn update_by_id_wxw_msg(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   vec![
     table,
   ]
@@ -2333,7 +2334,7 @@ pub async fn delete_by_ids_wxw_msg(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "delete_by_ids_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2372,10 +2373,11 @@ pub async fn delete_by_ids_wxw_msg(
       id,
       options.clone(),
     ).await?;
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
@@ -2455,7 +2457,7 @@ pub async fn revert_by_ids_wxw_msg(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "revert_by_ids_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2507,10 +2509,10 @@ pub async fn revert_by_ids_wxw_msg(
       ).await?;
     }
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     {
       let mut input: WxwMsgInput = old_model.clone().into();
@@ -2530,7 +2532,7 @@ pub async fn revert_by_ids_wxw_msg(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 企微消息 已经存在";
+        let err_msg = "企微消息 重复";
         return Err(eyre!(err_msg));
       }
     }
@@ -2554,7 +2556,7 @@ pub async fn force_delete_by_ids_wxw_msg(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "wxwork_wxw_msg";
+  let table = get_table_name_wxw_msg();
   let method = "force_delete_by_ids_wxw_msg";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2584,21 +2586,20 @@ pub async fn force_delete_by_ids_wxw_msg(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all_wxw_msg(
-      WxwMsgSearch {
-        id: id.into(),
-        is_deleted: 1.into(),
+    let old_model = find_one_wxw_msg(
+      Some(WxwMsgSearch {
+        id: Some(id),
+        is_deleted: Some(1),
         ..Default::default()
-      }.into(),
+      }),
       None,
-      None, 
       options.clone(),
-    ).await?.into_iter().next();
+    ).await?;
     
-    if old_model.is_none() {
-      continue;
-    }
-    let old_model = old_model.unwrap();
+    let old_model = match old_model {
+      Some(model) => model,
+      None => continue,
+    };
     
     if !is_silent_mode {
       info!(
