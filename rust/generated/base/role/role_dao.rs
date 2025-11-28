@@ -181,6 +181,27 @@ async fn get_where_query(
       where_query.push_str(" and t.code=?");
       args.push(code.into());
     }
+    let codes: Option<Vec<String>> = match search {
+      Some(item) => item.codes.clone(),
+      None => None,
+    };
+    if let Some(codes) = codes {
+      let arg = {
+        if codes.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(codes.len());
+          for item in codes {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.code in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
     let code_like = match search {
       Some(item) => item.code_like.clone(),
       None => None,
@@ -739,6 +760,20 @@ pub async fn find_all_role(
       return Ok(vec![]);
     }
   }
+  // 编码
+  if let Some(search) = &search && search.codes.is_some() {
+    let len = search.codes.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.codes.length > {ids_limit}"));
+    }
+  }
   // 菜单权限
   if let Some(search) = &search && search.menu_ids.is_some() {
     let len = search.menu_ids.as_ref().unwrap().len();
@@ -975,6 +1010,20 @@ pub async fn find_count_role(
     }
     if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
       return Ok(0);
+    }
+  }
+  // 编码
+  if let Some(search) = &search && search.codes.is_some() {
+    let len = search.codes.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.codes.length > {ids_limit}"));
     }
   }
   // 菜单权限
