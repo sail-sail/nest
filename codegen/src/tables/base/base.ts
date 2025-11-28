@@ -33,6 +33,7 @@ export default defineConfig({
           seq: "code_seq",
           seqPadStart0: 3,
         },
+        searchByArray: true,
       },
       {
         COLUMN_NAME: "lbl",
