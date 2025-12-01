@@ -507,12 +507,12 @@ export async function setLblById<#=Table_Up#>(
   model.<#=inline_column_name#> = model.<#=inline_column_name#> ?? [ ];
   for (let i = 0; i < model.<#=inline_column_name#>.length; i++) {
     const <#=inline_column_name#>_model = model.<#=inline_column_name#>[i] as <#=Table_Up#>Model;
-    await setLblById<#=Table_Up#>(<#=inline_column_name#>_model, isExcelExport);
+    await setLblById<#=Table_Up#>(<#=inline_column_name#>_model);
   }<#
     } else if (inline_foreign_type === "one2one") {
   #>
   // <#=inlineForeignTab.label#>
-  await setLblById<#=Table_Up#>(model.<#=inline_column_name#>, isExcelExport);<#
+  await setLblById<#=Table_Up#>(model.<#=inline_column_name#>);<#
     }
   #><#
   }

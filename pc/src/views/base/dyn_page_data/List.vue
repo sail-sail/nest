@@ -661,7 +661,10 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 动态页面表单字段 */
-const dyn_page_field_models = $(useDynPageFields(pagePath));
+const {
+  dyn_page_field_models,
+  refreshDynPageFields,
+} = $(useDynPageFields(pagePath));
 
 /** 表格 */
 const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));

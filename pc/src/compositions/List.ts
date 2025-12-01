@@ -1558,7 +1558,7 @@ export function useDynPageFields(
     dyn_page_field_ref.value = dyn_page_field;
   }
   
-  (async function() {
+  async function refreshDynPageFields() {
     dyn_page_model = await findOneDynPage({
       code: pagePath,
       is_enabled: [ 1 ],
@@ -1571,8 +1571,11 @@ export function useDynPageFields(
     localStorage.setItem(store_key, JSON.stringify(dyn_page_model));
     const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
     dyn_page_field_ref.value = dyn_page_field;
-  })();
+  };
   
-  return dyn_page_field_ref;
+  return {
+    dyn_page_field_models: dyn_page_field_ref,
+    refreshDynPageFields,
+  };
 }
 
