@@ -526,9 +526,12 @@ export async function getListMenu() {
   return data;
 }
 
-export async function getTreeMenu() {
+export async function getTreeMenu(
+  search?: MenuSearch,
+  opt?: GqlOpt,
+) {
   const data = await findTreeMenu(
-    undefined,
+    search,
     [
       {
         prop: "order_by",
@@ -537,6 +540,7 @@ export async function getTreeMenu() {
     ],
     {
       notLoading: true,
+      ...opt,
     },
   );
   return data;
