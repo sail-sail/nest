@@ -26,9 +26,6 @@ export async function findMenuAndRoles(
           menu_model {
             ${ menuFields.join(" ") }
           }
-          parent_menu_model {
-            ${ menuFields.join(" ") }
-          }
           role_models {
             ${ roleFields.join(" ") }
           }
