@@ -14,6 +14,7 @@ pub struct MenuQuery;
 impl MenuQuery {
   
   /// 首页获取菜单列表
+  #[graphql(name = "getMenus")]
   async fn get_menus(
     &self,
     ctx: &Context<'_>,
@@ -27,6 +28,7 @@ impl MenuQuery {
   }
   
   /// 查询菜单及其角色信息
+  #[graphql(name = "findMenuAndRoles")]
   async fn find_menu_and_roles(
     &self,
     ctx: &Context<'_>,
