@@ -784,10 +784,14 @@ export function useSelect<T = any, Id = string>(
           }
         }
       } else if (!selectedIds.includes(id)) {
-        selectedIds = [
-          ...selectedIds,
-          id,
-        ];
+        if (multiple) {
+          selectedIds = [
+            ...selectedIds,
+            id,
+          ];
+        } else {
+          setSelectIds([ id ]);
+        }
       }
     } else if (column && column.type === "selection") {
       if (selectedIds.includes(id)) {
@@ -859,12 +863,19 @@ export function useSelect<T = any, Id = string>(
     if (!rowKey) {
       return;
     }
+    let multiple = true;
+    if (opts?.multiple === false) {
+      multiple = false;
+    }
+    if (isRef(opts?.multiple) && opts?.multiple.value === false) {
+      multiple = false;
+    }
     const tableData = tableRef.value?.data;
     if (!tableData || tableData.length === 0) {
       return;
     }
     const id = (row as any)[rowKey];
-    if (selectedIds.length === 0) {
+    if (selectedIds.length === 0 || !multiple) {
       setSelectIds([ id ]);
       return;
     }
