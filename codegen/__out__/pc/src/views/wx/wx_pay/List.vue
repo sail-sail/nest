@@ -1619,13 +1619,10 @@ async function onRowDblclick(
   row: WxPayModel,
   column: TableColumnCtx<WxPayModel>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }

@@ -2210,17 +2210,19 @@ pub async fn create_return_pay_transactions_jsapi(
     options,
   ).await?;
   
-  if model_pay_transactions_jsapi.is_none() {
-    let err_msg = "create_return_pay_transactions_jsapi: model_pay_transactions_jsapi.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_pay_transactions_jsapi = model_pay_transactions_jsapi.unwrap();
+  let model_pay_transactions_jsapi = match model_pay_transactions_jsapi {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_pay_transactions_jsapi: model_pay_transactions_jsapi.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_pay_transactions_jsapi)
 }
@@ -2350,11 +2352,13 @@ pub async fn update_by_id_pay_transactions_jsapi(
     options.clone(),
   ).await?;
   
-  if old_model.is_none() {
-    let err_msg = "编辑失败, 此 微信JSAPI下单 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {
+      let err_msg = "编辑失败, 此 微信JSAPI下单 已被删除";
+      return Err(eyre!(err_msg));
+    }
+  };
   
   if !is_silent_mode {
     info!(
@@ -2949,20 +2953,24 @@ pub async fn force_delete_by_ids_pay_transactions_jsapi(
 pub async fn validate_option_pay_transactions_jsapi(
   model: Option<PayTransactionsJsapiModel>,
 ) -> Result<PayTransactionsJsapiModel> {
-  if model.is_none() {
-    let err_msg = "微信JSAPI下单不存在";
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {
+      let err_msg = "微信JSAPI下单不存在";
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }

@@ -2389,17 +2389,19 @@ pub async fn create_return_wx_pay_notice(
     options,
   ).await?;
   
-  if model_wx_pay_notice.is_none() {
-    let err_msg = "create_return_wx_pay_notice: model_wx_pay_notice.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_wx_pay_notice = model_wx_pay_notice.unwrap();
+  let model_wx_pay_notice = match model_wx_pay_notice {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_wx_pay_notice: model_wx_pay_notice.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_wx_pay_notice)
 }
@@ -2529,11 +2531,13 @@ pub async fn update_by_id_wx_pay_notice(
     options.clone(),
   ).await?;
   
-  if old_model.is_none() {
-    let err_msg = "编辑失败, 此 微信支付通知 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {
+      let err_msg = "编辑失败, 此 微信支付通知 已被删除";
+      return Err(eyre!(err_msg));
+    }
+  };
   
   if !is_silent_mode {
     info!(
@@ -3122,20 +3126,24 @@ pub async fn force_delete_by_ids_wx_pay_notice(
 pub async fn validate_option_wx_pay_notice(
   model: Option<WxPayNoticeModel>,
 ) -> Result<WxPayNoticeModel> {
-  if model.is_none() {
-    let err_msg = "微信支付通知不存在";
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {
+      let err_msg = "微信支付通知不存在";
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }

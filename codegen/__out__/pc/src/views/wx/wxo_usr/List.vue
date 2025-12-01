@@ -1496,13 +1496,10 @@ async function onRowDblclick(
   row: WxoUsrModel,
   column: TableColumnCtx<WxoUsrModel>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }
