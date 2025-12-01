@@ -2,9 +2,10 @@ use color_eyre::eyre::Result;
 use async_graphql::{Context, Object};
 
 use generated::common::context::Ctx;
+use generated::base::menu::menu_model::MenuSearch;
 
 use super::menu_resolver;
-use super::menu_model::GetMenus;
+use super::menu_model::{GetMenus, FindMenuAndRoles};
 
 #[derive(Default)]
 pub struct MenuQuery;
@@ -22,6 +23,24 @@ impl MenuQuery {
       .build()
       .scope({
         menu_resolver::get_menus()
+      }).await
+  }
+  
+  /// 查询菜单及其角色信息
+  async fn find_menu_and_roles(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: MenuSearch,
+  ) -> Result<FindMenuAndRoles> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        menu_resolver::find_menu_and_roles(
+          search,
+          None,
+        )
       }).await
   }
   

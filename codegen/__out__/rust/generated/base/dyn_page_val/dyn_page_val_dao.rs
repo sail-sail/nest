@@ -1663,17 +1663,19 @@ pub async fn create_return_dyn_page_val(
     options,
   ).await?;
   
-  if model_dyn_page_val.is_none() {
-    let err_msg = "create_return_dyn_page_val: model_dyn_page_val.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_dyn_page_val = model_dyn_page_val.unwrap();
+  let model_dyn_page_val = match model_dyn_page_val {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_dyn_page_val: model_dyn_page_val.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_dyn_page_val)
 }
@@ -1803,11 +1805,13 @@ pub async fn update_by_id_dyn_page_val(
     options.clone(),
   ).await?;
   
-  if old_model.is_none() {
-    let err_msg = "编辑失败, 此 动态页面值 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {
+      let err_msg = "编辑失败, 此 动态页面值 已被删除";
+      return Err(eyre!(err_msg));
+    }
+  };
   
   if !is_silent_mode {
     info!(
@@ -2315,20 +2319,24 @@ pub async fn force_delete_by_ids_dyn_page_val(
 pub async fn validate_option_dyn_page_val(
   model: Option<DynPageValModel>,
 ) -> Result<DynPageValModel> {
-  if model.is_none() {
-    let err_msg = "动态页面值不存在";
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {
+      let err_msg = "动态页面值不存在";
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }
