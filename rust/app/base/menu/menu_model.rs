@@ -2,6 +2,9 @@ use serde::{Serialize, Deserialize};
 use sqlx::{FromRow, mysql::MySqlRow, Row};
 use async_graphql::SimpleObject;
 
+use generated::base::menu::menu_model::MenuModel;
+use generated::base::role::role_model::RoleModel;
+
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetMenus {
@@ -13,6 +16,13 @@ pub struct GetMenus {
   pub route_query: String,
   pub is_dyn_page: u8,
   pub order_by: u32,
+}
+
+#[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
+#[graphql(rename_fields = "snake_case")]
+pub struct FindMenuAndRoles {
+  pub menu_model: Option<MenuModel>,
+  pub role_models: Vec<RoleModel>,
 }
 
 impl FromRow<'_, MySqlRow> for GetMenus {

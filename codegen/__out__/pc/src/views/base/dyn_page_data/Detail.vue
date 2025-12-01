@@ -282,7 +282,12 @@ let isReadonly = $ref(false);
 let isLocked = $ref(false);
 
 /** 动态页面表单字段 */
-const dyn_page_field_models = $(useDynPageFields(pagePath));
+const {
+  dyn_page_field_models,
+  refreshDynPageFields,
+} = $(useDynPageFields(pagePath));
+
+refreshDynPageFields();
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 

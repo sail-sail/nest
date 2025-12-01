@@ -784,10 +784,14 @@ export function useSelect<T = any, Id = string>(
           }
         }
       } else if (!selectedIds.includes(id)) {
-        selectedIds = [
-          ...selectedIds,
-          id,
-        ];
+        if (multiple) {
+          selectedIds = [
+            ...selectedIds,
+            id,
+          ];
+        } else {
+          setSelectIds([ id ]);
+        }
       }
     } else if (column && column.type === "selection") {
       if (selectedIds.includes(id)) {
@@ -859,12 +863,19 @@ export function useSelect<T = any, Id = string>(
     if (!rowKey) {
       return;
     }
+    let multiple = true;
+    if (opts?.multiple === false) {
+      multiple = false;
+    }
+    if (isRef(opts?.multiple) && opts?.multiple.value === false) {
+      multiple = false;
+    }
     const tableData = tableRef.value?.data;
     if (!tableData || tableData.length === 0) {
       return;
     }
     const id = (row as any)[rowKey];
-    if (selectedIds.length === 0) {
+    if (selectedIds.length === 0 || !multiple) {
       setSelectIds([ id ]);
       return;
     }
@@ -1558,7 +1569,7 @@ export function useDynPageFields(
     dyn_page_field_ref.value = dyn_page_field;
   }
   
-  (async function() {
+  async function refreshDynPageFields() {
     dyn_page_model = await findOneDynPage({
       code: pagePath,
       is_enabled: [ 1 ],
@@ -1571,8 +1582,11 @@ export function useDynPageFields(
     localStorage.setItem(store_key, JSON.stringify(dyn_page_model));
     const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
     dyn_page_field_ref.value = dyn_page_field;
-  })();
+  };
   
-  return dyn_page_field_ref;
+  return {
+    dyn_page_field_models: dyn_page_field_ref,
+    refreshDynPageFields,
+  };
 }
 

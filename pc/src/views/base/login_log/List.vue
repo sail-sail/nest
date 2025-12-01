@@ -971,13 +971,10 @@ async function onRowDblclick(
   row: LoginLogModel,
   column: TableColumnCtx<LoginLogModel>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }

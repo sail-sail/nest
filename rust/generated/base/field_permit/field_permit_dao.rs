@@ -1381,17 +1381,19 @@ pub async fn create_return_field_permit(
     options,
   ).await?;
   
-  if model_field_permit.is_none() {
-    let err_msg = "create_return_field_permit: model_field_permit.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_field_permit = model_field_permit.unwrap();
+  let model_field_permit = match model_field_permit {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_field_permit: model_field_permit.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_field_permit)
 }
@@ -1473,11 +1475,13 @@ pub async fn update_by_id_field_permit(
     options.clone(),
   ).await?;
   
-  if old_model.is_none() {
-    let err_msg = "编辑失败, 此 字段权限 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {
+      let err_msg = "编辑失败, 此 字段权限 已被删除";
+      return Err(eyre!(err_msg));
+    }
+  };
   
   {
     let mut input = input.clone();
@@ -1779,20 +1783,24 @@ pub async fn find_last_order_by_field_permit(
 pub async fn validate_option_field_permit(
   model: Option<FieldPermitModel>,
 ) -> Result<FieldPermitModel> {
-  if model.is_none() {
-    let err_msg = "字段权限不存在";
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {
+      let err_msg = "字段权限不存在";
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }

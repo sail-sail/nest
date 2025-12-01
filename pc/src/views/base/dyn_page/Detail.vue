@@ -90,6 +90,7 @@
                 v-model="dialogModel.code"
                 placeholder="自动生成 或 手动输入"
                 :readonly="isLocked || isReadonly"
+                @change="onCode"
               ></CustomInput>
               
               <el-link
@@ -114,7 +115,10 @@
             <CustomInput
               v-model="dialogModel.lbl"
               placeholder="请输入 名称"
-              :readonly="isLocked || isReadonly"
+              :readonly="
+                isLocked || isReadonly
+                  || menu_and_roles?.menu_model?.is_dyn_page == 0
+              "
             ></CustomInput>
           </el-form-item>
         </template>
@@ -126,9 +130,12 @@
           >
             <CustomTreeSelect
               v-model="dialogModel.parent_menu_id"
-              :method="getTreeMenu"
+              :method="getTreeMenu0"
               placeholder="请选择 父菜单"
-              :readonly="isLocked || isReadonly"
+              :readonly="
+                isLocked || isReadonly
+                  || menu_and_roles?.menu_model?.is_dyn_page == 0
+              "
             ></CustomTreeSelect>
           </el-form-item>
         </template>
@@ -151,7 +158,10 @@
               })"
               placeholder="请选择 所属角色"
               multiple
-              :readonly="isLocked || isReadonly"
+              :readonly="
+                isLocked || isReadonly
+                  || menu_and_roles?.menu_model?.is_dyn_page == 0
+              "
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -591,6 +601,14 @@ import {
   findOneMenu,
   findByIdMenu,
 } from "@/views/base/menu/Api.ts";
+
+import {
+  findMenuAndRoles,
+} from "./Api2.ts";
+
+import type {
+  FindMenuAndRoles,
+} from "#/types.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -1195,6 +1213,9 @@ async function onCodeSelect() {
   if (!menu_idsListSelectDialogRef) {
     return;
   }
+  if (isLocked) {
+    return;
+  }
   let menu_ids: MenuId[] = [ ];
   if (dialogModel.code) {
     const menu_model = await findOneMenu({
@@ -1208,9 +1229,6 @@ async function onCodeSelect() {
     title: "选择 菜单",
     selectedIds: menu_ids,
   });
-  if (isLocked) {
-    return;
-  }
   const action = res.action;
   if (action !== "select") {
     return;
@@ -1235,15 +1253,74 @@ async function onCodeSelect() {
   const menu_id = menu_ids[0];
   if (!menu_id) {
     dialogModel.code = "";
+    await onCode();
     return;
   }
   const menu_model = await findByIdMenu(menu_id);
   if (!menu_model) {
     dialogModel.code = "";
+    await onCode();
     return;
   }
   dialogModel.code = menu_model.route_path || "";
   dialogModel.lbl = menu_model.lbl;
+  await onCode();
+}
+
+let menu_and_roles = $ref<FindMenuAndRoles>();
+
+/** 处理路由编码变化 */
+async function onCode() {
+  
+  if (isLocked) {
+    return;
+  }
+  
+  formRef?.clearValidate([ "lbl" ]);
+  
+  if (!dialogModel.code || dialogModel.code.trim() === "") {
+    dialogModel.lbl = "";
+    dialogModel.parent_menu_id = "" as MenuId;
+    dialogModel.parent_menu_id_lbl = "";
+    dialogModel.role_ids = [ ];
+    dialogModel.role_ids_lbl = [ ];
+    return;
+  }
+  
+  menu_and_roles = await findMenuAndRoles(
+    {
+      route_path: dialogModel.code,
+    },
+    {
+      notLoading: !inited,
+    },
+  );
+  
+  if (!menu_and_roles.menu_model) {
+    dialogModel.lbl = "";
+    dialogModel.parent_menu_id = "" as MenuId;
+    dialogModel.parent_menu_id_lbl = "";
+    dialogModel.role_ids = [ ];
+    dialogModel.role_ids_lbl = [ ];
+    return;
+  }
+  
+  const menu_model = menu_and_roles.menu_model;
+  dialogModel.lbl = menu_model.lbl;
+  dialogModel.parent_menu_id = menu_model.parent_id;
+  dialogModel.parent_menu_id_lbl = menu_model.parent_id_lbl ?? "";
+  
+  const role_models = menu_and_roles.role_models;
+  dialogModel.role_ids = role_models.map((item) => item.id);
+  dialogModel.role_ids_lbl = role_models.map((item) => item.lbl);
+  
+}
+
+async function getTreeMenu0() {
+  return await getTreeMenu({
+    is_current_tenant: 1,
+    is_enabled: [ 1 ],
+  });
 }
 
 async function onDialogOpen() {

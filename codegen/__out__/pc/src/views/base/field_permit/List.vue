@@ -914,13 +914,10 @@ async function onRowDblclick(
   row: FieldPermitModel,
   column: TableColumnCtx<FieldPermitModel>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }

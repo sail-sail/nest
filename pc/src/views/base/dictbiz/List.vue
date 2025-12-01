@@ -1435,13 +1435,10 @@ async function onRowDblclick(
   row: DictbizModel,
   column: TableColumnCtx<DictbizModel>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }
