@@ -264,13 +264,18 @@ pub async fn method_name(
 | `find_by_id_xxx` | 根据ID查询 | `Option<Model>` | 不存在返回 None |
 | `find_by_id_ok_xxx` | 根据ID查询(必存在) | `Model` | 不存在抛异常 |
 | `find_by_ids_xxx` | 根据ID列表查询 | `Vec<Model>` | 批量查询 |
+| `find_by_ids_ok_xxx` | 根据ID列表查询 | `Vec<Model>` | 全部存在且顺序跟ids一致 |
 | `find_one_xxx` | 条件查询单条 | `Option<Model>` | 使用 Search 对象 |
 | `find_all_xxx` | 条件查询所有 | `Vec<Model>` | 支持排序、分页 |
 | `create_xxx` | 创建记录 | `Id` | 返回新记录ID |
+| `create_return_xxx` | 创建记录并返回 | `Model` | 返回完整记录 |
 | `update_by_id_xxx` | 根据ID更新 | `u64` | 返回影响行数 |
-| `delete_by_ids_xxx` | 根据ID列表删除 | `u64` | 物理或逻辑删除 |
+| `delete_by_ids_xxx` | 根据ID列表删除 | `u64` | 逻辑删除 |
+| `revert_by_ids_xxx` | 根据ID列表恢复 | `u64` | 恢复逻辑删除 |
+| `force_delete_by_ids_xxx` | 根据ID列表物理删除 | `u64` | 永久删除 |
 | `validate_option_xxx` | 校验 Option | `Model` | None 时抛异常 |
 | `validate_is_enabled_xxx` | 校验启用状态 | `()` | 禁用时抛异常 |
+| `find_last_order_by_xxx` | 查询最大排序值 | `u32` | 用于排序字段 |
 
 **使用示例:**
 
@@ -503,6 +508,4 @@ use generated::common::exceptions::service_exception::ServiceException;
 
 ---
 
-**最后更新:** 2025-11-28  
-**维护者:** 项目开发团队  
 **用途:** AI 辅助开发、团队规范参考
