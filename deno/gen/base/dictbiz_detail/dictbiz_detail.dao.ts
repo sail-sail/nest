@@ -78,6 +78,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathDictbizDetail,
+  getTableNameDictbizDetail,
+} from "./dictbiz_detail.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<DictbizDetailSearch>,
@@ -296,16 +301,6 @@ export async function findCountDictbizDetail(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathDictbizDetail
-export function getPagePathDictbizDetail() {
-  return "/base/dictbiz_detail";
-}
-
-// MARK: getTableNameDictbizDetail
-export function getTableNameDictbizDetail() {
-  return "base_dictbiz_detail";
 }
 
 // MARK: findAllDictbizDetail

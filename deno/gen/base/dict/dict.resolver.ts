@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./dict.model.ts";
-
 /**
  * 根据条件查找系统字典总数
  */
@@ -188,11 +184,15 @@ export async function createsDict(
     createsDict,
   } = await import("./dict.service.ts");
   
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathDict(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdDict(
     updateByIdDict,
   } = await import("./dict.service.ts");
   
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblDict(input);
   
   await usePermit(
-    route_path,
+    getPagePathDict(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsDict(
     deleteByIdsDict,
   } = await import("./dict.service.ts");
   
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDict(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsDict(
     throw new Error(`enableByIdsDict.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDict(),
     "edit",
   );
   const res = await enableByIdsDict(ids, is_enabled);
@@ -300,10 +312,14 @@ export async function revertByIdsDict(
     revertByIdsDict,
   } = await import("./dict.service.ts");
   
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDict(),
     "delete",
   );
   
@@ -323,10 +339,14 @@ export async function forceDeleteByIdsDict(
     forceDeleteByIdsDict,
   } = await import("./dict.service.ts");
   
+  const {
+    getPagePathDict,
+  } = await import("./dict.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDict(),
     "force_delete",
   );
   

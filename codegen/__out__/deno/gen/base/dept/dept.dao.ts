@@ -82,6 +82,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathDept,
+  getTableNameDept,
+} from "./dept.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<DeptSearch>,
@@ -368,16 +373,6 @@ export async function findCountDept(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathDept
-export function getPagePathDept() {
-  return "/base/dept";
-}
-
-// MARK: getTableNameDept
-export function getTableNameDept() {
-  return "base_dept";
 }
 
 // MARK: findAllDept

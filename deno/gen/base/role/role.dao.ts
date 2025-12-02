@@ -78,6 +78,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathRole,
+  getTableNameRole,
+} from "./role.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<RoleSearch>,
@@ -123,11 +128,11 @@ async function getWhereQuery(
   if (search?.code != null) {
     whereQuery += ` and t.code=${ args.push(search.code) }`;
   }
+  if (search?.codes != null) {
+    whereQuery += ` and t.code in (${ args.push(search.codes) })`;
+  }
   if (isNotEmpty(search?.code_like)) {
     whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
-  }
-  if (search?.codes != null && search?.codes.length > 0) {
-    whereQuery += ` and t.code in (${ args.push(search.codes) })`;
   }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
@@ -341,6 +346,13 @@ export async function findCountRole(
   if (search && search.ids && search.ids.length === 0) {
     return 0;
   }
+  // 编码
+  if (search && search.codes != null) {
+    const len = search.codes.length;
+    if (len === 0) {
+      return 0;
+    }
+  }
   // 菜单权限
   if (search && search.menu_ids != null) {
     const len = search.menu_ids.length;
@@ -461,16 +473,6 @@ export async function findCountRole(
   return result;
 }
 
-// MARK: getPagePathRole
-export function getPagePathRole() {
-  return "/base/role";
-}
-
-// MARK: getTableNameRole
-export function getTableNameRole() {
-  return "base_role";
-}
-
 // MARK: findAllRole
 /** 根据搜索条件和分页查找角色列表 */
 export async function findAllRole(
@@ -512,6 +514,13 @@ export async function findAllRole(
   }
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
+  }
+  // 编码
+  if (search && search.codes != null) {
+    const len = search.codes.length;
+    if (len === 0) {
+      return [ ];
+    }
   }
   // 菜单权限
   if (search && search.menu_ids != null) {

@@ -794,15 +794,12 @@ import {
   createHash,
 } from "node:crypto";<#
 }
-#><#
-if ((hasDataPermit() && hasCreateUsrId) || isUseI18n) {
 #>
 
 import {
-  route_path,
+  getPagePath<#=Table_Up#>,
+  getTableName<#=Table_Up#>,
 } from "./<#=table#>.model.ts";<#
-}
-#><#
 if (hasIsIcon) {
 #>
 
@@ -850,7 +847,7 @@ async function getWhereQuery(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
-  const dataPermitModels = await getDataPermits(route_path, options);
+  const dataPermitModels = await getDataPermits(getPagePath<#=Table_Up#>(), options);
   const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create);
   const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role);
   const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept);
@@ -1245,7 +1242,7 @@ async function getFromQuery(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
-  const dataPermitModels = await getDataPermits(route_path, options);
+  const dataPermitModels = await getDataPermits(getPagePath<#=Table_Up#>(), options);
   const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create);
   const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role);
   const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept || item.scope === DataPermitScope.DeptParent);
@@ -1567,16 +1564,6 @@ export async function setDynPageData<#=Table_Up#>(
 }<#
 }
 #>
-
-// MARK: getPagePath<#=Table_Up#>
-export function getPagePath<#=Table_Up#>() {
-  return "/<#=mod#>/<#=table#>";
-}
-
-// MARK: getTableName<#=Table_Up#>
-export function getTableName<#=Table_Up#>() {
-  return "<#=mod#>_<#=table#>";
-}
 
 // MARK: findAll<#=Table_Up#>
 /** 根据搜索条件和分页查找<#=table_comment#>列表 */
@@ -2993,7 +2980,7 @@ export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentNa
   #><#
   if (isUseI18n) {
   #>
-  const n = initN(route_path);
+  const n = initN(getPagePath<#=Table_Up#>());
   const fieldComments: <#=fieldCommentName#> = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -5370,7 +5357,7 @@ export async function getEditableDataPermitsByIds<#=Table_Up#>(
   if (ids.length === 0) {
     return [ ];
   }
-  const dataPermitModels = await getDataPermits(route_path, {
+  const dataPermitModels = await getDataPermits(getPagePath<#=Table_Up#>(), {
     hasDataPermit: true,
   });
   
@@ -5770,7 +5757,7 @@ export async function updateById<#=Table_Up#>(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
-  const dataPermitModels = await getDataPermits(route_path, options);
+  const dataPermitModels = await getDataPermits(getPagePath<#=Table_Up#>(), options);
   const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create && item.type === DataPermitType.Editable);
   const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role && item.type === DataPermitType.Editable);
   const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept && item.type === DataPermitType.Editable);
@@ -6715,7 +6702,7 @@ export async function deleteByIds<#=Table_Up#>(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
-  const dataPermitModels = await getDataPermits(route_path, options);
+  const dataPermitModels = await getDataPermits(getPagePath<#=Table_Up#>(), options);
   const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create && item.type === DataPermitType.Editable);
   const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role && item.type === DataPermitType.Editable);
   const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept && item.type === DataPermitType.Editable);

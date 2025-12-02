@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./dictbiz_detail.model.ts";
-
 /**
  * 根据条件查找业务字典明细总数
  */
@@ -188,11 +184,15 @@ export async function createsDictbizDetail(
     createsDictbizDetail,
   } = await import("./dictbiz_detail.service.ts");
   
+  const {
+    getPagePathDictbizDetail,
+  } = await import("./dictbiz_detail.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictbizDetail(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdDictbizDetail(
     updateByIdDictbizDetail,
   } = await import("./dictbiz_detail.service.ts");
   
+  const {
+    getPagePathDictbizDetail,
+  } = await import("./dictbiz_detail.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblDictbizDetail(input);
   
   await usePermit(
-    route_path,
+    getPagePathDictbizDetail(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsDictbizDetail(
     deleteByIdsDictbizDetail,
   } = await import("./dictbiz_detail.service.ts");
   
+  const {
+    getPagePathDictbizDetail,
+  } = await import("./dictbiz_detail.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictbizDetail(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsDictbizDetail(
     throw new Error(`enableByIdsDictbizDetail.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathDictbizDetail,
+  } = await import("./dictbiz_detail.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictbizDetail(),
     "edit",
   );
   const res = await enableByIdsDictbizDetail(ids, is_enabled);
@@ -300,10 +312,14 @@ export async function revertByIdsDictbizDetail(
     revertByIdsDictbizDetail,
   } = await import("./dictbiz_detail.service.ts");
   
+  const {
+    getPagePathDictbizDetail,
+  } = await import("./dictbiz_detail.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictbizDetail(),
     "delete",
   );
   
@@ -323,10 +339,14 @@ export async function forceDeleteByIdsDictbizDetail(
     forceDeleteByIdsDictbizDetail,
   } = await import("./dictbiz_detail.service.ts");
   
+  const {
+    getPagePathDictbizDetail,
+  } = await import("./dictbiz_detail.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictbizDetail(),
     "force_delete",
   );
   

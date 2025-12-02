@@ -68,6 +68,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathOperationRecord,
+  getTableNameOperationRecord,
+} from "./operation_record.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<OperationRecordSearch>,
@@ -269,16 +274,6 @@ export async function findCountOperationRecord(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathOperationRecord
-export function getPagePathOperationRecord() {
-  return "/base/operation_record";
-}
-
-// MARK: getTableNameOperationRecord
-export function getTableNameOperationRecord() {
-  return "base_operation_record";
 }
 
 // MARK: findAllOperationRecord

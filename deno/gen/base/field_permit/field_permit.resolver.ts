@@ -16,10 +16,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./field_permit.model.ts";
-
 /**
  * 根据条件查找字段权限总数
  */
@@ -187,12 +183,16 @@ export async function updateByIdFieldPermit(
     updateByIdFieldPermit,
   } = await import("./field_permit.service.ts");
   
+  const {
+    getPagePathFieldPermit,
+  } = await import("./field_permit.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblFieldPermit(input);
   
   await usePermit(
-    route_path,
+    getPagePathFieldPermit(),
     "edit",
   );
   

@@ -78,6 +78,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathDynPageData,
+  getTableNameDynPageData,
+} from "./dyn_page_data.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<DynPageDataSearch>,
@@ -364,21 +369,6 @@ export async function setDynPageDataDynPageData(
     
   }
   
-}
-
-// MARK: getPagePathDynPageData
-export function getPagePathDynPageData(
-  ref_code?: string | null,
-) {
-  if (ref_code) {
-    return ref_code;
-  }
-  return "/base/dyn_page_data";
-}
-
-// MARK: getTableNameDynPageData
-export function getTableNameDynPageData() {
-  return "base_dyn_page_data";
 }
 
 // MARK: findAllDynPageData

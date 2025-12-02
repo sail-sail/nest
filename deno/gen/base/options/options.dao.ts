@@ -66,6 +66,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathOptions,
+  getTableNameOptions,
+} from "./options.model.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -282,16 +287,6 @@ export async function findCountOptions(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathOptions
-export function getPagePathOptions() {
-  return "/base/options";
-}
-
-// MARK: getTableNameOptions
-export function getTableNameOptions() {
-  return "base_options";
 }
 
 // MARK: findAllOptions

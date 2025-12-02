@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./tenant.model.ts";
-
 /**
  * 根据条件查找租户总数
  */
@@ -188,11 +184,15 @@ export async function createsTenant(
     createsTenant,
   } = await import("./tenant.service.ts");
   
+  const {
+    getPagePathTenant,
+  } = await import("./tenant.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathTenant(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdTenant(
     updateByIdTenant,
   } = await import("./tenant.service.ts");
   
+  const {
+    getPagePathTenant,
+  } = await import("./tenant.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblTenant(input);
   
   await usePermit(
-    route_path,
+    getPagePathTenant(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsTenant(
     deleteByIdsTenant,
   } = await import("./tenant.service.ts");
   
+  const {
+    getPagePathTenant,
+  } = await import("./tenant.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathTenant(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsTenant(
     throw new Error(`enableByIdsTenant.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathTenant,
+  } = await import("./tenant.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathTenant(),
     "edit",
   );
   const res = await enableByIdsTenant(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsTenant(
     throw new Error(`lockByIdsTenant.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathTenant,
+  } = await import("./tenant.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathTenant(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsTenant(
     revertByIdsTenant,
   } = await import("./tenant.service.ts");
   
+  const {
+    getPagePathTenant,
+  } = await import("./tenant.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathTenant(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsTenant(
     forceDeleteByIdsTenant,
   } = await import("./tenant.service.ts");
   
+  const {
+    getPagePathTenant,
+  } = await import("./tenant.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathTenant(),
     "force_delete",
   );
   

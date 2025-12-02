@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/org";
+export function getPagePathOrg() {
+  return "/base/org";
+}
+
+export function getTableNameOrg() {
+  return "base_org";
+}
 
 declare const orgId: unique symbol;
 

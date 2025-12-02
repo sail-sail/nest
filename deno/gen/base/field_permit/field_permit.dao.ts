@@ -62,6 +62,11 @@ import {
   findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
 
+import {
+  getPagePathFieldPermit,
+  getTableNameFieldPermit,
+} from "./field_permit.model.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -195,16 +200,6 @@ export async function findCountFieldPermit(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathFieldPermit
-export function getPagePathFieldPermit() {
-  return "/base/field_permit";
-}
-
-// MARK: getTableNameFieldPermit
-export function getTableNameFieldPermit() {
-  return "base_field_permit";
 }
 
 // MARK: findAllFieldPermit

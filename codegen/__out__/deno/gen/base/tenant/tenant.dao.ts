@@ -74,6 +74,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathTenant,
+  getTableNameTenant,
+} from "./tenant.model.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -388,16 +393,6 @@ export async function findCountTenant(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathTenant
-export function getPagePathTenant() {
-  return "/base/tenant";
-}
-
-// MARK: getTableNameTenant
-export function getTableNameTenant() {
-  return "base_tenant";
 }
 
 // MARK: findAllTenant

@@ -74,6 +74,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathOptbiz,
+  getTableNameOptbiz,
+} from "./optbiz.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<OptbizSearch>,
@@ -299,16 +304,6 @@ export async function findCountOptbiz(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathOptbiz
-export function getPagePathOptbiz() {
-  return "/base/optbiz";
-}
-
-// MARK: getTableNameOptbiz
-export function getTableNameOptbiz() {
-  return "base_optbiz";
 }
 
 // MARK: findAllOptbiz

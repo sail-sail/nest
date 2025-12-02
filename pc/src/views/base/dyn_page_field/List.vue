@@ -1595,13 +1595,10 @@ async function onRowDblclick(
   row: DynPageFieldModel,
   column: TableColumnCtx<DynPageFieldModel>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }

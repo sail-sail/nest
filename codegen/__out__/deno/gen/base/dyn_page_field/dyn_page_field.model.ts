@@ -12,7 +12,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/dyn_page_field";
+export function getPagePathDynPageField() {
+  return "/base/dyn_page_field";
+}
+
+export function getTableNameDynPageField() {
+  return "base_dyn_page_field";
+}
 
 declare const dynPageFieldId: unique symbol;
 

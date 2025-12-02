@@ -163,6 +163,7 @@ input RoleSearch {
   id: RoleId
   "编码"
   code: String
+  codes: [String!]
   code_like: String
   "名称"
   lbl: String

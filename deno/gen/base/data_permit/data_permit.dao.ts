@@ -80,6 +80,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathDataPermit,
+  getTableNameDataPermit,
+} from "./data_permit.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<DataPermitSearch>,
@@ -292,16 +297,6 @@ export async function findCountDataPermit(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathDataPermit
-export function getPagePathDataPermit() {
-  return "/base/data_permit";
-}
-
-// MARK: getTableNameDataPermit
-export function getTableNameDataPermit() {
-  return "base_data_permit";
 }
 
 // MARK: findAllDataPermit

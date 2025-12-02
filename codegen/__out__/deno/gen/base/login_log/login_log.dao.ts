@@ -73,6 +73,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathLoginLog,
+  getTableNameLoginLog,
+} from "./login_log.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<LoginLogSearch>,
@@ -264,16 +269,6 @@ export async function findCountLoginLog(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathLoginLog
-export function getPagePathLoginLog() {
-  return "/base/login_log";
-}
-
-// MARK: getTableNameLoginLog
-export function getTableNameLoginLog() {
-  return "base_login_log";
 }
 
 // MARK: findAllLoginLog

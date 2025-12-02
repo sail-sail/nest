@@ -66,6 +66,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathMenu,
+  getTableNameMenu,
+} from "./menu.model.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -323,16 +328,6 @@ export async function findCountMenu(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathMenu
-export function getPagePathMenu() {
-  return "/base/menu";
-}
-
-// MARK: getTableNameMenu
-export function getTableNameMenu() {
-  return "base_menu";
 }
 
 // MARK: findAllMenu

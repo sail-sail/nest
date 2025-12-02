@@ -66,6 +66,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathLang,
+  getTableNameLang,
+} from "./lang.model.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -251,16 +256,6 @@ export async function findCountLang(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathLang
-export function getPagePathLang() {
-  return "/base/lang";
-}
-
-// MARK: getTableNameLang
-export function getTableNameLang() {
-  return "base_lang";
 }
 
 // MARK: findAllLang

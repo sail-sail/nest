@@ -62,6 +62,11 @@ import {
   findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
 
+import {
+  getPagePathPermit,
+  getTableNamePermit,
+} from "./permit.model.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -195,16 +200,6 @@ export async function findCountPermit(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathPermit
-export function getPagePathPermit() {
-  return "/base/permit";
-}
-
-// MARK: getTableNamePermit
-export function getTableNamePermit() {
-  return "base_permit";
 }
 
 // MARK: findAllPermit

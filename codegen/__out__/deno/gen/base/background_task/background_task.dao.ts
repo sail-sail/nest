@@ -74,6 +74,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathBackgroundTask,
+  getTableNameBackgroundTask,
+} from "./background_task.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<BackgroundTaskSearch>,
@@ -293,16 +298,6 @@ export async function findCountBackgroundTask(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathBackgroundTask
-export function getPagePathBackgroundTask() {
-  return "/base/background_task";
-}
-
-// MARK: getTableNameBackgroundTask
-export function getTableNameBackgroundTask() {
-  return "base_background_task";
 }
 
 // MARK: findAllBackgroundTask

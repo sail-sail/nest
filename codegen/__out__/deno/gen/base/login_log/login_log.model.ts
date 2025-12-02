@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/login_log";
+export function getPagePathLoginLog() {
+  return "/base/login_log";
+}
+
+export function getTableNameLoginLog() {
+  return "base_login_log";
+}
 
 declare const loginLogId: unique symbol;
 

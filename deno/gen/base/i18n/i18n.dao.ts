@@ -70,6 +70,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathI18n,
+  getTableNameI18n,
+} from "./i18n.model.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -281,16 +286,6 @@ export async function findCountI18n(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathI18n
-export function getPagePathI18n() {
-  return "/base/i18n";
-}
-
-// MARK: getTableNameI18n
-export function getTableNameI18n() {
-  return "base_i18n";
 }
 
 // MARK: findAllI18n

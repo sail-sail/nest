@@ -14,7 +14,13 @@ import {
   intoInputDynPageField,
 } from "/gen/base/dyn_page_field/dyn_page_field.model.ts";
 
-export const route_path = "/base/dyn_page";
+export function getPagePathDynPage() {
+  return "/base/dyn_page";
+}
+
+export function getTableNameDynPage() {
+  return "base_dyn_page";
+}
 
 declare const dynPageId: unique symbol;
 

@@ -74,6 +74,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathOrg,
+  getTableNameOrg,
+} from "./org.model.ts";
+
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<OrgSearch>,
@@ -276,16 +281,6 @@ export async function findCountOrg(
   let result = Number(model?.total || 0);
   
   return result;
-}
-
-// MARK: getPagePathOrg
-export function getPagePathOrg() {
-  return "/base/org";
-}
-
-// MARK: getTableNameOrg
-export function getTableNameOrg() {
-  return "base_org";
 }
 
 // MARK: findAllOrg
