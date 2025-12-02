@@ -27,7 +27,7 @@ rust/app/spc/{module}/
 ├── {module}_router.rs        # 定义路由 handler
 └── export_excel_{module}.xlsx  # Excel 模板文件(必须)
 
-rust/main.rs                  # 注册导出路由
+rust/app/lib.rs               # 在 register_routes 中注册路由
 
 uni/src/pages/{module}/
 ├── Api2.ts                   # 定义导出函数
@@ -334,36 +334,50 @@ pub async fn export_excel_{module}(
 
 ---
 
-### 步骤 5: 在 `main.rs` 中注册路由
+### 步骤 5: 在 `lib.rs` 中注册路由
 
-**文件路径:** `rust/main.rs`
+**文件路径:** `rust/app/lib.rs`
 
-**在路由注册区域添加:**
+**在 `register_routes` 函数中添加:**
 
 ```rust
-// 导出{中文名}
-app = app.at(
-  "/api/{module}/export_excel_{module}",
-  get(app::spc::{module}::{module}_router::export_excel_{module}),
-);
+/// 注册 业务路由
+pub fn register_routes(app: Route) -> Route {
+  let mut app = app;
+  
+  // ...其他路由
+  
+  // 导出{中文名}
+  app = app.at(
+    "/api/{module}/export_excel_{module}",
+    get(spc::{module}::{module}_router::export_excel_{module}),
+  );
+  
+  app
+}
 ```
 
 **示例 (pt_order):**
 
 ```rust
-// 导出生产单
-app = app.at(
-  "/api/pt_order/export_excel_pt_order",
-  get(app::spc::pt_order::pt_order_router::export_excel_pt_order),
-);
+/// 注册 业务路由
+pub fn register_routes(app: Route) -> Route {
+  let mut app = app;
+  
+  // 导出生产单
+  app = app.at(
+    "/api/pt_order/export_excel_pt_order",
+    get(spc::pt_order::pt_order_router::export_excel_pt_order),
+  );
+  
+  app
+}
 ```
 
-**位置参考:**
-通常放在其他导出路由附近,如:
-- 导出产品
-- 导出客户
-- 导出生产单 ← 新增
-- 导出记工记录
+**说明:**
+- 所有 spc 模块的业务路由统一在 `lib.rs` 的 `register_routes` 函数中注册
+- `main.rs` 只需调用 `app::register_routes(app)` 即可
+- 注意路径中使用 `spc::{module}` 而不是 `app::spc::{module}`(因为已经在 app 模块内部)
 
 ---
 
@@ -811,7 +825,7 @@ AutoImport({
 - [ ] 在 `{module}_service.rs` 实现 `export_excel_{module}` 函数
 - [ ] 在 `{module}_resful.rs` 实现 `export_excel_{module}` 函数
 - [ ] 在 `{module}_router.rs` 定义 `ExportExcel{Module}Request` 和 handler
-- [ ] 在 `main.rs` 注册路由 `/api/{module}/export_excel_{module}`
+- [ ] 在 `lib.rs` 的 `register_routes` 中注册路由
 - [ ] 如需要,修改 `{Module}Search` 添加 `Deserialize`
 - [ ] 创建 Excel 模板文件 `export_excel_{module}.xlsx`
 - [ ] 运行 `cargo check` 检查编译错误
