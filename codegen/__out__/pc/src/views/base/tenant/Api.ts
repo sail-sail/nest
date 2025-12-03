@@ -873,19 +873,22 @@ export async function importModelsTenant(
  * 查找 租户 order_by 字段的最大值
  */
 export async function findLastOrderByTenant(
+  search?: TenantSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByTenant: Query["findLastOrderByTenant"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByTenant
+      query($search: TenantSearch) {
+        findLastOrderByTenant(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByTenant;
-  return res;
+  
+  const order_by = data.findLastOrderByTenant;
+  
+  return order_by;
 }
 
 /**

@@ -852,19 +852,22 @@ export async function importModelsDept(
  * 查找 部门 order_by 字段的最大值
  */
 export async function findLastOrderByDept(
+  search?: DeptSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDept: Query["findLastOrderByDept"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDept
+      query($search: DeptSearch) {
+        findLastOrderByDept(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDept;
-  return res;
+  
+  const order_by = data.findLastOrderByDept;
+  
+  return order_by;
 }
 
 /**

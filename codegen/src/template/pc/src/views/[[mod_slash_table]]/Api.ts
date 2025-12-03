@@ -2528,19 +2528,22 @@ if (hasOrderBy) {
  * 查找 <#=table_comment#> order_by 字段的最大值
  */
 export async function findLastOrderBy<#=Table_Up#>(
+  search?: <#=searchName#>,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderBy<#=Table_Up2#>: Query["findLastOrderBy<#=Table_Up2#>"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderBy<#=Table_Up2#>
+      query($search: <#=searchName#>) {
+        findLastOrderBy<#=Table_Up2#>(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderBy<#=Table_Up2#>;
-  return res;
+  
+  const order_by = data.findLastOrderBy<#=Table_Up2#>;
+  
+  return order_by;
 }<#
 }
 #>

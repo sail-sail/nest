@@ -240,12 +240,14 @@ impl OrgGenQuery {
   async fn find_last_order_by_org(
     &self,
     ctx: &Context<'_>,
+    search: Option<OrgSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         org_resolver::find_last_order_by_org(
+          search,
           None,
         )
       }).await

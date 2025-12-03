@@ -900,19 +900,22 @@ export async function importModelsUsr(
  * 查找 用户 order_by 字段的最大值
  */
 export async function findLastOrderByUsr(
+  search?: UsrSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByUsr: Query["findLastOrderByUsr"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByUsr
+      query($search: UsrSearch) {
+        findLastOrderByUsr(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByUsr;
-  return res;
+  
+  const order_by = data.findLastOrderByUsr;
+  
+  return order_by;
 }
 
 /**

@@ -1514,6 +1514,7 @@ function getDynPageTableColumns(
       prop: "dyn_page_data." + field.code,
       width: field.width > 0 ? field.width : undefined,
       align: field.align,
+      showOverflowTooltip: true,
       isDynField: true,
     };
     columns.push(column);

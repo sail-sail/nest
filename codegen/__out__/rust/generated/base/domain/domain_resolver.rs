@@ -489,18 +489,20 @@ pub async fn force_delete_by_ids_domain(
 /// 查找 域名 order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_domain(
+  search: Option<DomainSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = domain_service::find_last_order_by_domain(
+  let order_by = domain_service::find_last_order_by_domain(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

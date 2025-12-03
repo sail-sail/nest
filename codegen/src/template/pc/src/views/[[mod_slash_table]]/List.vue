@@ -1506,6 +1506,18 @@ if (searchByKeyword) {
             </el-dropdown-item><#
             }
             #><#
+            if (opts?.isUseDynPageFields) {
+            #>
+            
+            <el-dropdown-item
+              v-if="permit('dyn_page_fields', '新增字段') && !isLocked || true"
+              un-justify-center
+              @click="onDynPageFields"
+            >
+              <span>新增字段</span>
+            </el-dropdown-item><#
+            }
+            #><#
             for (let ii = 0; ii < columns.length; ii++) {
               const column = columns[ii];
               if (!column.foreignTabs) {
@@ -2644,6 +2656,14 @@ if (searchByKeyword) {
     ref="auditListDialogRef"
   ></AuditListDialog><#
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  <DynPageDetail
+    ref="dynPageDetailRef"
+  ></DynPageDetail><#
+  }
   #>
   
 </div>
@@ -2907,6 +2927,12 @@ if (opts?.isRealData) {
 import {
   publish,
 } from "@/compositions/websocket";<#
+}
+#><#
+if (opts?.isUseDynPageFields) {
+#>
+
+import DynPageDetail from "@/views/base/dyn_page/Detail.vue";<#
 }
 #>
 
@@ -5449,7 +5475,38 @@ watch(
     deep: true,
     immediate: true,
   },
-);
+);<#
+if (opts?.isUseDynPageFields) {
+#>
+
+const dynPageDetailRef = $(useTemplateRef<InstanceType<typeof DynPageDetail>>("dynPageDetailRef"));
+
+/** 新增字段 */
+async function onDynPageFields() {
+  
+  if (!dynPageDetailRef) {
+    return;
+  }
+  
+  const {
+    changedIds,
+  } = await dynPageDetailRef.showDialog({
+    action: "add",
+    builtInModel: {
+      code: getPagePathUsr(),
+    },
+    title: "新增字段",
+  });
+  
+  if (changedIds.length == 0) {
+    return;
+  }
+  
+  await refreshDynPageFields();
+  
+}<#
+}
+#>
 
 initFrame();<#
 for (let i = 0; i < columns.length; i++) {

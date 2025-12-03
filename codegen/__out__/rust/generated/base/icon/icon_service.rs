@@ -323,12 +323,14 @@ pub async fn force_delete_by_ids_icon(
 
 /// 查找 图标库 order_by 字段的最大值
 pub async fn find_last_order_by_icon(
+  search: Option<IconSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = icon_dao::find_last_order_by_icon(
+  let order_by = icon_dao::find_last_order_by_icon(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

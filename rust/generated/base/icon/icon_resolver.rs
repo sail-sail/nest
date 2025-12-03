@@ -436,18 +436,20 @@ pub async fn force_delete_by_ids_icon(
 /// 查找 图标库 order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_icon(
+  search: Option<IconSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = icon_service::find_last_order_by_icon(
+  let order_by = icon_service::find_last_order_by_icon(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

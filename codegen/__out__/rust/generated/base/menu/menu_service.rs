@@ -323,12 +323,14 @@ pub async fn force_delete_by_ids_menu(
 
 /// 查找 菜单 order_by 字段的最大值
 pub async fn find_last_order_by_menu(
+  search: Option<MenuSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = menu_dao::find_last_order_by_menu(
+  let order_by = menu_dao::find_last_order_by_menu(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

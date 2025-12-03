@@ -353,12 +353,14 @@ pub async fn force_delete_by_ids_dict_detail(
 
 /// 查找 系统字典明细 order_by 字段的最大值
 pub async fn find_last_order_by_dict_detail(
+  search: Option<DictDetailSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = dict_detail_dao::find_last_order_by_dict_detail(
+  let order_by = dict_detail_dao::find_last_order_by_dict_detail(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

@@ -2495,6 +2495,7 @@ pub async fn force_delete_by_ids_lang(
 // MARK: find_last_order_by_lang
 /// 查找 语言 order_by 字段的最大值
 pub async fn find_last_order_by_lang(
+  search: Option<LangSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -2515,15 +2516,13 @@ pub async fn find_last_order_by_lang(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  #[allow(unused_mut)]
-  let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);
   
-  sql_wheres.push("t.is_deleted=0");
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
-  let sql_where = sql_wheres.join(" and ");
-  let sql = format!("select t.order_by order_by from {table} t where {sql_where} order by t.order_by desc limit 1");
+  let sql = format!(r#"select f.order_by from (select t.order_by
+  from {from_query} where {where_query} group by t.id order by t.order_by desc limit 1) f"#);
   
   let args: Vec<_> = args.into();
   

@@ -345,12 +345,14 @@ impl <#=tableUP#>GenQuery {
   async fn find_last_order_by_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    search: Option<<#=tableUP#>Search>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         <#=table#>_resolver::find_last_order_by_<#=table#>(
+          search,
           None,
         )
       }).await

@@ -792,19 +792,22 @@ export async function importModelsDynPage(
  * 查找 动态页面 order_by 字段的最大值
  */
 export async function findLastOrderByDynPage(
+  search?: DynPageSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDynPage: Query["findLastOrderByDynPage"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDynPage
+      query($search: DynPageSearch) {
+        findLastOrderByDynPage(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDynPage;
-  return res;
+  
+  const order_by = data.findLastOrderByDynPage;
+  
+  return order_by;
 }
 
 /**

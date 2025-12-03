@@ -384,12 +384,14 @@ pub async fn force_delete_by_ids_domain(
 
 /// 查找 域名 order_by 字段的最大值
 pub async fn find_last_order_by_domain(
+  search: Option<DomainSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = domain_dao::find_last_order_by_domain(
+  let order_by = domain_dao::find_last_order_by_domain(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

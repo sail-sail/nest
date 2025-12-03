@@ -220,12 +220,14 @@ impl DictbizDetailGenQuery {
   async fn find_last_order_by_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    search: Option<DictbizDetailSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         dictbiz_detail_resolver::find_last_order_by_dictbiz_detail(
+          search,
           None,
         )
       }).await

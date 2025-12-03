@@ -261,18 +261,20 @@ pub async fn get_field_comments_permit(
 /// 查找 按钮权限 order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_permit(
+  search: Option<PermitSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = permit_service::find_last_order_by_permit(
+  let order_by = permit_service::find_last_order_by_permit(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

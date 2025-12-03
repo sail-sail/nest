@@ -681,19 +681,22 @@ export async function importModelsOptbiz(
  * 查找 业务选项 order_by 字段的最大值
  */
 export async function findLastOrderByOptbiz(
+  search?: OptbizSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByOptbiz: Query["findLastOrderByOptbiz"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByOptbiz
+      query($search: OptbizSearch) {
+        findLastOrderByOptbiz(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByOptbiz;
-  return res;
+  
+  const order_by = data.findLastOrderByOptbiz;
+  
+  return order_by;
 }
 
 /**

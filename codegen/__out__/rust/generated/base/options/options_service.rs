@@ -406,12 +406,14 @@ pub async fn force_delete_by_ids_options(
 
 /// 查找 系统选项 order_by 字段的最大值
 pub async fn find_last_order_by_options(
+  search: Option<OptionsSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = options_dao::find_last_order_by_options(
+  let order_by = options_dao::find_last_order_by_options(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

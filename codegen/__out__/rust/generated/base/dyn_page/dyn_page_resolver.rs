@@ -462,18 +462,20 @@ pub async fn force_delete_by_ids_dyn_page(
 /// 查找 动态页面 order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_dyn_page(
+  search: Option<DynPageSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = dyn_page_service::find_last_order_by_dyn_page(
+  let order_by = dyn_page_service::find_last_order_by_dyn_page(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

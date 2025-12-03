@@ -218,12 +218,14 @@ impl DictGenQuery {
   async fn find_last_order_by_dict(
     &self,
     ctx: &Context<'_>,
+    search: Option<DictSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         dict_resolver::find_last_order_by_dict(
+          search,
           None,
         )
       }).await

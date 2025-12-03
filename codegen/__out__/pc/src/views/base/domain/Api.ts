@@ -677,19 +677,22 @@ export async function importModelsDomain(
  * 查找 域名 order_by 字段的最大值
  */
 export async function findLastOrderByDomain(
+  search?: DomainSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDomain: Query["findLastOrderByDomain"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDomain
+      query($search: DomainSearch) {
+        findLastOrderByDomain(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDomain;
-  return res;
+  
+  const order_by = data.findLastOrderByDomain;
+  
+  return order_by;
 }
 
 /**

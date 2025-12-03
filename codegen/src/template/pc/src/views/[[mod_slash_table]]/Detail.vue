@@ -185,7 +185,25 @@ for (let i = 0; i < columns.length; i++) {
   }
   #>
 >
-  <template #extra_header>
+  <template #extra_header><#
+    if (opts?.isUseDynPageFields) {
+    #>
+    
+    <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'add' || dialogAction === 'copy')">
+      <div
+        v-if="permit('dyn_page_fields', '新增字段') || true"
+        title="新增字段"
+      >
+        <ElIconPlus
+          class="dyn_page_fields_but"
+          @dblclick.stop
+          @click="onDynPageFields"
+        ></ElIconPlus>
+      </div>
+    </template>
+    <#
+    }
+    #>
     <div<#
       if (isUseI18n) {
       #>
@@ -198,6 +216,7 @@ for (let i = 0; i < columns.length; i++) {
     >
       <ElIconRefresh
         class="reset_but"
+        @dblclick.stop
         @click="onReset"
       ></ElIconRefresh>
     </div><#
@@ -217,6 +236,7 @@ for (let i = 0; i < columns.length; i++) {
       >
         <ElIconUnlock
           class="unlock_but"
+          @dblclick.stop
           @click="isReadonly = true;"
         >
         </ElIconUnlock>
@@ -234,6 +254,7 @@ for (let i = 0; i < columns.length; i++) {
       >
         <ElIconLock
           class="lock_but"
+          @dblclick.stop
           @click="isReadonly = false;"
         ></ElIconLock>
       </div>
@@ -3957,7 +3978,16 @@ for (let i = 0; i < columns.length; i++) {
     ref="auditDialogRef"
   ></AuditDialog><#
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
   #>
+  
+  <DynPageDetail
+    ref="dynPageDetailRef"
+  ></DynPageDetail><#
+  }
+  #>
+  
 </CustomDialog>
 </template>
 
@@ -4558,14 +4588,6 @@ for (let i = 0; i < columns.length; i++) {
 import <#=foreignSchema.opts.tableUp#>DetailDialog from "@/views/<#=foreignSchema.opts.mod#>/<#=foreignSchema.opts.table#>/Detail.vue";<#
 }
 #><#
-if (mod === "base" && table === "usr") {
-#>
-
-import {
-  findAllOrg as getOrgList,
-} from "@/views/base/org/Api.ts";<#
-}
-#><#
 if (mod === "cron" && table === "cron_job") {
 #>
 
@@ -4578,6 +4600,12 @@ if (hasIsFluentEditor) {
 
 import FluentEditor from "@opentiny/fluent-editor";
 import "@opentiny/fluent-editor/style.css";<#
+}
+#><#
+if (opts?.isUseDynPageFields) {
+#>
+
+import DynPageDetail from "@/views/base/dyn_page/Detail.vue";<#
 }
 #>
 
@@ -5500,6 +5528,7 @@ async function showDialog(
     #>
   });
   dialogAction = action || "add";
+  nextTick(() => formRef?.clearValidate());
   ids = [ ];
   changedIds = [ ];
   dialogModel = {<#
@@ -7120,7 +7149,7 @@ async function onAuditReview() {
 
 /** 保存并返回id */
 async function save() {
-  if (isReadonly) {
+  if (!inited || isReadonly) {
     return;
   }
   if (!formRef) {
@@ -7922,6 +7951,37 @@ watch(
 );<#
   }
 #><#
+}
+#><#
+if (opts?.isUseDynPageFields) {
+#>
+
+const dynPageDetailRef = $(useTemplateRef<InstanceType<typeof DynPageDetail>>("dynPageDetailRef"));
+
+/** 新增字段 */
+async function onDynPageFields() {
+  
+  if (!dynPageDetailRef) {
+    return;
+  }
+  
+  const {
+    changedIds,
+  } = await dynPageDetailRef.showDialog({
+    action: "add",
+    builtInModel: {
+      code: getPagePathUsr(),
+    },
+    title: "新增字段",
+  });
+  
+  if (changedIds.length == 0) {
+    return;
+  }
+  
+  await refreshDynPageFields();
+  
+}<#
 }
 #>
 

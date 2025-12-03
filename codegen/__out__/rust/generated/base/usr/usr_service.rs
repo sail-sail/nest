@@ -403,12 +403,14 @@ pub async fn force_delete_by_ids_usr(
 
 /// 查找 用户 order_by 字段的最大值
 pub async fn find_last_order_by_usr(
+  search: Option<UsrSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = usr_dao::find_last_order_by_usr(
+  let order_by = usr_dao::find_last_order_by_usr(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

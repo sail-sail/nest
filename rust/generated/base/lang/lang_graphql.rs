@@ -218,12 +218,14 @@ impl LangGenQuery {
   async fn find_last_order_by_lang(
     &self,
     ctx: &Context<'_>,
+    search: Option<LangSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         lang_resolver::find_last_order_by_lang(
+          search,
           None,
         )
       }).await
