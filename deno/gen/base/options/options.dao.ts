@@ -2132,6 +2132,7 @@ export async function forceDeleteByIdsOptions(
 // MARK: findLastOrderByOptions
 /** 查找 系统选项 order_by 字段的最大值 */
 export async function findLastOrderByOptions(
+  search?: Readonly<OptionsSearch>,
   options?: {
     is_debug?: boolean;
   },
@@ -2144,6 +2145,9 @@ export async function findLastOrderByOptions(
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2154,12 +2158,14 @@ export async function findLastOrderByOptions(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  let sql = `select t.order_by order_by from base_options t`;
-  const whereQuery: string[] = [ ];
+  let sql = `select t.order_by from base_options t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   

@@ -390,13 +390,15 @@ export async function forceDeleteByIdsTenant(
 /**
  * 查找 租户 order_by 字段的最大值
  */
-export async function findLastOrderByTenant(): Promise<number> {
+export async function findLastOrderByTenant(
+  search?: TenantSearch,
+): Promise<number> {
   
   const {
     findLastOrderByTenant,
   } = await import("./tenant.service.ts");
   
-  const res = findLastOrderByTenant();
+  const order_by = findLastOrderByTenant(search);
   
-  return res;
+  return order_by;
 }

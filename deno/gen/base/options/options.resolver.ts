@@ -390,13 +390,15 @@ export async function forceDeleteByIdsOptions(
 /**
  * 查找 系统选项 order_by 字段的最大值
  */
-export async function findLastOrderByOptions(): Promise<number> {
+export async function findLastOrderByOptions(
+  search?: OptionsSearch,
+): Promise<number> {
   
   const {
     findLastOrderByOptions,
   } = await import("./options.service.ts");
   
-  const res = findLastOrderByOptions();
+  const order_by = findLastOrderByOptions(search);
   
-  return res;
+  return order_by;
 }

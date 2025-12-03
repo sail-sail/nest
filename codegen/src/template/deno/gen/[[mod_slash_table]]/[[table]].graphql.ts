@@ -1009,7 +1009,7 @@ type Query {
   if (hasOrderBy) {
   #>
   "查找<#=table_comment#> order_by 字段的最大值"
-  findLastOrderBy<#=Table_Up2#>: Int!<#
+  findLastOrderBy<#=Table_Up2#>(search: <#=searchName#>): Int!<#
   }
   #>
 }<#

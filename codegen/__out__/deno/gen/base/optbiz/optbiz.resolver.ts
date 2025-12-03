@@ -390,13 +390,15 @@ export async function forceDeleteByIdsOptbiz(
 /**
  * 查找 业务选项 order_by 字段的最大值
  */
-export async function findLastOrderByOptbiz(): Promise<number> {
+export async function findLastOrderByOptbiz(
+  search?: OptbizSearch,
+): Promise<number> {
   
   const {
     findLastOrderByOptbiz,
   } = await import("./optbiz.service.ts");
   
-  const res = findLastOrderByOptbiz();
+  const order_by = findLastOrderByOptbiz(search);
   
-  return res;
+  return order_by;
 }

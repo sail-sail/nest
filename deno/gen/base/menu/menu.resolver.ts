@@ -370,13 +370,15 @@ export async function forceDeleteByIdsMenu(
 /**
  * 查找 菜单 order_by 字段的最大值
  */
-export async function findLastOrderByMenu(): Promise<number> {
+export async function findLastOrderByMenu(
+  search?: MenuSearch,
+): Promise<number> {
   
   const {
     findLastOrderByMenu,
   } = await import("./menu.service.ts");
   
-  const res = findLastOrderByMenu();
+  const order_by = findLastOrderByMenu(search);
   
-  return res;
+  return order_by;
 }

@@ -267,7 +267,10 @@ export async function getFieldCommentsDynPageField(): Promise<DynPageFieldFieldC
  * 查找 动态页面字段 order_by 字段的最大值
  */
 export async function findLastOrderByDynPageField(
+  search?: DynPageFieldSearch,
 ): Promise<number> {
-  const dyn_page_field_sort = await dyn_page_fieldDao.findLastOrderByDynPageField();
-  return dyn_page_field_sort;
+  
+  const order_by = await dyn_page_fieldDao.findLastOrderByDynPageField(search);
+  
+  return order_by;
 }

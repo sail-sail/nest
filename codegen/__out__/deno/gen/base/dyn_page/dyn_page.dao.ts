@@ -2234,6 +2234,7 @@ export async function forceDeleteByIdsDynPage(
 // MARK: findLastOrderByDynPage
 /** 查找 动态页面 order_by 字段的最大值 */
 export async function findLastOrderByDynPage(
+  search?: Readonly<DynPageSearch>,
   options?: {
     is_debug?: boolean;
   },
@@ -2246,6 +2247,9 @@ export async function findLastOrderByDynPage(
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2256,17 +2260,14 @@ export async function findLastOrderByDynPage(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  let sql = `select t.order_by order_by from base_dyn_page t`;
-  const whereQuery: string[] = [ ];
+  let sql = `select t.order_by from base_dyn_page t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   

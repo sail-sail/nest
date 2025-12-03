@@ -285,7 +285,10 @@ export async function getFieldCommentsDictDetail(): Promise<DictDetailFieldComme
  * 查找 系统字典明细 order_by 字段的最大值
  */
 export async function findLastOrderByDictDetail(
+  search?: DictDetailSearch,
 ): Promise<number> {
-  const dict_detail_sort = await dict_detailDao.findLastOrderByDictDetail();
-  return dict_detail_sort;
+  
+  const order_by = await dict_detailDao.findLastOrderByDictDetail(search);
+  
+  return order_by;
 }

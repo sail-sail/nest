@@ -2951,6 +2951,7 @@ export async function forceDeleteByIdsRole(
 // MARK: findLastOrderByRole
 /** 查找 角色 order_by 字段的最大值 */
 export async function findLastOrderByRole(
+  search?: Readonly<RoleSearch>,
   options?: {
     is_debug?: boolean;
   },
@@ -2963,6 +2964,9 @@ export async function findLastOrderByRole(
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2973,17 +2977,14 @@ export async function findLastOrderByRole(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  let sql = `select t.order_by order_by from base_role t`;
-  const whereQuery: string[] = [ ];
+  let sql = `select t.order_by from base_role t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   

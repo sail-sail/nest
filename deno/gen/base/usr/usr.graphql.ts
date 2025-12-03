@@ -257,7 +257,7 @@ type Query {
   "根据 ids 查找用户"
   findByIdsUsr(ids: [UsrId!]!): [UsrModel]!
   "查找用户 order_by 字段的最大值"
-  findLastOrderByUsr: Int!
+  findLastOrderByUsr(search: UsrSearch): Int!
 }
 type Mutation {
   "批量创建用户"

@@ -291,7 +291,10 @@ export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
  * 查找 用户 order_by 字段的最大值
  */
 export async function findLastOrderByUsr(
+  search?: UsrSearch,
 ): Promise<number> {
-  const usr_sort = await usrDao.findLastOrderByUsr();
-  return usr_sort;
+  
+  const order_by = await usrDao.findLastOrderByUsr(search);
+  
+  return order_by;
 }

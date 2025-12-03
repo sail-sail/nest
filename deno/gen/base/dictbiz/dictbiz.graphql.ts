@@ -179,7 +179,7 @@ type Query {
   "根据 ids 查找业务字典"
   findByIdsDictbiz(ids: [DictbizId!]!): [DictbizModel]!
   "查找业务字典 order_by 字段的最大值"
-  findLastOrderByDictbiz: Int!
+  findLastOrderByDictbiz(search: DictbizSearch): Int!
 }
 type Mutation {
   "批量创建业务字典"

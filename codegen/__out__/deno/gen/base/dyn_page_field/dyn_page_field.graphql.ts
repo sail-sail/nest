@@ -170,7 +170,7 @@ type Query {
   "根据 ids 查找动态页面字段"
   findByIdsDynPageField(ids: [DynPageFieldId!]!): [DynPageFieldModel]!
   "查找动态页面字段 order_by 字段的最大值"
-  findLastOrderByDynPageField: Int!
+  findLastOrderByDynPageField(search: DynPageFieldSearch): Int!
 }
 type Mutation {
   "批量创建动态页面字段"

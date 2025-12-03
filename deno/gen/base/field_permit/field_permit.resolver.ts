@@ -204,13 +204,15 @@ export async function updateByIdFieldPermit(
 /**
  * 查找 字段权限 order_by 字段的最大值
  */
-export async function findLastOrderByFieldPermit(): Promise<number> {
+export async function findLastOrderByFieldPermit(
+  search?: FieldPermitSearch,
+): Promise<number> {
   
   const {
     findLastOrderByFieldPermit,
   } = await import("./field_permit.service.ts");
   
-  const res = findLastOrderByFieldPermit();
+  const order_by = findLastOrderByFieldPermit(search);
   
-  return res;
+  return order_by;
 }

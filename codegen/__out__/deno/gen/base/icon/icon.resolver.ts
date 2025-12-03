@@ -358,13 +358,15 @@ export async function forceDeleteByIdsIcon(
 /**
  * 查找 图标库 order_by 字段的最大值
  */
-export async function findLastOrderByIcon(): Promise<number> {
+export async function findLastOrderByIcon(
+  search?: IconSearch,
+): Promise<number> {
   
   const {
     findLastOrderByIcon,
   } = await import("./icon.service.ts");
   
-  const res = findLastOrderByIcon();
+  const order_by = findLastOrderByIcon(search);
   
-  return res;
+  return order_by;
 }

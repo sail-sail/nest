@@ -390,13 +390,15 @@ export async function forceDeleteByIdsDept(
 /**
  * 查找 部门 order_by 字段的最大值
  */
-export async function findLastOrderByDept(): Promise<number> {
+export async function findLastOrderByDept(
+  search?: DeptSearch,
+): Promise<number> {
   
   const {
     findLastOrderByDept,
   } = await import("./dept.service.ts");
   
-  const res = findLastOrderByDept();
+  const order_by = findLastOrderByDept(search);
   
-  return res;
+  return order_by;
 }

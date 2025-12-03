@@ -1938,6 +1938,7 @@ export async function forceDeleteByIdsLang(
 // MARK: findLastOrderByLang
 /** 查找 语言 order_by 字段的最大值 */
 export async function findLastOrderByLang(
+  search?: Readonly<LangSearch>,
   options?: {
     is_debug?: boolean;
   },
@@ -1950,6 +1951,9 @@ export async function findLastOrderByLang(
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -1960,12 +1964,14 @@ export async function findLastOrderByLang(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  let sql = `select t.order_by order_by from base_lang t`;
-  const whereQuery: string[] = [ ];
+  let sql = `select t.order_by from base_lang t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   

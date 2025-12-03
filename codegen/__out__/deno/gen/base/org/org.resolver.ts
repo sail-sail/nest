@@ -390,13 +390,15 @@ export async function forceDeleteByIdsOrg(
 /**
  * 查找 组织 order_by 字段的最大值
  */
-export async function findLastOrderByOrg(): Promise<number> {
+export async function findLastOrderByOrg(
+  search?: OrgSearch,
+): Promise<number> {
   
   const {
     findLastOrderByOrg,
   } = await import("./org.service.ts");
   
-  const res = findLastOrderByOrg();
+  const order_by = findLastOrderByOrg(search);
   
-  return res;
+  return order_by;
 }

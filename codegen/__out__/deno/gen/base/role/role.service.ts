@@ -297,7 +297,10 @@ export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
  * 查找 角色 order_by 字段的最大值
  */
 export async function findLastOrderByRole(
+  search?: RoleSearch,
 ): Promise<number> {
-  const role_sort = await roleDao.findLastOrderByRole();
-  return role_sort;
+  
+  const order_by = await roleDao.findLastOrderByRole(search);
+  
+  return order_by;
 }

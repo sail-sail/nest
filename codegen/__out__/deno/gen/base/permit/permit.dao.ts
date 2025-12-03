@@ -1426,6 +1426,7 @@ export async function deleteByIdsPermit(
 // MARK: findLastOrderByPermit
 /** 查找 按钮权限 order_by 字段的最大值 */
 export async function findLastOrderByPermit(
+  search?: Readonly<PermitSearch>,
   options?: {
     is_debug?: boolean;
   },
@@ -1438,6 +1439,9 @@ export async function findLastOrderByPermit(
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -1448,12 +1452,14 @@ export async function findLastOrderByPermit(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  let sql = `select t.order_by order_by from base_permit t`;
-  const whereQuery: string[] = [ ];
+  let sql = `select t.order_by from base_permit t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   

@@ -390,13 +390,15 @@ export async function forceDeleteByIdsRole(
 /**
  * 查找 角色 order_by 字段的最大值
  */
-export async function findLastOrderByRole(): Promise<number> {
+export async function findLastOrderByRole(
+  search?: RoleSearch,
+): Promise<number> {
   
   const {
     findLastOrderByRole,
   } = await import("./role.service.ts");
   
-  const res = findLastOrderByRole();
+  const order_by = findLastOrderByRole(search);
   
-  return res;
+  return order_by;
 }

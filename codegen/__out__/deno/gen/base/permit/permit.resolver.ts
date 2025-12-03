@@ -204,13 +204,15 @@ export async function updateByIdPermit(
 /**
  * 查找 按钮权限 order_by 字段的最大值
  */
-export async function findLastOrderByPermit(): Promise<number> {
+export async function findLastOrderByPermit(
+  search?: PermitSearch,
+): Promise<number> {
   
   const {
     findLastOrderByPermit,
   } = await import("./permit.service.ts");
   
-  const res = findLastOrderByPermit();
+  const order_by = findLastOrderByPermit(search);
   
-  return res;
+  return order_by;
 }

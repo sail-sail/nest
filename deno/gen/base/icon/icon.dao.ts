@@ -1965,6 +1965,7 @@ export async function forceDeleteByIdsIcon(
 // MARK: findLastOrderByIcon
 /** 查找 图标库 order_by 字段的最大值 */
 export async function findLastOrderByIcon(
+  search?: Readonly<IconSearch>,
   options?: {
     is_debug?: boolean;
   },
@@ -1977,6 +1978,9 @@ export async function findLastOrderByIcon(
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -1987,12 +1991,14 @@ export async function findLastOrderByIcon(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  let sql = `select t.order_by order_by from base_icon t`;
-  const whereQuery: string[] = [ ];
+  let sql = `select t.order_by from base_icon t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   

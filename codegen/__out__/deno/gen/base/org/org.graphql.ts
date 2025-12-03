@@ -137,7 +137,7 @@ type Query {
   "根据 ids 查找组织"
   findByIdsOrg(ids: [OrgId!]!): [OrgModel]!
   "查找组织 order_by 字段的最大值"
-  findLastOrderByOrg: Int!
+  findLastOrderByOrg(search: OrgSearch): Int!
 }
 type Mutation {
   "批量创建组织"

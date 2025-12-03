@@ -253,7 +253,10 @@ export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
  * 查找 按钮权限 order_by 字段的最大值
  */
 export async function findLastOrderByPermit(
+  search?: PermitSearch,
 ): Promise<number> {
-  const permit_sort = await permitDao.findLastOrderByPermit();
-  return permit_sort;
+  
+  const order_by = await permitDao.findLastOrderByPermit(search);
+  
+  return order_by;
 }

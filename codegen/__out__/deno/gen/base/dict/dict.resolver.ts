@@ -358,13 +358,15 @@ export async function forceDeleteByIdsDict(
 /**
  * 查找 系统字典 order_by 字段的最大值
  */
-export async function findLastOrderByDict(): Promise<number> {
+export async function findLastOrderByDict(
+  search?: DictSearch,
+): Promise<number> {
   
   const {
     findLastOrderByDict,
   } = await import("./dict.service.ts");
   
-  const res = findLastOrderByDict();
+  const order_by = findLastOrderByDict(search);
   
-  return res;
+  return order_by;
 }

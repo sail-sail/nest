@@ -184,7 +184,7 @@ type Query {
   "根据 ids 查找菜单"
   findByIdsMenu(ids: [MenuId!]!): [MenuModel]!
   "查找菜单 order_by 字段的最大值"
-  findLastOrderByMenu: Int!
+  findLastOrderByMenu(search: MenuSearch): Int!
 }
 type Mutation {
   "批量创建菜单"

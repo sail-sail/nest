@@ -1249,15 +1249,17 @@ if (hasOrderBy) {
 /**
  * 查找 <#=table_comment#> order_by 字段的最大值
  */
-export async function findLastOrderBy<#=Table_Up2#>(): Promise<number> {
+export async function findLastOrderBy<#=Table_Up2#>(
+  search?: <#=searchName#>,
+): Promise<number> {
   
   const {
     findLastOrderBy<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
-  const res = findLastOrderBy<#=Table_Up2#>();
+  const order_by = findLastOrderBy<#=Table_Up2#>(search);
   
-  return res;
+  return order_by;
 }<#
 }
 #>

@@ -433,13 +433,15 @@ export async function forceDeleteByIdsUsr(
 /**
  * 查找 用户 order_by 字段的最大值
  */
-export async function findLastOrderByUsr(): Promise<number> {
+export async function findLastOrderByUsr(
+  search?: UsrSearch,
+): Promise<number> {
   
   const {
     findLastOrderByUsr,
   } = await import("./usr.service.ts");
   
-  const res = findLastOrderByUsr();
+  const order_by = findLastOrderByUsr(search);
   
-  return res;
+  return order_by;
 }

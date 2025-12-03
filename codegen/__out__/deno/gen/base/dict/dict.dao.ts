@@ -2159,6 +2159,7 @@ export async function forceDeleteByIdsDict(
 // MARK: findLastOrderByDict
 /** 查找 系统字典 order_by 字段的最大值 */
 export async function findLastOrderByDict(
+  search?: Readonly<DictSearch>,
   options?: {
     is_debug?: boolean;
   },
@@ -2171,6 +2172,9 @@ export async function findLastOrderByDict(
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2181,12 +2185,14 @@ export async function findLastOrderByDict(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  let sql = `select t.order_by order_by from base_dict t`;
-  const whereQuery: string[] = [ ];
+  let sql = `select t.order_by from base_dict t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   

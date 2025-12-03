@@ -317,7 +317,10 @@ export async function getFieldCommentsOptions(): Promise<OptionsFieldComment> {
  * 查找 系统选项 order_by 字段的最大值
  */
 export async function findLastOrderByOptions(
+  search?: OptionsSearch,
 ): Promise<number> {
-  const options_sort = await optionsDao.findLastOrderByOptions();
-  return options_sort;
+  
+  const order_by = await optionsDao.findLastOrderByOptions(search);
+  
+  return order_by;
 }

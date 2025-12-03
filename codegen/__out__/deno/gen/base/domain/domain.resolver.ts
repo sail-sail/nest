@@ -390,13 +390,15 @@ export async function forceDeleteByIdsDomain(
 /**
  * 查找 域名 order_by 字段的最大值
  */
-export async function findLastOrderByDomain(): Promise<number> {
+export async function findLastOrderByDomain(
+  search?: DomainSearch,
+): Promise<number> {
   
   const {
     findLastOrderByDomain,
   } = await import("./domain.service.ts");
   
-  const res = findLastOrderByDomain();
+  const order_by = findLastOrderByDomain(search);
   
-  return res;
+  return order_by;
 }

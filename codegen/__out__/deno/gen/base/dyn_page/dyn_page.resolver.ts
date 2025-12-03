@@ -358,13 +358,15 @@ export async function forceDeleteByIdsDynPage(
 /**
  * 查找 动态页面 order_by 字段的最大值
  */
-export async function findLastOrderByDynPage(): Promise<number> {
+export async function findLastOrderByDynPage(
+  search?: DynPageSearch,
+): Promise<number> {
   
   const {
     findLastOrderByDynPage,
   } = await import("./dyn_page.service.ts");
   
-  const res = findLastOrderByDynPage();
+  const order_by = findLastOrderByDynPage(search);
   
-  return res;
+  return order_by;
 }

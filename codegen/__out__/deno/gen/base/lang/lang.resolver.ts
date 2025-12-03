@@ -358,13 +358,15 @@ export async function forceDeleteByIdsLang(
 /**
  * 查找 语言 order_by 字段的最大值
  */
-export async function findLastOrderByLang(): Promise<number> {
+export async function findLastOrderByLang(
+  search?: LangSearch,
+): Promise<number> {
   
   const {
     findLastOrderByLang,
   } = await import("./lang.service.ts");
   
-  const res = findLastOrderByLang();
+  const order_by = findLastOrderByLang(search);
   
-  return res;
+  return order_by;
 }
