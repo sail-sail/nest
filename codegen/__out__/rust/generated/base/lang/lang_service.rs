@@ -340,12 +340,14 @@ pub async fn force_delete_by_ids_lang(
 
 /// 查找 语言 order_by 字段的最大值
 pub async fn find_last_order_by_lang(
+  search: Option<LangSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = lang_dao::find_last_order_by_lang(
+  let order_by = lang_dao::find_last_order_by_lang(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

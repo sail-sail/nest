@@ -433,12 +433,14 @@ pub async fn force_delete_by_ids_dept(
 
 /// 查找 部门 order_by 字段的最大值
 pub async fn find_last_order_by_dept(
+  search: Option<DeptSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = dept_dao::find_last_order_by_dept(
+  let order_by = dept_dao::find_last_order_by_dept(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

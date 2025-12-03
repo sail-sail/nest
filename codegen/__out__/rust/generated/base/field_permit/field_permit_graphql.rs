@@ -199,12 +199,14 @@ impl FieldPermitGenQuery {
   async fn find_last_order_by_field_permit(
     &self,
     ctx: &Context<'_>,
+    search: Option<FieldPermitSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         field_permit_resolver::find_last_order_by_field_permit(
+          search,
           None,
         )
       }).await

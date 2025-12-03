@@ -238,12 +238,14 @@ impl DomainGenQuery {
   async fn find_last_order_by_domain(
     &self,
     ctx: &Context<'_>,
+    search: Option<DomainSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         domain_resolver::find_last_order_by_domain(
+          search,
           None,
         )
       }).await

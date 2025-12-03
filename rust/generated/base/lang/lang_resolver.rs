@@ -436,18 +436,20 @@ pub async fn force_delete_by_ids_lang(
 /// 查找 语言 order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_lang(
+  search: Option<LangSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = lang_service::find_last_order_by_lang(
+  let order_by = lang_service::find_last_order_by_lang(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

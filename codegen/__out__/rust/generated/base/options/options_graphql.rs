@@ -238,12 +238,14 @@ impl OptionsGenQuery {
   async fn find_last_order_by_options(
     &self,
     ctx: &Context<'_>,
+    search: Option<OptionsSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         options_resolver::find_last_order_by_options(
+          search,
           None,
         )
       }).await

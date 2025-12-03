@@ -220,12 +220,14 @@ impl DynPageGenQuery {
   async fn find_last_order_by_dyn_page(
     &self,
     ctx: &Context<'_>,
+    search: Option<DynPageSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         dyn_page_resolver::find_last_order_by_dyn_page(
+          search,
           None,
         )
       }).await

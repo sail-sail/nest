@@ -240,12 +240,14 @@ impl OptbizGenQuery {
   async fn find_last_order_by_optbiz(
     &self,
     ctx: &Context<'_>,
+    search: Option<OptbizSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         optbiz_resolver::find_last_order_by_optbiz(
+          search,
           None,
         )
       }).await

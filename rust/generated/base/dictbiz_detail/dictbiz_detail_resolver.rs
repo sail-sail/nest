@@ -462,18 +462,20 @@ pub async fn force_delete_by_ids_dictbiz_detail(
 /// 查找 业务字典明细 order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_dictbiz_detail(
+  search: Option<DictbizDetailSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = dictbiz_detail_service::find_last_order_by_dictbiz_detail(
+  let order_by = dictbiz_detail_service::find_last_order_by_dictbiz_detail(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

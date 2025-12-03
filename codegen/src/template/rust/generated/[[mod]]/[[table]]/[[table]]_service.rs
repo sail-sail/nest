@@ -1540,14 +1540,16 @@ if (hasOrderBy) {
 
 /// 查找 <#=table_comment#> order_by 字段的最大值
 pub async fn find_last_order_by_<#=table#>(
+  search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = <#=table#>_dao::find_last_order_by_<#=table#>(
+  let order_by = <#=table#>_dao::find_last_order_by_<#=table#>(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }<#
 }
 #>
