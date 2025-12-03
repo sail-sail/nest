@@ -19,6 +19,7 @@
     >
       <ElIconRefresh
         class="reset_but"
+        @dblclick.stop
         @click="onReset"
       ></ElIconRefresh>
     </div>
@@ -29,6 +30,7 @@
       >
         <ElIconUnlock
           class="unlock_but"
+          @dblclick.stop
           @click="isReadonly = true;"
         >
         </ElIconUnlock>
@@ -39,6 +41,7 @@
       >
         <ElIconLock
           class="lock_but"
+          @dblclick.stop
           @click="isReadonly = false;"
         ></ElIconLock>
       </div>
@@ -761,6 +764,7 @@ async function showDialog(
     }
   });
   dialogAction = action || "add";
+  nextTick(() => formRef?.clearValidate());
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
@@ -776,9 +780,14 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       getDefaultInputDynPage(),
-      findLastOrderByDynPage({
-        notLoading: !inited,
-      }),
+      findLastOrderByDynPage(
+        {
+          code: dialogModel.code,
+        },
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -786,6 +795,9 @@ async function showDialog(
       ...model,
       order_by: order_by + 1,
     };
+    if (dialogModel.code) {
+      await onCode();
+    }
   } else if (dialogAction === "copy") {
     const id = model?.ids?.[0];
     if (!id) {
@@ -1026,7 +1038,7 @@ async function onSaveKeydown(e: KeyboardEvent) {
 
 /** 保存并返回id */
 async function save() {
-  if (isReadonly) {
+  if (!inited || isReadonly) {
     return;
   }
   if (!formRef) {

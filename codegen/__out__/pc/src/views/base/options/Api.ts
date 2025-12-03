@@ -681,19 +681,22 @@ export async function importModelsOptions(
  * 查找 系统选项 order_by 字段的最大值
  */
 export async function findLastOrderByOptions(
+  search?: OptionsSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByOptions: Query["findLastOrderByOptions"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByOptions
+      query($search: OptionsSearch) {
+        findLastOrderByOptions(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByOptions;
-  return res;
+  
+  const order_by = data.findLastOrderByOptions;
+  
+  return order_by;
 }
 
 /**

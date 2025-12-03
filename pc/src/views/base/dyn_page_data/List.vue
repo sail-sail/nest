@@ -284,6 +284,14 @@
               <span>导入</span>
             </el-dropdown-item>
             
+            <el-dropdown-item
+              v-if="permit('dyn_page_fields', '新增字段') && !isLocked || true"
+              un-justify-center
+              @click="onDynPageFields"
+            >
+              <span>新增字段</span>
+            </el-dropdown-item>
+            
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -546,6 +554,10 @@
     @stop="stopImport"
   ></ImportPercentageDialog>
   
+  <DynPageDetail
+    ref="dynPageDetailRef"
+  ></DynPageDetail>
+  
 </div>
 </template>
 
@@ -563,6 +575,8 @@ import {
   importModelsDynPageData,
   useDownloadImportTemplateDynPageData,
 } from "./Api.ts";
+
+import DynPageDetail from "@/views/base/dyn_page/Detail.vue";
 
 defineOptions({
   name: "动态页面数据",
@@ -1444,6 +1458,33 @@ watch(
     immediate: true,
   },
 );
+
+const dynPageDetailRef = $(useTemplateRef<InstanceType<typeof DynPageDetail>>("dynPageDetailRef"));
+
+/** 新增字段 */
+async function onDynPageFields() {
+  
+  if (!dynPageDetailRef) {
+    return;
+  }
+  
+  const {
+    changedIds,
+  } = await dynPageDetailRef.showDialog({
+    action: "add",
+    builtInModel: {
+      code: getPagePathUsr(),
+    },
+    title: "新增字段",
+  });
+  
+  if (changedIds.length == 0) {
+    return;
+  }
+  
+  await refreshDynPageFields();
+  
+}
 
 initFrame();
 

@@ -745,19 +745,22 @@ export async function importModelsMenu(
  * 查找 菜单 order_by 字段的最大值
  */
 export async function findLastOrderByMenu(
+  search?: MenuSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByMenu: Query["findLastOrderByMenu"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByMenu
+      query($search: MenuSearch) {
+        findLastOrderByMenu(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByMenu;
-  return res;
+  
+  const order_by = data.findLastOrderByMenu;
+  
+  return order_by;
 }
 
 /**

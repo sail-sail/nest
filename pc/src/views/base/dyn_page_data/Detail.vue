@@ -14,11 +14,26 @@
   @keydown.ctrl.s="onSaveKeydown"
 >
   <template #extra_header>
+    
+    <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'add' || dialogAction === 'copy')">
+      <div
+        v-if="permit('dyn_page_fields', '新增字段') || true"
+        title="新增字段"
+      >
+        <ElIconPlus
+          class="dyn_page_fields_but"
+          @dblclick.stop
+          @click="onDynPageFields"
+        ></ElIconPlus>
+      </div>
+    </template>
+    
     <div
       title="重置"
     >
       <ElIconRefresh
         class="reset_but"
+        @dblclick.stop
         @click="onReset"
       ></ElIconRefresh>
     </div>
@@ -29,6 +44,7 @@
       >
         <ElIconUnlock
           class="unlock_but"
+          @dblclick.stop
           @click="isReadonly = true;"
         >
         </ElIconUnlock>
@@ -39,6 +55,7 @@
       >
         <ElIconLock
           class="lock_but"
+          @dblclick.stop
           @click="isReadonly = false;"
         ></ElIconLock>
       </div>
@@ -194,6 +211,11 @@
       
     </div>
   </div>
+  
+  <DynPageDetail
+    ref="dynPageDetailRef"
+  ></DynPageDetail>
+  
 </CustomDialog>
 </template>
 
@@ -212,6 +234,8 @@ import {
   intoInputDynPageData,
   getFieldCommentsDynPageData,
 } from "./Api.ts";
+
+import DynPageDetail from "@/views/base/dyn_page/Detail.vue";
 
 import {
   Parser as ExprParser,
@@ -453,6 +477,7 @@ async function showDialog(
     }
   });
   dialogAction = action || "add";
+  nextTick(() => formRef?.clearValidate());
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
@@ -683,7 +708,7 @@ async function onSaveKeydown(e: KeyboardEvent) {
 
 /** 保存并返回id */
 async function save() {
-  if (isReadonly) {
+  if (!inited || isReadonly) {
     return;
   }
   if (!formRef) {
@@ -758,6 +783,33 @@ async function onSave() {
     type: "ok",
     changedIds,
   });
+}
+
+const dynPageDetailRef = $(useTemplateRef<InstanceType<typeof DynPageDetail>>("dynPageDetailRef"));
+
+/** 新增字段 */
+async function onDynPageFields() {
+  
+  if (!dynPageDetailRef) {
+    return;
+  }
+  
+  const {
+    changedIds,
+  } = await dynPageDetailRef.showDialog({
+    action: "add",
+    builtInModel: {
+      code: getPagePathUsr(),
+    },
+    title: "新增字段",
+  });
+  
+  if (changedIds.length == 0) {
+    return;
+  }
+  
+  await refreshDynPageFields();
+  
 }
 
 async function onDialogOpen() {

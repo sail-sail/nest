@@ -399,19 +399,22 @@ export async function getTreeMenu() {
  * 查找 按钮权限 order_by 字段的最大值
  */
 export async function findLastOrderByPermit(
+  search?: PermitSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByPermit: Query["findLastOrderByPermit"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByPermit
+      query($search: PermitSearch) {
+        findLastOrderByPermit(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByPermit;
-  return res;
+  
+  const order_by = data.findLastOrderByPermit;
+  
+  return order_by;
 }
 
 /**

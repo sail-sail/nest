@@ -645,19 +645,22 @@ export async function importModelsLang(
  * 查找 语言 order_by 字段的最大值
  */
 export async function findLastOrderByLang(
+  search?: LangSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByLang: Query["findLastOrderByLang"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByLang
+      query($search: LangSearch) {
+        findLastOrderByLang(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByLang;
-  return res;
+  
+  const order_by = data.findLastOrderByLang;
+  
+  return order_by;
 }
 
 /**

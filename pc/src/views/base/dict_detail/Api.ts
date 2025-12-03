@@ -702,19 +702,22 @@ export async function importModelsDictDetail(
  * 查找 系统字典明细 order_by 字段的最大值
  */
 export async function findLastOrderByDictDetail(
+  search?: DictDetailSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDictDetail: Query["findLastOrderByDictDetail"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDictDetail
+      query($search: DictDetailSearch) {
+        findLastOrderByDictDetail(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDictDetail;
-  return res;
+  
+  const order_by = data.findLastOrderByDictDetail;
+  
+  return order_by;
 }
 
 /**

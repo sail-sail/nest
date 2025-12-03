@@ -924,19 +924,22 @@ export async function importModelsRole(
  * 查找 角色 order_by 字段的最大值
  */
 export async function findLastOrderByRole(
+  search?: RoleSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByRole: Query["findLastOrderByRole"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByRole
+      query($search: RoleSearch) {
+        findLastOrderByRole(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByRole;
-  return res;
+  
+  const order_by = data.findLastOrderByRole;
+  
+  return order_by;
 }
 
 /**
