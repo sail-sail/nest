@@ -403,12 +403,14 @@ pub async fn force_delete_by_ids_wx_app(
 
 /// 查找 小程序设置 order_by 字段的最大值
 pub async fn find_last_order_by_wx_app(
+  search: Option<WxAppSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = wx_app_dao::find_last_order_by_wx_app(
+  let order_by = wx_app_dao::find_last_order_by_wx_app(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

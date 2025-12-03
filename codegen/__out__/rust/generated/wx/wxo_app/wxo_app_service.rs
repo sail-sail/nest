@@ -403,12 +403,14 @@ pub async fn force_delete_by_ids_wxo_app(
 
 /// 查找 公众号设置 order_by 字段的最大值
 pub async fn find_last_order_by_wxo_app(
+  search: Option<WxoAppSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = wxo_app_dao::find_last_order_by_wxo_app(
+  let order_by = wxo_app_dao::find_last_order_by_wxo_app(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

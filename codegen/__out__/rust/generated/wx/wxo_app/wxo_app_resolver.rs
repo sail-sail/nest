@@ -515,18 +515,20 @@ pub async fn force_delete_by_ids_wxo_app(
 /// 查找 公众号设置 order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_wxo_app(
+  search: Option<WxoAppSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = wxo_app_service::find_last_order_by_wxo_app(
+  let order_by = wxo_app_service::find_last_order_by_wxo_app(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

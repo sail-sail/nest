@@ -240,12 +240,14 @@ impl WxAppGenQuery {
   async fn find_last_order_by_wx_app(
     &self,
     ctx: &Context<'_>,
+    search: Option<WxAppSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         wx_app_resolver::find_last_order_by_wx_app(
+          search,
           None,
         )
       }).await

@@ -773,19 +773,22 @@ export async function importModelsWxoApp(
  * 查找 公众号设置 order_by 字段的最大值
  */
 export async function findLastOrderByWxoApp(
+  search?: WxoAppSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByWxoApp: Query["findLastOrderByWxoApp"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByWxoApp
+      query($search: WxoAppSearch) {
+        findLastOrderByWxoApp(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByWxoApp;
-  return res;
+  
+  const order_by = data.findLastOrderByWxoApp;
+  
+  return order_by;
 }
 
 /**

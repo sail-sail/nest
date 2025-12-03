@@ -695,19 +695,22 @@ export async function importModelsWxPay(
  * 查找 微信支付设置 order_by 字段的最大值
  */
 export async function findLastOrderByWxPay(
+  search?: WxPaySearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByWxPay: Query["findLastOrderByWxPay"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByWxPay
+      query($search: WxPaySearch) {
+        findLastOrderByWxPay(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByWxPay;
-  return res;
+  
+  const order_by = data.findLastOrderByWxPay;
+  
+  return order_by;
 }
 
 /**

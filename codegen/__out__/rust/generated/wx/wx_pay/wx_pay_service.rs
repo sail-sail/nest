@@ -403,12 +403,14 @@ pub async fn force_delete_by_ids_wx_pay(
 
 /// 查找 微信支付设置 order_by 字段的最大值
 pub async fn find_last_order_by_wx_pay(
+  search: Option<WxPaySearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = wx_pay_dao::find_last_order_by_wx_pay(
+  let order_by = wx_pay_dao::find_last_order_by_wx_pay(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

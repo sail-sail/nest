@@ -688,19 +688,22 @@ export async function importModelsWxApp(
  * 查找 小程序设置 order_by 字段的最大值
  */
 export async function findLastOrderByWxApp(
+  search?: WxAppSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByWxApp: Query["findLastOrderByWxApp"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByWxApp
+      query($search: WxAppSearch) {
+        findLastOrderByWxApp(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByWxApp;
-  return res;
+  
+  const order_by = data.findLastOrderByWxApp;
+  
+  return order_by;
 }
 
 /**
