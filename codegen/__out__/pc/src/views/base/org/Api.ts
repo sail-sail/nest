@@ -674,19 +674,22 @@ export async function importModelsOrg(
  * 查找 组织 order_by 字段的最大值
  */
 export async function findLastOrderByOrg(
+  search?: OrgSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByOrg: Query["findLastOrderByOrg"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByOrg
+      query($search: OrgSearch) {
+        findLastOrderByOrg(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByOrg;
-  return res;
+  
+  const order_by = data.findLastOrderByOrg;
+  
+  return order_by;
 }
 
 /**

@@ -658,19 +658,22 @@ export async function importModelsIcon(
  * 查找 图标库 order_by 字段的最大值
  */
 export async function findLastOrderByIcon(
+  search?: IconSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByIcon: Query["findLastOrderByIcon"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByIcon
+      query($search: IconSearch) {
+        findLastOrderByIcon(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByIcon;
-  return res;
+  
+  const order_by = data.findLastOrderByIcon;
+  
+  return order_by;
 }
 
 /**

@@ -162,7 +162,7 @@ html,body {
     .full_but:hover {
       color: var(--el-color-primary);
     }
-    .unlock_but,.lock_but,.reset_but,.select_refresh_icon {
+    .unlock_but,.lock_but,.reset_but,.select_refresh_icon,.dyn_page_fields_but {
       position: relative;
       top: 1px;
       cursor: pointer;
@@ -170,13 +170,11 @@ html,body {
       height: 15px;
       margin-right: 8px;
     }
-    .unlock_but:hover,.lock_but:hover,.select_refresh_icon:hover {
+    .unlock_but:hover,.lock_but:hover,.select_refresh_icon:hover,.dyn_page_fields_but:hover {
       color: var(--el-color-primary);
     }
     .notice_span,.reset_but:hover {
       color: red;
-      margin-left: 8px;
-      font-size: 13px;
     }
   }
 }
