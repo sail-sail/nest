@@ -33,6 +33,33 @@ pub enum GetwxacodeunlimitEnvVersion {
   Release,
 }
 
+impl std::fmt::Display for GetwxacodeunlimitEnvVersion {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let s = match self {
+      GetwxacodeunlimitEnvVersion::Develop => "develop",
+      GetwxacodeunlimitEnvVersion::Trial => "trial",
+      GetwxacodeunlimitEnvVersion::Release => "release",
+    };
+    write!(f, "{}", s)
+  }
+}
+
+impl TryFrom<String> for GetwxacodeunlimitEnvVersion {
+  type Error = color_eyre::eyre::Report;
+  
+  fn try_from(value: String) -> Result<Self, Self::Error> {
+    match value.as_str() {
+      "develop" => Ok(GetwxacodeunlimitEnvVersion::Develop),
+      "trial" => Ok(GetwxacodeunlimitEnvVersion::Trial),
+      "release" => Ok(GetwxacodeunlimitEnvVersion::Release),
+      _ => Err(color_eyre::eyre::eyre!(
+        "Invalid GetwxacodeunlimitEnvVersion: {}",
+        value,
+      )),
+    }
+  }
+} 
+
 #[derive(
   InputObject,
   Debug,
