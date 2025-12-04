@@ -1,6 +1,10 @@
 import {
   UserAgent,
 } from "@/utils/UserAgent";
+
+import {
+  GetwxacodeunlimitEnvVersion,
+} from "#/types.ts";
   
 const loading = ref(0);
   
@@ -147,6 +151,26 @@ export default function() {
     return isGuest.value;
   }
   
+  function getEnvVersion(): GetwxacodeunlimitEnvVersion {
+    const indexStore = useIndexStore();
+    const accountInfo = indexStore.getAccountInfo();
+    const envVersion = $ref(accountInfo?.miniProgram.envVersion as unknown as GetwxacodeunlimitEnvVersion | undefined);
+
+    let env_version: GetwxacodeunlimitEnvVersion;
+
+    if (envVersion === "develop") {
+      env_version = GetwxacodeunlimitEnvVersion.Trial;
+    } else if (envVersion === "trial") {
+      env_version = GetwxacodeunlimitEnvVersion.Trial;
+    } else if (envVersion === "release") {
+      env_version = GetwxacodeunlimitEnvVersion.Release;
+    } else {
+      env_version = GetwxacodeunlimitEnvVersion.Release;
+    }
+    
+    return env_version;
+  }
+  
   return {
     getUid,
     getLoading,
@@ -163,5 +187,6 @@ export default function() {
     getAccountInfo,
     setIsGuest,
     getIsGuest,
+    getEnvVersion,
   };
 };
