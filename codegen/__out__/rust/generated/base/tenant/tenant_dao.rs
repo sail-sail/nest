@@ -112,6 +112,22 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
+  {
+    let keyword: Option<String> = match search {
+      Some(item) => item.keyword.clone(),
+      None => None,
+    };
+    if let Some(keyword) = keyword && !keyword.is_empty() {
+      where_query.push_str(" and (");
+      where_query.push_str(" t.code like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+        
+      where_query.push_str(" or");
+      where_query.push_str(" t.lbl like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+      where_query.push(')');
+    }
+  }
   // 编码-序列号
   {
     let mut code_seq = match search {
