@@ -28,17 +28,6 @@
       @keydown.enter="onSearch(true)"
     >
       
-      <el-form-item
-        label="关键字"
-        prop="keyword"
-      >
-        <CustomInput
-          v-model="search.keyword"
-          placeholder="请输入 编码/名称/备注"
-          @clear="onSearchClear"
-        ></CustomInput>
-      </el-form-item>
-      
       <template v-if="(showBuildIn || builtInSearch?.is_enabled == null)">
         <el-form-item
           label="启用"
@@ -775,7 +764,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
+const tableRef = $(useTemplateRef("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -1065,7 +1054,7 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
+const detailRef = $(useTemplateRef("detailRef"));
 
 /** 当前表格数据对应的搜索条件 */
 let currentSearch = $ref<DictbizSearch>({ });
@@ -1290,7 +1279,7 @@ async function onInsert() {
   await openAdd();
 }
 
-const uploadFileDialogRef = $(useTemplateRef<InstanceType<typeof UploadFileDialog>>("uploadFileDialogRef"));
+const uploadFileDialogRef = $(useTemplateRef("uploadFileDialogRef"));
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -1611,7 +1600,7 @@ async function onRevertByIds() {
   }
 }
 
-const foreignTabsRef = $(useTemplateRef<InstanceType<typeof ForeignTabs>>("foreignTabsRef"));
+const foreignTabsRef = $(useTemplateRef("foreignTabsRef"));
 
 async function openForeignTabs(
   id: DictbizId,

@@ -20,11 +20,35 @@
       "style": {
         "navigationBarTitleText": "登录"
       }
+    },
+    {
+      "path": "pages/dyn_page/List",
+      "style": {
+        "navigationBarTitleText": "动态页面列表"
+      }
+    },
+    {
+      "path": "pages/dyn_page/Detail",
+      "style": {
+        "navigationBarTitleText": "动态页面详情"
+      }
+    },
+    {
+      "path": "pages/dyn_page_field/List",
+      "style": {
+        "navigationBarTitleText": "动态页面字段列表"
+      }
+    },
+    {
+      "path": "pages/dyn_page_field/Detail",
+      "style": {
+        "navigationBarTitleText": "动态页面字段详情"
+      }
     }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "uni-app",
+    "navigationBarTitleText": "uni",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8"
   }

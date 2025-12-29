@@ -197,6 +197,15 @@ const _validFun = (val: any) => {
     }
 }
 
+/**
+ * 重置校验状态（不重置数据）
+ */
+const resetValidation = () => {
+    isPass.value = null
+    errorMessage.value = null
+    isFirstVaild.value = true
+}
+
 const setVisibled = (isvisible = true) => {
     if (!proxy) return;
     let parent = findParent(proxy)
@@ -204,6 +213,18 @@ const setVisibled = (isvisible = true) => {
     let ele = parent! as InstanceType<typeof TmForm>
 
     ele._setMarker(props.name, isvisible)
+}
+
+/**
+ * 向父 form 注册/注销 resetValidation 回调
+ */
+const registerResetValidation = (register: boolean) => {
+    if (!proxy || !props.name) return;
+    let parent = findParent(proxy)
+    if (!parent) return;
+    let ele = parent! as InstanceType<typeof TmForm>
+
+    ele._registerResetValidation(props.name, register ? resetValidation : null)
 }
 
 function findParent(parent: any): any {
@@ -216,10 +237,16 @@ function findParent(parent: any): any {
 
 onMounted(() => {
     setVisibled(true)
+    registerResetValidation(true)
 })
 onBeforeUnmount(() => {
     clearTimeout(tid)
     setVisibled(false)
+    registerResetValidation(false)
+})
+
+defineExpose({
+    resetValidation
 })
 
 </script>

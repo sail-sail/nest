@@ -62,7 +62,7 @@ const props = defineProps(
 		 */
 		color: {
 			type: String,
-			default: "white"
+			default: ""
 		},
 		/**
 		 * 暗黑时的背景,如果不填写读取sheetDark

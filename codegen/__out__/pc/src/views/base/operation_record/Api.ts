@@ -36,7 +36,7 @@ export function intoInputOperationRecord(
     // 操作
     lbl: model?.lbl,
     // 耗时(毫秒)
-    time: model?.time,
+    time: model?.time != null ? Number(model?.time || 0) : undefined,
     // 操作前数据
     old_data: model?.old_data,
     // 操作后数据

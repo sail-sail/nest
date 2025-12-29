@@ -44,7 +44,7 @@ export function intoInputDept(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 组织
     org_id: model?.org_id,
     org_id_lbl: model?.org_id_lbl,
@@ -747,8 +747,8 @@ export function useExportExcelDept() {
     try {
       const data = await query({
         query: `
-          query($search: DeptSearch, $sort: [SortInput!]) {
-            findAllDept(search: $search, page: null, sort: $sort) {
+          query($search: DeptSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDept(search: $search, page: $page, sort: $sort) {
               ${ deptQueryField }
             }
             findAllUsr {
@@ -768,6 +768,9 @@ export function useExportExcelDept() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

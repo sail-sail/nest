@@ -37,7 +37,7 @@ export function intoInputOrg(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -575,8 +575,8 @@ export function useExportExcelOrg() {
     try {
       const data = await query({
         query: `
-          query($search: OrgSearch, $sort: [SortInput!]) {
-            findAllOrg(search: $search, page: null, sort: $sort) {
+          query($search: OrgSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllOrg(search: $search, page: $page, sort: $sort) {
               ${ orgQueryField }
             }
             getDict(codes: [
@@ -590,6 +590,9 @@ export function useExportExcelOrg() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

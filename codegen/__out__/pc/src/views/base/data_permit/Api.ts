@@ -603,8 +603,8 @@ export function useExportExcelDataPermit() {
     try {
       const data = await query({
         query: `
-          query($search: DataPermitSearch, $sort: [SortInput!]) {
-            findAllDataPermit(search: $search, page: null, sort: $sort) {
+          query($search: DataPermitSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDataPermit(search: $search, page: $page, sort: $sort) {
               ${ dataPermitQueryField }
             }
             findAllMenu {
@@ -621,6 +621,9 @@ export function useExportExcelDataPermit() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

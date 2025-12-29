@@ -947,7 +947,7 @@ const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 const isI18n = import.meta.env.VITE_SERVER_I18N_ENABLE !== "false";
 
 /** 表格 */
-const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
+const tableRef = $(useTemplateRef("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -1294,7 +1294,7 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
+const detailRef = $(useTemplateRef("detailRef"));
 
 // 设置租户管理员密码
 const pwdDialogRef = $(useTemplateRef<InstanceType<typeof PwdDialog>>("pwdDialogRef"));
@@ -1522,7 +1522,7 @@ async function onInsert() {
   await openAdd();
 }
 
-const uploadFileDialogRef = $(useTemplateRef<InstanceType<typeof UploadFileDialog>>("uploadFileDialogRef"));
+const uploadFileDialogRef = $(useTemplateRef("uploadFileDialogRef"));
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -2014,7 +2014,7 @@ watch(
 
 initFrame();
 
-const menu_idsListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("menu_idsListSelectDialogRef"));
+const menu_idsListSelectDialogRef = $(useTemplateRef("menu_idsListSelectDialogRef"));
 
 async function onMenu_ids(row: TenantModel) {
   if (!menu_idsListSelectDialogRef) {
