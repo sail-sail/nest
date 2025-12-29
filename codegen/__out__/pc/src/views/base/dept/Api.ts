@@ -747,8 +747,8 @@ export function useExportExcelDept() {
     try {
       const data = await query({
         query: `
-          query($search: DeptSearch, $sort: [SortInput!]) {
-            findAllDept(search: $search, page: null, sort: $sort) {
+          query($search: DeptSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDept(search: $search, page: $page, sort: $sort) {
               ${ deptQueryField }
             }
             findAllUsr {
@@ -768,6 +768,9 @@ export function useExportExcelDept() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

@@ -765,8 +765,8 @@ export function useExportExcelTenant() {
     try {
       const data = await query({
         query: `
-          query($search: TenantSearch, $sort: [SortInput!]) {
-            findAllTenant(search: $search, page: null, sort: $sort) {
+          query($search: TenantSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllTenant(search: $search, page: $page, sort: $sort) {
               ${ tenantQueryField }
             }
             findAllDomain {
@@ -789,6 +789,9 @@ export function useExportExcelTenant() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

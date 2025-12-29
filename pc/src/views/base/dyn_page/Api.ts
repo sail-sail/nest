@@ -688,8 +688,8 @@ export function useExportExcelDynPage() {
     try {
       const data = await query({
         query: `
-          query($search: DynPageSearch, $sort: [SortInput!]) {
-            findAllDynPage(search: $search, page: null, sort: $sort) {
+          query($search: DynPageSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDynPage(search: $search, page: $page, sort: $sort) {
               ${ dynPageQueryField }
             }
             findAllMenu {
@@ -708,6 +708,9 @@ export function useExportExcelDynPage() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

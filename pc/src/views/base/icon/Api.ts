@@ -560,8 +560,8 @@ export function useExportExcelIcon() {
     try {
       const data = await query({
         query: `
-          query($search: IconSearch, $sort: [SortInput!]) {
-            findAllIcon(search: $search, page: null, sort: $sort) {
+          query($search: IconSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllIcon(search: $search, page: $page, sort: $sort) {
               ${ iconQueryField }
             }
             getDict(codes: [
@@ -574,6 +574,9 @@ export function useExportExcelIcon() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

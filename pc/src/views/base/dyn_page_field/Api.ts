@@ -643,8 +643,8 @@ export function useExportExcelDynPageField() {
     try {
       const data = await query({
         query: `
-          query($search: DynPageFieldSearch, $sort: [SortInput!]) {
-            findAllDynPageField(search: $search, page: null, sort: $sort) {
+          query($search: DynPageFieldSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDynPageField(search: $search, page: $page, sort: $sort) {
               ${ dynPageFieldQueryField }
             }
             findAllDynPage {
@@ -663,6 +663,9 @@ export function useExportExcelDynPageField() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

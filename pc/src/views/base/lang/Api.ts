@@ -547,8 +547,8 @@ export function useExportExcelLang() {
     try {
       const data = await query({
         query: `
-          query($search: LangSearch, $sort: [SortInput!]) {
-            findAllLang(search: $search, page: null, sort: $sort) {
+          query($search: LangSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllLang(search: $search, page: $page, sort: $sort) {
               ${ langQueryField }
             }
             getDict(codes: [
@@ -561,6 +561,9 @@ export function useExportExcelLang() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

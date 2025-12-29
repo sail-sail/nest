@@ -582,8 +582,8 @@ export function useExportExcelOptions() {
     try {
       const data = await query({
         query: `
-          query($search: OptionsSearch, $sort: [SortInput!]) {
-            findAllOptions(search: $search, page: null, sort: $sort) {
+          query($search: OptionsSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllOptions(search: $search, page: $page, sort: $sort) {
               ${ optionsQueryField }
             }
             getDict(codes: [
@@ -597,6 +597,9 @@ export function useExportExcelOptions() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

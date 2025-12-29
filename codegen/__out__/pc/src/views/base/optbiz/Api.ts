@@ -582,8 +582,8 @@ export function useExportExcelOptbiz() {
     try {
       const data = await query({
         query: `
-          query($search: OptbizSearch, $sort: [SortInput!]) {
-            findAllOptbiz(search: $search, page: null, sort: $sort) {
+          query($search: OptbizSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllOptbiz(search: $search, page: $page, sort: $sort) {
               ${ optbizQueryField }
             }
             getDict(codes: [
@@ -597,6 +597,9 @@ export function useExportExcelOptbiz() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

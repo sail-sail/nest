@@ -577,8 +577,8 @@ export function useExportExcelDictbiz() {
     try {
       const data = await query({
         query: `
-          query($search: DictbizSearch, $sort: [SortInput!]) {
-            findAllDictbiz(search: $search, page: null, sort: $sort) {
+          query($search: DictbizSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDictbiz(search: $search, page: $page, sort: $sort) {
               ${ dictbizQueryField }
             }
             getDict(codes: [
@@ -592,6 +592,9 @@ export function useExportExcelDictbiz() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

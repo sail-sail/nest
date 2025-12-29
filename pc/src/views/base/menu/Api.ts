@@ -645,8 +645,8 @@ export function useExportExcelMenu() {
     try {
       const data = await query({
         query: `
-          query($search: MenuSearch, $sort: [SortInput!]) {
-            findAllMenu(search: $search, page: null, sort: $sort) {
+          query($search: MenuSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllMenu(search: $search, page: $page, sort: $sort) {
               ${ menuQueryField }
             }
             getDict(codes: [
@@ -661,6 +661,9 @@ export function useExportExcelMenu() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

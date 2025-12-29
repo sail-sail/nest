@@ -578,8 +578,8 @@ export function useExportExcelDomain() {
     try {
       const data = await query({
         query: `
-          query($search: DomainSearch, $sort: [SortInput!]) {
-            findAllDomain(search: $search, page: null, sort: $sort) {
+          query($search: DomainSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDomain(search: $search, page: $page, sort: $sort) {
               ${ domainQueryField }
             }
             getDict(codes: [
@@ -593,6 +593,9 @@ export function useExportExcelDomain() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

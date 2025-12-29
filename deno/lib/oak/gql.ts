@@ -55,6 +55,7 @@ scalar Uuid
 input PageInput {
   pgOffset: Int
   pgSize: Int
+  isResultLimit: Boolean
 }
 "排序输入"
 input SortInput {

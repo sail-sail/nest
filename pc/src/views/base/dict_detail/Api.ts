@@ -601,8 +601,8 @@ export function useExportExcelDictDetail() {
     try {
       const data = await query({
         query: `
-          query($search: DictDetailSearch, $sort: [SortInput!]) {
-            findAllDictDetail(search: $search, page: null, sort: $sort) {
+          query($search: DictDetailSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDictDetail(search: $search, page: $page, sort: $sort) {
               ${ dictDetailQueryField }
             }
             findAllDict {
@@ -618,6 +618,9 @@ export function useExportExcelDictDetail() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

@@ -791,8 +791,8 @@ export function useExportExcelUsr() {
     try {
       const data = await query({
         query: `
-          query($search: UsrSearch, $sort: [SortInput!]) {
-            findAllUsr(search: $search, page: null, sort: $sort) {
+          query($search: UsrSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllUsr(search: $search, page: $page, sort: $sort) {
               ${ usrQueryField }
             }
             findAllRole {
@@ -816,6 +816,9 @@ export function useExportExcelUsr() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
