@@ -44,7 +44,7 @@
     "@std/log": "jsr:@std/log@0.224.14",
     "@std/path": "jsr:@std/path@1.1.2",
     "lru-cache": "npm:lru-cache@11.2.4",
-    "mysql2": "npm:mysql2@3.15.3",
+    "mysql2": "npm:mysql2@3.16.0",
     "xlsx-handlebars": "jsr:@sail/xlsx-handlebars@0.2.2",
     "docx-handlebars": "jsr:@sail/docx-handlebars@0.3.3",
     "canvas": "https://deno.land/x/canvas@v1.4.2/mod.ts",

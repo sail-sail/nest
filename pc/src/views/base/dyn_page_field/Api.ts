@@ -61,7 +61,7 @@ export function intoInputDynPageField(
     is_search: model?.is_search,
     is_search_lbl: model?.is_search_lbl,
     // 宽度
-    width: model?.width,
+    width: model?.width != null ? Number(model?.width || 0) : undefined,
     // 对齐方式
     align: model?.align,
     align_lbl: model?.align_lbl,
@@ -69,7 +69,7 @@ export function intoInputDynPageField(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
   };
   return input;
 }

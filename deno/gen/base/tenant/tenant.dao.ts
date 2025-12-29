@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -89,6 +91,13 @@ async function getWhereQuery(
   
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  if (isNotEmpty(search?.keyword)) {
+    whereQuery += " and (";
+    whereQuery += ` t.code like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += " or";
+    whereQuery += ` t.lbl like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += ")";
+  }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
@@ -1988,7 +1997,12 @@ export async function updateByIdTenant(
   const oldModel = await findByIdTenant(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 租户 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 租户 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();

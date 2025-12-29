@@ -259,7 +259,7 @@ let ids = $ref<OrgId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<OrgId[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -314,7 +314,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOneOrg;
 
@@ -394,9 +394,12 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       getDefaultInputOrg(),
-      findLastOrderByOrg({
-        notLoading: !inited,
-      }),
+      findLastOrderByOrg(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -417,9 +420,12 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderByOrg({
-        notLoading: !inited,
-      }),
+      findLastOrderByOrg(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     if (data) {
       dialogModel = {
@@ -519,9 +525,12 @@ async function onRefresh() {
       order_by,
     ] = await Promise.all([
       getDefaultInputOrg(),
-      findLastOrderByOrg({
-        notLoading: !inited,
-      }),
+      findLastOrderByOrg(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,

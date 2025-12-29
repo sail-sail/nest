@@ -681,7 +681,7 @@ const {
 } = $(useDynPageFields(pagePath));
 
 /** 表格 */
-const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
+const tableRef = $(useTemplateRef("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -905,7 +905,7 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
+const detailRef = $(useTemplateRef("detailRef"));
 
 /** 当前表格数据对应的搜索条件 */
 let currentSearch = $ref<DynPageDataSearch>({ });
@@ -1130,7 +1130,7 @@ async function onInsert() {
   await openAdd();
 }
 
-const uploadFileDialogRef = $(useTemplateRef<InstanceType<typeof UploadFileDialog>>("uploadFileDialogRef"));
+const uploadFileDialogRef = $(useTemplateRef("uploadFileDialogRef"));
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -1458,7 +1458,7 @@ watch(
   },
 );
 
-const dynPageDetailRef = $(useTemplateRef<InstanceType<typeof DynPageDetail>>("dynPageDetailRef"));
+const dynPageDetailRef = $(useTemplateRef("dynPageDetailRef"));
 
 /** 新增字段 */
 async function onDynPageFields() {
@@ -1472,7 +1472,7 @@ async function onDynPageFields() {
   } = await dynPageDetailRef.showDialog({
     action: "add",
     builtInModel: {
-      code: getPagePathUsr(),
+      code: pagePath,
     },
     title: "新增字段",
   });

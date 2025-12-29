@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -1691,7 +1693,12 @@ export async function updateByIdDictbiz(
   const oldModel = await findByIdDictbiz(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 业务字典 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 业务字典 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();

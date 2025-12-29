@@ -319,7 +319,7 @@ async function onClear(e?: PointerEvent) {
 }
 
 
-const selectListRef = $(useTemplateRef<InstanceType<typeof SelectList>>("selectListRef"));
+const selectListRef = $(useTemplateRef("selectListRef"));
 
 async function onInput(
   clickType: "input" | "icon",
@@ -376,7 +376,7 @@ async function onInputChange() {
   emit("update:modelValue", modelValue);
 }
 
-const wrapperRef = $(useTemplateRef<InstanceType<typeof HTMLDivElement>>("wrapperRef"));
+const wrapperRef = $(useTemplateRef("wrapperRef"));
 
 function focus() {
   if (!wrapperRef) {

@@ -58,6 +58,24 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
+
+const search_fields = opts?.isUniPage?.list_page?.search_fields || [ ];
+const lbl_field = opts?.isUniPage?.list_page?.lbl_field || "lbl";
+const lbl_field_column = columns.find((col) => col.COLUMN_NAME === lbl_field);
+const lbl2_fields = opts?.isUniPage?.list_page?.lbl2_fields || [ ];
+const lbl2_fields_columns = lbl2_fields.map((field) => {
+  const column = columns.find((col) => col.COLUMN_NAME === field);
+  if (!column) {
+    throw new Error(`表: ${ mod }_${ table } 中配置的列表辅助显示字段 ${ field } 在列中不存在`);
+  }
+  return column;
+});
+const right_field = opts?.isUniPage?.list_page?.right_field;
+const right_field_column = columns.find((col) => col.COLUMN_NAME === right_field);
+if (right_field && !right_field_column) {
+  throw new Error(`表: ${ mod }_${ table } 中配置的列表右侧显示字段 ${ right_field } 在列中不存在`);
+}
+const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
 #><#
 let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
@@ -629,6 +647,10 @@ export function intoInput<#=Table_Up#>(
     <#=modelLabel#>: model?.<#=modelLabel#>,<#
       }
     #><#
+      } else if (data_type === "int" || data_type === "float" || data_type === "double") {
+    #>
+    // <#=column_comment#>
+    <#=column_name#>: model?.<#=column_name#> != null ? Number(model?.<#=column_name#> || 0) : undefined,<#
       } else if (data_type === "datetime" || data_type === "date") {
     #>
     // <#=column_comment#>
@@ -1991,7 +2013,79 @@ export async function getFieldComments<#=Table_Up#>(
 
 export function getPagePath<#=Table_Up#>() {
   return "/<#=mod#>/<#=table#>";
+}<#
+if (is_export_excel) {
+#>
+
+/** 导出<#=table_comment#> */
+export async function exportExcel<#=Table_Up#>(
+  search?: <#=searchName#>,
+  page?: PageInput,
+  sort?: Sort[],
+) {
+  
+  const filename = "<#=table_comment#>.xlsx";
+  
+  const indexStore = useIndexStore();
+  try {
+    indexStore.addLoading();
+    
+    const data: {
+      search?: string;
+      page?: string;
+      sort?: string;
+    } = { };
+    
+    if (search) {
+      data.search = JSON.stringify(search);
+    }
+    
+    if (page) {
+      data.page = JSON.stringify(page);
+    }
+    
+    if (sort) {
+      data.sort = JSON.stringify(sort);
+    }
+    
+    const url = getRequestUrl({
+      url: "<#=mod#>/export_excel_<#=table#>",
+      data,
+    });
+    
+    const res = await uni.downloadFile({
+      url,
+      filePath: `${ uni.env.USER_DATA_PATH }/${ filename }`,
+    });
+    
+    const statusCode = res.statusCode;
+    const filePath = res.filePath;
+    
+    if (!filePath || statusCode !== 200) {
+      uni.showToast({
+        title: "<#=table_comment#>导出失败",
+        icon: "none",
+      });
+      throw res;
+    }
+    
+    uni.showToast({
+      title: "<#=table_comment#>导出成功",
+      icon: "success",
+    });
+    
+    await uni.openDocument({
+      filePath,
+      fileType: "xlsx",
+      showMenu: true,
+    });
+  } finally {
+    indexStore.minusLoading();
+  }
+  
+}<#
 }
+#>
 
 /** 新增时的默认值 */
 export async function getDefaultInput<#=Table_Up#>() {<#

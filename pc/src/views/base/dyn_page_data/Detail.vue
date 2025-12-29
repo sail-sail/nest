@@ -279,7 +279,7 @@ let ids = $ref<DynPageDataId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DynPageDataId[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -416,7 +416,7 @@ watch(
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOneDynPageData;
 
@@ -785,7 +785,7 @@ async function onSave() {
   });
 }
 
-const dynPageDetailRef = $(useTemplateRef<InstanceType<typeof DynPageDetail>>("dynPageDetailRef"));
+const dynPageDetailRef = $(useTemplateRef("dynPageDetailRef"));
 
 /** 新增字段 */
 async function onDynPageFields() {

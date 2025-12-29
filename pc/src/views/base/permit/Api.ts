@@ -40,7 +40,7 @@ export function intoInputPermit(
     // 名称
     lbl: model?.lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };

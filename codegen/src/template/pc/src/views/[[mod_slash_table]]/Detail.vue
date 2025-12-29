@@ -4772,7 +4772,7 @@ let ids = $ref<<#=Table_Up#>Id[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<<#=Table_Up#>Id[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -5341,8 +5341,8 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 // <#=foreignSchema.opts.table_comment#>
-const <#=foreignSchema.opts.table#>DetailDialogRef = $(useTemplateRef<InstanceType<typeof <#=foreignSchema.opts.tableUp#>DetailDialog>>("<#=foreignSchema.opts.table#>DetailDialogRef"));
-const <#=column_name#>Ref = $(useTemplateRef<InstanceType<typeof CustomSelect>>("<#=column_name#>Ref"));
+const <#=foreignSchema.opts.table#>DetailDialogRef = $(useTemplateRef("<#=foreignSchema.opts.table#>DetailDialogRef"));
+const <#=column_name#>Ref = $(useTemplateRef("<#=column_name#>Ref"));
 
 /** 打开新增 <#=foreignSchema.opts.table_comment#> 对话框 */
 async function <#=column_name#>OpenAddDialog() {
@@ -5417,7 +5417,7 @@ refreshDynPageFields();<#
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOne<#=Table_Up#>;<#
 let hasDefaultInputColumn = false;
@@ -5639,9 +5639,12 @@ async function showDialog(
       getDefaultInput<#=Table_Up#>(),<#
       if (hasOrderBy) {
       #>
-      findLastOrderBy<#=Table_Up#>({
-        notLoading: !inited,
-      }),<#
+      findLastOrderBy<#=Table_Up#>(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),<#
       }
       #><#
       for (let i = 0; i < columns.length; i++) {
@@ -5832,9 +5835,12 @@ async function showDialog(
       }),<#
       if (hasOrderBy) {
       #>
-      findLastOrderBy<#=Table_Up#>({
-        notLoading: !inited,
-      }),<#
+      findLastOrderBy<#=Table_Up#>(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),<#
       }
       #><#
       for (let i = 0; i < columns.length; i++) {
@@ -6373,9 +6379,12 @@ async function onRefresh() {
       getDefaultInput<#=Table_Up#>(),<#
       if (hasOrderBy) {
       #>
-      findLastOrderBy<#=Table_Up#>({
-        notLoading: !inited,
-      }),<#
+      findLastOrderBy<#=Table_Up#>(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),<#
       }
       #>
     ]);
@@ -7020,7 +7029,7 @@ async function onAuditPass() {
   });
 }
 
-const auditDialogRef = $(useTemplateRef<InstanceType<typeof AuditDialog>>("auditDialogRef"));
+const auditDialogRef = $(useTemplateRef("auditDialogRef"));
 
 /** 审核拒绝 */
 async function onAuditReject() {
@@ -7442,9 +7451,12 @@ async function onSaveAndCopy() {
     }),<#
     if (hasOrderBy) {
     #>
-    findLastOrderBy<#=Table_Up#>({
-      notLoading: !inited,
-    }),<#
+    findLastOrderBy<#=Table_Up#>(
+      undefined,
+      {
+        notLoading: !inited,
+      },
+    ),<#
     }
     #>
   ]);
@@ -7582,7 +7594,7 @@ async function onSave() {
 if (mod === "base" && table === "usr") {
 #>
 
-const default_org_idRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("default_org_idRef"));
+const default_org_idRef = $(useTemplateRef("default_org_idRef"));
 let old_default_org_id: InputMaybe<OrgId> | undefined = undefined;
 
 async function getOrgListApi() {
@@ -7637,7 +7649,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 // <#=inlineForeignTab.label#>
-const <#=inline_column_name#>Ref = $(useTemplateRef<InstanceType<typeof ElTable>>("<#=inline_column_name#>Ref"));
+const <#=inline_column_name#>Ref = $(useTemplateRef("<#=inline_column_name#>Ref"));
 
 const <#=inline_column_name#>Data = $computed(() => {
   if (!isLocked && !isReadonly) {
@@ -7827,8 +7839,8 @@ for (let i = 0; i < columns.length; i++) {
   const inlineMany2manyColumns = inlineMany2manySchema.columns;
 #>
 
-const <#=column_name#>ListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("<#=column_name#>ListSelectDialogRef"));
-const <#=column_name#>_<#=table#>Ref = $(useTemplateRef<InstanceType<typeof ElTable>>("<#=column_name#>_<#=table#>Ref"));
+const <#=column_name#>ListSelectDialogRef = $(useTemplateRef("<#=column_name#>ListSelectDialogRef"));
+const <#=column_name#>_<#=table#>Ref = $(useTemplateRef("<#=column_name#>_<#=table#>Ref"));
 
 async function <#=column_name#>Select() {
   if (!<#=column_name#>ListSelectDialogRef) {
@@ -7956,7 +7968,7 @@ watch(
 if (opts?.isUseDynPageFields) {
 #>
 
-const dynPageDetailRef = $(useTemplateRef<InstanceType<typeof DynPageDetail>>("dynPageDetailRef"));
+const dynPageDetailRef = $(useTemplateRef("dynPageDetailRef"));
 
 /** 新增字段 */
 async function onDynPageFields() {
@@ -8100,7 +8112,7 @@ if (!column.isFluentEditor) {
 }
 #>
 
-const <#=column_name#>Ref = $(useTemplateRef<HTMLDivElement>("<#=column_name#>Ref"));
+const <#=column_name#>Ref = $(useTemplateRef("<#=column_name#>Ref"));
 let <#=column_name#>FluentEditor: InstanceType<typeof FluentEditor> | undefined = undefined;
 
 watch(

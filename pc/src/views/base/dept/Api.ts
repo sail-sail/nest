@@ -44,7 +44,7 @@ export function intoInputDept(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 组织
     org_id: model?.org_id,
     org_id_lbl: model?.org_id_lbl,

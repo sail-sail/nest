@@ -37,6 +37,8 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import {
   findOneDynPage,
 } from "/gen/base/dyn_page/dyn_page.dao.ts";
@@ -1616,7 +1618,12 @@ export async function updateByIdDynPageData(
   const oldModel = await findByIdDynPageData(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 动态页面数据 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 动态页面数据 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();

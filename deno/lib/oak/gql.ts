@@ -308,6 +308,9 @@ async function handleGraphql(
             code: err.originalError.code,
             message: err.originalError.message,
           });
+          if (err.originalError._showStack) {
+            error(err.originalError.stack || err.originalError.message);
+          }
           if (err.originalError.message) {
             log(err.originalError.message);
           }

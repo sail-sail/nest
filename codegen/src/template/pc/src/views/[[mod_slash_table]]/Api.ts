@@ -641,6 +641,10 @@ export function intoInput<#=Table_Up#>(
     <#=modelLabel#>: model?.<#=modelLabel#>,<#
       }
     #><#
+      } else if (data_type === "int" || data_type === "float" || data_type === "double") {
+    #>
+    // <#=column_comment#>
+    <#=column_name#>: model?.<#=column_name#> != null ? Number(model?.<#=column_name#> || 0) : undefined,<#
       } else if (data_type === "datetime" || data_type === "date") {
     #>
     // <#=column_comment#>

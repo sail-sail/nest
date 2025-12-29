@@ -278,7 +278,9 @@ import {
   hash,<#
   }
   #>
-} from "/lib/util/string_util.ts";<#
+} from "/lib/util/string_util.ts";
+
+import { ServiceException } from "/lib/exceptions/service.exception.ts";<#
 if (opts?.isUseDynPageFields) {
 #>
 
@@ -5747,10 +5749,20 @@ export async function updateById<#=Table_Up#>(
   if (!oldModel) {<#
     if (isUseI18n) {
     #>
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("<#=table_comment#>"));<#
+    throw throw new ServiceException(
+      await ns("编辑失败, 此 {0} 已被删除", await ns("<#=table_comment#>")),
+      "500",
+      true,
+      true,
+    );<#
     } else {
     #>
-    throw "编辑失败, 此 <#=table_comment#> 已被删除";<#
+    throw new ServiceException(
+      "编辑失败, 此 <#=table_comment#> 已被删除",
+      "500",
+      true,
+      true,
+    );<#
     }
     #>
   }<#

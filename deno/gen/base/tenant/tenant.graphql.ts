@@ -155,6 +155,8 @@ input TenantSearch {
   is_deleted: Int
   "ID列表"
   ids: [TenantId!]
+  "关键字"
+  keyword: String
   "ID"
   id: TenantId
   "编码"
