@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./options.model.ts";
-
 /**
  * 根据条件查找系统选项总数
  */
@@ -188,11 +184,15 @@ export async function createsOptions(
     createsOptions,
   } = await import("./options.service.ts");
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptions(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdOptions(
     updateByIdOptions,
   } = await import("./options.service.ts");
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblOptions(input);
   
   await usePermit(
-    route_path,
+    getPagePathOptions(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsOptions(
     deleteByIdsOptions,
   } = await import("./options.service.ts");
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptions(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsOptions(
     throw new Error(`enableByIdsOptions.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptions(),
     "edit",
   );
   const res = await enableByIdsOptions(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsOptions(
     throw new Error(`lockByIdsOptions.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptions(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsOptions(
     revertByIdsOptions,
   } = await import("./options.service.ts");
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptions(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsOptions(
     forceDeleteByIdsOptions,
   } = await import("./options.service.ts");
   
+  const {
+    getPagePathOptions,
+  } = await import("./options.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptions(),
     "force_delete",
   );
   
@@ -366,13 +390,15 @@ export async function forceDeleteByIdsOptions(
 /**
  * 查找 系统选项 order_by 字段的最大值
  */
-export async function findLastOrderByOptions(): Promise<number> {
+export async function findLastOrderByOptions(
+  search?: OptionsSearch,
+): Promise<number> {
   
   const {
     findLastOrderByOptions,
   } = await import("./options.service.ts");
   
-  const res = findLastOrderByOptions();
+  const order_by = findLastOrderByOptions(search);
   
-  return res;
+  return order_by;
 }

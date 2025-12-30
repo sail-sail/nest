@@ -9,10 +9,18 @@ scalar DynPageId
 type DynPageModel {
   "ID"
   id: DynPageId!
-  "编码"
+  "路由"
   code: String!
   "名称"
   lbl: String!
+  "父菜单"
+  parent_menu_id: MenuId!
+  "父菜单"
+  parent_menu_id_lbl: String!
+  "所属角色"
+  role_ids: [RoleId!]!
+  "所属角色"
+  role_ids_lbl: [String!]!
   "排序"
   order_by: Int!
   "启用"
@@ -45,10 +53,18 @@ type DynPageModel {
 type DynPageFieldComment {
   "ID"
   id: String!
-  "编码"
+  "路由"
   code: String!
   "名称"
   lbl: String!
+  "父菜单"
+  parent_menu_id: String!
+  "父菜单"
+  parent_menu_id_lbl: String!
+  "所属角色"
+  role_ids: String!
+  "所属角色"
+  role_ids_lbl: String!
   "排序"
   order_by: String!
   "启用"
@@ -77,10 +93,18 @@ type DynPageFieldComment {
 input DynPageInput {
   "ID"
   id: DynPageId
-  "编码"
+  "路由"
   code: String
   "名称"
   lbl: String
+  "父菜单"
+  parent_menu_id: MenuId
+  "父菜单"
+  parent_menu_id_lbl: String
+  "所属角色"
+  role_ids: [RoleId!]
+  "所属角色"
+  role_ids_lbl: [String!]
   "排序"
   order_by: Int
   "启用"
@@ -99,12 +123,28 @@ input DynPageSearch {
   ids: [DynPageId!]
   "ID"
   id: DynPageId
-  "编码"
+  "路由"
   code: String
   code_like: String
   "名称"
   lbl: String
   lbl_like: String
+  "父菜单"
+  parent_menu_id: [MenuId!]
+  "父菜单"
+  parent_menu_id_is_null: Boolean
+  "父菜单"
+  parent_menu_id_lbl: [String!]
+  "父菜单"
+  parent_menu_id_lbl_like: String
+  "所属角色"
+  role_ids: [RoleId!]
+  "所属角色"
+  role_ids_is_null: Boolean
+  "所属角色"
+  role_ids_lbl: [String!]
+  "所属角色"
+  role_ids_lbl_like: String
   "启用"
   is_enabled: [Int!]
   "创建人"
@@ -138,7 +178,7 @@ type Query {
   "根据 ids 查找动态页面"
   findByIdsDynPage(ids: [DynPageId!]!): [DynPageModel]!
   "查找动态页面 order_by 字段的最大值"
-  findLastOrderByDynPage: Int!
+  findLastOrderByDynPage(search: DynPageSearch): Int!
 }
 type Mutation {
   "批量创建动态页面"

@@ -28,6 +28,19 @@
       @keydown.enter="onSearch(true)"
     >
       
+      <template v-if="(builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null))">
+        <el-form-item
+          label="编码"
+          prop="code_like"
+        >
+          <CustomInput
+            v-model="search.code_like"
+            placeholder="请输入 编码"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <template v-if="(showBuildIn || builtInSearch?.dyn_page_id == null)">
         <el-form-item
           label="动态页面"
@@ -494,8 +507,17 @@
           :key="col.prop"
         >
           
+          <!-- 编码 -->
+          <template v-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 动态页面 -->
-          <template v-if="'dyn_page_id_lbl' === col.prop && (showBuildIn || builtInSearch?.dyn_page_id == null)">
+          <template v-else-if="'dyn_page_id_lbl' === col.prop && (showBuildIn || builtInSearch?.dyn_page_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -530,6 +552,15 @@
             </el-table-column>
           </template>
           
+          <!-- 计算公式 -->
+          <template v-else-if="'formula' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 必填 -->
           <template v-else-if="'is_required_lbl' === col.prop">
             <el-table-column
@@ -543,6 +574,40 @@
                   @change="onIs_required(row.id, row.is_required)"
                 ></CustomSwitch>
               </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 查询条件 -->
+          <template v-else-if="'is_search_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_search"
+                  @change="onIs_search(row.id, row.is_search)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 宽度 -->
+          <template v-else-if="'width' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 对齐方式 -->
+          <template v-else-if="'align_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
             </el-table-column>
           </template>
           
@@ -588,7 +653,7 @@
             </el-table-column>
           </template>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -699,6 +764,8 @@ const props = defineProps<{
   selectedIds?: DynPageFieldId[]; //已选择行的id列表
   isMultiple?: string; //是否多选
   id?: DynPageFieldId; // ID
+  code?: string; // 编码
+  code_like?: string; // 编码
   dyn_page_id?: string|string[]; // 动态页面
   dyn_page_id_lbl?: string; // 动态页面
   lbl?: string; // 名称
@@ -759,7 +826,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
+const tableRef = $(useTemplateRef("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -954,6 +1021,15 @@ let tableData = $ref<DynPageFieldModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
+      label: "编码",
+      prop: "code",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+      fixed: "left",
+    },
+    {
       label: "动态页面",
       prop: "dyn_page_id_lbl",
       sortBy: "dyn_page_id_lbl",
@@ -983,7 +1059,15 @@ function getTableColumns(): ColumnType[] {
       label: "属性",
       prop: "attrs",
       width: 200,
-      align: "left",
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "计算公式",
+      prop: "formula",
+      width: 180,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -995,6 +1079,32 @@ function getTableColumns(): ColumnType[] {
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
+    },
+    {
+      label: "查询条件",
+      prop: "is_search_lbl",
+      sortBy: "is_search",
+      width: 85,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "宽度",
+      prop: "width",
+      width: 100,
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "对齐方式",
+      prop: "align_lbl",
+      sortBy: "align",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "启用",
@@ -1033,7 +1143,7 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
+const detailRef = $(useTemplateRef("detailRef"));
 
 /** 当前表格数据对应的搜索条件 */
 let currentSearch = $ref<DynPageFieldSearch>({ });
@@ -1064,9 +1174,7 @@ function getDataSearch() {
     ...search,
     idsChecked: undefined,
   };
-  if (!showBuildIn) {
-    Object.assign(search2, builtInSearch);
-  }
+  Object.assign(search2, builtInSearch);
   search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
@@ -1258,7 +1366,7 @@ async function onInsert() {
   await openAdd();
 }
 
-const uploadFileDialogRef = $(useTemplateRef<InstanceType<typeof UploadFileDialog>>("uploadFileDialogRef"));
+const uploadFileDialogRef = $(useTemplateRef("uploadFileDialogRef"));
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -1282,11 +1390,16 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
+    [ "编码" ]: "code",
     [ "动态页面" ]: "dyn_page_id_lbl",
     [ "名称" ]: "lbl",
     [ "类型" ]: "type",
     [ "属性" ]: "attrs",
+    [ "计算公式" ]: "formula",
     [ "必填" ]: "is_required_lbl",
+    [ "查询条件" ]: "is_search_lbl",
+    [ "宽度" ]: "width",
+    [ "对齐方式" ]: "align_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
   };
@@ -1310,11 +1423,16 @@ async function onImportExcel() {
       header,
       {
         key_types: {
+          "code": "string",
           "dyn_page_id_lbl": "string",
           "lbl": "string",
           "type": "string",
           "attrs": "string",
+          "formula": "string",
           "is_required_lbl": "string",
+          "is_search_lbl": "string",
+          "width": "number",
+          "align_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
         },
@@ -1356,6 +1474,30 @@ async function onIs_required(id: DynPageFieldId, is_required: 0 | 1) {
     id,
     {
       is_required,
+    },
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}
+
+/** 查询条件 */
+async function onIs_search(id: DynPageFieldId, is_search: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateByIdDynPageField(
+    id,
+    {
+      is_search,
     },
     {
       notLoading,
@@ -1451,13 +1593,10 @@ async function onRowDblclick(
   row: DynPageFieldModel,
   column: TableColumnCtx<DynPageFieldModel>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }
@@ -1659,21 +1798,26 @@ async function initFrame() {
 }
 
 watch(
-  () => [ builtInSearch, showBuildIn ],
+  computed(() => {
+    const {
+      selectedIds,
+      isMultiple,
+      showBuildIn,
+      isPagination,
+      isLocked,
+      isFocus,
+      propsNotReset,
+      isListSelectDialog,
+      ...rest
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } = builtInSearch as any;
+    return rest
+  }),
   async function() {
     if (isSearchReset) {
       return;
     }
-    if (builtInSearch.is_deleted != null) {
-      search.is_deleted = builtInSearch.is_deleted;
-    }
-    if (showBuildIn) {
-      Object.assign(search, builtInSearch);
-    }
-    const search2 = getDataSearch();
-    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
-      return;
-    }
+    selectedIds = [ ];
     await dataGrid(true);
   },
   {

@@ -16,7 +16,13 @@ import {
   intoInputDictDetail,
 } from "/gen/base/dict_detail/dict_detail.model.ts";
 
-export const route_path = "/base/dict";
+export function getPagePathDict() {
+  return "/base/dict";
+}
+
+export function getTableNameDict() {
+  return "base_dict";
+}
 
 declare const dictId: unique symbol;
 

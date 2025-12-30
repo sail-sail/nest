@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/role";
+export function getPagePathRole() {
+  return "/base/role";
+}
+
+export function getTableNameRole() {
+  return "base_role";
+}
 
 declare const roleId: unique symbol;
 

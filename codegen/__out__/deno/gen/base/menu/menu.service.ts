@@ -267,7 +267,10 @@ export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
  * 查找 菜单 order_by 字段的最大值
  */
 export async function findLastOrderByMenu(
+  search?: MenuSearch,
 ): Promise<number> {
-  const menu_sort = await menuDao.findLastOrderByMenu();
-  return menu_sort;
+  
+  const order_by = await menuDao.findLastOrderByMenu(search);
+  
+  return order_by;
 }

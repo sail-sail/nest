@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./dyn_page_field.model.ts";
-
 /**
  * 根据条件查找动态页面字段总数
  */
@@ -188,11 +184,15 @@ export async function createsDynPageField(
     createsDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageField(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdDynPageField(
     updateByIdDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblDynPageField(input);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageField(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsDynPageField(
     deleteByIdsDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageField(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsDynPageField(
     throw new Error(`enableByIdsDynPageField.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageField(),
     "edit",
   );
   const res = await enableByIdsDynPageField(ids, is_enabled);
@@ -300,10 +312,14 @@ export async function revertByIdsDynPageField(
     revertByIdsDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageField(),
     "delete",
   );
   
@@ -323,10 +339,14 @@ export async function forceDeleteByIdsDynPageField(
     forceDeleteByIdsDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
+  const {
+    getPagePathDynPageField,
+  } = await import("./dyn_page_field.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPageField(),
     "force_delete",
   );
   
@@ -338,13 +358,15 @@ export async function forceDeleteByIdsDynPageField(
 /**
  * 查找 动态页面字段 order_by 字段的最大值
  */
-export async function findLastOrderByDynPageField(): Promise<number> {
+export async function findLastOrderByDynPageField(
+  search?: DynPageFieldSearch,
+): Promise<number> {
   
   const {
     findLastOrderByDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
-  const res = findLastOrderByDynPageField();
+  const order_by = findLastOrderByDynPageField(search);
   
-  return res;
+  return order_by;
 }

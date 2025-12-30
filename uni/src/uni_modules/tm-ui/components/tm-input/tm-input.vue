@@ -707,9 +707,11 @@
 </script>
 
 <style lang="scss" scoped>
+	/*
 	uni-input {
 		min-height: auto;
 	}
+	*/
 
 	.tmInputShowChar {
 		font-size: 12px;

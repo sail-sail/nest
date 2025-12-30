@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -65,6 +67,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathMenu,
+  getTableNameMenu,
+} from "./menu.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -203,7 +210,7 @@ export async function findCountMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findCountMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -337,7 +344,7 @@ export async function findAllMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findAllMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -503,6 +510,14 @@ export async function findAllMenu(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_home_hideDict, // 首页隐藏
     is_dyn_pageDict, // 动态页面
@@ -662,7 +677,7 @@ export async function setIdByLblMenu(
 // MARK: getFieldCommentsMenu
 /** 获取菜单字段注释 */
 export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
-  const fieldComments: MenuFieldComment = {
+  const field_comments: MenuFieldComment = {
     id: "ID",
     parent_id: "父菜单",
     parent_id_lbl: "父菜单",
@@ -686,7 +701,8 @@ export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueMenu
@@ -698,7 +714,7 @@ export async function findByUniqueMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByUniqueMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -825,7 +841,7 @@ export async function findOneMenu(
   },
 ): Promise<MenuModel | undefined> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findOneMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -873,7 +889,7 @@ export async function findOneOkMenu(
   },
 ): Promise<MenuModel> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findOneOkMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -925,7 +941,7 @@ export async function findByIdMenu(
   },
 ): Promise<MenuModel | undefined> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -967,7 +983,7 @@ export async function findByIdOkMenu(
   },
 ): Promise<MenuModel> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdOkMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1008,7 +1024,7 @@ export async function findByIdsMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1055,7 +1071,7 @@ export async function findByIdsOkMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdsOkMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1104,7 +1120,7 @@ export async function existMenu(
   },
 ): Promise<boolean> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "existMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1136,7 +1152,7 @@ export async function existByIdMenu(
   },
 ) {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "existByIdMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1279,7 +1295,7 @@ export async function createReturnMenu(
   },
 ): Promise<MenuModel> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createReturnMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1330,7 +1346,7 @@ export async function createMenu(
   },
 ): Promise<MenuId> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1371,7 +1387,7 @@ export async function createsReturnMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createsReturnMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1408,7 +1424,7 @@ export async function createsMenu(
   },
 ): Promise<MenuId[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1445,7 +1461,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1671,7 +1687,7 @@ export async function updateByIdMenu(
   },
 ): Promise<MenuId> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "updateByIdMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1720,7 +1736,12 @@ export async function updateByIdMenu(
   const oldModel = await findByIdMenu(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 菜单 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 菜单 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1865,7 +1886,14 @@ export async function updateByIdMenu(
     await delCacheMenu();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1891,7 +1919,7 @@ export async function deleteByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "deleteByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1914,6 +1942,8 @@ export async function deleteByIdsMenu(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheMenu();
   
@@ -1949,17 +1979,35 @@ export async function deleteByIdsMenu(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
       const sql = `update base_role_menu set is_deleted=1 where menu_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
     {
       const args = new QueryArgs();
       const sql = `update base_tenant_menu set is_deleted=1 where menu_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -1999,7 +2047,7 @@ export async function enableByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "enableByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2047,7 +2095,7 @@ export async function revertByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "revertByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2125,7 +2173,7 @@ export async function forceDeleteByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "forceDeleteByIdsMenu";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2147,6 +2195,8 @@ export async function forceDeleteByIdsMenu(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheMenu();
   
@@ -2171,12 +2221,24 @@ export async function forceDeleteByIdsMenu(
     {
       const args = new QueryArgs();
       const sql = `delete from base_role_menu where menu_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
     {
       const args = new QueryArgs();
       const sql = `delete from base_tenant_menu where menu_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2188,18 +2250,22 @@ export async function forceDeleteByIdsMenu(
 // MARK: findLastOrderByMenu
 /** 查找 菜单 order_by 字段的最大值 */
 export async function findLastOrderByMenu(
+  search?: Readonly<MenuSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findLastOrderByMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2208,19 +2274,29 @@ export async function findLastOrderByMenu(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_menu t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_menu t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

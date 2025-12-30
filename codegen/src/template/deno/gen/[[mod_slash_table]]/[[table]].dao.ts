@@ -84,6 +84,9 @@ const hasMany2manyNotInline = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
   }
+  if (column.isVirtual) {
+    return false;
+  }
   const foreignKey = column.foreignKey;
   if (foreignKey && foreignKey.type === "many2many" && !column.inlineMany2manyTab) {
     return true;
@@ -92,6 +95,9 @@ const hasMany2manyNotInline = columns.some((column) => {
 });
 const hasMany2many = columns.some((column) => {
   if (column.ignoreCodegen) {
+    return false;
+  }
+  if (column.isVirtual) {
     return false;
   }
   const foreignKey = column.foreignKey;
@@ -133,8 +139,8 @@ const langTableExcludeArr = [
 ];
 langTableExcludeArr.push(`${ table }_id`);
 const langTableRecords = [ ];
-for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
-  const record = opts.langTable.records[i];
+for (let i = 0; i < (opts?.langTable?.records?.length || 0); i++) {
+  const record = opts?.langTable.records[i];
   const column_name = record.COLUMN_NAME;
   if (
     langTableExcludeArr.includes(column_name)
@@ -272,7 +278,23 @@ import {
   hash,<#
   }
   #>
-} from "/lib/util/string_util.ts";<#
+} from "/lib/util/string_util.ts";
+
+import { ServiceException } from "/lib/exceptions/service.exception.ts";<#
+if (opts?.isUseDynPageFields) {
+#>
+
+import {
+  findOneDynPage,
+} from "/gen/base/dyn_page/dyn_page.dao.ts";
+
+import {
+  findAllDynPageVal,
+  updateByIdDynPageVal,
+  createDynPageVal,
+} from "/gen/base/dyn_page_val/dyn_page_val.dao.ts";<#
+}
+#><#
 if (opts?.history_table) {
 #>
 
@@ -314,7 +336,7 @@ import {
   getPassword,<#
   }
   #><#
-  if (opts.langTable) {
+  if (opts?.langTable) {
   #>
   get_lang_id,<#
   }
@@ -774,15 +796,12 @@ import {
   createHash,
 } from "node:crypto";<#
 }
-#><#
-if ((hasDataPermit() && hasCreateUsrId) || isUseI18n) {
 #>
 
 import {
-  route_path,
+  getPagePath<#=Table_Up#>,
+  getTableName<#=Table_Up#>,
 } from "./<#=table#>.model.ts";<#
-}
-#><#
 if (hasIsIcon) {
 #>
 
@@ -811,7 +830,7 @@ async function getWhereQuery(
     #>
   },
 ): Promise<string> {<#
-  if (opts.langTable && isUseI18n) {
+  if (opts?.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -830,7 +849,7 @@ async function getWhereQuery(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
-  const dataPermitModels = await getDataPermits(route_path, options);
+  const dataPermitModels = await getDataPermits(getPagePath<#=Table_Up#>(), options);
   const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create);
   const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role);
   const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept);
@@ -920,8 +939,8 @@ async function getWhereQuery(
     const foreignLangTableRecords = [ ];
     if (foreignKey) {
       foreignSchema = optTables[foreignKey.mod + "_" + foreignKey.table];
-      for (let i = 0; i < (foreignSchema.opts.langTable?.records?.length || 0); i++) {
-        const record = foreignSchema.opts.langTable.records[i];
+      for (let i = 0; i < (foreignSchema.opts?.langTable?.records?.length || 0); i++) {
+        const record = foreignSchema.opts?.langTable.records[i];
         const column_name = record.COLUMN_NAME;
         if (
           langTableExcludeArr.includes(column_name)
@@ -950,7 +969,7 @@ async function getWhereQuery(
     if (isUseI18n) {
     #>
     if (server_i18n_enable) {
-      whereQuery += ` and (t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }) or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }))`;
+      whereQuery += ` and (t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }) or <#=opts?.langTable.opts.table_name#>.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }))`;
     } else {
       whereQuery += ` and t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) })`;
     }<#
@@ -971,7 +990,7 @@ async function getWhereQuery(
     if (isUseI18n) {
     #>
     if (server_i18n_enable) {
-      whereQuery += ` and (t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") })`;
+      whereQuery += ` and (t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") } or <#=opts?.langTable.opts.table_name#>.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") })`;
     } else {
       whereQuery += ` and t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") }`;
     }<#
@@ -991,7 +1010,7 @@ async function getWhereQuery(
     whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in (${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) })`;<#
     } else {
     #>
-    whereQuery += ` and (<#=column_name#>_lbl.<#=foreignKey.lbl#> in (${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }) or <#=foreignSchema.opts.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> in (${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }))`;<#
+    whereQuery += ` and (<#=column_name#>_lbl.<#=foreignKey.lbl#> in (${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }) or <#=foreignSchema.opts?.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> in (${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }))`;<#
     }
     #>
   }
@@ -1001,7 +1020,7 @@ async function getWhereQuery(
     whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") }`;<#
     } else {
     #>
-    whereQuery += ` and (<#=column_name#>_lbl.<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") } or <#=foreignSchema.opts.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") })`;<#
+    whereQuery += ` and (<#=column_name#>_lbl.<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") } or <#=foreignSchema.opts?.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") })`;<#
     }
     #>
   }<#
@@ -1068,7 +1087,7 @@ async function getWhereQuery(
     if (isUseI18n) {
     #>
     if (server_i18n_enable) {
-      whereQuery += ` and (t.<#=column_name#>=${ args.push(search.<#=column_name#>) } or <#=opts.langTable.opts.table_name#>.<#=column_name#>=${ args.push(search.<#=column_name#>) })`;
+      whereQuery += ` and (t.<#=column_name#>=${ args.push(search.<#=column_name#>) } or <#=opts?.langTable.opts.table_name#>.<#=column_name#>=${ args.push(search.<#=column_name#>) })`;
     } else {
       whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;
     }<#
@@ -1079,7 +1098,32 @@ async function getWhereQuery(
     #><#
     }
     #>
+  }<#
+  if (column.searchByArray) {
+  #>
+  if (search?.<#=column_name#>s != null) {<#
+    if (!langTableRecords.some((record) => record.COLUMN_NAME === column_name)) {
+    #>
+    whereQuery += ` and t.<#=column_name#> in (${ args.push(search.<#=column_name#>s) })`;<#
+    } else {
+    #><#
+    if (isUseI18n) {
+    #>
+    if (server_i18n_enable) {
+      whereQuery += ` and (t.<#=column_name#> in (${ args.push(search.<#=column_name#>s) }) or <#=opts?.langTable.opts.table_name#>.<#=column_name#> in (${ args.push(search.<#=column_name#>s) }))`;
+    } else {
+      whereQuery += ` and t.<#=column_name#> in (${ args.push(search.<#=column_name#>s) })`;
+    }<#
+    } else {
+    #>
+    whereQuery += ` and t.<#=column_name#> in (${ args.push(search.<#=column_name#>s) })`;<#
+    }
+    #><#
+    }
+    #>
+  }<#
   }
+  #>
   if (isNotEmpty(search?.<#=column_name#>_like)) {<#
     if (!langTableRecords.some((record) => record.COLUMN_NAME === column_name)) {
     #>
@@ -1089,7 +1133,7 @@ async function getWhereQuery(
     if (isUseI18n) {
     #>
     if (server_i18n_enable) {
-      whereQuery += ` and (t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") })`;
+      whereQuery += ` and (t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") } or <#=opts?.langTable.opts.table_name#>.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") })`;
     } else {
       whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;
     }<#
@@ -1104,12 +1148,71 @@ async function getWhereQuery(
   }
   #><#
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  if (search?.dyn_page_data != null) {
+    
+    const pagePath = getPagePathDynPageData(search.ref_code);
+    
+    const dyn_page_model = await findOneDynPage(
+      {
+        code: pagePath,
+        is_enabled: [ 1 ],
+      },
+      undefined,
+      options,
+    );
+    
+    const dyn_page_field_models = dyn_page_model?.dyn_page_field;
+    
+    if (dyn_page_field_models && dyn_page_field_models.length > 0) {
+      whereQuery += ` and t.id in (select v.ref_id from base_dyn_page_val v where
+        v.ref_code=${ args.push(pagePath) }`;
+      for (let i = 0; i < dyn_page_field_models.length; i++) {
+        const field = dyn_page_field_models[i];
+        const field_code = field.code;
+        const field_type = field.type;
+        const val = (search.dyn_page_data as any)[field_code];
+        if (
+          [
+            "CustomCheckbox",
+            "CustomInputNumber",
+            "CustomSwitch",
+            "CustomDatePicker",
+          ].includes(field_type)
+        ) {
+          if (val != null) {
+            if (val[0] != null) {
+              whereQuery += ` and v.code=${ args.push(field_code) } and v.lbl<=${ args.push(val[0]) }`;
+            }
+            if (val[1] != null) {
+              whereQuery += ` and v.code=${ args.push(field_code) } and v.lbl>=${ args.push(val[1]) }`;
+            }
+          }
+        } else {
+          if (val != null) {
+            whereQuery += ` and v.code=${ args.push(field_code) } and v.lbl=${ args.push(val) }`;
+          }
+          const field_code_like = field.code + "_like";
+          const val_like = (search.dyn_page_data as any)[field_code_like];
+          if (isNotEmpty(val_like)) {
+            whereQuery += ` and v.code=${ args.push(field_code) } and v.lbl like ${ args.push("%" + sqlLike(val_like) + "%") }`;
+          }
+        }
+      }
+      whereQuery += `)`;
+    }
+    
+  }<#
+  }
   #>
   return whereQuery;
 }
 <#
 if (
-  !(hasDataPermit() && hasCreateUsrId) && !opts.langTable
+  !(hasDataPermit() && hasCreateUsrId) && !opts?.langTable
 ) {
 #>
 // deno-lint-ignore require-await<#
@@ -1132,7 +1235,7 @@ async function getFromQuery(
   const is_deleted = search?.is_deleted ?? 0;<#
   }
   #><#
-  if (opts.langTable && isUseI18n) {
+  if (opts?.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -1141,7 +1244,7 @@ async function getFromQuery(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
-  const dataPermitModels = await getDataPermits(route_path, options);
+  const dataPermitModels = await getDataPermits(getPagePath<#=Table_Up#>(), options);
   const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create);
   const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role);
   const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept || item.scope === DataPermitScope.DeptParent);
@@ -1217,11 +1320,11 @@ async function getFromQuery(
   #><#
   }
   #>`;<#
-  if (opts.langTable && isUseI18n) {
+  if (opts?.langTable && isUseI18n) {
   #>
   
   if (server_i18n_enable) {
-    fromQuery += ` left join <#=opts.langTable.opts.table_name#> on <#=opts.langTable.opts.table_name#>.<#=table#>_id=t.id and <#=opts.langTable.opts.table_name#>.lang_id=${ args.push(await get_lang_id()) }`;
+    fromQuery += ` left join <#=opts?.langTable.opts.table_name#> on <#=opts?.langTable.opts.table_name#>.<#=table#>_id=t.id and <#=opts?.langTable.opts.table_name#>.lang_id=${ args.push(await get_lang_id()) }`;
   }<#
   }
   #><#
@@ -1253,7 +1356,7 @@ export async function findCount<#=Table_Up#>(
   },
 ): Promise<number> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findCount<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1277,6 +1380,33 @@ export async function findCount<#=Table_Up#>(
   if (search && search.ids && search.ids.length === 0) {
     return 0;
   }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const data_type = column.DATA_TYPE;
+    const foreignKey = column.foreignKey;
+  #><#
+    if (column.searchByArray && !foreignKey && !column.dict && !column.dictbiz) {
+  #>
+  // <#=column.COLUMN_COMMENT#>
+  if (search && search.<#=column_name#>s != null) {
+    const len = search.<#=column_name#>s.length;
+    if (len === 0) {
+      return 0;
+    }
+  }<#
+    }
+  #><#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1357,7 +1487,85 @@ export async function findCount<#=Table_Up#>(
   let result = Number(model?.total || 0);
   
   return result;
+}<#
+if (opts?.isUseDynPageFields) {
+#>
+
+// MARK: setDynPageData<#=Table_Up#>
+/** 设置动态页面数据 */
+export async function setDynPageData<#=Table_Up#>(
+  models: <#=modelName#>[],
+  is_deleted?: InputMaybe<number>,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<void> {
+  
+  if (models.length === 0) {
+    return;
+  }
+  
+  const pagePath = getPagePath<#=Table_Up#>();
+  
+  const dyn_page_model = await findOneDynPage(
+    {
+      code: pagePath,
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    options,
+  );
+  
+  const dyn_page_field_models = dyn_page_model?.dyn_page_field ?? [ ];
+  
+  const ids = models.map((item) => item.id);
+  
+  const dyn_page_val_models = await findAllDynPageVal(
+    {
+      ref_code: pagePath,
+      ref_ids: ids as string[],
+      is_deleted,
+    },
+    undefined,
+    undefined,
+    options,
+  );
+  
+  for (const model of models) {
+    
+    model.dyn_page_data = model.dyn_page_data ?? { };
+    
+    for (const field of dyn_page_field_models) {
+      
+      const val_model = dyn_page_val_models.find((item) => item.ref_id === model.id && item.code === field.code);
+      
+      let val: any = null;
+      if (val_model) {
+        val = val_model.lbl;
+      }
+      if (
+        [
+          "CustomCheckbox",
+          "CustomInputNumber",
+          "CustomSwitch",
+        ].includes(field.type)
+      ) {
+        if (val != null) {
+          val = Number(val);
+        }
+      }
+      if (val == null) {
+        val = "";
+      }
+      
+      model.dyn_page_data[field.code] = val;
+    }
+    
+  }
+  
+}<#
 }
+#>
 
 // MARK: findAll<#=Table_Up#>
 /** 根据搜索条件和分页查找<#=table_comment#>列表 */
@@ -1376,7 +1584,7 @@ export async function findAll<#=Table_Up#>(
   },
 ): Promise<<#=modelName#>[]> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findAll<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1406,7 +1614,34 @@ export async function findAll<#=Table_Up#>(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }<#
-  if (opts.langTable && isUseI18n) {
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const data_type = column.DATA_TYPE;
+    const foreignKey = column.foreignKey;
+  #><#
+    if (column.searchByArray && !foreignKey && !column.dict && !column.dictbiz) {
+  #>
+  // <#=column.COLUMN_COMMENT#>
+  if (search && search.<#=column_name#>s != null) {
+    const len = search.<#=column_name#>s.length;
+    if (len === 0) {
+      return [ ];
+    }
+  }<#
+    }
+  #><#
+  }
+  #><#
+  if (opts?.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -1465,7 +1700,7 @@ export async function findAll<#=Table_Up#>(
   #><#
   }
   #><#
-  if (opts.langTable && isUseI18n) {
+  if (opts?.langTable && isUseI18n) {
   #>
   
   let lang_sql = "";
@@ -1475,7 +1710,7 @@ export async function findAll<#=Table_Up#>(
       const record = langTableRecords[i];
       const column_name = record.COLUMN_NAME;
     #>
-    lang_sql += ",max(<#=opts.langTable.opts.table_name#>.<#=column_name#>) <#=column_name#>_lang";<#
+    lang_sql += ",max(<#=opts?.langTable.opts.table_name#>.<#=column_name#>) <#=column_name#>_lang";<#
     }
     #>
   }<#
@@ -1531,7 +1766,7 @@ export async function findAll<#=Table_Up#>(
       #><#
       }
       #><#
-      if (opts.langTable && isUseI18n) {
+      if (opts?.langTable && isUseI18n) {
       #>
       ${ lang_sql }<#
       }
@@ -1645,7 +1880,26 @@ export async function findAll<#=Table_Up#>(
     },<#
     }
     #>
-  );<#
+  );
+  
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }<#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  await setDynPageData<#=Table_Up#>(
+    result,
+    search?.is_deleted,
+    options,
+  );
+  <#
+  }
+  #><#
   var hasMany2manyTmp = false;
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1958,6 +2212,7 @@ export async function findAll<#=Table_Up#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
@@ -1982,7 +2237,7 @@ export async function findAll<#=Table_Up#>(
     model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
     }
     #><#
-    if (opts.langTable && isUseI18n) {
+    if (opts?.langTable && isUseI18n) {
     #>
     
     if (server_i18n_enable) {<#
@@ -2006,6 +2261,7 @@ export async function findAll<#=Table_Up#>(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
@@ -2726,9 +2982,15 @@ export async function setIdByLbl<#=Table_Up#>(
 // MARK: getFieldComments<#=Table_Up#>
 /** 获取<#=table_comment#>字段注释 */
 export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentName#>> {<#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  const pagePath = getPagePath<#=Table_Up#>();<#
+  }
+  #><#
   if (isUseI18n) {
   #>
-  const n = initN(route_path);
+  const n = initN(getPagePath<#=Table_Up#>());
   const fieldComments: <#=fieldCommentName#> = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -2774,7 +3036,7 @@ export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentNa
   };<#
   } else {
   #>
-  const fieldComments: <#=fieldCommentName#> = {<#
+  const field_comments: <#=fieldCommentName#> = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -2818,8 +3080,32 @@ export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentNa
     #>
   };<#
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
   #>
-  return fieldComments;
+  
+  const dyn_page_model = await findOneDynPage(
+    {
+      code: pagePath,
+      is_enabled: [ 1 ],
+    },
+  );
+  
+  if (dyn_page_model) {
+    
+    const dyn_page_field_models = dyn_page_model.dyn_page_field;
+    
+    for (const dyn_page_field_model of dyn_page_field_models) {
+      const field_code = dyn_page_field_model.code;
+      const field_lbl = dyn_page_field_model.lbl;
+      field_comments[field_code] = field_lbl;
+    }
+    
+  }<#
+  }
+  #>
+  
+  return field_comments;
 }
 
 // MARK: findByUnique<#=Table_Up#>
@@ -2836,7 +3122,7 @@ export async function findByUnique<#=Table_Up#>(
   },
 ): Promise<<#=modelName#>[]> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findByUnique<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -3095,7 +3381,7 @@ export async function findSummary<#=Table_Up#>(
   },
 ): Promise<<#=Table_Up#>Summary> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findSummary<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -3163,7 +3449,7 @@ export async function findOne<#=Table_Up#>(
   },
 ): Promise<<#=modelName#> | undefined> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findOne<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -3216,7 +3502,7 @@ export async function findOneOk<#=Table_Up#>(
   },
 ): Promise<<#=modelName#>> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findOneOk<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -3280,7 +3566,7 @@ export async function findById<#=Table_Up#>(
   },
 ): Promise<<#=modelName#> | undefined> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findById<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -3327,7 +3613,7 @@ export async function findByIdOk<#=Table_Up#>(
   },
 ): Promise<<#=modelName#>> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findByIdOk<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -3380,7 +3666,7 @@ export async function findByIds<#=Table_Up#>(
   },
 ): Promise<<#=modelName#>[]> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findByIds<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -3432,7 +3718,7 @@ export async function findByIdsOk<#=Table_Up#>(
   },
 ): Promise<<#=modelName#>[]> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findByIdsOk<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -3500,7 +3786,7 @@ export async function exist<#=Table_Up#>(
   },
 ): Promise<boolean> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "exist<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -3537,7 +3823,7 @@ export async function existById<#=Table_Up#>(
   },
 ) {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "existById<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -3813,7 +4099,7 @@ export async function findAutoCode<#=Table_Up#>(
   },
 ) {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findAutoCode<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -3860,16 +4146,32 @@ export async function findAutoCode<#=Table_Up#>(
   }<#
   if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0");<#
+  const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString()<#
+    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+    }
+  #>;<#
   } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0");<#
+  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>.toString()<#
+    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+    }
+  #>;<#
   } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
   #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0") + "<#=autoCodeColumn.autoCode.suffix#>";<#
+  const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString()<#
+    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+    }
+  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
   } else {
   #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0") + "<#=autoCodeColumn.autoCode.suffix#>";<#
+  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>.toString()<#
+    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+    }
+  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
   }
   #>
   
@@ -3928,16 +4230,32 @@ export async function findAutoCode<#=Table_Up#>(
   }<#
   if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0");<#
+  const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
+    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+    }
+  #>;<#
   } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0");<#
+  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
+    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+    }
+  #>;<#
   } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
   #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0") + "<#=autoCodeColumn.autoCode.suffix#>";<#
+  const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
+    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+    }
+  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
   } else {
   #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0") + "<#=autoCodeColumn.autoCode.suffix#>";<#
+  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
+    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+    }
+  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
   }
   #>
   
@@ -3964,7 +4282,7 @@ export async function createReturn<#=Table_Up#>(
   },
 ): Promise<<#=modelName#>> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "createReturn<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -4015,7 +4333,7 @@ export async function create<#=Table_Up#>(
   },
 ): Promise<<#=Table_Up#>Id> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "create<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -4056,7 +4374,7 @@ export async function createsReturn<#=Table_Up#>(
   },
 ): Promise<<#=modelName#>[]> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "createsReturn<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -4093,7 +4411,7 @@ export async function creates<#=Table_Up#>(
   },
 ): Promise<<#=Table_Up#>Id[]> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "creates<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -4231,7 +4549,7 @@ async function _creates(
   }
   #>
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -4656,7 +4974,98 @@ for (const key of redundLblKeys) {
   if (affectedRows !== inputs2.length) {
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }<#
-  if (opts.langTable && isUseI18n) {
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  // 更新动态字段
+  const pagePath = getPagePath<#=Table_Up#>();
+  
+  const dyn_page_model = await findOneDynPage(
+    {
+      code: pagePath,
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    options,
+  );
+  
+  if (dyn_page_model) {
+    
+    const dyn_page_field_models = dyn_page_model.dyn_page_field;
+    
+    const dyn_page_val_models = await findAllDynPageVal(
+      {
+        ref_code: pagePath,
+        ref_ids: ids2 as string[],
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    
+    for (let i = 0; i < inputs2.length; i++) {
+      const id = ids2[i];
+      const input = inputs2[i];
+      const dyn_page_data = input.dyn_page_data;
+      
+      if (!dyn_page_data) {
+        continue;
+      }
+      
+      for (const dyn_page_field_model of dyn_page_field_models) {
+        const field_code = dyn_page_field_model.code;
+        const field_type = dyn_page_field_model.type;
+        const newValue0 = dyn_page_data[field_code];
+        let newValue: any = undefined;
+        if (
+          [
+            "CustomCheckbox",
+            "CustomInputNumber",
+            "CustomSwitch",
+          ].includes(field_type)
+        ) {
+          if (newValue0 != null) {
+            newValue = Number(newValue0);
+          }
+        }
+        if (newValue0 != null) {
+          newValue = newValue0;
+        } else {
+          newValue = "";
+        }
+        const oldValueModel = dyn_page_val_models.find((m) => m.code === field_code);
+        if (oldValueModel) {
+          const oldValue = oldValueModel?.lbl;
+          if (newValue !== oldValue) {
+            await updateByIdDynPageVal(
+              oldValueModel.id,
+              {
+                lbl: newValue,
+              },
+              {
+                is_debug: options?.is_debug,
+                is_silent_mode: options?.is_silent_mode,
+              },
+            );
+          }
+        } else {
+          await createDynPageVal(
+            {
+              ref_code: pagePath,
+              ref_id: id as unknown as string,
+              code: field_code,
+              lbl: newValue,
+            },
+            options,
+          );
+        }
+      }
+    }
+    
+  }<#
+  }
+  #><#
+  if (opts?.langTable && isUseI18n) {
   #>
   
   for (const input of inputs) {
@@ -4877,7 +5286,7 @@ export async function updateTenantById<#=Table_Up#>(
   },
 ): Promise<number> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "updateTenantById<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -4958,7 +5367,7 @@ export async function getEditableDataPermitsByIds<#=Table_Up#>(
   if (ids.length === 0) {
     return [ ];
   }
-  const dataPermitModels = await getDataPermits(route_path, {
+  const dataPermitModels = await getDataPermits(getPagePath<#=Table_Up#>(), {
     hasDataPermit: true,
   });
   
@@ -5032,7 +5441,7 @@ export async function getEditableDataPermitsByIds<#=Table_Up#>(
 }<#
 }
 #><#
-if (opts.langTable && isUseI18n) {
+if (opts?.langTable && isUseI18n) {
 #>
 
 async function refreshLangByInput(
@@ -5071,8 +5480,8 @@ async function refreshLangByInput(
     const foreignLangTableRecords = [ ];
     if (foreignKey) {
       foreignSchema = optTables[foreignKey.mod + "_" + foreignKey.table];
-      for (let i = 0; i < (foreignSchema.opts.langTable?.records?.length || 0); i++) {
-        const record = foreignSchema.opts.langTable.records[i];
+      for (let i = 0; i < (foreignSchema.opts?.langTable?.records?.length || 0); i++) {
+        const record = foreignSchema.opts?.langTable.records[i];
         const column_name = record.COLUMN_NAME;
         if (
           langTableExcludeArr.includes(column_name)
@@ -5084,7 +5493,7 @@ async function refreshLangByInput(
   
   // <#=column_comment#>
   {
-    const sql = "select lang_id,<#=foreignKey.lbl#> from <#=foreignSchema.opts.langTable.opts.table_name#> where <#=foreignTable#>_id=?";
+    const sql = "select lang_id,<#=foreignKey.lbl#> from <#=foreignSchema.opts?.langTable.opts.table_name#> where <#=foreignTable#>_id=?";
     const args = new QueryArgs();
     args.push(input.<#=column_name#>);
     const models = await query<{
@@ -5095,7 +5504,7 @@ async function refreshLangByInput(
       args,
     );
     for (const model of models) {
-      const sql = "select id,<#=modelLabel#> from <#=opts.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?";
+      const sql = "select id,<#=modelLabel#> from <#=opts?.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?";
       const args = new QueryArgs();
       args.push(model.lang_id);
       args.push(input.id);
@@ -5108,7 +5517,7 @@ async function refreshLangByInput(
       );
       const lang_id = lang_model?.id;
       if (!lang_id) {
-        const lang_sql = "insert into <#=opts.langTable.opts.table_name#>(id,lang_id,<#=table#>_id,<#=modelLabel#>)values(?,?,?,?)";
+        const lang_sql = "insert into <#=opts?.langTable.opts.table_name#>(id,lang_id,<#=table#>_id,<#=modelLabel#>)values(?,?,?,?)";
         const lang_args = new QueryArgs();
         lang_args.push(shortUuidV4());
         lang_args.push(model.lang_id);
@@ -5118,7 +5527,7 @@ async function refreshLangByInput(
         continue;
       }
       if (lang_model.<#=modelLabel#> !== model.<#=foreignKey.lbl#>) {
-        const lang_sql = "update <#=opts.langTable.opts.table_name#> set <#=modelLabel#>=? where id=?";
+        const lang_sql = "update <#=opts?.langTable.opts.table_name#> set <#=modelLabel#>=? where id=?";
         const lang_args = new QueryArgs();
         lang_args.push(model.<#=foreignKey.lbl#>);
         lang_args.push(lang_id);
@@ -5128,7 +5537,7 @@ async function refreshLangByInput(
   }<#
   }
   #>
-  const lang_sql = "select id from <#=opts.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?";
+  const lang_sql = "select id from <#=opts?.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?";
   const lang_args = new QueryArgs();
   lang_args.push(await get_lang_id());
   lang_args.push(input.id);
@@ -5138,7 +5547,7 @@ async function refreshLangByInput(
   );
   const lang_id = model?.id;
   if (lang_id) {
-    let lang_sql = "update <#=opts.langTable.opts.table_name#> set ";
+    let lang_sql = "update <#=opts?.langTable.opts.table_name#> set ";
     const lang_args = new QueryArgs();<#
     for (let i = 0; i < langTableRecords.length; i++) {
       const record = langTableRecords[i];
@@ -5176,7 +5585,7 @@ async function refreshLangByInput(
     }<#
     }
     #>
-    let lang_sql = "insert into <#=opts.langTable.opts.table_name#>(id,lang_id,<#=table#>_id";
+    let lang_sql = "insert into <#=opts?.langTable.opts.table_name#>(id,lang_id,<#=table#>_id";
     for (const sql_field of sql_fields) {
       lang_sql += "," + sql_field;
     }
@@ -5209,13 +5618,13 @@ export async function updateById<#=Table_Up#>(
   },
 ): Promise<<#=Table_Up#>Id> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "updateById<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);<#
-  if (opts.langTable && isUseI18n) {
+  if (opts?.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -5348,17 +5757,27 @@ export async function updateById<#=Table_Up#>(
   if (!oldModel) {<#
     if (isUseI18n) {
     #>
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("<#=table_comment#>"));<#
+    throw throw new ServiceException(
+      await ns("编辑失败, 此 {0} 已被删除", await ns("<#=table_comment#>")),
+      "500",
+      true,
+      true,
+    );<#
     } else {
     #>
-    throw "编辑失败, 此 <#=table_comment#> 已被删除";<#
+    throw new ServiceException(
+      "编辑失败, 此 <#=table_comment#> 已被删除",
+      "500",
+      true,
+      true,
+    );<#
     }
     #>
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
-  const dataPermitModels = await getDataPermits(route_path, options);
+  const dataPermitModels = await getDataPermits(getPagePath<#=Table_Up#>(), options);
   const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create && item.type === DataPermitType.Editable);
   const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role && item.type === DataPermitType.Editable);
   const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept && item.type === DataPermitType.Editable);
@@ -5618,6 +6037,93 @@ export async function updateById<#=Table_Up#>(
   }
   #>
   let sqlSetFldNum = updateFldNum;<#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  // 更新动态字段
+  const dyn_page_data = input.dyn_page_data;
+  if (dyn_page_data) {
+    
+    const pagePath = getPagePath<#=Table_Up#>();
+  
+    const dyn_page_model = await findOneDynPage(
+      {
+        code: pagePath,
+        is_enabled: [ 1 ],
+      },
+      undefined,
+      options,
+    );
+    
+    if (dyn_page_model) {
+      
+      const dyn_page_field_models = dyn_page_model.dyn_page_field;
+      
+      const dyn_page_val_models = await findAllDynPageVal(
+        {
+          ref_code: pagePath,
+          ref_ids: [ id ] as string[],
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      
+      for (const dyn_page_field_model of dyn_page_field_models) {
+        const field_code = dyn_page_field_model.code;
+        const field_type = dyn_page_field_model.type;
+        const newValue0 = dyn_page_data[field_code];
+        let newValue: any = undefined;
+        if (
+          [
+            "CustomCheckbox",
+            "CustomInputNumber",
+            "CustomSwitch",
+          ].includes(field_type)
+        ) {
+          if (newValue0 != null) {
+            newValue = Number(newValue0);
+          }
+        }
+        if (newValue0 != null) {
+          newValue = newValue0;
+        } else {
+          newValue = "";
+        }
+        const oldValueModel = dyn_page_val_models.find((m) => m.code === field_code);
+        if (oldValueModel) {
+          const oldValue = oldValueModel?.lbl;
+          if (newValue !== oldValue) {
+            await updateByIdDynPageVal(
+              oldValueModel.id,
+              {
+                lbl: newValue,
+              },
+              options,
+            );
+            updateFldNum++;
+            sqlSetFldNum++;
+          }
+        } else {
+          await createDynPageVal(
+            {
+              ref_code: pagePath,
+              ref_id: id as unknown as string,
+              code: field_code,
+              lbl: newValue,
+            },
+            options,
+          );
+          updateFldNum++;
+          sqlSetFldNum++;
+        }
+      }
+      
+    }
+    
+  }<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -6046,8 +6552,15 @@ export async function updateById<#=Table_Up#>(
     #>
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);<#
-      if (opts.langTable && isUseI18n) {
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );<#
+      if (opts?.langTable && isUseI18n) {
       #>
       if (server_i18n_enable) {
         await refreshLangByInput({
@@ -6176,13 +6689,13 @@ export async function deleteByIds<#=Table_Up#>(
   },
 ): Promise<number> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "deleteByIds<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);<#
-  if (opts.langTable && isUseI18n) {
+  if (opts?.langTable && isUseI18n) {
   #>
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
   }
@@ -6203,11 +6716,13 @@ export async function deleteByIds<#=Table_Up#>(
   
   if (!ids || !ids.length) {
     return 0;
-  }<#
+  }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
-  const dataPermitModels = await getDataPermits(route_path, options);
+  const dataPermitModels = await getDataPermits(getPagePath<#=Table_Up#>(), options);
   const hasCreatePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Create && item.type === DataPermitType.Editable);
   const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role && item.type === DataPermitType.Editable);
   const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept && item.type === DataPermitType.Editable);
@@ -6347,17 +6862,44 @@ export async function deleteByIds<#=Table_Up#>(
     const sql = `delete from <#=mod#>_<#=table#> where id=${ args.push(id) } limit 1`;<#
     }
     #>
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;<#
-    if (opts.langTable && isUseI18n) {
+    if (opts?.isUseDynPageFields) {
+    #>
+    // 删除动态页面值<#
+      if (hasIsDeleted) {
+    #>
+    {
+      const args = new QueryArgs();
+      const sql = `update base_dyn_page_val set is_deleted=1 where ref_id=${ args.push(id) } and is_deleted=0`;
+      await execute(sql, args);
+    }<#
+      } else {
+    #>
+    {
+      const args = new QueryArgs();
+      const sql = `delete from base_dyn_page_val where ref_id=${ args.push(id) }`;
+      await execute(sql, args);
+    }<#
+      }
+    #><#
+    }
+    #><#
+    if (opts?.langTable && isUseI18n) {
     #>
     if (server_i18n_enable) {<#
       if (hasIsDeleted) {
       #>
-      const sql = "update <#=opts.langTable.opts.table_name#> set is_deleted=1 where <#=table#>_id=?";<#
+      const sql = "update <#=opts?.langTable.opts.table_name#> set is_deleted=1 where <#=table#>_id=?";<#
       } else {
       #>
-      const sql = "delete from <#=opts.langTable.opts.table_name#> where <#=table#>_id=?";<#
+      const sql = "delete from <#=opts?.langTable.opts.table_name#> where <#=table#>_id=?";<#
       }
       #>
       const args = new QueryArgs();
@@ -6370,6 +6912,7 @@ export async function deleteByIds<#=Table_Up#>(
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       if (column.inlineMany2manyTab) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
@@ -6427,6 +6970,7 @@ export async function deleteByIds<#=Table_Up#>(
     const hasIsDeleted = optTable.columns.some((column) => column.COLUMN_NAME === "is_deleted");
     for (const column of optTable.columns) {
       if (column.inlineMany2manyTab) continue;
+      if (column.isVirtual) continue;
       const foreignKey = column.foreignKey;
       const many2many = column.many2many;
       if (!many2many || !foreignKey) continue;
@@ -6445,7 +6989,13 @@ export async function deleteByIds<#=Table_Up#>(
       const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=${ args.push(id) } and is_deleted=0`;<#
       }
       #>
-      await execute(sql, args);<#
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );<#
       } else {
       #>
       const sql = `select id from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=${ args.push(id) } and is_deleted=0`;
@@ -6496,6 +7046,7 @@ export async function deleteByIds<#=Table_Up#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     const foreignKey = column.foreignKey;
@@ -6579,7 +7130,7 @@ export async function defaultById<#=Table_Up#>(
   },
 ): Promise<number> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "defaultById<#=Table_Up#>";
   
   if (!id) {
@@ -6647,7 +7198,7 @@ export async function enableByIds<#=Table_Up#>(
   },
 ): Promise<number> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "enableByIds<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -6735,7 +7286,7 @@ export async function lockByIds<#=Table_Up#>(
   },
 ): Promise<number> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "lockByIds<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -6758,7 +7309,9 @@ export async function lockByIds<#=Table_Up#>(
   
   if (!ids || !ids.length) {
     return 0;
-  }<#
+  }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";<#
   if (cache) {
   #>
   
@@ -6768,7 +7321,13 @@ export async function lockByIds<#=Table_Up#>(
   
   const args = new QueryArgs();
   let sql = `update <#=mod#>_<#=table#> set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;<#
   if (cache) {
   #>
@@ -6793,11 +7352,11 @@ export async function revertByIds<#=Table_Up#>(
   },
 ): Promise<number> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "revertByIds<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);<#
-  if (opts.langTable && isUseI18n) {
+  if (opts?.langTable && isUseI18n) {
   #>
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
   }
@@ -6874,10 +7433,20 @@ export async function revertByIds<#=Table_Up#>(
     const sql = `update <#=mod#>_<#=table#> set is_deleted=0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;<#
-    if (opts.langTable && isUseI18n) {
+    if (opts?.isUseDynPageFields) {
+    #>
+    // 还原动态页面值
+    {
+      const args = new QueryArgs();
+      const sql = `update base_dyn_page_val set is_deleted=0 where ref_id=${ args.push(id) } and is_deleted=1`;
+      await execute(sql, args);
+    }<#
+    }
+    #><#
+    if (opts?.langTable && isUseI18n) {
     #>
     if (server_i18n_enable) {
-      const sql = "update <#=opts.langTable.opts.table_name#> set is_deleted=0 where <#=table#>_id=?";
+      const sql = "update <#=opts?.langTable.opts?.table_name#> set is_deleted=0 where <#=table#>_id=?";
       const args = new QueryArgs();
       args.push(id);
       await execute(sql, args);
@@ -6888,6 +7457,7 @@ export async function revertByIds<#=Table_Up#>(
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       if (column.inlineMany2manyTab) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
@@ -6975,6 +7545,7 @@ export async function revertByIds<#=Table_Up#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -7048,12 +7619,12 @@ export async function forceDeleteByIds<#=Table_Up#>(
   },
 ): Promise<number> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "forceDeleteByIds<#=Table_Up#>";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);<#
-  if (opts.langTable && isUseI18n) {
+  if (opts?.langTable && isUseI18n) {
   #>
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
   }
@@ -7074,7 +7645,9 @@ export async function forceDeleteByIds<#=Table_Up#>(
   
   if (!ids || !ids.length) {
     return 0;
-  }<#
+  }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";<#
   if (cache) {
   #>
   
@@ -7108,13 +7681,35 @@ export async function forceDeleteByIds<#=Table_Up#>(
     #> limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;<#
-    if (opts.langTable && isUseI18n) {
+    if (opts?.isUseDynPageFields) {
+    #>
+    // 彻底删除动态页面值
+    {
+      const args = new QueryArgs();
+      const sql = `delete from base_dyn_page_val where ref_id=${ args.push(id) }`;
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
+    }<#
+    }
+    #><#
+    if (opts?.langTable && isUseI18n) {
     #>
     if (server_i18n_enable) {
-      const sql = "delete from <#=opts.langTable.opts.table_name#> where <#=table#>_id=?";
+      const sql = "delete from <#=opts?.langTable.opts.table_name#> where <#=table#>_id=?";
       const args = new QueryArgs();
       args.push(id);
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }<#
     }
     #><#
@@ -7122,6 +7717,7 @@ export async function forceDeleteByIds<#=Table_Up#>(
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       if (column.inlineMany2manyTab) continue;
+      if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
@@ -7144,7 +7740,13 @@ export async function forceDeleteByIds<#=Table_Up#>(
       if (<#=column_name#> && <#=column_name#>.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in (${ args.push(<#=column_name#>) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }<#
     }
@@ -7154,6 +7756,7 @@ export async function forceDeleteByIds<#=Table_Up#>(
     const hasIsDeleted = optTable.columns.some((column) => column.COLUMN_NAME === "is_deleted");
     for (const column of optTable.columns) {
       if (column.inlineMany2manyTab) continue;
+      if (column.isVirtual) continue;
       const foreignKey = column.foreignKey;
       const many2many = column.many2many;
       if (!many2many || !foreignKey) continue;
@@ -7163,7 +7766,13 @@ export async function forceDeleteByIds<#=Table_Up#>(
     {
       const args = new QueryArgs();
       const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }<#
     }
     #><#
@@ -7199,6 +7808,7 @@ export async function forceDeleteByIds<#=Table_Up#>(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -7272,18 +7882,22 @@ if (hasOrderBy) {
 // MARK: findLastOrderBy<#=Table_Up#>
 /** 查找 <#=table_comment#> order_by 字段的最大值 */
 export async function findLastOrderBy<#=Table_Up#>(
+  search?: Readonly<<#=searchName#>>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "<#=mod#>_<#=table#>";
+  const table = getTableName<#=Table_Up#>();
   const method = "findLastOrderBy<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -7292,28 +7906,29 @@ export async function findLastOrderBy<#=Table_Up#>(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from <#=mod#>_<#=table#> t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from <#=mod#>_<#=table#> t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);<#
-  if (hasTenant_id) {
-  #>
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }<#
-  }
-  #>
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

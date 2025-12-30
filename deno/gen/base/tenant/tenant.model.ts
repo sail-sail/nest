@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/tenant";
+export function getPagePathTenant() {
+  return "/base/tenant";
+}
+
+export function getTableNameTenant() {
+  return "base_tenant";
+}
 
 declare const tenantId: unique symbol;
 

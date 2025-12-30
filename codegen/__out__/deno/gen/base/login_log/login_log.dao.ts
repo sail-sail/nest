@@ -37,6 +37,8 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -72,6 +74,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathLoginLog,
+  getTableNameLoginLog,
+} from "./login_log.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -180,7 +187,7 @@ export async function findCountLoginLog(
   },
 ): Promise<number> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findCountLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -278,7 +285,7 @@ export async function findAllLoginLog(
   },
 ): Promise<LoginLogModel[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findAllLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -397,6 +404,14 @@ export async function findAllLoginLog(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     typeDict, // 类型
     is_succDict, // 登录成功
@@ -502,7 +517,7 @@ export async function setIdByLblLoginLog(
 // MARK: getFieldCommentsLoginLog
 /** 获取登录日志字段注释 */
 export async function getFieldCommentsLoginLog(): Promise<LoginLogFieldComment> {
-  const fieldComments: LoginLogFieldComment = {
+  const field_comments: LoginLogFieldComment = {
     id: "ID",
     type: "类型",
     type_lbl: "类型",
@@ -513,7 +528,8 @@ export async function getFieldCommentsLoginLog(): Promise<LoginLogFieldComment> 
     create_time: "登录时间",
     create_time_lbl: "登录时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueLoginLog
@@ -525,7 +541,7 @@ export async function findByUniqueLoginLog(
   },
 ): Promise<LoginLogModel[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findByUniqueLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -621,7 +637,7 @@ export async function findOneLoginLog(
   },
 ): Promise<LoginLogModel | undefined> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findOneLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -669,7 +685,7 @@ export async function findOneOkLoginLog(
   },
 ): Promise<LoginLogModel> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findOneOkLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -721,7 +737,7 @@ export async function findByIdLoginLog(
   },
 ): Promise<LoginLogModel | undefined> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -763,7 +779,7 @@ export async function findByIdOkLoginLog(
   },
 ): Promise<LoginLogModel> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findByIdOkLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -804,7 +820,7 @@ export async function findByIdsLoginLog(
   },
 ): Promise<LoginLogModel[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findByIdsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -851,7 +867,7 @@ export async function findByIdsOkLoginLog(
   },
 ): Promise<LoginLogModel[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "findByIdsOkLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -900,7 +916,7 @@ export async function existLoginLog(
   },
 ): Promise<boolean> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "existLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -932,7 +948,7 @@ export async function existByIdLoginLog(
   },
 ) {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "existByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1021,7 +1037,7 @@ export async function createReturnLoginLog(
   },
 ): Promise<LoginLogModel> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "createReturnLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1072,7 +1088,7 @@ export async function createLoginLog(
   },
 ): Promise<LoginLogId> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "createLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1113,7 +1129,7 @@ export async function createsReturnLoginLog(
   },
 ): Promise<LoginLogModel[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "createsReturnLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1150,7 +1166,7 @@ export async function createsLoginLog(
   },
 ): Promise<LoginLogId[]> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "createsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1187,7 +1203,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1382,7 +1398,7 @@ export async function updateTenantByIdLoginLog(
   },
 ): Promise<number> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "updateTenantByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1428,7 +1444,7 @@ export async function updateByIdLoginLog(
   },
 ): Promise<LoginLogId> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "updateByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1482,7 +1498,12 @@ export async function updateByIdLoginLog(
   const oldModel = await findByIdLoginLog(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 登录日志 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 登录日志 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1589,7 +1610,14 @@ export async function updateByIdLoginLog(
     sql += ` where id=${ args.push(id) } limit 1`;
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1611,7 +1639,7 @@ export async function deleteByIdsLoginLog(
   },
 ): Promise<number> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "deleteByIdsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1634,6 +1662,8 @@ export async function deleteByIdsLoginLog(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1667,7 +1697,13 @@ export async function deleteByIdsLoginLog(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1683,7 +1719,7 @@ export async function revertByIdsLoginLog(
   },
 ): Promise<number> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "revertByIdsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1757,7 +1793,7 @@ export async function forceDeleteByIdsLoginLog(
   },
 ): Promise<number> {
   
-  const table = "base_login_log";
+  const table = getTableNameLoginLog();
   const method = "forceDeleteByIdsLoginLog";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1779,6 +1815,8 @@ export async function forceDeleteByIdsLoginLog(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {

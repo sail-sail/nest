@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -82,6 +84,23 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  findOneMenu,
+  createMenu,
+  updateByIdMenu,
+} from "/gen/base/menu/menu.dao.ts";
+
+import {
+  findAllRole,
+  findByIdsRole,
+  updateByIdRole,
+} from "/gen/base/role/role.dao.ts";
+
+import {
+  getPagePathDynPage,
+  getTableNameDynPage,
+} from "./dyn_page.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -209,7 +228,7 @@ export async function findCountDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findCountDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -299,7 +318,7 @@ export async function findAllDynPage(
   },
 ): Promise<DynPageModel[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findAllDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -420,6 +439,14 @@ export async function findAllDynPage(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_enabledDict, // 启用
   ] = await getDict([
@@ -439,6 +466,47 @@ export async function findAllDynPage(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    model.parent_menu_id = "" as MenuId;
+    model.parent_menu_id_lbl = "";
+    model.role_ids = [ ];
+    model.role_ids_lbl = [ ];
+    
+    // 根据路由获取菜单及其角色列表
+    {
+      const {
+        findOneMenu,
+      } = await import("/gen/base/menu/menu.dao.ts");
+      
+      const menu_model = await findOneMenu(
+        {
+          route_path: model.code,
+          is_deleted: search?.is_deleted,
+        },
+        undefined,
+        options,
+      );
+      
+      if (menu_model) {
+        // 获取父菜单ID
+        model.parent_menu_id = menu_model.parent_id;
+        model.parent_menu_id_lbl = menu_model.parent_id_lbl;
+        
+        // 获取拥有此菜单权限的角色列表
+        const role_models = await findAllRole(
+          {
+            menu_ids: [ menu_model.id ],
+            is_deleted: search?.is_deleted,
+          },
+          undefined,
+          undefined,
+          options,
+        );
+        
+        model.role_ids = role_models.map((item) => item.id);
+        model.role_ids_lbl = role_models.map((item) => item.lbl);
+      }
+    }
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -515,10 +583,14 @@ export async function setIdByLblDynPage(
 // MARK: getFieldCommentsDynPage
 /** 获取动态页面字段注释 */
 export async function getFieldCommentsDynPage(): Promise<DynPageFieldComment> {
-  const fieldComments: DynPageFieldComment = {
+  const field_comments: DynPageFieldComment = {
     id: "ID",
-    code: "编码",
+    code: "路由",
     lbl: "名称",
+    parent_menu_id: "父菜单",
+    parent_menu_id_lbl: "父菜单",
+    role_ids: "所属角色",
+    role_ids_lbl: "所属角色",
     order_by: "排序",
     is_enabled: "启用",
     is_enabled_lbl: "启用",
@@ -532,7 +604,8 @@ export async function getFieldCommentsDynPage(): Promise<DynPageFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDynPage
@@ -544,7 +617,7 @@ export async function findByUniqueDynPage(
   },
 ): Promise<DynPageModel[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findByUniqueDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -680,7 +753,7 @@ export async function findOneDynPage(
   },
 ): Promise<DynPageModel | undefined> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findOneDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -728,7 +801,7 @@ export async function findOneOkDynPage(
   },
 ): Promise<DynPageModel> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findOneOkDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -780,7 +853,7 @@ export async function findByIdDynPage(
   },
 ): Promise<DynPageModel | undefined> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findByIdDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -822,7 +895,7 @@ export async function findByIdOkDynPage(
   },
 ): Promise<DynPageModel> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findByIdOkDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -863,7 +936,7 @@ export async function findByIdsDynPage(
   },
 ): Promise<DynPageModel[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findByIdsDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -910,7 +983,7 @@ export async function findByIdsOkDynPage(
   },
 ): Promise<DynPageModel[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findByIdsOkDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -959,7 +1032,7 @@ export async function existDynPage(
   },
 ): Promise<boolean> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "existDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -991,7 +1064,7 @@ export async function existByIdDynPage(
   },
 ) {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "existByIdDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1071,10 +1144,10 @@ export async function validateDynPage(
     fieldComments.id,
   );
   
-  // 编码
+  // 路由
   await validators.chars_max_length(
     input.code,
-    20,
+    100,
     fieldComments.code,
   );
   
@@ -1116,7 +1189,7 @@ export async function findAutoCodeDynPage(
   },
 ) {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findAutoCodeDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1158,7 +1231,7 @@ export async function findAutoCodeDynPage(
   if (code_seq_deleted > code_seq) {
     code_seq = code_seq_deleted;
   }
-  const code = "DP" + code_seq.toString().padStart(3, "0");
+  const code = "/dyn/pg" + code_seq.toString();
   
   return {
     code_seq,
@@ -1178,7 +1251,7 @@ export async function createReturnDynPage(
   },
 ): Promise<DynPageModel> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "createReturnDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1229,7 +1302,7 @@ export async function createDynPage(
   },
 ): Promise<DynPageId> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "createDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1270,7 +1343,7 @@ export async function createsReturnDynPage(
   },
 ): Promise<DynPageModel[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "createsReturnDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1307,7 +1380,7 @@ export async function createsDynPage(
   },
 ): Promise<DynPageId[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "createsDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1357,7 +1430,7 @@ async function _creates(
     input.code = code;
   }
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1565,6 +1638,109 @@ async function _creates(
     }
   }
   
+  // 根据 code 路由查找菜单, 如果菜单不存在则创建菜单, 否则更新菜单名称
+  for (const input of inputs2) {
+    if (!input.code) {
+      continue;
+    }
+    const menu_model = await findOneMenu(
+      {
+        route_path: input.code,
+      },
+      undefined,
+      options,
+    );
+    let menu_id = menu_model?.id;
+    if (!menu_id) {
+      // 创建菜单
+      menu_id = await createMenu(
+        {
+          parent_id: input.parent_menu_id,
+          route_path: input.code,
+          lbl: input.lbl || "",
+          is_dyn_page: 1,
+          is_enabled: input.is_enabled,
+        },
+        options,
+      );
+    } else {
+      // 更新菜单名称
+      await updateByIdMenu(
+        menu_id,
+        {
+          parent_id: input.parent_menu_id,
+          lbl: input.lbl || "",
+          is_enabled: input.is_enabled,
+        },
+        {
+          is_debug: options?.is_debug,
+          is_silent_mode: options?.is_silent_mode,
+          is_creating: true,
+        },
+      );
+    }
+    // 菜单所属角色
+    const new_role_ids = input.role_ids ?? [];
+    
+    // 查找旧的角色列表(拥有此菜单的角色)
+    const old_role_models = await findAllRole(
+      {
+        menu_ids: [ menu_id ],
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    const old_role_ids = old_role_models.map((item) => item.id);
+    
+    // 找出需要删除此菜单的角色(在旧列表中但不在新列表中)
+    const remove_role_ids = old_role_ids.filter((role_id) => !new_role_ids.includes(role_id));
+    for (const role_id of remove_role_ids) {
+      const role_model = old_role_models.find((item) => item.id === role_id);
+      if (!role_model) continue;
+      const menu_ids = role_model.menu_ids.filter((id) => id !== menu_id);
+      await updateByIdRole(
+        role_id,
+        {
+          menu_ids,
+        },
+        {
+          is_debug: options?.is_debug,
+          is_silent_mode: options?.is_silent_mode,
+          is_creating: true,
+        },
+      );
+    }
+    
+    // 找出需要添加此菜单的角色(在新列表中但不在旧列表中)
+    const add_role_ids = new_role_ids.filter((role_id) => !old_role_ids.includes(role_id));
+    if (add_role_ids.length > 0) {
+      const add_role_models = await findByIdsRole(
+        add_role_ids,
+        options,
+      );
+      for (const role_model of add_role_models) {
+        const role_id = role_model.id;
+        const menu_ids = role_model.menu_ids;
+        if (menu_ids.includes(menu_id)) {
+          continue;
+        }
+        menu_ids.push(menu_id);
+        await updateByIdRole(
+          role_id,
+          {
+            menu_ids,
+          },
+          {
+            is_debug: options?.is_debug,
+            is_silent_mode: options?.is_silent_mode,
+            is_creating: true,
+          },
+        );
+      }
+    }
+  }
+  
   await delCacheDynPage();
   
   return ids2;
@@ -1586,7 +1762,7 @@ export async function updateTenantByIdDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "updateTenantByIdDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1634,7 +1810,7 @@ export async function updateByIdDynPage(
   },
 ): Promise<DynPageId> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "updateByIdDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1688,7 +1864,12 @@ export async function updateByIdDynPage(
   const oldModel = await findByIdDynPage(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 动态页面 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 动态页面 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1860,12 +2041,120 @@ export async function updateByIdDynPage(
     await delCacheDynPage();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
   if (updateFldNum > 0) {
     await delCacheDynPage();
+  }
+  
+  // 根据 code 路由查找菜单, 如果菜单不存在则创建菜单, 否则更新菜单名称
+  if (input.code) {
+    const menu_model = await findOneMenu(
+      {
+        route_path: input.code,
+      },
+      undefined,
+      options,
+    );
+    let menu_id = menu_model?.id;
+    if (!menu_id) {
+      // 创建菜单
+      menu_id = await createMenu(
+        {
+          parent_id: input.parent_menu_id,
+          route_path: input.code,
+          lbl: input.lbl || "",
+          is_dyn_page: 1,
+          is_enabled: input.is_enabled,
+        },
+        options,
+      );
+    } else {
+      // 更新菜单名称
+      await updateByIdMenu(
+        menu_id,
+        {
+          parent_id: input.parent_menu_id,
+          lbl: input.lbl || "",
+          is_enabled: input.is_enabled,
+        },
+        {
+          is_debug: options?.is_debug,
+          is_silent_mode: options?.is_silent_mode,
+          is_creating: true,
+        },
+      );
+    }
+    
+    // 菜单所属角色
+    const new_role_ids = input.role_ids ?? [];
+    
+    // 查找旧的角色列表(拥有此菜单的角色)
+    const old_role_models = await findAllRole(
+      {
+        menu_ids: [ menu_id ],
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    const old_role_ids = old_role_models.map((item) => item.id);
+    
+    // 找出需要删除此菜单的角色(在旧列表中但不在新列表中)
+    const remove_role_ids = old_role_ids.filter((role_id) => !new_role_ids.includes(role_id));
+    for (const role_id of remove_role_ids) {
+      const role_model = old_role_models.find((item) => item.id === role_id);
+      if (!role_model) continue;
+      const menu_ids = role_model.menu_ids.filter((id) => id !== menu_id);
+      await updateByIdRole(
+        role_id,
+        {
+          menu_ids,
+        },
+        {
+          is_debug: options?.is_debug,
+          is_silent_mode: options?.is_silent_mode,
+          is_creating: true,
+        },
+      );
+    }
+    
+    // 找出需要添加此菜单的角色(在新列表中但不在旧列表中)
+    const add_role_ids = new_role_ids.filter((role_id) => !old_role_ids.includes(role_id));
+    if (add_role_ids.length > 0) {
+      const add_role_models = await findByIdsRole(
+        add_role_ids,
+        options,
+      );
+      for (const role_model of add_role_models) {
+        const role_id = role_model.id;
+        const menu_ids = role_model.menu_ids;
+        if (menu_ids.includes(menu_id)) {
+          continue;
+        }
+        menu_ids.push(menu_id);
+        await updateByIdRole(
+          role_id,
+          {
+            menu_ids,
+          },
+          {
+            is_debug: options?.is_debug,
+            is_silent_mode: options?.is_silent_mode,
+            is_creating: true,
+          },
+        );
+      }
+    }
   }
   
   if (!is_silent_mode) {
@@ -1886,7 +2175,7 @@ export async function deleteByIdsDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "deleteByIdsDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1910,9 +2199,13 @@ export async function deleteByIdsDynPage(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheDynPage();
   
   let affectedRows = 0;
+  const menu_ids_to_delete: MenuId[] = [];
+  
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const oldModel = await findByIdDynPage(id, options);
@@ -1922,6 +2215,21 @@ export async function deleteByIdsDynPage(
     if (!is_silent_mode) {
       log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
     }
+    
+    // 检查是否需要级联删除菜单
+    if (oldModel.code) {
+      const menu_model = await findOneMenu(
+        {
+          route_path: oldModel.code,
+        },
+        undefined,
+        options,
+      );
+      if (menu_model && menu_model.is_dyn_page === 1) {
+        menu_ids_to_delete.push(menu_model.id);
+      }
+    }
+    
     const args = new QueryArgs();
     let sql = `update base_dyn_page set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
@@ -1944,7 +2252,13 @@ export async function deleteByIdsDynPage(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1961,6 +2275,17 @@ export async function deleteByIdsDynPage(
     dyn_page_field.map((item) => item.id),
     options,
   );
+  
+  // 级联删除菜单
+  if (menu_ids_to_delete.length > 0) {
+    const {
+      deleteByIdsMenu,
+    } = await import("/gen/base/menu/menu.dao.ts");
+    await deleteByIdsMenu(
+      menu_ids_to_delete,
+      options,
+    );
+  }
   
   await delCacheDynPage();
   
@@ -1998,7 +2323,7 @@ export async function enableByIdsDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "enableByIdsDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2046,7 +2371,7 @@ export async function revertByIdsDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "revertByIdsDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2071,6 +2396,8 @@ export async function revertByIdsDynPage(
   await delCacheDynPage();
   
   let num = 0;
+  const menu_ids_to_revert: MenuId[] = [];
+  
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     let old_model = await findOneDynPage(
@@ -2103,6 +2430,22 @@ export async function revertByIdsDynPage(
         throw "动态页面 重复";
       }
     }
+    
+    // 检查是否需要级联还原菜单
+    if (old_model.code) {
+      const menu_model = await findOneMenu(
+        {
+          route_path: old_model.code,
+          is_deleted: 1,
+        },
+        undefined,
+        options,
+      );
+      if (menu_model && menu_model.is_dyn_page === 1) {
+        menu_ids_to_revert.push(menu_model.id);
+      }
+    }
+    
     const args = new QueryArgs();
     const sql = `update base_dyn_page set is_deleted=0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
@@ -2124,6 +2467,17 @@ export async function revertByIdsDynPage(
     options,
   );
   
+  // 级联还原菜单
+  if (menu_ids_to_revert.length > 0) {
+    const {
+      revertByIdsMenu,
+    } = await import("/gen/base/menu/menu.dao.ts");
+    await revertByIdsMenu(
+      menu_ids_to_revert,
+      options,
+    );
+  }
+  
   await delCacheDynPage();
   
   return num;
@@ -2139,7 +2493,7 @@ export async function forceDeleteByIdsDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "forceDeleteByIdsDynPage";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2162,9 +2516,13 @@ export async function forceDeleteByIdsDynPage(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheDynPage();
   
   let num = 0;
+  const menu_ids_to_force_delete: MenuId[] = [];
+  
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const oldModel = await findOneDynPage(
@@ -2178,6 +2536,22 @@ export async function forceDeleteByIdsDynPage(
     if (oldModel && !is_silent_mode) {
       log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
     }
+    
+    // 检查是否需要级联彻底删除菜单
+    if (oldModel?.code) {
+      const menu_model = await findOneMenu(
+        {
+          route_path: oldModel.code,
+          is_deleted: 1,
+        },
+        undefined,
+        options,
+      );
+      if (menu_model && menu_model.is_dyn_page === 1) {
+        menu_ids_to_force_delete.push(menu_model.id);
+      }
+    }
+    
     const args = new QueryArgs();
     const sql = `delete from base_dyn_page where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
@@ -2199,6 +2573,17 @@ export async function forceDeleteByIdsDynPage(
     options,
   );
   
+  // 级联彻底删除菜单
+  if (menu_ids_to_force_delete.length > 0) {
+    const {
+      forceDeleteByIdsMenu,
+    } = await import("/gen/base/menu/menu.dao.ts");
+    await forceDeleteByIdsMenu(
+      menu_ids_to_force_delete,
+      options,
+    );
+  }
+  
   await delCacheDynPage();
   
   return num;
@@ -2207,18 +2592,22 @@ export async function forceDeleteByIdsDynPage(
 // MARK: findLastOrderByDynPage
 /** 查找 动态页面 order_by 字段的最大值 */
 export async function findLastOrderByDynPage(
+  search?: Readonly<DynPageSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findLastOrderByDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2227,24 +2616,29 @@ export async function findLastOrderByDynPage(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_dyn_page t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_dyn_page t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

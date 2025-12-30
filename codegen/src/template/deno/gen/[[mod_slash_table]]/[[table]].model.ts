@@ -194,7 +194,13 @@ import {
 }
 #>
 
-export const route_path = "/<#=mod#>/<#=table#>";
+export function getPagePath<#=Table_Up#>() {
+  return "/<#=mod#>/<#=table#>";
+}
+
+export function getTableName<#=Table_Up#>() {
+  return "<#=mod#>_<#=table#>";
+}
 
 declare const <#=table_Up#>Id: unique symbol;
 
@@ -782,7 +788,11 @@ export async function fieldPermitInput<#=Table_Up#>(
     return;
   }
   
-  const fields = await getFieldPermit(route_path);
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.dao.ts");
+  
+  const fields = await getFieldPermit(getPagePath<#=Table_Up#>());
   
   if (fields == null) {
     return;
@@ -899,7 +909,11 @@ export async function fieldPermitModel<#=Table_Up#>(
     return;
   }
   
-  const fields = await getFieldPermit(route_path);
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.dao.ts");
+  
+  const fields = await getFieldPermit(getPagePath<#=Table_Up#>());
   
   if (fields == null) {
     return;

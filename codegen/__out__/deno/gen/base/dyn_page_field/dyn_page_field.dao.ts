@@ -37,6 +37,8 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -66,6 +68,7 @@ import type {
   InputMaybe,
   PageInput,
   SortInput,
+  DynPageFieldAlign,
 } from "/gen/types.ts";
 
 import {
@@ -75,6 +78,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathDynPageField,
+  getTableNameDynPageField,
+} from "./dyn_page_field.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -100,6 +108,20 @@ async function getWhereQuery(
   }
   if (search?.ids != null) {
     whereQuery += ` and t.id in (${ args.push(search.ids) })`;
+  }
+  if (search?.code_seq != null) {
+    if (search.code_seq[0] != null) {
+      whereQuery += ` and t.code_seq>=${ args.push(search.code_seq[0]) }`;
+    }
+    if (search.code_seq[1] != null) {
+      whereQuery += ` and t.code_seq<=${ args.push(search.code_seq[1]) }`;
+    }
+  }
+  if (search?.code != null) {
+    whereQuery += ` and t.code=${ args.push(search.code) }`;
+  }
+  if (isNotEmpty(search?.code_like)) {
+    whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
   }
   if (search?.dyn_page_id != null) {
     whereQuery += ` and t.dyn_page_id in (${ args.push(search.dyn_page_id) })`;
@@ -131,8 +153,28 @@ async function getWhereQuery(
   if (isNotEmpty(search?.attrs_like)) {
     whereQuery += ` and t.attrs like ${ args.push("%" + sqlLike(search?.attrs_like) + "%") }`;
   }
+  if (search?.formula != null) {
+    whereQuery += ` and t.formula=${ args.push(search.formula) }`;
+  }
+  if (isNotEmpty(search?.formula_like)) {
+    whereQuery += ` and t.formula like ${ args.push("%" + sqlLike(search?.formula_like) + "%") }`;
+  }
   if (search?.is_required != null) {
     whereQuery += ` and t.is_required in (${ args.push(search.is_required) })`;
+  }
+  if (search?.is_search != null) {
+    whereQuery += ` and t.is_search in (${ args.push(search.is_search) })`;
+  }
+  if (search?.width != null) {
+    if (search.width[0] != null) {
+      whereQuery += ` and t.width>=${ args.push(search.width[0]) }`;
+    }
+    if (search.width[1] != null) {
+      whereQuery += ` and t.width<=${ args.push(search.width[1]) }`;
+    }
+  }
+  if (search?.align != null) {
+    whereQuery += ` and t.align in (${ args.push(search.align) })`;
   }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
@@ -210,7 +252,7 @@ export async function findCountDynPageField(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "findCountDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -254,6 +296,28 @@ export async function findCountDynPageField(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.is_required.length > ${ ids_limit }`);
+    }
+  }
+  // 查询条件
+  if (search && search.is_search != null) {
+    const len = search.is_search.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_search.length > ${ ids_limit }`);
+    }
+  }
+  // 对齐方式
+  if (search && search.align != null) {
+    const len = search.align.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.align.length > ${ ids_limit }`);
     }
   }
   // 启用
@@ -319,7 +383,7 @@ export async function findAllDynPageField(
   },
 ): Promise<DynPageFieldModel[]> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "findAllDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -369,6 +433,28 @@ export async function findAllDynPageField(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.is_required.length > ${ ids_limit }`);
+    }
+  }
+  // 查询条件
+  if (search && search.is_search != null) {
+    const len = search.is_search.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_search.length > ${ ids_limit }`);
+    }
+  }
+  // 对齐方式
+  if (search && search.align != null) {
+    const len = search.align.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.align.length > ${ ids_limit }`);
     }
   }
   // 启用
@@ -457,11 +543,23 @@ export async function findAllDynPageField(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_requiredDict, // 必填
+    is_searchDict, // 查询条件
+    alignDict, // 对齐方式
     is_enabledDict, // 启用
   ] = await getDict([
     "yes_no",
+    "yes_no",
+    "dyn_page_field_align",
     "is_enabled",
   ]);
   
@@ -480,6 +578,26 @@ export async function findAllDynPageField(
       }
     }
     model.is_required_lbl = is_required_lbl || "";
+    
+    // 查询条件
+    let is_search_lbl = model.is_search?.toString() || "";
+    if (model.is_search != null) {
+      const dictItem = is_searchDict.find((dictItem) => dictItem.val === String(model.is_search));
+      if (dictItem) {
+        is_search_lbl = dictItem.lbl;
+      }
+    }
+    model.is_search_lbl = is_search_lbl || "";
+    
+    // 对齐方式
+    let align_lbl = model.align as string;
+    if (!isEmpty(model.align)) {
+      const dictItem = alignDict.find((dictItem) => dictItem.val === model.align);
+      if (dictItem) {
+        align_lbl = dictItem.lbl;
+      }
+    }
+    model.align_lbl = align_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -533,9 +651,13 @@ export async function setIdByLblDynPageField(
   
   const [
     is_requiredDict, // 必填
+    is_searchDict, // 查询条件
+    alignDict, // 对齐方式
     is_enabledDict, // 启用
   ] = await getDict([
     "yes_no",
+    "yes_no",
+    "dyn_page_field_align",
     "is_enabled",
   ]);
   
@@ -576,6 +698,28 @@ export async function setIdByLblDynPageField(
     input.is_required_lbl = lbl;
   }
   
+  // 查询条件
+  if (isNotEmpty(input.is_search_lbl) && input.is_search == null) {
+    const val = is_searchDict.find((itemTmp) => itemTmp.lbl === input.is_search_lbl)?.val;
+    if (val != null) {
+      input.is_search = Number(val);
+    }
+  } else if (isEmpty(input.is_search_lbl) && input.is_search != null) {
+    const lbl = is_searchDict.find((itemTmp) => itemTmp.val === String(input.is_search))?.lbl || "";
+    input.is_search_lbl = lbl;
+  }
+  
+  // 对齐方式
+  if (isNotEmpty(input.align_lbl) && input.align == null) {
+    const val = alignDict.find((itemTmp) => itemTmp.lbl === input.align_lbl)?.val;
+    if (val != null) {
+      input.align = val as DynPageFieldAlign;
+    }
+  } else if (isEmpty(input.align_lbl) && input.align != null) {
+    const lbl = alignDict.find((itemTmp) => itemTmp.val === input.align)?.lbl || "";
+    input.align_lbl = lbl;
+  }
+  
   // 启用
   if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled == null) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
@@ -591,20 +735,28 @@ export async function setIdByLblDynPageField(
 // MARK: getFieldCommentsDynPageField
 /** 获取动态页面字段字段注释 */
 export async function getFieldCommentsDynPageField(): Promise<DynPageFieldFieldComment> {
-  const fieldComments: DynPageFieldFieldComment = {
+  const field_comments: DynPageFieldFieldComment = {
     id: "ID",
+    code: "编码",
     dyn_page_id: "动态页面",
     dyn_page_id_lbl: "动态页面",
     lbl: "名称",
     type: "类型",
     attrs: "属性",
+    formula: "计算公式",
     is_required: "必填",
     is_required_lbl: "必填",
+    is_search: "查询条件",
+    is_search_lbl: "查询条件",
+    width: "宽度",
+    align: "对齐方式",
+    align_lbl: "对齐方式",
     is_enabled: "启用",
     is_enabled_lbl: "启用",
     order_by: "排序",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDynPageField
@@ -616,7 +768,7 @@ export async function findByUniqueDynPageField(
   },
 ): Promise<DynPageFieldModel[]> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "findByUniqueDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -673,6 +825,21 @@ export async function findByUniqueDynPageField(
     );
     models.push(...modelTmps);
   }
+  {
+    if (search0.code == null) {
+      return [ ];
+    }
+    const code = search0.code;
+    const modelTmps = await findAllDynPageField(
+      {
+        code,
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    models.push(...modelTmps);
+  }
   
   return models;
 }
@@ -689,6 +856,11 @@ export function equalsByUniqueDynPageField(
   if (
     oldModel.dyn_page_id === input.dyn_page_id &&
     oldModel.lbl === input.lbl
+  ) {
+    return true;
+  }
+  if (
+    oldModel.code === input.code
   ) {
     return true;
   }
@@ -743,7 +915,7 @@ export async function findOneDynPageField(
   },
 ): Promise<DynPageFieldModel | undefined> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "findOneDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -791,7 +963,7 @@ export async function findOneOkDynPageField(
   },
 ): Promise<DynPageFieldModel> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "findOneOkDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -843,7 +1015,7 @@ export async function findByIdDynPageField(
   },
 ): Promise<DynPageFieldModel | undefined> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "findByIdDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -885,7 +1057,7 @@ export async function findByIdOkDynPageField(
   },
 ): Promise<DynPageFieldModel> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "findByIdOkDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -926,7 +1098,7 @@ export async function findByIdsDynPageField(
   },
 ): Promise<DynPageFieldModel[]> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "findByIdsDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -973,7 +1145,7 @@ export async function findByIdsOkDynPageField(
   },
 ): Promise<DynPageFieldModel[]> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "findByIdsOkDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1022,7 +1194,7 @@ export async function existDynPageField(
   },
 ): Promise<boolean> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "existDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1054,7 +1226,7 @@ export async function existByIdDynPageField(
   },
 ) {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "existByIdDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1125,6 +1297,13 @@ export async function validateDynPageField(
     fieldComments.id,
   );
   
+  // 编码
+  await validators.chars_max_length(
+    input.code,
+    20,
+    fieldComments.code,
+  );
+  
   // 动态页面
   await validators.chars_max_length(
     input.dyn_page_id,
@@ -1146,6 +1325,71 @@ export async function validateDynPageField(
     fieldComments.type,
   );
   
+  // 计算公式
+  await validators.chars_max_length(
+    input.formula,
+    200,
+    fieldComments.formula,
+  );
+  
+}
+
+// MARK: findAutoCodeDynPageField
+/** 获得 动态页面字段 自动编码 */
+export async function findAutoCodeDynPageField(
+  options?: {
+    is_debug?: boolean;
+  },
+) {
+  
+  const table = getTableNameDynPageField();
+  const method = "findAutoCodeDynPageField";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model = await findOneDynPageField(
+    undefined,
+    [
+      {
+        prop: "code_seq",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );
+  
+  const model_deleted = await findOneDynPageField(
+    {
+      is_deleted: 1,
+    },
+    [
+      {
+        prop: "code_seq",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );
+  
+  let code_seq = (model?.code_seq || 0) + 1;
+  const code_seq_deleted = (model_deleted?.code_seq || 0) + 1;
+  if (code_seq_deleted > code_seq) {
+    code_seq = code_seq_deleted;
+  }
+  const code = "fld_" + code_seq.toString();
+  
+  return {
+    code_seq,
+    code,
+  };
 }
 
 // MARK: createReturnDynPageField
@@ -1160,7 +1404,7 @@ export async function createReturnDynPageField(
   },
 ): Promise<DynPageFieldModel> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "createReturnDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1211,7 +1455,7 @@ export async function createDynPageField(
   },
 ): Promise<DynPageFieldId> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "createDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1252,7 +1496,7 @@ export async function createsReturnDynPageField(
   },
 ): Promise<DynPageFieldModel[]> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "createsReturnDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1289,7 +1533,7 @@ export async function createsDynPageField(
   },
 ): Promise<DynPageFieldId[]> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "createsDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1326,7 +1570,20 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_dyn_page_field";
+  // 设置自动编码
+  for (const input of inputs) {
+    if (input.code) {
+      continue;
+    }
+    const {
+      code_seq,
+      code,
+    } = await findAutoCodeDynPageField(options);
+    input.code_seq = code_seq;
+    input.code = code;
+  }
+  
+  const table = getTableNameDynPageField();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1374,7 +1631,7 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into base_dyn_page_field(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,dyn_page_id,lbl,type,attrs,is_required,is_enabled,order_by)values";
+  let sql = "insert into base_dyn_page_field(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,dyn_page_id,lbl,type,attrs,formula,is_required,is_search,width,align,is_enabled,order_by)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1472,6 +1729,16 @@ async function _creates(
       } else {
         sql += ",default";
       }
+      if (input.code_seq != null) {
+        sql += `,${ args.push(input.code_seq) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.code != null) {
+        sql += `,${ args.push(input.code) }`;
+      } else {
+        sql += ",default";
+      }
       if (input.dyn_page_id != null) {
         sql += `,${ args.push(input.dyn_page_id) }`;
       } else {
@@ -1492,8 +1759,28 @@ async function _creates(
       } else {
         sql += ",default";
       }
+      if (input.formula != null) {
+        sql += `,${ args.push(input.formula) }`;
+      } else {
+        sql += ",default";
+      }
       if (input.is_required != null) {
         sql += `,${ args.push(input.is_required) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_search != null) {
+        sql += `,${ args.push(input.is_search) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.width != null) {
+        sql += `,${ args.push(input.width) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.align != null) {
+        sql += `,${ args.push(input.align) }`;
       } else {
         sql += ",default";
       }
@@ -1536,7 +1823,7 @@ export async function updateTenantByIdDynPageField(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "updateTenantByIdDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1582,7 +1869,7 @@ export async function updateByIdDynPageField(
   },
 ): Promise<DynPageFieldId> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "updateByIdDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1636,12 +1923,29 @@ export async function updateByIdDynPageField(
   const oldModel = await findByIdDynPageField(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 动态页面字段 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 动态页面字段 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
   let sql = `update base_dyn_page_field set `;
   let updateFldNum = 0;
+  if (input.code_seq != null) {
+    if (input.code_seq != oldModel.code_seq) {
+      sql += `code_seq=${ args.push(input.code_seq) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.code != null) {
+    if (input.code != oldModel.code) {
+      sql += `code=${ args.push(input.code) },`;
+      updateFldNum++;
+    }
+  }
   if (input.dyn_page_id != null) {
     if (input.dyn_page_id != oldModel.dyn_page_id) {
       sql += `dyn_page_id=${ args.push(input.dyn_page_id) },`;
@@ -1666,9 +1970,33 @@ export async function updateByIdDynPageField(
       updateFldNum++;
     }
   }
+  if (input.formula != null) {
+    if (input.formula != oldModel.formula) {
+      sql += `formula=${ args.push(input.formula) },`;
+      updateFldNum++;
+    }
+  }
   if (input.is_required != null) {
     if (input.is_required != oldModel.is_required) {
       sql += `is_required=${ args.push(input.is_required) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_search != null) {
+    if (input.is_search != oldModel.is_search) {
+      sql += `is_search=${ args.push(input.is_search) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.width != null) {
+    if (input.width != oldModel.width) {
+      sql += `width=${ args.push(input.width) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.align != null) {
+    if (input.align != oldModel.align) {
+      sql += `align=${ args.push(input.align) },`;
       updateFldNum++;
     }
   }
@@ -1761,7 +2089,14 @@ export async function updateByIdDynPageField(
     sql += ` where id=${ args.push(id) } limit 1`;
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1783,7 +2118,7 @@ export async function deleteByIdsDynPageField(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "deleteByIdsDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1806,6 +2141,8 @@ export async function deleteByIdsDynPageField(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1839,7 +2176,13 @@ export async function deleteByIdsDynPageField(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1877,7 +2220,7 @@ export async function enableByIdsDynPageField(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "enableByIdsDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1919,7 +2262,7 @@ export async function revertByIdsDynPageField(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "revertByIdsDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1993,7 +2336,7 @@ export async function forceDeleteByIdsDynPageField(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "forceDeleteByIdsDynPageField";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2015,6 +2358,8 @@ export async function forceDeleteByIdsDynPageField(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -2042,18 +2387,22 @@ export async function forceDeleteByIdsDynPageField(
 // MARK: findLastOrderByDynPageField
 /** 查找 动态页面字段 order_by 字段的最大值 */
 export async function findLastOrderByDynPageField(
+  search?: Readonly<DynPageFieldSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page_field";
+  const table = getTableNameDynPageField();
   const method = "findLastOrderByDynPageField";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2062,24 +2411,29 @@ export async function findLastOrderByDynPageField(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_dyn_page_field t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_dyn_page_field t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

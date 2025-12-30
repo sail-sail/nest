@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -79,6 +81,11 @@ import type {
 import {
   findOneOrg,
 } from "/gen/base/org/org.dao.ts";
+
+import {
+  getPagePathUsr,
+  getTableNameUsr,
+} from "./usr.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -306,7 +313,7 @@ export async function findCountUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findCountUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -473,7 +480,7 @@ export async function findAllUsr(
   },
 ): Promise<UsrModel[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findAllUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -688,6 +695,14 @@ export async function findAllUsr(
       debug: is_debug_sql,
     },
   );
+  
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
   for (const item of result) {
     
     // 所属角色
@@ -988,7 +1003,7 @@ export async function setIdByLblUsr(
 // MARK: getFieldCommentsUsr
 /** 获取用户字段注释 */
 export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
-  const fieldComments: UsrFieldComment = {
+  const field_comments: UsrFieldComment = {
     id: "ID",
     img: "头像",
     lbl: "名称",
@@ -1018,7 +1033,8 @@ export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueUsr
@@ -1030,7 +1046,7 @@ export async function findByUniqueUsr(
   },
 ): Promise<UsrModel[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findByUniqueUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1166,7 +1182,7 @@ export async function findOneUsr(
   },
 ): Promise<UsrModel | undefined> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findOneUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1214,7 +1230,7 @@ export async function findOneOkUsr(
   },
 ): Promise<UsrModel> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findOneOkUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1266,7 +1282,7 @@ export async function findByIdUsr(
   },
 ): Promise<UsrModel | undefined> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1308,7 +1324,7 @@ export async function findByIdOkUsr(
   },
 ): Promise<UsrModel> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findByIdOkUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1349,7 +1365,7 @@ export async function findByIdsUsr(
   },
 ): Promise<UsrModel[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1396,7 +1412,7 @@ export async function findByIdsOkUsr(
   },
 ): Promise<UsrModel[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findByIdsOkUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1445,7 +1461,7 @@ export async function existUsr(
   },
 ): Promise<boolean> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "existUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1477,7 +1493,7 @@ export async function existByIdUsr(
   },
 ) {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "existByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1620,7 +1636,7 @@ export async function createReturnUsr(
   },
 ): Promise<UsrModel> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "createReturnUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1671,7 +1687,7 @@ export async function createUsr(
   },
 ): Promise<UsrId> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "createUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1712,7 +1728,7 @@ export async function createsReturnUsr(
   },
 ): Promise<UsrModel[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "createsReturnUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1749,7 +1765,7 @@ export async function createsUsr(
   },
 ): Promise<UsrId[]> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "createsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1786,7 +1802,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -2067,7 +2083,7 @@ export async function updateTenantByIdUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "updateTenantByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2115,7 +2131,7 @@ export async function updateByIdUsr(
   },
 ): Promise<UsrId> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "updateByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2169,7 +2185,12 @@ export async function updateByIdUsr(
   const oldModel = await findByIdUsr(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 用户 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 用户 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -2370,7 +2391,14 @@ export async function updateByIdUsr(
     await delCacheUsr();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -2396,7 +2424,7 @@ export async function deleteByIdsUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "deleteByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2419,6 +2447,8 @@ export async function deleteByIdsUsr(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheUsr();
   
@@ -2454,7 +2484,13 @@ export async function deleteByIdsUsr(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const role_ids = oldModel.role_ids;
@@ -2483,7 +2519,13 @@ export async function deleteByIdsUsr(
     {
       const args = new QueryArgs();
       const sql = `update base_dept_usr set is_deleted=1 where usr_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2523,7 +2565,7 @@ export async function enableByIdsUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "enableByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2593,7 +2635,7 @@ export async function lockByIdsUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "lockByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2618,11 +2660,19 @@ export async function lockByIdsUsr(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheUsr();
   
   const args = new QueryArgs();
   let sql = `update base_usr set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheUsr();
@@ -2639,7 +2689,7 @@ export async function revertByIdsUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "revertByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2741,7 +2791,7 @@ export async function forceDeleteByIdsUsr(
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "forceDeleteByIdsUsr";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2763,6 +2813,8 @@ export async function forceDeleteByIdsUsr(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheUsr();
   
@@ -2789,7 +2841,13 @@ export async function forceDeleteByIdsUsr(
       if (role_ids && role_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_usr_role where usr_id=${ args.push(id) } and role_id in (${ args.push(role_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2797,7 +2855,13 @@ export async function forceDeleteByIdsUsr(
       if (dept_ids && dept_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_usr_dept where usr_id=${ args.push(id) } and dept_id in (${ args.push(dept_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2805,13 +2869,25 @@ export async function forceDeleteByIdsUsr(
       if (org_ids && org_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_usr_org where usr_id=${ args.push(id) } and org_id in (${ args.push(org_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     {
       const args = new QueryArgs();
       const sql = `delete from base_dept_usr where usr_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2823,18 +2899,22 @@ export async function forceDeleteByIdsUsr(
 // MARK: findLastOrderByUsr
 /** 查找 用户 order_by 字段的最大值 */
 export async function findLastOrderByUsr(
+  search?: Readonly<UsrSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_usr";
+  const table = getTableNameUsr();
   const method = "findLastOrderByUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2843,24 +2923,29 @@ export async function findLastOrderByUsr(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_usr t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_usr t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

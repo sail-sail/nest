@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/menu";
+export function getPagePathMenu() {
+  return "/base/menu";
+}
+
+export function getTableNameMenu() {
+  return "base_menu";
+}
 
 declare const menuId: unique symbol;
 
@@ -21,9 +27,6 @@ declare global {
   
   /** 菜单 */
   interface MenuSearch extends MenuSearchType {
-    /** 路由 */
-    route_path?: string;
-    route_path_like?: string;
     /** 参数 */
     route_query?: string;
     route_query_like?: string;

@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -81,6 +83,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathDept,
+  getTableNameDept,
+} from "./dept.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -248,7 +255,7 @@ export async function findCountDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findCountDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -382,7 +389,7 @@ export async function findAllDept(
   },
 ): Promise<DeptModel[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findAllDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -549,6 +556,14 @@ export async function findAllDept(
       debug: is_debug_sql,
     },
   );
+  
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
   for (const item of result) {
     
     // 部门负责人
@@ -758,7 +773,7 @@ export async function setIdByLblDept(
 // MARK: getFieldCommentsDept
 /** 获取部门字段注释 */
 export async function getFieldCommentsDept(): Promise<DeptFieldComment> {
-  const fieldComments: DeptFieldComment = {
+  const field_comments: DeptFieldComment = {
     id: "ID",
     parent_id: "父部门",
     parent_id_lbl: "父部门",
@@ -782,7 +797,8 @@ export async function getFieldCommentsDept(): Promise<DeptFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDept
@@ -794,7 +810,7 @@ export async function findByUniqueDept(
   },
 ): Promise<DeptModel[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findByUniqueDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -921,7 +937,7 @@ export async function findOneDept(
   },
 ): Promise<DeptModel | undefined> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findOneDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -969,7 +985,7 @@ export async function findOneOkDept(
   },
 ): Promise<DeptModel> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findOneOkDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1021,7 +1037,7 @@ export async function findByIdDept(
   },
 ): Promise<DeptModel | undefined> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1063,7 +1079,7 @@ export async function findByIdOkDept(
   },
 ): Promise<DeptModel> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findByIdOkDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1104,7 +1120,7 @@ export async function findByIdsDept(
   },
 ): Promise<DeptModel[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1151,7 +1167,7 @@ export async function findByIdsOkDept(
   },
 ): Promise<DeptModel[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findByIdsOkDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1200,7 +1216,7 @@ export async function existDept(
   },
 ): Promise<boolean> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "existDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1232,7 +1248,7 @@ export async function existByIdDept(
   },
 ) {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "existByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1368,7 +1384,7 @@ export async function createReturnDept(
   },
 ): Promise<DeptModel> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "createReturnDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1419,7 +1435,7 @@ export async function createDept(
   },
 ): Promise<DeptId> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "createDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1460,7 +1476,7 @@ export async function createsReturnDept(
   },
 ): Promise<DeptModel[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "createsReturnDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1497,7 +1513,7 @@ export async function createsDept(
   },
 ): Promise<DeptId[]> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "createsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1534,7 +1550,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1775,7 +1791,7 @@ export async function updateTenantByIdDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "updateTenantByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1823,7 +1839,7 @@ export async function updateByIdDept(
   },
 ): Promise<DeptId> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "updateByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1877,7 +1893,12 @@ export async function updateByIdDept(
   const oldModel = await findByIdDept(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 部门 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 部门 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -2026,7 +2047,14 @@ export async function updateByIdDept(
     await delCacheDept();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -2052,7 +2080,7 @@ export async function deleteByIdsDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "deleteByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2075,6 +2103,8 @@ export async function deleteByIdsDept(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheDept();
   
@@ -2110,7 +2140,13 @@ export async function deleteByIdsDept(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const usr_ids = oldModel.usr_ids;
@@ -2123,7 +2159,13 @@ export async function deleteByIdsDept(
     {
       const args = new QueryArgs();
       const sql = `update base_usr_dept set is_deleted=1 where dept_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2163,7 +2205,7 @@ export async function enableByIdsDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "enableByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2233,7 +2275,7 @@ export async function lockByIdsDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "lockByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2258,11 +2300,19 @@ export async function lockByIdsDept(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheDept();
   
   const args = new QueryArgs();
   let sql = `update base_dept set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheDept();
@@ -2279,7 +2329,7 @@ export async function revertByIdsDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "revertByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2365,7 +2415,7 @@ export async function forceDeleteByIdsDept(
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "forceDeleteByIdsDept";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2387,6 +2437,8 @@ export async function forceDeleteByIdsDept(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheDept();
   
@@ -2413,13 +2465,25 @@ export async function forceDeleteByIdsDept(
       if (usr_ids && usr_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_dept_usr where dept_id=${ args.push(id) } and usr_id in (${ args.push(usr_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     {
       const args = new QueryArgs();
       const sql = `delete from base_usr_dept where dept_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2431,18 +2495,22 @@ export async function forceDeleteByIdsDept(
 // MARK: findLastOrderByDept
 /** 查找 部门 order_by 字段的最大值 */
 export async function findLastOrderByDept(
+  search?: Readonly<DeptSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_dept";
+  const table = getTableNameDept();
   const method = "findLastOrderByDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2451,24 +2519,29 @@ export async function findLastOrderByDept(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_dept t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_dept t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

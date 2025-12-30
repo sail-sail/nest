@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -82,6 +84,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathDynPage,
+  getTableNameDynPage,
+} from "./dyn_page.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -209,7 +216,7 @@ export async function findCountDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findCountDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -299,7 +306,7 @@ export async function findAllDynPage(
   },
 ): Promise<DynPageModel[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findAllDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -420,6 +427,14 @@ export async function findAllDynPage(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_enabledDict, // 启用
   ] = await getDict([
@@ -515,10 +530,14 @@ export async function setIdByLblDynPage(
 // MARK: getFieldCommentsDynPage
 /** 获取动态页面字段注释 */
 export async function getFieldCommentsDynPage(): Promise<DynPageFieldComment> {
-  const fieldComments: DynPageFieldComment = {
+  const field_comments: DynPageFieldComment = {
     id: "ID",
-    code: "编码",
+    code: "路由",
     lbl: "名称",
+    parent_menu_id: "父菜单",
+    parent_menu_id_lbl: "父菜单",
+    role_ids: "所属角色",
+    role_ids_lbl: "所属角色",
     order_by: "排序",
     is_enabled: "启用",
     is_enabled_lbl: "启用",
@@ -532,7 +551,8 @@ export async function getFieldCommentsDynPage(): Promise<DynPageFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDynPage
@@ -544,7 +564,7 @@ export async function findByUniqueDynPage(
   },
 ): Promise<DynPageModel[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findByUniqueDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -680,7 +700,7 @@ export async function findOneDynPage(
   },
 ): Promise<DynPageModel | undefined> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findOneDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -728,7 +748,7 @@ export async function findOneOkDynPage(
   },
 ): Promise<DynPageModel> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findOneOkDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -780,7 +800,7 @@ export async function findByIdDynPage(
   },
 ): Promise<DynPageModel | undefined> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findByIdDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -822,7 +842,7 @@ export async function findByIdOkDynPage(
   },
 ): Promise<DynPageModel> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findByIdOkDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -863,7 +883,7 @@ export async function findByIdsDynPage(
   },
 ): Promise<DynPageModel[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findByIdsDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -910,7 +930,7 @@ export async function findByIdsOkDynPage(
   },
 ): Promise<DynPageModel[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findByIdsOkDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -959,7 +979,7 @@ export async function existDynPage(
   },
 ): Promise<boolean> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "existDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -991,7 +1011,7 @@ export async function existByIdDynPage(
   },
 ) {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "existByIdDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1071,10 +1091,10 @@ export async function validateDynPage(
     fieldComments.id,
   );
   
-  // 编码
+  // 路由
   await validators.chars_max_length(
     input.code,
-    20,
+    100,
     fieldComments.code,
   );
   
@@ -1116,7 +1136,7 @@ export async function findAutoCodeDynPage(
   },
 ) {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findAutoCodeDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1158,7 +1178,7 @@ export async function findAutoCodeDynPage(
   if (code_seq_deleted > code_seq) {
     code_seq = code_seq_deleted;
   }
-  const code = "DP" + code_seq.toString().padStart(3, "0");
+  const code = "/dyn/pg" + code_seq.toString();
   
   return {
     code_seq,
@@ -1178,7 +1198,7 @@ export async function createReturnDynPage(
   },
 ): Promise<DynPageModel> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "createReturnDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1229,7 +1249,7 @@ export async function createDynPage(
   },
 ): Promise<DynPageId> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "createDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1270,7 +1290,7 @@ export async function createsReturnDynPage(
   },
 ): Promise<DynPageModel[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "createsReturnDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1307,7 +1327,7 @@ export async function createsDynPage(
   },
 ): Promise<DynPageId[]> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "createsDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1357,7 +1377,7 @@ async function _creates(
     input.code = code;
   }
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1586,7 +1606,7 @@ export async function updateTenantByIdDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "updateTenantByIdDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1634,7 +1654,7 @@ export async function updateByIdDynPage(
   },
 ): Promise<DynPageId> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "updateByIdDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1688,7 +1708,12 @@ export async function updateByIdDynPage(
   const oldModel = await findByIdDynPage(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 动态页面 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 动态页面 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1860,7 +1885,14 @@ export async function updateByIdDynPage(
     await delCacheDynPage();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1886,7 +1918,7 @@ export async function deleteByIdsDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "deleteByIdsDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1909,6 +1941,8 @@ export async function deleteByIdsDynPage(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheDynPage();
   
@@ -1944,7 +1978,13 @@ export async function deleteByIdsDynPage(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1998,7 +2038,7 @@ export async function enableByIdsDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "enableByIdsDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2046,7 +2086,7 @@ export async function revertByIdsDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "revertByIdsDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2139,7 +2179,7 @@ export async function forceDeleteByIdsDynPage(
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "forceDeleteByIdsDynPage";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2161,6 +2201,8 @@ export async function forceDeleteByIdsDynPage(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheDynPage();
   
@@ -2207,18 +2249,22 @@ export async function forceDeleteByIdsDynPage(
 // MARK: findLastOrderByDynPage
 /** 查找 动态页面 order_by 字段的最大值 */
 export async function findLastOrderByDynPage(
+  search?: Readonly<DynPageSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_dyn_page";
+  const table = getTableNameDynPage();
   const method = "findLastOrderByDynPage";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2227,24 +2273,29 @@ export async function findLastOrderByDynPage(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_dyn_page t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_dyn_page t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

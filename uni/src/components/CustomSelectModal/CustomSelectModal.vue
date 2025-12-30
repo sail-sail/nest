@@ -126,7 +126,7 @@
   <tm-modal
     v-model:show="showPicker"
     :closeable="true"
-    :height="props.height"
+    :height="_height"
     :title="props.placeholder || '请选择'"
     disabled-scroll
     show-close
@@ -139,7 +139,11 @@
     
     <view
       un-h="full"
-      un-flex="~ auto col"
+      un-flex="~ [1_0_0] col"
+      un-overflow-hidden
+      :style="{
+        flex: options4SelectV2.length > 5 ? undefined : 'none',
+      }"
     >
       
       <view
@@ -161,7 +165,7 @@
           <tm-input
             v-model="searchStr"
             width="100%"
-            placeholder="请输入搜索内容"
+            placeholder="请输入关键字"
             show-clear
           ></tm-input>
           
@@ -181,8 +185,11 @@
       </view>
       
       <scroll-view
-        un-flex="~ auto col"
+        un-flex="~ [1_0_0] col"
         un-overflow-hidden
+        :style="{
+          flex: options4SelectV2.length > 5 ? undefined : 'none',
+        }"
         scroll-y
         :rebound="false"
         :scroll-into-view="scrollIntoViewId"
@@ -212,62 +219,73 @@
         >
           
           <view
-            v-for="item of options4SelectV2Computed"
-            :id="'a' + item.value"
-            :key="item.value"
-            :title="item.label"
-            un-m="x-2"
-            un-p="y-4"
-            un-box-border
-            un-flex="~"
-            un-items="center"
-            un-gap="2"
-            un-b="0 b-1 solid #e6e6e6"
+            un-flex="~ [1_0_0] col"
+            un-overflow-hidden
             :style="{
-              'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
-              'border-color': selectedValueArr.includes(item.value) ? '#0579ff' : '#e6e6e6',
+              flex: options4SelectV2.length > 5 ? undefined : 'none',
             }"
-            @click="onSelect(item.value)"
           >
-                  
+          
             <view
-              un-flex="~ [1_0_0]"
-              un-overflow-hidden
+              v-for="item of options4SelectV2Computed"
+              :id="'a' + item.value"
+              :key="item.value"
+              :title="item.label"
+              un-m="x-2"
+              un-p="y-4"
+              un-box-border
+              un-flex="~"
               un-items="center"
-              un-m="l-4"
+              un-gap="2"
+              un-b="0 b-1 solid #e6e6e6"
+              :style="{
+                'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
+                'border-color': selectedValueArr.includes(item.value) ? '#0579ff' : '#e6e6e6',
+              }"
+              @click="onSelect(item.value)"
             >
-              {{ item.label }}
-            </view>
-                  
-            <view
-              style="width: 1.2rem;height: 1.2rem;"
-              un-m="r-4"
-            >
+                    
               <view
-                v-if="selectedValueArr.includes(item.value)"
-                un-i="iconfont-check"
-              ></view>
+                un-flex="~ [1_0_0]"
+                un-overflow-hidden
+                un-items="center"
+                un-m="l-4"
+              >
+                {{ item.label }}
+              </view>
+                    
+              <view
+                style="width: 1.2rem;height: 1.2rem;"
+                un-m="r-4"
+              >
+                <view
+                  v-if="selectedValueArr.includes(item.value)"
+                  un-i="iconfont-check"
+                ></view>
+              </view>
+                    
             </view>
-                  
-          </view>
+              
+            <view
+              v-if="inited && options4SelectV2Computed.length === 0"
+              un-flex="~"
+              un-items="center"
+              un-justify="center"
+              un-text="gray-400"
+              un-h="10"
+            >
+              (暂无数据)
+            </view>
             
-          <view
-            v-if="inited && options4SelectV2Computed.length === 0"
-            un-flex="~"
-            un-items="center"
-            un-justify="center"
-            un-text="gray-400"
-            un-h="10"
-          >
-            (暂无数据)
+            <view
+              v-else-if="options4SelectV2Computed.length > 5"
+              un-m="y-2"
+            >
+              <CustomDivider></CustomDivider>
+            </view>
+            
           </view>
           
-          <view
-            v-else-if="options4SelectV2Computed.length > 5"
-            un-m="y-2"
-          >
-            <CustomDivider></CustomDivider>
-          </view>
         </template>
           
       </scroll-view>
@@ -367,7 +385,7 @@ const props = withDefaults(
     },
     modelValue: undefined,
     placeholder: "",
-    height: "auto",
+    height: undefined,
     initData: true,
     pageInited: true,
     clearable: true,
@@ -377,6 +395,8 @@ const props = withDefaults(
     searchStr: "",
   },
 );
+
+let _height = $ref(props.height || "90%");
 
 const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
 
@@ -464,11 +484,11 @@ function onSelectAll() {
 }
 
 const modelValueIsEmpty = computed(() => {
-  if (!props.modelValue) {
+  if (props.modelValue == null || props.modelValue === '') {
     return true;
   }
   if (props.multiple) {
-    return !props.modelValue || (props.modelValue as string[]).length === 0;
+    return (props.modelValue as string[]).length === 0;
   }
   return false;
 });
@@ -598,6 +618,23 @@ async function onRefresh() {
     options4SelectV2.value = data.value.map(props.optionsMap);
   }
 }
+
+watch(
+  () => [
+    inited.value,
+    props.height,
+  ],
+  () => {
+    if (!inited.value) {
+      return;
+    }
+    if (options4SelectV2.value.length <= 5 && !props.height) {
+      _height = "auto";
+    } else {
+      _height = props.height || "90%";
+    }
+  },
+);
 
 async function initFrame() {
   await onRefresh();

@@ -179,7 +179,7 @@ type Query {
   "根据 ids 查找系统字典"
   findByIdsDict(ids: [DictId!]!): [DictModel]!
   "查找系统字典 order_by 字段的最大值"
-  findLastOrderByDict: Int!
+  findLastOrderByDict(search: DictSearch): Int!
 }
 type Mutation {
   "批量创建系统字典"

@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/dict_detail";
+export function getPagePathDictDetail() {
+  return "/base/dict_detail";
+}
+
+export function getTableNameDictDetail() {
+  return "base_dict_detail";
+}
 
 declare const dictDetailId: unique symbol;
 

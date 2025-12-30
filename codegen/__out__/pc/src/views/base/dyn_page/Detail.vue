@@ -19,6 +19,7 @@
     >
       <ElIconRefresh
         class="reset_but"
+        @dblclick.stop
         @click="onReset"
       ></ElIconRefresh>
     </div>
@@ -29,6 +30,7 @@
       >
         <ElIconUnlock
           class="unlock_but"
+          @dblclick.stop
           @click="isReadonly = true;"
         >
         </ElIconUnlock>
@@ -39,6 +41,7 @@
       >
         <ElIconLock
           class="lock_but"
+          @dblclick.stop
           @click="isReadonly = false;"
         ></ElIconLock>
       </div>
@@ -62,7 +65,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -76,14 +79,13 @@
         
         <template v-if="(showBuildIn || builtInModel?.code == null)">
           <el-form-item
-            label="编码"
+            label="路由"
             prop="code"
           >
             <CustomInput
               v-model="dialogModel.code"
-              placeholder="请输入 编码"
-              :readonly="true"
-              :readonly-placeholder="inited ? '(自动生成)' : ''"
+              placeholder="请输入 路由"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -98,6 +100,43 @@
               placeholder="请输入 名称"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="true">
+          <el-form-item
+            label="父菜单"
+            prop="parent_menu_id"
+          >
+            <CustomTreeSelect
+              v-model="dialogModel.parent_menu_id"
+              :method="getTreeMenu"
+              placeholder="请选择 父菜单"
+              :readonly="isLocked || isReadonly"
+            ></CustomTreeSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="true">
+          <el-form-item
+            label="所属角色"
+            prop="role_ids"
+          >
+            <CustomSelect
+              v-model="dialogModel.role_ids"
+              :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
+              :method="getListRole"
+              :find-by-values="findByIdsRole"
+              :options-map="((item: RoleModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              placeholder="请选择 所属角色"
+              multiple
+              :readonly="isLocked || isReadonly"
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -118,6 +157,7 @@
           <el-form-item
             label="备注"
             prop="rem"
+            un-grid="col-span-full"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -167,6 +207,24 @@
               </el-table-column>
               
               <el-table-column
+                prop="code"
+                label="编码"
+                width="150"
+                header-align="center"
+                align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomInput
+                      v-model="row.code"
+                      placeholder=" "
+                      :readonly="isLocked || isReadonly"
+                    ></CustomInput>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
                 prop="lbl"
                 label="名称"
                 width="210"
@@ -205,6 +263,7 @@
                 label="属性"
                 width="210"
                 header-align="center"
+                align="center"
               >
                 <template #default="{ row }">
                   <template v-if="row._type !== 'add'">
@@ -218,17 +277,91 @@
               </el-table-column>
               
               <el-table-column
+                prop="formula"
+                label="计算公式"
+                width="190"
+                header-align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomInput
+                      v-model="row.formula"
+                      placeholder=" "
+                      :readonly="isLocked || isReadonly"
+                    ></CustomInput>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
                 prop="is_required"
                 label="必填"
                 width="95"
+                header-align="center"
+                align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomCheckbox
+                      v-model="row.is_required"
+                      placeholder=" "
+                      :readonly="isLocked || isReadonly"
+                    ></CustomCheckbox>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
+                prop="is_search"
+                label="查询条件"
+                width="95"
+                header-align="center"
+                align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomCheckbox
+                      v-model="row.is_search"
+                      placeholder=" "
+                      :readonly="isLocked || isReadonly"
+                    ></CustomCheckbox>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
+                prop="width"
+                label="宽度"
+                width="190"
+                header-align="center"
+                align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomInputNumber
+                      v-model="row.width"
+                      un-text="right"
+                      placeholder=" "
+                      :readonly="isLocked || isReadonly"
+                      align="center"
+                      :is-hide-zero="true"
+                    ></CustomInputNumber>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
+                prop="align"
+                label="对齐方式"
+                width="110"
                 header-align="center"
               >
                 <template #default="{ row }">
                   <template v-if="row._type !== 'add'">
                     <DictSelect
-                      v-model="row.is_required"
-                      :set="row.is_required = row.is_required ?? undefined"
-                      code="yes_no"
+                      v-model="row.align"
+                      :set="row.align = row.align ?? undefined"
+                      code="dyn_page_field_align"
                       placeholder=" "
                       :readonly="isLocked || isReadonly"
                     ></DictSelect>
@@ -362,6 +495,7 @@
       
     </div>
   </div>
+  
 </CustomDialog>
 </template>
 
@@ -380,6 +514,18 @@ import {
   getPagePathDynPage,
   intoInputDynPage,
 } from "./Api.ts";
+
+import {
+  getListRole,
+} from "./Api.ts";
+
+import {
+  findByIdsRole,
+} from "@/views/base/role/Api.ts";
+
+import {
+  getTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 import {
   getDefaultInputDynPageField,
@@ -411,6 +557,7 @@ let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
 let dialogModel: DynPageInput = $ref({
+  role_ids: [ ],
 } as DynPageInput);
 
 let dyn_page_model = $ref<DynPageModel>();
@@ -419,7 +566,7 @@ let ids = $ref<DynPageId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DynPageId[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -474,7 +621,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOneDynPage;
 
@@ -502,7 +649,7 @@ async function showDialog(
   oldDialogNotice = notice;
   dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
-    type: "default",
+    type: "medium",
     title: $$(dialogTitle),
     pointerPierce: true,
     notice: $$(dialogNotice),
@@ -535,9 +682,11 @@ async function showDialog(
     }
   });
   dialogAction = action || "add";
+  nextTick(() => formRef?.clearValidate());
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
+    role_ids: [ ],
   };
   dyn_page_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
@@ -549,9 +698,12 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       getDefaultInputDynPage(),
-      findLastOrderByDynPage({
-        notLoading: !inited,
-      }),
+      findLastOrderByDynPage(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -565,24 +717,24 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
-      defaultInput,
       data,
       order_by,
     ] = await Promise.all([
-      getDefaultInputDynPage(),
       findOneModel({
         id,
         is_deleted,
       }),
-      findLastOrderByDynPage({
-        notLoading: !inited,
-      }),
+      findLastOrderByDynPage(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     if (data) {
       dialogModel = {
         ...data,
         id: undefined,
-        code: defaultInput.code,
         order_by: order_by + 1,
         dyn_page_field: data.dyn_page_field?.map((item) => ({
           ...item,
@@ -641,25 +793,8 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
-    const [
-      defaultModel,
-      order_by,
-    ] = await Promise.all([
-      getDefaultInputDynPage(),
-      findLastOrderByDynPage({
-        notLoading: !inited,
-      }),
-    ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,
-      order_by: order_by + 1,
-    };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
   ElMessage({
     message: "表单重置完毕",
     type: "success",
@@ -670,6 +805,23 @@ async function onReset() {
 async function onRefresh() {
   const id = dialogModel.id;
   if (!id) {
+    const [
+      defaultModel,
+      order_by,
+    ] = await Promise.all([
+      getDefaultInputDynPage(),
+      findLastOrderByDynPage(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
+    ]);
+    dialogModel = {
+      ...defaultModel,
+      ...builtInModel,
+      order_by: order_by + 1,
+    };
     return;
   }
   const [
@@ -777,6 +929,24 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    dialogModel.parent_menu_id,
+    dialogModel.role_ids,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.parent_menu_id) {
+      dialogModel.parent_menu_id_lbl = "";
+    }
+    if (!dialogModel.role_ids || dialogModel.role_ids.length === 0) {
+      dialogModel.role_ids_lbl = [ ];
+    }
+  },
+);
+
 /** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
@@ -787,7 +957,7 @@ async function onSaveKeydown(e: KeyboardEvent) {
 
 /** 保存并返回id */
 async function save() {
-  if (isReadonly) {
+  if (!inited || isReadonly) {
     return;
   }
   if (!formRef) {
@@ -883,7 +1053,7 @@ async function onSave() {
 const inlineForeignTabLabel = $ref("动态页面字段");
 
 // 动态页面字段
-const dyn_page_fieldRef = $(useTemplateRef<InstanceType<typeof ElTable>>("dyn_page_fieldRef"));
+const dyn_page_fieldRef = $(useTemplateRef("dyn_page_fieldRef"));
 
 const dyn_page_fieldData = $computed(() => {
   if (!isLocked && !isReadonly) {

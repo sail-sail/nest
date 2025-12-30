@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./dyn_page.model.ts";
-
 /**
  * 根据条件查找动态页面总数
  */
@@ -188,11 +184,15 @@ export async function createsDynPage(
     createsDynPage,
   } = await import("./dyn_page.service.ts");
   
+  const {
+    getPagePathDynPage,
+  } = await import("./dyn_page.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPage(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdDynPage(
     updateByIdDynPage,
   } = await import("./dyn_page.service.ts");
   
+  const {
+    getPagePathDynPage,
+  } = await import("./dyn_page.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblDynPage(input);
   
   await usePermit(
-    route_path,
+    getPagePathDynPage(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsDynPage(
     deleteByIdsDynPage,
   } = await import("./dyn_page.service.ts");
   
+  const {
+    getPagePathDynPage,
+  } = await import("./dyn_page.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPage(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsDynPage(
     throw new Error(`enableByIdsDynPage.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathDynPage,
+  } = await import("./dyn_page.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPage(),
     "edit",
   );
   const res = await enableByIdsDynPage(ids, is_enabled);
@@ -300,10 +312,14 @@ export async function revertByIdsDynPage(
     revertByIdsDynPage,
   } = await import("./dyn_page.service.ts");
   
+  const {
+    getPagePathDynPage,
+  } = await import("./dyn_page.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPage(),
     "delete",
   );
   
@@ -323,10 +339,14 @@ export async function forceDeleteByIdsDynPage(
     forceDeleteByIdsDynPage,
   } = await import("./dyn_page.service.ts");
   
+  const {
+    getPagePathDynPage,
+  } = await import("./dyn_page.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDynPage(),
     "force_delete",
   );
   
@@ -338,13 +358,15 @@ export async function forceDeleteByIdsDynPage(
 /**
  * 查找 动态页面 order_by 字段的最大值
  */
-export async function findLastOrderByDynPage(): Promise<number> {
+export async function findLastOrderByDynPage(
+  search?: DynPageSearch,
+): Promise<number> {
   
   const {
     findLastOrderByDynPage,
   } = await import("./dyn_page.service.ts");
   
-  const res = findLastOrderByDynPage();
+  const order_by = findLastOrderByDynPage(search);
   
-  return res;
+  return order_by;
 }

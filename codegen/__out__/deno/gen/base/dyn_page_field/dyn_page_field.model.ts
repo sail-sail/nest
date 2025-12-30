@@ -3,6 +3,8 @@ import type {
   DynPageFieldModel as DynPageFieldModelType,
   DynPageFieldSearch as DynPageFieldSearchType,
   DynPageFieldFieldComment as DynPageFieldFieldCommentType,
+  // 对齐方式
+  DynPageFieldAlign,
   SortInput,
 } from "/gen/types.ts";
 
@@ -10,7 +12,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/dyn_page_field";
+export function getPagePathDynPageField() {
+  return "/base/dyn_page_field";
+}
+
+export function getTableNameDynPageField() {
+  return "base_dyn_page_field";
+}
 
 declare const dynPageFieldId: unique symbol;
 
@@ -21,14 +29,25 @@ declare global {
   
   /** 动态页面字段 */
   interface DynPageFieldSearch extends DynPageFieldSearchType {
+    /** 编码-序列号 */
+    code_seq?: [(number|undefined|null), (number|undefined|null)];
     /** 类型 */
     type?: string;
     type_like?: string;
     /** 属性 */
     attrs?: string;
     attrs_like?: string;
+    /** 计算公式 */
+    formula?: string;
+    formula_like?: string;
     /** 必填 */
     is_required?: number[];
+    /** 查询条件 */
+    is_search?: number[];
+    /** 宽度 */
+    width?: [(number|undefined|null), (number|undefined|null)];
+    /** 对齐方式 */
+    align?: DynPageFieldAlign[];
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 创建人 */
@@ -55,6 +74,8 @@ declare global {
   }
 
   interface DynPageFieldModel extends DynPageFieldModelType {
+    /** 编码-序列号 */
+    code_seq: number;
     create_usr_id: UsrId;
     create_usr_id_lbl: string;
     create_time?: string | null;
@@ -67,6 +88,8 @@ declare global {
   }
 
   interface DynPageFieldInput extends DynPageFieldInputType {
+    /** 编码-序列号 */
+    code_seq?: number | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;

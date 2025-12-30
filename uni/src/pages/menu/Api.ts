@@ -1,0 +1,639 @@
+
+import {
+  UniqueType,
+} from "#/types.ts";
+
+import type {
+  Query,
+  Mutation,
+  PageInput,
+} from "#/types.ts";
+
+import {
+  menuQueryField,
+} from "./Model.ts";
+
+export async function setLblByIdMenu(
+  model?: MenuModel | null,
+) {
+  if (!model) {
+    return;
+  }
+}
+
+export function intoInputMenu(
+  model?: MenuInput,
+) {
+  const input: MenuInput = {
+    // ID
+    id: model?.id,
+    // 父菜单
+    parent_id: model?.parent_id,
+    parent_id_lbl: model?.parent_id_lbl,
+    // 名称
+    lbl: model?.lbl,
+    // 路由
+    route_path: model?.route_path,
+    // 参数
+    route_query: model?.route_query,
+    // 首页隐藏
+    is_home_hide: model?.is_home_hide,
+    is_home_hide_lbl: model?.is_home_hide_lbl,
+    // 动态页面
+    is_dyn_page: model?.is_dyn_page,
+    is_dyn_page_lbl: model?.is_dyn_page_lbl,
+    // 启用
+    is_enabled: model?.is_enabled,
+    is_enabled_lbl: model?.is_enabled_lbl,
+    // 排序
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
+    // 备注
+    rem: model?.rem,
+  };
+  return input;
+}
+
+/**
+ * 根据搜索条件查找 菜单 列表
+ */
+export async function findAllMenu(
+  search?: MenuSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllMenu: MenuModel[];
+  } = await query({
+    query: `
+      query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllMenu(search: $search, page: $page, sort: $sort) {
+          ${ menuQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const models = data.findAllMenu;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblByIdMenu(model);
+  }
+  return models;
+}
+
+/**
+ * 根据条件查找第一个菜单
+ */
+export async function findOneMenu(
+  search?: MenuSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneMenu?: MenuModel;
+  } = await query({
+    query: `
+      query($search: MenuSearch, $sort: [SortInput!]) {
+        findOneMenu(search: $search, sort: $sort) {
+          ${ menuQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneMenu;
+  
+  await setLblByIdMenu(model);
+  
+  return model;
+}
+
+/**
+ * 根据条件查找第一个 菜单, 如果不存在则抛错
+ */
+export async function findOneOkMenu(
+  search?: MenuSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    findOneOkMenu?: MenuModel;
+  } = await query({
+    query: `
+      query($search: MenuSearch, $sort: [SortInput!]) {
+        findOneOkMenu(search: $search, sort: $sort) {
+          ${ menuQueryField }
+        }
+      }
+    `,
+    variables: {
+      search,
+      sort,
+    },
+  }, opt);
+  
+  const model = data.findOneOkMenu;
+  
+  await setLblByIdMenu(model);
+  
+  return model;
+}
+
+export type MenuModelTree = MenuModel & {
+  children?: MenuModelTree[];
+}
+
+/**
+ * 查找 菜单 树形列表
+ */
+export async function findTreeMenu(
+  search?: MenuSearch,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const res = await findAllMenu(
+    search,
+    undefined,
+    sort,
+    opt,
+  );
+  const treeData = list2tree(res);
+  return treeData;
+}
+
+/**
+ * 根据搜索条件查找 菜单 总数
+ */
+export async function findCountMenu(
+  search?: MenuSearch,
+  opt?: GqlOpt,
+) {
+  const data: {
+    findCountMenu: Query["findCountMenu"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MenuSearch) {
+        findCountMenu(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  const count = data.findCountMenu;
+  return count;
+}
+
+/**
+ * 创建 菜单
+ */
+export async function createMenu(
+  input: MenuInput,
+  unique_type?: UniqueType,
+  opt?: GqlOpt,
+): Promise<MenuId> {
+  const ids = await createsMenu(
+    [ input ],
+    unique_type,
+    opt,
+  );
+  const id = ids[0];
+  return id;
+}
+
+/**
+ * 批量创建 菜单
+ */
+export async function createsMenu(
+  inputs: MenuInput[],
+  unique_type?: UniqueType,
+  opt?: GqlOpt,
+): Promise<MenuId[]> {
+  inputs = inputs.map(intoInputMenu);
+  const data: {
+    createsMenu: Mutation["createsMenu"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($inputs: [MenuInput!]!, $unique_type: UniqueType) {
+        createsMenu(inputs: $inputs, unique_type: $unique_type)
+      }
+    `,
+    variables: {
+      inputs,
+      unique_type,
+    },
+  }, opt);
+  const ids = data.createsMenu;
+  return ids;
+}
+
+/**
+ * 根据 id 修改 菜单
+ */
+export async function updateByIdMenu(
+  id: MenuId,
+  input: MenuInput,
+  opt?: GqlOpt,
+): Promise<MenuId> {
+  input = intoInputMenu(input);
+  const data: {
+    updateByIdMenu: Mutation["updateByIdMenu"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: MenuId!, $input: MenuInput!) {
+        updateByIdMenu(id: $id, input: $input)
+      }
+    `,
+    variables: {
+      id,
+      input,
+    },
+  }, opt);
+  const id2: MenuId = data.updateByIdMenu;
+  return id2;
+}
+
+/**
+ * 根据 id 查找 菜单
+ */
+export async function findByIdMenu(
+  id: MenuId,
+  opt?: GqlOpt,
+): Promise<MenuModel | undefined> {
+  
+  if (!id) {
+    return;
+  }
+  
+  const data: {
+    findByIdMenu?: MenuModel;
+  } = await query({
+    query: `
+      query($id: MenuId!) {
+        findByIdMenu(id: $id) {
+          ${ menuQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdMenu;
+  
+  await setLblByIdMenu(model);
+  
+  return model;
+}
+
+/**
+ * 根据 id 查找 菜单, 如果不存在则抛错
+ */
+export async function findByIdOkMenu(
+  id: MenuId,
+  opt?: GqlOpt,
+): Promise<MenuModel> {
+  
+  const data: {
+    findByIdOkMenu: MenuModel;
+  } = await query({
+    query: `
+      query($id: MenuId!) {
+        findByIdOkMenu(id: $id) {
+          ${ menuQueryField }
+        }
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  
+  const model = data.findByIdOkMenu;
+  
+  await setLblByIdMenu(model);
+  
+  return model;
+}
+
+/**
+ * 根据 ids 查找 菜单
+ */
+export async function findByIdsMenu(
+  ids: MenuId[],
+  opt?: GqlOpt,
+): Promise<MenuModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  const data: {
+    findByIdsMenu: MenuModel[];
+  } = await query({
+    query: `
+      query($ids: [MenuId!]!) {
+        findByIdsMenu(ids: $ids) {
+          ${ menuQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsMenu;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblByIdMenu(model);
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 查找 菜单, 出现查询不到的 id 则报错
+ */
+export async function findByIdsOkMenu(
+  ids: MenuId[],
+  opt?: GqlOpt,
+): Promise<MenuModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  const data: {
+    findByIdsOkMenu: MenuModel[];
+  } = await query({
+    query: `
+      query($ids: [MenuId!]!) {
+        findByIdsOkMenu(ids: $ids) {
+          ${ menuQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  
+  const models = data.findByIdsOkMenu;
+  
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblByIdMenu(model);
+  }
+  
+  return models;
+}
+
+/**
+ * 根据 ids 删除 菜单
+ */
+export async function deleteByIdsMenu(
+  ids: MenuId[],
+  opt?: GqlOpt,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+  const data: {
+    deleteByIdsMenu: Mutation["deleteByIdsMenu"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [MenuId!]!) {
+        deleteByIdsMenu(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const res = data.deleteByIdsMenu;
+  return res;
+}
+
+/**
+ * 根据 ids 启用或禁用 菜单
+ */
+export async function enableByIdsMenu(
+  ids: MenuId[],
+  is_enabled: 0 | 1,
+  opt?: GqlOpt,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+  const data: {
+    enableByIdsMenu: Mutation["enableByIdsMenu"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [MenuId!]!, $is_enabled: Int!) {
+        enableByIdsMenu(ids: $ids, is_enabled: $is_enabled)
+      }
+    `,
+    variables: {
+      ids,
+      is_enabled,
+    },
+  }, opt);
+  const res = data.enableByIdsMenu;
+  return res;
+}
+
+/**
+ * 根据 ids 还原 菜单
+ */
+export async function revertByIdsMenu(
+  ids: MenuId[],
+  opt?: GqlOpt,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+  const data: {
+    revertByIdsMenu: Mutation["revertByIdsMenu"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [MenuId!]!) {
+        revertByIdsMenu(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const res = data.revertByIdsMenu;
+  return res;
+}
+
+/**
+ * 根据 ids 彻底删除 菜单
+ */
+export async function forceDeleteByIdsMenu(
+  ids: MenuId[],
+  opt?: GqlOpt,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+  const data: {
+    forceDeleteByIdsMenu: Mutation["forceDeleteByIdsMenu"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($ids: [MenuId!]!) {
+        forceDeleteByIdsMenu(ids: $ids)
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const res = data.forceDeleteByIdsMenu;
+  return res;
+}
+
+export async function getListMenu() {
+  const data = await findAllMenu(
+    undefined,
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export async function getTreeMenu() {
+  const data = await findTreeMenu(
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
+export const menuDataPermit = {
+} as const;
+
+export function useMenuTreeFilter(_value: string, model: MenuModel): boolean {
+  const route_path = model.route_path;
+  if (!route_path) {
+    return false;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const isPermit = (menuDataPermit as any)[route_path];
+  return isPermit;
+}
+
+/**
+ * 查找 菜单 order_by 字段的最大值
+ */
+export async function findLastOrderByMenu(
+  search?: MenuSearch,
+  opt?: GqlOpt,
+) {
+  const data: {
+    findLastOrderByMenu: Query["findLastOrderByMenu"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MenuSearch) {
+        findLastOrderByMenu(search: $search)
+      }
+    `,
+  }, opt);
+  
+  const order_by = data.findLastOrderByMenu;
+  
+  return order_by;
+}
+
+/**
+ * 获取 菜单 字段注释
+ */
+export async function getFieldCommentsMenu(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsMenu: Query["getFieldCommentsMenu"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsMenu {
+          id,
+          parent_id,
+          parent_id_lbl,
+          lbl,
+          route_path,
+          route_query,
+          is_home_hide,
+          is_home_hide_lbl,
+          is_dyn_page,
+          is_dyn_page_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsMenu as MenuFieldComment;
+  
+  return field_comments;
+}
+
+export function getPagePathMenu() {
+  return "/base/menu";
+}
+
+/** 新增时的默认值 */
+export async function getDefaultInputMenu() {
+  const defaultInput: MenuInput = {
+    is_home_hide: 0,
+    is_dyn_page: 0,
+    is_enabled: 1,
+    order_by: 1,
+  };
+  return defaultInput;
+}

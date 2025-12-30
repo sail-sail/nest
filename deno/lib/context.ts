@@ -989,7 +989,7 @@ export async function query<T = any>(
       const debugSql = getDebugQuery(sql, args);
       error(debugSql);
       // deno-lint-ignore no-explicit-any
-      if ((err as any).code === "ECONNREFUSED") {
+      if ((err as any).code === "ECONNREFUSED" || (err as any).code === "ECONNRESET") {
         throw new Error("系统错误: 数据库连接失败");
       }
       throw err;
@@ -1048,6 +1048,9 @@ export async function execute(
     } catch(err) {
       error(sql);
       error(args);
+      if ((err as any).code === "ECONNREFUSED" || (err as any).code === "ECONNRESET") {
+        throw new Error("系统错误: 数据库连接失败");
+      }
       throw err;
     }
   }

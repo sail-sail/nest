@@ -12,7 +12,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/usr";
+export function getPagePathUsr() {
+  return "/base/usr";
+}
+
+export function getTableNameUsr() {
+  return "base_usr";
+}
 
 declare const usrId: unique symbol;
 

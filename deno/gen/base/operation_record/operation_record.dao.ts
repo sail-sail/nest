@@ -37,6 +37,8 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -67,6 +69,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathOperationRecord,
+  getTableNameOperationRecord,
+} from "./operation_record.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -207,7 +214,7 @@ export async function findCountOperationRecord(
   },
 ): Promise<number> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findCountOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -283,7 +290,7 @@ export async function findAllOperationRecord(
   },
 ): Promise<OperationRecordModel[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findAllOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -380,6 +387,14 @@ export async function findAllOperationRecord(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -427,7 +442,7 @@ export async function setIdByLblOperationRecord(
 // MARK: getFieldCommentsOperationRecord
 /** 获取操作记录字段注释 */
 export async function getFieldCommentsOperationRecord(): Promise<OperationRecordFieldComment> {
-  const fieldComments: OperationRecordFieldComment = {
+  const field_comments: OperationRecordFieldComment = {
     id: "ID",
     module: "模块",
     module_lbl: "模块名称",
@@ -442,7 +457,8 @@ export async function getFieldCommentsOperationRecord(): Promise<OperationRecord
     create_time: "操作时间",
     create_time_lbl: "操作时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueOperationRecord
@@ -454,7 +470,7 @@ export async function findByUniqueOperationRecord(
   },
 ): Promise<OperationRecordModel[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findByUniqueOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -550,7 +566,7 @@ export async function findOneOperationRecord(
   },
 ): Promise<OperationRecordModel | undefined> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findOneOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -598,7 +614,7 @@ export async function findOneOkOperationRecord(
   },
 ): Promise<OperationRecordModel> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findOneOkOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -650,7 +666,7 @@ export async function findByIdOperationRecord(
   },
 ): Promise<OperationRecordModel | undefined> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findByIdOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -692,7 +708,7 @@ export async function findByIdOkOperationRecord(
   },
 ): Promise<OperationRecordModel> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findByIdOkOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -733,7 +749,7 @@ export async function findByIdsOperationRecord(
   },
 ): Promise<OperationRecordModel[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findByIdsOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -780,7 +796,7 @@ export async function findByIdsOkOperationRecord(
   },
 ): Promise<OperationRecordModel[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "findByIdsOkOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -829,7 +845,7 @@ export async function existOperationRecord(
   },
 ): Promise<boolean> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "existOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -861,7 +877,7 @@ export async function existByIdOperationRecord(
   },
 ) {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "existByIdOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -978,7 +994,7 @@ export async function createReturnOperationRecord(
   },
 ): Promise<OperationRecordModel> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "createReturnOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1029,7 +1045,7 @@ export async function createOperationRecord(
   },
 ): Promise<OperationRecordId> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "createOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1070,7 +1086,7 @@ export async function createsReturnOperationRecord(
   },
 ): Promise<OperationRecordModel[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "createsReturnOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1107,7 +1123,7 @@ export async function createsOperationRecord(
   },
 ): Promise<OperationRecordId[]> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "createsOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1144,7 +1160,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1359,7 +1375,7 @@ export async function updateTenantByIdOperationRecord(
   },
 ): Promise<number> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "updateTenantByIdOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1405,7 +1421,7 @@ export async function updateByIdOperationRecord(
   },
 ): Promise<OperationRecordId> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "updateByIdOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1459,7 +1475,12 @@ export async function updateByIdOperationRecord(
   const oldModel = await findByIdOperationRecord(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 操作记录 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 操作记录 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1590,7 +1611,14 @@ export async function updateByIdOperationRecord(
     sql += ` where id=${ args.push(id) } limit 1`;
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1612,7 +1640,7 @@ export async function deleteByIdsOperationRecord(
   },
 ): Promise<number> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "deleteByIdsOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1635,6 +1663,8 @@ export async function deleteByIdsOperationRecord(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1668,7 +1698,13 @@ export async function deleteByIdsOperationRecord(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1684,7 +1720,7 @@ export async function revertByIdsOperationRecord(
   },
 ): Promise<number> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "revertByIdsOperationRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1758,7 +1794,7 @@ export async function forceDeleteByIdsOperationRecord(
   },
 ): Promise<number> {
   
-  const table = "base_operation_record";
+  const table = getTableNameOperationRecord();
   const method = "forceDeleteByIdsOperationRecord";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1780,6 +1816,8 @@ export async function forceDeleteByIdsOperationRecord(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {

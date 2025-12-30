@@ -19,6 +19,7 @@
     >
       <ElIconRefresh
         class="reset_but"
+        @dblclick.stop
         @click="onReset"
       ></ElIconRefresh>
     </div>
@@ -29,6 +30,7 @@
       >
         <ElIconUnlock
           class="unlock_but"
+          @dblclick.stop
           @click="isReadonly = true;"
         >
         </ElIconUnlock>
@@ -39,6 +41,7 @@
       >
         <ElIconLock
           class="lock_but"
+          @dblclick.stop
           @click="isReadonly = false;"
         ></ElIconLock>
       </div>
@@ -73,6 +76,19 @@
         
         @submit.prevent
       >
+        
+        <template v-if="(showBuildIn || builtInModel?.code == null)">
+          <el-form-item
+            label="编码"
+            prop="code"
+          >
+            <CustomInput
+              v-model="dialogModel.code"
+              placeholder="请输入 编码"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
         
         <template v-if="(showBuildIn || builtInModel?.dyn_page_id == null)">
           <el-form-item
@@ -127,6 +143,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.formula == null)">
+          <el-form-item
+            label="计算公式"
+            prop="formula"
+          >
+            <CustomInput
+              v-model="dialogModel.formula"
+              placeholder="请输入 计算公式"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.is_required == null)">
           <el-form-item
             label="必填"
@@ -137,6 +166,49 @@
               :set="dialogModel.is_required = dialogModel.is_required ?? undefined"
               code="yes_no"
               placeholder="请选择 必填"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.is_search == null)">
+          <el-form-item
+            label="查询条件"
+            prop="is_search"
+          >
+            <DictSelect
+              v-model="dialogModel.is_search"
+              :set="dialogModel.is_search = dialogModel.is_search ?? undefined"
+              code="yes_no"
+              placeholder="请选择 查询条件"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.width == null)">
+          <el-form-item
+            label="宽度"
+            prop="width"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.width"
+              placeholder="请输入 宽度"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.align == null)">
+          <el-form-item
+            label="对齐方式"
+            prop="align"
+          >
+            <DictSelect
+              v-model="dialogModel.align"
+              :set="dialogModel.align = dialogModel.align ?? undefined"
+              code="dyn_page_field_align"
+              placeholder="请选择 对齐方式"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -241,6 +313,7 @@
       
     </div>
   </div>
+  
 </CustomDialog>
 </template>
 
@@ -296,7 +369,7 @@ let ids = $ref<DynPageFieldId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DynPageFieldId[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -334,6 +407,20 @@ watchEffect(async () => {
         message: "请选择 必填",
       },
     ],
+    // 查询条件
+    is_search: [
+      {
+        required: true,
+        message: "请选择 查询条件",
+      },
+    ],
+    // 对齐方式
+    align: [
+      {
+        required: true,
+        message: "请选择 对齐方式",
+      },
+    ],
     // 排序
     order_by: [
       {
@@ -365,7 +452,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOneDynPageField;
 
@@ -426,6 +513,7 @@ async function showDialog(
     }
   });
   dialogAction = action || "add";
+  nextTick(() => formRef?.clearValidate());
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
@@ -440,9 +528,12 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       getDefaultInputDynPageField(),
-      findLastOrderByDynPageField({
-        notLoading: !inited,
-      }),
+      findLastOrderByDynPageField(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -463,9 +554,12 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderByDynPageField({
-        notLoading: !inited,
-      }),
+      findLastOrderByDynPageField(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     if (data) {
       dialogModel = {
@@ -525,25 +619,8 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
-    const [
-      defaultModel,
-      order_by,
-    ] = await Promise.all([
-      getDefaultInputDynPageField(),
-      findLastOrderByDynPageField({
-        notLoading: !inited,
-      }),
-    ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,
-      order_by: order_by + 1,
-    };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
   ElMessage({
     message: "表单重置完毕",
     type: "success",
@@ -554,6 +631,23 @@ async function onReset() {
 async function onRefresh() {
   const id = dialogModel.id;
   if (!id) {
+    const [
+      defaultModel,
+      order_by,
+    ] = await Promise.all([
+      getDefaultInputDynPageField(),
+      findLastOrderByDynPageField(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
+    ]);
+    dialogModel = {
+      ...defaultModel,
+      ...builtInModel,
+      order_by: order_by + 1,
+    };
     return;
   }
   const [
@@ -665,6 +759,8 @@ watch(
   () => [
     dialogModel.dyn_page_id,
     dialogModel.is_required,
+    dialogModel.is_search,
+    dialogModel.align,
   ],
   () => {
     if (!inited) {
@@ -675,6 +771,12 @@ watch(
     }
     if (!dialogModel.is_required) {
       dialogModel.is_required_lbl = "";
+    }
+    if (!dialogModel.is_search) {
+      dialogModel.is_search_lbl = "";
+    }
+    if (!dialogModel.align) {
+      dialogModel.align_lbl = "";
     }
   },
 );
@@ -689,7 +791,7 @@ async function onSaveKeydown(e: KeyboardEvent) {
 
 /** 保存并返回id */
 async function save() {
-  if (isReadonly) {
+  if (!inited || isReadonly) {
     return;
   }
   if (!formRef) {
