@@ -21,7 +21,7 @@ import {
   findTreeDept,
 } from "@/views/base/dept/Api.ts";
 
-async function setLblById(
+export async function setLblByIdUsr(
   model?: UsrModel | null,
   isExcelExport = false,
 ) {
@@ -74,7 +74,7 @@ export function intoInputUsr(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -109,7 +109,7 @@ export async function findAllUsr(
   const models = data.findAllUsr;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdUsr(model);
   }
   return models;
 }
@@ -141,7 +141,7 @@ export async function findOneUsr(
   
   const model = data.findOneUsr;
   
-  await setLblById(model);
+  await setLblByIdUsr(model);
   
   return model;
 }
@@ -173,7 +173,7 @@ export async function findOneOkUsr(
   
   const model = data.findOneOkUsr;
   
-  await setLblById(model);
+  await setLblByIdUsr(model);
   
   return model;
 }
@@ -299,7 +299,7 @@ export async function findByIdUsr(
   
   const model = data.findByIdUsr;
   
-  await setLblById(model);
+  await setLblByIdUsr(model);
   
   return model;
 }
@@ -329,7 +329,7 @@ export async function findByIdOkUsr(
   
   const model = data.findByIdOkUsr;
   
-  await setLblById(model);
+  await setLblByIdUsr(model);
   
   return model;
 }
@@ -365,7 +365,7 @@ export async function findByIdsUsr(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdUsr(model);
   }
   
   return models;
@@ -402,7 +402,7 @@ export async function findByIdsOkUsr(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdUsr(model);
   }
   
   return models;
@@ -791,8 +791,8 @@ export function useExportExcelUsr() {
     try {
       const data = await query({
         query: `
-          query($search: UsrSearch, $sort: [SortInput!]) {
-            findAllUsr(search: $search, page: null, sort: $sort) {
+          query($search: UsrSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllUsr(search: $search, page: $page, sort: $sort) {
               ${ usrQueryField }
             }
             findAllRole {
@@ -816,11 +816,14 @@ export function useExportExcelUsr() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllUsr) {
-        await setLblById(model, true);
+        await setLblByIdUsr(model, true);
       }
       try {
         const sheetName = "用户";
@@ -900,19 +903,75 @@ export async function importModelsUsr(
  * 查找 用户 order_by 字段的最大值
  */
 export async function findLastOrderByUsr(
+  search?: UsrSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByUsr: Query["findLastOrderByUsr"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByUsr
+      query($search: UsrSearch) {
+        findLastOrderByUsr(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByUsr;
-  return res;
+  
+  const order_by = data.findLastOrderByUsr;
+  
+  return order_by;
+}
+
+/**
+ * 获取 用户 字段注释
+ */
+export async function getFieldCommentsUsr(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsUsr: Query["getFieldCommentsUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsUsr {
+          id,
+          img,
+          lbl,
+          username,
+          role_ids,
+          role_ids_lbl,
+          dept_ids,
+          dept_ids_lbl,
+          org_ids,
+          org_ids_lbl,
+          default_org_id,
+          default_org_id_lbl,
+          type,
+          type_lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsUsr as UsrFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathUsr() {

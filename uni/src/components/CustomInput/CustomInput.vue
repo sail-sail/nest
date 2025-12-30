@@ -14,12 +14,12 @@
   :selection-end="selectionEnd"
   width="100%"
   v-bind="$attrs"
-  :show-clear="props.clearable == null ? (modelValue ? !readonly : false) : props.clearable"
+  :show-clear="props.clearable == null ? ((modelValue != null && modelValue !== '') ? !readonly : false) : props.clearable"
   :readonly="readonly"
   :placeholder="(readonly || !props.pageInited) ? '' : props.placeholder"
   :color="props.color"
   :font-color="props.fontColor ? props.fontColor : (readonly ? 'var(--color-readonly)' : undefined)"
-  :type="props.type"
+  :type="props.type === 'decimal' ? 'digit' : props.type"
   @update:model-value="onUpdateModelValue"
   @focus="onFocus"
   @blur="onBlur"
@@ -83,7 +83,7 @@
     ></view>
     
     <view
-      v-if="modelValue && (props.clearable == null ? (readonly ? false : true) : props.clearable)"
+      v-if="(modelValue != null && modelValue !== '') && (props.clearable == null ? (readonly ? false : true) : props.clearable)"
       @tap.stop=""
       @click="onClear"
     >
@@ -120,7 +120,7 @@ const props = withDefaults(
   defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
-    type?: "number" | "text" | "textarea" | "idcard" | "digit" | "tel" | "safe-password" | "nickname" | undefined;
+    type?: "decimal" | "number" | "text" | "textarea" | "idcard" | "digit" | "tel" | "safe-password" | "nickname" | undefined;
     readonly?: boolean;
     pageInited?: boolean;
     clearable?: boolean;
@@ -222,7 +222,7 @@ const shouldShowPlaceholder = $computed<boolean>(() => {
   if (props.isNumber) {
     return modelValue.value == null || modelValue.value === "" || Number(modelValue.value) == 0 || isNaN(Number(modelValue.value));
   }
-  if (props.type === "number" || props.type === "digit") {
+  if (props.type === "number" || props.type === "digit" || props.type === "decimal") {
     return modelValue.value == null || modelValue.value === "" || Number(modelValue.value) == 0 || isNaN(modelValue.value);
   }
   return modelValue.value == null || modelValue.value === "";

@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -74,6 +76,11 @@ import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getPagePathTenant,
+  getTableNameTenant,
+} from "./tenant.model.ts";
+
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
@@ -84,6 +91,13 @@ async function getWhereQuery(
   
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  if (isNotEmpty(search?.keyword)) {
+    whereQuery += " and (";
+    whereQuery += ` t.code like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += " or";
+    whereQuery += ` t.lbl like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += ")";
+  }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
@@ -268,7 +282,7 @@ export async function findCountTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findCountTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -402,7 +416,7 @@ export async function findAllTenant(
   },
 ): Promise<TenantModel[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findAllTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -570,6 +584,14 @@ export async function findAllTenant(
       debug: is_debug_sql,
     },
   );
+  
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
   for (const item of result) {
     
     // 所属域名
@@ -796,7 +818,7 @@ export async function setIdByLblTenant(
 // MARK: getFieldCommentsTenant
 /** 获取租户字段注释 */
 export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
-  const fieldComments: TenantFieldComment = {
+  const field_comments: TenantFieldComment = {
     id: "ID",
     code: "编码",
     lbl: "名称",
@@ -823,7 +845,8 @@ export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueTenant
@@ -835,7 +858,7 @@ export async function findByUniqueTenant(
   },
 ): Promise<TenantModel[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findByUniqueTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -941,7 +964,7 @@ export async function checkByUniqueTenant(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 租户 已经存在");
+      throw new UniqueException("租户 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: TenantId = await updateByIdTenant(
@@ -971,7 +994,7 @@ export async function findOneTenant(
   },
 ): Promise<TenantModel | undefined> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findOneTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1019,7 +1042,7 @@ export async function findOneOkTenant(
   },
 ): Promise<TenantModel> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findOneOkTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1071,7 +1094,7 @@ export async function findByIdTenant(
   },
 ): Promise<TenantModel | undefined> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findByIdTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1113,7 +1136,7 @@ export async function findByIdOkTenant(
   },
 ): Promise<TenantModel> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findByIdOkTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1154,7 +1177,7 @@ export async function findByIdsTenant(
   },
 ): Promise<TenantModel[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1201,7 +1224,7 @@ export async function findByIdsOkTenant(
   },
 ): Promise<TenantModel[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findByIdsOkTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1250,7 +1273,7 @@ export async function existTenant(
   },
 ): Promise<boolean> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "existTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1282,7 +1305,7 @@ export async function existByIdTenant(
   },
 ) {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "existByIdTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1428,7 +1451,7 @@ export async function findAutoCodeTenant(
   },
 ) {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findAutoCodeTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1490,7 +1513,7 @@ export async function createReturnTenant(
   },
 ): Promise<TenantModel> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "createReturnTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1541,7 +1564,7 @@ export async function createTenant(
   },
 ): Promise<TenantId> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "createTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1582,7 +1605,7 @@ export async function createsReturnTenant(
   },
 ): Promise<TenantModel[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "createsReturnTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1619,7 +1642,7 @@ export async function createsTenant(
   },
 ): Promise<TenantId[]> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "createsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1669,7 +1692,7 @@ async function _creates(
     input.code = code;
   }
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1933,7 +1956,7 @@ export async function updateByIdTenant(
   },
 ): Promise<TenantId> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "updateByIdTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1972,7 +1995,7 @@ export async function updateByIdTenant(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 租户 已经存在";
+        throw "租户 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1982,7 +2005,12 @@ export async function updateByIdTenant(
   const oldModel = await findByIdTenant(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 租户 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 租户 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -2172,7 +2200,14 @@ export async function updateByIdTenant(
     await delCacheTenant();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -2198,7 +2233,7 @@ export async function deleteByIdsTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "deleteByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2221,6 +2256,8 @@ export async function deleteByIdsTenant(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheTenant();
   
@@ -2256,7 +2293,13 @@ export async function deleteByIdsTenant(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const domain_ids = oldModel.domain_ids;
@@ -2312,7 +2355,7 @@ export async function enableByIdsTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "enableByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2382,7 +2425,7 @@ export async function lockByIdsTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "lockByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2407,11 +2450,19 @@ export async function lockByIdsTenant(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheTenant();
   
   const args = new QueryArgs();
   let sql = `update base_tenant set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheTenant();
@@ -2428,7 +2479,7 @@ export async function revertByIdsTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "revertByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2482,7 +2533,7 @@ export async function revertByIdsTenant(
         if (model.id === id) {
           continue;
         }
-        throw "此 租户 已经存在";
+        throw "租户 重复";
       }
     }
     const args = new QueryArgs();
@@ -2522,7 +2573,7 @@ export async function forceDeleteByIdsTenant(
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "forceDeleteByIdsTenant";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2544,6 +2595,8 @@ export async function forceDeleteByIdsTenant(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheTenant();
   
@@ -2570,7 +2623,13 @@ export async function forceDeleteByIdsTenant(
       if (domain_ids && domain_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_tenant_domain where tenant_id=${ args.push(id) } and domain_id in (${ args.push(domain_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2578,7 +2637,13 @@ export async function forceDeleteByIdsTenant(
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_tenant_menu where tenant_id=${ args.push(id) } and menu_id in (${ args.push(menu_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
   }
@@ -2591,18 +2656,22 @@ export async function forceDeleteByIdsTenant(
 // MARK: findLastOrderByTenant
 /** 查找 租户 order_by 字段的最大值 */
 export async function findLastOrderByTenant(
+  search?: Readonly<TenantSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_tenant";
+  const table = getTableNameTenant();
   const method = "findLastOrderByTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2611,19 +2680,29 @@ export async function findLastOrderByTenant(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_tenant t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_tenant t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

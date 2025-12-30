@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./org.model.ts";
-
 /**
  * 根据条件查找组织总数
  */
@@ -188,11 +184,15 @@ export async function createsOrg(
     createsOrg,
   } = await import("./org.service.ts");
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathOrg(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdOrg(
     updateByIdOrg,
   } = await import("./org.service.ts");
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblOrg(input);
   
   await usePermit(
-    route_path,
+    getPagePathOrg(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsOrg(
     deleteByIdsOrg,
   } = await import("./org.service.ts");
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOrg(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsOrg(
     throw new Error(`enableByIdsOrg.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOrg(),
     "edit",
   );
   const res = await enableByIdsOrg(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsOrg(
     throw new Error(`lockByIdsOrg.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOrg(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsOrg(
     revertByIdsOrg,
   } = await import("./org.service.ts");
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOrg(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsOrg(
     forceDeleteByIdsOrg,
   } = await import("./org.service.ts");
   
+  const {
+    getPagePathOrg,
+  } = await import("./org.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOrg(),
     "force_delete",
   );
   
@@ -366,13 +390,15 @@ export async function forceDeleteByIdsOrg(
 /**
  * 查找 组织 order_by 字段的最大值
  */
-export async function findLastOrderByOrg(): Promise<number> {
+export async function findLastOrderByOrg(
+  search?: OrgSearch,
+): Promise<number> {
   
   const {
     findLastOrderByOrg,
   } = await import("./org.service.ts");
   
-  const res = findLastOrderByOrg();
+  const order_by = findLastOrderByOrg(search);
   
-  return res;
+  return order_by;
 }

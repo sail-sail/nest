@@ -16,10 +16,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./permit.model.ts";
-
 /**
  * 根据条件查找按钮权限总数
  */
@@ -187,12 +183,16 @@ export async function updateByIdPermit(
     updateByIdPermit,
   } = await import("./permit.service.ts");
   
+  const {
+    getPagePathPermit,
+  } = await import("./permit.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblPermit(input);
   
   await usePermit(
-    route_path,
+    getPagePathPermit(),
     "edit",
   );
   
@@ -204,13 +204,15 @@ export async function updateByIdPermit(
 /**
  * 查找 按钮权限 order_by 字段的最大值
  */
-export async function findLastOrderByPermit(): Promise<number> {
+export async function findLastOrderByPermit(
+  search?: PermitSearch,
+): Promise<number> {
   
   const {
     findLastOrderByPermit,
   } = await import("./permit.service.ts");
   
-  const res = findLastOrderByPermit();
+  const order_by = findLastOrderByPermit(search);
   
-  return res;
+  return order_by;
 }

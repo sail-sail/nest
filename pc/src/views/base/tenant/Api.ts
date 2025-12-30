@@ -17,7 +17,7 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-async function setLblById(
+export async function setLblByIdTenant(
   model?: TenantModel | null,
   isExcelExport = false,
 ) {
@@ -56,7 +56,7 @@ export function intoInputTenant(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -91,7 +91,7 @@ export async function findAllTenant(
   const models = data.findAllTenant;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdTenant(model);
   }
   return models;
 }
@@ -123,7 +123,7 @@ export async function findOneTenant(
   
   const model = data.findOneTenant;
   
-  await setLblById(model);
+  await setLblByIdTenant(model);
   
   return model;
 }
@@ -155,7 +155,7 @@ export async function findOneOkTenant(
   
   const model = data.findOneOkTenant;
   
-  await setLblById(model);
+  await setLblByIdTenant(model);
   
   return model;
 }
@@ -281,7 +281,7 @@ export async function findByIdTenant(
   
   const model = data.findByIdTenant;
   
-  await setLblById(model);
+  await setLblByIdTenant(model);
   
   return model;
 }
@@ -311,7 +311,7 @@ export async function findByIdOkTenant(
   
   const model = data.findByIdOkTenant;
   
-  await setLblById(model);
+  await setLblByIdTenant(model);
   
   return model;
 }
@@ -347,7 +347,7 @@ export async function findByIdsTenant(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdTenant(model);
   }
   
   return models;
@@ -384,7 +384,7 @@ export async function findByIdsOkTenant(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdTenant(model);
   }
   
   return models;
@@ -765,8 +765,8 @@ export function useExportExcelTenant() {
     try {
       const data = await query({
         query: `
-          query($search: TenantSearch, $sort: [SortInput!]) {
-            findAllTenant(search: $search, page: null, sort: $sort) {
+          query($search: TenantSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllTenant(search: $search, page: $page, sort: $sort) {
               ${ tenantQueryField }
             }
             findAllDomain {
@@ -789,11 +789,14 @@ export function useExportExcelTenant() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllTenant) {
-        await setLblById(model, true);
+        await setLblByIdTenant(model, true);
       }
       try {
         const sheetName = "租户";
@@ -873,19 +876,72 @@ export async function importModelsTenant(
  * 查找 租户 order_by 字段的最大值
  */
 export async function findLastOrderByTenant(
+  search?: TenantSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByTenant: Query["findLastOrderByTenant"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByTenant
+      query($search: TenantSearch) {
+        findLastOrderByTenant(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByTenant;
-  return res;
+  
+  const order_by = data.findLastOrderByTenant;
+  
+  return order_by;
+}
+
+/**
+ * 获取 租户 字段注释
+ */
+export async function getFieldCommentsTenant(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsTenant: Query["getFieldCommentsTenant"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsTenant {
+          id,
+          code,
+          lbl,
+          domain_ids,
+          domain_ids_lbl,
+          menu_ids,
+          menu_ids_lbl,
+          title,
+          info,
+          lang_id,
+          lang_id_lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsTenant as TenantFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathTenant() {

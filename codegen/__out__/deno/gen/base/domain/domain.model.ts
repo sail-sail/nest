@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/domain";
+export function getPagePathDomain() {
+  return "/base/domain";
+}
+
+export function getTableNameDomain() {
+  return "base_domain";
+}
 
 declare const domainId: unique symbol;
 

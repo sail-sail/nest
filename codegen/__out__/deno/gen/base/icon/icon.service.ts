@@ -267,7 +267,10 @@ export async function getFieldCommentsIcon(): Promise<IconFieldComment> {
  * 查找 图标库 order_by 字段的最大值
  */
 export async function findLastOrderByIcon(
+  search?: IconSearch,
 ): Promise<number> {
-  const icon_sort = await iconDao.findLastOrderByIcon();
-  return icon_sort;
+  
+  const order_by = await iconDao.findLastOrderByIcon(search);
+  
+  return order_by;
 }

@@ -1221,9 +1221,12 @@ if (hasOrderBy) {
  * 查找 <#=table_comment#> order_by 字段的最大值
  */
 export async function findLastOrderBy<#=Table_Up#>(
+  search?: <#=searchName#>,
 ): Promise<number> {
-  const <#=table#>_sort = await <#=table#>Dao.findLastOrderBy<#=Table_Up#>();
-  return <#=table#>_sort;
+  
+  const order_by = await <#=table#>Dao.findLastOrderBy<#=Table_Up#>(search);
+  
+  return order_by;
 }<#
 }
 #>

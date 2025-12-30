@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/background_task";
+export function getPagePathBackgroundTask() {
+  return "/base/background_task";
+}
+
+export function getTableNameBackgroundTask() {
+  return "base_background_task";
+}
 
 declare const backgroundTaskId: unique symbol;
 

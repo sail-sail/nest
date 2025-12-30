@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -69,6 +71,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathI18n,
+  getTableNameI18n,
+} from "./i18n.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -194,7 +201,7 @@ export async function findCountI18n(
   },
 ): Promise<number> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findCountI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -295,7 +302,7 @@ export async function findAllI18n(
   },
 ): Promise<I18nModel[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findAllI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -422,6 +429,14 @@ export async function findAllI18n(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -527,7 +542,7 @@ export async function setIdByLblI18n(
 // MARK: getFieldCommentsI18n
 /** 获取国际化字段注释 */
 export async function getFieldCommentsI18n(): Promise<I18nFieldComment> {
-  const fieldComments: I18nFieldComment = {
+  const field_comments: I18nFieldComment = {
     id: "ID",
     lang_id: "语言",
     lang_id_lbl: "语言",
@@ -545,7 +560,8 @@ export async function getFieldCommentsI18n(): Promise<I18nFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueI18n
@@ -557,7 +573,7 @@ export async function findByUniqueI18n(
   },
 ): Promise<I18nModel[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findByUniqueI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -665,7 +681,7 @@ export async function checkByUniqueI18n(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 国际化 已经存在");
+      throw new UniqueException("国际化 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: I18nId = await updateByIdI18n(
@@ -695,7 +711,7 @@ export async function findOneI18n(
   },
 ): Promise<I18nModel | undefined> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findOneI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -743,7 +759,7 @@ export async function findOneOkI18n(
   },
 ): Promise<I18nModel> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findOneOkI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -795,7 +811,7 @@ export async function findByIdI18n(
   },
 ): Promise<I18nModel | undefined> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findByIdI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -837,7 +853,7 @@ export async function findByIdOkI18n(
   },
 ): Promise<I18nModel> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findByIdOkI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -878,7 +894,7 @@ export async function findByIdsI18n(
   },
 ): Promise<I18nModel[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findByIdsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -925,7 +941,7 @@ export async function findByIdsOkI18n(
   },
 ): Promise<I18nModel[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "findByIdsOkI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -974,7 +990,7 @@ export async function existI18n(
   },
 ): Promise<boolean> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "existI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1006,7 +1022,7 @@ export async function existByIdI18n(
   },
 ) {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "existByIdI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1139,7 +1155,7 @@ export async function createReturnI18n(
   },
 ): Promise<I18nModel> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "createReturnI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1190,7 +1206,7 @@ export async function createI18n(
   },
 ): Promise<I18nId> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "createI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1231,7 +1247,7 @@ export async function createsReturnI18n(
   },
 ): Promise<I18nModel[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "createsReturnI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1268,7 +1284,7 @@ export async function createsI18n(
   },
 ): Promise<I18nId[]> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "createsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1305,7 +1321,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1505,7 +1521,7 @@ export async function updateByIdI18n(
   },
 ): Promise<I18nId> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "updateByIdI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1544,7 +1560,7 @@ export async function updateByIdI18n(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 国际化 已经存在";
+        throw "国际化 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1554,7 +1570,12 @@ export async function updateByIdI18n(
   const oldModel = await findByIdI18n(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 国际化 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 国际化 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1669,7 +1690,14 @@ export async function updateByIdI18n(
     await delCacheI18n();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1695,7 +1723,7 @@ export async function deleteByIdsI18n(
   },
 ): Promise<number> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "deleteByIdsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1718,6 +1746,8 @@ export async function deleteByIdsI18n(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheI18n();
   
@@ -1753,7 +1783,13 @@ export async function deleteByIdsI18n(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1771,7 +1807,7 @@ export async function revertByIdsI18n(
   },
 ): Promise<number> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "revertByIdsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1825,7 +1861,7 @@ export async function revertByIdsI18n(
         if (model.id === id) {
           continue;
         }
-        throw "此 国际化 已经存在";
+        throw "国际化 重复";
       }
     }
     const args = new QueryArgs();
@@ -1849,7 +1885,7 @@ export async function forceDeleteByIdsI18n(
   },
 ): Promise<number> {
   
-  const table = "base_i18n";
+  const table = getTableNameI18n();
   const method = "forceDeleteByIdsI18n";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1871,6 +1907,8 @@ export async function forceDeleteByIdsI18n(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheI18n();
   

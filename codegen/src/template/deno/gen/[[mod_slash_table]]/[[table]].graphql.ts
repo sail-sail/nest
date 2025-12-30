@@ -449,6 +449,12 @@ type <#=modelName#> {<#
   "<#=comment#>"
   <#=column_name#>_<#=table#>_models: [<#=modelName#>!]!<#
   }
+  #><#
+  if (opts.isUseDynPageFields) {
+  #>
+  "动态页面数据"
+  dyn_page_data: JSONObject!<#
+  }
   #>
 }
 type <#=fieldCommentName#> {<#
@@ -503,6 +509,12 @@ type <#=fieldCommentName#> {<#
   "<#=column_comment#>"
   <#=column_name#>: String!<#
     }
+  }
+  #><#
+  if (opts.isUseDynPageFields) {
+  #>
+  "动态页面数据"
+  dyn_page_data: JSONObject!<#
   }
   #>
 }
@@ -768,6 +780,12 @@ input <#=inputName#> {<#
   "<#=comment#>"
   <#=column_name#>_<#=table#>_models: [<#=inputName#>!]<#
   }
+  #><#
+  if (opts.isUseDynPageFields) {
+  #>
+  "动态页面数据"
+  dyn_page_data: JSONObject<#
+  }
   #>
 }
 input <#=searchName#> {<#
@@ -794,7 +812,6 @@ input <#=searchName#> {<#
       column.onlyCodegenDeno
       || column.canSearch !== true
     ) continue;
-    // if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
@@ -923,10 +940,21 @@ input <#=searchName#> {<#
     } else if (!column.isEncrypt) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>: <#=data_type#>
+  <#=column_name#>: <#=data_type#><#
+  if (column.searchByArray) {
+  #>
+  <#=column_name#>s: [String!]<#
+  }
+  #>
   <#=column_name#>_like: <#=data_type#><#
     }
   #><#
+  }
+  #><#
+  if (opts.isUseDynPageFields) {
+  #>
+  "动态页面数据"
+  dyn_page_data: JSONObject<#
   }
   #>
 }<#
@@ -936,7 +964,6 @@ type <#=Table_Up2#>Summary {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    // if (column.isVirtual) continue;
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
@@ -982,7 +1009,7 @@ type Query {
   if (hasOrderBy) {
   #>
   "查找<#=table_comment#> order_by 字段的最大值"
-  findLastOrderBy<#=Table_Up2#>: Int!<#
+  findLastOrderBy<#=Table_Up2#>(search: <#=searchName#>): Int!<#
   }
   #>
 }<#
