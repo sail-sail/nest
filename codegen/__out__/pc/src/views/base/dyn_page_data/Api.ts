@@ -509,14 +509,17 @@ export function useExportExcelDynPageData() {
     try {
       const data = await query({
         query: `
-          query($search: DynPageDataSearch, $sort: [SortInput!]) {
-            findAllDynPageData(search: $search, page: null, sort: $sort) {
+          query($search: DynPageDataSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDynPageData(search: $search, page: $page, sort: $sort) {
               ${ dynPageDataQueryField }
             }
           }
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

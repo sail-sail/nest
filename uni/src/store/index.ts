@@ -2,9 +2,15 @@ import {
   UserAgent,
 } from "@/utils/UserAgent";
 
-import {
-  GetwxacodeunlimitEnvVersion,
-} from "#/types.ts";
+// import {
+//   GetwxacodeunlimitEnvVersion,
+// } from "#/types.ts";
+
+export enum GetwxacodeunlimitEnvVersion {
+  Release = "release",
+  Trial = "trial",
+  Debug = "develop",
+}
   
 const loading = ref(0);
   

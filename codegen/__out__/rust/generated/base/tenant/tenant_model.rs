@@ -388,6 +388,8 @@ pub struct TenantSearch {
   /// ID列表
   pub ids: Option<Vec<TenantId>>,
   pub is_deleted: Option<u8>,
+  #[graphql(name = "keyword")]
+  pub keyword: Option<String>,
   /// 编码-序列号
   #[graphql(skip)]
   pub code_seq: Option<[Option<u32>; 2]>,

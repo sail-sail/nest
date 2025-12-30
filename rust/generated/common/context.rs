@@ -42,7 +42,15 @@ use crate::base::tenant::tenant_model::TenantId;
 use crate::base::org::org_model::OrgId;
 
 pub const FIND_ALL_IDS_LIMIT: usize = 5000;
+const FIND_ALL_RESULT_LIMIT: usize = 1000;
 pub const MAX_SAFE_INTEGER: u64 = 9007199254740991;
+
+pub fn find_all_result_limit() -> usize {
+  env::var("server_find_all_result_limit")
+    .ok()
+    .and_then(|x| x.parse::<usize>().ok())
+    .unwrap_or(FIND_ALL_RESULT_LIMIT)
+}
 
 static SERVER_TOKEN_TIMEOUT: OnceLock<i64> = OnceLock::new();
 static DB_POOL: OnceLock<Pool<MySql>> = OnceLock::new();

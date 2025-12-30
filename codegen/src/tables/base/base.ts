@@ -12,9 +12,11 @@ export default defineConfig({
         prop: "keyword",
         fields: [ "code", "lbl", "rem" ],
         lbl: "关键字",
-        placeholder: "编码/名称/备注",
+        placeholder: "关键字",
+        showInPcList: true,
       },
       hasSelectInput: true,
+      isUniApi: true,
     },
     columns: [
       {
@@ -115,6 +117,12 @@ export default defineConfig({
       uniques: [
         [ "lbl" ],
       ],
+      searchByKeyword: {
+        prop: "keyword",
+        fields: [ "code", "lbl" ],
+        lbl: "关键字",
+        placeholder: "关键字",
+      },
     },
     columns: [
       {
@@ -418,6 +426,7 @@ export default defineConfig({
         order: "ascending",
       },
       list_tree: true,
+      isUniApi: true,
     },
     columns: [
       {
@@ -833,7 +842,8 @@ export default defineConfig({
         prop: "keyword",
         fields: [ "lbl", "ky", "val", "rem" ],
         lbl: "关键字",
-        placeholder: "名称/键/值/备注",
+        placeholder: "关键字",
+        showInPcList: true,
       },
     },
     columns: [
@@ -897,7 +907,8 @@ export default defineConfig({
         prop: "keyword",
         fields: [ "lbl", "ky", "val", "rem" ],
         lbl: "关键字",
-        placeholder: "名称/键/值/备注",
+        placeholder: "关键字",
+        showInPcList: true,
       },
     },
     columns: [
@@ -1153,7 +1164,7 @@ export default defineConfig({
         prop: "keyword",
         fields: [ "code", "lbl", "rem" ],
         lbl: "关键字",
-        placeholder: "编码/名称/备注",
+        placeholder: "关键字",
       },
     },
     columns: [
@@ -1303,7 +1314,7 @@ export default defineConfig({
         prop: "keyword",
         fields: [ "code", "lbl", "rem" ],
         lbl: "关键字",
-        placeholder: "编码/名称/备注",
+        placeholder: "关键字",
       },
     },
     columns: [
@@ -1489,10 +1500,23 @@ export default defineConfig({
           table: "dyn_page_field",
           label: "动态页面字段",
           column: "dyn_page_id",
+          uni_list_page_fields: [
+            "code",
+            "lbl",
+            "type",
+          ],
         },
       ],
       hasSelectInput: true,
       detailCustomDialogType: "medium",
+      isUniPage: {
+        list_page: {
+          search_fields: [ "lbl", "code" ],
+          lbl_field: "lbl",
+          lbl2_fields: [ "code" ],
+          right_field: "create_time",
+        },
+      },
     },
     columns: [
       {
@@ -1563,6 +1587,14 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      isUniPage: {
+        list_page: {
+          search_fields: [ "lbl", "code" ],
+          lbl_field: "lbl",
+          lbl2_fields: [ "code" ],
+          right_field: "create_time",
+        },
+      },
     },
     columns: [
       {
@@ -1579,6 +1611,7 @@ export default defineConfig({
         },
         align: "center",
         fixed: "left",
+        require: false,
       },
       {
         COLUMN_NAME: "dyn_page_id",

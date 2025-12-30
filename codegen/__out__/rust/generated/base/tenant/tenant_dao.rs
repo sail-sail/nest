@@ -36,6 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
+  find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -109,6 +110,22 @@ async fn get_where_query(
       };
       where_query.push_str(" and t.id in (");
       where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let keyword: Option<String> = match search {
+      Some(item) => item.keyword.clone(),
+      None => None,
+    };
+    if let Some(keyword) = keyword && !keyword.is_empty() {
+      where_query.push_str(" and (");
+      where_query.push_str(" t.code like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+        
+      where_query.push_str(" or");
+      where_query.push_str(" t.lbl like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
       where_query.push(')');
     }
   }
@@ -822,6 +839,9 @@ pub async fn find_all_tenant(
   }
   
   let order_by_query = get_order_by_query(Some(sort));
+  let is_result_limit = page.as_ref()
+    .and_then(|item| item.is_result_limit)
+    .unwrap_or(true);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -842,6 +862,13 @@ pub async fn find_all_tenant(
     args,
     Some(options),
   ).await?;
+  
+  let len = res.len();
+  let result_limit_num = find_all_result_limit();
+  
+  if is_result_limit && len > result_limit_num {
+    return Err(eyre!("{table}.{method}: result length {len} > {result_limit_num}"));
+  }
   
   let dict_vec = get_dict(&[
     "is_locked",
@@ -1174,10 +1201,11 @@ pub async fn find_one_tenant(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let page = PageInput {
-    pg_offset: 0.into(),
-    pg_size: 1.into(),
-  }.into();
+  let page = Some(PageInput {
+    pg_offset: Some(0),
+    pg_size: Some(1),
+    is_result_limit: Some(true),
+  });
   
   let res = find_all_tenant(
     search,

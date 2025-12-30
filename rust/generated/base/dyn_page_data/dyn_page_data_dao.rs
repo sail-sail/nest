@@ -49,6 +49,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
+  find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -390,13 +391,11 @@ async fn get_where_query(
             
             // 模糊查询
             let field_code_like = format!("{}_like", field_code);
-            if let Some(val_like) = dyn_page_data.0.get(&field_code_like) {
-              if let serde_json::Value::String(val_like_str) = val_like {
-                if !val_like_str.is_empty() {
-                  where_query.push_str(" and v.code=? and v.lbl like ?");
-                  args.push(field_code.clone().into());
-                  args.push(format!("%{}%", sql_like(val_like_str)).into());
-                }
+            if let Some(serde_json::Value::String(val_like_str)) = dyn_page_data.0.get(&field_code_like) {
+              if !val_like_str.is_empty() {
+                where_query.push_str(" and v.code=? and v.lbl like ?");
+                args.push(field_code.clone().into());
+                args.push(format!("%{}%", sql_like(val_like_str)).into());
               }
             }
             
@@ -428,11 +427,7 @@ pub async fn set_dyn_page_data_dyn_page_data(
   options: Option<Options>,
 ) -> Result<()> {
   
-  let ref_code = if let Some(model) = models.first() {
-    Some(model.ref_code.clone())
-  } else {
-    None
-  };
+  let ref_code = models.first().map(|model| model.ref_code.clone());
   
   let page_path = get_page_path_dyn_page_data(ref_code);
   
@@ -611,6 +606,9 @@ pub async fn find_all_dyn_page_data(
   }
   
   let order_by_query = get_order_by_query(Some(sort));
+  let is_result_limit = page.as_ref()
+    .and_then(|item| item.is_result_limit)
+    .unwrap_or(true);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -625,6 +623,13 @@ pub async fn find_all_dyn_page_data(
     args,
     Some(options.clone()),
   ).await?;
+  
+  let len = res.len();
+  let result_limit_num = find_all_result_limit();
+  
+  if is_result_limit && len > result_limit_num {
+    return Err(eyre!("{table}.{method}: result length {len} > {result_limit_num}"));
+  }
   
   set_dyn_page_data_dyn_page_data(
     &mut res,
@@ -873,10 +878,11 @@ pub async fn find_one_dyn_page_data(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let page = PageInput {
-    pg_offset: 0.into(),
-    pg_size: 1.into(),
-  }.into();
+  let page = Some(PageInput {
+    pg_offset: Some(0),
+    pg_size: Some(1),
+    is_result_limit: Some(true),
+  });
   
   let res = find_all_dyn_page_data(
     search,

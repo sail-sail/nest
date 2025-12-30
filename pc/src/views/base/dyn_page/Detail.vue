@@ -648,7 +648,7 @@ let ids = $ref<DynPageId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DynPageId[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -703,7 +703,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOneDynPage;
 
@@ -811,9 +811,12 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderByDynPage({
-        notLoading: !inited,
-      }),
+      findLastOrderByDynPage(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     if (data) {
       dialogModel = {
@@ -894,9 +897,12 @@ async function onRefresh() {
       order_by,
     ] = await Promise.all([
       getDefaultInputDynPage(),
-      findLastOrderByDynPage({
-        notLoading: !inited,
-      }),
+      findLastOrderByDynPage(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -1134,7 +1140,7 @@ async function onSave() {
 const inlineForeignTabLabel = $ref("动态页面字段");
 
 // 动态页面字段
-const dyn_page_fieldRef = $(useTemplateRef<InstanceType<typeof ElTable>>("dyn_page_fieldRef"));
+const dyn_page_fieldRef = $(useTemplateRef("dyn_page_fieldRef"));
 
 // AttrsDialog 引用
 const attrsDialogRef = $ref<InstanceType<typeof AttrsDialog>>();

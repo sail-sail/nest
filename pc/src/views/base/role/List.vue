@@ -34,7 +34,7 @@
       >
         <CustomInput
           v-model="search.keyword"
-          placeholder="请输入 编码/名称/备注"
+          placeholder="请输入 关键字"
           @clear="onSearchClear"
         ></CustomInput>
       </el-form-item>
@@ -983,7 +983,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
+const tableRef = $(useTemplateRef("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -1331,7 +1331,7 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
+const detailRef = $(useTemplateRef("detailRef"));
 
 /** 当前表格数据对应的搜索条件 */
 let currentSearch = $ref<RoleSearch>({ });
@@ -1362,9 +1362,7 @@ function getDataSearch() {
     ...search,
     idsChecked: undefined,
   };
-  if (!showBuildIn) {
-    Object.assign(search2, builtInSearch);
-  }
+  Object.assign(search2, builtInSearch);
   search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
@@ -1556,7 +1554,7 @@ async function onInsert() {
   await openAdd();
 }
 
-const uploadFileDialogRef = $(useTemplateRef<InstanceType<typeof UploadFileDialog>>("uploadFileDialogRef"));
+const uploadFileDialogRef = $(useTemplateRef("uploadFileDialogRef"));
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -1992,21 +1990,26 @@ async function initFrame() {
 }
 
 watch(
-  () => [ builtInSearch, showBuildIn ],
+  computed(() => {
+    const {
+      selectedIds,
+      isMultiple,
+      showBuildIn,
+      isPagination,
+      isLocked,
+      isFocus,
+      propsNotReset,
+      isListSelectDialog,
+      ...rest
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } = builtInSearch as any;
+    return rest
+  }),
   async function() {
     if (isSearchReset) {
       return;
     }
-    if (builtInSearch.is_deleted != null) {
-      search.is_deleted = builtInSearch.is_deleted;
-    }
-    if (showBuildIn) {
-      Object.assign(search, builtInSearch);
-    }
-    const search2 = getDataSearch();
-    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
-      return;
-    }
+    selectedIds = [ ];
     await dataGrid(true);
   },
   {
@@ -2017,7 +2020,7 @@ watch(
 
 initFrame();
 
-const menu_idsListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("menu_idsListSelectDialogRef"));
+const menu_idsListSelectDialogRef = $(useTemplateRef("menu_idsListSelectDialogRef"));
 
 async function onMenu_ids(row: RoleModel) {
   if (!menu_idsListSelectDialogRef) {
@@ -2058,7 +2061,7 @@ async function onMenu_ids(row: RoleModel) {
   await dataGrid();
 }
 
-const permit_idsListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("permit_idsListSelectDialogRef"));
+const permit_idsListSelectDialogRef = $(useTemplateRef("permit_idsListSelectDialogRef"));
 
 async function onPermit_ids(row: RoleModel) {
   if (!permit_idsListSelectDialogRef) {
@@ -2099,7 +2102,7 @@ async function onPermit_ids(row: RoleModel) {
   await dataGrid();
 }
 
-const data_permit_idsListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("data_permit_idsListSelectDialogRef"));
+const data_permit_idsListSelectDialogRef = $(useTemplateRef("data_permit_idsListSelectDialogRef"));
 
 async function onData_permit_ids(row: RoleModel) {
   if (!data_permit_idsListSelectDialogRef) {
@@ -2140,7 +2143,7 @@ async function onData_permit_ids(row: RoleModel) {
   await dataGrid();
 }
 
-const field_permit_idsListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("field_permit_idsListSelectDialogRef"));
+const field_permit_idsListSelectDialogRef = $(useTemplateRef("field_permit_idsListSelectDialogRef"));
 
 async function onField_permit_ids(row: RoleModel) {
   if (!field_permit_idsListSelectDialogRef) {

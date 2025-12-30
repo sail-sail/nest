@@ -641,6 +641,10 @@ export function intoInput<#=Table_Up#>(
     <#=modelLabel#>: model?.<#=modelLabel#>,<#
       }
     #><#
+      } else if (data_type === "int" || data_type === "float" || data_type === "double") {
+    #>
+    // <#=column_comment#>
+    <#=column_name#>: model?.<#=column_name#> != null ? Number(model?.<#=column_name#> || 0) : undefined,<#
       } else if (data_type === "datetime" || data_type === "date") {
     #>
     // <#=column_comment#>
@@ -2278,8 +2282,8 @@ if (isUseI18n) {
     try {
       const data = await query({
         query: `
-          query($search: <#=searchName#>, $sort: [SortInput!]) {
-            findAll<#=Table_Up2#>(search: $search, page: null, sort: $sort) {
+          query($search: <#=searchName#>, $page: PageInput, , $sort: [SortInput!]) {
+            findAll<#=Table_Up2#>(search: $search, page: $page, sort: $sort) {
               ${ <#=table_Up#>QueryField }<#
               if (hasAudit && auditTable_Up) {
               #>
@@ -2407,6 +2411,9 @@ if (isUseI18n) {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

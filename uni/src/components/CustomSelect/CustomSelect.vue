@@ -359,11 +359,11 @@ function onSelect(value: string) {
 }
 
 const modelValueIsEmpty = computed(() => {
-  if (!props.modelValue) {
+  if (props.modelValue == null || props.modelValue === '') {
     return true;
   }
   if (props.multiple) {
-    return !props.modelValue || (props.modelValue as string[]).length === 0;
+    return (props.modelValue as string[]).length === 0;
   }
   return false;
 });
