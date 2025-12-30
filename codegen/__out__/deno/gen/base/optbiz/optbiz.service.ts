@@ -317,7 +317,10 @@ export async function getFieldCommentsOptbiz(): Promise<OptbizFieldComment> {
  * 查找 业务选项 order_by 字段的最大值
  */
 export async function findLastOrderByOptbiz(
+  search?: OptbizSearch,
 ): Promise<number> {
-  const optbiz_sort = await optbizDao.findLastOrderByOptbiz();
-  return optbiz_sort;
+  
+  const order_by = await optbizDao.findLastOrderByOptbiz(search);
+  
+  return order_by;
 }

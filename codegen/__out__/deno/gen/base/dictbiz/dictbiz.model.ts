@@ -16,7 +16,13 @@ import {
   intoInputDictbizDetail,
 } from "/gen/base/dictbiz_detail/dictbiz_detail.model.ts";
 
-export const route_path = "/base/dictbiz";
+export function getPagePathDictbiz() {
+  return "/base/dictbiz";
+}
+
+export function getTableNameDictbiz() {
+  return "base_dictbiz";
+}
 
 declare const dictbizId: unique symbol;
 

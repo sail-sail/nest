@@ -275,7 +275,10 @@ export async function getFieldCommentsLang(): Promise<LangFieldComment> {
  * 查找 语言 order_by 字段的最大值
  */
 export async function findLastOrderByLang(
+  search?: LangSearch,
 ): Promise<number> {
-  const lang_sort = await langDao.findLastOrderByLang();
-  return lang_sort;
+  
+  const order_by = await langDao.findLastOrderByLang(search);
+  
+  return order_by;
 }

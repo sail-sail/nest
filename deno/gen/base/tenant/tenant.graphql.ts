@@ -155,6 +155,8 @@ input TenantSearch {
   is_deleted: Int
   "ID列表"
   ids: [TenantId!]
+  "关键字"
+  keyword: String
   "ID"
   id: TenantId
   "编码"
@@ -220,7 +222,7 @@ type Query {
   "根据 ids 查找租户"
   findByIdsTenant(ids: [TenantId!]!): [TenantModel]!
   "查找租户 order_by 字段的最大值"
-  findLastOrderByTenant: Int!
+  findLastOrderByTenant(search: TenantSearch): Int!
 }
 type Mutation {
   "批量创建租户"

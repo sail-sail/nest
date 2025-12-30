@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./dict_detail.model.ts";
-
 /**
  * 根据条件查找系统字典明细总数
  */
@@ -188,11 +184,15 @@ export async function createsDictDetail(
     createsDictDetail,
   } = await import("./dict_detail.service.ts");
   
+  const {
+    getPagePathDictDetail,
+  } = await import("./dict_detail.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictDetail(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdDictDetail(
     updateByIdDictDetail,
   } = await import("./dict_detail.service.ts");
   
+  const {
+    getPagePathDictDetail,
+  } = await import("./dict_detail.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblDictDetail(input);
   
   await usePermit(
-    route_path,
+    getPagePathDictDetail(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsDictDetail(
     deleteByIdsDictDetail,
   } = await import("./dict_detail.service.ts");
   
+  const {
+    getPagePathDictDetail,
+  } = await import("./dict_detail.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictDetail(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsDictDetail(
     throw new Error(`enableByIdsDictDetail.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathDictDetail,
+  } = await import("./dict_detail.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictDetail(),
     "edit",
   );
   const res = await enableByIdsDictDetail(ids, is_enabled);
@@ -300,10 +312,14 @@ export async function revertByIdsDictDetail(
     revertByIdsDictDetail,
   } = await import("./dict_detail.service.ts");
   
+  const {
+    getPagePathDictDetail,
+  } = await import("./dict_detail.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictDetail(),
     "delete",
   );
   
@@ -323,10 +339,14 @@ export async function forceDeleteByIdsDictDetail(
     forceDeleteByIdsDictDetail,
   } = await import("./dict_detail.service.ts");
   
+  const {
+    getPagePathDictDetail,
+  } = await import("./dict_detail.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictDetail(),
     "force_delete",
   );
   
@@ -338,13 +358,15 @@ export async function forceDeleteByIdsDictDetail(
 /**
  * 查找 系统字典明细 order_by 字段的最大值
  */
-export async function findLastOrderByDictDetail(): Promise<number> {
+export async function findLastOrderByDictDetail(
+  search?: DictDetailSearch,
+): Promise<number> {
   
   const {
     findLastOrderByDictDetail,
   } = await import("./dict_detail.service.ts");
   
-  const res = findLastOrderByDictDetail();
+  const order_by = findLastOrderByDictDetail(search);
   
-  return res;
+  return order_by;
 }

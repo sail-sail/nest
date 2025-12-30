@@ -52,14 +52,19 @@ export const defaultValidator = (value: any, rule: TM.FORM_RULE_TYPE) => {
         return rule.rule.test(value);
     }
     if (rule.type != 'auto') return defaultValidatorByType(value, rule)
+    
     if (typeof value == 'number') {
+        // 对于 number 类型，只要不是 NaN 就算通过必填校验
+        // min/max 是可选的范围校验，不影响必填判断
         if (isNaN(value)) return false;
-        if (rule.max == -1) return value >= rule.min
-        return value >= rule.min && value <= rule.max
+        // 如果设置了 min/max，则额外校验范围
+        if (rule.min !== undefined && rule.min !== 1) { // min 默认是 1，如果不是默认值才校验
+            if (rule.max == -1) return value >= rule.min
+            return value >= rule.min && value <= rule.max
+        }
+        return true; // 有值且不是 NaN，通过必填校验
     }
-    if (typeof value == 'undefined' || typeof value == null) {
-        return false
-    }
+    
     if (typeof value == 'string') {
         let val = value.trim()
         if (val === '') return false;
@@ -72,12 +77,8 @@ export const defaultValidator = (value: any, rule: TM.FORM_RULE_TYPE) => {
         if (rule.max == -1) return value.length >= rule.min
         return value.length >= rule.min && value.length <= rule.max
     }
-    
-    if (value == null) {
-        return false;
-    }
 
-    if (typeof value == 'object'&&value!=null) {
+    if (typeof value == 'object' && value !== null) {
         let keys = Object.keys(value)
         return keys.length > 0
     }

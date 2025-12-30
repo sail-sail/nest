@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/icon";
+export function getPagePathIcon() {
+  return "/base/icon";
+}
+
+export function getTableNameIcon() {
+  return "base_icon";
+}
 
 declare const iconId: unique symbol;
 

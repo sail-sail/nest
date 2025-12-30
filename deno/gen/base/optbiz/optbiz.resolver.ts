@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./optbiz.model.ts";
-
 /**
  * 根据条件查找业务选项总数
  */
@@ -188,11 +184,15 @@ export async function createsOptbiz(
     createsOptbiz,
   } = await import("./optbiz.service.ts");
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptbiz(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdOptbiz(
     updateByIdOptbiz,
   } = await import("./optbiz.service.ts");
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblOptbiz(input);
   
   await usePermit(
-    route_path,
+    getPagePathOptbiz(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsOptbiz(
     deleteByIdsOptbiz,
   } = await import("./optbiz.service.ts");
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptbiz(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsOptbiz(
     throw new Error(`enableByIdsOptbiz.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptbiz(),
     "edit",
   );
   const res = await enableByIdsOptbiz(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsOptbiz(
     throw new Error(`lockByIdsOptbiz.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptbiz(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsOptbiz(
     revertByIdsOptbiz,
   } = await import("./optbiz.service.ts");
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptbiz(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsOptbiz(
     forceDeleteByIdsOptbiz,
   } = await import("./optbiz.service.ts");
   
+  const {
+    getPagePathOptbiz,
+  } = await import("./optbiz.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOptbiz(),
     "force_delete",
   );
   
@@ -366,13 +390,15 @@ export async function forceDeleteByIdsOptbiz(
 /**
  * 查找 业务选项 order_by 字段的最大值
  */
-export async function findLastOrderByOptbiz(): Promise<number> {
+export async function findLastOrderByOptbiz(
+  search?: OptbizSearch,
+): Promise<number> {
   
   const {
     findLastOrderByOptbiz,
   } = await import("./optbiz.service.ts");
   
-  const res = findLastOrderByOptbiz();
+  const order_by = findLastOrderByOptbiz(search);
   
-  return res;
+  return order_by;
 }

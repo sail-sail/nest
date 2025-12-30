@@ -156,7 +156,7 @@ type Query {
   "根据 ids 查找系统字典明细"
   findByIdsDictDetail(ids: [DictDetailId!]!): [DictDetailModel]!
   "查找系统字典明细 order_by 字段的最大值"
-  findLastOrderByDictDetail: Int!
+  findLastOrderByDictDetail(search: DictDetailSearch): Int!
 }
 type Mutation {
   "批量创建系统字典明细"

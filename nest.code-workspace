@@ -58,6 +58,12 @@
     "vue.inlayHints.destructuredProps": true,
     "vue.inlayHints.inlineHandlerLeading": false,
     "vue.inlayHints.missingProps": true,
-    "typescript.tsdk": "pc\\node_modules\\typescript\\lib"
+    "typescript.tsdk": "pc\\node_modules\\typescript\\lib",
+    "vue.codeActions.askNewComponentName": false,
+    "vue.editor.reactivityVisualization": false,
+    "vue.editor.templateInterpolationDecorators": false,
+    "vue.format.template.initialIndent": false,
+    "vue.format.wrapAttributes": "force",
+    "chat.useClaudeSkills": true
   }
 }

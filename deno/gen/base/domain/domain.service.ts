@@ -291,7 +291,10 @@ export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
  * 查找 域名 order_by 字段的最大值
  */
 export async function findLastOrderByDomain(
+  search?: DomainSearch,
 ): Promise<number> {
-  const domain_sort = await domainDao.findLastOrderByDomain();
-  return domain_sort;
+  
+  const order_by = await domainDao.findLastOrderByDomain(search);
+  
+  return order_by;
 }

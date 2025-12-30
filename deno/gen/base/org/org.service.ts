@@ -291,7 +291,10 @@ export async function getFieldCommentsOrg(): Promise<OrgFieldComment> {
  * 查找 组织 order_by 字段的最大值
  */
 export async function findLastOrderByOrg(
+  search?: OrgSearch,
 ): Promise<number> {
-  const org_sort = await orgDao.findLastOrderByOrg();
-  return org_sort;
+  
+  const order_by = await orgDao.findLastOrderByOrg(search);
+  
+  return order_by;
 }

@@ -90,7 +90,7 @@ type Query {
   "根据 ids 查找字段权限"
   findByIdsFieldPermit(ids: [FieldPermitId!]!): [FieldPermitModel]!
   "查找字段权限 order_by 字段的最大值"
-  findLastOrderByFieldPermit: Int!
+  findLastOrderByFieldPermit(search: FieldPermitSearch): Int!
 }
 type Mutation {
   "根据 id 修改字段权限"

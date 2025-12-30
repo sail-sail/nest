@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -65,6 +67,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathOptions,
+  getTableNameOptions,
+} from "./options.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -195,7 +202,7 @@ export async function findCountOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findCountOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -296,7 +303,7 @@ export async function findAllOptions(
   },
 ): Promise<OptionsModel[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findAllOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -428,6 +435,14 @@ export async function findAllOptions(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
@@ -533,7 +548,7 @@ export async function setIdByLblOptions(
 // MARK: getFieldCommentsOptions
 /** 获取系统选项字段注释 */
 export async function getFieldCommentsOptions(): Promise<OptionsFieldComment> {
-  const fieldComments: OptionsFieldComment = {
+  const field_comments: OptionsFieldComment = {
     id: "ID",
     lbl: "名称",
     ky: "键",
@@ -553,7 +568,8 @@ export async function getFieldCommentsOptions(): Promise<OptionsFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueOptions
@@ -565,7 +581,7 @@ export async function findByUniqueOptions(
   },
 ): Promise<OptionsModel[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findByUniqueOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -657,7 +673,7 @@ export async function checkByUniqueOptions(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 系统选项 已经存在");
+      throw new UniqueException("系统选项 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: OptionsId = await updateByIdOptions(
@@ -687,7 +703,7 @@ export async function findOneOptions(
   },
 ): Promise<OptionsModel | undefined> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findOneOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -735,7 +751,7 @@ export async function findOneOkOptions(
   },
 ): Promise<OptionsModel> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findOneOkOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -787,7 +803,7 @@ export async function findByIdOptions(
   },
 ): Promise<OptionsModel | undefined> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findByIdOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -829,7 +845,7 @@ export async function findByIdOkOptions(
   },
 ): Promise<OptionsModel> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findByIdOkOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -870,7 +886,7 @@ export async function findByIdsOptions(
   },
 ): Promise<OptionsModel[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findByIdsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -917,7 +933,7 @@ export async function findByIdsOkOptions(
   },
 ): Promise<OptionsModel[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findByIdsOkOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -966,7 +982,7 @@ export async function existOptions(
   },
 ): Promise<boolean> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "existOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -998,7 +1014,7 @@ export async function existByIdOptions(
   },
 ) {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "existByIdOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1134,7 +1150,7 @@ export async function createReturnOptions(
   },
 ): Promise<OptionsModel> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "createReturnOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1185,7 +1201,7 @@ export async function createOptions(
   },
 ): Promise<OptionsId> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "createOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1226,7 +1242,7 @@ export async function createsReturnOptions(
   },
 ): Promise<OptionsModel[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "createsReturnOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1263,7 +1279,7 @@ export async function createsOptions(
   },
 ): Promise<OptionsId[]> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "createsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1300,7 +1316,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1535,7 +1551,7 @@ export async function updateByIdOptions(
   },
 ): Promise<OptionsId> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "updateByIdOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1574,7 +1590,7 @@ export async function updateByIdOptions(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 系统选项 已经存在";
+        throw "系统选项 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1584,7 +1600,12 @@ export async function updateByIdOptions(
   const oldModel = await findByIdOptions(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 系统选项 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 系统选项 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1730,7 +1751,14 @@ export async function updateByIdOptions(
     await delCacheOptions();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1756,7 +1784,7 @@ export async function deleteByIdsOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "deleteByIdsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1779,6 +1807,8 @@ export async function deleteByIdsOptions(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheOptions();
   
@@ -1814,7 +1844,13 @@ export async function deleteByIdsOptions(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1854,7 +1890,7 @@ export async function enableByIdsOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "enableByIdsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1924,7 +1960,7 @@ export async function lockByIdsOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "lockByIdsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1949,11 +1985,19 @@ export async function lockByIdsOptions(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheOptions();
   
   const args = new QueryArgs();
   let sql = `update base_options set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheOptions();
@@ -1970,7 +2014,7 @@ export async function revertByIdsOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "revertByIdsOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2024,7 +2068,7 @@ export async function revertByIdsOptions(
         if (model.id === id) {
           continue;
         }
-        throw "此 系统选项 已经存在";
+        throw "系统选项 重复";
       }
     }
     const args = new QueryArgs();
@@ -2048,7 +2092,7 @@ export async function forceDeleteByIdsOptions(
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "forceDeleteByIdsOptions";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2070,6 +2114,8 @@ export async function forceDeleteByIdsOptions(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheOptions();
   
@@ -2101,18 +2147,22 @@ export async function forceDeleteByIdsOptions(
 // MARK: findLastOrderByOptions
 /** 查找 系统选项 order_by 字段的最大值 */
 export async function findLastOrderByOptions(
+  search?: Readonly<OptionsSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_options";
+  const table = getTableNameOptions();
   const method = "findLastOrderByOptions";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2121,19 +2171,29 @@ export async function findLastOrderByOptions(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_options t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_options t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

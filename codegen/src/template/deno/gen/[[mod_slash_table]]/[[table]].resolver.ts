@@ -111,10 +111,6 @@ import "./cron_job.service.ts";<#
 }
 #>
 
-import {
-  route_path,
-} from "./<#=table#>.model.ts";
-
 /**
  * 根据条件查找<#=table_comment#>总数
  */
@@ -514,11 +510,15 @@ export async function creates<#=Table_Up2#>(
     creates<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "add",
   );<#
   if (tableFieldPermit) {
@@ -590,12 +590,16 @@ export async function updateById<#=Table_Up2#>(
     updateById<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLbl<#=Table_Up2#>(input);
   
   await usePermit(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "edit",
   );<#
   if (tableFieldPermit) {
@@ -652,10 +656,14 @@ export async function auditSubmit<#=Table_Up2#>(
     auditSubmit<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "audit_submit",
   );<#
   if (log) {
@@ -699,10 +707,14 @@ export async function auditPass<#=Table_Up2#>(
     auditPass<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "audit_pass",
   );<#
   if (log) {
@@ -747,10 +759,14 @@ export async function auditReject<#=Table_Up2#>(
     auditReject<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "audit_reject",
   );<#
   if (log) {
@@ -796,10 +812,14 @@ export async function auditReview<#=Table_Up2#>(
     auditReview<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   
   await usePermit<#=Table_Up2#>(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "audit_review",
   );<#
   if (log) {
@@ -851,10 +871,14 @@ export async function deleteByIds<#=Table_Up2#>(
     deleteByIds<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "delete",
   );<#
   if (log) {
@@ -908,10 +932,14 @@ export async function defaultById<#=Table_Up2#>(
     defaultById<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "edit",
   );<#
   if (log) {
@@ -965,10 +993,14 @@ export async function enableByIds<#=Table_Up2#>(
     throw new Error(`enableByIds<#=Table_Up#>.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "edit",
   );<#
   if (log) {
@@ -1029,10 +1061,14 @@ export async function lockByIds<#=Table_Up2#>(
     throw new Error(`lockByIds<#=Table_Up2#>.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "edit",
   );<#
   if (log) {
@@ -1082,10 +1118,14 @@ export async function revertByIds<#=Table_Up2#>(
     revertByIds<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "delete",
   );<#
   if (log) {
@@ -1135,10 +1175,14 @@ export async function forceDeleteByIds<#=Table_Up2#>(
     forceDeleteByIds<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePath<#=Table_Up#>(),
     "force_delete",
   );<#
   if (log) {
@@ -1205,15 +1249,17 @@ if (hasOrderBy) {
 /**
  * 查找 <#=table_comment#> order_by 字段的最大值
  */
-export async function findLastOrderBy<#=Table_Up2#>(): Promise<number> {
+export async function findLastOrderBy<#=Table_Up2#>(
+  search?: <#=searchName#>,
+): Promise<number> {
   
   const {
     findLastOrderBy<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
-  const res = findLastOrderBy<#=Table_Up2#>();
+  const order_by = findLastOrderBy<#=Table_Up2#>(search);
   
-  return res;
+  return order_by;
 }<#
 }
 #>
