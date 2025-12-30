@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/operation_record";
+export function getPagePathOperationRecord() {
+  return "/base/operation_record";
+}
+
+export function getTableNameOperationRecord() {
+  return "base_operation_record";
+}
 
 declare const operationRecordId: unique symbol;
 

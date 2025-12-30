@@ -16,10 +16,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./operation_record.model.ts";
-
 /**
  * 根据条件查找操作记录总数
  */
@@ -183,10 +179,14 @@ export async function deleteByIdsOperationRecord(
     deleteByIdsOperationRecord,
   } = await import("./operation_record.service.ts");
   
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOperationRecord(),
     "delete",
   );
   
@@ -206,10 +206,14 @@ export async function revertByIdsOperationRecord(
     revertByIdsOperationRecord,
   } = await import("./operation_record.service.ts");
   
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOperationRecord(),
     "delete",
   );
   
@@ -229,10 +233,14 @@ export async function forceDeleteByIdsOperationRecord(
     forceDeleteByIdsOperationRecord,
   } = await import("./operation_record.service.ts");
   
+  const {
+    getPagePathOperationRecord,
+  } = await import("./operation_record.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathOperationRecord(),
     "force_delete",
   );
   

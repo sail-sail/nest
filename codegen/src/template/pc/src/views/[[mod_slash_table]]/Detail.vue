@@ -185,7 +185,25 @@ for (let i = 0; i < columns.length; i++) {
   }
   #>
 >
-  <template #extra_header>
+  <template #extra_header><#
+    if (opts?.isUseDynPageFields) {
+    #>
+    
+    <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'add' || dialogAction === 'copy')">
+      <div
+        v-if="permit('dyn_page_fields', '新增字段') || true"
+        title="新增字段"
+      >
+        <ElIconPlus
+          class="dyn_page_fields_but"
+          @dblclick.stop
+          @click="onDynPageFields"
+        ></ElIconPlus>
+      </div>
+    </template>
+    <#
+    }
+    #>
     <div<#
       if (isUseI18n) {
       #>
@@ -198,6 +216,7 @@ for (let i = 0; i < columns.length; i++) {
     >
       <ElIconRefresh
         class="reset_but"
+        @dblclick.stop
         @click="onReset"
       ></ElIconRefresh>
     </div><#
@@ -217,6 +236,7 @@ for (let i = 0; i < columns.length; i++) {
       >
         <ElIconUnlock
           class="unlock_but"
+          @dblclick.stop
           @click="isReadonly = true;"
         >
         </ElIconUnlock>
@@ -234,6 +254,7 @@ for (let i = 0; i < columns.length; i++) {
       >
         <ElIconLock
           class="lock_but"
+          @dblclick.stop
           @click="isReadonly = false;"
         ></ElIconLock>
       </div>
@@ -324,13 +345,24 @@ for (let i = 0; i < columns.length; i++) {
           const isPassword = column.isPassword;
           form_item_index++;
           const fieldPermit = column.fieldPermit;
+          const isVirtual = column.isVirtual;
         #>
         
-        <template v-if="<#
+        <template<#
+          if (fieldPermit || !isVirtual || vIfStr) {
+        #> v-if="<#
           if (fieldPermit) {
         #>field_permit('<#=column_name#>') && <#
           }
-        #>(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
+        #><#
+          if (!isVirtual) {
+        #>(showBuildIn || builtInModel?.<#=column_name#> == null)<#
+          }
+        #><#=vIfStr ? ' && '+vIfStr : ''#>"<#
+          } else {
+        #> v-if="true"<#
+          }
+        #>>
           <el-form-item<#
             if (isUseI18n) {
             #>
@@ -1135,6 +1167,44 @@ for (let i = 0; i < columns.length; i++) {
           </el-form-item>
         </template><#
         }
+        #><#
+        if (opts?.isUseDynPageFields) {
+        #>
+        
+        <template
+          v-for="field_model in dyn_page_field_models"
+          :key="field_model.id"
+        >
+          <el-form-item
+            :label="field_model.lbl"
+            :prop="field_model.code"
+            :class="{
+              'col-span-full':
+                field_model.type === 'CustomInput' &&
+                field_model._attrs.type === 'textarea',
+            }"
+          >
+            <CustomDynComp
+              :model-value="dialogModel.dyn_page_data?.[field_model.code]"
+              :name="field_model.type"
+              :placeholder="`请输入 ${ field_model.lbl }`"
+              v-bind="field_model._attrs"
+              :autosize="
+                (field_model._attrs.minRows || field_model._attrs.maxRows) && 
+                  {
+                    minRows: field_model._attrs.minRows,
+                    maxRows: field_model._attrs.maxRows,
+                  }
+              "
+              :readonly="field_model._attrs.readonly || isLocked || isReadonly"
+              @update:model-value="(val: any) => {
+                dialogModel.dyn_page_data = dialogModel.dyn_page_data ?? { };
+                dialogModel.dyn_page_data[field_model.code] = val;
+              }"
+            ></CustomDynComp>
+          </el-form-item>
+        </template><#
+        }
         #>
         
       </el-form><#
@@ -1280,6 +1350,20 @@ for (let i = 0; i < columns.length; i++) {
                 const readonlyPlaceholder = column.readonlyPlaceholder;
                 const modelLabel = column.modelLabel;
                 const isPassword = column.isPassword;
+                const isSwitch = column.isSwitch;
+                const isCheckbox = column.isCheckbox;
+                let align = column.align;
+                if (!align) {
+                  if (["int", "decimal", "float", "double"].some((type) => column_type.startsWith(type))) {
+                    align = "center";
+                  } else if (data_type === "datetime" || data_type === "date") {
+                    align = "center";
+                  } else if (column.isImg || column.isColorPicker) {
+                    align = "center";
+                  } else if (isSwitch || isCheckbox) {
+                    align = "center";
+                  }
+                }
               #>
               
               <el-table-column<#
@@ -1298,7 +1382,12 @@ for (let i = 0; i < columns.length; i++) {
                 }
                 #>
                 width="<#=width#>"
-                header-align="center"
+                header-align="center"<#
+                if (align && align !== "left") {
+                #>
+                align="<#=align#>"<#
+                }
+                #>
               >
                 <template #default="{ row }">
                   <template v-if="row._type !== 'add'"><#
@@ -1522,7 +1611,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                     ></CustomTreeSelect><#
-                    } else if (column.dict) {
+                    } else if (column.dict && !isSwitch && !isCheckbox) {
                     #>
                     <DictSelect
                       v-model="row.<#=column_name#>"<#
@@ -1564,7 +1653,77 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                     ></DictSelect><#
-                    } else if (column.dictbiz) {
+                    } else if (column.dict && isSwitch && !isCheckbox) {
+                    #>
+                    <CustomSwitch
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
+                      #>
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
+                      } else {
+                      #>
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+                      }
+                      #><#
+                      }
+                      #>
+                    ></CustomSwitch><#
+                    } else if (column.dict && isCheckbox) {
+                    #>
+                    <CustomCheckbox
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
+                      #>
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
+                      } else {
+                      #>
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+                      }
+                      #><#
+                      }
+                      #>
+                    ></CustomCheckbox><#
+                    } else if (column.dictbiz && !isSwitch) {
                     #>
                     <DictbizSelect
                       v-model="row.<#=column_name#>"<#
@@ -1606,6 +1765,41 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                     ></DictbizSelect><#
+                    } else if (column.dictbiz && isSwitch) {
+                    #>
+                    <CustomSwitch
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
+                      placeholder=" "<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
+                      }
+                      #><#
+                      if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
+                      #>
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
+                      } else {
+                      #>
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+                      }
+                      #><#
+                      }
+                      #>
+                    ></CustomSwitch><#
                     } else if (data_type === "datetime" || data_type === "date") {
                     #>
                     <CustomDatePicker
@@ -3784,7 +3978,16 @@ for (let i = 0; i < columns.length; i++) {
     ref="auditDialogRef"
   ></AuditDialog><#
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
   #>
+  
+  <DynPageDetail
+    ref="dynPageDetailRef"
+  ></DynPageDetail><#
+  }
+  #>
+  
 </CustomDialog>
 </template>
 
@@ -4385,14 +4588,6 @@ for (let i = 0; i < columns.length; i++) {
 import <#=foreignSchema.opts.tableUp#>DetailDialog from "@/views/<#=foreignSchema.opts.mod#>/<#=foreignSchema.opts.table#>/Detail.vue";<#
 }
 #><#
-if (mod === "base" && table === "usr") {
-#>
-
-import {
-  findAllOrg as getOrgList,
-} from "@/views/base/org/Api.ts";<#
-}
-#><#
 if (mod === "cron" && table === "cron_job") {
 #>
 
@@ -4405,6 +4600,12 @@ if (hasIsFluentEditor) {
 
 import FluentEditor from "@opentiny/fluent-editor";
 import "@opentiny/fluent-editor/style.css";<#
+}
+#><#
+if (opts?.isUseDynPageFields) {
+#>
+
+import DynPageDetail from "@/views/base/dyn_page/Detail.vue";<#
 }
 #>
 
@@ -4523,6 +4724,11 @@ let dialogModel: <#=inputName#> = $ref({<#
   <#=column_name#>: [ ],<#
     }
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  dyn_page_data: { },<#
+  }
   #>
 } as <#=inputName#>);
 
@@ -4566,7 +4772,7 @@ let ids = $ref<<#=Table_Up#>Id[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<<#=Table_Up#>Id[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -5135,8 +5341,8 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 // <#=foreignSchema.opts.table_comment#>
-const <#=foreignSchema.opts.table#>DetailDialogRef = $(useTemplateRef<InstanceType<typeof <#=foreignSchema.opts.tableUp#>DetailDialog>>("<#=foreignSchema.opts.table#>DetailDialogRef"));
-const <#=column_name#>Ref = $(useTemplateRef<InstanceType<typeof CustomSelect>>("<#=column_name#>Ref"));
+const <#=foreignSchema.opts.table#>DetailDialogRef = $(useTemplateRef("<#=foreignSchema.opts.table#>DetailDialogRef"));
+const <#=column_name#>Ref = $(useTemplateRef("<#=column_name#>Ref"));
 
 /** 打开新增 <#=foreignSchema.opts.table_comment#> 对话框 */
 async function <#=column_name#>OpenAddDialog() {
@@ -5195,11 +5401,23 @@ let showBuildIn = $ref(false);
 let isReadonly = $ref(false);
 
 /** 是否锁定 */
-let isLocked = $ref(false);
+let isLocked = $ref(false);<#
+if (opts?.isUseDynPageFields) {
+#>
+
+/** 动态页面表单字段 */
+const {
+  dyn_page_field_models,
+  refreshDynPageFields,
+} = $(useDynPageFields(pagePath));
+
+refreshDynPageFields();<# 
+}
+#>
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOne<#=Table_Up#>;<#
 let hasDefaultInputColumn = false;
@@ -5310,9 +5528,37 @@ async function showDialog(
     #>
   });
   dialogAction = action || "add";
+  nextTick(() => formRef?.clearValidate());
   ids = [ ];
   changedIds = [ ];
   dialogModel = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (column_comment.indexOf("[") !== -1) {
+        column_comment = column_comment.substring(0, column_comment.indexOf("["));
+      }
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    #><#
+      if (foreignKey && foreignKey.multiple) {
+    #>
+    <#=column_name#>: [ ],<#
+      }
+    }
+    #><#
+    if (opts?.isUseDynPageFields) {
+    #>
+    dyn_page_data: { },<#
+    }
+    #><#
     if (hasVersion) {
     #>
     version: 0,<#
@@ -5393,9 +5639,12 @@ async function showDialog(
       getDefaultInput<#=Table_Up#>(),<#
       if (hasOrderBy) {
       #>
-      findLastOrderBy<#=Table_Up#>({
-        notLoading: !inited,
-      }),<#
+      findLastOrderBy<#=Table_Up#>(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),<#
       }
       #><#
       for (let i = 0; i < columns.length; i++) {
@@ -5586,9 +5835,12 @@ async function showDialog(
       }),<#
       if (hasOrderBy) {
       #>
-      findLastOrderBy<#=Table_Up#>({
-        notLoading: !inited,
-      }),<#
+      findLastOrderBy<#=Table_Up#>(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),<#
       }
       #><#
       for (let i = 0; i < columns.length; i++) {
@@ -5995,37 +6247,8 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
-    const [
-      defaultModel,<#
-      if (hasOrderBy) {
-      #>
-      order_by,<#
-      }
-      #>
-    ] = await Promise.all([
-      getDefaultInput<#=Table_Up#>(),<#
-      if (hasOrderBy) {
-      #>
-      findLastOrderBy<#=Table_Up#>({
-        notLoading: !inited,
-      }),<#
-      }
-      #>
-    ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,<#
-      if (hasOrderBy) {
-      #>
-      order_by: order_by + 1,<#
-      }
-      #>
-    };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
   ElMessage({<#
     if (isUseI18n) {
     #>
@@ -6145,6 +6368,35 @@ async function subscribeDeleteCallback(ids?: <#=Table_Up#>Id[]) {
 async function onRefresh() {
   const id = dialogModel.id;
   if (!id) {
+    const [
+      defaultModel,<#
+      if (hasOrderBy) {
+      #>
+      order_by,<#
+      }
+      #>
+    ] = await Promise.all([
+      getDefaultInput<#=Table_Up#>(),<#
+      if (hasOrderBy) {
+      #>
+      findLastOrderBy<#=Table_Up#>(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),<#
+      }
+      #>
+    ]);
+    dialogModel = {
+      ...defaultModel,
+      ...builtInModel,<#
+      if (hasOrderBy) {
+      #>
+      order_by: order_by + 1,<#
+      }
+      #>
+    };
     return;
   }
   const [
@@ -6777,7 +7029,7 @@ async function onAuditPass() {
   });
 }
 
-const auditDialogRef = $(useTemplateRef<InstanceType<typeof AuditDialog>>("auditDialogRef"));
+const auditDialogRef = $(useTemplateRef("auditDialogRef"));
 
 /** 审核拒绝 */
 async function onAuditReject() {
@@ -6906,7 +7158,7 @@ async function onAuditReview() {
 
 /** 保存并返回id */
 async function save() {
-  if (isReadonly) {
+  if (!inited || isReadonly) {
     return;
   }
   if (!formRef) {
@@ -7199,9 +7451,12 @@ async function onSaveAndCopy() {
     }),<#
     if (hasOrderBy) {
     #>
-    findLastOrderBy<#=Table_Up#>({
-      notLoading: !inited,
-    }),<#
+    findLastOrderBy<#=Table_Up#>(
+      undefined,
+      {
+        notLoading: !inited,
+      },
+    ),<#
     }
     #>
   ]);
@@ -7339,7 +7594,7 @@ async function onSave() {
 if (mod === "base" && table === "usr") {
 #>
 
-const default_org_idRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("default_org_idRef"));
+const default_org_idRef = $(useTemplateRef("default_org_idRef"));
 let old_default_org_id: InputMaybe<OrgId> | undefined = undefined;
 
 async function getOrgListApi() {
@@ -7394,7 +7649,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 // <#=inlineForeignTab.label#>
-const <#=inline_column_name#>Ref = $(useTemplateRef<InstanceType<typeof ElTable>>("<#=inline_column_name#>Ref"));
+const <#=inline_column_name#>Ref = $(useTemplateRef("<#=inline_column_name#>Ref"));
 
 const <#=inline_column_name#>Data = $computed(() => {
   if (!isLocked && !isReadonly) {
@@ -7584,8 +7839,8 @@ for (let i = 0; i < columns.length; i++) {
   const inlineMany2manyColumns = inlineMany2manySchema.columns;
 #>
 
-const <#=column_name#>ListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("<#=column_name#>ListSelectDialogRef"));
-const <#=column_name#>_<#=table#>Ref = $(useTemplateRef<InstanceType<typeof ElTable>>("<#=column_name#>_<#=table#>Ref"));
+const <#=column_name#>ListSelectDialogRef = $(useTemplateRef("<#=column_name#>ListSelectDialogRef"));
+const <#=column_name#>_<#=table#>Ref = $(useTemplateRef("<#=column_name#>_<#=table#>Ref"));
 
 async function <#=column_name#>Select() {
   if (!<#=column_name#>ListSelectDialogRef) {
@@ -7709,6 +7964,37 @@ watch(
   }
 #><#
 }
+#><#
+if (opts?.isUseDynPageFields) {
+#>
+
+const dynPageDetailRef = $(useTemplateRef("dynPageDetailRef"));
+
+/** 新增字段 */
+async function onDynPageFields() {
+  
+  if (!dynPageDetailRef) {
+    return;
+  }
+  
+  const {
+    changedIds,
+  } = await dynPageDetailRef.showDialog({
+    action: "add",
+    builtInModel: {
+      code: getPagePathUsr(),
+    },
+    title: "新增字段",
+  });
+  
+  if (changedIds.length == 0) {
+    return;
+  }
+  
+  await refreshDynPageFields();
+  
+}<#
+}
 #>
 
 async function onDialogOpen() {<#
@@ -7826,7 +8112,7 @@ if (!column.isFluentEditor) {
 }
 #>
 
-const <#=column_name#>Ref = $(useTemplateRef<HTMLDivElement>("<#=column_name#>Ref"));
+const <#=column_name#>Ref = $(useTemplateRef("<#=column_name#>Ref"));
 let <#=column_name#>FluentEditor: InstanceType<typeof FluentEditor> | undefined = undefined;
 
 watch(

@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -61,6 +63,11 @@ import type {
 import {
   findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
+
+import {
+  getPagePathFieldPermit,
+  getTableNameFieldPermit,
+} from "./field_permit.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -141,7 +148,7 @@ export async function findCountFieldPermit(
   },
 ): Promise<number> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findCountFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -209,7 +216,7 @@ export async function findAllFieldPermit(
   },
 ): Promise<FieldPermitModel[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findAllFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -302,6 +309,14 @@ export async function findAllFieldPermit(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -352,7 +367,7 @@ export async function setIdByLblFieldPermit(
 // MARK: getFieldCommentsFieldPermit
 /** 获取字段权限字段注释 */
 export async function getFieldCommentsFieldPermit(): Promise<FieldPermitFieldComment> {
-  const fieldComments: FieldPermitFieldComment = {
+  const field_comments: FieldPermitFieldComment = {
     id: "ID",
     menu_id: "菜单",
     menu_id_lbl: "菜单",
@@ -361,7 +376,8 @@ export async function getFieldCommentsFieldPermit(): Promise<FieldPermitFieldCom
     order_by: "排序",
     rem: "备注",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueFieldPermit
@@ -373,7 +389,7 @@ export async function findByUniqueFieldPermit(
   },
 ): Promise<FieldPermitModel[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findByUniqueFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -470,7 +486,7 @@ export async function checkByUniqueFieldPermit(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 字段权限 已经存在");
+      throw new UniqueException("字段权限 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: FieldPermitId = await updateByIdFieldPermit(
@@ -500,7 +516,7 @@ export async function findOneFieldPermit(
   },
 ): Promise<FieldPermitModel | undefined> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findOneFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -548,7 +564,7 @@ export async function findOneOkFieldPermit(
   },
 ): Promise<FieldPermitModel> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findOneOkFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -600,7 +616,7 @@ export async function findByIdFieldPermit(
   },
 ): Promise<FieldPermitModel | undefined> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findByIdFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -642,7 +658,7 @@ export async function findByIdOkFieldPermit(
   },
 ): Promise<FieldPermitModel> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findByIdOkFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -683,7 +699,7 @@ export async function findByIdsFieldPermit(
   },
 ): Promise<FieldPermitModel[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findByIdsFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -730,7 +746,7 @@ export async function findByIdsOkFieldPermit(
   },
 ): Promise<FieldPermitModel[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findByIdsOkFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -779,7 +795,7 @@ export async function existFieldPermit(
   },
 ): Promise<boolean> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "existFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -811,7 +827,7 @@ export async function existByIdFieldPermit(
   },
 ) {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "existByIdFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -923,7 +939,7 @@ export async function createReturnFieldPermit(
   },
 ): Promise<FieldPermitModel> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "createReturnFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -974,7 +990,7 @@ export async function createFieldPermit(
   },
 ): Promise<FieldPermitId> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "createFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1015,7 +1031,7 @@ export async function createsReturnFieldPermit(
   },
 ): Promise<FieldPermitModel[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "createsReturnFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1052,7 +1068,7 @@ export async function createsFieldPermit(
   },
 ): Promise<FieldPermitId[]> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "createsFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1089,7 +1105,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1216,7 +1232,7 @@ export async function updateByIdFieldPermit(
   },
 ): Promise<FieldPermitId> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "updateByIdFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1255,7 +1271,7 @@ export async function updateByIdFieldPermit(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 字段权限 已经存在";
+        throw "字段权限 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1265,7 +1281,12 @@ export async function updateByIdFieldPermit(
   const oldModel = await findByIdFieldPermit(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 字段权限 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 字段权限 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1318,7 +1339,14 @@ export async function updateByIdFieldPermit(
     await delCacheFieldPermit();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1344,7 +1372,7 @@ export async function deleteByIdsFieldPermit(
   },
 ): Promise<number> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "deleteByIdsFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1368,6 +1396,8 @@ export async function deleteByIdsFieldPermit(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheFieldPermit();
   
   let affectedRows = 0;
@@ -1382,12 +1412,24 @@ export async function deleteByIdsFieldPermit(
     }
     const args = new QueryArgs();
     const sql = `delete from base_field_permit where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
       const sql = `update base_role_field_permit set is_deleted=1 where field_permit_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -1399,18 +1441,22 @@ export async function deleteByIdsFieldPermit(
 // MARK: findLastOrderByFieldPermit
 /** 查找 字段权限 order_by 字段的最大值 */
 export async function findLastOrderByFieldPermit(
+  search?: Readonly<FieldPermitSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_field_permit";
+  const table = getTableNameFieldPermit();
   const method = "findLastOrderByFieldPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -1419,19 +1465,29 @@ export async function findLastOrderByFieldPermit(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_field_permit t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_field_permit t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

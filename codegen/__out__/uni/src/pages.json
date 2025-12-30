@@ -1,0 +1,62 @@
+{
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^App(.*)": "@/components/App$1/App$1.vue",
+      "^Custom(.*)": "@/components/Custom$1/Custom$1.vue",
+      "^Dict(.*)": "@/components/Dict$1/Dict$1.vue",
+      "^tm-(.*)": "@/uni_modules/tm-ui/components/tm-$1/tm-$1.vue"
+    }
+  },
+  "pages": [
+    {
+      "path": "pages/dyn_page/List",
+      "style": {
+        "navigationBarTitleText": "动态页面列表"
+      }
+    },
+    {
+      "path": "pages/dyn_page/Detail",
+      "style": {
+        "navigationBarTitleText": "动态页面详情"
+      }
+    },
+    {
+      "path": "pages/dyn_page_field/List",
+      "style": {
+        "navigationBarTitleText": "动态页面字段列表"
+      }
+    },
+    {
+      "path": "pages/dyn_page_field/Detail",
+      "style": {
+        "navigationBarTitleText": "动态页面字段详情"
+      }
+    }
+  ],
+  "tabBar": {
+    "selectedColor": "#3975C6",
+    "color": "#808080",
+    "backgroundColor": "#fff",
+    "list": [
+      {
+        "text": "首页",
+        "iconPath": "/static/tabbar/home.png",
+        "selectedIconPath": "/static/tabbar/home-active.png",
+        "pagePath": "pages/home/index"
+      },
+      {
+        "text": "我的",
+        "iconPath": "/static/tabbar/my.png",
+        "selectedIconPath": "/static/tabbar/my-active.png",
+        "pagePath": "pages/my/index"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "管理系统",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  }
+}

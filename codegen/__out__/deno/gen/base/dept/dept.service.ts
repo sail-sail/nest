@@ -322,7 +322,10 @@ export async function getFieldCommentsDept(): Promise<DeptFieldComment> {
  * 查找 部门 order_by 字段的最大值
  */
 export async function findLastOrderByDept(
+  search?: DeptSearch,
 ): Promise<number> {
-  const dept_sort = await deptDao.findLastOrderByDept();
-  return dept_sort;
+  
+  const order_by = await deptDao.findLastOrderByDept(search);
+  
+  return order_by;
 }

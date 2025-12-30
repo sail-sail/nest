@@ -156,7 +156,7 @@ type Query {
   "根据 ids 查找业务字典明细"
   findByIdsDictbizDetail(ids: [DictbizDetailId!]!): [DictbizDetailModel]!
   "查找业务字典明细 order_by 字段的最大值"
-  findLastOrderByDictbizDetail: Int!
+  findLastOrderByDictbizDetail(search: DictbizDetailSearch): Int!
 }
 type Mutation {
   "批量创建业务字典明细"

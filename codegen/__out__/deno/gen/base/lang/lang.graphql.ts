@@ -136,7 +136,7 @@ type Query {
   "根据 ids 查找语言"
   findByIdsLang(ids: [LangId!]!): [LangModel]!
   "查找语言 order_by 字段的最大值"
-  findLastOrderByLang: Int!
+  findLastOrderByLang(search: LangSearch): Int!
 }
 type Mutation {
   "批量创建语言"

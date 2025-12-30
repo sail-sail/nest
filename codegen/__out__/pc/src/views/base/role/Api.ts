@@ -17,7 +17,7 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-async function setLblById(
+export async function setLblByIdRole(
   model?: RoleModel | null,
   isExcelExport = false,
 ) {
@@ -56,7 +56,7 @@ export function intoInputRole(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -91,7 +91,7 @@ export async function findAllRole(
   const models = data.findAllRole;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdRole(model);
   }
   return models;
 }
@@ -123,7 +123,7 @@ export async function findOneRole(
   
   const model = data.findOneRole;
   
-  await setLblById(model);
+  await setLblByIdRole(model);
   
   return model;
 }
@@ -155,7 +155,7 @@ export async function findOneOkRole(
   
   const model = data.findOneOkRole;
   
-  await setLblById(model);
+  await setLblByIdRole(model);
   
   return model;
 }
@@ -281,7 +281,7 @@ export async function findByIdRole(
   
   const model = data.findByIdRole;
   
-  await setLblById(model);
+  await setLblByIdRole(model);
   
   return model;
 }
@@ -311,7 +311,7 @@ export async function findByIdOkRole(
   
   const model = data.findByIdOkRole;
   
-  await setLblById(model);
+  await setLblByIdRole(model);
   
   return model;
 }
@@ -347,7 +347,7 @@ export async function findByIdsRole(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdRole(model);
   }
   
   return models;
@@ -384,7 +384,7 @@ export async function findByIdsOkRole(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdRole(model);
   }
   
   return models;
@@ -809,8 +809,8 @@ export function useExportExcelRole() {
     try {
       const data = await query({
         query: `
-          query($search: RoleSearch, $sort: [SortInput!]) {
-            findAllRole(search: $search, page: null, sort: $sort) {
+          query($search: RoleSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllRole(search: $search, page: $page, sort: $sort) {
               ${ roleQueryField }
             }
             findAllMenu {
@@ -833,11 +833,14 @@ export function useExportExcelRole() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllRole) {
-        await setLblById(model, true);
+        await setLblByIdRole(model, true);
       }
       try {
         const sheetName = "角色";
@@ -917,19 +920,73 @@ export async function importModelsRole(
  * 查找 角色 order_by 字段的最大值
  */
 export async function findLastOrderByRole(
+  search?: RoleSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByRole: Query["findLastOrderByRole"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByRole
+      query($search: RoleSearch) {
+        findLastOrderByRole(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByRole;
-  return res;
+  
+  const order_by = data.findLastOrderByRole;
+  
+  return order_by;
+}
+
+/**
+ * 获取 角色 字段注释
+ */
+export async function getFieldCommentsRole(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsRole: Query["getFieldCommentsRole"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsRole {
+          id,
+          code,
+          lbl,
+          home_url,
+          menu_ids,
+          menu_ids_lbl,
+          permit_ids,
+          permit_ids_lbl,
+          data_permit_ids,
+          data_permit_ids_lbl,
+          field_permit_ids,
+          field_permit_ids_lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsRole as RoleFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathRole() {

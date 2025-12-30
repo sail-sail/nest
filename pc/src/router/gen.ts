@@ -138,6 +138,51 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/base/dyn_page",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "动态页面",
+        component: () => import("@/views/base/dyn_page/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "动态页面",
+        },
+      },
+    ],
+  },
+  {
+    path: "/base/dyn_page_data",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "动态页面数据",
+        component: () => import("@/views/base/dyn_page_data/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "动态页面数据",
+        },
+      },
+    ],
+  },
+  {
+    path: "/base/dyn_page_field",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "动态页面字段",
+        component: () => import("@/views/base/dyn_page_field/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "动态页面字段",
+        },
+      },
+    ],
+  },
+  {
     path: "/base/field_permit",
     component: Layout1,
     children: [

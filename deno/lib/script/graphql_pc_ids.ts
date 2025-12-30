@@ -62,6 +62,30 @@ export function getScalars() {
       "output": "DomainId",
     },
     
+    // 动态页面
+    "DynPageId": {
+      "input": "DynPageId",
+      "output": "DynPageId",
+    },
+    
+    // 动态页面数据
+    "DynPageDataId": {
+      "input": "DynPageDataId",
+      "output": "DynPageDataId",
+    },
+    
+    // 动态页面字段
+    "DynPageFieldId": {
+      "input": "DynPageFieldId",
+      "output": "DynPageFieldId",
+    },
+    
+    // 动态页面值
+    "DynPageValId": {
+      "input": "DynPageValId",
+      "output": "DynPageValId",
+    },
+    
     // 字段权限
     "FieldPermitId": {
       "input": "FieldPermitId",
