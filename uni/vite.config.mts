@@ -75,6 +75,9 @@ export default defineConfig({
           "@/store/index": [
             [ "default", "useIndexStore" ],
           ],
+          "@/store/inline_foreign_tab.ts": [
+            "useInlineForeignTab",
+          ],
           "@/utils/request": [
             "request",
             "getRequestUrl",

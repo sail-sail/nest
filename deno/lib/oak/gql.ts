@@ -41,6 +41,8 @@ const gqlRouter = new Router();
 
 const _gqlSchemaStr = /* GraphQL */ `
 scalar JSON
+scalar JSONObject
+scalar JSONArray
 scalar NaiveDateTime
 scalar NaiveDate
 scalar NaiveTime
@@ -53,6 +55,7 @@ scalar Uuid
 input PageInput {
   pgOffset: Int
   pgSize: Int
+  isResultLimit: Boolean
 }
 "排序输入"
 input SortInput {
@@ -306,6 +309,9 @@ async function handleGraphql(
             code: err.originalError.code,
             message: err.originalError.message,
           });
+          if (err.originalError._showStack) {
+            error(err.originalError.stack || err.originalError.message);
+          }
           if (err.originalError.message) {
             log(err.originalError.message);
           }

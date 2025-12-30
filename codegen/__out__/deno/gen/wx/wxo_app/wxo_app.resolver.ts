@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./wxo_app.model.ts";
-
 /**
  * 根据条件查找公众号设置总数
  */
@@ -188,11 +184,15 @@ export async function createsWxoApp(
     createsWxoApp,
   } = await import("./wxo_app.service.ts");
   
+  const {
+    getPagePathWxoApp,
+  } = await import("./wxo_app.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxoApp(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdWxoApp(
     updateByIdWxoApp,
   } = await import("./wxo_app.service.ts");
   
+  const {
+    getPagePathWxoApp,
+  } = await import("./wxo_app.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblWxoApp(input);
   
   await usePermit(
-    route_path,
+    getPagePathWxoApp(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsWxoApp(
     deleteByIdsWxoApp,
   } = await import("./wxo_app.service.ts");
   
+  const {
+    getPagePathWxoApp,
+  } = await import("./wxo_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxoApp(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsWxoApp(
     throw new Error(`enableByIdsWxoApp.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathWxoApp,
+  } = await import("./wxo_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxoApp(),
     "edit",
   );
   const res = await enableByIdsWxoApp(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsWxoApp(
     throw new Error(`lockByIdsWxoApp.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathWxoApp,
+  } = await import("./wxo_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxoApp(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsWxoApp(
     revertByIdsWxoApp,
   } = await import("./wxo_app.service.ts");
   
+  const {
+    getPagePathWxoApp,
+  } = await import("./wxo_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxoApp(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsWxoApp(
     forceDeleteByIdsWxoApp,
   } = await import("./wxo_app.service.ts");
   
+  const {
+    getPagePathWxoApp,
+  } = await import("./wxo_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxoApp(),
     "force_delete",
   );
   
@@ -366,13 +390,15 @@ export async function forceDeleteByIdsWxoApp(
 /**
  * 查找 公众号设置 order_by 字段的最大值
  */
-export async function findLastOrderByWxoApp(): Promise<number> {
+export async function findLastOrderByWxoApp(
+  search?: WxoAppSearch,
+): Promise<number> {
   
   const {
     findLastOrderByWxoApp,
   } = await import("./wxo_app.service.ts");
   
-  const res = findLastOrderByWxoApp();
+  const order_by = findLastOrderByWxoApp(search);
   
-  return res;
+  return order_by;
 }

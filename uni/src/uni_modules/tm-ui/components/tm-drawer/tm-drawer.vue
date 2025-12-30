@@ -180,7 +180,7 @@ const props = defineProps({
 	 */
 	zIndex: {
 		type: [String, Number],
-		default: 1100
+		default: 1200
 	},
 	/**
 	 * 懒加载

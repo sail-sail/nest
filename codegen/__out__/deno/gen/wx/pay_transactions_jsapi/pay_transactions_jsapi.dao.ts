@@ -37,6 +37,8 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -73,6 +75,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathPayTransactionsJsapi,
+  getTableNamePayTransactionsJsapi,
+} from "./pay_transactions_jsapi.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -269,7 +276,7 @@ export async function findCountPayTransactionsJsapi(
   },
 ): Promise<number> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "findCountPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -367,7 +374,7 @@ export async function findAllPayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiModel[]> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "findAllPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -485,6 +492,14 @@ export async function findAllPayTransactionsJsapi(
       debug: is_debug_sql,
     },
   );
+  
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
   
   const [
     trade_stateDict, // 交易状态
@@ -628,7 +643,7 @@ export async function setIdByLblPayTransactionsJsapi(
 // MARK: getFieldCommentsPayTransactionsJsapi
 /** 获取微信JSAPI下单字段注释 */
 export async function getFieldCommentsPayTransactionsJsapi(): Promise<PayTransactionsJsapiFieldComment> {
-  const fieldComments: PayTransactionsJsapiFieldComment = {
+  const field_comments: PayTransactionsJsapiFieldComment = {
     id: "ID",
     appid: "开发者ID",
     mchid: "商户号",
@@ -657,7 +672,8 @@ export async function getFieldCommentsPayTransactionsJsapi(): Promise<PayTransac
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniquePayTransactionsJsapi
@@ -669,7 +685,7 @@ export async function findByUniquePayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiModel[]> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "findByUniquePayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -765,7 +781,7 @@ export async function findOnePayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiModel | undefined> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "findOnePayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -813,7 +829,7 @@ export async function findOneOkPayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiModel> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "findOneOkPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -865,7 +881,7 @@ export async function findByIdPayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiModel | undefined> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "findByIdPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -907,7 +923,7 @@ export async function findByIdOkPayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiModel> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "findByIdOkPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -948,7 +964,7 @@ export async function findByIdsPayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiModel[]> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "findByIdsPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -995,7 +1011,7 @@ export async function findByIdsOkPayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiModel[]> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "findByIdsOkPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1044,7 +1060,7 @@ export async function existPayTransactionsJsapi(
   },
 ): Promise<boolean> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "existPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1076,7 +1092,7 @@ export async function existByIdPayTransactionsJsapi(
   },
 ) {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "existByIdPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1242,7 +1258,7 @@ export async function createReturnPayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiModel> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "createReturnPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1293,7 +1309,7 @@ export async function createPayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiId> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "createPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1334,7 +1350,7 @@ export async function createsReturnPayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiModel[]> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "createsReturnPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1371,7 +1387,7 @@ export async function createsPayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiId[]> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "createsPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1408,7 +1424,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1673,7 +1689,7 @@ export async function updateTenantByIdPayTransactionsJsapi(
   },
 ): Promise<number> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "updateTenantByIdPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1719,7 +1735,7 @@ export async function updateByIdPayTransactionsJsapi(
   },
 ): Promise<PayTransactionsJsapiId> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "updateByIdPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1773,7 +1789,12 @@ export async function updateByIdPayTransactionsJsapi(
   const oldModel = await findByIdPayTransactionsJsapi(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 微信JSAPI下单 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 微信JSAPI下单 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1964,7 +1985,14 @@ export async function updateByIdPayTransactionsJsapi(
     sql += ` where id=${ args.push(id) } limit 1`;
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1986,7 +2014,7 @@ export async function deleteByIdsPayTransactionsJsapi(
   },
 ): Promise<number> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "deleteByIdsPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2009,6 +2037,8 @@ export async function deleteByIdsPayTransactionsJsapi(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -2042,7 +2072,13 @@ export async function deleteByIdsPayTransactionsJsapi(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -2058,7 +2094,7 @@ export async function revertByIdsPayTransactionsJsapi(
   },
 ): Promise<number> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "revertByIdsPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2132,7 +2168,7 @@ export async function forceDeleteByIdsPayTransactionsJsapi(
   },
 ): Promise<number> {
   
-  const table = "wx_pay_transactions_jsapi";
+  const table = getTableNamePayTransactionsJsapi();
   const method = "forceDeleteByIdsPayTransactionsJsapi";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2154,6 +2190,8 @@ export async function forceDeleteByIdsPayTransactionsJsapi(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {

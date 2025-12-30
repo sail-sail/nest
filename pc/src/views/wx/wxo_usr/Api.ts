@@ -13,7 +13,7 @@ import {
   wxoUsrQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdWxoUsr(
   model?: WxoUsrModel | null,
   isExcelExport = false,
 ) {
@@ -92,7 +92,7 @@ export async function findAllWxoUsr(
   const models = data.findAllWxoUsr;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxoUsr(model);
   }
   return models;
 }
@@ -124,7 +124,7 @@ export async function findOneWxoUsr(
   
   const model = data.findOneWxoUsr;
   
-  await setLblById(model);
+  await setLblByIdWxoUsr(model);
   
   return model;
 }
@@ -156,7 +156,7 @@ export async function findOneOkWxoUsr(
   
   const model = data.findOneOkWxoUsr;
   
-  await setLblById(model);
+  await setLblByIdWxoUsr(model);
   
   return model;
 }
@@ -282,7 +282,7 @@ export async function findByIdWxoUsr(
   
   const model = data.findByIdWxoUsr;
   
-  await setLblById(model);
+  await setLblByIdWxoUsr(model);
   
   return model;
 }
@@ -312,7 +312,7 @@ export async function findByIdOkWxoUsr(
   
   const model = data.findByIdOkWxoUsr;
   
-  await setLblById(model);
+  await setLblByIdWxoUsr(model);
   
   return model;
 }
@@ -348,7 +348,7 @@ export async function findByIdsWxoUsr(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxoUsr(model);
   }
   
   return models;
@@ -385,7 +385,7 @@ export async function findByIdsOkWxoUsr(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxoUsr(model);
   }
   
   return models;
@@ -603,8 +603,8 @@ export function useExportExcelWxoUsr() {
     try {
       const data = await query({
         query: `
-          query($search: WxoUsrSearch, $sort: [SortInput!]) {
-            findAllWxoUsr(search: $search, page: null, sort: $sort) {
+          query($search: WxoUsrSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllWxoUsr(search: $search, page: $page, sort: $sort) {
               ${ wxoUsrQueryField }
             }
             findAllUsr {
@@ -620,11 +620,14 @@ export function useExportExcelWxoUsr() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllWxoUsr) {
-        await setLblById(model, true);
+        await setLblByIdWxoUsr(model, true);
       }
       try {
         const sheetName = "公众号用户";
@@ -698,6 +701,53 @@ export async function importModelsWxoUsr(
   }
   
   return showUploadMsg(succNum, failNum, failErrMsgs);
+}
+
+/**
+ * 获取 公众号用户 字段注释
+ */
+export async function getFieldCommentsWxoUsr(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsWxoUsr: Query["getFieldCommentsWxoUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsWxoUsr {
+          id,
+          lbl,
+          head_img,
+          usr_id,
+          usr_id_lbl,
+          appid,
+          openid,
+          unionid,
+          sex,
+          sex_lbl,
+          province,
+          city,
+          country,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsWxoUsr as WxoUsrFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathWxoUsr() {

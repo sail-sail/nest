@@ -69,18 +69,9 @@ export const wxPayNoticeFields = [
   "device_id",
   // 备注
   "rem",
-  // 创建人
-  "create_usr_id",
-  "create_usr_id_lbl",
   // 创建时间
   "create_time",
   "create_time_lbl",
-  // 更新人
-  "update_usr_id",
-  "update_usr_id_lbl",
-  // 更新时间
-  "update_time",
-  "update_time_lbl",
   "is_deleted",
 ];
 

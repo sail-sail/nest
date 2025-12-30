@@ -46,6 +46,7 @@ export async function getMenus(
         lbl
         route_path
         route_query
+        is_dyn_page
       }
       query {
         getMenus {
@@ -67,6 +68,10 @@ export async function getMenus(
     ) {
       continue;
     }
+    // 只为动态页面创建路由
+    if (!menu_model.is_dyn_page) {
+      continue;
+    }
     const routerItem = routersMap[menu_model.route_path || ""];
     if (!routerItem) {
       let name = "";
@@ -82,7 +87,11 @@ export async function getMenus(
           {
             path: "",
             name,
-            component: () => import("@/components/CustomDynList.vue"),
+            component: async () => {
+              const com = await import("@/views/base/dyn_page_data/List.vue");
+              com.default.name = name;
+              return com;
+            },
             props: (route) => {
               const query = route.query || { };
               if (menu_model.route_query) {
@@ -97,6 +106,7 @@ export async function getMenus(
             },
             meta: {
               name: menu_model.lbl,
+              is_dyn_page: true,
             },
           },
         ],

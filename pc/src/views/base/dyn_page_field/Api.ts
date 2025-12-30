@@ -3,6 +3,10 @@ import {
   UniqueType,
 } from "#/types.ts";
 
+import {
+  DynPageFieldAlign,
+} from "#/types.ts";
+
 import type {
   Query,
   Mutation,
@@ -13,12 +17,21 @@ import {
   dynPageFieldQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdDynPageField(
   model?: DynPageFieldModel | null,
   isExcelExport = false,
 ) {
   if (!model) {
     return;
+  }
+  
+  model._attrs = model._attrs || { };
+  if (model.attrs) {
+    try {
+      model._attrs = JSON.parse(model.attrs);
+    } catch (err) { 
+      console.error("解析 attrs 字段失败", err);
+    }
   }
 }
 
@@ -28,6 +41,8 @@ export function intoInputDynPageField(
   const input: DynPageFieldInput = {
     // ID
     id: model?.id,
+    // 编码
+    code: model?.code,
     // 动态页面
     dyn_page_id: model?.dyn_page_id,
     dyn_page_id_lbl: model?.dyn_page_id_lbl,
@@ -37,14 +52,24 @@ export function intoInputDynPageField(
     type: model?.type,
     // 属性
     attrs: model?.attrs,
+    // 计算公式
+    formula: model?.formula,
     // 必填
     is_required: model?.is_required,
     is_required_lbl: model?.is_required_lbl,
+    // 查询条件
+    is_search: model?.is_search,
+    is_search_lbl: model?.is_search_lbl,
+    // 宽度
+    width: model?.width != null ? Number(model?.width || 0) : undefined,
+    // 对齐方式
+    align: model?.align,
+    align_lbl: model?.align_lbl,
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
   };
   return input;
 }
@@ -77,7 +102,7 @@ export async function findAllDynPageField(
   const models = data.findAllDynPageField;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPageField(model);
   }
   return models;
 }
@@ -109,7 +134,7 @@ export async function findOneDynPageField(
   
   const model = data.findOneDynPageField;
   
-  await setLblById(model);
+  await setLblByIdDynPageField(model);
   
   return model;
 }
@@ -141,7 +166,7 @@ export async function findOneOkDynPageField(
   
   const model = data.findOneOkDynPageField;
   
-  await setLblById(model);
+  await setLblByIdDynPageField(model);
   
   return model;
 }
@@ -267,7 +292,7 @@ export async function findByIdDynPageField(
   
   const model = data.findByIdDynPageField;
   
-  await setLblById(model);
+  await setLblByIdDynPageField(model);
   
   return model;
 }
@@ -297,7 +322,7 @@ export async function findByIdOkDynPageField(
   
   const model = data.findByIdOkDynPageField;
   
-  await setLblById(model);
+  await setLblByIdDynPageField(model);
   
   return model;
 }
@@ -333,7 +358,7 @@ export async function findByIdsDynPageField(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPageField(model);
   }
   
   return models;
@@ -370,7 +395,7 @@ export async function findByIdsOkDynPageField(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDynPageField(model);
   }
   
   return models;
@@ -542,11 +567,16 @@ export function useDownloadImportTemplateDynPageField() {
       query: /* GraphQL */ `
         query {
           getFieldCommentsDynPageField {
+            code
             dyn_page_id_lbl
             lbl
             type
             attrs
+            formula
             is_required_lbl
+            is_search_lbl
+            width
+            align_lbl
             order_by
           }
           findAllDynPage {
@@ -555,6 +585,8 @@ export function useDownloadImportTemplateDynPageField() {
           }
           getDict(codes: [
             "yes_no",
+            "yes_no",
+            "dyn_page_field_align",
           ]) {
             code
             lbl
@@ -611,8 +643,8 @@ export function useExportExcelDynPageField() {
     try {
       const data = await query({
         query: `
-          query($search: DynPageFieldSearch, $sort: [SortInput!]) {
-            findAllDynPageField(search: $search, page: null, sort: $sort) {
+          query($search: DynPageFieldSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDynPageField(search: $search, page: $page, sort: $sort) {
               ${ dynPageFieldQueryField }
             }
             findAllDynPage {
@@ -620,6 +652,8 @@ export function useExportExcelDynPageField() {
             }
             getDict(codes: [
               "yes_no",
+              "yes_no",
+              "dyn_page_field_align",
               "is_enabled",
             ]) {
               code
@@ -629,11 +663,14 @@ export function useExportExcelDynPageField() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllDynPageField) {
-        await setLblById(model, true);
+        await setLblByIdDynPageField(model, true);
       }
       try {
         const sheetName = "动态页面字段";
@@ -713,19 +750,65 @@ export async function importModelsDynPageField(
  * 查找 动态页面字段 order_by 字段的最大值
  */
 export async function findLastOrderByDynPageField(
+  search?: DynPageFieldSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDynPageField: Query["findLastOrderByDynPageField"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDynPageField
+      query($search: DynPageFieldSearch) {
+        findLastOrderByDynPageField(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDynPageField;
-  return res;
+  
+  const order_by = data.findLastOrderByDynPageField;
+  
+  return order_by;
+}
+
+/**
+ * 获取 动态页面字段 字段注释
+ */
+export async function getFieldCommentsDynPageField(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDynPageField: Query["getFieldCommentsDynPageField"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDynPageField {
+          id,
+          code,
+          dyn_page_id,
+          dyn_page_id_lbl,
+          lbl,
+          type,
+          attrs,
+          formula,
+          is_required,
+          is_required_lbl,
+          is_search,
+          is_search_lbl,
+          width,
+          align,
+          align_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDynPageField as DynPageFieldFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathDynPageField() {
@@ -736,6 +819,9 @@ export function getPagePathDynPageField() {
 export async function getDefaultInputDynPageField() {
   const defaultInput: DynPageFieldInput = {
     is_required: 0,
+    is_search: 0,
+    width: 0,
+    align: DynPageFieldAlign.Center,
     is_enabled: 1,
     order_by: 1,
   };

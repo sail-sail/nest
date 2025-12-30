@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./role.model.ts";
-
 /**
  * 根据条件查找角色总数
  */
@@ -188,11 +184,15 @@ export async function createsRole(
     createsRole,
   } = await import("./role.service.ts");
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathRole(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdRole(
     updateByIdRole,
   } = await import("./role.service.ts");
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblRole(input);
   
   await usePermit(
-    route_path,
+    getPagePathRole(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsRole(
     deleteByIdsRole,
   } = await import("./role.service.ts");
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathRole(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsRole(
     throw new Error(`enableByIdsRole.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathRole(),
     "edit",
   );
   const res = await enableByIdsRole(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsRole(
     throw new Error(`lockByIdsRole.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathRole(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsRole(
     revertByIdsRole,
   } = await import("./role.service.ts");
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathRole(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsRole(
     forceDeleteByIdsRole,
   } = await import("./role.service.ts");
   
+  const {
+    getPagePathRole,
+  } = await import("./role.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathRole(),
     "force_delete",
   );
   
@@ -366,13 +390,15 @@ export async function forceDeleteByIdsRole(
 /**
  * 查找 角色 order_by 字段的最大值
  */
-export async function findLastOrderByRole(): Promise<number> {
+export async function findLastOrderByRole(
+  search?: RoleSearch,
+): Promise<number> {
   
   const {
     findLastOrderByRole,
   } = await import("./role.service.ts");
   
-  const res = findLastOrderByRole();
+  const order_by = findLastOrderByRole(search);
   
-  return res;
+  return order_by;
 }

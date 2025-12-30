@@ -559,7 +559,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "openid",
         align: "left",
-        width: 240,
+        width: 260,
       },
       {
         COLUMN_NAME: "prepay_id",
@@ -605,7 +605,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "openid",
         search: true,
-        width: 240,
+        width: 260,
       },
       {
         COLUMN_NAME: "out_trade_no",
@@ -677,16 +677,7 @@ export default defineConfig({
         width: 100,
       },
       {
-        COLUMN_NAME: "create_usr_id",
-      },
-      {
         COLUMN_NAME: "create_time",
-      },
-      {
-        COLUMN_NAME: "update_usr_id",
-      },
-      {
-        COLUMN_NAME: "update_time",
       },
     ],
   },

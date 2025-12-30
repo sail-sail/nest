@@ -18,7 +18,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/wx/wx_pay_notice";
+export function getPagePathWxPayNotice() {
+  return "/wx/wx_pay_notice";
+}
+
+export function getTableNameWxPayNotice() {
+  return "wx_wx_pay_notice";
+}
 
 declare const wxPayNoticeId: unique symbol;
 
@@ -67,6 +73,22 @@ declare global {
     rem_like?: string;
     /** 创建时间 */
     create_time?: [(string|undefined|null), (string|undefined|null)];
+    /** 创建人 */
+    create_usr_id?: UsrId[];
+    /** 创建人 */
+    create_usr_id_is_null?: boolean;
+    /** 创建人 */
+    create_usr_id_lbl?: string[];
+    /** 创建人 */
+    create_usr_id_lbl_like?: string;
+    /** 更新人 */
+    update_usr_id?: UsrId[];
+    /** 更新人 */
+    update_usr_id_is_null?: boolean;
+    /** 更新人 */
+    update_usr_id_lbl?: string[];
+    /** 更新人 */
+    update_usr_id_lbl_like?: string;
     /** 更新时间 */
     update_time?: [(string|undefined|null), (string|undefined|null)];
     tenant_id?: TenantId | null;

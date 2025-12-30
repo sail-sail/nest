@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -73,6 +75,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathOptbiz,
+  getTableNameOptbiz,
+} from "./optbiz.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -212,7 +219,7 @@ export async function findCountOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findCountOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -313,7 +320,7 @@ export async function findAllOptbiz(
   },
 ): Promise<OptbizModel[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findAllOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -445,6 +452,14 @@ export async function findAllOptbiz(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
@@ -550,7 +565,7 @@ export async function setIdByLblOptbiz(
 // MARK: getFieldCommentsOptbiz
 /** 获取业务选项字段注释 */
 export async function getFieldCommentsOptbiz(): Promise<OptbizFieldComment> {
-  const fieldComments: OptbizFieldComment = {
+  const field_comments: OptbizFieldComment = {
     id: "ID",
     lbl: "名称",
     ky: "键",
@@ -570,7 +585,8 @@ export async function getFieldCommentsOptbiz(): Promise<OptbizFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueOptbiz
@@ -582,7 +598,7 @@ export async function findByUniqueOptbiz(
   },
 ): Promise<OptbizModel[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findByUniqueOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -704,7 +720,7 @@ export async function findOneOptbiz(
   },
 ): Promise<OptbizModel | undefined> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findOneOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -752,7 +768,7 @@ export async function findOneOkOptbiz(
   },
 ): Promise<OptbizModel> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findOneOkOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -804,7 +820,7 @@ export async function findByIdOptbiz(
   },
 ): Promise<OptbizModel | undefined> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -846,7 +862,7 @@ export async function findByIdOkOptbiz(
   },
 ): Promise<OptbizModel> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findByIdOkOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -887,7 +903,7 @@ export async function findByIdsOptbiz(
   },
 ): Promise<OptbizModel[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -934,7 +950,7 @@ export async function findByIdsOkOptbiz(
   },
 ): Promise<OptbizModel[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findByIdsOkOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -983,7 +999,7 @@ export async function existOptbiz(
   },
 ): Promise<boolean> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "existOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1015,7 +1031,7 @@ export async function existByIdOptbiz(
   },
 ) {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "existByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1151,7 +1167,7 @@ export async function createReturnOptbiz(
   },
 ): Promise<OptbizModel> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "createReturnOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1202,7 +1218,7 @@ export async function createOptbiz(
   },
 ): Promise<OptbizId> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "createOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1243,7 +1259,7 @@ export async function createsReturnOptbiz(
   },
 ): Promise<OptbizModel[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "createsReturnOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1280,7 +1296,7 @@ export async function createsOptbiz(
   },
 ): Promise<OptbizId[]> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "createsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1317,7 +1333,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1542,7 +1558,7 @@ export async function updateTenantByIdOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "updateTenantByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1610,7 +1626,7 @@ export async function updateByIdOptbiz(
   },
 ): Promise<OptbizId> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "updateByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1664,7 +1680,12 @@ export async function updateByIdOptbiz(
   const oldModel = await findByIdOptbiz(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 业务选项 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 业务选项 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1810,7 +1831,14 @@ export async function updateByIdOptbiz(
     await delCacheOptbiz();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1836,7 +1864,7 @@ export async function deleteByIdsOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "deleteByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1859,6 +1887,8 @@ export async function deleteByIdsOptbiz(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheOptbiz();
   
@@ -1894,7 +1924,13 @@ export async function deleteByIdsOptbiz(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1934,7 +1970,7 @@ export async function enableByIdsOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "enableByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2004,7 +2040,7 @@ export async function lockByIdsOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "lockByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2029,11 +2065,19 @@ export async function lockByIdsOptbiz(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheOptbiz();
   
   const args = new QueryArgs();
   let sql = `update base_optbiz set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheOptbiz();
@@ -2050,7 +2094,7 @@ export async function revertByIdsOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "revertByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2128,7 +2172,7 @@ export async function forceDeleteByIdsOptbiz(
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "forceDeleteByIdsOptbiz";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2150,6 +2194,8 @@ export async function forceDeleteByIdsOptbiz(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheOptbiz();
   
@@ -2181,18 +2227,22 @@ export async function forceDeleteByIdsOptbiz(
 // MARK: findLastOrderByOptbiz
 /** 查找 业务选项 order_by 字段的最大值 */
 export async function findLastOrderByOptbiz(
+  search?: Readonly<OptbizSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_optbiz";
+  const table = getTableNameOptbiz();
   const method = "findLastOrderByOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2201,24 +2251,29 @@ export async function findLastOrderByOptbiz(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_optbiz t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_optbiz t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -65,6 +67,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathDomain,
+  getTableNameDomain,
+} from "./domain.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -178,7 +185,7 @@ export async function findCountDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findCountDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -279,7 +286,7 @@ export async function findAllDomain(
   },
 ): Promise<DomainModel[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findAllDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -411,6 +418,14 @@ export async function findAllDomain(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
@@ -516,7 +531,7 @@ export async function setIdByLblDomain(
 // MARK: getFieldCommentsDomain
 /** 获取域名字段注释 */
 export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
-  const fieldComments: DomainFieldComment = {
+  const field_comments: DomainFieldComment = {
     id: "ID",
     protocol: "协议",
     lbl: "名称",
@@ -535,7 +550,8 @@ export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDomain
@@ -547,7 +563,7 @@ export async function findByUniqueDomain(
   },
 ): Promise<DomainModel[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findByUniqueDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -663,7 +679,7 @@ export async function findOneDomain(
   },
 ): Promise<DomainModel | undefined> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findOneDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -711,7 +727,7 @@ export async function findOneOkDomain(
   },
 ): Promise<DomainModel> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findOneOkDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -763,7 +779,7 @@ export async function findByIdDomain(
   },
 ): Promise<DomainModel | undefined> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findByIdDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -805,7 +821,7 @@ export async function findByIdOkDomain(
   },
 ): Promise<DomainModel> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findByIdOkDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -846,7 +862,7 @@ export async function findByIdsDomain(
   },
 ): Promise<DomainModel[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -893,7 +909,7 @@ export async function findByIdsOkDomain(
   },
 ): Promise<DomainModel[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findByIdsOkDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -942,7 +958,7 @@ export async function existDomain(
   },
 ): Promise<boolean> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "existDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -974,7 +990,7 @@ export async function existByIdDomain(
   },
 ) {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "existByIdDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1103,7 +1119,7 @@ export async function createReturnDomain(
   },
 ): Promise<DomainModel> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "createReturnDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1154,7 +1170,7 @@ export async function createDomain(
   },
 ): Promise<DomainId> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "createDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1195,7 +1211,7 @@ export async function createsReturnDomain(
   },
 ): Promise<DomainModel[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "createsReturnDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1232,7 +1248,7 @@ export async function createsDomain(
   },
 ): Promise<DomainId[]> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "createsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1269,7 +1285,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1474,7 +1490,7 @@ export async function updateByIdDomain(
   },
 ): Promise<DomainId> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "updateByIdDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1523,7 +1539,12 @@ export async function updateByIdDomain(
   const oldModel = await findByIdDomain(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 域名 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 域名 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1644,7 +1665,14 @@ export async function updateByIdDomain(
     await delCacheDomain();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1670,7 +1698,7 @@ export async function deleteByIdsDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "deleteByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1693,6 +1721,8 @@ export async function deleteByIdsDomain(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheDomain();
   
@@ -1728,12 +1758,24 @@ export async function deleteByIdsDomain(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
       const sql = `update base_tenant_domain set is_deleted=1 where domain_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -1773,7 +1815,7 @@ export async function enableByIdsDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "enableByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1843,7 +1885,7 @@ export async function lockByIdsDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "lockByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1868,11 +1910,19 @@ export async function lockByIdsDomain(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheDomain();
   
   const args = new QueryArgs();
   let sql = `update base_domain set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheDomain();
@@ -1889,7 +1939,7 @@ export async function revertByIdsDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "revertByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1967,7 +2017,7 @@ export async function forceDeleteByIdsDomain(
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "forceDeleteByIdsDomain";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1989,6 +2039,8 @@ export async function forceDeleteByIdsDomain(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheDomain();
   
@@ -2013,7 +2065,13 @@ export async function forceDeleteByIdsDomain(
     {
       const args = new QueryArgs();
       const sql = `delete from base_tenant_domain where domain_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2025,18 +2083,22 @@ export async function forceDeleteByIdsDomain(
 // MARK: findLastOrderByDomain
 /** 查找 域名 order_by 字段的最大值 */
 export async function findLastOrderByDomain(
+  search?: Readonly<DomainSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_domain";
+  const table = getTableNameDomain();
   const method = "findLastOrderByDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2045,19 +2107,29 @@ export async function findLastOrderByDomain(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_domain t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_domain t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

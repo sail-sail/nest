@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/field_permit";
+export function getPagePathFieldPermit() {
+  return "/base/field_permit";
+}
+
+export function getTableNameFieldPermit() {
+  return "base_field_permit";
+}
 
 declare const fieldPermitId: unique symbol;
 

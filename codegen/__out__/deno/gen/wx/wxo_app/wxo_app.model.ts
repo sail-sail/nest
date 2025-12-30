@@ -14,7 +14,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/wx/wxo_app";
+export function getPagePathWxoApp() {
+  return "/wx/wxo_app";
+}
+
+export function getTableNameWxoApp() {
+  return "wx_wxo_app";
+}
 
 declare const wxoAppId: unique symbol;
 

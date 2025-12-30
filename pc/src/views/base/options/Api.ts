@@ -13,7 +13,7 @@ import {
   optionsQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdOptions(
   model?: OptionsModel | null,
   isExcelExport = false,
 ) {
@@ -41,7 +41,7 @@ export function intoInputOptions(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
     version: model?.version,
@@ -77,7 +77,7 @@ export async function findAllOptions(
   const models = data.findAllOptions;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptions(model);
   }
   return models;
 }
@@ -109,7 +109,7 @@ export async function findOneOptions(
   
   const model = data.findOneOptions;
   
-  await setLblById(model);
+  await setLblByIdOptions(model);
   
   return model;
 }
@@ -141,7 +141,7 @@ export async function findOneOkOptions(
   
   const model = data.findOneOkOptions;
   
-  await setLblById(model);
+  await setLblByIdOptions(model);
   
   return model;
 }
@@ -267,7 +267,7 @@ export async function findByIdOptions(
   
   const model = data.findByIdOptions;
   
-  await setLblById(model);
+  await setLblByIdOptions(model);
   
   return model;
 }
@@ -297,7 +297,7 @@ export async function findByIdOkOptions(
   
   const model = data.findByIdOkOptions;
   
-  await setLblById(model);
+  await setLblByIdOptions(model);
   
   return model;
 }
@@ -333,7 +333,7 @@ export async function findByIdsOptions(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptions(model);
   }
   
   return models;
@@ -370,7 +370,7 @@ export async function findByIdsOkOptions(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptions(model);
   }
   
   return models;
@@ -582,8 +582,8 @@ export function useExportExcelOptions() {
     try {
       const data = await query({
         query: `
-          query($search: OptionsSearch, $sort: [SortInput!]) {
-            findAllOptions(search: $search, page: null, sort: $sort) {
+          query($search: OptionsSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllOptions(search: $search, page: $page, sort: $sort) {
               ${ optionsQueryField }
             }
             getDict(codes: [
@@ -597,11 +597,14 @@ export function useExportExcelOptions() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllOptions) {
-        await setLblById(model, true);
+        await setLblByIdOptions(model, true);
       }
       try {
         const sheetName = "系统选项";
@@ -681,19 +684,65 @@ export async function importModelsOptions(
  * 查找 系统选项 order_by 字段的最大值
  */
 export async function findLastOrderByOptions(
+  search?: OptionsSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByOptions: Query["findLastOrderByOptions"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByOptions
+      query($search: OptionsSearch) {
+        findLastOrderByOptions(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByOptions;
-  return res;
+  
+  const order_by = data.findLastOrderByOptions;
+  
+  return order_by;
+}
+
+/**
+ * 获取 系统选项 字段注释
+ */
+export async function getFieldCommentsOptions(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsOptions: Query["getFieldCommentsOptions"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsOptions {
+          id,
+          lbl,
+          ky,
+          val,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsOptions as OptionsFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathOptions() {

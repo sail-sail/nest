@@ -16,10 +16,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./wx_pay_notice.model.ts";
-
 /**
  * 根据条件查找微信支付通知总数
  */

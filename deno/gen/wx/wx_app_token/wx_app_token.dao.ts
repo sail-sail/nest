@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -65,6 +67,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathWxAppToken,
+  getTableNameWxAppToken,
+} from "./wx_app_token.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -193,7 +200,7 @@ export async function findCountWxAppToken(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "findCountWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -283,7 +290,7 @@ export async function findAllWxAppToken(
   },
 ): Promise<WxAppTokenModel[]> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "findAllWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -398,6 +405,14 @@ export async function findAllWxAppToken(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -511,7 +526,7 @@ export async function setIdByLblWxAppToken(
 // MARK: getFieldCommentsWxAppToken
 /** 获取小程序接口凭据字段注释 */
 export async function getFieldCommentsWxAppToken(): Promise<WxAppTokenFieldComment> {
-  const fieldComments: WxAppTokenFieldComment = {
+  const field_comments: WxAppTokenFieldComment = {
     id: "ID",
     wx_app_id: "小程序设置",
     wx_app_id_lbl: "小程序设置",
@@ -522,7 +537,8 @@ export async function getFieldCommentsWxAppToken(): Promise<WxAppTokenFieldComme
     token_time_lbl: "令牌创建时间",
     expires_in: "令牌超时时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueWxAppToken
@@ -534,7 +550,7 @@ export async function findByUniqueWxAppToken(
   },
 ): Promise<WxAppTokenModel[]> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "findByUniqueWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -655,7 +671,7 @@ export async function findOneWxAppToken(
   },
 ): Promise<WxAppTokenModel | undefined> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "findOneWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -703,7 +719,7 @@ export async function findOneOkWxAppToken(
   },
 ): Promise<WxAppTokenModel> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "findOneOkWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -755,7 +771,7 @@ export async function findByIdWxAppToken(
   },
 ): Promise<WxAppTokenModel | undefined> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "findByIdWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -797,7 +813,7 @@ export async function findByIdOkWxAppToken(
   },
 ): Promise<WxAppTokenModel> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "findByIdOkWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -838,7 +854,7 @@ export async function findByIdsWxAppToken(
   },
 ): Promise<WxAppTokenModel[]> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "findByIdsWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -885,7 +901,7 @@ export async function findByIdsOkWxAppToken(
   },
 ): Promise<WxAppTokenModel[]> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "findByIdsOkWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -934,7 +950,7 @@ export async function existWxAppToken(
   },
 ): Promise<boolean> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "existWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -966,7 +982,7 @@ export async function existByIdWxAppToken(
   },
 ) {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "existByIdWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1078,7 +1094,7 @@ export async function createReturnWxAppToken(
   },
 ): Promise<WxAppTokenModel> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "createReturnWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1129,7 +1145,7 @@ export async function createWxAppToken(
   },
 ): Promise<WxAppTokenId> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "createWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1170,7 +1186,7 @@ export async function createsReturnWxAppToken(
   },
 ): Promise<WxAppTokenModel[]> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "createsReturnWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1207,7 +1223,7 @@ export async function createsWxAppToken(
   },
 ): Promise<WxAppTokenId[]> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "createsWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1244,7 +1260,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1449,7 +1465,7 @@ export async function updateByIdWxAppToken(
   },
 ): Promise<WxAppTokenId> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "updateByIdWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1498,7 +1514,12 @@ export async function updateByIdWxAppToken(
   const oldModel = await findByIdWxAppToken(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 小程序接口凭据 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 小程序接口凭据 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1619,7 +1640,14 @@ export async function updateByIdWxAppToken(
     await delCacheWxAppToken();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1645,7 +1673,7 @@ export async function deleteByIdsWxAppToken(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "deleteByIdsWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1668,6 +1696,8 @@ export async function deleteByIdsWxAppToken(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxAppToken();
   
@@ -1703,7 +1733,13 @@ export async function deleteByIdsWxAppToken(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1721,7 +1757,7 @@ export async function revertByIdsWxAppToken(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "revertByIdsWxAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1799,7 +1835,7 @@ export async function forceDeleteByIdsWxAppToken(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app_token";
+  const table = getTableNameWxAppToken();
   const method = "forceDeleteByIdsWxAppToken";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1821,6 +1857,8 @@ export async function forceDeleteByIdsWxAppToken(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxAppToken();
   

@@ -18,7 +18,7 @@ import {
   wxoAppQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdWxoApp(
   model?: WxoAppModel | null,
   isExcelExport = false,
 ) {
@@ -65,7 +65,7 @@ export function intoInputWxoApp(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -100,7 +100,7 @@ export async function findAllWxoApp(
   const models = data.findAllWxoApp;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxoApp(model);
   }
   return models;
 }
@@ -132,7 +132,7 @@ export async function findOneWxoApp(
   
   const model = data.findOneWxoApp;
   
-  await setLblById(model);
+  await setLblByIdWxoApp(model);
   
   return model;
 }
@@ -164,7 +164,7 @@ export async function findOneOkWxoApp(
   
   const model = data.findOneOkWxoApp;
   
-  await setLblById(model);
+  await setLblByIdWxoApp(model);
   
   return model;
 }
@@ -290,7 +290,7 @@ export async function findByIdWxoApp(
   
   const model = data.findByIdWxoApp;
   
-  await setLblById(model);
+  await setLblByIdWxoApp(model);
   
   return model;
 }
@@ -320,7 +320,7 @@ export async function findByIdOkWxoApp(
   
   const model = data.findByIdOkWxoApp;
   
-  await setLblById(model);
+  await setLblByIdWxoApp(model);
   
   return model;
 }
@@ -356,7 +356,7 @@ export async function findByIdsWxoApp(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxoApp(model);
   }
   
   return models;
@@ -393,7 +393,7 @@ export async function findByIdsOkWxoApp(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxoApp(model);
   }
   
   return models;
@@ -669,8 +669,8 @@ export function useExportExcelWxoApp() {
     try {
       const data = await query({
         query: `
-          query($search: WxoAppSearch, $sort: [SortInput!]) {
-            findAllWxoApp(search: $search, page: null, sort: $sort) {
+          query($search: WxoAppSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllWxoApp(search: $search, page: $page, sort: $sort) {
               ${ wxoAppQueryField }
             }
             findAllDomain {
@@ -689,11 +689,14 @@ export function useExportExcelWxoApp() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllWxoApp) {
-        await setLblById(model, true);
+        await setLblByIdWxoApp(model, true);
       }
       try {
         const sheetName = "公众号设置";
@@ -773,19 +776,75 @@ export async function importModelsWxoApp(
  * 查找 公众号设置 order_by 字段的最大值
  */
 export async function findLastOrderByWxoApp(
+  search?: WxoAppSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByWxoApp: Query["findLastOrderByWxoApp"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByWxoApp
+      query($search: WxoAppSearch) {
+        findLastOrderByWxoApp(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByWxoApp;
-  return res;
+  
+  const order_by = data.findLastOrderByWxoApp;
+  
+  return order_by;
+}
+
+/**
+ * 获取 公众号设置 字段注释
+ */
+export async function getFieldCommentsWxoApp(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsWxoApp: Query["getFieldCommentsWxoApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsWxoApp {
+          id,
+          code,
+          lbl,
+          appid,
+          appsecret,
+          token,
+          encoding_aes_key,
+          encoding_type,
+          encoding_type_lbl,
+          scope,
+          scope_lbl,
+          domain_id,
+          domain_id_lbl,
+          default_role_codes,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsWxoApp as WxoAppFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathWxoApp() {

@@ -17,7 +17,7 @@ import {
   wxPayNoticeQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdWxPayNotice(
   model?: WxPayNoticeModel | null,
   isExcelExport = false,
 ) {
@@ -59,9 +59,9 @@ export function intoInputWxPayNotice(
     success_time_lbl: model?.success_time_lbl,
     success_time_save_null: model?.success_time_save_null,
     // 总金额(分)
-    total: model?.total,
+    total: model?.total != null ? Number(model?.total || 0) : undefined,
     // 用户支付金额(分)
-    payer_total: model?.payer_total,
+    payer_total: model?.payer_total != null ? Number(model?.payer_total || 0) : undefined,
     // 货币类型
     currency: model?.currency,
     currency_lbl: model?.currency_lbl,
@@ -104,7 +104,7 @@ export async function findAllWxPayNotice(
   const models = data.findAllWxPayNotice;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxPayNotice(model);
   }
   return models;
 }
@@ -136,7 +136,7 @@ export async function findOneWxPayNotice(
   
   const model = data.findOneWxPayNotice;
   
-  await setLblById(model);
+  await setLblByIdWxPayNotice(model);
   
   return model;
 }
@@ -168,7 +168,7 @@ export async function findOneOkWxPayNotice(
   
   const model = data.findOneOkWxPayNotice;
   
-  await setLblById(model);
+  await setLblByIdWxPayNotice(model);
   
   return model;
 }
@@ -225,7 +225,7 @@ export async function findByIdWxPayNotice(
   
   const model = data.findByIdWxPayNotice;
   
-  await setLblById(model);
+  await setLblByIdWxPayNotice(model);
   
   return model;
 }
@@ -255,7 +255,7 @@ export async function findByIdOkWxPayNotice(
   
   const model = data.findByIdOkWxPayNotice;
   
-  await setLblById(model);
+  await setLblByIdWxPayNotice(model);
   
   return model;
 }
@@ -291,7 +291,7 @@ export async function findByIdsWxPayNotice(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxPayNotice(model);
   }
   
   return models;
@@ -328,7 +328,7 @@ export async function findByIdsOkWxPayNotice(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdWxPayNotice(model);
   }
   
   return models;
@@ -359,8 +359,8 @@ export function useExportExcelWxPayNotice() {
     try {
       const data = await query({
         query: `
-          query($search: WxPayNoticeSearch, $sort: [SortInput!]) {
-            findAllWxPayNotice(search: $search, page: null, sort: $sort) {
+          query($search: WxPayNoticeSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllWxPayNotice(search: $search, page: $page, sort: $sort) {
               ${ wxPayNoticeQueryField }
             }
             getDict(codes: [
@@ -376,11 +376,14 @@ export function useExportExcelWxPayNotice() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllWxPayNotice) {
-        await setLblById(model, true);
+        await setLblByIdWxPayNotice(model, true);
       }
       try {
         const sheetName = "微信支付通知";
@@ -407,6 +410,56 @@ export function useExportExcelWxPayNotice() {
     workerStatus,
     workerTerminate,
   };
+}
+
+/**
+ * 获取 微信支付通知 字段注释
+ */
+export async function getFieldCommentsWxPayNotice(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsWxPayNotice: Query["getFieldCommentsWxPayNotice"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsWxPayNotice {
+          id,
+          appid,
+          mchid,
+          openid,
+          out_trade_no,
+          transaction_id,
+          trade_type,
+          trade_type_lbl,
+          trade_state,
+          trade_state_lbl,
+          trade_state_desc,
+          bank_type,
+          attach,
+          success_time,
+          success_time_lbl,
+          total,
+          payer_total,
+          currency,
+          currency_lbl,
+          payer_currency,
+          payer_currency_lbl,
+          device_id,
+          rem,
+          create_time,
+          create_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsWxPayNotice as WxPayNoticeFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathWxPayNotice() {

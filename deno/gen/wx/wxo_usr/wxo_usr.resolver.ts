@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./wxo_usr.model.ts";
-
 /**
  * 根据条件查找公众号用户总数
  */
@@ -188,11 +184,15 @@ export async function createsWxoUsr(
     createsWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
+  const {
+    getPagePathWxoUsr,
+  } = await import("./wxo_usr.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxoUsr(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdWxoUsr(
     updateByIdWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
+  const {
+    getPagePathWxoUsr,
+  } = await import("./wxo_usr.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblWxoUsr(input);
   
   await usePermit(
-    route_path,
+    getPagePathWxoUsr(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsWxoUsr(
     deleteByIdsWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
+  const {
+    getPagePathWxoUsr,
+  } = await import("./wxo_usr.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxoUsr(),
     "delete",
   );
   
@@ -273,10 +281,14 @@ export async function revertByIdsWxoUsr(
     revertByIdsWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
+  const {
+    getPagePathWxoUsr,
+  } = await import("./wxo_usr.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxoUsr(),
     "delete",
   );
   
@@ -296,10 +308,14 @@ export async function forceDeleteByIdsWxoUsr(
     forceDeleteByIdsWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
+  const {
+    getPagePathWxoUsr,
+  } = await import("./wxo_usr.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxoUsr(),
     "force_delete",
   );
   

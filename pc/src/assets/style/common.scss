@@ -162,7 +162,7 @@ html,body {
     .full_but:hover {
       color: var(--el-color-primary);
     }
-    .unlock_but,.lock_but,.reset_but,.select_refresh_icon {
+    .unlock_but,.lock_but,.reset_but,.select_refresh_icon,.dyn_page_fields_but {
       position: relative;
       top: 1px;
       cursor: pointer;
@@ -170,13 +170,11 @@ html,body {
       height: 15px;
       margin-right: 8px;
     }
-    .unlock_but:hover,.lock_but:hover,.select_refresh_icon:hover {
+    .unlock_but:hover,.lock_but:hover,.select_refresh_icon:hover,.dyn_page_fields_but:hover {
       color: var(--el-color-primary);
     }
     .notice_span,.reset_but:hover {
       color: red;
-      margin-left: 8px;
-      font-size: 13px;
     }
   }
 }
@@ -583,3 +581,36 @@ html .ql-toolbar span.ql-picker-label path {
 .el-form-item.is-error .el-form-item__content .custom_input_readonly_border {
   box-shadow: 0 0 0 1px var(--el-color-danger) inset;
 }
+
+// 月范围选择, 日范围选择 -- begin
+.custom_date_picker_range {
+  .el-date-range-picker,.el-date-range-picker:hover {
+    --el-datepicker-inrange-bg-color: var(--el-color-primary-light-7);
+    --el-datepicker-inrange-hover-bg-color: var(--el-color-primary-light-7);
+  }
+  .el-month-table td .el-date-table-cell__text {
+    height: 46px;
+  }
+  .el-month-table td .el-date-table-cell {
+    height: 56px;
+  }
+  .el-date-table td .el-date-table-cell .el-date-table-cell__text {
+    height: 36px;
+    width: 36px;
+  }
+  .el-date-table td .el-date-table-cell {
+    height: 42px;
+    width: 42px;
+  }
+  .el-date-table td.end-date .el-date-table-cell {
+    border-bottom-right-radius: 50%;
+    border-top-right-radius: 50%;
+    margin-right: 0;
+  }
+  .el-date-table td.start-date .el-date-table-cell {
+    border-bottom-left-radius: 50%;
+    border-top-left-radius: 50%;
+    margin-left: 0;
+  }
+}
+// 月范围选择, 日范围选择 -- end

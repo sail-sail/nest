@@ -173,7 +173,7 @@ const timelineItemTypes = {
   #>
 } as const;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let id = $ref<<#=Table_Up#>Id>();
 

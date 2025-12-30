@@ -13,7 +13,7 @@ import {
   optbizQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdOptbiz(
   model?: OptbizModel | null,
   isExcelExport = false,
 ) {
@@ -41,7 +41,7 @@ export function intoInputOptbiz(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
     version: model?.version,
@@ -77,7 +77,7 @@ export async function findAllOptbiz(
   const models = data.findAllOptbiz;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptbiz(model);
   }
   return models;
 }
@@ -109,7 +109,7 @@ export async function findOneOptbiz(
   
   const model = data.findOneOptbiz;
   
-  await setLblById(model);
+  await setLblByIdOptbiz(model);
   
   return model;
 }
@@ -141,7 +141,7 @@ export async function findOneOkOptbiz(
   
   const model = data.findOneOkOptbiz;
   
-  await setLblById(model);
+  await setLblByIdOptbiz(model);
   
   return model;
 }
@@ -267,7 +267,7 @@ export async function findByIdOptbiz(
   
   const model = data.findByIdOptbiz;
   
-  await setLblById(model);
+  await setLblByIdOptbiz(model);
   
   return model;
 }
@@ -297,7 +297,7 @@ export async function findByIdOkOptbiz(
   
   const model = data.findByIdOkOptbiz;
   
-  await setLblById(model);
+  await setLblByIdOptbiz(model);
   
   return model;
 }
@@ -333,7 +333,7 @@ export async function findByIdsOptbiz(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptbiz(model);
   }
   
   return models;
@@ -370,7 +370,7 @@ export async function findByIdsOkOptbiz(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOptbiz(model);
   }
   
   return models;
@@ -582,8 +582,8 @@ export function useExportExcelOptbiz() {
     try {
       const data = await query({
         query: `
-          query($search: OptbizSearch, $sort: [SortInput!]) {
-            findAllOptbiz(search: $search, page: null, sort: $sort) {
+          query($search: OptbizSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllOptbiz(search: $search, page: $page, sort: $sort) {
               ${ optbizQueryField }
             }
             getDict(codes: [
@@ -597,11 +597,14 @@ export function useExportExcelOptbiz() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllOptbiz) {
-        await setLblById(model, true);
+        await setLblByIdOptbiz(model, true);
       }
       try {
         const sheetName = "业务选项";
@@ -681,19 +684,65 @@ export async function importModelsOptbiz(
  * 查找 业务选项 order_by 字段的最大值
  */
 export async function findLastOrderByOptbiz(
+  search?: OptbizSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByOptbiz: Query["findLastOrderByOptbiz"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByOptbiz
+      query($search: OptbizSearch) {
+        findLastOrderByOptbiz(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByOptbiz;
-  return res;
+  
+  const order_by = data.findLastOrderByOptbiz;
+  
+  return order_by;
+}
+
+/**
+ * 获取 业务选项 字段注释
+ */
+export async function getFieldCommentsOptbiz(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsOptbiz: Query["getFieldCommentsOptbiz"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsOptbiz {
+          id,
+          lbl,
+          ky,
+          val,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsOptbiz as OptbizFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathOptbiz() {

@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/wx/wx_pay";
+export function getPagePathWxPay() {
+  return "/wx/wx_pay";
+}
+
+export function getTableNameWxPay() {
+  return "wx_wx_pay";
+}
 
 declare const wxPayId: unique symbol;
 

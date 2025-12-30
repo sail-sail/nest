@@ -166,7 +166,7 @@ type Query {
   "根据 ids 查找系统选项"
   findByIdsOptions(ids: [OptionsId!]!): [OptionsModel]!
   "查找系统选项 order_by 字段的最大值"
-  findLastOrderByOptions: Int!
+  findLastOrderByOptions(search: OptionsSearch): Int!
 }
 type Mutation {
   "批量创建系统选项"

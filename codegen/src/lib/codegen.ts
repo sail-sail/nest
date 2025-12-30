@@ -20,6 +20,8 @@ import {
   type ExecException,
 } from "child_process";
 
+// import jsonc from "jsonc-parser";
+
 const {
   readFile,
   stat,
@@ -150,7 +152,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     // 审核
     const hasAudit = !!opts?.audit;
     if (stats.isFile()) {
-      if (opts.onlyCodegenDeno && dir.startsWith("/pc/")) {
+      if (opts.onlyCodegenDeno && (dir.startsWith("/pc/") || dir.startsWith("/uni/"))) {
         return;
       }
       if(dir.endsWith(".xlsx")) {
@@ -383,6 +385,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       if (dir === "/pc/src/components/ComponentMapSelectInput.ts") {
         return;
       }
+      if (dir === "/uni/src/pages.json") {
+        return;
+      }
       if (dir === "/pc/src/typings/ids.d.ts") {
         return;
       }
@@ -417,14 +422,20 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           return;
         }
       }
-      if (opts.onlyCodegenDeno || !opts.isUniApi) {
-        if (dir === "/uni/src/pages/[[table]]/Api.ts") {
-          return;
-        }
-        if (dir === "/uni/src/pages/[[table]]/Model.ts") {
+      
+      if (dir.startsWith("/uni/src/pages/[[table]]/")) {
+        if (
+          dir === "/uni/src/pages/[[table]]/Api.ts" ||
+          dir === "/uni/src/pages/[[table]]/Model.ts"
+        ) {
+          if (!opts.isUniApi && !opts.isUniPage) {
+            return;
+          }
+        } else if (!opts.isUniPage) {
           return;
         }
       }
+      
       let htmlStr = includeFtl(
         await readFile(fileTng ,"utf8"),
         "<#",
@@ -553,6 +564,7 @@ export async function genRouter(context: Context) {
     "pc/src/typings/ids.d.ts",
     "uni/src/typings/ids.d.ts",
     "pc/src/components/ComponentMapSelectInput.ts",
+    "uni/src/pages.json",
   ];
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
@@ -576,6 +588,75 @@ export async function genRouter(context: Context) {
       throw err;
     }
   }
+  
+  // uni/src/pages.json
+  // const pagesJsonContent = await readFile(`${ projectPh }/uni/src/pages.json`, "utf8");
+  // const pagesJson = jsonc.parse(pagesJsonContent);
+  // const edits = [ ];
+  // const uni_table_names = [ ];
+  // for (let i = 0; i < allTables.length; i++) {
+  //   const record = allTables[i];
+  //   if (!record.opts?.isUniPage) {
+  //     continue;
+  //   }
+  //   let table_name = record.TABLE_NAME;
+  //   if (!optTables[table_name]) continue;
+  //   uni_table_names.push(table_name);
+  //   const table_nameUp = table_name.substring(0, 1).toUpperCase() + table_name.substring(1);
+  //   const table_comment = record.TABLE_COMMENT;
+  //   const mod = table_name.substring(0, table_name.indexOf("_"));
+  //   const mod_slash_table = table_name.replace("_", "/");
+  //   table_name = table_name.substring(table_name.indexOf("_") + 1);
+  //   record.opts = record.opts || { };
+    
+  //   const existsList = pagesJson.pages.some((item: any) => item.path === `pages/${ table_name }/List`);
+  //   if (!existsList) {
+  //     const newPage = {
+  //       path: `pages/${ table_name }/List`,
+  //       style: {
+  //         navigationBarTitleText: table_comment,
+  //       }
+  //     };
+  //     const edit = jsonc.modify(pagesJsonContent, ['pages', pagesJson.pages.length], newPage, {
+  //       isArrayInsertion: true,
+  //       formattingOptions: {
+  //         tabSize: 2,
+  //         insertSpaces: true,
+  //         eol: '\n'
+  //       }
+  //     });
+      
+  //     edits.push(...edit);
+  //   }
+    
+  //   const existsDetail = pagesJson.pages.some((item: any) => item.path === `pages/${ table_name }/Detail`);
+  //   if (!existsDetail) {
+  //     const newPage = {
+  //       path: `pages/${ table_name }/Detail`,
+  //       style: {
+  //         navigationBarTitleText: table_comment + "详情",
+  //       }
+  //     };
+  //     const edit = jsonc.modify(pagesJsonContent, ['pages', pagesJson.pages.length], newPage, {
+  //       isArrayInsertion: true,
+  //       formattingOptions: {
+  //         tabSize: 2,
+  //         insertSpaces: true,
+  //         eol: '\n'
+  //       }
+  //     });
+      
+  //     edits.push(...edit);
+  //   }
+    
+  // }
+  
+  // const pagesJsonContent2 = jsonc.applyEdits(pagesJsonContent, edits);
+  
+  // if (pagesJsonContent !== pagesJsonContent2) {
+  //   console.log(`${chalk.gray("修改文件:")} ${chalk.green(normalize(`${projectPh}/uni/src/pages.json`))}`);
+  //   await writeFile(`${ projectPh }/uni/src/pages.json`, pagesJsonContent2);
+  // }
 }
 
 export async function gitDiffOut() {

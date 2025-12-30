@@ -291,7 +291,10 @@ export async function getFieldCommentsWxPay(): Promise<WxPayFieldComment> {
  * 查找 微信支付设置 order_by 字段的最大值
  */
 export async function findLastOrderByWxPay(
+  search?: WxPaySearch,
 ): Promise<number> {
-  const wx_pay_sort = await wx_payDao.findLastOrderByWxPay();
-  return wx_pay_sort;
+  
+  const order_by = await wx_payDao.findLastOrderByWxPay(search);
+  
+  return order_by;
 }

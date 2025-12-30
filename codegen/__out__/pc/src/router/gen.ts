@@ -138,6 +138,21 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/base/dyn_page_data",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "动态页面数据",
+        component: () => import("@/views/base/dyn_page_data/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "动态页面数据",
+        },
+      },
+    ],
+  },
+  {
     path: "/base/dyn_page_field",
     component: Layout1,
     children: [

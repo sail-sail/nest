@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -65,6 +67,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathIcon,
+  getTableNameIcon,
+} from "./icon.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -181,7 +188,7 @@ export async function findCountIcon(
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findCountIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -271,7 +278,7 @@ export async function findAllIcon(
   },
 ): Promise<IconModel[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findAllIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -392,6 +399,14 @@ export async function findAllIcon(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_enabledDict, // 启用
   ] = await getDict([
@@ -485,7 +500,7 @@ export async function setIdByLblIcon(
 // MARK: getFieldCommentsIcon
 /** 获取图标库字段注释 */
 export async function getFieldCommentsIcon(): Promise<IconFieldComment> {
-  const fieldComments: IconFieldComment = {
+  const field_comments: IconFieldComment = {
     id: "ID",
     img: "图标",
     code: "编码",
@@ -503,7 +518,8 @@ export async function getFieldCommentsIcon(): Promise<IconFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueIcon
@@ -515,7 +531,7 @@ export async function findByUniqueIcon(
   },
 ): Promise<IconModel[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findByUniqueIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -651,7 +667,7 @@ export async function findOneIcon(
   },
 ): Promise<IconModel | undefined> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findOneIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -699,7 +715,7 @@ export async function findOneOkIcon(
   },
 ): Promise<IconModel> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findOneOkIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -751,7 +767,7 @@ export async function findByIdIcon(
   },
 ): Promise<IconModel | undefined> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findByIdIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -793,7 +809,7 @@ export async function findByIdOkIcon(
   },
 ): Promise<IconModel> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findByIdOkIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -834,7 +850,7 @@ export async function findByIdsIcon(
   },
 ): Promise<IconModel[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -881,7 +897,7 @@ export async function findByIdsOkIcon(
   },
 ): Promise<IconModel[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findByIdsOkIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -930,7 +946,7 @@ export async function existIcon(
   },
 ): Promise<boolean> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "existIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -962,7 +978,7 @@ export async function existByIdIcon(
   },
 ) {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "existByIdIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1098,7 +1114,7 @@ export async function createReturnIcon(
   },
 ): Promise<IconModel> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "createReturnIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1149,7 +1165,7 @@ export async function createIcon(
   },
 ): Promise<IconId> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "createIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1190,7 +1206,7 @@ export async function createsReturnIcon(
   },
 ): Promise<IconModel[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "createsReturnIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1227,7 +1243,7 @@ export async function createsIcon(
   },
 ): Promise<IconId[]> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "createsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1264,7 +1280,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1469,7 +1485,7 @@ export async function updateByIdIcon(
   },
 ): Promise<IconId> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "updateByIdIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1518,7 +1534,12 @@ export async function updateByIdIcon(
   const oldModel = await findByIdIcon(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 图标库 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 图标库 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1639,7 +1660,14 @@ export async function updateByIdIcon(
     await delCacheIcon();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1665,7 +1693,7 @@ export async function deleteByIdsIcon(
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "deleteByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1688,6 +1716,8 @@ export async function deleteByIdsIcon(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheIcon();
   
@@ -1723,7 +1753,13 @@ export async function deleteByIdsIcon(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1763,7 +1799,7 @@ export async function enableByIdsIcon(
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "enableByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1811,7 +1847,7 @@ export async function revertByIdsIcon(
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "revertByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1889,7 +1925,7 @@ export async function forceDeleteByIdsIcon(
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "forceDeleteByIdsIcon";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1911,6 +1947,8 @@ export async function forceDeleteByIdsIcon(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheIcon();
   
@@ -1942,18 +1980,22 @@ export async function forceDeleteByIdsIcon(
 // MARK: findLastOrderByIcon
 /** 查找 图标库 order_by 字段的最大值 */
 export async function findLastOrderByIcon(
+  search?: Readonly<IconSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_icon";
+  const table = getTableNameIcon();
   const method = "findLastOrderByIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -1962,19 +2004,29 @@ export async function findLastOrderByIcon(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_icon t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_icon t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

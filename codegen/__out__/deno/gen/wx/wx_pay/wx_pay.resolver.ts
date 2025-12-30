@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./wx_pay.model.ts";
-
 /**
  * 根据条件查找微信支付设置总数
  */
@@ -188,11 +184,15 @@ export async function createsWxPay(
     createsWxPay,
   } = await import("./wx_pay.service.ts");
   
+  const {
+    getPagePathWxPay,
+  } = await import("./wx_pay.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxPay(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdWxPay(
     updateByIdWxPay,
   } = await import("./wx_pay.service.ts");
   
+  const {
+    getPagePathWxPay,
+  } = await import("./wx_pay.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblWxPay(input);
   
   await usePermit(
-    route_path,
+    getPagePathWxPay(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsWxPay(
     deleteByIdsWxPay,
   } = await import("./wx_pay.service.ts");
   
+  const {
+    getPagePathWxPay,
+  } = await import("./wx_pay.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxPay(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsWxPay(
     throw new Error(`enableByIdsWxPay.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathWxPay,
+  } = await import("./wx_pay.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxPay(),
     "edit",
   );
   const res = await enableByIdsWxPay(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsWxPay(
     throw new Error(`lockByIdsWxPay.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathWxPay,
+  } = await import("./wx_pay.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxPay(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsWxPay(
     revertByIdsWxPay,
   } = await import("./wx_pay.service.ts");
   
+  const {
+    getPagePathWxPay,
+  } = await import("./wx_pay.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxPay(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsWxPay(
     forceDeleteByIdsWxPay,
   } = await import("./wx_pay.service.ts");
   
+  const {
+    getPagePathWxPay,
+  } = await import("./wx_pay.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxPay(),
     "force_delete",
   );
   
@@ -366,13 +390,15 @@ export async function forceDeleteByIdsWxPay(
 /**
  * 查找 微信支付设置 order_by 字段的最大值
  */
-export async function findLastOrderByWxPay(): Promise<number> {
+export async function findLastOrderByWxPay(
+  search?: WxPaySearch,
+): Promise<number> {
   
   const {
     findLastOrderByWxPay,
   } = await import("./wx_pay.service.ts");
   
-  const res = findLastOrderByWxPay();
+  const order_by = findLastOrderByWxPay(search);
   
-  return res;
+  return order_by;
 }

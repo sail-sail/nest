@@ -37,6 +37,8 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -75,6 +77,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathWxPayNotice,
+  getTableNameWxPayNotice,
+} from "./wx_pay_notice.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -197,6 +204,14 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
+  if (search?.create_time != null) {
+    if (search.create_time[0] != null) {
+      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
+    }
+    if (search.create_time[1] != null) {
+      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
+    }
+  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
@@ -208,14 +223,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.create_usr_id_lbl_like)) {
     whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
-  }
-  if (search?.create_time != null) {
-    if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
-    }
-    if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
-    }
   }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
@@ -261,7 +268,7 @@ export async function findCountWxPayNotice(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "findCountWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -381,7 +388,7 @@ export async function findAllWxPayNotice(
   },
 ): Promise<WxPayNoticeModel[]> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "findAllWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -528,6 +535,14 @@ export async function findAllWxPayNotice(
       debug: is_debug_sql,
     },
   );
+  
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
   
   const [
     trade_typeDict, // 交易类型
@@ -721,7 +736,7 @@ export async function setIdByLblWxPayNotice(
 // MARK: getFieldCommentsWxPayNotice
 /** 获取微信支付通知字段注释 */
 export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldComment> {
-  const fieldComments: WxPayNoticeFieldComment = {
+  const field_comments: WxPayNoticeFieldComment = {
     id: "ID",
     appid: "开发者ID",
     mchid: "商户号",
@@ -745,16 +760,11 @@ export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldCom
     payer_currency_lbl: "用户支付币种",
     device_id: "商户端设备号",
     rem: "备注",
-    create_usr_id: "创建人",
-    create_usr_id_lbl: "创建人",
     create_time: "创建时间",
     create_time_lbl: "创建时间",
-    update_usr_id: "更新人",
-    update_usr_id_lbl: "更新人",
-    update_time: "更新时间",
-    update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueWxPayNotice
@@ -766,7 +776,7 @@ export async function findByUniqueWxPayNotice(
   },
 ): Promise<WxPayNoticeModel[]> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "findByUniqueWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -862,7 +872,7 @@ export async function findOneWxPayNotice(
   },
 ): Promise<WxPayNoticeModel | undefined> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "findOneWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -910,7 +920,7 @@ export async function findOneOkWxPayNotice(
   },
 ): Promise<WxPayNoticeModel> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "findOneOkWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -962,7 +972,7 @@ export async function findByIdWxPayNotice(
   },
 ): Promise<WxPayNoticeModel | undefined> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "findByIdWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1004,7 +1014,7 @@ export async function findByIdOkWxPayNotice(
   },
 ): Promise<WxPayNoticeModel> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "findByIdOkWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1045,7 +1055,7 @@ export async function findByIdsWxPayNotice(
   },
 ): Promise<WxPayNoticeModel[]> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "findByIdsWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1092,7 +1102,7 @@ export async function findByIdsOkWxPayNotice(
   },
 ): Promise<WxPayNoticeModel[]> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "findByIdsOkWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1141,7 +1151,7 @@ export async function existWxPayNotice(
   },
 ): Promise<boolean> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "existWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1173,7 +1183,7 @@ export async function existByIdWxPayNotice(
   },
 ) {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "existByIdWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1304,20 +1314,6 @@ export async function validateWxPayNotice(
     fieldComments.rem,
   );
   
-  // 创建人
-  await validators.chars_max_length(
-    input.create_usr_id,
-    22,
-    fieldComments.create_usr_id,
-  );
-  
-  // 更新人
-  await validators.chars_max_length(
-    input.update_usr_id,
-    22,
-    fieldComments.update_usr_id,
-  );
-  
 }
 
 // MARK: createReturnWxPayNotice
@@ -1332,7 +1328,7 @@ export async function createReturnWxPayNotice(
   },
 ): Promise<WxPayNoticeModel> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "createReturnWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1383,7 +1379,7 @@ export async function createWxPayNotice(
   },
 ): Promise<WxPayNoticeId> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "createWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1424,7 +1420,7 @@ export async function createsReturnWxPayNotice(
   },
 ): Promise<WxPayNoticeModel[]> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "createsReturnWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1461,7 +1457,7 @@ export async function createsWxPayNotice(
   },
 ): Promise<WxPayNoticeId[]> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "createsWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1498,7 +1494,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1758,7 +1754,7 @@ export async function updateTenantByIdWxPayNotice(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "updateTenantByIdWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1804,7 +1800,7 @@ export async function updateByIdWxPayNotice(
   },
 ): Promise<WxPayNoticeId> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "updateByIdWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1858,7 +1854,12 @@ export async function updateByIdWxPayNotice(
   const oldModel = await findByIdWxPayNotice(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 微信支付通知 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 微信支付通知 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1966,6 +1967,12 @@ export async function updateByIdWxPayNotice(
       updateFldNum++;
     }
   }
+  if (input.create_time != null || input.create_time_save_null) {
+    if (input.create_time != oldModel.create_time) {
+      sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
   if (isNotEmpty(input.create_usr_id_lbl)) {
     sql += `create_usr_id_lbl=?,`;
     args.push(input.create_usr_id_lbl);
@@ -1974,12 +1981,6 @@ export async function updateByIdWxPayNotice(
   if (input.create_usr_id != null) {
     if (input.create_usr_id != oldModel.create_usr_id) {
       sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.create_time != null || input.create_time_save_null) {
-    if (input.create_time != oldModel.create_time) {
-      sql += `create_time=${ args.push(input.create_time) },`;
       updateFldNum++;
     }
   }
@@ -2043,7 +2044,14 @@ export async function updateByIdWxPayNotice(
     sql += ` where id=${ args.push(id) } limit 1`;
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -2065,7 +2073,7 @@ export async function deleteByIdsWxPayNotice(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "deleteByIdsWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2088,6 +2096,8 @@ export async function deleteByIdsWxPayNotice(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -2121,7 +2131,13 @@ export async function deleteByIdsWxPayNotice(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -2137,7 +2153,7 @@ export async function revertByIdsWxPayNotice(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "revertByIdsWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2211,7 +2227,7 @@ export async function forceDeleteByIdsWxPayNotice(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay_notice";
+  const table = getTableNameWxPayNotice();
   const method = "forceDeleteByIdsWxPayNotice";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2233,6 +2249,8 @@ export async function forceDeleteByIdsWxPayNotice(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {

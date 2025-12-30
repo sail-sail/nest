@@ -148,6 +148,9 @@ input MenuSearch {
   "名称"
   lbl: String
   lbl_like: String
+  "路由"
+  route_path: String
+  route_path_like: String
   "启用"
   is_enabled: [Int!]
   "仅当前租户"
@@ -183,7 +186,7 @@ type Query {
   "根据 ids 查找菜单"
   findByIdsMenu(ids: [MenuId!]!): [MenuModel]!
   "查找菜单 order_by 字段的最大值"
-  findLastOrderByMenu: Int!
+  findLastOrderByMenu(search: MenuSearch): Int!
 }
 type Mutation {
   "批量创建菜单"

@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./wx_app_token.model.ts";
-
 /**
  * 根据条件查找小程序接口凭据总数
  */
@@ -188,11 +184,15 @@ export async function createsWxAppToken(
     createsWxAppToken,
   } = await import("./wx_app_token.service.ts");
   
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxAppToken(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdWxAppToken(
     updateByIdWxAppToken,
   } = await import("./wx_app_token.service.ts");
   
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblWxAppToken(input);
   
   await usePermit(
-    route_path,
+    getPagePathWxAppToken(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsWxAppToken(
     deleteByIdsWxAppToken,
   } = await import("./wx_app_token.service.ts");
   
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxAppToken(),
     "delete",
   );
   
@@ -273,10 +281,14 @@ export async function revertByIdsWxAppToken(
     revertByIdsWxAppToken,
   } = await import("./wx_app_token.service.ts");
   
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxAppToken(),
     "delete",
   );
   
@@ -296,10 +308,14 @@ export async function forceDeleteByIdsWxAppToken(
     forceDeleteByIdsWxAppToken,
   } = await import("./wx_app_token.service.ts");
   
+  const {
+    getPagePathWxAppToken,
+  } = await import("./wx_app_token.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxAppToken(),
     "force_delete",
   );
   

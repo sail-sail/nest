@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./data_permit.model.ts";
-
 /**
  * 根据条件查找数据权限总数
  */
@@ -188,11 +184,15 @@ export async function createsDataPermit(
     createsDataPermit,
   } = await import("./data_permit.service.ts");
   
+  const {
+    getPagePathDataPermit,
+  } = await import("./data_permit.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathDataPermit(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdDataPermit(
     updateByIdDataPermit,
   } = await import("./data_permit.service.ts");
   
+  const {
+    getPagePathDataPermit,
+  } = await import("./data_permit.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblDataPermit(input);
   
   await usePermit(
-    route_path,
+    getPagePathDataPermit(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsDataPermit(
     deleteByIdsDataPermit,
   } = await import("./data_permit.service.ts");
   
+  const {
+    getPagePathDataPermit,
+  } = await import("./data_permit.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDataPermit(),
     "delete",
   );
   
@@ -273,10 +281,14 @@ export async function revertByIdsDataPermit(
     revertByIdsDataPermit,
   } = await import("./data_permit.service.ts");
   
+  const {
+    getPagePathDataPermit,
+  } = await import("./data_permit.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDataPermit(),
     "delete",
   );
   
@@ -296,10 +308,14 @@ export async function forceDeleteByIdsDataPermit(
     forceDeleteByIdsDataPermit,
   } = await import("./data_permit.service.ts");
   
+  const {
+    getPagePathDataPermit,
+  } = await import("./data_permit.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDataPermit(),
     "force_delete",
   );
   

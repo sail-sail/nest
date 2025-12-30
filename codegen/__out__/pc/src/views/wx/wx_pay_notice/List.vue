@@ -565,15 +565,6 @@
             </el-table-column>
           </template>
           
-          <!-- 创建人 -->
-          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
@@ -583,25 +574,7 @@
             </el-table-column>
           </template>
           
-          <!-- 更新人 -->
-          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -716,10 +689,6 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  create_usr_id: "string[]",
-  create_usr_id_lbl: "string[]",
-  update_usr_id: "string[]",
-  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -760,7 +729,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
+const tableRef = $(useTemplateRef("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -962,7 +931,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "用户标识",
       prop: "openid",
-      width: 240,
+      width: 260,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1086,37 +1055,9 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "创建人",
-      prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id_lbl",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "创建时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 160,
-      sortable: "custom",
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "更新人",
-      prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id_lbl",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "更新时间",
-      prop: "update_time_lbl",
-      sortBy: "update_time",
       width: 160,
       sortable: "custom",
       align: "center",
@@ -1142,7 +1083,7 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
+const detailRef = $(useTemplateRef("detailRef"));
 
 /** 当前表格数据对应的搜索条件 */
 let currentSearch = $ref<WxPayNoticeSearch>({ });
@@ -1173,9 +1114,7 @@ function getDataSearch() {
     ...search,
     idsChecked: undefined,
   };
-  if (!showBuildIn) {
-    Object.assign(search2, builtInSearch);
-  }
+  Object.assign(search2, builtInSearch);
   search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
@@ -1300,13 +1239,10 @@ async function onRowDblclick(
   row: WxPayNoticeModel,
   column: TableColumnCtx<WxPayNoticeModel>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }
@@ -1377,21 +1313,26 @@ async function initFrame() {
 }
 
 watch(
-  () => [ builtInSearch, showBuildIn ],
+  computed(() => {
+    const {
+      selectedIds,
+      isMultiple,
+      showBuildIn,
+      isPagination,
+      isLocked,
+      isFocus,
+      propsNotReset,
+      isListSelectDialog,
+      ...rest
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } = builtInSearch as any;
+    return rest
+  }),
   async function() {
     if (isSearchReset) {
       return;
     }
-    if (builtInSearch.is_deleted != null) {
-      search.is_deleted = builtInSearch.is_deleted;
-    }
-    if (showBuildIn) {
-      Object.assign(search, builtInSearch);
-    }
-    const search2 = getDataSearch();
-    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
-      return;
-    }
+    selectedIds = [ ];
     await dataGrid(true);
   },
   {

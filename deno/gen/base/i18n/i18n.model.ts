@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/i18n";
+export function getPagePathI18n() {
+  return "/base/i18n";
+}
+
+export function getTableNameI18n() {
+  return "base_i18n";
+}
 
 declare const i18nId: unique symbol;
 

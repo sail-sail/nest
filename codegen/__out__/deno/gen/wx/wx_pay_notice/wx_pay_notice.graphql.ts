@@ -99,22 +99,10 @@ type WxPayNoticeModel {
   device_id: String!
   "备注"
   rem: String!
-  "创建人"
-  create_usr_id: UsrId!
-  "创建人"
-  create_usr_id_lbl: String!
   "创建时间"
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "更新人"
-  update_usr_id: UsrId!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String!
   "已删除"
   is_deleted: Int!
 }
@@ -165,22 +153,10 @@ type WxPayNoticeFieldComment {
   device_id: String!
   "备注"
   rem: String!
-  "创建人"
-  create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
   "创建时间"
   create_time: String!
   "创建时间"
   create_time_lbl: String!
-  "更新人"
-  update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: String!
-  "更新时间"
-  update_time_lbl: String!
 }
 input WxPayNoticeInput {
   "ID"
@@ -247,22 +223,6 @@ input WxPayNoticeSearch {
   transaction_id_like: String
   "支付完成时间"
   success_time: [NaiveDateTime]
-  "创建人"
-  create_usr_id: [UsrId!]
-  "创建人"
-  create_usr_id_is_null: Boolean
-  "创建人"
-  create_usr_id_lbl: [String!]
-  "创建人"
-  create_usr_id_lbl_like: String
-  "更新人"
-  update_usr_id: [UsrId!]
-  "更新人"
-  update_usr_id_is_null: Boolean
-  "更新人"
-  update_usr_id_lbl: [String!]
-  "更新人"
-  update_usr_id_lbl_like: String
 }
 type Query {
   "根据条件查找微信支付通知总数"

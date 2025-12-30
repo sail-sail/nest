@@ -108,7 +108,7 @@ let inited = $ref(false);
 
 let parent_id = $ref(props.parent_id);
 
-const treeRef = $(useTemplateRef<InstanceType<typeof ElTree>>("treeRef"));
+const treeRef = $(useTemplateRef("treeRef"));
 
 watch(
   () => props.parent_id,

@@ -10,6 +10,8 @@ declare global {
   
   /** 动态页面字段 */
   interface DynPageFieldModel extends DynPageFieldModelType {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _attrs: Record<string, any>;
   }
   
   /** 动态页面字段 */
@@ -30,6 +32,8 @@ declare global {
 export const dynPageFieldFields = [
   // ID
   "id",
+  // 编码
+  "code",
   // 动态页面
   "dyn_page_id",
   "dyn_page_id_lbl",
@@ -39,9 +43,19 @@ export const dynPageFieldFields = [
   "type",
   // 属性
   "attrs",
+  // 计算公式
+  "formula",
   // 必填
   "is_required",
   "is_required_lbl",
+  // 查询条件
+  "is_search",
+  "is_search_lbl",
+  // 宽度
+  "width",
+  // 对齐方式
+  "align",
+  "align_lbl",
   // 启用
   "is_enabled",
   "is_enabled_lbl",

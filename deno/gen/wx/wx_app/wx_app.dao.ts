@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -78,6 +80,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathWxApp,
+  getTableNameWxApp,
+} from "./wx_app.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -218,7 +225,7 @@ export async function findCountWxApp(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "findCountWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -319,7 +326,7 @@ export async function findAllWxApp(
   },
 ): Promise<WxAppModel[]> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "findAllWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -450,6 +457,14 @@ export async function findAllWxApp(
       debug: is_debug_sql,
     },
   );
+  
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
   
   const [
     is_lockedDict, // 锁定
@@ -583,7 +598,7 @@ export async function setIdByLblWxApp(
 // MARK: getFieldCommentsWxApp
 /** 获取小程序设置字段注释 */
 export async function getFieldCommentsWxApp(): Promise<WxAppFieldComment> {
-  const fieldComments: WxAppFieldComment = {
+  const field_comments: WxAppFieldComment = {
     id: "ID",
     code: "原始ID",
     lbl: "名称",
@@ -605,7 +620,8 @@ export async function getFieldCommentsWxApp(): Promise<WxAppFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueWxApp
@@ -617,7 +633,7 @@ export async function findByUniqueWxApp(
   },
 ): Promise<WxAppModel[]> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "findByUniqueWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -773,7 +789,7 @@ export async function findOneWxApp(
   },
 ): Promise<WxAppModel | undefined> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "findOneWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -821,7 +837,7 @@ export async function findOneOkWxApp(
   },
 ): Promise<WxAppModel> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "findOneOkWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -873,7 +889,7 @@ export async function findByIdWxApp(
   },
 ): Promise<WxAppModel | undefined> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "findByIdWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -915,7 +931,7 @@ export async function findByIdOkWxApp(
   },
 ): Promise<WxAppModel> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "findByIdOkWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -956,7 +972,7 @@ export async function findByIdsWxApp(
   },
 ): Promise<WxAppModel[]> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "findByIdsWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1003,7 +1019,7 @@ export async function findByIdsOkWxApp(
   },
 ): Promise<WxAppModel[]> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "findByIdsOkWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1052,7 +1068,7 @@ export async function existWxApp(
   },
 ): Promise<boolean> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "existWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1084,7 +1100,7 @@ export async function existByIdWxApp(
   },
 ) {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "existByIdWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1234,7 +1250,7 @@ export async function createReturnWxApp(
   },
 ): Promise<WxAppModel> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "createReturnWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1285,7 +1301,7 @@ export async function createWxApp(
   },
 ): Promise<WxAppId> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "createWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1326,7 +1342,7 @@ export async function createsReturnWxApp(
   },
 ): Promise<WxAppModel[]> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "createsReturnWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1363,7 +1379,7 @@ export async function createsWxApp(
   },
 ): Promise<WxAppId[]> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "createsWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1400,7 +1416,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1644,7 +1660,7 @@ export async function updateTenantByIdWxApp(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "updateTenantByIdWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1692,7 +1708,7 @@ export async function updateByIdWxApp(
   },
 ): Promise<WxAppId> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "updateByIdWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1757,7 +1773,12 @@ export async function updateByIdWxApp(
   const oldModel = await findByIdWxApp(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 小程序设置 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 小程序设置 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1896,7 +1917,14 @@ export async function updateByIdWxApp(
     await delCacheWxApp();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1922,7 +1950,7 @@ export async function deleteByIdsWxApp(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "deleteByIdsWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1945,6 +1973,8 @@ export async function deleteByIdsWxApp(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxApp();
   
@@ -1980,7 +2010,13 @@ export async function deleteByIdsWxApp(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -2020,7 +2056,7 @@ export async function enableByIdsWxApp(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "enableByIdsWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2090,7 +2126,7 @@ export async function lockByIdsWxApp(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "lockByIdsWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2115,11 +2151,19 @@ export async function lockByIdsWxApp(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheWxApp();
   
   const args = new QueryArgs();
   let sql = `update wx_wx_app set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheWxApp();
@@ -2136,7 +2180,7 @@ export async function revertByIdsWxApp(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "revertByIdsWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2214,7 +2258,7 @@ export async function forceDeleteByIdsWxApp(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "forceDeleteByIdsWxApp";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2236,6 +2280,8 @@ export async function forceDeleteByIdsWxApp(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxApp();
   
@@ -2267,18 +2313,22 @@ export async function forceDeleteByIdsWxApp(
 // MARK: findLastOrderByWxApp
 /** 查找 小程序设置 order_by 字段的最大值 */
 export async function findLastOrderByWxApp(
+  search?: Readonly<WxAppSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "wx_wx_app";
+  const table = getTableNameWxApp();
   const method = "findLastOrderByWxApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2287,24 +2337,29 @@ export async function findLastOrderByWxApp(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from wx_wx_app t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from wx_wx_app t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

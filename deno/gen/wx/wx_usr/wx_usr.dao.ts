@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -77,6 +79,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathWxUsr,
+  getTableNameWxUsr,
+} from "./wx_usr.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -255,7 +262,7 @@ export async function findCountWxUsr(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "findCountWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -356,7 +363,7 @@ export async function findAllWxUsr(
   },
 ): Promise<WxUsrModel[]> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "findAllWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -482,6 +489,14 @@ export async function findAllWxUsr(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     genderDict, // 性别
   ] = await getDict([
@@ -591,7 +606,7 @@ export async function setIdByLblWxUsr(
 // MARK: getFieldCommentsWxUsr
 /** 获取小程序用户字段注释 */
 export async function getFieldCommentsWxUsr(): Promise<WxUsrFieldComment> {
-  const fieldComments: WxUsrFieldComment = {
+  const field_comments: WxUsrFieldComment = {
     id: "ID",
     lbl: "名称",
     usr_id: "用户",
@@ -618,7 +633,8 @@ export async function getFieldCommentsWxUsr(): Promise<WxUsrFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueWxUsr
@@ -630,7 +646,7 @@ export async function findByUniqueWxUsr(
   },
 ): Promise<WxUsrModel[]> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "findByUniqueWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -746,7 +762,7 @@ export async function findOneWxUsr(
   },
 ): Promise<WxUsrModel | undefined> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "findOneWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -794,7 +810,7 @@ export async function findOneOkWxUsr(
   },
 ): Promise<WxUsrModel> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "findOneOkWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -846,7 +862,7 @@ export async function findByIdWxUsr(
   },
 ): Promise<WxUsrModel | undefined> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "findByIdWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -888,7 +904,7 @@ export async function findByIdOkWxUsr(
   },
 ): Promise<WxUsrModel> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "findByIdOkWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -929,7 +945,7 @@ export async function findByIdsWxUsr(
   },
 ): Promise<WxUsrModel[]> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "findByIdsWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -976,7 +992,7 @@ export async function findByIdsOkWxUsr(
   },
 ): Promise<WxUsrModel[]> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "findByIdsOkWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1025,7 +1041,7 @@ export async function existWxUsr(
   },
 ): Promise<boolean> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "existWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1057,7 +1073,7 @@ export async function existByIdWxUsr(
   },
 ) {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "existByIdWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1246,7 +1262,7 @@ export async function createReturnWxUsr(
   },
 ): Promise<WxUsrModel> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "createReturnWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1297,7 +1313,7 @@ export async function createWxUsr(
   },
 ): Promise<WxUsrId> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "createWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1338,7 +1354,7 @@ export async function createsReturnWxUsr(
   },
 ): Promise<WxUsrModel[]> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "createsReturnWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1375,7 +1391,7 @@ export async function createsWxUsr(
   },
 ): Promise<WxUsrId[]> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "createsWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1412,7 +1428,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1667,7 +1683,7 @@ export async function updateTenantByIdWxUsr(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "updateTenantByIdWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1715,7 +1731,7 @@ export async function updateByIdWxUsr(
   },
 ): Promise<WxUsrId> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "updateByIdWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1769,7 +1785,12 @@ export async function updateByIdWxUsr(
   const oldModel = await findByIdWxUsr(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 小程序用户 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 小程序用户 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1938,7 +1959,14 @@ export async function updateByIdWxUsr(
     await delCacheWxUsr();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1964,7 +1992,7 @@ export async function deleteByIdsWxUsr(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "deleteByIdsWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1987,6 +2015,8 @@ export async function deleteByIdsWxUsr(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxUsr();
   
@@ -2022,7 +2052,13 @@ export async function deleteByIdsWxUsr(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -2040,7 +2076,7 @@ export async function revertByIdsWxUsr(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "revertByIdsWxUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2118,7 +2154,7 @@ export async function forceDeleteByIdsWxUsr(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_usr";
+  const table = getTableNameWxUsr();
   const method = "forceDeleteByIdsWxUsr";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2140,6 +2176,8 @@ export async function forceDeleteByIdsWxUsr(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxUsr();
   

@@ -297,7 +297,10 @@ export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
  * 查找 租户 order_by 字段的最大值
  */
 export async function findLastOrderByTenant(
+  search?: TenantSearch,
 ): Promise<number> {
-  const tenant_sort = await tenantDao.findLastOrderByTenant();
-  return tenant_sort;
+  
+  const order_by = await tenantDao.findLastOrderByTenant(search);
+  
+  return order_by;
 }

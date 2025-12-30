@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./menu.model.ts";
-
 /**
  * 根据条件查找菜单总数
  */
@@ -200,11 +196,15 @@ export async function createsMenu(
     createsMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathMenu(),
     "add",
   );
   
@@ -237,12 +237,16 @@ export async function updateByIdMenu(
     updateByIdMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblMenu(input);
   
   await usePermit(
-    route_path,
+    getPagePathMenu(),
     "edit",
   );
   
@@ -262,10 +266,14 @@ export async function deleteByIdsMenu(
     deleteByIdsMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathMenu(),
     "delete",
   );
   
@@ -290,10 +298,14 @@ export async function enableByIdsMenu(
     throw new Error(`enableByIdsMenu.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathMenu(),
     "edit",
   );
   const res = await enableByIdsMenu(ids, is_enabled);
@@ -312,10 +324,14 @@ export async function revertByIdsMenu(
     revertByIdsMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathMenu(),
     "delete",
   );
   
@@ -335,10 +351,14 @@ export async function forceDeleteByIdsMenu(
     forceDeleteByIdsMenu,
   } = await import("./menu.service.ts");
   
+  const {
+    getPagePathMenu,
+  } = await import("./menu.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathMenu(),
     "force_delete",
   );
   
@@ -350,13 +370,15 @@ export async function forceDeleteByIdsMenu(
 /**
  * 查找 菜单 order_by 字段的最大值
  */
-export async function findLastOrderByMenu(): Promise<number> {
+export async function findLastOrderByMenu(
+  search?: MenuSearch,
+): Promise<number> {
   
   const {
     findLastOrderByMenu,
   } = await import("./menu.service.ts");
   
-  const res = findLastOrderByMenu();
+  const order_by = findLastOrderByMenu(search);
   
-  return res;
+  return order_by;
 }

@@ -34,10 +34,16 @@ declare global {
 export const dynPageFields = [
   // ID
   "id",
-  // 编码
+  // 路由
   "code",
   // 名称
   "lbl",
+  // 父菜单
+  "parent_menu_id",
+  "parent_menu_id_lbl",
+  // 所属角色
+  "role_ids",
+  "role_ids_lbl",
   // 排序
   "order_by",
   // 启用

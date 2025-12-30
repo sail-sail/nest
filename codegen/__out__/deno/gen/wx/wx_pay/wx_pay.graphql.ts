@@ -188,7 +188,7 @@ type Query {
   "根据 ids 查找微信支付设置"
   findByIdsWxPay(ids: [WxPayId!]!): [WxPayModel]!
   "查找微信支付设置 order_by 字段的最大值"
-  findLastOrderByWxPay: Int!
+  findLastOrderByWxPay(search: WxPaySearch): Int!
 }
 type Mutation {
   "批量创建微信支付设置"

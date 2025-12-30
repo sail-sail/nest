@@ -12,9 +12,11 @@ export default defineConfig({
         prop: "keyword",
         fields: [ "code", "lbl", "rem" ],
         lbl: "关键字",
-        placeholder: "编码/名称/备注",
+        placeholder: "关键字",
+        showInPcList: true,
       },
       hasSelectInput: true,
+      isUniApi: true,
     },
     columns: [
       {
@@ -33,6 +35,7 @@ export default defineConfig({
           seq: "code_seq",
           seqPadStart0: 3,
         },
+        searchByArray: true,
       },
       {
         COLUMN_NAME: "lbl",
@@ -114,6 +117,12 @@ export default defineConfig({
       uniques: [
         [ "lbl" ],
       ],
+      searchByKeyword: {
+        prop: "keyword",
+        fields: [ "code", "lbl" ],
+        lbl: "关键字",
+        placeholder: "关键字",
+      },
     },
     columns: [
       {
@@ -417,6 +426,7 @@ export default defineConfig({
         order: "ascending",
       },
       list_tree: true,
+      isUniApi: true,
     },
     columns: [
       {
@@ -448,6 +458,7 @@ export default defineConfig({
         COLUMN_NAME: "route_path",
         align: "left",
         width: 280,
+        canSearch: true,
       },
       {
         COLUMN_NAME: "route_query",
@@ -831,7 +842,8 @@ export default defineConfig({
         prop: "keyword",
         fields: [ "lbl", "ky", "val", "rem" ],
         lbl: "关键字",
-        placeholder: "名称/键/值/备注",
+        placeholder: "关键字",
+        showInPcList: true,
       },
     },
     columns: [
@@ -895,7 +907,8 @@ export default defineConfig({
         prop: "keyword",
         fields: [ "lbl", "ky", "val", "rem" ],
         lbl: "关键字",
-        placeholder: "名称/键/值/备注",
+        placeholder: "关键字",
+        showInPcList: true,
       },
     },
     columns: [
@@ -1151,7 +1164,7 @@ export default defineConfig({
         prop: "keyword",
         fields: [ "code", "lbl", "rem" ],
         lbl: "关键字",
-        placeholder: "编码/名称/备注",
+        placeholder: "关键字",
       },
     },
     columns: [
@@ -1301,7 +1314,7 @@ export default defineConfig({
         prop: "keyword",
         fields: [ "code", "lbl", "rem" ],
         lbl: "关键字",
-        placeholder: "编码/名称/备注",
+        placeholder: "关键字",
       },
     },
     columns: [
@@ -1487,9 +1500,23 @@ export default defineConfig({
           table: "dyn_page_field",
           label: "动态页面字段",
           column: "dyn_page_id",
+          uni_list_page_fields: [
+            "code",
+            "lbl",
+            "type",
+          ],
         },
       ],
       hasSelectInput: true,
+      detailCustomDialogType: "medium",
+      isUniPage: {
+        list_page: {
+          search_fields: [ "lbl", "code" ],
+          lbl_field: "lbl",
+          lbl2_fields: [ "code" ],
+          right_field: "create_time",
+        },
+      },
     },
     columns: [
       {
@@ -1499,17 +1526,33 @@ export default defineConfig({
       {
         COLUMN_NAME: "code",
         width: 140,
-        readonly: true,
-        readonlyPlaceholder: "(自动生成)",
         autoCode: {
-          prefix: "DP",
-          seqPadStart0: 3,
+          prefix: "/dyn/pg",
+          seqPadStart0: 0,
           seq: "code_seq",
         },
+        require: false,
         fixed: "left",
       },
       {
         COLUMN_NAME: "lbl",
+      },
+      {
+        COLUMN_NAME: "parent_menu_id",
+        COLUMN_COMMENT: "父菜单",
+        width: 200,
+        isVirtual: true,
+        foreignKey: {
+          mod: "base",
+          table: "menu",
+        },
+      },
+      {
+        COLUMN_NAME: "role_ids",
+        COLUMN_COMMENT: "所属角色",
+        width: 200,
+        require: false,
+        isVirtual: true,
       },
       {
         COLUMN_NAME: "order_by",
@@ -1544,8 +1587,32 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      isUniPage: {
+        list_page: {
+          search_fields: [ "lbl", "code" ],
+          lbl_field: "lbl",
+          lbl2_fields: [ "code" ],
+          right_field: "create_time",
+        },
+      },
     },
     columns: [
+      {
+        COLUMN_NAME: "code_seq",
+        onlyCodegenDeno: true,
+      },
+      {
+        COLUMN_NAME: "code",
+        width: 140,
+        autoCode: {
+          prefix: "fld_",
+          seqPadStart0: 0,
+          seq: "code_seq",
+        },
+        align: "center",
+        fixed: "left",
+        require: false,
+      },
       {
         COLUMN_NAME: "dyn_page_id",
         require: true,
@@ -1564,17 +1631,98 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "attrs",
-        align: "left",
+        align: "center",
         width: 200,
       },
       {
+        COLUMN_NAME: "formula",
+        width: 180,
+      },
+      {
         COLUMN_NAME: "is_required",
+        isCheckbox: true,
+      },
+      {
+        COLUMN_NAME: "is_search",
+        isCheckbox: true,
+      },
+      {
+        COLUMN_NAME: "width",
+      },
+      {
+        COLUMN_NAME: "align",
+        width: 100,
       },
       {
         COLUMN_NAME: "is_enabled",
+        isCheckbox: true,
       },
       {
         COLUMN_NAME: "order_by",
+      },
+    ],
+  },
+  // 动态页面值
+  base_dyn_page_val: {
+    opts: {
+      uniques: [
+        [ "ref_code", "ref_id", "code" ],
+      ],
+      onlyCodegenDeno: true,
+    },
+    columns: [
+      {
+        COLUMN_NAME: "ref_code",
+      },
+      {
+        COLUMN_NAME: "ref_id",
+        notForeignKeyById: true,
+        canSearch: true,
+        searchByArray: true,
+      },
+      {
+        COLUMN_NAME: "code",
+      },
+      {
+        COLUMN_NAME: "lbl",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+  // 动态页面数据
+  base_dyn_page_data: {
+    opts: {
+      isUseDynPageFields: true,
+    },
+    columns: [
+      {
+        COLUMN_NAME: "ref_code",
+        canSearch: true,
+        noDetail: true,
+        noList: true,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ],
   },

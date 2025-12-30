@@ -19,6 +19,7 @@
     >
       <ElIconRefresh
         class="reset_but"
+        @dblclick.stop
         @click="onReset"
       ></ElIconRefresh>
     </div>
@@ -29,6 +30,7 @@
       >
         <ElIconUnlock
           class="unlock_but"
+          @dblclick.stop
           @click="isReadonly = true;"
         >
         </ElIconUnlock>
@@ -39,6 +41,7 @@
       >
         <ElIconLock
           class="lock_but"
+          @dblclick.stop
           @click="isReadonly = false;"
         ></ElIconLock>
       </div>
@@ -314,6 +317,7 @@
   <DomainDetailDialog
     ref="domainDetailDialogRef"
   ></DomainDetailDialog>
+  
 </CustomDialog>
 </template>
 
@@ -388,7 +392,7 @@ let ids = $ref<TenantId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<TenantId[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -437,8 +441,8 @@ watchEffect(async () => {
 });
 
 // 域名
-const domainDetailDialogRef = $(useTemplateRef<InstanceType<typeof DomainDetailDialog>>("domainDetailDialogRef"));
-const domain_idsRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("domain_idsRef"));
+const domainDetailDialogRef = $(useTemplateRef("domainDetailDialogRef"));
+const domain_idsRef = $(useTemplateRef("domain_idsRef"));
 
 /** 打开新增 域名 对话框 */
 async function domain_idsOpenAddDialog() {
@@ -485,7 +489,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOneTenant;
 
@@ -550,9 +554,12 @@ async function showDialog(
     }
   });
   dialogAction = action || "add";
+  nextTick(() => formRef?.clearValidate());
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
+    domain_ids: [ ],
+    menu_ids: [ ],
   };
   tenant_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
@@ -564,9 +571,12 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       getDefaultInputTenant(),
-      findLastOrderByTenant({
-        notLoading: !inited,
-      }),
+      findLastOrderByTenant(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -589,9 +599,12 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderByTenant({
-        notLoading: !inited,
-      }),
+      findLastOrderByTenant(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     if (data) {
       dialogModel = {
@@ -675,25 +688,8 @@ async function onReset() {
       return;
     }
   }
-  if (dialogAction === "add" || dialogAction === "copy") {
-    const [
-      defaultModel,
-      order_by,
-    ] = await Promise.all([
-      getDefaultInputTenant(),
-      findLastOrderByTenant({
-        notLoading: !inited,
-      }),
-    ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,
-      order_by: order_by + 1,
-    };
-    nextTick(() => nextTick(() => formRef?.clearValidate()));
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    await onRefresh();
-  }
+  await onRefresh();
+  nextTick(() => nextTick(() => formRef?.clearValidate()));
   ElMessage({
     message: "表单重置完毕",
     type: "success",
@@ -704,6 +700,23 @@ async function onReset() {
 async function onRefresh() {
   const id = dialogModel.id;
   if (!id) {
+    const [
+      defaultModel,
+      order_by,
+    ] = await Promise.all([
+      getDefaultInputTenant(),
+      findLastOrderByTenant(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
+    ]);
+    dialogModel = {
+      ...defaultModel,
+      ...builtInModel,
+      order_by: order_by + 1,
+    };
     return;
   }
   const [
@@ -843,7 +856,7 @@ async function onSaveKeydown(e: KeyboardEvent) {
 
 /** 保存并返回id */
 async function save() {
-  if (isReadonly) {
+  if (!inited || isReadonly) {
     return;
   }
   if (!formRef) {

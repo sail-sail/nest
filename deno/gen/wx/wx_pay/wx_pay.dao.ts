@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -73,6 +75,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathWxPay,
+  getTableNameWxPay,
+} from "./wx_pay.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -237,7 +244,7 @@ export async function findCountWxPay(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "findCountWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -338,7 +345,7 @@ export async function findAllWxPay(
   },
 ): Promise<WxPayModel[]> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "findAllWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -470,6 +477,14 @@ export async function findAllWxPay(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
@@ -575,7 +590,7 @@ export async function setIdByLblWxPay(
 // MARK: getFieldCommentsWxPay
 /** 获取微信支付设置字段注释 */
 export async function getFieldCommentsWxPay(): Promise<WxPayFieldComment> {
-  const fieldComments: WxPayFieldComment = {
+  const field_comments: WxPayFieldComment = {
     id: "ID",
     lbl: "名称",
     appid: "开发者ID",
@@ -601,7 +616,8 @@ export async function getFieldCommentsWxPay(): Promise<WxPayFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueWxPay
@@ -613,7 +629,7 @@ export async function findByUniqueWxPay(
   },
 ): Promise<WxPayModel[]> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "findByUniqueWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -749,7 +765,7 @@ export async function findOneWxPay(
   },
 ): Promise<WxPayModel | undefined> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "findOneWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -797,7 +813,7 @@ export async function findOneOkWxPay(
   },
 ): Promise<WxPayModel> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "findOneOkWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -849,7 +865,7 @@ export async function findByIdWxPay(
   },
 ): Promise<WxPayModel | undefined> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "findByIdWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -891,7 +907,7 @@ export async function findByIdOkWxPay(
   },
 ): Promise<WxPayModel> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "findByIdOkWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -932,7 +948,7 @@ export async function findByIdsWxPay(
   },
 ): Promise<WxPayModel[]> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "findByIdsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -979,7 +995,7 @@ export async function findByIdsOkWxPay(
   },
 ): Promise<WxPayModel[]> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "findByIdsOkWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1028,7 +1044,7 @@ export async function existWxPay(
   },
 ): Promise<boolean> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "existWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1060,7 +1076,7 @@ export async function existByIdWxPay(
   },
 ) {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "existByIdWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1238,7 +1254,7 @@ export async function createReturnWxPay(
   },
 ): Promise<WxPayModel> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "createReturnWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1289,7 +1305,7 @@ export async function createWxPay(
   },
 ): Promise<WxPayId> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "createWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1330,7 +1346,7 @@ export async function createsReturnWxPay(
   },
 ): Promise<WxPayModel[]> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "createsReturnWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1367,7 +1383,7 @@ export async function createsWxPay(
   },
 ): Promise<WxPayId[]> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "createsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1404,7 +1420,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1654,7 +1670,7 @@ export async function updateTenantByIdWxPay(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "updateTenantByIdWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1702,7 +1718,7 @@ export async function updateByIdWxPay(
   },
 ): Promise<WxPayId> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "updateByIdWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1756,7 +1772,12 @@ export async function updateByIdWxPay(
   const oldModel = await findByIdWxPay(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 微信支付设置 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 微信支付设置 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1919,7 +1940,14 @@ export async function updateByIdWxPay(
     await delCacheWxPay();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1945,7 +1973,7 @@ export async function deleteByIdsWxPay(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "deleteByIdsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1968,6 +1996,8 @@ export async function deleteByIdsWxPay(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxPay();
   
@@ -2003,7 +2033,13 @@ export async function deleteByIdsWxPay(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -2043,7 +2079,7 @@ export async function enableByIdsWxPay(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "enableByIdsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2113,7 +2149,7 @@ export async function lockByIdsWxPay(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "lockByIdsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2138,11 +2174,19 @@ export async function lockByIdsWxPay(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheWxPay();
   
   const args = new QueryArgs();
   let sql = `update wx_wx_pay set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheWxPay();
@@ -2159,7 +2203,7 @@ export async function revertByIdsWxPay(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "revertByIdsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2237,7 +2281,7 @@ export async function forceDeleteByIdsWxPay(
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "forceDeleteByIdsWxPay";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2259,6 +2303,8 @@ export async function forceDeleteByIdsWxPay(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxPay();
   
@@ -2290,18 +2336,22 @@ export async function forceDeleteByIdsWxPay(
 // MARK: findLastOrderByWxPay
 /** 查找 微信支付设置 order_by 字段的最大值 */
 export async function findLastOrderByWxPay(
+  search?: Readonly<WxPaySearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "wx_wx_pay";
+  const table = getTableNameWxPay();
   const method = "findLastOrderByWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2310,24 +2360,29 @@ export async function findLastOrderByWxPay(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from wx_wx_pay t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from wx_wx_pay t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

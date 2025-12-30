@@ -173,7 +173,7 @@ type Query {
   "根据 ids 查找小程序设置"
   findByIdsWxApp(ids: [WxAppId!]!): [WxAppModel]!
   "查找小程序设置 order_by 字段的最大值"
-  findLastOrderByWxApp: Int!
+  findLastOrderByWxApp(search: WxAppSearch): Int!
 }
 type Mutation {
   "批量创建小程序设置"
