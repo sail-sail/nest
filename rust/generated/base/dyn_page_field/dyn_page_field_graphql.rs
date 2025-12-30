@@ -220,12 +220,14 @@ impl DynPageFieldGenQuery {
   async fn find_last_order_by_dyn_page_field(
     &self,
     ctx: &Context<'_>,
+    search: Option<DynPageFieldSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         dyn_page_field_resolver::find_last_order_by_dyn_page_field(
+          search,
           None,
         )
       }).await

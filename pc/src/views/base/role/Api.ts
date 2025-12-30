@@ -63,7 +63,7 @@ export function intoInputRole(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -816,8 +816,8 @@ export function useExportExcelRole() {
     try {
       const data = await query({
         query: `
-          query($search: RoleSearch, $sort: [SortInput!]) {
-            findAllRole(search: $search, page: null, sort: $sort) {
+          query($search: RoleSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllRole(search: $search, page: $page, sort: $sort) {
               ${ roleQueryField }
             }
             findAllMenu {
@@ -840,6 +840,9 @@ export function useExportExcelRole() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -924,19 +927,22 @@ export async function importModelsRole(
  * 查找 角色 order_by 字段的最大值
  */
 export async function findLastOrderByRole(
+  search?: RoleSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByRole: Query["findLastOrderByRole"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByRole
+      query($search: RoleSearch) {
+        findLastOrderByRole(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByRole;
-  return res;
+  
+  const order_by = data.findLastOrderByRole;
+  
+  return order_by;
 }
 
 /**

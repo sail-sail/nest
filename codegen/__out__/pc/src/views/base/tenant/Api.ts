@@ -56,7 +56,7 @@ export function intoInputTenant(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -765,8 +765,8 @@ export function useExportExcelTenant() {
     try {
       const data = await query({
         query: `
-          query($search: TenantSearch, $sort: [SortInput!]) {
-            findAllTenant(search: $search, page: null, sort: $sort) {
+          query($search: TenantSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllTenant(search: $search, page: $page, sort: $sort) {
               ${ tenantQueryField }
             }
             findAllDomain {
@@ -789,6 +789,9 @@ export function useExportExcelTenant() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -873,19 +876,22 @@ export async function importModelsTenant(
  * 查找 租户 order_by 字段的最大值
  */
 export async function findLastOrderByTenant(
+  search?: TenantSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByTenant: Query["findLastOrderByTenant"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByTenant
+      query($search: TenantSearch) {
+        findLastOrderByTenant(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByTenant;
-  return res;
+  
+  const order_by = data.findLastOrderByTenant;
+  
+  return order_by;
 }
 
 /**

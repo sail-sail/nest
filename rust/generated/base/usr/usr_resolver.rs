@@ -584,18 +584,20 @@ pub async fn force_delete_by_ids_usr(
 /// 查找 用户 order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_usr(
+  search: Option<UsrSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = usr_service::find_last_order_by_usr(
+  let order_by = usr_service::find_last_order_by_usr(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

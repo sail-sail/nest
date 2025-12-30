@@ -240,12 +240,14 @@ impl RoleGenQuery {
   async fn find_last_order_by_role(
     &self,
     ctx: &Context<'_>,
+    search: Option<RoleSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         role_resolver::find_last_order_by_role(
+          search,
           None,
         )
       }).await

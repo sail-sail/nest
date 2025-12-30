@@ -410,12 +410,14 @@ pub async fn force_delete_by_ids_role(
 
 /// 查找 角色 order_by 字段的最大值
 pub async fn find_last_order_by_role(
+  search: Option<RoleSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = role_dao::find_last_order_by_role(
+  let order_by = role_dao::find_last_order_by_role(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

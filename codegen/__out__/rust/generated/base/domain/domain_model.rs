@@ -372,7 +372,7 @@ impl std::fmt::Debug for DomainSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DomainInput")]
 #[allow(dead_code)]
 pub struct DomainInput {

@@ -359,12 +359,14 @@ pub async fn force_delete_by_ids_dictbiz_detail(
 
 /// 查找 业务字典明细 order_by 字段的最大值
 pub async fn find_last_order_by_dictbiz_detail(
+  search: Option<DictbizDetailSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = dictbiz_detail_dao::find_last_order_by_dictbiz_detail(
+  let order_by = dictbiz_detail_dao::find_last_order_by_dictbiz_detail(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

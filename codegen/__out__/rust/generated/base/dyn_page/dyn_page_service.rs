@@ -342,12 +342,14 @@ pub async fn force_delete_by_ids_dyn_page(
 
 /// 查找 动态页面 order_by 字段的最大值
 pub async fn find_last_order_by_dyn_page(
+  search: Option<DynPageSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = dyn_page_dao::find_last_order_by_dyn_page(
+  let order_by = dyn_page_dao::find_last_order_by_dyn_page(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

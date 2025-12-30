@@ -27,12 +27,14 @@
         
         <view
           v-if="!props.readonly"
+          un-text="[var(--color-readonly)]"
         >
           {{ props.placeholder }}
         </view>
         
         <view
           v-else
+          un-text="[var(--color-readonly)]"
         >
           {{ props.readonlyPlaceholder }}
         </view>

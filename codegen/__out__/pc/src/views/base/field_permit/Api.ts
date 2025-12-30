@@ -40,7 +40,7 @@ export function intoInputFieldPermit(
     // 名称
     lbl: model?.lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -399,19 +399,22 @@ export async function getTreeMenu() {
  * 查找 字段权限 order_by 字段的最大值
  */
 export async function findLastOrderByFieldPermit(
+  search?: FieldPermitSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByFieldPermit: Query["findLastOrderByFieldPermit"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByFieldPermit
+      query($search: FieldPermitSearch) {
+        findLastOrderByFieldPermit(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByFieldPermit;
-  return res;
+  
+  const order_by = data.findLastOrderByFieldPermit;
+  
+  return order_by;
 }
 
 /**

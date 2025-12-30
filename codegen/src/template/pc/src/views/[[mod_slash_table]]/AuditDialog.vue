@@ -165,14 +165,14 @@ let dialogAction = $ref<DialogAction>("reject");
 let dialogTitle = $ref("");
 let dialogNotice = $ref("");
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let dialogModel = $ref<<#=auditTable_Up#>Input>({
 } as <#=auditTable_Up#>Input);
 
 let id = $ref<<#=Table_Up#>Id>();
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });

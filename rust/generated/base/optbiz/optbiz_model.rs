@@ -419,7 +419,7 @@ impl std::fmt::Debug for OptbizSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OptbizInput")]
 #[allow(dead_code)]
 pub struct OptbizInput {

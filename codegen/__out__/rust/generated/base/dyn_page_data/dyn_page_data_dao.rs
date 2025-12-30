@@ -49,6 +49,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
+  find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -338,7 +339,7 @@ async fn get_where_query(
       let page_path = get_page_path_dyn_page_data();
       
       let dyn_page_search = DynPageSearch {
-        code: Some(page_path.clone()),
+        code: Some(page_path.to_string()),
         is_enabled: Some(vec![1]),
         ..Default::default()
       };
@@ -604,6 +605,9 @@ pub async fn find_all_dyn_page_data(
   }
   
   let order_by_query = get_order_by_query(Some(sort));
+  let is_result_limit = page.as_ref()
+    .and_then(|item| item.is_result_limit)
+    .unwrap_or(true);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -618,6 +622,13 @@ pub async fn find_all_dyn_page_data(
     args,
     Some(options.clone()),
   ).await?;
+  
+  let len = res.len();
+  let result_limit_num = find_all_result_limit();
+  
+  if is_result_limit && len > result_limit_num {
+    return Err(eyre!("{table}.{method}: result length {len} > {result_limit_num}"));
+  }
   
   set_dyn_page_data_dyn_page_data(
     &mut res,
@@ -865,10 +876,11 @@ pub async fn find_one_dyn_page_data(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let page = PageInput {
-    pg_offset: 0.into(),
-    pg_size: 1.into(),
-  }.into();
+  let page = Some(PageInput {
+    pg_offset: Some(0),
+    pg_size: Some(1),
+    is_result_limit: Some(true),
+  });
   
   let res = find_all_dyn_page_data(
     search,
@@ -1726,11 +1738,10 @@ async fn _creates(
         let id = inputs2_ids[i];
         let dyn_page_data = input.dyn_page_data.clone();
         
-        if dyn_page_data.is_none() {
-          continue;
-        }
-        
-        let dyn_page_data = dyn_page_data.unwrap();
+        let dyn_page_data = match dyn_page_data {
+          Some(data) => data,
+          None => continue,
+        };
         
         for dyn_page_field_model in dyn_page_field_models.clone() {
           
@@ -1830,17 +1841,19 @@ pub async fn create_return_dyn_page_data(
     options,
   ).await?;
   
-  if model_dyn_page_data.is_none() {
-    let err_msg = "create_return_dyn_page_data: model_dyn_page_data.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_dyn_page_data = model_dyn_page_data.unwrap();
+  let model_dyn_page_data = match model_dyn_page_data {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_dyn_page_data: model_dyn_page_data.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_dyn_page_data)
 }
@@ -1970,11 +1983,13 @@ pub async fn update_by_id_dyn_page_data(
     options.clone(),
   ).await?;
   
-  if old_model.is_none() {
-    let err_msg = "编辑失败, 此 动态页面数据 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {
+      let err_msg = "编辑失败, 此 动态页面数据 已被删除";
+      return Err(eyre!(err_msg));
+    }
+  };
   
   if !is_silent_mode {
     info!(
@@ -2604,20 +2619,24 @@ pub async fn force_delete_by_ids_dyn_page_data(
 pub async fn validate_option_dyn_page_data(
   model: Option<DynPageDataModel>,
 ) -> Result<DynPageDataModel> {
-  if model.is_none() {
-    let err_msg = "动态页面数据不存在";
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {
+      let err_msg = "动态页面数据不存在";
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }

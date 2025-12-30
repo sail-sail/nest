@@ -240,12 +240,14 @@ impl DeptGenQuery {
   async fn find_last_order_by_dept(
     &self,
     ctx: &Context<'_>,
+    search: Option<DeptSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         dept_resolver::find_last_order_by_dept(
+          search,
           None,
         )
       }).await

@@ -282,8 +282,17 @@ async function onLogin() {
   usrStore.isLogining = false;
   let loginModel: LoginModel | undefined;
   try {
-    loginModel = await login(model);
+    loginModel = await login(
+      model,
+      {
+        showErrMsg: true,
+      },
+    );
   } catch (err) {
+    ElMessage.error({
+      message: err?.toString() || "登录失败",
+      appendTo: loginRef,
+    });
     usrStore.isLogining = true;
     return;
   }

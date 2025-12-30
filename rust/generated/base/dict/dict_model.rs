@@ -404,7 +404,7 @@ impl std::fmt::Debug for DictSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictInput")]
 #[allow(dead_code)]
 pub struct DictInput {

@@ -218,12 +218,14 @@ impl MenuGenQuery {
   async fn find_last_order_by_menu(
     &self,
     ctx: &Context<'_>,
+    search: Option<MenuSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         menu_resolver::find_last_order_by_menu(
+          search,
           None,
         )
       }).await
