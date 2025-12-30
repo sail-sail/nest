@@ -166,7 +166,7 @@ type Query {
   "根据 ids 查找业务选项"
   findByIdsOptbiz(ids: [OptbizId!]!): [OptbizModel]!
   "查找业务选项 order_by 字段的最大值"
-  findLastOrderByOptbiz: Int!
+  findLastOrderByOptbiz(search: OptbizSearch): Int!
 }
 type Mutation {
   "批量创建业务选项"

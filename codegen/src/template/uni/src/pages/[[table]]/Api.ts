@@ -58,6 +58,24 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
+
+const search_fields = opts?.isUniPage?.list_page?.search_fields || [ ];
+const lbl_field = opts?.isUniPage?.list_page?.lbl_field || "lbl";
+const lbl_field_column = columns.find((col) => col.COLUMN_NAME === lbl_field);
+const lbl2_fields = opts?.isUniPage?.list_page?.lbl2_fields || [ ];
+const lbl2_fields_columns = lbl2_fields.map((field) => {
+  const column = columns.find((col) => col.COLUMN_NAME === field);
+  if (!column) {
+    throw new Error(`表: ${ mod }_${ table } 中配置的列表辅助显示字段 ${ field } 在列中不存在`);
+  }
+  return column;
+});
+const right_field = opts?.isUniPage?.list_page?.right_field;
+const right_field_column = columns.find((col) => col.COLUMN_NAME === right_field);
+if (right_field && !right_field_column) {
+  throw new Error(`表: ${ mod }_${ table } 中配置的列表右侧显示字段 ${ right_field } 在列中不存在`);
+}
+const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
 #><#
 let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
@@ -369,6 +387,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 import {
   intoInput<#=Table_Up#>,
+  setLblById<#=Table_Up#>,
 } from "@/pages/<#=table#>/Api.ts";<#
   }
 #><#
@@ -460,12 +479,62 @@ import {
 }
 #>
 
-async function setLblById(
+export async function setLblById<#=Table_Up#>(
   model?: <#=modelName#> | null,
 ) {
   if (!model) {
     return;
   }<#
+  for (const inlineForeignTab of inlineForeignTabs) {
+    const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+    const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+    const table = inlineForeignTab.table;
+    const mod = inlineForeignTab.mod;
+    if (!inlineForeignSchema) {
+      throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+      process.exit(1);
+    }
+    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+    const Table_Up = tableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let modelName = "";
+    let fieldCommentName = "";
+    let inputName = "";
+    let searchName = "";
+    if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
+      && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
+    ) {
+      Table_Up = Table_Up.substring(0, Table_Up.length - 1) + Table_Up.substring(Table_Up.length - 1).toUpperCase();
+      modelName = Table_Up + "model";
+      fieldCommentName = Table_Up + "fieldComment";
+      inputName = Table_Up + "input";
+      searchName = Table_Up + "search";
+    } else {
+      modelName = Table_Up + "Model";
+      fieldCommentName = Table_Up + "FieldComment";
+      inputName = Table_Up + "Input";
+      searchName = Table_Up + "Search";
+    }
+    const inline_column_name = inlineForeignTab.column_name;
+    const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  #><#
+    if (inline_foreign_type === "one2many") {
+  #>
+  // <#=inlineForeignTab.label#>
+  model.<#=inline_column_name#> = model.<#=inline_column_name#> ?? [ ];
+  for (let i = 0; i < model.<#=inline_column_name#>.length; i++) {
+    const <#=inline_column_name#>_model = model.<#=inline_column_name#>[i] as <#=Table_Up#>Model;
+    await setLblById<#=Table_Up#>(<#=inline_column_name#>_model);
+  }<#
+    } else if (inline_foreign_type === "one2one") {
+  #>
+  // <#=inlineForeignTab.label#>
+  await setLblById<#=Table_Up#>(model.<#=inline_column_name#>);<#
+    }
+  #><#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -578,6 +647,10 @@ export function intoInput<#=Table_Up#>(
     <#=modelLabel#>: model?.<#=modelLabel#>,<#
       }
     #><#
+      } else if (data_type === "int" || data_type === "float" || data_type === "double") {
+    #>
+    // <#=column_comment#>
+    <#=column_name#>: model?.<#=column_name#> != null ? Number(model?.<#=column_name#> || 0) : undefined,<#
       } else if (data_type === "datetime" || data_type === "date") {
     #>
     // <#=column_comment#>
@@ -679,6 +752,12 @@ export function intoInput<#=Table_Up#>(
     #>
     <#=column_name#>_<#=table#>_models: model?.<#=column_name#>_<#=table#>_models?.map(intoInput<#=Table_Up#>),<#
     }
+    #><#
+    if (opts.isUseDynPageFields) {
+    #>
+    // 动态页面数据
+    dyn_page_data: model?.dyn_page_data,<#
+    }
     #>
   };
   return input;
@@ -724,7 +803,7 @@ export async function findAll<#=Table_Up#>(
   const models = data.findAll<#=Table_Up2#>;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblById<#=Table_Up#>(model);
   }
   return models;
 }
@@ -768,7 +847,7 @@ export async function findOne<#=Table_Up#>(
   
   const model = data.findOne<#=Table_Up2#>;
   
-  await setLblById(model);
+  await setLblById<#=Table_Up#>(model);
   
   return model;
 }
@@ -812,7 +891,7 @@ export async function findOneOk<#=Table_Up#>(
   
   const model = data.findOneOk<#=Table_Up2#>;
   
-  await setLblById(model);
+  await setLblById<#=Table_Up#>(model);
   
   return model;
 }<#
@@ -1159,7 +1238,7 @@ export async function findById<#=Table_Up#>(
   
   const model = data.findById<#=Table_Up2#>;
   
-  await setLblById(model);
+  await setLblById<#=Table_Up#>(model);
   
   return model;
 }
@@ -1201,7 +1280,7 @@ export async function findByIdOk<#=Table_Up#>(
   
   const model = data.findByIdOk<#=Table_Up2#>;
   
-  await setLblById(model);
+  await setLblById<#=Table_Up#>(model);
   
   return model;
 }
@@ -1249,7 +1328,7 @@ export async function findByIds<#=Table_Up#>(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblById<#=Table_Up#>(model);
   }
   
   return models;
@@ -1298,7 +1377,7 @@ export async function findByIdsOk<#=Table_Up#>(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblById<#=Table_Up#>(model);
   }
   
   return models;
@@ -1841,26 +1920,172 @@ if (hasOrderBy) {
  * 查找 <#=table_comment#> order_by 字段的最大值
  */
 export async function findLastOrderBy<#=Table_Up#>(
+  search?: <#=searchName#>,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderBy<#=Table_Up2#>: Query["findLastOrderBy<#=Table_Up2#>"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderBy<#=Table_Up2#>
+      query($search: <#=searchName#>) {
+        findLastOrderBy<#=Table_Up2#>(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderBy<#=Table_Up2#>;
-  return res;
+  
+  const order_by = data.findLastOrderBy<#=Table_Up2#>;
+  
+  return order_by;
 }<#
 }
 #>
 
+/**
+ * 获取 <#=table_comment#> 字段注释
+ */
+export async function getFieldComments<#=Table_Up#>(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldComments<#=Table_Up2#>: Query["getFieldComments<#=Table_Up2#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldComments<#=Table_Up2#> {<#
+          for (let i = 0; i < columns.length; i++) {
+            const column = columns[i];
+            if (column.ignoreCodegen) continue;
+            if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+            const column_name = column.COLUMN_NAME;
+            let data_type = column.DATA_TYPE;
+            let column_type = column.COLUMN_TYPE;
+            let column_comment = column.COLUMN_COMMENT || "";
+            if (column_name === "is_sys") {
+              continue;
+            }
+            if (column_name === "is_deleted") {
+              continue;
+            }
+            if (column_name === "tenant_id") {
+              continue;
+            }
+            if (column_name === "is_hidden") {
+              continue;
+            }
+            const isPassword = column.isPassword;
+            if (isPassword) continue;
+            const foreignKey = column.foreignKey;
+          #><#
+            if (foreignKey || column.dict || column.dictbiz
+              || data_type === "datetime" || data_type === "date"
+            ) {
+          #>
+          <#=column_name#>,<#
+              if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
+          #>
+          <#=column_name#>_lbl,<#
+              }
+          #><#
+            } else {
+          #>
+          <#=column_name#>,<#
+            }
+          #><#
+          }
+          #><#
+          if (opts.isUseDynPageFields) {
+          #>
+          dyn_page_data<#
+          }
+          #>
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldComments<#=Table_Up2#> as <#=fieldCommentName#>;
+  
+  return field_comments;
+}
+
 export function getPagePath<#=Table_Up#>() {
   return "/<#=mod#>/<#=table#>";
+}<#
+if (is_export_excel) {
+#>
+
+/** 导出<#=table_comment#> */
+export async function exportExcel<#=Table_Up#>(
+  search?: <#=searchName#>,
+  page?: PageInput,
+  sort?: Sort[],
+) {
+  
+  const filename = "<#=table_comment#>.xlsx";
+  
+  const indexStore = useIndexStore();
+  try {
+    indexStore.addLoading();
+    
+    const data: {
+      search?: string;
+      page?: string;
+      sort?: string;
+    } = { };
+    
+    if (search) {
+      data.search = JSON.stringify(search);
+    }
+    
+    if (page) {
+      data.page = JSON.stringify(page);
+    }
+    
+    if (sort) {
+      data.sort = JSON.stringify(sort);
+    }
+    
+    const url = getRequestUrl({
+      url: "<#=mod#>/export_excel_<#=table#>",
+      data,
+    });
+    
+    const res = await uni.downloadFile({
+      url,
+      filePath: `${ uni.env.USER_DATA_PATH }/${ filename }`,
+    });
+    
+    const statusCode = res.statusCode;
+    const filePath = res.filePath;
+    
+    if (!filePath || statusCode !== 200) {
+      uni.showToast({
+        title: "<#=table_comment#>导出失败",
+        icon: "none",
+      });
+      throw res;
+    }
+    
+    uni.showToast({
+      title: "<#=table_comment#>导出成功",
+      icon: "success",
+    });
+    
+    await uni.openDocument({
+      filePath,
+      fileType: "xlsx",
+      showMenu: true,
+    });
+  } finally {
+    indexStore.minusLoading();
+  }
+  
+}<#
 }
+#>
 
 /** 新增时的默认值 */
 export async function getDefaultInput<#=Table_Up#>() {<#

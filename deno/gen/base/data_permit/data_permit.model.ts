@@ -12,7 +12,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/data_permit";
+export function getPagePathDataPermit() {
+  return "/base/data_permit";
+}
+
+export function getTableNameDataPermit() {
+  return "base_data_permit";
+}
 
 declare const dataPermitId: unique symbol;
 

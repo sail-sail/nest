@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./lang.model.ts";
-
 /**
  * 根据条件查找语言总数
  */
@@ -188,11 +184,15 @@ export async function createsLang(
     createsLang,
   } = await import("./lang.service.ts");
   
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathLang(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdLang(
     updateByIdLang,
   } = await import("./lang.service.ts");
   
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblLang(input);
   
   await usePermit(
-    route_path,
+    getPagePathLang(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsLang(
     deleteByIdsLang,
   } = await import("./lang.service.ts");
   
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathLang(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsLang(
     throw new Error(`enableByIdsLang.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathLang(),
     "edit",
   );
   const res = await enableByIdsLang(ids, is_enabled);
@@ -300,10 +312,14 @@ export async function revertByIdsLang(
     revertByIdsLang,
   } = await import("./lang.service.ts");
   
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathLang(),
     "delete",
   );
   
@@ -323,10 +339,14 @@ export async function forceDeleteByIdsLang(
     forceDeleteByIdsLang,
   } = await import("./lang.service.ts");
   
+  const {
+    getPagePathLang,
+  } = await import("./lang.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathLang(),
     "force_delete",
   );
   
@@ -338,13 +358,15 @@ export async function forceDeleteByIdsLang(
 /**
  * 查找 语言 order_by 字段的最大值
  */
-export async function findLastOrderByLang(): Promise<number> {
+export async function findLastOrderByLang(
+  search?: LangSearch,
+): Promise<number> {
   
   const {
     findLastOrderByLang,
   } = await import("./lang.service.ts");
   
-  const res = findLastOrderByLang();
+  const order_by = findLastOrderByLang(search);
   
-  return res;
+  return order_by;
 }

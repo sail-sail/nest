@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -61,6 +63,11 @@ import type {
 import {
   findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
+
+import {
+  getPagePathPermit,
+  getTableNamePermit,
+} from "./permit.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -141,7 +148,7 @@ export async function findCountPermit(
   },
 ): Promise<number> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findCountPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -209,7 +216,7 @@ export async function findAllPermit(
   },
 ): Promise<PermitModel[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findAllPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -302,6 +309,14 @@ export async function findAllPermit(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -352,7 +367,7 @@ export async function setIdByLblPermit(
 // MARK: getFieldCommentsPermit
 /** 获取按钮权限字段注释 */
 export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
-  const fieldComments: PermitFieldComment = {
+  const field_comments: PermitFieldComment = {
     id: "ID",
     menu_id: "菜单",
     menu_id_lbl: "菜单",
@@ -361,7 +376,8 @@ export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
     order_by: "排序",
     rem: "备注",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniquePermit
@@ -373,7 +389,7 @@ export async function findByUniquePermit(
   },
 ): Promise<PermitModel[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findByUniquePermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -470,7 +486,7 @@ export async function checkByUniquePermit(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 按钮权限 已经存在");
+      throw new UniqueException("按钮权限 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: PermitId = await updateByIdPermit(
@@ -500,7 +516,7 @@ export async function findOnePermit(
   },
 ): Promise<PermitModel | undefined> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findOnePermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -548,7 +564,7 @@ export async function findOneOkPermit(
   },
 ): Promise<PermitModel> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findOneOkPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -600,7 +616,7 @@ export async function findByIdPermit(
   },
 ): Promise<PermitModel | undefined> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findByIdPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -642,7 +658,7 @@ export async function findByIdOkPermit(
   },
 ): Promise<PermitModel> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findByIdOkPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -683,7 +699,7 @@ export async function findByIdsPermit(
   },
 ): Promise<PermitModel[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findByIdsPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -730,7 +746,7 @@ export async function findByIdsOkPermit(
   },
 ): Promise<PermitModel[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findByIdsOkPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -779,7 +795,7 @@ export async function existPermit(
   },
 ): Promise<boolean> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "existPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -811,7 +827,7 @@ export async function existByIdPermit(
   },
 ) {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "existByIdPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -923,7 +939,7 @@ export async function createReturnPermit(
   },
 ): Promise<PermitModel> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "createReturnPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -974,7 +990,7 @@ export async function createPermit(
   },
 ): Promise<PermitId> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "createPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1015,7 +1031,7 @@ export async function createsReturnPermit(
   },
 ): Promise<PermitModel[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "createsReturnPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1052,7 +1068,7 @@ export async function createsPermit(
   },
 ): Promise<PermitId[]> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "createsPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1089,7 +1105,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1216,7 +1232,7 @@ export async function updateByIdPermit(
   },
 ): Promise<PermitId> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "updateByIdPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1255,7 +1271,7 @@ export async function updateByIdPermit(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 按钮权限 已经存在";
+        throw "按钮权限 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1265,7 +1281,12 @@ export async function updateByIdPermit(
   const oldModel = await findByIdPermit(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 按钮权限 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 按钮权限 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1318,7 +1339,14 @@ export async function updateByIdPermit(
     await delCachePermit();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1344,7 +1372,7 @@ export async function deleteByIdsPermit(
   },
 ): Promise<number> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "deleteByIdsPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1368,6 +1396,8 @@ export async function deleteByIdsPermit(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCachePermit();
   
   let affectedRows = 0;
@@ -1382,12 +1412,24 @@ export async function deleteByIdsPermit(
     }
     const args = new QueryArgs();
     const sql = `delete from base_permit where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
       const sql = `update base_role_permit set is_deleted=1 where permit_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -1399,18 +1441,22 @@ export async function deleteByIdsPermit(
 // MARK: findLastOrderByPermit
 /** 查找 按钮权限 order_by 字段的最大值 */
 export async function findLastOrderByPermit(
+  search?: Readonly<PermitSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_permit";
+  const table = getTableNamePermit();
   const method = "findLastOrderByPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -1419,19 +1465,29 @@ export async function findLastOrderByPermit(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_permit t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_permit t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

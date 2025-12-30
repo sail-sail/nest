@@ -2,6 +2,7 @@ import { createApp } from "vue";
 
 import "element-plus/theme-chalk/dark/css-vars.css";
 import "element-plus/dist/index.css";
+import "virtual:uno.css";
 
 import "@/assets/style/common.scss";
 

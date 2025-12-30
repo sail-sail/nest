@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -77,6 +79,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathDictbizDetail,
+  getTableNameDictbizDetail,
+} from "./dictbiz_detail.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -209,7 +216,7 @@ export async function findCountDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findCountDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -310,7 +317,7 @@ export async function findAllDictbizDetail(
   },
 ): Promise<DictbizDetailModel[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findAllDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -443,6 +450,14 @@ export async function findAllDictbizDetail(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_enabledDict, // 启用
   ] = await getDict([
@@ -552,7 +567,7 @@ export async function setIdByLblDictbizDetail(
 // MARK: getFieldCommentsDictbizDetail
 /** 获取业务字典明细字段注释 */
 export async function getFieldCommentsDictbizDetail(): Promise<DictbizDetailFieldComment> {
-  const fieldComments: DictbizDetailFieldComment = {
+  const field_comments: DictbizDetailFieldComment = {
     id: "ID",
     dictbiz_id: "业务字典",
     dictbiz_id_lbl: "业务字典",
@@ -571,7 +586,8 @@ export async function getFieldCommentsDictbizDetail(): Promise<DictbizDetailFiel
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDictbizDetail
@@ -583,7 +599,7 @@ export async function findByUniqueDictbizDetail(
   },
 ): Promise<DictbizDetailModel[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findByUniqueDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -680,7 +696,7 @@ export async function checkByUniqueDictbizDetail(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 业务字典明细 已经存在");
+      throw new UniqueException("业务字典明细 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: DictbizDetailId = await updateByIdDictbizDetail(
@@ -710,7 +726,7 @@ export async function findOneDictbizDetail(
   },
 ): Promise<DictbizDetailModel | undefined> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findOneDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -758,7 +774,7 @@ export async function findOneOkDictbizDetail(
   },
 ): Promise<DictbizDetailModel> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findOneOkDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -810,7 +826,7 @@ export async function findByIdDictbizDetail(
   },
 ): Promise<DictbizDetailModel | undefined> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findByIdDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -852,7 +868,7 @@ export async function findByIdOkDictbizDetail(
   },
 ): Promise<DictbizDetailModel> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findByIdOkDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -893,7 +909,7 @@ export async function findByIdsDictbizDetail(
   },
 ): Promise<DictbizDetailModel[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findByIdsDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -940,7 +956,7 @@ export async function findByIdsOkDictbizDetail(
   },
 ): Promise<DictbizDetailModel[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findByIdsOkDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -989,7 +1005,7 @@ export async function existDictbizDetail(
   },
 ): Promise<boolean> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "existDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1021,7 +1037,7 @@ export async function existByIdDictbizDetail(
   },
 ) {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "existByIdDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1157,7 +1173,7 @@ export async function createReturnDictbizDetail(
   },
 ): Promise<DictbizDetailModel> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "createReturnDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1208,7 +1224,7 @@ export async function createDictbizDetail(
   },
 ): Promise<DictbizDetailId> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "createDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1249,7 +1265,7 @@ export async function createsReturnDictbizDetail(
   },
 ): Promise<DictbizDetailModel[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "createsReturnDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1286,7 +1302,7 @@ export async function createsDictbizDetail(
   },
 ): Promise<DictbizDetailId[]> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "createsDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1323,7 +1339,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1543,7 +1559,7 @@ export async function updateTenantByIdDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "updateTenantByIdDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1591,7 +1607,7 @@ export async function updateByIdDictbizDetail(
   },
 ): Promise<DictbizDetailId> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "updateByIdDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1635,7 +1651,7 @@ export async function updateByIdDictbizDetail(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 业务字典明细 已经存在";
+        throw "业务字典明细 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1645,7 +1661,12 @@ export async function updateByIdDictbizDetail(
   const oldModel = await findByIdDictbizDetail(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 业务字典明细 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 业务字典明细 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1772,7 +1793,14 @@ export async function updateByIdDictbizDetail(
     await delCacheDictbizDetail();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1798,7 +1826,7 @@ export async function deleteByIdsDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "deleteByIdsDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1821,6 +1849,8 @@ export async function deleteByIdsDictbizDetail(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheDictbizDetail();
   
@@ -1856,7 +1886,13 @@ export async function deleteByIdsDictbizDetail(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1896,7 +1932,7 @@ export async function enableByIdsDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "enableByIdsDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1944,7 +1980,7 @@ export async function revertByIdsDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "revertByIdsDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1998,7 +2034,7 @@ export async function revertByIdsDictbizDetail(
         if (model.id === id) {
           continue;
         }
-        throw "此 业务字典明细 已经存在";
+        throw "业务字典明细 重复";
       }
     }
     const args = new QueryArgs();
@@ -2022,7 +2058,7 @@ export async function forceDeleteByIdsDictbizDetail(
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "forceDeleteByIdsDictbizDetail";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2044,6 +2080,8 @@ export async function forceDeleteByIdsDictbizDetail(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheDictbizDetail();
   
@@ -2075,18 +2113,22 @@ export async function forceDeleteByIdsDictbizDetail(
 // MARK: findLastOrderByDictbizDetail
 /** 查找 业务字典明细 order_by 字段的最大值 */
 export async function findLastOrderByDictbizDetail(
+  search?: Readonly<DictbizDetailSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_dictbiz_detail";
+  const table = getTableNameDictbizDetail();
   const method = "findLastOrderByDictbizDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2095,24 +2137,29 @@ export async function findLastOrderByDictbizDetail(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_dictbiz_detail t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_dictbiz_detail t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

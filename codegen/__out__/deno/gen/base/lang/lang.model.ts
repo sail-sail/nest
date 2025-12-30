@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/base/lang";
+export function getPagePathLang() {
+  return "/base/lang";
+}
+
+export function getTableNameLang() {
+  return "base_lang";
+}
 
 declare const langId: unique symbol;
 

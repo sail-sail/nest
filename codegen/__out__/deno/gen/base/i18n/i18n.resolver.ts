@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./i18n.model.ts";
-
 /**
  * 根据条件查找国际化总数
  */
@@ -188,11 +184,15 @@ export async function createsI18n(
     createsI18n,
   } = await import("./i18n.service.ts");
   
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathI18n(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdI18n(
     updateByIdI18n,
   } = await import("./i18n.service.ts");
   
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblI18n(input);
   
   await usePermit(
-    route_path,
+    getPagePathI18n(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsI18n(
     deleteByIdsI18n,
   } = await import("./i18n.service.ts");
   
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathI18n(),
     "delete",
   );
   
@@ -273,10 +281,14 @@ export async function revertByIdsI18n(
     revertByIdsI18n,
   } = await import("./i18n.service.ts");
   
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathI18n(),
     "delete",
   );
   
@@ -296,10 +308,14 @@ export async function forceDeleteByIdsI18n(
     forceDeleteByIdsI18n,
   } = await import("./i18n.service.ts");
   
+  const {
+    getPagePathI18n,
+  } = await import("./i18n.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathI18n(),
     "force_delete",
   );
   

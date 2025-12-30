@@ -19,14 +19,21 @@ import {
 
 import {
   intoInputDictbizDetail,
+  setLblByIdDictbizDetail,
 } from "@/views/base/dictbiz_detail/Api.ts";
 
-async function setLblById(
+export async function setLblByIdDictbiz(
   model?: DictbizModel | null,
   isExcelExport = false,
 ) {
   if (!model) {
     return;
+  }
+  // 业务字典明细
+  model.dictbiz_detail = model.dictbiz_detail ?? [ ];
+  for (let i = 0; i < model.dictbiz_detail.length; i++) {
+    const dictbiz_detail_model = model.dictbiz_detail[i] as DictbizDetailModel;
+    await setLblByIdDictbizDetail(dictbiz_detail_model, isExcelExport);
   }
 }
 
@@ -49,7 +56,7 @@ export function intoInputDictbiz(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
     // 业务字典明细
@@ -86,7 +93,7 @@ export async function findAllDictbiz(
   const models = data.findAllDictbiz;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictbiz(model);
   }
   return models;
 }
@@ -118,7 +125,7 @@ export async function findOneDictbiz(
   
   const model = data.findOneDictbiz;
   
-  await setLblById(model);
+  await setLblByIdDictbiz(model);
   
   return model;
 }
@@ -150,7 +157,7 @@ export async function findOneOkDictbiz(
   
   const model = data.findOneOkDictbiz;
   
-  await setLblById(model);
+  await setLblByIdDictbiz(model);
   
   return model;
 }
@@ -276,7 +283,7 @@ export async function findByIdDictbiz(
   
   const model = data.findByIdDictbiz;
   
-  await setLblById(model);
+  await setLblByIdDictbiz(model);
   
   return model;
 }
@@ -306,7 +313,7 @@ export async function findByIdOkDictbiz(
   
   const model = data.findByIdOkDictbiz;
   
-  await setLblById(model);
+  await setLblByIdDictbiz(model);
   
   return model;
 }
@@ -342,7 +349,7 @@ export async function findByIdsDictbiz(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictbiz(model);
   }
   
   return models;
@@ -379,7 +386,7 @@ export async function findByIdsOkDictbiz(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDictbiz(model);
   }
   
   return models;
@@ -570,8 +577,8 @@ export function useExportExcelDictbiz() {
     try {
       const data = await query({
         query: `
-          query($search: DictbizSearch, $sort: [SortInput!]) {
-            findAllDictbiz(search: $search, page: null, sort: $sort) {
+          query($search: DictbizSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDictbiz(search: $search, page: $page, sort: $sort) {
               ${ dictbizQueryField }
             }
             getDict(codes: [
@@ -585,11 +592,14 @@ export function useExportExcelDictbiz() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllDictbiz) {
-        await setLblById(model, true);
+        await setLblByIdDictbiz(model, true);
       }
       try {
         const sheetName = "业务字典";
@@ -669,19 +679,65 @@ export async function importModelsDictbiz(
  * 查找 业务字典 order_by 字段的最大值
  */
 export async function findLastOrderByDictbiz(
+  search?: DictbizSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDictbiz: Query["findLastOrderByDictbiz"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDictbiz
+      query($search: DictbizSearch) {
+        findLastOrderByDictbiz(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDictbiz;
-  return res;
+  
+  const order_by = data.findLastOrderByDictbiz;
+  
+  return order_by;
+}
+
+/**
+ * 获取 业务字典 字段注释
+ */
+export async function getFieldCommentsDictbiz(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDictbiz: Query["getFieldCommentsDictbiz"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDictbiz {
+          id,
+          code,
+          lbl,
+          is_add,
+          type,
+          type_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDictbiz as DictbizFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathDictbiz() {

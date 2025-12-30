@@ -142,7 +142,7 @@ type Query {
   "根据 ids 查找图标库"
   findByIdsIcon(ids: [IconId!]!): [IconModel]!
   "查找图标库 order_by 字段的最大值"
-  findLastOrderByIcon: Int!
+  findLastOrderByIcon(search: IconSearch): Int!
 }
 type Mutation {
   "批量创建图标库"

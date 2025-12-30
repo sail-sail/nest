@@ -17,7 +17,7 @@ import {
   findTreeMenu,
 } from "@/views/base/menu/Api.ts";
 
-async function setLblById(
+export async function setLblByIdFieldPermit(
   model?: FieldPermitModel | null,
   isExcelExport = false,
 ) {
@@ -40,7 +40,7 @@ export function intoInputFieldPermit(
     // 名称
     lbl: model?.lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -75,7 +75,7 @@ export async function findAllFieldPermit(
   const models = data.findAllFieldPermit;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdFieldPermit(model);
   }
   return models;
 }
@@ -107,7 +107,7 @@ export async function findOneFieldPermit(
   
   const model = data.findOneFieldPermit;
   
-  await setLblById(model);
+  await setLblByIdFieldPermit(model);
   
   return model;
 }
@@ -139,7 +139,7 @@ export async function findOneOkFieldPermit(
   
   const model = data.findOneOkFieldPermit;
   
-  await setLblById(model);
+  await setLblByIdFieldPermit(model);
   
   return model;
 }
@@ -222,7 +222,7 @@ export async function findByIdFieldPermit(
   
   const model = data.findByIdFieldPermit;
   
-  await setLblById(model);
+  await setLblByIdFieldPermit(model);
   
   return model;
 }
@@ -252,7 +252,7 @@ export async function findByIdOkFieldPermit(
   
   const model = data.findByIdOkFieldPermit;
   
-  await setLblById(model);
+  await setLblByIdFieldPermit(model);
   
   return model;
 }
@@ -288,7 +288,7 @@ export async function findByIdsFieldPermit(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdFieldPermit(model);
   }
   
   return models;
@@ -325,7 +325,7 @@ export async function findByIdsOkFieldPermit(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdFieldPermit(model);
   }
   
   return models;
@@ -399,19 +399,54 @@ export async function getTreeMenu() {
  * 查找 字段权限 order_by 字段的最大值
  */
 export async function findLastOrderByFieldPermit(
+  search?: FieldPermitSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByFieldPermit: Query["findLastOrderByFieldPermit"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByFieldPermit
+      query($search: FieldPermitSearch) {
+        findLastOrderByFieldPermit(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByFieldPermit;
-  return res;
+  
+  const order_by = data.findLastOrderByFieldPermit;
+  
+  return order_by;
+}
+
+/**
+ * 获取 字段权限 字段注释
+ */
+export async function getFieldCommentsFieldPermit(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsFieldPermit: Query["getFieldCommentsFieldPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsFieldPermit {
+          id,
+          menu_id,
+          menu_id_lbl,
+          code,
+          lbl,
+          order_by,
+          rem,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsFieldPermit as FieldPermitFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathFieldPermit() {

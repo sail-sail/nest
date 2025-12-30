@@ -19,14 +19,21 @@ import {
 
 import {
   intoInputDictDetail,
+  setLblByIdDictDetail,
 } from "@/views/base/dict_detail/Api.ts";
 
-async function setLblById(
+export async function setLblByIdDict(
   model?: DictModel | null,
   isExcelExport = false,
 ) {
   if (!model) {
     return;
+  }
+  // 系统字典明细
+  model.dict_detail = model.dict_detail ?? [ ];
+  for (let i = 0; i < model.dict_detail.length; i++) {
+    const dict_detail_model = model.dict_detail[i] as DictDetailModel;
+    await setLblByIdDictDetail(dict_detail_model, isExcelExport);
   }
 }
 
@@ -49,7 +56,7 @@ export function intoInputDict(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
     // 系统字典明细
@@ -86,7 +93,7 @@ export async function findAllDict(
   const models = data.findAllDict;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDict(model);
   }
   return models;
 }
@@ -118,7 +125,7 @@ export async function findOneDict(
   
   const model = data.findOneDict;
   
-  await setLblById(model);
+  await setLblByIdDict(model);
   
   return model;
 }
@@ -150,7 +157,7 @@ export async function findOneOkDict(
   
   const model = data.findOneOkDict;
   
-  await setLblById(model);
+  await setLblByIdDict(model);
   
   return model;
 }
@@ -276,7 +283,7 @@ export async function findByIdDict(
   
   const model = data.findByIdDict;
   
-  await setLblById(model);
+  await setLblByIdDict(model);
   
   return model;
 }
@@ -306,7 +313,7 @@ export async function findByIdOkDict(
   
   const model = data.findByIdOkDict;
   
-  await setLblById(model);
+  await setLblByIdDict(model);
   
   return model;
 }
@@ -342,7 +349,7 @@ export async function findByIdsDict(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDict(model);
   }
   
   return models;
@@ -379,7 +386,7 @@ export async function findByIdsOkDict(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDict(model);
   }
   
   return models;
@@ -570,8 +577,8 @@ export function useExportExcelDict() {
     try {
       const data = await query({
         query: `
-          query($search: DictSearch, $sort: [SortInput!]) {
-            findAllDict(search: $search, page: null, sort: $sort) {
+          query($search: DictSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDict(search: $search, page: $page, sort: $sort) {
               ${ dictQueryField }
             }
             getDict(codes: [
@@ -585,11 +592,14 @@ export function useExportExcelDict() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllDict) {
-        await setLblById(model, true);
+        await setLblByIdDict(model, true);
       }
       try {
         const sheetName = "系统字典";
@@ -669,19 +679,65 @@ export async function importModelsDict(
  * 查找 系统字典 order_by 字段的最大值
  */
 export async function findLastOrderByDict(
+  search?: DictSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDict: Query["findLastOrderByDict"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDict
+      query($search: DictSearch) {
+        findLastOrderByDict(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDict;
-  return res;
+  
+  const order_by = data.findLastOrderByDict;
+  
+  return order_by;
+}
+
+/**
+ * 获取 系统字典 字段注释
+ */
+export async function getFieldCommentsDict(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDict: Query["getFieldCommentsDict"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDict {
+          id,
+          code,
+          lbl,
+          type,
+          type_lbl,
+          is_add,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDict as DictFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathDict() {

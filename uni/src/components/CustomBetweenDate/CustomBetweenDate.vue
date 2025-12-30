@@ -11,7 +11,6 @@
   :disabled="readonly"
   v-bind="$attrs"
   @confirm="onConfirm"
-  @change="onChange"
 >
   <slot>
     <view
@@ -28,12 +27,14 @@
         
         <view
           v-if="!props.readonly"
+          un-text="[var(--color-readonly)]"
         >
           {{ props.placeholder }}
         </view>
         
         <view
           v-else
+          un-text="[var(--color-readonly)]"
         >
           {{ props.readonlyPlaceholder }}
         </view>
@@ -89,8 +90,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: "change", value?: string[]): void,
-  (e: "confirm", value?: string[]): void,
+  (e: "change", value?: string[]): void;
 }>();
 
 const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
@@ -111,12 +111,8 @@ const modelValue = defineModel<any[]>({
   default: () => [null, null],
 });
 
-function onChange(value: string[]) {
-  emit("change", value);
-}
-
 function onConfirm(value: string[]) {
-  emit("confirm", value);
+  emit("change", value);
 }
 </script>
 

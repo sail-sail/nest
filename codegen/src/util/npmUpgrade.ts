@@ -37,6 +37,8 @@ async function exec() {
       console.log(command);
       execSync(command, { stdio: "inherit" });
     }
+  } else {
+    console.log("无父分支需要合并");
   }
 }
 

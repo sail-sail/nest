@@ -14,7 +14,7 @@ import {
   deptQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdDept(
   model?: DeptModel | null,
   isExcelExport = false,
 ) {
@@ -44,7 +44,7 @@ export function intoInputDept(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 组织
     org_id: model?.org_id,
     org_id_lbl: model?.org_id_lbl,
@@ -82,7 +82,7 @@ export async function findAllDept(
   const models = data.findAllDept;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDept(model);
   }
   return models;
 }
@@ -114,7 +114,7 @@ export async function findOneDept(
   
   const model = data.findOneDept;
   
-  await setLblById(model);
+  await setLblByIdDept(model);
   
   return model;
 }
@@ -146,7 +146,7 @@ export async function findOneOkDept(
   
   const model = data.findOneOkDept;
   
-  await setLblById(model);
+  await setLblByIdDept(model);
   
   return model;
 }
@@ -294,7 +294,7 @@ export async function findByIdDept(
   
   const model = data.findByIdDept;
   
-  await setLblById(model);
+  await setLblByIdDept(model);
   
   return model;
 }
@@ -324,7 +324,7 @@ export async function findByIdOkDept(
   
   const model = data.findByIdOkDept;
   
-  await setLblById(model);
+  await setLblByIdDept(model);
   
   return model;
 }
@@ -360,7 +360,7 @@ export async function findByIdsDept(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDept(model);
   }
   
   return models;
@@ -397,7 +397,7 @@ export async function findByIdsOkDept(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdDept(model);
   }
   
   return models;
@@ -747,8 +747,8 @@ export function useExportExcelDept() {
     try {
       const data = await query({
         query: `
-          query($search: DeptSearch, $sort: [SortInput!]) {
-            findAllDept(search: $search, page: null, sort: $sort) {
+          query($search: DeptSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDept(search: $search, page: $page, sort: $sort) {
               ${ deptQueryField }
             }
             findAllUsr {
@@ -768,11 +768,14 @@ export function useExportExcelDept() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllDept) {
-        await setLblById(model, true);
+        await setLblByIdDept(model, true);
       }
       try {
         const sheetName = "部门";
@@ -852,19 +855,69 @@ export async function importModelsDept(
  * 查找 部门 order_by 字段的最大值
  */
 export async function findLastOrderByDept(
+  search?: DeptSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDept: Query["findLastOrderByDept"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDept
+      query($search: DeptSearch) {
+        findLastOrderByDept(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDept;
-  return res;
+  
+  const order_by = data.findLastOrderByDept;
+  
+  return order_by;
+}
+
+/**
+ * 获取 部门 字段注释
+ */
+export async function getFieldCommentsDept(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsDept: Query["getFieldCommentsDept"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsDept {
+          id,
+          parent_id,
+          parent_id_lbl,
+          lbl,
+          usr_ids,
+          usr_ids_lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          org_id,
+          org_id_lbl,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsDept as DeptFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathDept() {

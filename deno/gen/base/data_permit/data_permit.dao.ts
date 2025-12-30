@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -79,6 +81,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathDataPermit,
+  getTableNameDataPermit,
+} from "./data_permit.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -194,7 +201,7 @@ export async function findCountDataPermit(
   },
 ): Promise<number> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findCountDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -306,7 +313,7 @@ export async function findAllDataPermit(
   },
 ): Promise<DataPermitModel[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findAllDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -443,6 +450,14 @@ export async function findAllDataPermit(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     scopeDict, // 范围
     typeDict, // 类型
@@ -577,7 +592,7 @@ export async function setIdByLblDataPermit(
 // MARK: getFieldCommentsDataPermit
 /** 获取数据权限字段注释 */
 export async function getFieldCommentsDataPermit(): Promise<DataPermitFieldComment> {
-  const fieldComments: DataPermitFieldComment = {
+  const field_comments: DataPermitFieldComment = {
     id: "ID",
     menu_id: "菜单",
     menu_id_lbl: "菜单",
@@ -595,7 +610,8 @@ export async function getFieldCommentsDataPermit(): Promise<DataPermitFieldComme
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueDataPermit
@@ -607,7 +623,7 @@ export async function findByUniqueDataPermit(
   },
 ): Promise<DataPermitModel[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findByUniqueDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -709,7 +725,7 @@ export async function checkByUniqueDataPermit(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 数据权限 已经存在");
+      throw new UniqueException("数据权限 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: DataPermitId = await updateByIdDataPermit(
@@ -739,7 +755,7 @@ export async function findOneDataPermit(
   },
 ): Promise<DataPermitModel | undefined> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findOneDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -787,7 +803,7 @@ export async function findOneOkDataPermit(
   },
 ): Promise<DataPermitModel> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findOneOkDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -839,7 +855,7 @@ export async function findByIdDataPermit(
   },
 ): Promise<DataPermitModel | undefined> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -881,7 +897,7 @@ export async function findByIdOkDataPermit(
   },
 ): Promise<DataPermitModel> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findByIdOkDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -922,7 +938,7 @@ export async function findByIdsDataPermit(
   },
 ): Promise<DataPermitModel[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findByIdsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -969,7 +985,7 @@ export async function findByIdsOkDataPermit(
   },
 ): Promise<DataPermitModel[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "findByIdsOkDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1018,7 +1034,7 @@ export async function existDataPermit(
   },
 ): Promise<boolean> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "existDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1050,7 +1066,7 @@ export async function existByIdDataPermit(
   },
 ) {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "existByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1162,7 +1178,7 @@ export async function createReturnDataPermit(
   },
 ): Promise<DataPermitModel> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "createReturnDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1213,7 +1229,7 @@ export async function createDataPermit(
   },
 ): Promise<DataPermitId> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "createDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1254,7 +1270,7 @@ export async function createsReturnDataPermit(
   },
 ): Promise<DataPermitModel[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "createsReturnDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1291,7 +1307,7 @@ export async function createsDataPermit(
   },
 ): Promise<DataPermitId[]> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "createsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1328,7 +1344,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1538,7 +1554,7 @@ export async function updateTenantByIdDataPermit(
   },
 ): Promise<number> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "updateTenantByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1586,7 +1602,7 @@ export async function updateByIdDataPermit(
   },
 ): Promise<DataPermitId> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "updateByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1630,7 +1646,7 @@ export async function updateByIdDataPermit(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 数据权限 已经存在";
+        throw "数据权限 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1640,7 +1656,12 @@ export async function updateByIdDataPermit(
   const oldModel = await findByIdDataPermit(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 数据权限 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 数据权限 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1755,7 +1776,14 @@ export async function updateByIdDataPermit(
     await delCacheDataPermit();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1781,7 +1809,7 @@ export async function deleteByIdsDataPermit(
   },
 ): Promise<number> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "deleteByIdsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1804,6 +1832,8 @@ export async function deleteByIdsDataPermit(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheDataPermit();
   
@@ -1839,12 +1869,24 @@ export async function deleteByIdsDataPermit(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
       const sql = `update base_role_data_permit set is_deleted=1 where data_permit_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -1862,7 +1904,7 @@ export async function revertByIdsDataPermit(
   },
 ): Promise<number> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "revertByIdsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1916,7 +1958,7 @@ export async function revertByIdsDataPermit(
         if (model.id === id) {
           continue;
         }
-        throw "此 数据权限 已经存在";
+        throw "数据权限 重复";
       }
     }
     const args = new QueryArgs();
@@ -1940,7 +1982,7 @@ export async function forceDeleteByIdsDataPermit(
   },
 ): Promise<number> {
   
-  const table = "base_data_permit";
+  const table = getTableNameDataPermit();
   const method = "forceDeleteByIdsDataPermit";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1962,6 +2004,8 @@ export async function forceDeleteByIdsDataPermit(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheDataPermit();
   
@@ -1986,7 +2030,13 @@ export async function forceDeleteByIdsDataPermit(
     {
       const args = new QueryArgs();
       const sql = `delete from base_role_data_permit where data_permit_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
