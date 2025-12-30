@@ -227,7 +227,7 @@ impl std::fmt::Debug for FieldPermitSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "FieldPermitInput")]
 #[allow(dead_code)]
 pub struct FieldPermitInput {

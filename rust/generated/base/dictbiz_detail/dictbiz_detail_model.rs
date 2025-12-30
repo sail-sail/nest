@@ -410,7 +410,7 @@ impl std::fmt::Debug for DictbizDetailSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictbizDetailInput")]
 #[allow(dead_code)]
 pub struct DictbizDetailInput {
