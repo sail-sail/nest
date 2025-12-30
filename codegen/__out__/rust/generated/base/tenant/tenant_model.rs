@@ -618,7 +618,7 @@ impl std::fmt::Debug for TenantSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "TenantInput")]
 #[allow(dead_code)]
 pub struct TenantInput {
