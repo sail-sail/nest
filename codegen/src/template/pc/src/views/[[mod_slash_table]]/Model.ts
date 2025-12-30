@@ -230,6 +230,12 @@ export const <#=fieldsName#> = [<#
   #>
   "is_sys",<#
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  // 动态页面数据
+  "dyn_page_data",<#
+  }
   #>
 ];
 

@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -77,6 +79,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathRole,
+  getTableNameRole,
+} from "./role.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -122,6 +129,9 @@ async function getWhereQuery(
   }
   if (search?.code != null) {
     whereQuery += ` and t.code=${ args.push(search.code) }`;
+  }
+  if (search?.codes != null) {
+    whereQuery += ` and t.code in (${ args.push(search.codes) })`;
   }
   if (isNotEmpty(search?.code_like)) {
     whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
@@ -314,7 +324,7 @@ export async function findCountRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findCountRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -337,6 +347,13 @@ export async function findCountRole(
   }
   if (search && search.ids && search.ids.length === 0) {
     return 0;
+  }
+  // 编码
+  if (search && search.codes != null) {
+    const len = search.codes.length;
+    if (len === 0) {
+      return 0;
+    }
   }
   // 菜单权限
   if (search && search.menu_ids != null) {
@@ -459,7 +476,7 @@ export async function findAllRole(
   },
 ): Promise<RoleModel[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findAllRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -488,6 +505,13 @@ export async function findAllRole(
   }
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
+  }
+  // 编码
+  if (search && search.codes != null) {
+    const len = search.codes.length;
+    if (len === 0) {
+      return [ ];
+    }
   }
   // 菜单权限
   if (search && search.menu_ids != null) {
@@ -641,6 +665,14 @@ export async function findAllRole(
       debug: is_debug_sql,
     },
   );
+  
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
   for (const item of result) {
     
     // 菜单权限
@@ -900,7 +932,7 @@ export async function setIdByLblRole(
 // MARK: getFieldCommentsRole
 /** 获取角色字段注释 */
 export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
-  const fieldComments: RoleFieldComment = {
+  const field_comments: RoleFieldComment = {
     id: "ID",
     code: "编码",
     lbl: "名称",
@@ -928,7 +960,8 @@ export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueRole
@@ -940,7 +973,7 @@ export async function findByUniqueRole(
   },
 ): Promise<RoleModel[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findByUniqueRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1046,7 +1079,7 @@ export async function checkByUniqueRole(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 角色 已经存在");
+      throw new UniqueException("角色 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: RoleId = await updateByIdRole(
@@ -1076,7 +1109,7 @@ export async function findOneRole(
   },
 ): Promise<RoleModel | undefined> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findOneRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1124,7 +1157,7 @@ export async function findOneOkRole(
   },
 ): Promise<RoleModel> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findOneOkRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1176,7 +1209,7 @@ export async function findByIdRole(
   },
 ): Promise<RoleModel | undefined> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findByIdRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1218,7 +1251,7 @@ export async function findByIdOkRole(
   },
 ): Promise<RoleModel> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findByIdOkRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1259,7 +1292,7 @@ export async function findByIdsRole(
   },
 ): Promise<RoleModel[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findByIdsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1306,7 +1339,7 @@ export async function findByIdsOkRole(
   },
 ): Promise<RoleModel[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findByIdsOkRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1355,7 +1388,7 @@ export async function existRole(
   },
 ): Promise<boolean> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "existRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1387,7 +1420,7 @@ export async function existByIdRole(
   },
 ) {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "existByIdRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1519,7 +1552,7 @@ export async function findAutoCodeRole(
   },
 ) {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findAutoCodeRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1581,7 +1614,7 @@ export async function createReturnRole(
   },
 ): Promise<RoleModel> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "createReturnRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1632,7 +1665,7 @@ export async function createRole(
   },
 ): Promise<RoleId> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "createRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1673,7 +1706,7 @@ export async function createsReturnRole(
   },
 ): Promise<RoleModel[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "createsReturnRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1710,7 +1743,7 @@ export async function createsRole(
   },
 ): Promise<RoleId[]> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "createsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1760,7 +1793,7 @@ async function _creates(
     input.code = code;
   }
   
-  const table = "base_role";
+  const table = getTableNameRole();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -2051,7 +2084,7 @@ export async function updateTenantByIdRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "updateTenantByIdRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2099,7 +2132,7 @@ export async function updateByIdRole(
   },
 ): Promise<RoleId> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "updateByIdRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2143,7 +2176,7 @@ export async function updateByIdRole(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 角色 已经存在";
+        throw "角色 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -2153,7 +2186,12 @@ export async function updateByIdRole(
   const oldModel = await findByIdRole(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 角色 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 角色 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   {
@@ -2368,7 +2406,14 @@ export async function updateByIdRole(
     await delCacheRole();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -2394,7 +2439,7 @@ export async function deleteByIdsRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "deleteByIdsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2417,6 +2462,8 @@ export async function deleteByIdsRole(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheRole();
   
@@ -2452,7 +2499,13 @@ export async function deleteByIdsRole(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const menu_ids = oldModel.menu_ids;
@@ -2489,7 +2542,13 @@ export async function deleteByIdsRole(
     {
       const args = new QueryArgs();
       const sql = `update base_usr_role set is_deleted=1 where role_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2529,7 +2588,7 @@ export async function enableByIdsRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "enableByIdsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2599,7 +2658,7 @@ export async function lockByIdsRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "lockByIdsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2624,11 +2683,19 @@ export async function lockByIdsRole(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheRole();
   
   const args = new QueryArgs();
   let sql = `update base_role set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheRole();
@@ -2645,7 +2712,7 @@ export async function revertByIdsRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "revertByIdsRole";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2699,7 +2766,7 @@ export async function revertByIdsRole(
         if (model.id === id) {
           continue;
         }
-        throw "此 角色 已经存在";
+        throw "角色 重复";
       }
     }
     const args = new QueryArgs();
@@ -2755,7 +2822,7 @@ export async function forceDeleteByIdsRole(
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "forceDeleteByIdsRole";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2777,6 +2844,8 @@ export async function forceDeleteByIdsRole(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheRole();
   
@@ -2803,7 +2872,13 @@ export async function forceDeleteByIdsRole(
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_role_menu where role_id=${ args.push(id) } and menu_id in (${ args.push(menu_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2811,7 +2886,13 @@ export async function forceDeleteByIdsRole(
       if (permit_ids && permit_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_role_permit where role_id=${ args.push(id) } and permit_id in (${ args.push(permit_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2819,7 +2900,13 @@ export async function forceDeleteByIdsRole(
       if (data_permit_ids && data_permit_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_role_data_permit where role_id=${ args.push(id) } and data_permit_id in (${ args.push(data_permit_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     if (oldModel) {
@@ -2827,13 +2914,25 @@ export async function forceDeleteByIdsRole(
       if (field_permit_ids && field_permit_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_role_field_permit where role_id=${ args.push(id) } and field_permit_id in (${ args.push(field_permit_ids) })`;
-        await execute(sql, args);
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
       }
     }
     {
       const args = new QueryArgs();
       const sql = `delete from base_usr_role where role_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2845,18 +2944,22 @@ export async function forceDeleteByIdsRole(
 // MARK: findLastOrderByRole
 /** 查找 角色 order_by 字段的最大值 */
 export async function findLastOrderByRole(
+  search?: Readonly<RoleSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_role";
+  const table = getTableNameRole();
   const method = "findLastOrderByRole";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2865,24 +2968,29 @@ export async function findLastOrderByRole(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_role t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_role t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

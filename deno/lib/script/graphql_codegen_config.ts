@@ -55,6 +55,14 @@ const config: CodegenConfig = {
             "input": "string",
             "output": "string"
           },
+          "JSONObject": {
+            "input": "Record<string, any>",
+            "output": "Record<string, any>"
+          },
+          "JSONArray": {
+            "input": "any[]",
+            "output": "any[]"
+          },
           ...getScalars(),
         }
       }
@@ -103,6 +111,14 @@ const config: CodegenConfig = {
           "NaiveDateTime": {
             "input": "string",
             "output": "string"
+          },
+          "JSONObject": {
+            "input": "Record<string, any>",
+            "output": "Record<string, any>"
+          },
+          "JSONArray": {
+            "input": "any[]",
+            "output": "any[]"
           },
           ...getScalarsPC(),
         }
@@ -201,6 +217,14 @@ const config: CodegenConfig = {
           "NaiveDateTime": {
             "input": "string",
             "output": "string"
+          },
+          "JSONObject": {
+            "input": "Record<string, any>",
+            "output": "Record<string, any>"
+          },
+          "JSONArray": {
+            "input": "any[]",
+            "output": "any[]"
           },
           ...getScalarsPC(),
         }

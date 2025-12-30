@@ -13,7 +13,7 @@ import {
   orgQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdOrg(
   model?: OrgModel | null,
   isExcelExport = false,
 ) {
@@ -37,7 +37,7 @@ export function intoInputOrg(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -72,7 +72,7 @@ export async function findAllOrg(
   const models = data.findAllOrg;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOrg(model);
   }
   return models;
 }
@@ -104,7 +104,7 @@ export async function findOneOrg(
   
   const model = data.findOneOrg;
   
-  await setLblById(model);
+  await setLblByIdOrg(model);
   
   return model;
 }
@@ -136,7 +136,7 @@ export async function findOneOkOrg(
   
   const model = data.findOneOkOrg;
   
-  await setLblById(model);
+  await setLblByIdOrg(model);
   
   return model;
 }
@@ -262,7 +262,7 @@ export async function findByIdOrg(
   
   const model = data.findByIdOrg;
   
-  await setLblById(model);
+  await setLblByIdOrg(model);
   
   return model;
 }
@@ -292,7 +292,7 @@ export async function findByIdOkOrg(
   
   const model = data.findByIdOkOrg;
   
-  await setLblById(model);
+  await setLblByIdOrg(model);
   
   return model;
 }
@@ -328,7 +328,7 @@ export async function findByIdsOrg(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOrg(model);
   }
   
   return models;
@@ -365,7 +365,7 @@ export async function findByIdsOkOrg(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdOrg(model);
   }
   
   return models;
@@ -575,8 +575,8 @@ export function useExportExcelOrg() {
     try {
       const data = await query({
         query: `
-          query($search: OrgSearch, $sort: [SortInput!]) {
-            findAllOrg(search: $search, page: null, sort: $sort) {
+          query($search: OrgSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllOrg(search: $search, page: $page, sort: $sort) {
               ${ orgQueryField }
             }
             getDict(codes: [
@@ -590,11 +590,14 @@ export function useExportExcelOrg() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllOrg) {
-        await setLblById(model, true);
+        await setLblByIdOrg(model, true);
       }
       try {
         const sheetName = "组织";
@@ -674,19 +677,63 @@ export async function importModelsOrg(
  * 查找 组织 order_by 字段的最大值
  */
 export async function findLastOrderByOrg(
+  search?: OrgSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByOrg: Query["findLastOrderByOrg"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByOrg
+      query($search: OrgSearch) {
+        findLastOrderByOrg(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByOrg;
-  return res;
+  
+  const order_by = data.findLastOrderByOrg;
+  
+  return order_by;
+}
+
+/**
+ * 获取 组织 字段注释
+ */
+export async function getFieldCommentsOrg(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsOrg: Query["getFieldCommentsOrg"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsOrg {
+          id,
+          lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsOrg as OrgFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathOrg() {

@@ -163,9 +163,8 @@ input RoleSearch {
   id: RoleId
   "编码"
   code: String
-  code_like: String
-  "编码"
   codes: [String!]
+  code_like: String
   "名称"
   lbl: String
   lbl_like: String
@@ -233,7 +232,7 @@ type Query {
   "根据 ids 查找角色"
   findByIdsRole(ids: [RoleId!]!): [RoleModel]!
   "查找角色 order_by 字段的最大值"
-  findLastOrderByRole: Int!
+  findLastOrderByRole(search: RoleSearch): Int!
 }
 type Mutation {
   "批量创建角色"

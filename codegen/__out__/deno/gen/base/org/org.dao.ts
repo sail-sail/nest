@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -73,6 +75,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathOrg,
+  getTableNameOrg,
+} from "./org.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -189,7 +196,7 @@ export async function findCountOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findCountOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -290,7 +297,7 @@ export async function findAllOrg(
   },
 ): Promise<OrgModel[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findAllOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -422,6 +429,14 @@ export async function findAllOrg(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
@@ -527,7 +542,7 @@ export async function setIdByLblOrg(
 // MARK: getFieldCommentsOrg
 /** 获取组织字段注释 */
 export async function getFieldCommentsOrg(): Promise<OrgFieldComment> {
-  const fieldComments: OrgFieldComment = {
+  const field_comments: OrgFieldComment = {
     id: "ID",
     lbl: "名称",
     is_locked: "锁定",
@@ -545,7 +560,8 @@ export async function getFieldCommentsOrg(): Promise<OrgFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueOrg
@@ -557,7 +573,7 @@ export async function findByUniqueOrg(
   },
 ): Promise<OrgModel[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findByUniqueOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -643,7 +659,7 @@ export async function checkByUniqueOrg(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 组织 已经存在");
+      throw new UniqueException("组织 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: OrgId = await updateByIdOrg(
@@ -673,7 +689,7 @@ export async function findOneOrg(
   },
 ): Promise<OrgModel | undefined> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findOneOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -721,7 +737,7 @@ export async function findOneOkOrg(
   },
 ): Promise<OrgModel> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findOneOkOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -773,7 +789,7 @@ export async function findByIdOrg(
   },
 ): Promise<OrgModel | undefined> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findByIdOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -815,7 +831,7 @@ export async function findByIdOkOrg(
   },
 ): Promise<OrgModel> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findByIdOkOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -856,7 +872,7 @@ export async function findByIdsOrg(
   },
 ): Promise<OrgModel[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findByIdsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -903,7 +919,7 @@ export async function findByIdsOkOrg(
   },
 ): Promise<OrgModel[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findByIdsOkOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -952,7 +968,7 @@ export async function existOrg(
   },
 ): Promise<boolean> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "existOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -984,7 +1000,7 @@ export async function existByIdOrg(
   },
 ) {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "existByIdOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1106,7 +1122,7 @@ export async function createReturnOrg(
   },
 ): Promise<OrgModel> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "createReturnOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1157,7 +1173,7 @@ export async function createOrg(
   },
 ): Promise<OrgId> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "createOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1198,7 +1214,7 @@ export async function createsReturnOrg(
   },
 ): Promise<OrgModel[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "createsReturnOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1235,7 +1251,7 @@ export async function createsOrg(
   },
 ): Promise<OrgId[]> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "createsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1272,7 +1288,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1482,7 +1498,7 @@ export async function updateTenantByIdOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "updateTenantByIdOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1530,7 +1546,7 @@ export async function updateByIdOrg(
   },
 ): Promise<OrgId> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "updateByIdOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1574,7 +1590,7 @@ export async function updateByIdOrg(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 组织 已经存在";
+        throw "组织 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1584,7 +1600,12 @@ export async function updateByIdOrg(
   const oldModel = await findByIdOrg(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 组织 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 组织 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1699,7 +1720,14 @@ export async function updateByIdOrg(
     await delCacheOrg();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1725,7 +1753,7 @@ export async function deleteByIdsOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "deleteByIdsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1748,6 +1776,8 @@ export async function deleteByIdsOrg(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheOrg();
   
@@ -1783,12 +1813,24 @@ export async function deleteByIdsOrg(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
       const sql = `update base_usr_org set is_deleted=1 where org_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -1828,7 +1870,7 @@ export async function enableByIdsOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "enableByIdsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1898,7 +1940,7 @@ export async function lockByIdsOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "lockByIdsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1923,11 +1965,19 @@ export async function lockByIdsOrg(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheOrg();
   
   const args = new QueryArgs();
   let sql = `update base_org set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheOrg();
@@ -1944,7 +1994,7 @@ export async function revertByIdsOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "revertByIdsOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1998,7 +2048,7 @@ export async function revertByIdsOrg(
         if (model.id === id) {
           continue;
         }
-        throw "此 组织 已经存在";
+        throw "组织 重复";
       }
     }
     const args = new QueryArgs();
@@ -2022,7 +2072,7 @@ export async function forceDeleteByIdsOrg(
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "forceDeleteByIdsOrg";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2044,6 +2094,8 @@ export async function forceDeleteByIdsOrg(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheOrg();
   
@@ -2068,7 +2120,13 @@ export async function forceDeleteByIdsOrg(
     {
       const args = new QueryArgs();
       const sql = `delete from base_usr_org where org_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2080,18 +2138,22 @@ export async function forceDeleteByIdsOrg(
 // MARK: findLastOrderByOrg
 /** 查找 组织 order_by 字段的最大值 */
 export async function findLastOrderByOrg(
+  search?: Readonly<OrgSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_org";
+  const table = getTableNameOrg();
   const method = "findLastOrderByOrg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2100,24 +2162,29 @@ export async function findLastOrderByOrg(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_org t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_org t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

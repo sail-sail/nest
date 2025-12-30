@@ -143,7 +143,7 @@ type Query {
   "根据 ids 查找域名"
   findByIdsDomain(ids: [DomainId!]!): [DomainModel]!
   "查找域名 order_by 字段的最大值"
-  findLastOrderByDomain: Int!
+  findLastOrderByDomain(search: DomainSearch): Int!
 }
 type Mutation {
   "批量创建域名"

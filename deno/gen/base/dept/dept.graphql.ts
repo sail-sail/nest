@@ -197,7 +197,7 @@ type Query {
   "根据 ids 查找部门"
   findByIdsDept(ids: [DeptId!]!): [DeptModel]!
   "查找部门 order_by 字段的最大值"
-  findLastOrderByDept: Int!
+  findLastOrderByDept(search: DeptSearch): Int!
 }
 type Mutation {
   "批量创建部门"

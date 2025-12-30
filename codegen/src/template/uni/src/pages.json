@@ -1,0 +1,67 @@
+{
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^App(.*)": "@/components/App$1/App$1.vue",
+      "^Custom(.*)": "@/components/Custom$1/Custom$1.vue",
+      "^Dict(.*)": "@/components/Dict$1/Dict$1.vue",
+      "^tm-(.*)": "@/uni_modules/tm-ui/components/tm-$1/tm-$1.vue"
+    }
+  },
+  "pages": [<#
+    const uniAllTables = allTables.filter(t=>t.opts?.isUniPage);
+    for (let i = 0; i < uniAllTables.length; i++) {
+      const record = uniAllTables[i];
+      let table_name = record.TABLE_NAME;
+      if (!optTables[table_name]) continue;
+      const table_nameUp = table_name.substring(0, 1).toUpperCase() + table_name.substring(1);
+      const table_comment = record.TABLE_COMMENT;
+      const mod = table_name.substring(0, table_name.indexOf("_"));
+      const mod_slash_table = table_name.replace("_", "/");
+      table_name = table_name.substring(table_name.indexOf("_") + 1);
+    #>
+    {
+      "path": "pages/<#=table_name#>/List",
+      "style": {
+        "navigationBarTitleText": "<#=table_comment#>列表"
+      }
+    },
+    {
+      "path": "pages/<#=table_name#>/Detail",
+      "style": {
+        "navigationBarTitleText": "<#=table_comment#>详情"
+      }
+    }<#
+      if (i < uniAllTables.length - 1) {
+    #>,<#
+      }
+    #><#
+    }
+    #>
+  ],
+  "tabBar": {
+    "selectedColor": "#3975C6",
+    "color": "#808080",
+    "backgroundColor": "#fff",
+    "list": [
+      {
+        "text": "首页",
+        "iconPath": "/static/tabbar/home.png",
+        "selectedIconPath": "/static/tabbar/home-active.png",
+        "pagePath": "pages/home/index"
+      },
+      {
+        "text": "我的",
+        "iconPath": "/static/tabbar/my.png",
+        "selectedIconPath": "/static/tabbar/my-active.png",
+        "pagePath": "pages/my/index"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "管理系统",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  }
+}

@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./dictbiz.model.ts";
-
 /**
  * 根据条件查找业务字典总数
  */
@@ -188,11 +184,15 @@ export async function createsDictbiz(
     createsDictbiz,
   } = await import("./dictbiz.service.ts");
   
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictbiz(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdDictbiz(
     updateByIdDictbiz,
   } = await import("./dictbiz.service.ts");
   
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblDictbiz(input);
   
   await usePermit(
-    route_path,
+    getPagePathDictbiz(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsDictbiz(
     deleteByIdsDictbiz,
   } = await import("./dictbiz.service.ts");
   
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictbiz(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsDictbiz(
     throw new Error(`enableByIdsDictbiz.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictbiz(),
     "edit",
   );
   const res = await enableByIdsDictbiz(ids, is_enabled);
@@ -300,10 +312,14 @@ export async function revertByIdsDictbiz(
     revertByIdsDictbiz,
   } = await import("./dictbiz.service.ts");
   
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictbiz(),
     "delete",
   );
   
@@ -323,10 +339,14 @@ export async function forceDeleteByIdsDictbiz(
     forceDeleteByIdsDictbiz,
   } = await import("./dictbiz.service.ts");
   
+  const {
+    getPagePathDictbiz,
+  } = await import("./dictbiz.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathDictbiz(),
     "force_delete",
   );
   
@@ -338,13 +358,15 @@ export async function forceDeleteByIdsDictbiz(
 /**
  * 查找 业务字典 order_by 字段的最大值
  */
-export async function findLastOrderByDictbiz(): Promise<number> {
+export async function findLastOrderByDictbiz(
+  search?: DictbizSearch,
+): Promise<number> {
   
   const {
     findLastOrderByDictbiz,
   } = await import("./dictbiz.service.ts");
   
-  const res = findLastOrderByDictbiz();
+  const order_by = findLastOrderByDictbiz(search);
   
-  return res;
+  return order_by;
 }

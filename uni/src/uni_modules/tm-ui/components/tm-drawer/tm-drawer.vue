@@ -180,7 +180,7 @@ const props = defineProps({
 	 */
 	zIndex: {
 		type: [String, Number],
-		default: 1100
+		default: 1200
 	},
 	/**
 	 * 懒加载
@@ -624,21 +624,21 @@ export default {
 						<view v-if="!disabledScroll && _size != 'auto'" style="flex: 1;" class="tmModalWrapBoxContent">
 							<scroll-view style="height:100%;position:absolute;width:100%;" :scroll-y="true"
 								:rebound="false">
-								<view :style="{ padding: `0px ${_contentMargin}  0px ${_contentMargin}` }">
+								<!-- <view :style="{ padding: `0px ${_contentMargin}  0px ${_contentMargin}` }"> -->
 									<!--
 									@slot 默认插槽
 									-->
 									<slot></slot>
-								</view>
+								<!-- </view> -->
 							</scroll-view>
 						</view>
-						<view v-else
-							:style="{ height: '100%', padding: `0px ${_contentMargin}  0px ${_contentMargin}` }">
+						<template v-else
+						>
 							<!--
 							@slot 默认插槽
 							-->
 							<slot></slot>
-						</view>
+						</template>
 
 
 						<view v-if="showFooter && lezyShowModal" class="tmDrawerFooter"

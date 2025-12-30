@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -69,6 +71,11 @@ import {
 import {
   getTenant_id,
 } from "/src/base/usr/usr.dao.ts";
+
+import {
+  getPagePathMenu,
+  getTableNameMenu,
+} from "./menu.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -119,8 +126,8 @@ async function getWhereQuery(
   if (search?.is_home_hide != null) {
     whereQuery += ` and t.is_home_hide in (${ args.push(search.is_home_hide) })`;
   }
-  if (search?.is_locked != null) {
-    whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
+  if (search?.is_dyn_page != null) {
+    whereQuery += ` and t.is_dyn_page in (${ args.push(search.is_dyn_page) })`;
   }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
@@ -215,7 +222,7 @@ export async function findCountMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findCountMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -261,15 +268,15 @@ export async function findCountMenu(
       throw new Error(`search.is_home_hide.length > ${ ids_limit }`);
     }
   }
-  // 锁定
-  if (search && search.is_locked != null) {
-    const len = search.is_locked.length;
+  // 动态页面
+  if (search && search.is_dyn_page != null) {
+    const len = search.is_dyn_page.length;
     if (len === 0) {
       return 0;
     }
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
-      throw new Error(`search.is_locked.length > ${ ids_limit }`);
+      throw new Error(`search.is_dyn_page.length > ${ ids_limit }`);
     }
   }
   // 启用
@@ -349,7 +356,7 @@ export async function findAllMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findAllMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -401,15 +408,15 @@ export async function findAllMenu(
       throw new Error(`search.is_home_hide.length > ${ ids_limit }`);
     }
   }
-  // 锁定
-  if (search && search.is_locked != null) {
-    const len = search.is_locked.length;
+  // 动态页面
+  if (search && search.is_dyn_page != null) {
+    const len = search.is_dyn_page.length;
     if (len === 0) {
       return [ ];
     }
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
-      throw new Error(`search.is_locked.length > ${ ids_limit }`);
+      throw new Error(`search.is_dyn_page.length > ${ ids_limit }`);
     }
   }
   // 启用
@@ -515,13 +522,21 @@ export async function findAllMenu(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_home_hideDict, // 首页隐藏
-    is_lockedDict, // 锁定
+    is_dyn_pageDict, // 动态页面
     is_enabledDict, // 启用
   ] = await getDict([
     "yes_no",
-    "is_locked",
+    "yes_no",
     "is_enabled",
   ]);
   
@@ -541,15 +556,15 @@ export async function findAllMenu(
     }
     model.is_home_hide_lbl = is_home_hide_lbl || "";
     
-    // 锁定
-    let is_locked_lbl = model.is_locked?.toString() || "";
-    if (model.is_locked != null) {
-      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === String(model.is_locked));
+    // 动态页面
+    let is_dyn_page_lbl = model.is_dyn_page?.toString() || "";
+    if (model.is_dyn_page != null) {
+      const dictItem = is_dyn_pageDict.find((dictItem) => dictItem.val === String(model.is_dyn_page));
       if (dictItem) {
-        is_locked_lbl = dictItem.lbl;
+        is_dyn_page_lbl = dictItem.lbl;
       }
     }
-    model.is_locked_lbl = is_locked_lbl || "";
+    model.is_dyn_page_lbl = is_dyn_page_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -603,11 +618,11 @@ export async function setIdByLblMenu(
   
   const [
     is_home_hideDict, // 首页隐藏
-    is_lockedDict, // 锁定
+    is_dyn_pageDict, // 动态页面
     is_enabledDict, // 启用
   ] = await getDict([
     "yes_no",
-    "is_locked",
+    "yes_no",
     "is_enabled",
   ]);
   
@@ -648,15 +663,15 @@ export async function setIdByLblMenu(
     input.is_home_hide_lbl = lbl;
   }
   
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
+  // 动态页面
+  if (isNotEmpty(input.is_dyn_page_lbl) && input.is_dyn_page == null) {
+    const val = is_dyn_pageDict.find((itemTmp) => itemTmp.lbl === input.is_dyn_page_lbl)?.val;
     if (val != null) {
-      input.is_locked = Number(val);
+      input.is_dyn_page = Number(val);
     }
-  } else if (isEmpty(input.is_locked_lbl) && input.is_locked != null) {
-    const lbl = is_lockedDict.find((itemTmp) => itemTmp.val === String(input.is_locked))?.lbl || "";
-    input.is_locked_lbl = lbl;
+  } else if (isEmpty(input.is_dyn_page_lbl) && input.is_dyn_page != null) {
+    const lbl = is_dyn_pageDict.find((itemTmp) => itemTmp.val === String(input.is_dyn_page))?.lbl || "";
+    input.is_dyn_page_lbl = lbl;
   }
   
   // 启用
@@ -674,7 +689,7 @@ export async function setIdByLblMenu(
 // MARK: getFieldCommentsMenu
 /** 获取菜单字段注释 */
 export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
-  const fieldComments: MenuFieldComment = {
+  const field_comments: MenuFieldComment = {
     id: "ID",
     parent_id: "父菜单",
     parent_id_lbl: "父菜单",
@@ -683,8 +698,8 @@ export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
     route_query: "参数",
     is_home_hide: "首页隐藏",
     is_home_hide_lbl: "首页隐藏",
-    is_locked: "锁定",
-    is_locked_lbl: "锁定",
+    is_dyn_page: "动态页面",
+    is_dyn_page_lbl: "动态页面",
     is_enabled: "启用",
     is_enabled_lbl: "启用",
     order_by: "排序",
@@ -698,7 +713,8 @@ export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueMenu
@@ -710,7 +726,7 @@ export async function findByUniqueMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByUniqueMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -807,7 +823,7 @@ export async function checkByUniqueMenu(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 菜单 已经存在");
+      throw new UniqueException("菜单 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: MenuId = await updateByIdMenu(
@@ -837,7 +853,7 @@ export async function findOneMenu(
   },
 ): Promise<MenuModel | undefined> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findOneMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -885,7 +901,7 @@ export async function findOneOkMenu(
   },
 ): Promise<MenuModel> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findOneOkMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -937,7 +953,7 @@ export async function findByIdMenu(
   },
 ): Promise<MenuModel | undefined> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -979,7 +995,7 @@ export async function findByIdOkMenu(
   },
 ): Promise<MenuModel> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdOkMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1020,7 +1036,7 @@ export async function findByIdsMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1067,7 +1083,7 @@ export async function findByIdsOkMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findByIdsOkMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1116,7 +1132,7 @@ export async function existMenu(
   },
 ): Promise<boolean> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "existMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1148,7 +1164,7 @@ export async function existByIdMenu(
   },
 ) {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "existByIdMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1291,7 +1307,7 @@ export async function createReturnMenu(
   },
 ): Promise<MenuModel> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createReturnMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1342,7 +1358,7 @@ export async function createMenu(
   },
 ): Promise<MenuId> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1383,7 +1399,7 @@ export async function createsReturnMenu(
   },
 ): Promise<MenuModel[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createsReturnMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1420,7 +1436,7 @@ export async function createsMenu(
   },
 ): Promise<MenuId[]> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "createsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1457,7 +1473,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1507,7 +1523,7 @@ async function _creates(
   await delCacheMenu();
   
   const args = new QueryArgs();
-  let sql = "insert into base_menu(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,parent_id,lbl,route_path,route_query,is_home_hide,is_locked,is_enabled,order_by,rem,is_hidden)values";
+  let sql = "insert into base_menu(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,parent_id,lbl,route_path,route_query,is_home_hide,is_dyn_page,is_enabled,order_by,rem,is_hidden)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1617,8 +1633,8 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.is_locked != null) {
-        sql += `,${ args.push(input.is_locked) }`;
+      if (input.is_dyn_page != null) {
+        sql += `,${ args.push(input.is_dyn_page) }`;
       } else {
         sql += ",default";
       }
@@ -1683,7 +1699,7 @@ export async function updateByIdMenu(
   },
 ): Promise<MenuId> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "updateByIdMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1722,7 +1738,7 @@ export async function updateByIdMenu(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 菜单 已经存在";
+        throw "菜单 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1732,7 +1748,12 @@ export async function updateByIdMenu(
   const oldModel = await findByIdMenu(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 菜单 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 菜单 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1768,9 +1789,9 @@ export async function updateByIdMenu(
       updateFldNum++;
     }
   }
-  if (input.is_locked != null) {
-    if (input.is_locked != oldModel.is_locked) {
-      sql += `is_locked=${ args.push(input.is_locked) },`;
+  if (input.is_dyn_page != null) {
+    if (input.is_dyn_page != oldModel.is_dyn_page) {
+      sql += `is_dyn_page=${ args.push(input.is_dyn_page) },`;
       updateFldNum++;
     }
   }
@@ -1877,7 +1898,14 @@ export async function updateByIdMenu(
     await delCacheMenu();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1903,7 +1931,7 @@ export async function deleteByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "deleteByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1926,6 +1954,8 @@ export async function deleteByIdsMenu(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheMenu();
   
@@ -1961,17 +1991,35 @@ export async function deleteByIdsMenu(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
       const sql = `update base_role_menu set is_deleted=1 where menu_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
     {
       const args = new QueryArgs();
       const sql = `update base_tenant_menu set is_deleted=1 where menu_id=${ args.push(id) } and is_deleted=0`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2011,7 +2059,7 @@ export async function enableByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "enableByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2050,74 +2098,6 @@ export async function enableByIdsMenu(
   return num;
 }
 
-// MARK: getIsLockedByIdMenu
-/** 根据 id 查找 菜单 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedByIdMenu(
-  id: MenuId,
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<0 | 1 | undefined> {
-  
-  options = options ?? { };
-  options.is_debug = false;
-  
-  const menu_model = await findByIdMenu(
-    id,
-    options,
-  );
-  const is_locked = menu_model?.is_locked as (0 | 1 | undefined);
-  
-  return is_locked;
-}
-
-// MARK: lockByIdsMenu
-/** 根据 ids 锁定或者解锁 菜单 */
-export async function lockByIdsMenu(
-  ids: MenuId[],
-  is_locked: Readonly<0 | 1>,
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<number> {
-  
-  const table = "base_menu";
-  const method = "lockByIdsMenu";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (ids) {
-      msg += ` ids:${ JSON.stringify(ids) }`;
-    }
-    if (is_locked != null) {
-      msg += ` is_locked:${ is_locked }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  if (!ids || !ids.length) {
-    return 0;
-  }
-  
-  await delCacheMenu();
-  
-  const args = new QueryArgs();
-  let sql = `update base_menu set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCacheMenu();
-  
-  return num;
-}
-
 // MARK: revertByIdsMenu
 /** 根据 ids 还原 菜单 */
 export async function revertByIdsMenu(
@@ -2127,7 +2107,7 @@ export async function revertByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "revertByIdsMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2181,7 +2161,7 @@ export async function revertByIdsMenu(
         if (model.id === id) {
           continue;
         }
-        throw "此 菜单 已经存在";
+        throw "菜单 重复";
       }
     }
     const args = new QueryArgs();
@@ -2205,7 +2185,7 @@ export async function forceDeleteByIdsMenu(
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "forceDeleteByIdsMenu";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2227,6 +2207,8 @@ export async function forceDeleteByIdsMenu(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheMenu();
   
@@ -2251,12 +2233,24 @@ export async function forceDeleteByIdsMenu(
     {
       const args = new QueryArgs();
       const sql = `delete from base_role_menu where menu_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
     {
       const args = new QueryArgs();
       const sql = `delete from base_tenant_menu where menu_id=${ args.push(id) }`;
-      await execute(sql, args);
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug_sql,
+        },
+      );
     }
   }
   
@@ -2268,18 +2262,22 @@ export async function forceDeleteByIdsMenu(
 // MARK: findLastOrderByMenu
 /** 查找 菜单 order_by 字段的最大值 */
 export async function findLastOrderByMenu(
+  search?: Readonly<MenuSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "base_menu";
+  const table = getTableNameMenu();
   const method = "findLastOrderByMenu";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2288,19 +2286,29 @@ export async function findLastOrderByMenu(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from base_menu t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from base_menu t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

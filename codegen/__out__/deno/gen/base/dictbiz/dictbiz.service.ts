@@ -275,7 +275,10 @@ export async function getFieldCommentsDictbiz(): Promise<DictbizFieldComment> {
  * 查找 业务字典 order_by 字段的最大值
  */
 export async function findLastOrderByDictbiz(
+  search?: DictbizSearch,
 ): Promise<number> {
-  const dictbiz_sort = await dictbizDao.findLastOrderByDictbiz();
-  return dictbiz_sort;
+  
+  const order_by = await dictbizDao.findLastOrderByDictbiz(search);
+  
+  return order_by;
 }

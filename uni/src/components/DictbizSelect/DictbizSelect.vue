@@ -1,6 +1,7 @@
 <template>
 <CustomSelect
   v-bind="$attrs"
+  v-model="modelValue"
   :method="dataMethod"
   :options-map="optionsMap"
   @change="onChange"
@@ -30,6 +31,9 @@ const props = withDefaults(
   {
   },
 );
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const modelValue = defineModel<any>();
 
 function onChange(value: GetDictbiz | GetDictbiz[] | null) {
   emit("change", value);
