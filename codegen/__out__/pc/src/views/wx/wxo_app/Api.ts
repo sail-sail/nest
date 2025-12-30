@@ -63,7 +63,7 @@ export function intoInputWxoApp(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -667,8 +667,8 @@ export function useExportExcelWxoApp() {
     try {
       const data = await query({
         query: `
-          query($search: WxoAppSearch, $sort: [SortInput!]) {
-            findAllWxoApp(search: $search, page: null, sort: $sort) {
+          query($search: WxoAppSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllWxoApp(search: $search, page: $page, sort: $sort) {
               ${ wxoAppQueryField }
             }
             findAllDomain {
@@ -687,6 +687,9 @@ export function useExportExcelWxoApp() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

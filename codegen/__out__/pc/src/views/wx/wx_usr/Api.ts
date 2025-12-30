@@ -612,8 +612,8 @@ export function useExportExcelWxUsr() {
     try {
       const data = await query({
         query: `
-          query($search: WxUsrSearch, $sort: [SortInput!]) {
-            findAllWxUsr(search: $search, page: null, sort: $sort) {
+          query($search: WxUsrSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllWxUsr(search: $search, page: $page, sort: $sort) {
               ${ wxUsrQueryField }
             }
             findAllUsr {
@@ -629,6 +629,9 @@ export function useExportExcelWxUsr() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

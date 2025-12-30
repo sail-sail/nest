@@ -110,17 +110,6 @@
               <ElIconRemove />
             </el-icon>
           </div>
-          
-          <el-checkbox
-            v-if="!isLocked"
-            v-model="search.is_deleted"
-            :set="search.is_deleted = search.is_deleted ?? 0"
-            :false-value="0"
-            :true-value="1"
-            @change="onRecycle"
-          >
-            <span>回收站</span>
-          </el-checkbox>
         </div>
       </div>
       
@@ -175,7 +164,7 @@
     un-m="x-1.5 t-1.5"
     un-flex="~ nowrap"
   >
-    <template v-if="search.is_deleted !== 1">
+    <template v-if="true">
       
       <el-button
         plain
@@ -565,7 +554,7 @@
             </el-table-column>
           </template>
           
-          <!-- 创建人 -->
+          <!--  -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -583,7 +572,7 @@
             </el-table-column>
           </template>
           
-          <!-- 更新人 -->
+          <!--  -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -592,8 +581,8 @@
             </el-table-column>
           </template>
           
-          <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop">
+          <!--  -->
+          <template v-else-if="'update_time' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -689,7 +678,6 @@ const emit = defineEmits<{
 }>();
 
 const props = defineProps<{
-  is_deleted?: string;
   showBuildIn?: string;
   isPagination?: string;
   isLocked?: string;
@@ -708,7 +696,6 @@ const props = defineProps<{
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
-  is_deleted: "0|1",
   showBuildIn: "0|1",
   isPagination: "0|1",
   isMultiple: "0|1",
@@ -760,12 +747,11 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
+const tableRef = $(useTemplateRef("tableRef"));
 
 /** 查询 */
 function initSearch() {
   const search = {
-    is_deleted: 0,
   } as WxPayNoticeSearch;
   props.propsNotReset?.forEach((key) => {
     search[key] = builtInSearch[key];
@@ -1086,7 +1072,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "创建人",
+      label: "",
       prop: "create_usr_id_lbl",
       sortBy: "create_usr_id_lbl",
       width: 120,
@@ -1105,7 +1091,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "更新人",
+      label: "",
       prop: "update_usr_id_lbl",
       sortBy: "update_usr_id_lbl",
       width: 120,
@@ -1114,9 +1100,8 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "更新时间",
-      prop: "update_time_lbl",
-      sortBy: "update_time",
+      label: "",
+      prop: "update_time",
       width: 160,
       sortable: "custom",
       align: "center",
@@ -1142,7 +1127,7 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
+const detailRef = $(useTemplateRef("detailRef"));
 
 /** 当前表格数据对应的搜索条件 */
 let currentSearch = $ref<WxPayNoticeSearch>({ });
@@ -1168,15 +1153,11 @@ async function dataGrid(
 }
 
 function getDataSearch() {
-  const is_deleted = search.is_deleted;
   const search2 = {
     ...search,
     idsChecked: undefined,
   };
-  if (!showBuildIn) {
-    Object.assign(search2, builtInSearch);
-  }
-  search2.is_deleted = is_deleted;
+  Object.assign(search2, builtInSearch);
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -1321,7 +1302,6 @@ async function openView() {
     return;
   }
   const search = getDataSearch();
-  const is_deleted = search.is_deleted;
   const ids = selectedIds;
   const {
     changedIds,
@@ -1333,7 +1313,6 @@ async function openView() {
     isLocked: $$(isLocked),
     model: {
       ids,
-      is_deleted,
     },
   });
   tableFocus();
@@ -1374,21 +1353,26 @@ async function initFrame() {
 }
 
 watch(
-  () => [ builtInSearch, showBuildIn ],
+  computed(() => {
+    const {
+      selectedIds,
+      isMultiple,
+      showBuildIn,
+      isPagination,
+      isLocked,
+      isFocus,
+      propsNotReset,
+      isListSelectDialog,
+      ...rest
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } = builtInSearch as any;
+    return rest
+  }),
   async function() {
     if (isSearchReset) {
       return;
     }
-    if (builtInSearch.is_deleted != null) {
-      search.is_deleted = builtInSearch.is_deleted;
-    }
-    if (showBuildIn) {
-      Object.assign(search, builtInSearch);
-    }
-    const search2 = getDataSearch();
-    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
-      return;
-    }
+    selectedIds = [ ];
     await dataGrid(true);
   },
   {

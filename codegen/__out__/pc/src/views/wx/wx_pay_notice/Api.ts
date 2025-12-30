@@ -59,9 +59,9 @@ export function intoInputWxPayNotice(
     success_time_lbl: model?.success_time_lbl,
     success_time_save_null: model?.success_time_save_null,
     // 总金额(分)
-    total: model?.total,
+    total: model?.total != null ? Number(model?.total || 0) : undefined,
     // 用户支付金额(分)
-    payer_total: model?.payer_total,
+    payer_total: model?.payer_total != null ? Number(model?.payer_total || 0) : undefined,
     // 货币类型
     currency: model?.currency,
     currency_lbl: model?.currency_lbl,
@@ -359,8 +359,8 @@ export function useExportExcelWxPayNotice() {
     try {
       const data = await query({
         query: `
-          query($search: WxPayNoticeSearch, $sort: [SortInput!]) {
-            findAllWxPayNotice(search: $search, page: null, sort: $sort) {
+          query($search: WxPayNoticeSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllWxPayNotice(search: $search, page: $page, sort: $sort) {
               ${ wxPayNoticeQueryField }
             }
             getDict(codes: [
@@ -376,6 +376,9 @@ export function useExportExcelWxPayNotice() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -452,7 +455,6 @@ export async function getFieldCommentsWxPayNotice(
           update_usr_id,
           update_usr_id_lbl,
           update_time,
-          update_time_lbl,
         }
       }
     `,

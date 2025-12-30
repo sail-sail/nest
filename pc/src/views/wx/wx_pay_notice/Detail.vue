@@ -19,29 +19,6 @@
         @click="onReset"
       ></ElIconRefresh>
     </div>
-    <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
-      <div
-        v-if="!isReadonly"
-        title="锁定"
-      >
-        <ElIconUnlock
-          class="unlock_but"
-          @dblclick.stop
-          @click="isReadonly = true;"
-        >
-        </ElIconUnlock>
-      </div>
-      <div
-        v-else
-        title="解锁"
-      >
-        <ElIconLock
-          class="lock_but"
-          @dblclick.stop
-          @click="isReadonly = false;"
-        ></ElIconLock>
-      </div>
-    </template>
   </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
@@ -422,7 +399,7 @@ let ids = $ref<WxPayNoticeId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<WxPayNoticeId[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -486,7 +463,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOneWxPayNotice;
 
@@ -577,7 +554,6 @@ async function showDialog(
     ] = await Promise.all([
       findOneModel({
         id,
-        is_deleted,
       }),
     ]);
     if (data) {
@@ -658,7 +634,6 @@ async function onRefresh() {
   ] = await Promise.all([
     await findOneModel({
       id,
-      is_deleted,
     }),
   ]);
   if (data) {

@@ -276,33 +276,3 @@ pub async fn get_field_comments_wx_pay_notice(
   
   Ok(comments)
 }
-
-/// 根据 wx_pay_notice_ids 还原微信支付通知
-#[allow(dead_code)]
-pub async fn revert_by_ids_wx_pay_notice(
-  wx_pay_notice_ids: Vec<WxPayNoticeId>,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = wx_pay_notice_dao::revert_by_ids_wx_pay_notice(
-    wx_pay_notice_ids,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
-/// 根据 wx_pay_notice_ids 彻底删除微信支付通知
-#[allow(dead_code)]
-pub async fn force_delete_by_ids_wx_pay_notice(
-  wx_pay_notice_ids: Vec<WxPayNoticeId>,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = wx_pay_notice_dao::force_delete_by_ids_wx_pay_notice(
-    wx_pay_notice_ids,
-    options,
-  ).await?;
-  
-  Ok(num)
-}

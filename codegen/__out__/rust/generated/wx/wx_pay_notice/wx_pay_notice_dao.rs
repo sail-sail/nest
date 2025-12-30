@@ -31,6 +31,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
+  find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -55,8 +56,6 @@ use super::wx_pay_notice_model::*;
 use crate::base::tenant::tenant_model::TenantId;
 use crate::base::usr::usr_model::UsrId;
 
-use crate::base::usr::usr_dao::find_by_id_usr;
-
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
@@ -64,14 +63,9 @@ async fn get_where_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let is_deleted = search
-    .and_then(|item| item.is_deleted)
-    .unwrap_or(0);
+  let mut where_query = String::with_capacity(80 * 23 * 2);
   
-  let mut where_query = String::with_capacity(80 * 24 * 2);
-  
-  where_query.push_str(" t.is_deleted=?");
-  args.push(is_deleted.into());
+  where_query.push_str(" 1=1");
   {
     let id = match search {
       Some(item) => item.id.as_ref(),
@@ -461,7 +455,7 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
   }
-  // 创建人
+  // 
   {
     let create_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.create_usr_id.clone(),
@@ -512,21 +506,19 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query.push_str(" and t.create_usr_id_lbl in (");
+      where_query.push_str(" and create_usr_id_lbl.lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
-    {
-      let create_usr_id_lbl_like = match search {
-        Some(item) => item.create_usr_id_lbl_like.clone(),
-        None => None,
-      };
-      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
-        if !create_usr_id_lbl_like.is_empty() {
-          where_query.push_str(" and create_usr_id_lbl like ?");
-          args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
-        }
-      }
+  }
+  {
+    let create_usr_id_lbl_like = match search {
+      Some(item) => item.create_usr_id_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+      where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+      args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
     }
   }
   // 创建时间
@@ -546,7 +538,7 @@ async fn get_where_query(
       args.push(create_time_lt.into());
     }
   }
-  // 更新人
+  // 
   {
     let update_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.update_usr_id.clone(),
@@ -597,38 +589,30 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query.push_str(" and t.update_usr_id_lbl in (");
+      where_query.push_str(" and update_usr_id_lbl.lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
-    {
-      let update_usr_id_lbl_like = match search {
-        Some(item) => item.update_usr_id_lbl_like.clone(),
-        None => None,
-      };
-      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
-        if !update_usr_id_lbl_like.is_empty() {
-          where_query.push_str(" and update_usr_id_lbl like ?");
-          args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
-        }
-      }
+  }
+  {
+    let update_usr_id_lbl_like = match search {
+      Some(item) => item.update_usr_id_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+      where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+      args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
     }
   }
-  // 更新时间
+  // 
   {
-    let mut update_time = match search {
-      Some(item) => item.update_time.unwrap_or_default(),
-      None => Default::default(),
+    let update_time = match search {
+      Some(item) => item.update_time.clone(),
+      None => None,
     };
-    let update_time_gt = update_time[0].take();
-    let update_time_lt = update_time[1].take();
-    if let Some(update_time_gt) = update_time_gt {
-      where_query.push_str(" and t.update_time >= ?");
-      args.push(update_time_gt.into());
-    }
-    if let Some(update_time_lt) = update_time_lt {
-      where_query.push_str(" and t.update_time <= ?");
-      args.push(update_time_lt.into());
+    if let Some(update_time) = update_time {
+      where_query.push_str(" and t.update_time=?");
+      args.push(update_time.into());
     }
   }
   Ok(where_query)
@@ -641,7 +625,9 @@ async fn get_from_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let from_query = r#"wx_wx_pay_notice t"#.to_owned();
+  let from_query = r#"wx_wx_pay_notice t
+  left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+  left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id"#.to_owned();
   Ok(from_query)
 }
 
@@ -744,7 +730,7 @@ pub async fn find_all_wx_pay_notice(
       return Err(eyre!("search.payer_currency.length > {ids_limit}"));
     }
   }
-  // 创建人
+  // 
   if let Some(search) = &search && search.create_usr_id.is_some() {
     let len = search.create_usr_id.as_ref().unwrap().len();
     if len == 0 {
@@ -758,7 +744,7 @@ pub async fn find_all_wx_pay_notice(
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
-  // 更新人
+  // 
   if let Some(search) = &search && search.update_usr_id.is_some() {
     let len = search.update_usr_id.as_ref().unwrap().len();
     if len == 0 {
@@ -776,10 +762,6 @@ pub async fn find_all_wx_pay_notice(
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
-  
-  #[allow(unused_variables)]
-  let is_deleted = search.as_ref()
-    .and_then(|item| item.is_deleted);
   
   let mut args = QueryArgs::new();
   
@@ -803,9 +785,14 @@ pub async fn find_all_wx_pay_notice(
   }
   
   let order_by_query = get_order_by_query(Some(sort));
+  let is_result_limit = page.as_ref()
+    .and_then(|item| item.is_result_limit)
+    .unwrap_or(true);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
+  ,create_usr_id_lbl.lbl create_usr_id_lbl
+  ,update_usr_id_lbl.lbl update_usr_id_lbl
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -817,6 +804,13 @@ pub async fn find_all_wx_pay_notice(
     args,
     Some(options),
   ).await?;
+  
+  let len = res.len();
+  let result_limit_num = find_all_result_limit();
+  
+  if is_result_limit && len > result_limit_num {
+    return Err(eyre!("{table}.{method}: result length {len} > {result_limit_num}"));
+  }
   
   let dict_vec = get_dict(&[
     "wx_unified_order_trade_type",
@@ -967,7 +961,7 @@ pub async fn find_count_wx_pay_notice(
       return Err(eyre!("search.payer_currency.length > {ids_limit}"));
     }
   }
-  // 创建人
+  // 
   if let Some(search) = &search && search.create_usr_id.is_some() {
     let len = search.create_usr_id.as_ref().unwrap().len();
     if len == 0 {
@@ -981,7 +975,7 @@ pub async fn find_count_wx_pay_notice(
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
-  // 更新人
+  // 
   if let Some(search) = &search && search.update_usr_id.is_some() {
     let len = search.update_usr_id.as_ref().unwrap().len();
     if len == 0 {
@@ -1057,14 +1051,13 @@ pub async fn get_field_comments_wx_pay_notice(
     payer_currency_lbl: "用户支付币种".into(),
     device_id: "商户端设备号".into(),
     rem: "备注".into(),
-    create_usr_id: "创建人".into(),
-    create_usr_id_lbl: "创建人".into(),
+    create_usr_id: "".into(),
+    create_usr_id_lbl: "".into(),
     create_time: "创建时间".into(),
     create_time_lbl: "创建时间".into(),
-    update_usr_id: "更新人".into(),
-    update_usr_id_lbl: "更新人".into(),
-    update_time: "更新时间".into(),
-    update_time_lbl: "更新时间".into(),
+    update_usr_id: "".into(),
+    update_usr_id_lbl: "".into(),
+    update_time: "".into(),
   };
   Ok(field_comments)
 }
@@ -1157,10 +1150,11 @@ pub async fn find_one_wx_pay_notice(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let page = PageInput {
-    pg_offset: 0.into(),
-    pg_size: 1.into(),
-  }.into();
+  let page = Some(PageInput {
+    pg_offset: Some(0),
+    pg_size: Some(1),
+    is_result_limit: Some(true),
+  });
   
   let res = find_all_wx_pay_notice(
     search,
@@ -1503,7 +1497,7 @@ pub async fn exists_wx_pay_notice(
       return Err(eyre!("search.payer_currency.length > {ids_limit}"));
     }
   }
-  // 创建人
+  // 
   if let Some(search) = &search && search.create_usr_id.is_some() {
     let len = search.create_usr_id.as_ref().unwrap().len();
     if len == 0 {
@@ -1517,7 +1511,7 @@ pub async fn exists_wx_pay_notice(
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
-  // 更新人
+  // 
   if let Some(search) = &search && search.update_usr_id.is_some() {
     let len = search.update_usr_id.as_ref().unwrap().len();
     if len == 0 {
@@ -2048,15 +2042,10 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 24 + 20);
+  let mut sql_fields = String::with_capacity(80 * 23 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
-  sql_fields += ",update_time";
-  sql_fields += ",create_usr_id";
-  sql_fields += ",create_usr_id_lbl";
-  sql_fields += ",update_usr_id";
-  sql_fields += ",update_usr_id_lbl";
   sql_fields += ",tenant_id";
   // 开发者ID
   sql_fields += ",appid";
@@ -2094,7 +2083,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 24 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 23 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2126,89 +2115,6 @@ async fn _creates(
       args.push(create_time.into());
     } else {
       sql_values += ",null";
-    }
-    
-    if let Some(update_time) = input.update_time {
-      sql_values += ",?";
-      args.push(update_time.into());
-    } else {
-      sql_values += ",null";
-    }
-    
-    if !is_silent_mode {
-      if input.create_usr_id.is_none() {
-        let mut usr_id = get_auth_id();
-        let mut usr_lbl = String::new();
-        if usr_id.is_some() {
-          let usr_model = find_by_id_usr(
-            usr_id.unwrap(),
-            options.clone(),
-          ).await?;
-          if let Some(usr_model) = usr_model {
-            usr_lbl = usr_model.lbl;
-          } else {
-            usr_id = None;
-          }
-        }
-        if let Some(usr_id) = usr_id {
-          sql_values += ",?";
-          args.push(usr_id.into());
-        } else {
-          sql_values += ",default";
-        }
-        sql_values += ",?";
-        args.push(usr_lbl.into());
-      } else if input.create_usr_id.unwrap().is_empty() {
-        sql_values += ",default";
-        sql_values += ",default";
-      } else {
-        let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = String::new();
-        let usr_model = find_by_id_usr(
-          usr_id.unwrap(),
-          options.clone(),
-        ).await?;
-        if let Some(usr_model) = usr_model {
-          usr_lbl = usr_model.lbl;
-        } else {
-          usr_id = None;
-        }
-        if let Some(usr_id) = usr_id {
-          sql_values += ",?";
-          args.push(usr_id.into());
-        } else {
-          sql_values += ",default";
-        }
-        sql_values += ",?";
-        args.push(usr_lbl.into());
-      }
-    } else {
-      if let Some(create_usr_id) = input.create_usr_id {
-        sql_values += ",?";
-        args.push(create_usr_id.into());
-      } else {
-        sql_values += ",default";
-      }
-      if let Some(create_usr_id_lbl) = input.create_usr_id_lbl {
-        sql_values += ",?";
-        args.push(create_usr_id_lbl.into());
-      } else {
-        sql_values += ",default";
-      }
-    }
-    
-    if let Some(update_usr_id) = input.update_usr_id {
-      sql_values += ",?";
-      args.push(update_usr_id.into());
-    } else {
-      sql_values += ",default";
-    }
-    
-    if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-      sql_values += ",?";
-      args.push(update_usr_id_lbl.into());
-    } else {
-      sql_values += ",default";
     }
     
     if let Some(tenant_id) = input.tenant_id {
@@ -2505,8 +2411,6 @@ pub async fn update_by_id_wx_pay_notice(
   let method = "update_by_id_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
-  
-  let is_silent_mode = get_is_silent_mode(options.as_ref());
   let is_creating = get_is_creating(options.as_ref());
   
   if is_debug {
@@ -2538,16 +2442,6 @@ pub async fn update_by_id_wx_pay_notice(
       return Err(eyre!(err_msg));
     }
   };
-  
-  if !is_silent_mode {
-    info!(
-      "{} {}.{}: {}",
-      get_req_id(),
-      table,
-      method,
-      serde_json::to_string(&old_model)?,
-    );
-  }
   
   {
     let mut input = input.clone();
@@ -2581,7 +2475,7 @@ pub async fn update_by_id_wx_pay_notice(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 24 + 20);
+  let mut sql_fields = String::with_capacity(80 * 23 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2697,75 +2591,6 @@ pub async fn update_by_id_wx_pay_notice(
   }
   
   if field_num > 0 {
-    if !is_silent_mode && !is_creating {
-      if input.update_usr_id.is_none() {
-        let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = String::new();
-        if usr_id.is_some() {
-          let usr_model = find_by_id_usr(
-            usr_id.unwrap(),
-            options.clone(),
-          ).await?;
-          if let Some(usr_model) = usr_model {
-            usr_id_lbl = usr_model.lbl;
-          } else {
-            usr_id = None;
-          }
-        }
-        if let Some(usr_id) = usr_id {
-          sql_fields += "update_usr_id=?,";
-          args.push(usr_id.into());
-        }
-        if !usr_id_lbl.is_empty() {
-          sql_fields += "update_usr_id_lbl=?,";
-          args.push(usr_id_lbl.into());
-        }
-      } else if !input.update_usr_id.unwrap().is_empty() {
-        let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = String::new();
-        if usr_id.is_some() {
-          let usr_model = find_by_id_usr(
-            usr_id.unwrap(),
-            options.clone(),
-          ).await?;
-          if let Some(usr_model) = usr_model {
-            usr_id_lbl = usr_model.lbl;
-          } else {
-            usr_id = None;
-          }
-        }
-        if let Some(usr_id) = usr_id {
-          sql_fields += "update_usr_id=?,";
-          args.push(usr_id.into());
-          sql_fields += "update_usr_id_lbl=?,";
-          args.push(usr_id_lbl.into());
-        }
-      }
-    } else {
-      if input.update_usr_id.is_some() && !input.update_usr_id.unwrap().is_empty() {
-        let usr_id = input.update_usr_id;
-        if let Some(usr_id) = usr_id {
-          sql_fields += "update_usr_id=?,";
-          args.push(usr_id.into());
-        }
-      }
-      if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
-        args.push(update_usr_id_lbl.into());
-      }
-    }
-    if !is_silent_mode && !is_creating {
-      if let Some(update_time) = input.update_time {
-        sql_fields += "update_time=?,";
-        args.push(update_time.into());
-      } else {
-        sql_fields += "update_time=?,";
-        args.push(get_now().into());
-      }
-    } else if let Some(update_time) = input.update_time {
-      sql_fields += "update_time=?,";
-      args.push(update_time.into());
-    }
     
     if sql_fields.ends_with(',') {
       sql_fields.pop();
@@ -2878,42 +2703,7 @@ pub async fn delete_by_ids_wx_pay_notice(
     
     let mut args = QueryArgs::new();
     
-    let mut sql_fields = String::with_capacity(30);
-    sql_fields.push_str("is_deleted=1,");
-    let mut usr_id = get_auth_id();
-    let mut usr_lbl = String::new();
-    if usr_id.is_some() {
-      let usr_model = find_by_id_usr(
-        usr_id.unwrap(),
-        options.clone(),
-      ).await?;
-      if let Some(usr_model) = usr_model {
-        usr_lbl = usr_model.lbl;
-      } else {
-        usr_id = None;
-      }
-    }
-    
-    if !is_silent_mode && !is_creating && let Some(usr_id) = usr_id {
-      sql_fields.push_str("delete_usr_id=?,");
-      args.push(usr_id.into());
-    }
-    
-    if !is_silent_mode && !is_creating {
-      sql_fields.push_str("delete_usr_id_lbl=?,");
-      args.push(usr_lbl.into());
-    }
-    
-    if !is_silent_mode && !is_creating {
-      sql_fields.push_str("delete_time=?,");
-      args.push(get_now().into());
-    }
-    
-    if sql_fields.ends_with(',') {
-      sql_fields.pop();
-    }
-    
-    let sql = format!("update {table} set {sql_fields} where id=? limit 1");
+    let sql = format!("delete from {table} where id=? limit 1");
     
     args.push(id.into());
     
@@ -2932,189 +2722,6 @@ pub async fn delete_by_ids_wx_pay_notice(
   
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
-  }
-  
-  Ok(num)
-}
-
-// MARK: revert_by_ids_wx_pay_notice
-/// 根据 ids 还原微信支付通知
-pub async fn revert_by_ids_wx_pay_notice(
-  ids: Vec<WxPayNoticeId>,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let table = get_table_name_wx_pay_notice();
-  let method = "revert_by_ids_wx_pay_notice";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
-    if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  if ids.is_empty() {
-    return Ok(0);
-  }
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let mut num = 0;
-  for id in ids.clone() {
-    let mut args = QueryArgs::new();
-    
-    let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
-    
-    args.push(id.into());
-    
-    let args: Vec<_> = args.into();
-    
-    let mut old_model = find_one_wx_pay_notice(
-      WxPayNoticeSearch {
-        id: Some(id),
-        is_deleted: Some(1),
-        ..Default::default()
-      }.into(),
-      None,
-      options.clone(),
-    ).await?;
-    
-    if old_model.is_none() {
-      old_model = find_by_id_wx_pay_notice(
-        id,
-        options.clone(),
-      ).await?;
-    }
-    
-    let old_model = match old_model {
-      Some(model) => model,
-      None => continue,
-    };
-    
-    {
-      let mut input: WxPayNoticeInput = old_model.clone().into();
-      input.id = None;
-      
-      let models = find_by_unique_wx_pay_notice(
-        input.into(),
-        None,
-        options.clone(),
-      ).await?;
-      
-      let models: Vec<WxPayNoticeModel> = models
-        .into_iter()
-        .filter(|item| 
-          item.id != id
-        )
-        .collect();
-      
-      if !models.is_empty() {
-        let err_msg = "微信支付通知 重复";
-        return Err(eyre!(err_msg));
-      }
-    }
-    
-    num += execute(
-      sql,
-      args,
-      options.clone(),
-    ).await?;
-    
-  }
-  
-  Ok(num)
-}
-
-// MARK: force_delete_by_ids_wx_pay_notice
-/// 根据 ids 彻底删除微信支付通知
-#[allow(unused_variables)]
-pub async fn force_delete_by_ids_wx_pay_notice(
-  ids: Vec<WxPayNoticeId>,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let table = get_table_name_wx_pay_notice();
-  let method = "force_delete_by_ids_wx_pay_notice";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  let is_silent_mode = get_is_silent_mode(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
-    if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  if ids.is_empty() {
-    return Ok(0);
-  }
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let mut num = 0;
-  for id in ids.clone() {
-    
-    let old_model = find_one_wx_pay_notice(
-      Some(WxPayNoticeSearch {
-        id: Some(id),
-        is_deleted: Some(1),
-        ..Default::default()
-      }),
-      None,
-      options.clone(),
-    ).await?;
-    
-    let old_model = match old_model {
-      Some(model) => model,
-      None => continue,
-    };
-    
-    if !is_silent_mode {
-      info!(
-        "{} {}.{}: {}",
-        get_req_id(),
-        table,
-        method,
-        serde_json::to_string(&old_model)?,
-      );
-    }
-    
-    let mut args = QueryArgs::new();
-    
-    let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
-    
-    args.push(id.into());
-    
-    let args: Vec<_> = args.into();
-    
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
-    num += execute(
-      sql,
-      args,
-      options.clone(),
-    ).await?;
   }
   
   Ok(num)

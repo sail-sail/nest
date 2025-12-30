@@ -58,7 +58,7 @@ export function intoInputPayTransactionsJsapi(
     // 分账
     profit_sharing: model?.profit_sharing,
     // 订单金额(分)
-    total_fee: model?.total_fee,
+    total_fee: model?.total_fee != null ? Number(model?.total_fee || 0) : undefined,
     // 货币类型
     currency: model?.currency,
     currency_lbl: model?.currency_lbl,
@@ -351,8 +351,8 @@ export function useExportExcelPayTransactionsJsapi() {
     try {
       const data = await query({
         query: `
-          query($search: PayTransactionsJsapiSearch, $sort: [SortInput!]) {
-            findAllPayTransactionsJsapi(search: $search, page: null, sort: $sort) {
+          query($search: PayTransactionsJsapiSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllPayTransactionsJsapi(search: $search, page: $page, sort: $sort) {
               ${ payTransactionsJsapiQueryField }
             }
             getDict(codes: [
@@ -366,6 +366,9 @@ export function useExportExcelPayTransactionsJsapi() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

@@ -123,24 +123,10 @@ pub struct WxPayNoticeModel {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 是否已删除
-  pub is_deleted: u8,
-  /// 创建人
-  pub create_usr_id: UsrId,
-  /// 创建人
-  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   pub create_time_lbl: String,
-  /// 更新人
-  pub update_usr_id: UsrId,
-  /// 更新人
-  pub update_usr_id_lbl: String,
-  /// 更新时间
-  pub update_time: Option<chrono::NaiveDateTime>,
-  /// 更新时间
-  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for WxPayNoticeModel {
@@ -191,32 +177,15 @@ impl FromRow<'_, MySqlRow> for WxPayNoticeModel {
     let device_id: String = row.try_get("device_id")?;
     // 备注
     let rem: String = row.try_get("rem")?;
-    // 创建人
-    let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
     let create_time_lbl: String = match create_time {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => String::new(),
     };
-    // 更新人
-    let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
-    // 更新时间
-    let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
-    };
-    // 是否已删除
-    let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
       tenant_id,
-      is_deleted,
       id,
       appid,
       mchid,
@@ -240,14 +209,8 @@ impl FromRow<'_, MySqlRow> for WxPayNoticeModel {
       payer_currency_lbl,
       device_id,
       rem,
-      create_usr_id,
-      create_usr_id_lbl,
       create_time,
       create_time_lbl,
-      update_usr_id,
-      update_usr_id_lbl,
-      update_time,
-      update_time_lbl,
     };
     
     Ok(model)
@@ -327,10 +290,10 @@ pub struct WxPayNoticeFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
+  /// 
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
-  /// 创建人
+  /// 
   #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: String,
   /// 创建时间
@@ -339,18 +302,15 @@ pub struct WxPayNoticeFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 更新人
+  /// 
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
-  /// 更新人
+  /// 
   #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: String,
-  /// 更新时间
+  /// 
   #[graphql(name = "update_time")]
   pub update_time: String,
-  /// 更新时间
-  #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Default)]
@@ -363,7 +323,6 @@ pub struct WxPayNoticeSearch {
   pub ids: Option<Vec<WxPayNoticeId>>,
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
-  pub is_deleted: Option<u8>,
   /// 开发者ID
   #[graphql(skip)]
   pub appid: Option<String>,
@@ -445,36 +404,36 @@ pub struct WxPayNoticeSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 创建人
+  /// 
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
-  /// 创建人
+  /// 
   #[graphql(name = "create_usr_id_save_null")]
   pub create_usr_id_is_null: Option<bool>,
-  /// 创建人
+  /// 
   #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: Option<Vec<String>>,
-  /// 创建人
+  /// 
   #[graphql(name = "create_usr_id_lbl_like")]
   pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 更新人
+  /// 
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
-  /// 更新人
+  /// 
   #[graphql(name = "update_usr_id_save_null")]
   pub update_usr_id_is_null: Option<bool>,
-  /// 更新人
+  /// 
   #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: Option<Vec<String>>,
-  /// 更新人
+  /// 
   #[graphql(name = "update_usr_id_lbl_like")]
   pub update_usr_id_lbl_like: Option<String>,
-  /// 更新时间
+  /// 
   #[graphql(skip)]
-  pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
+  pub update_time: Option<String>,
 }
 
 impl std::fmt::Debug for WxPayNoticeSearch {
@@ -488,11 +447,6 @@ impl std::fmt::Debug for WxPayNoticeSearch {
     }
     if let Some(ref tenant_id) = self.tenant_id {
       item = item.field("tenant_id", tenant_id);
-    }
-    if let Some(ref is_deleted) = self.is_deleted {
-      if *is_deleted == 1 {
-        item = item.field("is_deleted", is_deleted);
-      }
     }
     // 开发者ID
     if let Some(ref appid) = self.appid {
@@ -592,7 +546,7 @@ impl std::fmt::Debug for WxPayNoticeSearch {
     if let Some(ref rem_like) = self.rem_like {
       item = item.field("rem_like", rem_like);
     }
-    // 创建人
+    // 
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
@@ -609,7 +563,7 @@ impl std::fmt::Debug for WxPayNoticeSearch {
     if let Some(ref create_time) = self.create_time {
       item = item.field("create_time", create_time);
     }
-    // 更新人
+    // 
     if let Some(ref update_usr_id) = self.update_usr_id {
       item = item.field("update_usr_id", update_usr_id);
     }
@@ -622,7 +576,7 @@ impl std::fmt::Debug for WxPayNoticeSearch {
     if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
       item = item.field("update_usr_id_is_null", update_usr_id_is_null);
     }
-    // 更新时间
+    // 
     if let Some(ref update_time) = self.update_time {
       item = item.field("update_time", update_time);
     }
@@ -636,9 +590,6 @@ impl std::fmt::Debug for WxPayNoticeSearch {
 pub struct WxPayNoticeInput {
   /// ID
   pub id: Option<WxPayNoticeId>,
-  /// 已删除
-  #[graphql(skip)]
-  pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
@@ -711,12 +662,6 @@ pub struct WxPayNoticeInput {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<String>,
-  /// 创建人
-  #[graphql(skip)]
-  pub create_usr_id: Option<UsrId>,
-  /// 创建人
-  #[graphql(skip)]
-  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
@@ -726,28 +671,12 @@ pub struct WxPayNoticeInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
-  /// 更新人
-  #[graphql(skip)]
-  pub update_usr_id: Option<UsrId>,
-  /// 更新人
-  #[graphql(skip)]
-  pub update_usr_id_lbl: Option<String>,
-  /// 更新时间
-  #[graphql(skip)]
-  pub update_time: Option<chrono::NaiveDateTime>,
-  /// 更新时间
-  #[graphql(skip)]
-  pub update_time_lbl: Option<String>,
-  /// 更新时间
-  #[graphql(skip)]
-  pub update_time_save_null: Option<bool>,
 }
 
 impl From<WxPayNoticeModel> for WxPayNoticeInput {
   fn from(model: WxPayNoticeModel) -> Self {
     Self {
       id: model.id.into(),
-      is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
       // 开发者ID
       appid: model.appid.into(),
@@ -789,20 +718,10 @@ impl From<WxPayNoticeModel> for WxPayNoticeInput {
       device_id: model.device_id.into(),
       // 备注
       rem: model.rem.into(),
-      // 创建人
-      create_usr_id: model.create_usr_id.into(),
-      create_usr_id_lbl: model.create_usr_id_lbl.into(),
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
       create_time_save_null: Some(true),
-      // 更新人
-      update_usr_id: model.update_usr_id.into(),
-      update_usr_id_lbl: model.update_usr_id_lbl.into(),
-      // 更新时间
-      update_time: model.update_time,
-      update_time_lbl: model.update_time_lbl.into(),
-      update_time_save_null: Some(true),
     }
   }
 }
@@ -814,7 +733,6 @@ impl From<WxPayNoticeInput> for WxPayNoticeSearch {
       ids: None,
       // 租户ID
       tenant_id: input.tenant_id,
-      is_deleted: None,
       // 开发者ID
       appid: input.appid,
       // 商户号
@@ -849,18 +767,14 @@ impl From<WxPayNoticeInput> for WxPayNoticeSearch {
       device_id: input.device_id,
       // 备注
       rem: input.rem,
-      // 创建人
+      // 
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
-      // 创建人
-      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
-      // 更新人
+      // 
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
-      // 更新人
-      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
-      // 更新时间
-      update_time: input.update_time.map(|x| [Some(x), Some(x)]),
+      // 
+      update_time: input.update_time,
       ..Default::default()
     }
   }
