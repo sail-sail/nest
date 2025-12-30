@@ -677,16 +677,7 @@ export default defineConfig({
         width: 100,
       },
       {
-        COLUMN_NAME: "create_usr_id",
-      },
-      {
         COLUMN_NAME: "create_time",
-      },
-      {
-        COLUMN_NAME: "update_usr_id",
-      },
-      {
-        COLUMN_NAME: "update_time",
       },
     ],
   },

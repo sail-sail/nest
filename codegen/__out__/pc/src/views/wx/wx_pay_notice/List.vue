@@ -554,35 +554,8 @@
             </el-table-column>
           </template>
           
-          <!--  -->
-          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!--  -->
-          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!--  -->
-          <template v-else-if="'update_time' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -703,10 +676,6 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  create_usr_id: "string[]",
-  create_usr_id_lbl: "string[]",
-  update_usr_id: "string[]",
-  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -1072,36 +1041,9 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "",
-      prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id_lbl",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "创建时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 160,
-      sortable: "custom",
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "",
-      prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id_lbl",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "",
-      prop: "update_time",
       width: 160,
       sortable: "custom",
       align: "center",

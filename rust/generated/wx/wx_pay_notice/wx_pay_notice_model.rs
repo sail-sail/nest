@@ -35,16 +35,14 @@ use crate::common::gql::model::SortInput;
 use crate::common::id::{Id, impl_id};
 
 use crate::base::tenant::tenant_model::TenantId;
-use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_WX_PAY_NOTICE: OnceLock<[&'static str; 3]> = OnceLock::new();
+static CAN_SORT_IN_API_WX_PAY_NOTICE: OnceLock<[&'static str; 2]> = OnceLock::new();
 
 /// 微信支付通知 前端允许排序的字段
-fn get_can_sort_in_api_wx_pay_notice() -> &'static [&'static str; 3] {
+fn get_can_sort_in_api_wx_pay_notice() -> &'static [&'static str; 2] {
   CAN_SORT_IN_API_WX_PAY_NOTICE.get_or_init(|| [
     "success_time",
     "create_time",
-    "update_time",
   ])
 }
 
@@ -290,27 +288,12 @@ pub struct WxPayNoticeFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 
-  #[graphql(name = "create_usr_id")]
-  pub create_usr_id: String,
-  /// 
-  #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(name = "create_time")]
   pub create_time: String,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 
-  #[graphql(name = "update_usr_id")]
-  pub update_usr_id: String,
-  /// 
-  #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: String,
-  /// 
-  #[graphql(name = "update_time")]
-  pub update_time: String,
 }
 
 #[derive(InputObject, Default)]
@@ -404,36 +387,9 @@ pub struct WxPayNoticeSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 
-  #[graphql(name = "create_usr_id")]
-  pub create_usr_id: Option<Vec<UsrId>>,
-  /// 
-  #[graphql(name = "create_usr_id_save_null")]
-  pub create_usr_id_is_null: Option<bool>,
-  /// 
-  #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<String>>,
-  /// 
-  #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 
-  #[graphql(name = "update_usr_id")]
-  pub update_usr_id: Option<Vec<UsrId>>,
-  /// 
-  #[graphql(name = "update_usr_id_save_null")]
-  pub update_usr_id_is_null: Option<bool>,
-  /// 
-  #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<String>>,
-  /// 
-  #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<String>,
-  /// 
-  #[graphql(skip)]
-  pub update_time: Option<String>,
 }
 
 impl std::fmt::Debug for WxPayNoticeSearch {
@@ -546,39 +502,9 @@ impl std::fmt::Debug for WxPayNoticeSearch {
     if let Some(ref rem_like) = self.rem_like {
       item = item.field("rem_like", rem_like);
     }
-    // 
-    if let Some(ref create_usr_id) = self.create_usr_id {
-      item = item.field("create_usr_id", create_usr_id);
-    }
-    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
-      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
-    }
-    if let Some(ref create_usr_id_lbl_like) = self.create_usr_id_lbl_like {
-      item = item.field("create_usr_id_lbl_like", create_usr_id_lbl_like);
-    }
-    if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
-      item = item.field("create_usr_id_is_null", create_usr_id_is_null);
-    }
     // 创建时间
     if let Some(ref create_time) = self.create_time {
       item = item.field("create_time", create_time);
-    }
-    // 
-    if let Some(ref update_usr_id) = self.update_usr_id {
-      item = item.field("update_usr_id", update_usr_id);
-    }
-    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
-      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
-    }
-    if let Some(ref update_usr_id_lbl_like) = self.update_usr_id_lbl_like {
-      item = item.field("update_usr_id_lbl_like", update_usr_id_lbl_like);
-    }
-    if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
-      item = item.field("update_usr_id_is_null", update_usr_id_is_null);
-    }
-    // 
-    if let Some(ref update_time) = self.update_time {
-      item = item.field("update_time", update_time);
     }
     item.finish()
   }
@@ -767,14 +693,8 @@ impl From<WxPayNoticeInput> for WxPayNoticeSearch {
       device_id: input.device_id,
       // 备注
       rem: input.rem,
-      // 
-      create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
-      // 
-      update_usr_id: input.update_usr_id.map(|x| vec![x]),
-      // 
-      update_time: input.update_time,
       ..Default::default()
     }
   }

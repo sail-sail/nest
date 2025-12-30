@@ -54,7 +54,6 @@ use crate::common::dict_detail::dict_detail_dao::get_dict;
 use super::wx_pay_notice_model::*;
 
 use crate::base::tenant::tenant_model::TenantId;
-use crate::base::usr::usr_model::UsrId;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -63,7 +62,7 @@ async fn get_where_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let mut where_query = String::with_capacity(80 * 23 * 2);
+  let mut where_query = String::with_capacity(80 * 20 * 2);
   
   where_query.push_str(" 1=1");
   {
@@ -455,72 +454,6 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
   }
-  // 
-  {
-    let create_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.create_usr_id.clone(),
-      None => None,
-    };
-    if let Some(create_usr_id) = create_usr_id {
-      let arg = {
-        if create_usr_id.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(create_usr_id.len());
-          for item in create_usr_id {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and t.create_usr_id in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
-  {
-    let create_usr_id_is_null: bool = match search {
-      Some(item) => item.create_usr_id_is_null.unwrap_or(false),
-      None => false,
-    };
-    if create_usr_id_is_null {
-      where_query.push_str(" and t.create_usr_id is null");
-    }
-  }
-  {
-    let create_usr_id_lbl: Option<Vec<String>> = match search {
-      Some(item) => item.create_usr_id_lbl.clone(),
-      None => None,
-    };
-    if let Some(create_usr_id_lbl) = create_usr_id_lbl {
-      let arg = {
-        if create_usr_id_lbl.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(create_usr_id_lbl.len());
-          for item in create_usr_id_lbl {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and create_usr_id_lbl.lbl in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
-  {
-    let create_usr_id_lbl_like = match search {
-      Some(item) => item.create_usr_id_lbl_like.clone(),
-      None => None,
-    };
-    if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
-      where_query.push_str(" and create_usr_id_lbl.lbl like ?");
-      args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
-    }
-  }
   // 创建时间
   {
     let mut create_time = match search {
@@ -538,83 +471,6 @@ async fn get_where_query(
       args.push(create_time_lt.into());
     }
   }
-  // 
-  {
-    let update_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.update_usr_id.clone(),
-      None => None,
-    };
-    if let Some(update_usr_id) = update_usr_id {
-      let arg = {
-        if update_usr_id.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(update_usr_id.len());
-          for item in update_usr_id {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and t.update_usr_id in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
-  {
-    let update_usr_id_is_null: bool = match search {
-      Some(item) => item.update_usr_id_is_null.unwrap_or(false),
-      None => false,
-    };
-    if update_usr_id_is_null {
-      where_query.push_str(" and t.update_usr_id is null");
-    }
-  }
-  {
-    let update_usr_id_lbl: Option<Vec<String>> = match search {
-      Some(item) => item.update_usr_id_lbl.clone(),
-      None => None,
-    };
-    if let Some(update_usr_id_lbl) = update_usr_id_lbl {
-      let arg = {
-        if update_usr_id_lbl.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(update_usr_id_lbl.len());
-          for item in update_usr_id_lbl {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and update_usr_id_lbl.lbl in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
-  {
-    let update_usr_id_lbl_like = match search {
-      Some(item) => item.update_usr_id_lbl_like.clone(),
-      None => None,
-    };
-    if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
-      where_query.push_str(" and update_usr_id_lbl.lbl like ?");
-      args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
-    }
-  }
-  // 
-  {
-    let update_time = match search {
-      Some(item) => item.update_time.clone(),
-      None => None,
-    };
-    if let Some(update_time) = update_time {
-      where_query.push_str(" and t.update_time=?");
-      args.push(update_time.into());
-    }
-  }
   Ok(where_query)
 }
 
@@ -625,9 +481,7 @@ async fn get_from_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let from_query = r#"wx_wx_pay_notice t
-  left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
-  left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id"#.to_owned();
+  let from_query = r#"wx_wx_pay_notice t"#.to_owned();
   Ok(from_query)
 }
 
@@ -730,34 +584,6 @@ pub async fn find_all_wx_pay_notice(
       return Err(eyre!("search.payer_currency.length > {ids_limit}"));
     }
   }
-  // 
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(vec![]);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-    }
-  }
-  // 
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(vec![]);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-    }
-  }
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
@@ -791,8 +617,6 @@ pub async fn find_all_wx_pay_notice(
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
-  ,create_usr_id_lbl.lbl create_usr_id_lbl
-  ,update_usr_id_lbl.lbl update_usr_id_lbl
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -961,34 +785,6 @@ pub async fn find_count_wx_pay_notice(
       return Err(eyre!("search.payer_currency.length > {ids_limit}"));
     }
   }
-  // 
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(0);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-    }
-  }
-  // 
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(0);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-    }
-  }
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
@@ -1051,13 +847,8 @@ pub async fn get_field_comments_wx_pay_notice(
     payer_currency_lbl: "用户支付币种".into(),
     device_id: "商户端设备号".into(),
     rem: "备注".into(),
-    create_usr_id: "".into(),
-    create_usr_id_lbl: "".into(),
     create_time: "创建时间".into(),
     create_time_lbl: "创建时间".into(),
-    update_usr_id: "".into(),
-    update_usr_id_lbl: "".into(),
-    update_time: "".into(),
   };
   Ok(field_comments)
 }
@@ -1495,34 +1286,6 @@ pub async fn exists_wx_pay_notice(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.payer_currency.length > {ids_limit}"));
-    }
-  }
-  // 
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(false);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
-    }
-  }
-  // 
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(false);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
   
@@ -2042,7 +1805,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 23 + 20);
+  let mut sql_fields = String::with_capacity(80 * 20 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2083,7 +1846,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 23 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 20 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2475,7 +2238,7 @@ pub async fn update_by_id_wx_pay_notice(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 23 + 20);
+  let mut sql_fields = String::with_capacity(80 * 20 + 20);
   
   let mut field_num: usize = 0;
   

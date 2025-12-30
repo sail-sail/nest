@@ -448,13 +448,8 @@ export async function getFieldCommentsWxPayNotice(
           payer_currency_lbl,
           device_id,
           rem,
-          create_usr_id,
-          create_usr_id_lbl,
           create_time,
           create_time_lbl,
-          update_usr_id,
-          update_usr_id_lbl,
-          update_time,
         }
       }
     `,
