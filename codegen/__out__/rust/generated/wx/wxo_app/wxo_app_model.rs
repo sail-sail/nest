@@ -587,7 +587,7 @@ impl std::fmt::Debug for WxoAppSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxoAppInput")]
 #[allow(dead_code)]
 pub struct WxoAppInput {

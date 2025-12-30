@@ -460,7 +460,7 @@ impl std::fmt::Debug for WxAppSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxAppInput")]
 #[allow(dead_code)]
 pub struct WxAppInput {
