@@ -31,6 +31,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
+  find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -583,6 +584,9 @@ pub async fn find_all_options(
   }
   
   let order_by_query = get_order_by_query(Some(sort));
+  let is_result_limit = page.as_ref()
+    .and_then(|item| item.is_result_limit)
+    .unwrap_or(true);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -599,6 +603,13 @@ pub async fn find_all_options(
     args,
     Some(options),
   ).await?;
+  
+  let len = res.len();
+  let result_limit_num = find_all_result_limit();
+  
+  if is_result_limit && len > result_limit_num {
+    return Err(eyre!("{table}.{method}: result length {len} > {result_limit_num}"));
+  }
   
   let dict_vec = get_dict(&[
     "is_locked",
@@ -882,10 +893,11 @@ pub async fn find_one_options(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let page = PageInput {
-    pg_offset: 0.into(),
-    pg_size: 1.into(),
-  }.into();
+  let page = Some(PageInput {
+    pg_offset: Some(0),
+    pg_size: Some(1),
+    is_result_limit: Some(true),
+  });
   
   let res = find_all_options(
     search,
@@ -1933,17 +1945,19 @@ pub async fn create_return_options(
     options,
   ).await?;
   
-  if model_options.is_none() {
-    let err_msg = "create_return_options: model_options.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_options = model_options.unwrap();
+  let model_options = match model_options {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_options: model_options.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_options)
 }
@@ -2045,11 +2059,13 @@ pub async fn update_by_id_options(
     options.clone(),
   ).await?;
   
-  if old_model.is_none() {
-    let err_msg = "编辑失败, 此 系统选项 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {
+      let err_msg = "编辑失败, 此 系统选项 已被删除";
+      return Err(eyre!(err_msg));
+    }
+  };
   
   if !is_silent_mode {
     info!(
@@ -2783,6 +2799,7 @@ pub async fn force_delete_by_ids_options(
 // MARK: find_last_order_by_options
 /// 查找 系统选项 order_by 字段的最大值
 pub async fn find_last_order_by_options(
+  search: Option<OptionsSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -2803,15 +2820,13 @@ pub async fn find_last_order_by_options(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  #[allow(unused_mut)]
-  let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);
   
-  sql_wheres.push("t.is_deleted=0");
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
-  let sql_where = sql_wheres.join(" and ");
-  let sql = format!("select t.order_by order_by from {table} t where {sql_where} order by t.order_by desc limit 1");
+  let sql = format!(r#"select f.order_by from (select t.order_by
+  from {from_query} where {where_query} group by t.id order by t.order_by desc limit 1) f"#);
   
   let args: Vec<_> = args.into();
   
@@ -2857,20 +2872,24 @@ pub async fn validate_is_enabled_options(
 pub async fn validate_option_options(
   model: Option<OptionsModel>,
 ) -> Result<OptionsModel> {
-  if model.is_none() {
-    let err_msg = "系统选项不存在";
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {
+      let err_msg = "系统选项不存在";
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }

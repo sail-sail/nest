@@ -293,12 +293,14 @@ pub async fn get_field_comments_permit(
 
 /// 查找 按钮权限 order_by 字段的最大值
 pub async fn find_last_order_by_permit(
+  search: Option<PermitSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = permit_dao::find_last_order_by_permit(
+  let order_by = permit_dao::find_last_order_by_permit(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

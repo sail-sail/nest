@@ -56,7 +56,7 @@ export function intoInputDictbiz(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
     // 业务字典明细
@@ -577,8 +577,8 @@ export function useExportExcelDictbiz() {
     try {
       const data = await query({
         query: `
-          query($search: DictbizSearch, $sort: [SortInput!]) {
-            findAllDictbiz(search: $search, page: null, sort: $sort) {
+          query($search: DictbizSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDictbiz(search: $search, page: $page, sort: $sort) {
               ${ dictbizQueryField }
             }
             getDict(codes: [
@@ -592,6 +592,9 @@ export function useExportExcelDictbiz() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -676,19 +679,22 @@ export async function importModelsDictbiz(
  * 查找 业务字典 order_by 字段的最大值
  */
 export async function findLastOrderByDictbiz(
+  search?: DictbizSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDictbiz: Query["findLastOrderByDictbiz"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDictbiz
+      query($search: DictbizSearch) {
+        findLastOrderByDictbiz(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDictbiz;
-  return res;
+  
+  const order_by = data.findLastOrderByDictbiz;
+  
+  return order_by;
 }
 
 /**

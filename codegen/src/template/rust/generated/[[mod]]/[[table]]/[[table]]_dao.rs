@@ -281,6 +281,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
+  find_all_result_limit,
   CountModel,
   UniqueType,<#
   if (hasOrderBy) {
@@ -1529,10 +1530,10 @@ async fn get_where_query(
   // 动态页面字段查询
   if let Some(search) = search {
     if let Some(ref dyn_page_data) = search.dyn_page_data {
-      let page_path = get_page_path_dyn_page_data();
+      let page_path = get_page_path_<#=table#>();
       
       let dyn_page_search = DynPageSearch {
-        code: Some(page_path.clone()),
+        code: Some(page_path.to_string()),
         is_enabled: Some(vec![1]),
         ..Default::default()
       };
@@ -2056,6 +2057,9 @@ pub async fn find_all_<#=table#>(
   #>
   
   let order_by_query = get_order_by_query(Some(sort));
+  let is_result_limit = page.as_ref()
+    .and_then(|item| item.is_result_limit)
+    .unwrap_or(true);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*<#
@@ -2148,7 +2152,14 @@ pub async fn find_all_<#=table#>(
     #>.clone()<#
     }
     #>),
-  ).await?;<#
+  ).await?;
+  
+  let len = res.len();
+  let result_limit_num = find_all_result_limit();
+  
+  if is_result_limit && len > result_limit_num {
+    return Err(eyre!("{table}.{method}: result length {len} > {result_limit_num}"));
+  }<#
   if (opts?.isUseDynPageFields) {
   #>
   
@@ -3109,10 +3120,11 @@ pub async fn find_one_<#=table#>(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let page = PageInput {
-    pg_offset: 0.into(),
-    pg_size: 1.into(),
-  }.into();
+  let page = Some(PageInput {
+    pg_offset: Some(0),
+    pg_size: Some(1),
+    is_result_limit: Some(true),
+  });
   
   let res = find_all_<#=table#>(
     search,
@@ -4413,8 +4425,7 @@ pub async fn set_id_by_lbl_<#=table#>(
       input.<#=column_name#>.clone().unwrap(),
       Some(Options::new().set_is_debug(Some(false))),
     ).await?;
-    if <#=foreignTable#>_model.is_some() {
-      let <#=foreignTable#>_model = <#=foreignTable#>_model.unwrap();<#
+    if let Some(<#=foreignTable#>_model) = <#=foreignTable#>_model {<#
       for (const key of redundLblKeys) {
         const val = redundLbl[key];
       #>
@@ -5222,11 +5233,10 @@ async fn _creates(
         let id = inputs2_ids[i];
         let dyn_page_data = input.dyn_page_data.clone();
         
-        if dyn_page_data.is_none() {
-          continue;
-        }
-        
-        let dyn_page_data = dyn_page_data.unwrap();
+        let dyn_page_data = match dyn_page_data {
+          Some(data) => data,
+          None => continue,
+        };
         
         for dyn_page_field_model in dyn_page_field_models.clone() {
           
@@ -5717,17 +5727,19 @@ pub async fn create_return_<#=table#>(
     options,
   ).await?;
   
-  if model_<#=table#>.is_none() {
-    let err_msg = "create_return_<#=table#>: model_<#=table#>.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_<#=table#> = model_<#=table#>.unwrap();
+  let model_<#=table#> = match model_<#=table#> {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_<#=table#>: model_<#=table#>.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_<#=table#>)
 }
@@ -5891,11 +5903,14 @@ pub async fn get_editable_data_permits_by_ids_<#=table#>(
   for id in ids {
     let model = models.iter()
       .find(|item| item.id == id);
-    if model.is_none() {
-      editable_data_permits.push(0);
-      continue;
-    }
-    let model = model.unwrap();
+    
+    let model = match model {
+      Some(model) => model,
+      None => {
+        editable_data_permits.push(0);
+        continue;
+      }
+    };
     
     if model.create_usr_id.is_empty() {
       editable_data_permits.push(1);
@@ -5904,11 +5919,15 @@ pub async fn get_editable_data_permits_by_ids_<#=table#>(
     
     if !has_tenant_permit && !has_dept_permit && !has_dept_parent_permit && !has_role_permit && !has_create_permit {
       let usr_id = get_auth_id();
-      if usr_id.is_none() {
-        editable_data_permits.push(0);
-        continue;
-      }
-      let usr_id = usr_id.unwrap();
+      
+      let usr_id = match usr_id {
+        Some(usr_id) => usr_id,
+        None => {
+          editable_data_permits.push(0);
+          continue;
+        }
+      };
+      
       if usr_id == model.create_usr_id {
         editable_data_permits.push(1);
       } else {
@@ -6296,28 +6315,30 @@ pub async fn update_by_id_<#=table#>(
     options.clone(),
   ).await?;
   
-  if old_model.is_none() {<#
-    if (isUseI18n) {
-    #>
-    let table_comment = i18n_dao::ns(
-      "<#=table_comment#>".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "编辑失败, 此 {0} 已被删除".to_owned(),
-      map.into(),
-    ).await?;<#
-    } else {
-    #>
-    let err_msg = "编辑失败, 此 <#=table_comment#> 已被删除";<#
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {<#
+      if (isUseI18n) {
+      #>
+      let table_comment = i18n_dao::ns(
+        "<#=table_comment#>".to_owned(),
+        None,
+      ).await?;
+      let map = HashMap::from([
+        ("0".to_owned(), table_comment),
+      ]);
+      let err_msg = i18n_dao::ns(
+        "编辑失败, 此 {0} 已被删除".to_owned(),
+        map.into(),
+      ).await?;<#
+      } else {
+      #>
+      let err_msg = "编辑失败, 此 <#=table_comment#> 已被删除";<#
+      }
+      #>
+      return Err(eyre!(err_msg));
     }
-    #>
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();<#
+  };<#
   if (hasVersion || hasUpdateUsrId || hasUpdateTime) {
   #>
   
@@ -7470,7 +7491,17 @@ pub async fn update_by_id_<#=table#>(
   #>
   
   if field_num > 0 {
-    let old_model = old_model.unwrap();
+    let old_model = match find_by_id_<#=table#>(
+      id,
+      options.clone(),
+    ).await? {
+      Some(model) => model,
+      None => {
+        return Err(eyre!(
+          "<#=table_comment#> historyTable.create id: {id}",
+        ));
+      },
+    };
     crate::<#=mod#>::<#=historyTable#>::<#=historyTable#>_dao::create(
       old_model.into(),
       None,
@@ -9175,6 +9206,7 @@ if (hasOrderBy) {
 // MARK: find_last_order_by_<#=table#>
 /// 查找 <#=table_comment#> order_by 字段的最大值
 pub async fn find_last_order_by_<#=table#>(
+  search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -9195,28 +9227,13 @@ pub async fn find_last_order_by_<#=table#>(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  #[allow(unused_mut)]
-  let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);<#
-  if (hasIsDeleted) {
-  #>
   
-  sql_wheres.push("t.is_deleted=0");<#
-  }
-  #><#
-  if (hasTenantId) {
-  #>
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
-  if let Some(tenant_id) = get_auth_tenant_id() {
-    sql_wheres.push("t.tenant_id=?");
-    args.push(tenant_id.into());
-  }<#
-  }
-  #>
-  
-  let sql_where = sql_wheres.join(" and ");
-  let sql = format!("select t.order_by order_by from {table} t where {sql_where} order by t.order_by desc limit 1");
+  let sql = format!(r#"select f.order_by from (select t.order_by
+  from {from_query} where {where_query} group by t.id order by t.order_by desc limit 1) f"#);
   
   let args: Vec<_> = args.into();
   
@@ -9287,36 +9304,40 @@ pub async fn validate_is_enabled_<#=table#>(
 pub async fn validate_option_<#=table#>(
   model: Option<<#=tableUP#>Model>,
 ) -> Result<<#=tableUP#>Model> {
-  if model.is_none() {<#
-    if (isUseI18n) {
-    #>
-    let table_comment = i18n_dao::ns(
-      "<#=table_comment#>".to_owned(),
-      None,
-    ).await?;
-    let msg1 = i18n_dao::ns(
-      "不存在".to_owned(),
-      None,
-    ).await?;
-    let err_msg = table_comment + msg1.as_str();<#
-    } else {
-    #>
-    let err_msg = "<#=table_comment#>不存在";<#
-    }
-    #>
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {<#
+      if (isUseI18n) {
+      #>
+      let table_comment = i18n_dao::ns(
+        "<#=table_comment#>".to_owned(),
+        None,
+      ).await?;
+      let msg1 = i18n_dao::ns(
+        "不存在".to_owned(),
+        None,
+      ).await?;
+      let err_msg = table_comment + msg1.as_str();<#
+      } else {
+      #>
+      let err_msg = "<#=table_comment#>不存在";<#
+      }
+      #>
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }<#
 if (false) {

@@ -238,12 +238,14 @@ impl TenantGenQuery {
   async fn find_last_order_by_tenant(
     &self,
     ctx: &Context<'_>,
+    search: Option<TenantSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         tenant_resolver::find_last_order_by_tenant(
+          search,
           None,
         )
       }).await

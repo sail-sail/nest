@@ -641,6 +641,10 @@ export function intoInput<#=Table_Up#>(
     <#=modelLabel#>: model?.<#=modelLabel#>,<#
       }
     #><#
+      } else if (data_type === "int" || data_type === "float" || data_type === "double") {
+    #>
+    // <#=column_comment#>
+    <#=column_name#>: model?.<#=column_name#> != null ? Number(model?.<#=column_name#> || 0) : undefined,<#
       } else if (data_type === "datetime" || data_type === "date") {
     #>
     // <#=column_comment#>
@@ -2278,8 +2282,8 @@ if (isUseI18n) {
     try {
       const data = await query({
         query: `
-          query($search: <#=searchName#>, $sort: [SortInput!]) {
-            findAll<#=Table_Up2#>(search: $search, page: null, sort: $sort) {
+          query($search: <#=searchName#>, $page: PageInput, , $sort: [SortInput!]) {
+            findAll<#=Table_Up2#>(search: $search, page: $page, sort: $sort) {
               ${ <#=table_Up#>QueryField }<#
               if (hasAudit && auditTable_Up) {
               #>
@@ -2407,6 +2411,9 @@ if (isUseI18n) {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -2528,19 +2535,22 @@ if (hasOrderBy) {
  * 查找 <#=table_comment#> order_by 字段的最大值
  */
 export async function findLastOrderBy<#=Table_Up#>(
+  search?: <#=searchName#>,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderBy<#=Table_Up2#>: Query["findLastOrderBy<#=Table_Up2#>"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderBy<#=Table_Up2#>
+      query($search: <#=searchName#>) {
+        findLastOrderBy<#=Table_Up2#>(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderBy<#=Table_Up2#>;
-  return res;
+  
+  const order_by = data.findLastOrderBy<#=Table_Up2#>;
+  
+  return order_by;
 }<#
 }
 #>

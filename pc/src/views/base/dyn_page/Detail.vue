@@ -19,6 +19,7 @@
     >
       <ElIconRefresh
         class="reset_but"
+        @dblclick.stop
         @click="onReset"
       ></ElIconRefresh>
     </div>
@@ -29,6 +30,7 @@
       >
         <ElIconUnlock
           class="unlock_but"
+          @dblclick.stop
           @click="isReadonly = true;"
         >
         </ElIconUnlock>
@@ -39,6 +41,7 @@
       >
         <ElIconLock
           class="lock_but"
+          @dblclick.stop
           @click="isReadonly = false;"
         ></ElIconLock>
       </div>
@@ -90,6 +93,7 @@
                 v-model="dialogModel.code"
                 placeholder="自动生成 或 手动输入"
                 :readonly="isLocked || isReadonly"
+                @change="onCode"
               ></CustomInput>
               
               <el-link
@@ -114,7 +118,10 @@
             <CustomInput
               v-model="dialogModel.lbl"
               placeholder="请输入 名称"
-              :readonly="isLocked || isReadonly"
+              :readonly="
+                isLocked || isReadonly
+                  || menu_and_roles?.menu_model?.is_dyn_page == 0
+              "
             ></CustomInput>
           </el-form-item>
         </template>
@@ -126,9 +133,12 @@
           >
             <CustomTreeSelect
               v-model="dialogModel.parent_menu_id"
-              :method="getTreeMenu"
+              :method="getTreeMenu0"
               placeholder="请选择 父菜单"
-              :readonly="isLocked || isReadonly"
+              :readonly="
+                isLocked || isReadonly
+                  || menu_and_roles?.menu_model?.is_dyn_page == 0
+              "
             ></CustomTreeSelect>
           </el-form-item>
         </template>
@@ -151,7 +161,10 @@
               })"
               placeholder="请选择 所属角色"
               multiple
-              :readonly="isLocked || isReadonly"
+              :readonly="
+                isLocked || isReadonly
+                  || menu_and_roles?.menu_model?.is_dyn_page == 0
+              "
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -592,6 +605,14 @@ import {
   findByIdMenu,
 } from "@/views/base/menu/Api.ts";
 
+import {
+  findMenuAndRoles,
+} from "./Api2.ts";
+
+import type {
+  FindMenuAndRoles,
+} from "#/types.ts";
+
 const emit = defineEmits<{
   nextId: [
     {
@@ -627,7 +648,7 @@ let ids = $ref<DynPageId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DynPageId[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -682,7 +703,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOneDynPage;
 
@@ -743,6 +764,7 @@ async function showDialog(
     }
   });
   dialogAction = action || "add";
+  nextTick(() => formRef?.clearValidate());
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
@@ -758,9 +780,14 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       getDefaultInputDynPage(),
-      findLastOrderByDynPage({
-        notLoading: !inited,
-      }),
+      findLastOrderByDynPage(
+        {
+          code: dialogModel.code,
+        },
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -768,6 +795,9 @@ async function showDialog(
       ...model,
       order_by: order_by + 1,
     };
+    if (dialogModel.code) {
+      await onCode();
+    }
   } else if (dialogAction === "copy") {
     const id = model?.ids?.[0];
     if (!id) {
@@ -781,9 +811,12 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderByDynPage({
-        notLoading: !inited,
-      }),
+      findLastOrderByDynPage(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     if (data) {
       dialogModel = {
@@ -864,9 +897,12 @@ async function onRefresh() {
       order_by,
     ] = await Promise.all([
       getDefaultInputDynPage(),
-      findLastOrderByDynPage({
-        notLoading: !inited,
-      }),
+      findLastOrderByDynPage(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -1008,7 +1044,7 @@ async function onSaveKeydown(e: KeyboardEvent) {
 
 /** 保存并返回id */
 async function save() {
-  if (isReadonly) {
+  if (!inited || isReadonly) {
     return;
   }
   if (!formRef) {
@@ -1104,7 +1140,7 @@ async function onSave() {
 const inlineForeignTabLabel = $ref("动态页面字段");
 
 // 动态页面字段
-const dyn_page_fieldRef = $(useTemplateRef<InstanceType<typeof ElTable>>("dyn_page_fieldRef"));
+const dyn_page_fieldRef = $(useTemplateRef("dyn_page_fieldRef"));
 
 // AttrsDialog 引用
 const attrsDialogRef = $ref<InstanceType<typeof AttrsDialog>>();
@@ -1195,6 +1231,9 @@ async function onCodeSelect() {
   if (!menu_idsListSelectDialogRef) {
     return;
   }
+  if (isLocked) {
+    return;
+  }
   let menu_ids: MenuId[] = [ ];
   if (dialogModel.code) {
     const menu_model = await findOneMenu({
@@ -1208,9 +1247,6 @@ async function onCodeSelect() {
     title: "选择 菜单",
     selectedIds: menu_ids,
   });
-  if (isLocked) {
-    return;
-  }
   const action = res.action;
   if (action !== "select") {
     return;
@@ -1235,15 +1271,74 @@ async function onCodeSelect() {
   const menu_id = menu_ids[0];
   if (!menu_id) {
     dialogModel.code = "";
+    await onCode();
     return;
   }
   const menu_model = await findByIdMenu(menu_id);
   if (!menu_model) {
     dialogModel.code = "";
+    await onCode();
     return;
   }
   dialogModel.code = menu_model.route_path || "";
   dialogModel.lbl = menu_model.lbl;
+  await onCode();
+}
+
+let menu_and_roles = $ref<FindMenuAndRoles>();
+
+/** 处理路由编码变化 */
+async function onCode() {
+  
+  if (isLocked) {
+    return;
+  }
+  
+  formRef?.clearValidate([ "lbl" ]);
+  
+  if (!dialogModel.code || dialogModel.code.trim() === "") {
+    dialogModel.lbl = "";
+    dialogModel.parent_menu_id = "" as MenuId;
+    dialogModel.parent_menu_id_lbl = "";
+    dialogModel.role_ids = [ ];
+    dialogModel.role_ids_lbl = [ ];
+    return;
+  }
+  
+  menu_and_roles = await findMenuAndRoles(
+    {
+      route_path: dialogModel.code,
+    },
+    {
+      notLoading: !inited,
+    },
+  );
+  
+  if (!menu_and_roles.menu_model) {
+    dialogModel.lbl = "";
+    dialogModel.parent_menu_id = "" as MenuId;
+    dialogModel.parent_menu_id_lbl = "";
+    dialogModel.role_ids = [ ];
+    dialogModel.role_ids_lbl = [ ];
+    return;
+  }
+  
+  const menu_model = menu_and_roles.menu_model;
+  dialogModel.lbl = menu_model.lbl;
+  dialogModel.parent_menu_id = menu_model.parent_id;
+  dialogModel.parent_menu_id_lbl = menu_model.parent_id_lbl ?? "";
+  
+  const role_models = menu_and_roles.role_models;
+  dialogModel.role_ids = role_models.map((item) => item.id);
+  dialogModel.role_ids_lbl = role_models.map((item) => item.lbl);
+  
+}
+
+async function getTreeMenu0() {
+  return await getTreeMenu({
+    is_current_tenant: 1,
+    is_enabled: [ 1 ],
+  });
 }
 
 async function onDialogOpen() {

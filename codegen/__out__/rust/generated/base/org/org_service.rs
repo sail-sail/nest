@@ -403,12 +403,14 @@ pub async fn force_delete_by_ids_org(
 
 /// 查找 组织 order_by 字段的最大值
 pub async fn find_last_order_by_org(
+  search: Option<OrgSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = org_dao::find_last_order_by_org(
+  let order_by = org_dao::find_last_order_by_org(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

@@ -61,7 +61,7 @@ export function intoInputDynPageField(
     is_search: model?.is_search,
     is_search_lbl: model?.is_search_lbl,
     // 宽度
-    width: model?.width,
+    width: model?.width != null ? Number(model?.width || 0) : undefined,
     // 对齐方式
     align: model?.align,
     align_lbl: model?.align_lbl,
@@ -69,7 +69,7 @@ export function intoInputDynPageField(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
   };
   return input;
 }
@@ -643,8 +643,8 @@ export function useExportExcelDynPageField() {
     try {
       const data = await query({
         query: `
-          query($search: DynPageFieldSearch, $sort: [SortInput!]) {
-            findAllDynPageField(search: $search, page: null, sort: $sort) {
+          query($search: DynPageFieldSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDynPageField(search: $search, page: $page, sort: $sort) {
               ${ dynPageFieldQueryField }
             }
             findAllDynPage {
@@ -663,6 +663,9 @@ export function useExportExcelDynPageField() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -747,19 +750,22 @@ export async function importModelsDynPageField(
  * 查找 动态页面字段 order_by 字段的最大值
  */
 export async function findLastOrderByDynPageField(
+  search?: DynPageFieldSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDynPageField: Query["findLastOrderByDynPageField"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDynPageField
+      query($search: DynPageFieldSearch) {
+        findLastOrderByDynPageField(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDynPageField;
-  return res;
+  
+  const order_by = data.findLastOrderByDynPageField;
+  
+  return order_by;
 }
 
 /**

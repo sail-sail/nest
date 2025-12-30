@@ -519,7 +519,7 @@ export interface TableCloumn {
   /**
    * 表格中一对多时标签最大个数, 默认为3
    */
-   linkListMaxSize?: number,
+  linkListMaxSize?: number,
   
   /**
    * 附件或者图片的accept, 图片默认为image/svg+xml,image/png,image/jpeg,image/webp, 附件默认为*
@@ -880,13 +880,14 @@ export interface TablesConfigItem {
     
     /**
      * 关键字搜索
+     * showInPcList: 是否在pc端列表页面显示关键字搜索框, 默认为false
      */
     searchByKeyword?: {
       prop: string;
       fields: string[];
       lbl?: string;
       placeholder?: string;
-      hideInList?: boolean;
+      showInPcList?: boolean;
     };
     
     /**
@@ -972,6 +973,8 @@ export interface TablesConfigItem {
       foreign_type?: "one2one" | "one2many";
       /** 是否只生成后端相关功能, 默认为false */
       onlyCodegenDeno?: boolean;
+      /** 移动端内联表格显示列 */
+      uni_list_page_fields?: string[];
     }[],
     
     /**
@@ -1038,8 +1041,29 @@ export interface TablesConfigItem {
     
     /**
      * 是否生成uni手机端的Api接口代码, 默认为false
+     * 如果 isUniPage 为 true, 则 isUniApi 强制为 true
      */
     isUniApi?: boolean;
+    
+    /** 是否生成uni手机端的页面代码
+     * 默认为:
+     * list_page?: {
+     *   search_fields: [ ],
+     *   lbl_field: "lbl",
+     *   lbl2_fields: [ ],
+     *   right_field: "create_time"
+     *   is_export_excel: false
+     * }
+     */
+    isUniPage?: {
+      list_page?: {
+        search_fields?: string[];
+        lbl_field?: string;
+        lbl2_fields?: string[];
+        right_field?: string;
+        is_export_excel?: boolean;
+      } | boolean;
+    };
     
     /**
      * 级联更新字段, 当外键关联的字段变化时, 自动更新相关的字段

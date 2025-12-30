@@ -121,18 +121,18 @@ const ruleCover = (rule: TM.FORM_RULE): TM.FORM_RULE_TYPE => {
 const _rules = computed((): Record<string, Array<TM.FORM_RULE_TYPE>> => {
     let rules: Record<string, Array<TM.FORM_RULE_TYPE>> = {};
     // 将嵌套的modelValue拍平，获取所有可能的键名（包括点分隔的键名）
-    const flattenedModelValue = flattenObject(props.modelValue)
-    let keys = Object.keys(flattenedModelValue)
+    // const flattenedModelValue = flattenObject(props.modelValue)
+    // let keys = Object.keys(flattenedModelValue)
     
     for (let key in props.rules) {
-        if (keys.includes(key)) {
+        // if (keys.includes(key)) {
             let item = props.rules[key];
             if (Array.isArray(item)) {
                 rules[key] = item.map(item => ruleCover(item))
             } else if (typeof props.rules[key] == 'object' && !Array.isArray(props.rules[key])) {
                 rules[key] = [ruleCover(item)]
             }
-        }
+        // }
     }
 	
     return rules
@@ -148,6 +148,8 @@ provide("tmFormLabelFontColor", computed(() => props.labelFontColor))
 const oldbackValue = deepClone(props.modelValue)
 // 被标记的字段
 const markedKeys:string[] = []
+// 存储各个 form-item 的 resetValidation 回调
+const resetValidationCallbacks: Map<string, () => void> = new Map()
 /**
  * 提交表单
  */
@@ -226,12 +228,44 @@ const _setMarker = (name:string,isvisibl:boolean)=>{
 	}
 }
 
+/**
+ * 注册 form-item 的 resetValidation 回调
+ */
+const _registerResetValidation = (name: string, callback: (() => void) | null) => {
+	if (callback) {
+		resetValidationCallbacks.set(name, callback)
+	} else {
+		resetValidationCallbacks.delete(name)
+	}
+}
+
+/**
+ * 重置校验状态（不重置数据）
+ * @param name 可选，指定字段名则只重置该字段，不传则重置所有字段
+ */
+const resetValidation = (name?: string) => {
+	if (name) {
+		// 重置指定字段
+		const callback = resetValidationCallbacks.get(name)
+		if (callback) {
+			callback()
+		}
+	} else {
+		// 重置所有字段
+		resetValidationCallbacks.forEach((callback) => {
+			callback()
+		})
+	}
+}
+
 defineExpose({
     submit,
     validate,
     reset,
+    resetValidation,
     _validate,
-	_setMarker
+	_setMarker,
+	_registerResetValidation
 })
 
 </script>

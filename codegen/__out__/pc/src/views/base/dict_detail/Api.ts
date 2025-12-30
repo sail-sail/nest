@@ -39,7 +39,7 @@ export function intoInputDictDetail(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -601,8 +601,8 @@ export function useExportExcelDictDetail() {
     try {
       const data = await query({
         query: `
-          query($search: DictDetailSearch, $sort: [SortInput!]) {
-            findAllDictDetail(search: $search, page: null, sort: $sort) {
+          query($search: DictDetailSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDictDetail(search: $search, page: $page, sort: $sort) {
               ${ dictDetailQueryField }
             }
             findAllDict {
@@ -618,6 +618,9 @@ export function useExportExcelDictDetail() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -702,19 +705,22 @@ export async function importModelsDictDetail(
  * 查找 系统字典明细 order_by 字段的最大值
  */
 export async function findLastOrderByDictDetail(
+  search?: DictDetailSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDictDetail: Query["findLastOrderByDictDetail"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDictDetail
+      query($search: DictDetailSearch) {
+        findLastOrderByDictDetail(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDictDetail;
-  return res;
+  
+  const order_by = data.findLastOrderByDictDetail;
+  
+  return order_by;
 }
 
 /**

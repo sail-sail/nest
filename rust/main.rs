@@ -245,11 +245,7 @@ async fn main() -> Result<(), std::io::Error> {
       .install()
       .unwrap();
     let log_path = std::env::var_os("log_path");
-    if log_path.is_none() {
-      tracing_subscriber::fmt::init();
-      None
-    } else {
-      let log_path = log_path.unwrap();
+    if let Some(log_path) = log_path {
       let file_appender = tracing_appender::rolling::daily(
         log_path,
         format!("{server_title}.log").as_str(),
@@ -261,6 +257,9 @@ async fn main() -> Result<(), std::io::Error> {
         .with_ansi(false)
         .init();
       Some(guard)
+    } else {
+      tracing_subscriber::fmt::init();
+      None
     }
   };
   
@@ -325,16 +324,14 @@ async fn main() -> Result<(), std::io::Error> {
     let mut is_equal = true;
     let file = std::fs::File::open(file_path).ok();
     let size = {
-      if file.is_none() {
-        0
-      } else {
-        let file = file.unwrap();
-        let metadata = file.metadata().ok();
-        if metadata.is_none() {
-          0
+      if let Some(file) = file {
+        if let Ok(metadata) = file.metadata() {
+          metadata.len()
         } else {
-          metadata.unwrap().len()
+          0
         }
+      } else {
+        0
       }
     };
     if size == schema.len() as u64 {

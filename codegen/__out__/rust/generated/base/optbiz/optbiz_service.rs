@@ -425,12 +425,14 @@ pub async fn force_delete_by_ids_optbiz(
 
 /// 查找 业务选项 order_by 字段的最大值
 pub async fn find_last_order_by_optbiz(
+  search: Option<OptbizSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = optbiz_dao::find_last_order_by_optbiz(
+  let order_by = optbiz_dao::find_last_order_by_optbiz(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

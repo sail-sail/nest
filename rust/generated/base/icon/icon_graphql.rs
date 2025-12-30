@@ -218,12 +218,14 @@ impl IconGenQuery {
   async fn find_last_order_by_icon(
     &self,
     ctx: &Context<'_>,
+    search: Option<IconSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         icon_resolver::find_last_order_by_icon(
+          search,
           None,
         )
       }).await

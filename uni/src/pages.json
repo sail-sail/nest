@@ -26,7 +26,31 @@
 			"style": {
 				"navigationBarTitleText": "企业微信登录测试"
 			}
-		}
+		},
+    {
+      "path": "pages/dyn_page/List",
+      "style": {
+        "navigationBarTitleText": "动态页面列表"
+      }
+    },
+    {
+      "path": "pages/dyn_page/Detail",
+      "style": {
+        "navigationBarTitleText": "动态页面详情"
+      }
+    },
+    {
+      "path": "pages/dyn_page_field/List",
+      "style": {
+        "navigationBarTitleText": "动态页面字段列表"
+      }
+    },
+    {
+      "path": "pages/dyn_page_field/Detail",
+      "style": {
+        "navigationBarTitleText": "动态页面字段详情"
+      }
+    }
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

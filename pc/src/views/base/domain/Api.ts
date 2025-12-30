@@ -39,7 +39,7 @@ export function intoInputDomain(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -578,8 +578,8 @@ export function useExportExcelDomain() {
     try {
       const data = await query({
         query: `
-          query($search: DomainSearch, $sort: [SortInput!]) {
-            findAllDomain(search: $search, page: null, sort: $sort) {
+          query($search: DomainSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDomain(search: $search, page: $page, sort: $sort) {
               ${ domainQueryField }
             }
             getDict(codes: [
@@ -593,6 +593,9 @@ export function useExportExcelDomain() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -677,19 +680,22 @@ export async function importModelsDomain(
  * 查找 域名 order_by 字段的最大值
  */
 export async function findLastOrderByDomain(
+  search?: DomainSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDomain: Query["findLastOrderByDomain"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDomain
+      query($search: DomainSearch) {
+        findLastOrderByDomain(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDomain;
-  return res;
+  
+  const order_by = data.findLastOrderByDomain;
+  
+  return order_by;
 }
 
 /**

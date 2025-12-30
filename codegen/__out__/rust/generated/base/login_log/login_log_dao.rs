@@ -31,6 +31,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
+  find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -517,6 +518,9 @@ pub async fn find_all_login_log(
   }
   
   let order_by_query = get_order_by_query(Some(sort));
+  let is_result_limit = page.as_ref()
+    .and_then(|item| item.is_result_limit)
+    .unwrap_or(true);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -531,6 +535,13 @@ pub async fn find_all_login_log(
     args,
     Some(options),
   ).await?;
+  
+  let len = res.len();
+  let result_limit_num = find_all_result_limit();
+  
+  if is_result_limit && len > result_limit_num {
+    return Err(eyre!("{table}.{method}: result length {len} > {result_limit_num}"));
+  }
   
   let dict_vec = get_dict(&[
     "login_log_type",
@@ -799,10 +810,11 @@ pub async fn find_one_login_log(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let page = PageInput {
-    pg_offset: 0.into(),
-    pg_size: 1.into(),
-  }.into();
+  let page = Some(PageInput {
+    pg_offset: Some(0),
+    pg_size: Some(1),
+    is_result_limit: Some(true),
+  });
   
   let res = find_all_login_log(
     search,
@@ -1785,17 +1797,19 @@ pub async fn create_return_login_log(
     options,
   ).await?;
   
-  if model_login_log.is_none() {
-    let err_msg = "create_return_login_log: model_login_log.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_login_log = model_login_log.unwrap();
+  let model_login_log = match model_login_log {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_login_log: model_login_log.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_login_log)
 }
@@ -1925,11 +1939,13 @@ pub async fn update_by_id_login_log(
     options.clone(),
   ).await?;
   
-  if old_model.is_none() {
-    let err_msg = "编辑失败, 此 登录日志 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {
+      let err_msg = "编辑失败, 此 登录日志 已被删除";
+      return Err(eyre!(err_msg));
+    }
+  };
   
   if !is_silent_mode {
     info!(
@@ -2437,20 +2453,24 @@ pub async fn force_delete_by_ids_login_log(
 pub async fn validate_option_login_log(
   model: Option<LoginLogModel>,
 ) -> Result<LoginLogModel> {
-  if model.is_none() {
-    let err_msg = "登录日志不存在";
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {
+      let err_msg = "登录日志不存在";
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }

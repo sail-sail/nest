@@ -1891,20 +1891,22 @@ if (hasOrderBy) {
 /// 查找 <#=table_comment#> order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_<#=table#>(
+  search: Option<<#=Table_Up#>Search>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = <#=table#>_service::find_last_order_by_<#=table#>(
+  let order_by = <#=table#>_service::find_last_order_by_<#=table#>(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }<#
 }
 #>

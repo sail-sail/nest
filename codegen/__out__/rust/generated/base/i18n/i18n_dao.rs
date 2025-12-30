@@ -31,6 +31,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
+  find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -601,6 +602,9 @@ pub async fn find_all_i18n(
   }
   
   let order_by_query = get_order_by_query(Some(sort));
+  let is_result_limit = page.as_ref()
+    .and_then(|item| item.is_result_limit)
+    .unwrap_or(true);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -619,6 +623,13 @@ pub async fn find_all_i18n(
     args,
     Some(options),
   ).await?;
+  
+  let len = res.len();
+  let result_limit_num = find_all_result_limit();
+  
+  if is_result_limit && len > result_limit_num {
+    return Err(eyre!("{table}.{method}: result length {len} > {result_limit_num}"));
+  }
   
   #[allow(unused_variables)]
   for model in &mut res {
@@ -871,10 +882,11 @@ pub async fn find_one_i18n(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let page = PageInput {
-    pg_offset: 0.into(),
-    pg_size: 1.into(),
-  }.into();
+  let page = Some(PageInput {
+    pg_offset: Some(0),
+    pg_size: Some(1),
+    is_result_limit: Some(true),
+  });
   
   let res = find_all_i18n(
     search,
@@ -1885,17 +1897,19 @@ pub async fn create_return_i18n(
     options,
   ).await?;
   
-  if model_i18n.is_none() {
-    let err_msg = "create_return_i18n: model_i18n.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_i18n = model_i18n.unwrap();
+  let model_i18n = match model_i18n {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_i18n: model_i18n.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_i18n)
 }
@@ -1979,11 +1993,13 @@ pub async fn update_by_id_i18n(
     options.clone(),
   ).await?;
   
-  if old_model.is_none() {
-    let err_msg = "编辑失败, 此 国际化 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {
+      let err_msg = "编辑失败, 此 国际化 已被删除";
+      return Err(eyre!(err_msg));
+    }
+  };
   
   if !is_silent_mode {
     info!(
@@ -2512,20 +2528,24 @@ pub async fn force_delete_by_ids_i18n(
 pub async fn validate_option_i18n(
   model: Option<I18nModel>,
 ) -> Result<I18nModel> {
-  if model.is_none() {
-    let err_msg = "国际化不存在";
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {
+      let err_msg = "国际化不存在";
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }

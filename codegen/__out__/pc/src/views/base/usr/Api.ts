@@ -74,7 +74,7 @@ export function intoInputUsr(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -791,8 +791,8 @@ export function useExportExcelUsr() {
     try {
       const data = await query({
         query: `
-          query($search: UsrSearch, $sort: [SortInput!]) {
-            findAllUsr(search: $search, page: null, sort: $sort) {
+          query($search: UsrSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllUsr(search: $search, page: $page, sort: $sort) {
               ${ usrQueryField }
             }
             findAllRole {
@@ -816,6 +816,9 @@ export function useExportExcelUsr() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -900,19 +903,22 @@ export async function importModelsUsr(
  * 查找 用户 order_by 字段的最大值
  */
 export async function findLastOrderByUsr(
+  search?: UsrSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByUsr: Query["findLastOrderByUsr"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByUsr
+      query($search: UsrSearch) {
+        findLastOrderByUsr(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByUsr;
-  return res;
+  
+  const order_by = data.findLastOrderByUsr;
+  
+  return order_by;
 }
 
 /**

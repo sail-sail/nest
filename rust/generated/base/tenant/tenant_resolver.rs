@@ -489,18 +489,20 @@ pub async fn force_delete_by_ids_tenant(
 /// 查找 租户 order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_tenant(
+  search: Option<TenantSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = tenant_service::find_last_order_by_tenant(
+  let order_by = tenant_service::find_last_order_by_tenant(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

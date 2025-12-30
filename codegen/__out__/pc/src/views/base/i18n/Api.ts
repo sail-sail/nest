@@ -643,8 +643,8 @@ export function useExportExcelI18n() {
     try {
       const data = await query({
         query: `
-          query($search: I18nSearch, $sort: [SortInput!]) {
-            findAllI18n(search: $search, page: null, sort: $sort) {
+          query($search: I18nSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllI18n(search: $search, page: $page, sort: $sort) {
               ${ i18nQueryField }
             }
             findAllLang {
@@ -657,6 +657,9 @@ export function useExportExcelI18n() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

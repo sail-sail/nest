@@ -19,6 +19,7 @@
     >
       <ElIconRefresh
         class="reset_but"
+        @dblclick.stop
         @click="onReset"
       ></ElIconRefresh>
     </div>
@@ -29,6 +30,7 @@
       >
         <ElIconUnlock
           class="unlock_but"
+          @dblclick.stop
           @click="isReadonly = true;"
         >
         </ElIconUnlock>
@@ -39,6 +41,7 @@
       >
         <ElIconLock
           class="lock_but"
+          @dblclick.stop
           @click="isReadonly = false;"
         ></ElIconLock>
       </div>
@@ -347,6 +350,7 @@
       
     </div>
   </div>
+  
 </CustomDialog>
 </template>
 
@@ -382,10 +386,6 @@ import {
 import {
   getTreeDept,
 } from "@/views/base/dept/Api.ts";
-
-import {
-  findAllOrg as getOrgList,
-} from "@/views/base/org/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -424,7 +424,7 @@ let ids = $ref<UsrId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<UsrId[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -498,7 +498,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOneUsr;
 
@@ -563,6 +563,7 @@ async function showDialog(
     }
   });
   dialogAction = action || "add";
+  nextTick(() => formRef?.clearValidate());
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
@@ -580,9 +581,12 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       getDefaultInputUsr(),
-      findLastOrderByUsr({
-        notLoading: !inited,
-      }),
+      findLastOrderByUsr(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -603,9 +607,12 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderByUsr({
-        notLoading: !inited,
-      }),
+      findLastOrderByUsr(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     if (data) {
       dialogModel = {
@@ -705,9 +712,12 @@ async function onRefresh() {
       order_by,
     ] = await Promise.all([
       getDefaultInputUsr(),
-      findLastOrderByUsr({
-        notLoading: !inited,
-      }),
+      findLastOrderByUsr(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -862,7 +872,7 @@ async function onSaveKeydown(e: KeyboardEvent) {
 
 /** 保存并返回id */
 async function save() {
-  if (isReadonly) {
+  if (!inited || isReadonly) {
     return;
   }
   if (!formRef) {
@@ -937,7 +947,7 @@ async function onSave() {
   });
 }
 
-const default_org_idRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("default_org_idRef"));
+const default_org_idRef = $(useTemplateRef("default_org_idRef"));
 let old_default_org_id: InputMaybe<OrgId> | undefined = undefined;
 
 async function getOrgListApi() {

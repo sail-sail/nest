@@ -391,12 +391,14 @@ pub async fn force_delete_by_ids_tenant(
 
 /// 查找 租户 order_by 字段的最大值
 pub async fn find_last_order_by_tenant(
+  search: Option<TenantSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = tenant_dao::find_last_order_by_tenant(
+  let order_by = tenant_dao::find_last_order_by_tenant(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

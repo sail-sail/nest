@@ -31,6 +31,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
+  find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -579,6 +580,9 @@ pub async fn find_all_dyn_page(
   }
   
   let order_by_query = get_order_by_query(Some(sort));
+  let is_result_limit = page.as_ref()
+    .and_then(|item| item.is_result_limit)
+    .unwrap_or(true);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -595,6 +599,13 @@ pub async fn find_all_dyn_page(
     args,
     Some(options.clone()),
   ).await?;
+  
+  let len = res.len();
+  let result_limit_num = find_all_result_limit();
+  
+  if is_result_limit && len > result_limit_num {
+    return Err(eyre!("{table}.{method}: result length {len} > {result_limit_num}"));
+  }
   
   let dict_vec = get_dict(&[
     "is_enabled",
@@ -638,7 +649,7 @@ pub async fn find_all_dyn_page(
       
       if let Some(menu_model) = menu_model {
         // 获取父菜单ID
-        model.parent_menu_id = menu_model.parent_id.clone();
+        model.parent_menu_id = menu_model.parent_id;
         model.parent_menu_id_lbl = menu_model.parent_id_lbl.clone();
         
         // 获取拥有此菜单权限的角色列表
@@ -913,10 +924,11 @@ pub async fn find_one_dyn_page(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let page = PageInput {
-    pg_offset: 0.into(),
-    pg_size: 1.into(),
-  }.into();
+  let page = Some(PageInput {
+    pg_offset: Some(0),
+    pg_size: Some(1),
+    is_result_limit: Some(true),
+  });
   
   let res = find_all_dyn_page(
     search,
@@ -1939,10 +1951,10 @@ async fn _creates(
   
   // 根据 code 路由查找菜单, 如果菜单不存在则创建菜单, 否则更新菜单名称
   for input in &inputs2 {
-    if input.code.is_none() {
-      continue;
-    }
-    let code = input.code.as_ref().unwrap();
+    let code = match input.code.clone() {
+      Some(code) => code,
+      None => continue,
+    };
     let menu_model = find_one_menu(
       Some(MenuSearch {
         route_path: Some(code.clone()),
@@ -1956,9 +1968,9 @@ async fn _creates(
       let menu_options = Options::from(options.clone())
         .set_is_creating(Some(true));
       update_by_id_menu(
-        menu_model.id.clone(),
+        menu_model.id,
         MenuInput {
-          parent_id: input.parent_menu_id.clone(),
+          parent_id: input.parent_menu_id,
           lbl: input.lbl.clone(),
           is_enabled: input.is_enabled,
           ..Default::default()
@@ -1970,7 +1982,7 @@ async fn _creates(
       // 创建菜单
       create_menu(
         MenuInput {
-          parent_id: input.parent_menu_id.clone(),
+          parent_id: input.parent_menu_id,
           route_path: Some(code.clone()),
           lbl: input.lbl.clone(),
           is_dyn_page: Some(1),
@@ -2143,17 +2155,19 @@ pub async fn create_return_dyn_page(
     options,
   ).await?;
   
-  if model_dyn_page.is_none() {
-    let err_msg = "create_return_dyn_page: model_dyn_page.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_dyn_page = model_dyn_page.unwrap();
+  let model_dyn_page = match model_dyn_page {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_dyn_page: model_dyn_page.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_dyn_page)
 }
@@ -2283,11 +2297,13 @@ pub async fn update_by_id_dyn_page(
     options.clone(),
   ).await?;
   
-  if old_model.is_none() {
-    let err_msg = "编辑失败, 此 动态页面 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {
+      let err_msg = "编辑失败, 此 动态页面 已被删除";
+      return Err(eyre!(err_msg));
+    }
+  };
   
   if !is_silent_mode {
     info!(
@@ -2562,7 +2578,7 @@ pub async fn update_by_id_dyn_page(
       update_by_id_menu(
         menu_model.id.clone(),
         MenuInput {
-          parent_id: input.parent_menu_id.clone(),
+          parent_id: input.parent_menu_id,
           lbl: input.lbl.clone(),
           is_enabled: input.is_enabled,
           ..Default::default()
@@ -2574,7 +2590,7 @@ pub async fn update_by_id_dyn_page(
       // 创建菜单
       create_menu(
         MenuInput {
-          parent_id: input.parent_menu_id.clone(),
+          parent_id: input.parent_menu_id,
           route_path: Some(code.clone()),
           lbl: input.lbl.clone(),
           is_dyn_page: Some(1),
@@ -3219,6 +3235,7 @@ pub async fn force_delete_by_ids_dyn_page(
 // MARK: find_last_order_by_dyn_page
 /// 查找 动态页面 order_by 字段的最大值
 pub async fn find_last_order_by_dyn_page(
+  search: Option<DynPageSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -3239,20 +3256,13 @@ pub async fn find_last_order_by_dyn_page(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  #[allow(unused_mut)]
-  let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);
   
-  sql_wheres.push("t.is_deleted=0");
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
-  if let Some(tenant_id) = get_auth_tenant_id() {
-    sql_wheres.push("t.tenant_id=?");
-    args.push(tenant_id.into());
-  }
-  
-  let sql_where = sql_wheres.join(" and ");
-  let sql = format!("select t.order_by order_by from {table} t where {sql_where} order by t.order_by desc limit 1");
+  let sql = format!(r#"select f.order_by from (select t.order_by
+  from {from_query} where {where_query} group by t.id order by t.order_by desc limit 1) f"#);
   
   let args: Vec<_> = args.into();
   
@@ -3298,20 +3308,24 @@ pub async fn validate_is_enabled_dyn_page(
 pub async fn validate_option_dyn_page(
   model: Option<DynPageModel>,
 ) -> Result<DynPageModel> {
-  if model.is_none() {
-    let err_msg = "动态页面不存在";
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {
+      let err_msg = "动态页面不存在";
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.to_owned(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }

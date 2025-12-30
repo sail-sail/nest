@@ -36,7 +36,7 @@ export function intoInputLang(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -547,8 +547,8 @@ export function useExportExcelLang() {
     try {
       const data = await query({
         query: `
-          query($search: LangSearch, $sort: [SortInput!]) {
-            findAllLang(search: $search, page: null, sort: $sort) {
+          query($search: LangSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllLang(search: $search, page: $page, sort: $sort) {
               ${ langQueryField }
             }
             getDict(codes: [
@@ -561,6 +561,9 @@ export function useExportExcelLang() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -645,19 +648,22 @@ export async function importModelsLang(
  * 查找 语言 order_by 字段的最大值
  */
 export async function findLastOrderByLang(
+  search?: LangSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByLang: Query["findLastOrderByLang"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByLang
+      query($search: LangSearch) {
+        findLastOrderByLang(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByLang;
-  return res;
+  
+  const order_by = data.findLastOrderByLang;
+  
+  return order_by;
 }
 
 /**

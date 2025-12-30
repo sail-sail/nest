@@ -46,7 +46,7 @@ export function intoInputIcon(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -558,8 +558,8 @@ export function useExportExcelIcon() {
     try {
       const data = await query({
         query: `
-          query($search: IconSearch, $sort: [SortInput!]) {
-            findAllIcon(search: $search, page: null, sort: $sort) {
+          query($search: IconSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllIcon(search: $search, page: $page, sort: $sort) {
               ${ iconQueryField }
             }
             getDict(codes: [
@@ -572,6 +572,9 @@ export function useExportExcelIcon() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -656,19 +659,22 @@ export async function importModelsIcon(
  * 查找 图标库 order_by 字段的最大值
  */
 export async function findLastOrderByIcon(
+  search?: IconSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByIcon: Query["findLastOrderByIcon"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByIcon
+      query($search: IconSearch) {
+        findLastOrderByIcon(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByIcon;
-  return res;
+  
+  const order_by = data.findLastOrderByIcon;
+  
+  return order_by;
 }
 
 /**

@@ -787,7 +787,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
+const tableRef = $(useTemplateRef("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -1075,7 +1075,7 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
+const detailRef = $(useTemplateRef("detailRef"));
 
 /** 当前表格数据对应的搜索条件 */
 let currentSearch = $ref<IconSearch>({ });
@@ -1106,9 +1106,7 @@ function getDataSearch() {
     ...search,
     idsChecked: undefined,
   };
-  if (!showBuildIn) {
-    Object.assign(search2, builtInSearch);
-  }
+  Object.assign(search2, builtInSearch);
   search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
@@ -1300,7 +1298,7 @@ async function onInsert() {
   await openAdd();
 }
 
-const uploadFileDialogRef = $(useTemplateRef<InstanceType<typeof UploadFileDialog>>("uploadFileDialogRef"));
+const uploadFileDialogRef = $(useTemplateRef("uploadFileDialogRef"));
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -1467,13 +1465,10 @@ async function onRowDblclick(
   row: IconModel,
   column: TableColumnCtx<IconModel>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }
@@ -1675,21 +1670,26 @@ async function initFrame() {
 }
 
 watch(
-  () => [ builtInSearch, showBuildIn ],
+  computed(() => {
+    const {
+      selectedIds,
+      isMultiple,
+      showBuildIn,
+      isPagination,
+      isLocked,
+      isFocus,
+      propsNotReset,
+      isListSelectDialog,
+      ...rest
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } = builtInSearch as any;
+    return rest
+  }),
   async function() {
     if (isSearchReset) {
       return;
     }
-    if (builtInSearch.is_deleted != null) {
-      search.is_deleted = builtInSearch.is_deleted;
-    }
-    if (showBuildIn) {
-      Object.assign(search, builtInSearch);
-    }
-    const search2 = getDataSearch();
-    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
-      return;
-    }
+    selectedIds = [ ];
     await dataGrid(true);
   },
   {

@@ -47,7 +47,7 @@ export function intoInputMenu(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -641,8 +641,8 @@ export function useExportExcelMenu() {
     try {
       const data = await query({
         query: `
-          query($search: MenuSearch, $sort: [SortInput!]) {
-            findAllMenu(search: $search, page: null, sort: $sort) {
+          query($search: MenuSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllMenu(search: $search, page: $page, sort: $sort) {
               ${ menuQueryField }
             }
             getDict(codes: [
@@ -657,6 +657,9 @@ export function useExportExcelMenu() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -741,19 +744,22 @@ export async function importModelsMenu(
  * 查找 菜单 order_by 字段的最大值
  */
 export async function findLastOrderByMenu(
+  search?: MenuSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByMenu: Query["findLastOrderByMenu"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByMenu
+      query($search: MenuSearch) {
+        findLastOrderByMenu(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByMenu;
-  return res;
+  
+  const order_by = data.findLastOrderByMenu;
+  
+  return order_by;
 }
 
 /**

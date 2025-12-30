@@ -41,7 +41,7 @@ export function intoInputOptbiz(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
     version: model?.version,
@@ -582,8 +582,8 @@ export function useExportExcelOptbiz() {
     try {
       const data = await query({
         query: `
-          query($search: OptbizSearch, $sort: [SortInput!]) {
-            findAllOptbiz(search: $search, page: null, sort: $sort) {
+          query($search: OptbizSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllOptbiz(search: $search, page: $page, sort: $sort) {
               ${ optbizQueryField }
             }
             getDict(codes: [
@@ -597,6 +597,9 @@ export function useExportExcelOptbiz() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -681,19 +684,22 @@ export async function importModelsOptbiz(
  * 查找 业务选项 order_by 字段的最大值
  */
 export async function findLastOrderByOptbiz(
+  search?: OptbizSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByOptbiz: Query["findLastOrderByOptbiz"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByOptbiz
+      query($search: OptbizSearch) {
+        findLastOrderByOptbiz(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByOptbiz;
-  return res;
+  
+  const order_by = data.findLastOrderByOptbiz;
+  
+  return order_by;
 }
 
 /**

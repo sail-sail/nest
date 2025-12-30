@@ -15,6 +15,17 @@ use serde_json::Map;
 pub struct PageInput {
   pub pg_offset: Option<i64>,
   pub pg_size: Option<i64>,
+  pub is_result_limit: Option<bool>,
+}
+
+impl Default for PageInput {
+  fn default() -> Self {
+    PageInput {
+      pg_offset: None,
+      pg_size: None,
+      is_result_limit: Some(true),
+    }
+  }
 }
 
 impl std::fmt::Debug for PageInput {
@@ -25,6 +36,9 @@ impl std::fmt::Debug for PageInput {
     }
     if let Some(ref pg_size) = self.pg_size {
       item = item.field("pg_size", pg_size);
+    }
+    if let Some(ref is_result_limit) = self.is_result_limit {
+      item = item.field("is_result_limit", is_result_limit);
     }
     item.finish()
   }

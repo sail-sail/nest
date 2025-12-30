@@ -125,7 +125,7 @@ for (let i = 0; i < columns.length; i++) {
 }
 
 // 根据关键字搜索
-const searchByKeyword = opts?.searchByKeyword;
+let searchByKeyword = opts?.searchByKeyword;
 
 if (searchByKeyword) {
   if (!searchByKeyword.prop) {
@@ -136,6 +136,8 @@ if (searchByKeyword) {
     throw `表: ${ mod }_${ table } 的 opts.searchByKeyword.fields 不能为空`;
     process.exit(1);
   }
+} else {
+  searchByKeyword = { };
 }
 
 #><template>
@@ -167,7 +169,7 @@ if (searchByKeyword) {
       @submit.prevent
       @keydown.enter="onSearch(true)"
     ><#
-    if (searchByKeyword && !searchByKeyword.hideInList) {
+    if (searchByKeyword && searchByKeyword.showInPcList === true) {
       const prop = searchByKeyword.prop;
       const lbl = searchByKeyword.lbl || "关键字";
       const placeholder = searchByKeyword.placeholder || "关键字";
@@ -1506,6 +1508,18 @@ if (searchByKeyword) {
             </el-dropdown-item><#
             }
             #><#
+            if (opts?.isUseDynPageFields) {
+            #>
+            
+            <el-dropdown-item
+              v-if="permit('dyn_page_fields', '新增字段') && !isLocked || true"
+              un-justify-center
+              @click="onDynPageFields"
+            >
+              <span>新增字段</span>
+            </el-dropdown-item><#
+            }
+            #><#
             for (let ii = 0; ii < columns.length; ii++) {
               const column = columns[ii];
               if (!column.foreignTabs) {
@@ -2644,6 +2658,14 @@ if (searchByKeyword) {
     ref="auditListDialogRef"
   ></AuditListDialog><#
   }
+  #><#
+  if (opts?.isUseDynPageFields) {
+  #>
+  
+  <DynPageDetail
+    ref="dynPageDetailRef"
+  ></DynPageDetail><#
+  }
   #>
   
 </div>
@@ -2907,6 +2929,12 @@ if (opts?.isRealData) {
 import {
   publish,
 } from "@/compositions/websocket";<#
+}
+#><#
+if (opts?.isUseDynPageFields) {
+#>
+
+import DynPageDetail from "@/views/base/dyn_page/Detail.vue";<#
 }
 #>
 
@@ -3189,10 +3217,20 @@ const isPagination = $computed(() => !props.isPagination || props.isPagination =
 const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
-const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
+const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");<#
+if (opts?.isUseDynPageFields) {
+#>
+
+/** 动态页面表单字段 */
+const {
+  dyn_page_field_models,
+  refreshDynPageFields,
+} = $(useDynPageFields(pagePath));<#
+}
+#>
 
 /** 表格 */
-const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));<#
+const tableRef = $(useTemplateRef("tableRef"));<#
 if (opts?.isRealData) {
 #>
 
@@ -3823,7 +3861,7 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
+const detailRef = $(useTemplateRef("detailRef"));
 
 /** 当前表格数据对应的搜索条件 */
 let currentSearch = $ref<<#=searchName#>>({ });
@@ -3877,9 +3915,7 @@ function getDataSearch() {<#
     ...search,
     idsChecked: undefined,
   };
-  if (!showBuildIn) {
-    Object.assign(search2, builtInSearch);
-  }<#
+  Object.assign(search2, builtInSearch);<#
   if (hasIsDeleted) {
   #>
   search2.is_deleted = is_deleted;<#
@@ -4194,7 +4230,7 @@ async function onInsert() {
   if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
 #>
 
-const uploadFileDialogRef = $(useTemplateRef<InstanceType<typeof UploadFileDialog>>("uploadFileDialogRef"));
+const uploadFileDialogRef = $(useTemplateRef("uploadFileDialogRef"));
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -4643,7 +4679,7 @@ async function openAudit() {
 if (hasAudit && auditTable_Up) {
 #>
 
-const auditListDialogRef = $(useTemplateRef<InstanceType<typeof AuditListDialog>>("auditListDialogRef"));
+const auditListDialogRef = $(useTemplateRef("auditListDialogRef"));
 
 /** 打开审核列表 */
 async function openAuditListDialog(
@@ -4713,13 +4749,10 @@ async function onRowDblclick(
   row: <#=modelName#>,
   column: TableColumnCtx<<#=modelName#>>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }
@@ -5198,7 +5231,7 @@ async function getDetailByModule(
 if (hasForeignTabs) {
 #>
 
-const foreignTabsRef = $(useTemplateRef<InstanceType<typeof ForeignTabs>>("foreignTabsRef"));<#
+const foreignTabsRef = $(useTemplateRef("foreignTabsRef"));<#
 if (hasForeignTabsButton || hasForeignTabsMore) {
 #>
 
@@ -5417,32 +5450,64 @@ async function initFrame() {<#
 }
 
 watch(
-  () => [ builtInSearch, showBuildIn ],
+  computed(() => {
+    const {
+      selectedIds,
+      isMultiple,
+      showBuildIn,
+      isPagination,
+      isLocked,
+      isFocus,
+      propsNotReset,
+      isListSelectDialog,
+      ...rest
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } = builtInSearch as any;
+    return rest
+  }),
   async function() {
     if (isSearchReset) {
       return;
-    }<#
-    if (hasIsDeleted) {
-    #>
-    if (builtInSearch.is_deleted != null) {
-      search.is_deleted = builtInSearch.is_deleted;
-    }<#
     }
-    #>
-    if (showBuildIn) {
-      Object.assign(search, builtInSearch);
-    }
-    const search2 = getDataSearch();
-    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
-      return;
-    }
+    selectedIds = [ ];
     await dataGrid(true);
   },
   {
     deep: true,
     immediate: true,
   },
-);
+);<#
+if (opts?.isUseDynPageFields) {
+#>
+
+const dynPageDetailRef = $(useTemplateRef("dynPageDetailRef"));
+
+/** 新增字段 */
+async function onDynPageFields() {
+  
+  if (!dynPageDetailRef) {
+    return;
+  }
+  
+  const {
+    changedIds,
+  } = await dynPageDetailRef.showDialog({
+    action: "add",
+    builtInModel: {
+      code: pagePath,
+    },
+    title: "新增字段",
+  });
+  
+  if (changedIds.length == 0) {
+    return;
+  }
+  
+  await refreshDynPageFields();
+  
+}<#
+}
+#>
 
 initFrame();<#
 for (let i = 0; i < columns.length; i++) {
@@ -5470,7 +5535,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
 
-const <#=column_name#>ListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("<#=column_name#>ListSelectDialogRef"));
+const <#=column_name#>ListSelectDialogRef = $(useTemplateRef("<#=column_name#>ListSelectDialogRef"));
 
 async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row: <#=modelName#>) {
   if (!<#=column_name#>ListSelectDialogRef) {
@@ -5539,7 +5604,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   if (foreignKey && foreignKey.isLinkForeignTabs) {
 #>
 
-const <#=foreignTable#>ForeignTabsRef = $(useTemplateRef<InstanceType<typeof <#=Foreign_Table_Up#>ForeignTabs>>("<#=foreignTable#>ForeignTabsRef"));
+const <#=foreignTable#>ForeignTabsRef = $(useTemplateRef("<#=foreignTable#>ForeignTabsRef"));
 
 async function open<#=Foreign_Table_Up#>ForeignTabs(id: <#=Table_Up#>Id, title: string) {
   await <#=foreignTable#>ForeignTabsRef?.showDialog({

@@ -54,7 +54,7 @@ export function intoInputDynPage(
     role_ids: model?.role_ids,
     role_ids_lbl: model?.role_ids_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
@@ -688,8 +688,8 @@ export function useExportExcelDynPage() {
     try {
       const data = await query({
         query: `
-          query($search: DynPageSearch, $sort: [SortInput!]) {
-            findAllDynPage(search: $search, page: null, sort: $sort) {
+          query($search: DynPageSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllDynPage(search: $search, page: $page, sort: $sort) {
               ${ dynPageQueryField }
             }
             findAllMenu {
@@ -708,6 +708,9 @@ export function useExportExcelDynPage() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -792,19 +795,22 @@ export async function importModelsDynPage(
  * 查找 动态页面 order_by 字段的最大值
  */
 export async function findLastOrderByDynPage(
+  search?: DynPageSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByDynPage: Query["findLastOrderByDynPage"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByDynPage
+      query($search: DynPageSearch) {
+        findLastOrderByDynPage(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByDynPage;
-  return res;
+  
+  const order_by = data.findLastOrderByDynPage;
+  
+  return order_by;
 }
 
 /**

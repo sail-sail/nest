@@ -240,12 +240,14 @@ impl UsrGenQuery {
   async fn find_last_order_by_usr(
     &self,
     ctx: &Context<'_>,
+    search: Option<UsrSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         usr_resolver::find_last_order_by_usr(
+          search,
           None,
         )
       }).await
