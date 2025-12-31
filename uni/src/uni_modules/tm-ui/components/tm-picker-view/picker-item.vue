@@ -90,8 +90,8 @@ function sanitizeIndex(indexes: number[], list: TM_PICKER_X_ITEM[][]): number[] 
 	const cols = list.length;
 	const result: number[] = new Array(cols).fill(0);
 	for (let i = 0; i < cols; i++) {
-		const colLen = list[i]?.length || 0;
-		const n = indexes[i] || 0;
+		const colLen = list[i]?.length ?? 0;
+		const n = indexes[i] ?? 0;
 		result[i] = colLen > 0 ? Math.min(Math.max(0, n), colLen - 1) : 0;
 	}
 	return result;
