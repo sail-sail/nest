@@ -421,6 +421,9 @@ html:is(.dark) {
   color: var(--readonly_font_color);
   background-color: var(--el-fill-color-blank);
 }
+.custom_input_readonly.select_input {
+  background-color: var(--el-fill-color-blank);
+}
 .custom_date_picker_readonly {
   .el-input__wrapper.is-focus {
     --el-input-focus-border-color: var(--el-input-border-color);
