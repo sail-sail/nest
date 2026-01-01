@@ -239,10 +239,11 @@ const _title = computed((): string => props.title)
 function getNowPageRoute(){
     if(nowpage) return nowpage;
     const pages = getCurrentPages();
-    let page = undefined
+    let page:string|undefined = undefined
     if(pages.length>0){
         page = pages[pages.length - 1]?.route||undefined
     }
+    if(!page) return ;
     nowpage = page
 }
 const _styleMap = computed(() => {
@@ -279,7 +280,7 @@ const _styleMap = computed(() => {
 })
 const onReadyEvent = ()=>{
     let sys = uni.getWindowInfo();
-    statusBarHeight.value = sys?.statusBarHeight || 0
+    statusBarHeight.value = sys?.statusBarHeight ?? 0
     emits('init', statusBarHeight.value + navbarHeight)
     if (props.staticTransparent) {
         fiexRatio.value = 0
