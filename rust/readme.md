@@ -1,27 +1,20 @@
 rust 静态链接:
 ```bash
 
-# windows安装scoop
-  iwr -useb get.scoop.sh | iex
-  # 或者
-  Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-
-# windows安装llvm
-  scoop install llvm
-
-# 安装musl
-  
-  # unbuntu
-  sudo apt install build-essential
-  sudo apt install musl-tools musl-dev
-  # sudo apt install openssl libssl-dev
-  
-  # centos
-  yum install -y musl-tools musl-dev
-
-# 安装rustup
+# wsl中安装rustup
   rustup target add x86_64-unknown-linux-musl
   cargo build --release --target=x86_64-unknown-linux-musl
+
+# wsl中安装 aws-lc-sys 工具链
+  sudo apt-get install -y build-essential cmake libclang-dev golang perl
+
+# windows中安装 aws-lc-sys 工具链
+  # 打开 Visual Studio Installer
+  # MSVC v143 - VS 2022 C++ x64/x86 生成工具
+  # C++ Clang Compiler for Windows （如果使用 ClangCL）
+  # Windows 11 SDK
+  # CMake tools for Windows
+  # https://cmake.org/download/ 下载安装 CMake
 ```
 
 ab 压力测试:
