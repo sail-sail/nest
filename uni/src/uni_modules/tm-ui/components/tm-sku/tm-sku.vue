@@ -114,7 +114,7 @@ const _nowSelectedItem = computed<TM.SKU_PRODUCT | null>(() => {
 	let ids = ''
 	for (let i = 0; i < dataItems.length; i++) {
 		let item = dataItems[i]
-		let children = item?.children || []
+		let children = item?.children ?? []
 		if (children.length > 0) {
 			let cis = children.map((el) => el.id)
 			for (let j = 0; j < cis.length; j++) {
@@ -133,7 +133,7 @@ const _nowSelectedItem = computed<TM.SKU_PRODUCT | null>(() => {
 const _lazyContent = computed(() => props.lazyContent);
 const _nowImgDefault = computed(() => {
 	if (!_data.value || !_data.value.product || _data.value.product?.length == 0) return ''
-	return _data.value.product[0].img || ''
+	return _data.value.product[0].img ?? ''
 })
 watch(() => props.modelValue, (_: string | number) => {
 	onSetDefaultStr()
@@ -208,7 +208,7 @@ function onSetDefaultStr() {
 		nowValue.value = val
 
 	} else if (props.autoSelectDefault) {
-		let product = _data.value?.product || []
+		let product = _data.value?.product ?? []
 		if (product.length > 0) {
 			let defaulter = product[0]
 			nowSelectedIds.value = String(defaulter.id).split('-')
@@ -292,7 +292,7 @@ export default {
 		@open="onOpen"
 	>
 		<view class="skuHeader">
-			<tm-image :preview="true" :src="(_nowSelectedItem?.img||_nowImgDefault)" height="160" round="12"
+			<tm-image :preview="true" :src="(_nowSelectedItem?.img??_nowImgDefault)" height="160" round="12"
 					  width="160"></tm-image>
 			<view style="margin-left: 20rpx">
 				<view v-if="_nowSelectedItem">
@@ -327,14 +327,14 @@ export default {
 				</view>
 				<view style="margin-top: 24rpx">
 					<tm-badge
-						v-for="(item2) in (item.children||[])"
+						v-for="(item2) in (item.children??[])"
 						:key="item2.id"
-						:label="(item2?.inventory_quantity||1)==0?$i18n.t('tmui32x.tmSku.queHuo'):''"
+						:label="(item2?.inventory_quantity??1)==0?$i18n.t('tmui32x.tmSku.queHuo'):''"
 						:offset="[22,0]"
 					>
 						<tm-tag
 							:color="isSelectedTags(item2.id)?props.color:'info'"
-							:style="{margin:`0 12rpx 12rpx 0`,opacity:(item2?.inventory_quantity||1)==0?0.5:1}"
+							:style="{margin:`0 12rpx 12rpx 0`,opacity:(item2?.inventory_quantity??1)==0?0.5:1}"
 							@click="selectedItem(item,index,item2)">
 							{{ item2.title }}
 						</tm-tag>

@@ -13,7 +13,7 @@ export const i18n = (options?: I18nOptions) => {
     // 创建多语言实例
     let i18nInstance = new Tmui4xI18n(options);
     // 设置默认语言
-    const defaultLanguage = options?.locale || 'zh-Hans';
+    const defaultLanguage = options?.locale ?? 'zh-Hans';
     i18nInstance.setLocale(defaultLanguage);
     // 合并本地语言文件
     const localLanguages = {

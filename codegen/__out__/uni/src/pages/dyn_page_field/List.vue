@@ -237,13 +237,6 @@
               un-overflow="hidden"
             ></view>
             
-            <view
-              un-text="4 gray-400"
-              un-m="x-2"
-            >
-              {{ dyn_page_field_model.create_time_lbl }}
-            </view>
-            
             <!-- 向右的箭头 -->
             <view
               v-if="!isEditing"
@@ -335,20 +328,14 @@ type DynPageFieldModelComputed = {
   id: DynPageFieldId;
   lbl: string;
   code: string;
-  create_time_lbl: string;
 };
 
 const dyn_page_field_models_computed = computed<DynPageFieldModelComputed[]>(() => {
   return dyn_page_field_models.map((dyn_page_field_model, i) => {
-    let create_time_lbl = "";
-    if (dyn_page_field_model.create_time) {
-      create_time_lbl = dayjs(dyn_page_field_model.create_time).format("YYYY-MM-DD");
-    }
     return {
       id: dyn_page_field_model.id,
       lbl: dyn_page_field_model.lbl,
       code: dyn_page_field_model.code,
-      create_time_lbl: create_time_lbl,
     };
   });
 });
