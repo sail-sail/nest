@@ -28,6 +28,6 @@
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
     "preinstall": "npx only-allow pnpm",
-    "postinstall": "cd deno && pnpm i && cd ../pc && pnpm i && cd ../uni && pnpm i"
+    "postinstall": "cd deno && pnpm i && cd ../pc && pnpm i && cd ../uni && pnpm i && cd ../codegen && pnpm i"
   }
 }

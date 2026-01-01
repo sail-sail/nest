@@ -109,13 +109,13 @@ const flattenObject = (obj: Record<string, any>, prefix: string = ''): Record<st
 
 const ruleCover = (rule: TM.FORM_RULE): TM.FORM_RULE_TYPE => {
     return {
-        required: rule?.required || false,
-        message: rule?.message || $i18n.t('tmui32x.tmForm.ruleMessage'),
-        validator: rule?.validator || null,
-        min: rule?.min || 1,
-        max: rule?.max || -1,
-        type: rule?.type || 'auto',
-        rule: rule?.rule || null
+        required: rule?.required ?? false,
+        message: rule?.message ?? $i18n.t('tmui32x.tmForm.ruleMessage'),
+        validator: rule?.validator ?? null,
+        min: rule?.min ?? 1,
+        max: rule?.max ?? -1,
+        type: rule?.type ?? 'auto',
+        rule: rule?.rule ?? null
     }
 }
 const _rules = computed((): Record<string, Array<TM.FORM_RULE_TYPE>> => {
