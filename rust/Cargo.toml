@@ -182,12 +182,18 @@ path = "main.rs"
 [profile.release]
 panic = "unwind"
 debug = 0
+strip = true           # 剥离符号表，大幅减小体积
+lto = "thin"          # 链接时优化（thin 比 true 编译更快）
+codegen-units = 16    # 平衡编译速度和优化
+opt-level = 3         # 最高性能优化（若要最小体积用 "z"）
 
 [profile.release.package.generated]
-debug = 1
+debug = 1             # 只保留行号和函数名
+strip = false         # 保留 generated 的基本符号用于错误追踪
 
 [profile.release.package.app]
-debug = 2
+debug = 2             # 完整调试信息和堆栈
+strip = false         # 保留完整符号
 
 [profile.dev]
 debug = 1
