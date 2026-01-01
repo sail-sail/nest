@@ -180,6 +180,7 @@ const props = defineProps({
 	 */
 	zIndex: {
 		type: [String, Number],
+		// default: 1100
 		default: 1200
 	},
 	/**
@@ -392,7 +393,7 @@ const setDomHeight = ()=>{
     _height.value = sys.windowHeight
     windtop.value = _offset.value
     // #endif
-    safeFooterHeight.value = (sys.safeAreaInsets?.bottom||0) == 0 ? 16 : sys.safeAreaInsets.bottom
+    safeFooterHeight.value = (sys.safeAreaInsets?.bottom??0) == 0 ? 16 : sys.safeAreaInsets.bottom
 }
 
 
@@ -812,7 +813,9 @@ export default {
 
 .tmModalWrap_on {
 	background-color: rgba(0, 0, 0, 0.4);
+	// #ifndef APP-HARMONY
 	backdrop-filter: blur(3px);
+	// #endif
 }
 
 .tmModalWrap_off {

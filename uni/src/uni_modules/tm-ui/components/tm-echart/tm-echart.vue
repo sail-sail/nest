@@ -25,9 +25,9 @@
 	  defaultCoarsePointer = retrieve2(root.__ECHARTS__DEFAULT__COARSE_POINTER, defaultCoarsePointer);
 	  var devUseDirtyRect = root.__ECHARTS__DEFAULT__USE_DIRTY_RECT__;
 	  改成如下：
-	  defaultRenderer = root?.__ECHARTS__DEFAULT__RENDERER__ || defaultRenderer;
+	  defaultRenderer = root?.__ECHARTS__DEFAULT__RENDERER__ ?? defaultRenderer;
 	  defaultCoarsePointer = retrieve2(root?.__ECHARTS__DEFAULT__COARSE_POINTER, defaultCoarsePointer);
-	  var devUseDirtyRect = root?.__ECHARTS__DEFAULT__USE_DIRTY_RECT__||null;
+	  var devUseDirtyRect = root?.__ECHARTS__DEFAULT__USE_DIRTY_RECT__??null;
 	* @constant 平台兼容
 	*	| H5 | uniAPP | 小程序 | version |
 	   | --- | --- | --- | --- |
@@ -141,13 +141,13 @@
 				}
 
 			}, 300)
-			if (canvasNode?.offsetWidth || null) {
+			if (canvasNode?.offsetWidth ?? null) {
 				canvasNode.width = canvasNode.offsetWidth * pixelRatio
 				canvasNode.height = canvasNode.offsetHeight * pixelRatio
 			}
 
 			tid = setTimeout(() => {
-				if (canvasNode?.offsetWidth || null) {
+				if (canvasNode?.offsetWidth ?? null) {
 					canvasNode.width = canvasNode.offsetWidth * pixelRatio
 					canvasNode.height = canvasNode.offsetHeight * pixelRatio
 				}

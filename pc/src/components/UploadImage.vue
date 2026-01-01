@@ -10,6 +10,10 @@
   :style="{
     'min-height': `${ (props.itemHeight + 4) }px`,
   }"
+  class="upload_image"
+  :class="{
+    'upload_image_readonly': props.readonly,
+  }"
   v-bind="$attrs"
 >
   <div
@@ -115,7 +119,6 @@
   </div>
   <div
     v-if="!props.readonly && thumbList.length < props.maxSize"
-    class="upload_image_empty"
     :style="{
       height: `${ (props.itemHeight + 4) }px`,
       width: `${ (props.itemHeight + 4) }px`,
@@ -137,6 +140,7 @@
       un-w="full"
       un-transition="border-color"
       un-relative
+      class="upload_image_empty"
       @click="onUpload"
     >
       <el-icon
@@ -190,6 +194,7 @@
       un-items-center
       un-b="1 dotted gray-300 dark:gray-600"
       un-rounded
+      class="upload_image_empty"
     ></div>
   </div>
 </div>
