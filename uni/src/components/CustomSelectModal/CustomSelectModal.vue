@@ -623,6 +623,7 @@ watch(
   () => [
     inited.value,
     props.height,
+    options4SelectV2.value.length,
   ],
   () => {
     if (!inited.value) {
