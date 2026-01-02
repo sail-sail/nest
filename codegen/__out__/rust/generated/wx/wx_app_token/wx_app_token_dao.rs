@@ -579,7 +579,13 @@ pub async fn find_all_wx_app_token(
   let result_limit_num = find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
-    return Err(eyre!("{table}.{method}: result length {len} > {result_limit_num}"));
+    return Err(eyre!(
+      ServiceException {
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   #[allow(unused_variables)]
