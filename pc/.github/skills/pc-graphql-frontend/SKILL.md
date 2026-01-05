@@ -12,23 +12,29 @@ metadata:
 
 ```
 src/views/{module}/{table}/
-├── Api.ts      # 自动生成（不修改）
+├── Api.ts      # 自动生成(尽量不修改)
 └── Api2.ts     # 手写自定义接口
 ```
 
 ## Query 模板
 
 ```typescript
-import type { Query } from "#/types.ts";
+import type {
+  Query,
+} from "#/types.ts";
 
 /** 接口描述 */
-export async function getXxxData(id: XxxId, opt?: GqlOpt) {
+export async function 函数名(
+  id: XxxId,
+  opt?: GqlOpt,
+) {
+  
   const res: {
-    getXxxData: Query["getXxxData"];
+    函数名: Query["函数名"];
   } = await query({
     query: /* GraphQL */ `
       query($id: XxxId!) {
-        getXxxData(id: $id) {
+        函数名(id: $id) {
           field1
           field2
         }
@@ -36,17 +42,28 @@ export async function getXxxData(id: XxxId, opt?: GqlOpt) {
     `,
     variables: { id },
   }, opt);
-  return res.getXxxData;
+  
+  const data = res.函数名;
+  
+  return data;
 }
 ```
 
 ## Mutation 模板
 
 ```typescript
-import type { Mutation, XxxInput } from "#/types.ts";
+import type {
+  Mutation,
+  XxxInput,
+} from "#/types.ts";
 
 /** 接口描述 */
-export async function updateXxx(id: XxxId, input: XxxInput, opt?: GqlOpt) {
+export async function updateXxx(
+  id: XxxId,
+  input: XxxInput,
+  opt?: GqlOpt,
+) {
+  
   const res: {
     updateXxx: Mutation["updateXxx"];
   } = await mutation({
@@ -55,9 +72,15 @@ export async function updateXxx(id: XxxId, input: XxxInput, opt?: GqlOpt) {
         updateXxx(id: $id, input: $input)
       }
     `,
-    variables: { id, input },
+    variables: {
+      id,
+      input,
+    },
   }, opt);
-  return res.updateXxx;
+  
+  const data = res.updateXxx;
+  
+  return data;
 }
 ```
 
@@ -65,11 +88,9 @@ export async function updateXxx(id: XxxId, input: XxxInput, opt?: GqlOpt) {
 
 | 规则 | 说明 |
 |------|------|
-| 类型导入 | 从 `#/types.ts` 导入 `Query`、`Mutation`、`XxxInput` 等 |
+| 类型导入 | 从 `#/types.ts` 导入 `Query`、`Mutation`、`XxxInput` 等,如果是标准的{table}Model,{table}Input,{table}Search就不需要引入,因为已经在Model.ts全局定义了 |
 | 返回类型 | 使用 `Query["xxx"]` 或 `Mutation["xxx"]` 声明 |
-| GraphQL 标记 | 使用 `` /* GraphQL */ ` `` 标记查询字符串 |
 | 命名 | 函数驼峰式，参数蛇形式，与后端保持一致 |
-| 注释 | 每个函数必须有 JSDoc 注释 |
 
 ## 开发流程
 
