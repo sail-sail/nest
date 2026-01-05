@@ -64,6 +64,22 @@
     "vue.editor.templateInterpolationDecorators": false,
     "vue.format.template.initialIndent": false,
     "vue.format.wrapAttributes": "force",
-    "chat.useClaudeSkills": true
+    "chat.useClaudeSkills": true,
+    "mcp": {
+      "servers": {
+        "utcp-codemode": {
+          "args": [
+            "-y",
+            "@utcp/code-mode-mcp@latest"
+          ],
+          "env": {
+            "UTCP_CONFIG_FILE": "${workspaceFolder:codegen}/../.utcp_config.json"
+          },
+          "command": "npx",
+          "type": "stdio"
+        }
+      },
+      "inputs": []
+    }
   }
 }
