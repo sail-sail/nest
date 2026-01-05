@@ -744,7 +744,9 @@
 
 	.tmModalWrap_on {
 		background-color: rgba(0, 0, 0, 0.4);
+		// #ifndef APP-HARMONY
 		backdrop-filter: blur(3px);
+		// #endif
 	}
 
 	.tmModalWrap_off {
