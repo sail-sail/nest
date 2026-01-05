@@ -55,7 +55,7 @@
 	import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumberValidByStyleBorderColor, linearValid, getUnit } from "../../libs/tool";
 	import { getDefaultColor,hslaToCss, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
 	import { useTmConfig } from "../../libs/config";
-	const proxy = getCurrentInstance()?.proxy||null;
+	const proxy = getCurrentInstance()?.proxy??null;
 	type tmAvatarGROUPITEMTYPE = {
 		name : string,
 		isImg : boolean,
