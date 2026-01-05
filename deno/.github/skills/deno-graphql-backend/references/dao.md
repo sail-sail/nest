@@ -36,11 +36,25 @@ validateIsEnabledXxx(model)  // 禁用时抛异常
 
 ```typescript
 {
-  id?: XxxId,         // 精确匹配
-  lbl?: string,       // 模糊查询
-  ids?: XxxId[],      // 范围查询
-  page?: number,      // 页码（从1开始）
-  limit?: number,     // 每页数量
-  order?: string,     // 排序 "id DESC"
+  id?: XxxId,           // 精确匹配
+  ids?: XxxId[],        // ID 列表范围查询
+  lbl?: string,         // 精确匹配
+  lbl_like?: string,    // 模糊查询
+  xxx_is_null?: boolean,// 判断字段是否为空
+  is_deleted?: 0 | 1,   // 软删除标记（默认 0）
 }
+```
+
+## 分页与排序
+
+分页和排序是**独立参数**，不在 Search 对象中：
+
+```typescript
+findAllXxx(search, page, sort)
+
+// PageInput
+{ page?: number, limit?: number }
+
+// SortInput[]
+[{ prop: "create_time", order: "descending" }]
 ```

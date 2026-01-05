@@ -18,11 +18,13 @@
     un-flex="~ [1_0_0] row basis-[inherit]"
   >
     <List
+      ref="listRef"
       v-bind="$attrs"
       :selected-ids="selectedIds"
       :is-multiple="multiple ? '1' : '0'"
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
+      is-list-select-dialog="1"
       @selected-ids-chg="selectedIdsChg"
       @row-enter="onRowEnter"
       @row-dblclick="onRowDblclick"
