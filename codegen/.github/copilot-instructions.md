@@ -4,7 +4,7 @@
 
 | 模块 | 说明 | 指令文件 |
 |------|------|---------|
-| `deno/` | GraphQL API 后端 | [指令](../../deno/.github/copilot-instructions.md) |
+| `rust/` | GraphQL API 后端 | [指令](../../rust/.github/copilot-instructions.md) |
 | `pc/` | Vue 3 管理界面 | [指令](../../pc/.github/copilot-instructions.md) |
 | `uni/` | Uni-app 移动端 | [指令](../../uni/.github/copilot-instructions.md) |
 | `codegen/` | 代码生成引擎 | [指令](../../codegen/.github/copilot-instructions.md) |
