@@ -31,6 +31,11 @@ const actTab = computed(() => tabs.value.find((item) => item.active));
 
 const keepAliveNames = ref<string[]>([ ]);
 
+// 选项卡访问历史（后进先出），用于关闭选项卡时返回上一个访问的选项卡
+const TAB_HISTORY_LIMIT = 15;
+type TabHistoryItem = Pick<TabInf, "path" | "query">;
+const tabHistory = useStorage<TabHistoryItem[]>("store.tabs.tabHistory", [ ]);
+
 let indexIsEmptyHandle: ReturnType<typeof watch> | undefined = undefined;
 
 const menuStore = useMenuStore();
@@ -92,6 +97,41 @@ export default function() {
     return tabs.value.find((item) => tabEqual(item, tab));
   }
   
+  /** 将 tab 加入访问历史（已存在则移到末尾） */
+  function addToHistory(tab: TabHistoryItem) {
+    const historyIdx = tabHistory.value.findIndex((item) => tabEqual(item, tab));
+    if (historyIdx !== -1) {
+      tabHistory.value.splice(historyIdx, 1);
+    }
+    tabHistory.value.push({ path: tab.path, query: tab.query });
+    // 超出阈值，移除最旧的
+    if (tabHistory.value.length > TAB_HISTORY_LIMIT) {
+      tabHistory.value.shift();
+    }
+  }
+  
+  /** 从历史中移除指定 tab */
+  function removeFromHistory(tab: TabHistoryItem) {
+    const historyIdx = tabHistory.value.findIndex((item) => tabEqual(item, tab));
+    if (historyIdx !== -1) {
+      tabHistory.value.splice(historyIdx, 1);
+    }
+  }
+  
+  /** 从历史中找到下一个可激活的 tab（必须在 tabs 中存在） */
+  function findNextTabFromHistory(): TabInf | undefined {
+    // 从后往前找（后进先出）
+    for (let i = tabHistory.value.length - 1; i >= 0; i--) {
+      const historyItem = tabHistory.value[i];
+      const tab = findTab(historyItem);
+      if (tab) {
+        return tab;
+      }
+      // 不存在则移除这个历史记录
+      tabHistory.value.splice(i, 1);
+    }
+  }
+  
   function activeTab(tab?: TabInf) {
     if (tab && tab.name) {
       if (!keepAliveNames.value.includes(tab.name)) {
@@ -116,6 +156,8 @@ export default function() {
         if (!keepAliveNames.value.includes(tab.name)) {
           keepAliveNames.value.push(tab.name);
         }
+        // 加入访问历史
+        addToHistory(tab);
       }
     } else {
       if (!keepAliveNames.value.includes(tabs.value[idx].name)) {
@@ -123,6 +165,8 @@ export default function() {
       }
       tabs.value[idx].active = true;
       tabs.value[idx].query = tab?.query;
+      // 加入访问历史
+      addToHistory(tabs.value[idx]);
     }
   }
   
@@ -154,11 +198,21 @@ export default function() {
     const idx = tabs.value.findIndex((item: TabInf) => {
       return tabEqual(item, tab);
     });
+    
+    // 从历史中移除当前 tab
+    removeFromHistory(tab);
+    
     if (tab.active) {
       if (idx !== -1) {
-        if (tabs.value[idx + 1]) {
+        // 优先从历史中找下一个激活的 tab（后进先出）
+        const nextTab = findNextTabFromHistory();
+        if (nextTab) {
+          activeTab(nextTab);
+        } else if (tabs.value[idx + 1]) {
+          // fallback: 激活右边的
           activeTab(tabs.value[idx + 1]);
         } else if (tabs.value[idx - 1]) {
+          // fallback: 激活左边的
           activeTab(tabs.value[idx - 1]);
         } else {
           await router.replace({ path: "/", query: { } });
@@ -201,6 +255,8 @@ export default function() {
     const notCloseableTabs = tabs.value.filter((item) => item.closeable === false);
     if (!tab) {
       tabs.value = notCloseableTabs;
+      // 清空历史
+      tabHistory.value = [ ];
       await router.replace({ path: "/", query: { } });
       return;
     }
@@ -210,6 +266,8 @@ export default function() {
     }
     tab.active = true;
     keepAliveNames.value = [ tab.name ];
+    // 只保留当前 tab 的历史
+    tabHistory.value = [ { path: tab.path, query: tab.query } ];
     await router.replace({ path: tab.path, query: tab.query });
   }
   
@@ -356,6 +414,7 @@ export default function() {
   
   function reset() {
     tabs.value = [ ];
+    tabHistory.value = [ ];
     const tab = setIndexTab();
     if (tab) {
       activeTab(tab);

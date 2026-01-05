@@ -628,7 +628,13 @@ pub async fn find_all_dyn_page_data(
   let result_limit_num = find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
-    return Err(eyre!("{table}.{method}: result length {len} > {result_limit_num}"));
+    return Err(eyre!(
+      ServiceException {
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
   
   set_dyn_page_data_dyn_page_data(

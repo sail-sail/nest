@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, PropType, ref, watch,toRaw } from 'vue'
+	import { computed, PropType, ref, watch } from 'vue'
 	import { covetUniNumber } from '../../libs/tool'
 	import { TMUPLOAD_PHOTO_STATUS } from '../../interface'
 	import { useTmConfig } from '../../libs/config'
@@ -337,14 +337,14 @@
 					response: item
 				}
 			}
-			let realStatus = item?.status||status;
+			let realStatus = item?.status??status;
 			return {
 				path: item[props.rangUrl] || item['path'] || '',
 				id: getUUID(),
 				status: realStatus,
 				progress: realStatus == TMUPLOAD_PHOTO_STATUS.UPLOAD_SUCCESS?100:0,
 				statusText: STATUS_TEXT.get(realStatus) || '',
-				response:TMUPLOAD_PHOTO_STATUS.UPLOAD_SUCCESS?(item?.response || item):''
+				response:TMUPLOAD_PHOTO_STATUS.UPLOAD_SUCCESS?(item?.response ?? item):''
 			}
 		})
 		// let nowfilesrc = list.value.map(item => item.path)
@@ -459,7 +459,7 @@
 				src: item.path,
 				quality: props.quality,
 				width: props.compressedWidth,
-				height: props.compressedWidth,
+				height: props.compressedHeight,
 				success: (res) => {
 					item.path = res.tempFilePath
 					index += 1
@@ -488,8 +488,8 @@
 		//结束上传。
 		if (uploadIndex.value >= list.value.length) {
 			uploading.value = false
-			let oladValue = JSON.parse(JSON.stringify(list.value.slice(0)));
-			oladValue = oladValue.map((el)=>({...el,url:el?.path||el?.url}))
+			let oladValue:TM.TMUPLOAD_PHOTO_INFO[] = JSON.parse(JSON.stringify(list.value.slice(0)));
+			oladValue = oladValue.map((el)=>({...el,url:el?.path??el?.url}))
 			emit('complete', oladValue)
 			emit('update:modelValue', oladValue)
 			return

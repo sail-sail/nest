@@ -1592,7 +1592,7 @@ export default defineConfig({
           search_fields: [ "lbl", "code" ],
           lbl_field: "lbl",
           lbl2_fields: [ "code" ],
-          right_field: "create_time",
+          right_field: "",
         },
       },
     },
