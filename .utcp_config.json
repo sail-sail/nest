@@ -1,0 +1,32 @@
+{
+  "manual_call_templates": [
+    {
+      "name": "context7",
+      "description": "context7",
+      "call_template_type": "mcp",
+      "config": {
+        "mcpServers": {
+          "context7": {
+            "transport": "stdio",
+            "command": "npx",
+            "args": ["-y", "@upstash/context7-mcp@latest"]
+          }
+        }
+      }
+    },
+    {
+      "name": "chrome-devtools-mcp",
+      "description": "open chrome browser navigate to url",
+      "call_template_type": "mcp",
+      "config": {
+        "mcpServers": {
+          "chrome-devtools": {
+            "transport": "stdio",
+            "command": "npx",
+            "args": ["-y", "chrome-devtools-mcp@latest"]
+          }
+        }
+      }
+    }
+  ]
+}
