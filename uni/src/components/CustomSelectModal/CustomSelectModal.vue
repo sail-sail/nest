@@ -617,12 +617,14 @@ async function onRefresh() {
     emit("data", data.value);
     options4SelectV2.value = data.value.map(props.optionsMap);
   }
+  inited.value = true;
 }
 
 watch(
   () => [
     inited.value,
     props.height,
+    options4SelectV2.value.length,
   ],
   () => {
     if (!inited.value) {

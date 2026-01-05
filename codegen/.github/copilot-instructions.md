@@ -1,54 +1,30 @@
-# Nest Codegen - 代码生成引擎
+# Nest - 全栈代码生成系统
 
-从数据库模式定义自动生成 GraphQL API 和前端组件。
+## 工作空间结构
 
-## 架构
+| 模块 | 说明 | 指令文件 |
+|------|------|---------|
+| `rust/` | GraphQL API 后端 | [指令](../../rust/.github/copilot-instructions.md) |
+| `pc/` | Vue 3 管理界面 | [指令](../../pc/.github/copilot-instructions.md) |
+| `uni/` | Uni-app 移动端 | [指令](../../uni/.github/copilot-instructions.md) |
+| `codegen/` | 代码生成引擎 | [指令](../../codegen/.github/copilot-instructions.md) |
 
-| 模块 | 说明 |
-|------|------|
-| `deno/` | GraphQL API 后端 |
-| `pc/` | Vue 3 管理界面 |
-| `uni/` | Uni-app 移动端 |
-| `codegen/` | 代码生成引擎 |
+## 全局配置
 
-## 目录约定
+- **MCP 配置**：`/.utcp_config.json`
+- **代码生成**：所有 CRUD 通过 `codegen/` 生成，禁止手写
 
-| 目录 | 说明 |
-|------|------|
-| `src/tables/{mod}/{mod}.sql` | 表结构定义 |
-| `src/tables/{mod}/{mod}.ts` | 表配置 |
-| `src/tables/tables.ts` | 模块注册 |
+## mcp 相关规范
+- 尽量使用 utcp 查询工具
 
-## 生成输出
+## UTCP Code-Mode 规则
 
-| 目标 | 路径 |
-|------|------|
-| 后端 | `deno/gen/{mod}/{table}/` |
-| PC端 | `pc/src/views/{mod}/{table}/` |
-| 移动端 | `uni/src/pages/{table}/` |
+⚠️ **命名空间直接访问**：工具通过命名空间暴露，**禁止使用 `manual.` 前缀**
 
-## 命名规范
+```typescript
+// ❌ 错误
+await manual.chrome_devtools_mcp.tool()
 
-| 类型 | 格式 | 示例 |
-|------|------|------|
-| 表名 | `{mod}_{table}` | `base_usr` |
-| 主键 | `id` varchar(22) | UUID base64 |
-| 外键 | `{table}_id` | `usr_id` |
-| 标签 | `lbl` / `{fk}_lbl` | 显示名称 |
-
-## 开发命令
-
-```bash
-nr codegen      # 生成并应用代码
-nr uuid         # 生成 UUID
-nr importCsv    # 导入字典数据
+// ✅ 正确  
+await chrome_devtools_mcp.chrome_devtools_tool()
 ```
-
-## Agent Skills
-
-| 技能 | 说明 |
-|------|------|
-| [create-module](skills/create-module/SKILL.md) | 创建新模块 |
-| [create-table](skills/create-table/SKILL.md) | 数据库建表规范 |
-| [table-config](skills/table-config/SKILL.md) | 表配置规范 |
-| [dict](skills/dict/SKILL.md) | 字典配置 |
