@@ -2003,10 +2003,13 @@ watch(
       ...rest
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } = builtInSearch as any;
-    return rest
+    return rest;
   }),
   async function() {
     if (isSearchReset) {
+      return;
+    }
+    if (deepCompare(oldVal, newVal)) {
       return;
     }
     selectedIds = [ ];
