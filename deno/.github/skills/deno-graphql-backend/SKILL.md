@@ -1,6 +1,6 @@
 ---
 name: deno-graphql-backend
-description: 创建 Deno GraphQL 后端接口的完整开发指南。包含三层架构（GraphQL/Resolver/Service）、DAO 函数使用、事务处理、认证权限、错误处理。当需要创建、修改后端 API 接口时使用此技能。
+description: Deno GraphQL 后端接口的完整开发指南. 当需要创建、修改后端 API 接口时使用此技能
 compatibility: Requires Deno runtime
 metadata:
   version: "1.0"
@@ -31,14 +31,19 @@ defineGraphql(resolver, /* GraphQL */ `
   input {Feature}Search { lbl: String }
   
   type Query {
-    "查询" get{Feature}(id: {Feature}Id!): {Feature}Model
-    "列表" findAll{Feature}(search: {Feature}Search): [{Feature}Model!]!
+    "查询"
+    get{Feature}(id: {Feature}Id!): {Feature}Model
+    "列表"
+    findAll{Feature}(search: {Feature}Search): [{Feature}Model!]!
   }
   
   type Mutation {
-    "创建" create{Feature}(input: {Feature}Input!): {Feature}Id!
-    "更新" update{Feature}(id: {Feature}Id!, input: {Feature}Input!): Boolean!
-    "删除" delete{Feature}(ids: [{Feature}Id!]!): Int!
+    "创建"
+    create{Feature}(input: {Feature}Input!): {Feature}Id!
+    "更新"
+    update{Feature}(id: {Feature}Id!, input: {Feature}Input!): Boolean!
+    "删除"
+    delete{Feature}(ids: [{Feature}Id!]!): Int!
   }
 `);
 ```
@@ -50,16 +55,26 @@ import { useContext } from "/lib/context.ts";
 import type { {Feature}Id, {Feature}Input, {Feature}Search } from "/gen/types.ts";
 
 // 查询 - 不需要事务
-export async function get{Feature}(id: {Feature}Id) {
-  const { get{Feature} } = await import("./{feature}.service.ts");
+export async function get{Feature}(
+  id: {Feature}Id,
+) {
+  
+  const {
+    get{Feature},
+  } = await import("./{feature}.service.ts");
+  
   return await get{Feature}(id);
 }
 
 // 修改 - 需要事务
 export async function create{Feature}(input: {Feature}Input) {
-  const { create{Feature} } = await import("./{feature}.service.ts");
+  const {
+    create{Feature},
+  } = await import("./{feature}.service.ts");
+  
   const context = useContext();
   context.is_tran = true;  // 增删改必须设置
+  
   return await create{Feature}(input);
 }
 ```
@@ -67,13 +82,27 @@ export async function create{Feature}(input: {Feature}Input) {
 ### 3. Service
 
 ```typescript
-import { isEmpty } from "/lib/util/string_util.ts";
-import { findById{Feature}, create{Feature} as createDao } from "/gen/{module}/{feature}/{feature}.dao.ts";
-import type { {Feature}Id, {Feature}Input } from "/gen/types.ts";
+import {
+  isEmpty,
+} from "/lib/util/string_util.ts";
 
-export async function create{Feature}(input: {Feature}Input) {
-  if (isEmpty(input.lbl)) throw "名称不能为空";  // 业务错误用中文
-  return await createDao(input);
+import {
+  findById{Feature},
+  create{Feature},
+} from "/gen/{module}/{feature}/{feature}.dao.ts";
+
+import type {
+  {Feature}Id,
+  {Feature}Input
+} from "/gen/types.ts";
+
+export async function create{Feature}(
+  input: {Feature}Input,
+) {
+  if (isEmpty(input.lbl)) {
+    throw "名称不能为空";  // 业务错误用中文
+  }
+  return await create{Feature}(input);
 }
 ```
 
