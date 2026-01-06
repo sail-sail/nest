@@ -19,7 +19,6 @@
   ],
   "settings": {
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
-    "json.schemaDownload.enable": false,
     "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
     "git.openRepositoryInParentFolders": "never",
     "git.repositoryScanMaxDepth": 1,
