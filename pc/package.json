@@ -19,9 +19,9 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.3.2",
-    "@jsquash/resize": "2.1.0",
+    "@jsquash/resize": "2.1.1",
     "@jsquash/webp": "1.5.0",
-    "@opentiny/fluent-editor": "3.25.6",
+    "@opentiny/fluent-editor": "4.0.0",
     "@qr-x/vue": "1.1.1",
     "@vue-office/docx": "1.6.3",
     "@vue-office/excel": "1.7.14",
@@ -72,11 +72,11 @@
     "eslint-plugin-vue": "10.6.2",
     "globals": "17.0.0",
     "mysql2": "3.16.0",
-    "sass": "1.97.1",
+    "sass": "1.97.2",
     "spark-md5": "3.0.2",
     "svgo": "4.0.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.51.0",
+    "typescript-eslint": "8.52.0",
     "unocss": "66.5.12",
     "unplugin-auto-import": "20.3.0",
     "unplugin-icons": "22.5.0",
@@ -91,7 +91,7 @@
     "vite-plugin-vue-inspector": "5.3.2",
     "vite-plugin-wasm": "3.5.0",
     "vitest": "4.0.16",
-    "vue-tsc": "3.2.1"
+    "vue-tsc": "3.2.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

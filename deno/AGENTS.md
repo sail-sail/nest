@@ -11,3 +11,7 @@
 - 类型：`{Table}Id`, `{Table}Model`, `{Table}Input`, `{Table}Search`
 - 软删除：`is_deleted` 字段
 - 外键：`xxx_id` + `xxx_id_lbl`
+
+## 可用 Skills
+
+- `deno-graphql-backend` - GraphQL 后端接口的完整开发指南. 当需要创建、修改后端 API 接口时使用此技能
