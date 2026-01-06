@@ -1,19 +1,6 @@
 # Nest Rust - GraphQL API 后端
 
-Rust + async-graphql + sqlx 后端服务。
-
-## 架构
-
-| 模块 | 说明 |
-|------|------|
-| `rust/` | GraphQL API 后端 |
-| `pc/` | Vue 3 管理界面 |
-| `uni/` | Uni-app 移动端 |
-| `codegen/` | 代码生成引擎 |
-
-## 核心原则
-
-**无需手动创建 CRUD**。在 `codegen/src/tables/` 定义模式，运行 `nr codegen` 生成代码。
+Rust + async-graphql + sqlx 后端服务
 
 ## 目录约定
 
@@ -32,3 +19,8 @@ app/{mod}/{table}/
 ├── {table}_dao.rs       # 数据库操作
 └── {table}_service.rs   # 业务逻辑/数据库
 ```
+
+## 可用 Skills
+
+- `excel-export` - Excel 导出功能开发. 移动端导出 Excel 时使用
+- `graphql-api` - Rust GraphQL 接口开发. 创建自定义 API 时使用
