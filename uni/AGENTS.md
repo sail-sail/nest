@@ -6,7 +6,6 @@
 |------|------|
 | `src/pages/{table}/` | 生成的页面 |
 | `src/components/` | 通用组件(不需要import即可全局引用) |
-| `src/compositions/` | 组合式函数 |
 
 ## 生成文件结构
 
