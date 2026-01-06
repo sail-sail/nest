@@ -14,4 +14,4 @@
 
 ## 可用 Skills
 
-- `deno-graphql-backend` - 创建 GraphQL 后端接口的完整开发指南. 当需要创建、修改后端 API 接口时使用此技能
+- `deno-graphql-backend` - GraphQL 后端接口的完整开发指南. 当需要创建、修改后端 API 接口时使用此技能

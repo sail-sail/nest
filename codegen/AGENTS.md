@@ -1,5 +1,7 @@
 # Nest - 全栈代码生成系统
 
+# 工作区 [AGENTS.md](../AGENTS.md)
+
 ## 工作空间结构
 
 | 模块 | 说明 | 指令文件 |
@@ -8,6 +10,8 @@
 | `pc/` | Vue 3 管理界面 | [指令](../../pc/.github/copilot-instructions.md) |
 | `uni/` | Uni-app 移动端 | [指令](../../uni/.github/copilot-instructions.md) |
 | `codegen/` | 代码生成引擎 | [指令](../../codegen/.github/copilot-instructions.md) |
+
+⚠️ `codegen/__out__` 目录为代码生成输出目录，禁止修改
 
 ## 全局配置
 
