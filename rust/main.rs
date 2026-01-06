@@ -220,12 +220,12 @@ pub fn graphql_playground(
 #[tokio::main]
 #[allow(clippy::too_many_lines)]
 async fn main() -> Result<(), std::io::Error> {
-  dotenv().unwrap();
+  dotenv().ok();
   let server_title = std::env::var_os("server_title").expect("server_title not found in .env");
-  let server_title = server_title.to_str().unwrap();
+  let server_title = server_title.to_str().expect("server_title is not valid utf-8");
   let git_hash = std::env::var_os("GIT_HASH");
   if let Some(git_hash) = git_hash {
-    let git_hash = git_hash.to_str().unwrap();
+    let git_hash = git_hash.to_str().expect("GIT_HASH is not valid utf-8");
     info!("git_hash: {git_hash}");
   }
   
@@ -243,7 +243,7 @@ async fn main() -> Result<(), std::io::Error> {
         });
       }))
       .install()
-      .unwrap();
+      .expect("Failed to install color_eyre hook");
     let log_path = std::env::var_os("log_path");
     if let Some(log_path) = log_path {
       let file_appender = tracing_appender::rolling::daily(
@@ -277,7 +277,7 @@ async fn main() -> Result<(), std::io::Error> {
         });
       }))
       .install()
-      .unwrap();
+      .expect("Failed to install color_eyre hook");
     let log_path = std::env::var_os("log_path");
     if log_path.is_none() {
       tracing_subscriber::fmt()
@@ -285,7 +285,7 @@ async fn main() -> Result<(), std::io::Error> {
         .init();
       None
     } else {
-      let log_path = log_path.unwrap();
+      let log_path = log_path.expect("log_path is none");
       let file_appender = tracing_appender::rolling::daily(
         log_path,
         format!("{}.log", server_title).as_str(),
@@ -337,7 +337,7 @@ async fn main() -> Result<(), std::io::Error> {
     if size == schema.len() as u64 {
       let old_schema = {
         if std::path::Path::new(file_path).exists() {
-          std::fs::read_to_string(file_path).unwrap()
+          std::fs::read_to_string(file_path).expect("Failed to read schema file")
         } else {
           String::new()
         }
@@ -350,8 +350,8 @@ async fn main() -> Result<(), std::io::Error> {
     }
     if !is_equal {
       use std::io::Write;
-      let mut writer = std::io::BufWriter::new(std::fs::File::create(file_path).unwrap());
-      writer.write_all(schema.as_bytes()).unwrap();
+      let mut writer = std::io::BufWriter::new(std::fs::File::create(file_path).expect("Failed to create schema file"));
+      writer.write_all(schema.as_bytes()).expect("Failed to write schema file");
     }
     let status = std::process::Command::new("node")
       .arg("node_modules/@graphql-codegen/cli/cjs/bin.js")

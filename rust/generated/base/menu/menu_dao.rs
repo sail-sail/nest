@@ -596,108 +596,85 @@ pub async fn find_all_menu(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(vec![]);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(vec![]);
     }
   }
   // 父菜单
-  if let Some(search) = &search && search.parent_id.is_some() {
-    let len = search.parent_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(parent_id) = &search.parent_id {
+    let len = parent_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.parent_id.length > {ids_limit}"));
     }
   }
   // 首页隐藏
-  if let Some(search) = &search && search.is_home_hide.is_some() {
-    let len = search.is_home_hide.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_home_hide) = &search.is_home_hide {
+    let len = is_home_hide.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_home_hide.length > {ids_limit}"));
     }
   }
   // 动态页面
-  if let Some(search) = &search && search.is_dyn_page.is_some() {
-    let len = search.is_dyn_page.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_dyn_page) = &search.is_dyn_page {
+    let len = is_dyn_page.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_dyn_page.length > {ids_limit}"));
     }
   }
   // 启用
-  if let Some(search) = &search && search.is_enabled.is_some() {
-    let len = search.is_enabled.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_enabled) = &search.is_enabled {
+    let len = is_enabled.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(create_usr_id) = &search.create_usr_id {
+    let len = create_usr_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(update_usr_id) = &search.update_usr_id {
+    let len = update_usr_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
   // 隐藏记录
-  if let Some(search) = &search && search.is_hidden.is_some() {
-    let len = search.is_hidden.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_hidden) = &search.is_hidden {
+    let len = is_hidden.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_hidden.length > {ids_limit}"));
     }
