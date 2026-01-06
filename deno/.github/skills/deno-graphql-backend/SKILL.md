@@ -1,6 +1,6 @@
 ---
 name: deno-graphql-backend
-description: 创建 Deno GraphQL 后端接口的完整开发指南。包含三层架构（GraphQL/Resolver/Service）、DAO 函数使用、事务处理、认证权限、错误处理。当需要创建、修改后端 API 接口时使用此技能。
+description: 创建 Deno GraphQL 后端接口的完整开发指南. 当需要创建、修改后端 API 接口时使用此技能
 compatibility: Requires Deno runtime
 metadata:
   version: "1.0"
