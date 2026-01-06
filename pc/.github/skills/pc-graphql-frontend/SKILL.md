@@ -1,6 +1,6 @@
 ---
 name: pc-graphql-frontend
-description: 前端自定义 GraphQL API 接口开发。当需要在 Vue 3 前端调用后端自定义接口（非标准 CRUD）时使用此技能。
+description: 前端自定义 GraphQL API 接口. 当需要在 Vue 3 前端调用后端自定义接口（非标准 CRUD）时使用此技能
 compatibility: Vue 3 + TypeScript
 metadata:
   version: "1.0"
