@@ -479,80 +479,65 @@ pub async fn find_all_data_permit(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(vec![]);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(vec![]);
     }
   }
   // 菜单
-  if let Some(search) = &search && search.menu_id.is_some() {
-    let len = search.menu_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(menu_id) = &search.menu_id {
+    let len = menu_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.menu_id.length > {ids_limit}"));
     }
   }
   // 范围
-  if let Some(search) = &search && search.scope.is_some() {
-    let len = search.scope.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(scope) = &search.scope {
+    let len = scope.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.scope.length > {ids_limit}"));
     }
   }
   // 类型
-  if let Some(search) = &search && search.r#type.is_some() {
-    let len = search.r#type.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(r#type) = &search.r#type {
+    let len = r#type.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.type.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(create_usr_id) = &search.create_usr_id {
+    let len = create_usr_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(update_usr_id) = &search.update_usr_id {
+    let len = update_usr_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }

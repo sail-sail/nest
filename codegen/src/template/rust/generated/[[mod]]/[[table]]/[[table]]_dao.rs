@@ -1879,11 +1879,16 @@ pub async fn find_all_<#=table#>(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(vec![]);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(vec![]);
     }
   }<#
@@ -1926,15 +1931,11 @@ pub async fn find_all_<#=table#>(
     ) {
   #>
   // <#=column_comment#>
-  if let Some(search) = &search && search.<#=column_name_rust#>.is_some() {
-    let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(<#=column_name_rust#>) = &search.<#=column_name_rust#> {
+    let len = <#=column_name_rust#>.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
     }
@@ -1944,15 +1945,11 @@ pub async fn find_all_<#=table#>(
     if (column.searchByArray) {
   #>
   // <#=column_comment#>
-  if let Some(search) = &search && search.<#=column_name#>s.is_some() {
-    let len = search.<#=column_name#>s.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(<#=column_name#>s) = &search.<#=column_name#>s {
+    let len = <#=column_name#>s.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.<#=column_name#>s.length > {ids_limit}"));
     }

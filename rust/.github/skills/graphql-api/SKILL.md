@@ -1,6 +1,6 @@
 ---
 name: graphql-api
-description: Rust GraphQL 接口开发。创建自定义 API 时使用。
+description: Rust GraphQL 接口开发. 创建自定义 API 时使用
 ---
 
 # GraphQL 接口开发
