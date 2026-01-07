@@ -586,7 +586,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<FieldPermitModel>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -594,7 +594,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<FieldPermitModel, FieldPermitId>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -613,9 +613,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as FieldPermitId[]);
 
 watch(
   () => selectedIds,
@@ -999,7 +999,7 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
     if (isSearchReset) {
       return;
     }

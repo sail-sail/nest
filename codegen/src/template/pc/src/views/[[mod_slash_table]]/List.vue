@@ -3440,7 +3440,7 @@ const {
   onPageDown,<#
   }
   #>
-} = $(usePage<<#=modelName#>>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -3454,7 +3454,7 @@ function tableSelectable(model: <#=modelName#>, index: number) {<#=opts?.tableSe
 #>
 
 /** 表格选择功能 */
-const tableSelected = useSelect<<#=modelName#>, <#=Table_Up#>Id>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -3478,9 +3478,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as <#=Table_Up#>Id[]);
 
 watch(
   () => selectedIds,
@@ -4046,7 +4046,7 @@ async function onSortChange(
   if (opts.noExport !== true) {
 #>
 
-const exportExcel = $ref(useExportExcel<#=Table_Up#>(<#
+const exportExcel = $(useExportExcel<#=Table_Up#>(<#
 if (isUseI18n) {
 #>pagePath<#
 }
@@ -5465,7 +5465,7 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
     if (isSearchReset) {
       return;
     }

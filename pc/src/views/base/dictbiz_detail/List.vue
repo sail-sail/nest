@@ -917,7 +917,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<DictbizDetailModel>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -925,7 +925,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<DictbizDetailModel, DictbizDetailId>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -944,9 +944,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as DictbizDetailId[]);
 
 watch(
   () => selectedIds,
@@ -1236,7 +1236,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcelDictbizDetail());
+const exportExcel = $(useExportExcelDictbizDetail());
 
 /** 导出Excel */
 async function onExport() {
@@ -1712,7 +1712,7 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
     if (isSearchReset) {
       return;
     }

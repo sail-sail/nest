@@ -935,7 +935,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<DynPageFieldModel>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -943,7 +943,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<DynPageFieldModel, DynPageFieldId>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -962,9 +962,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as DynPageFieldId[]);
 
 watch(
   () => selectedIds,
@@ -1268,7 +1268,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcelDynPageField());
+const exportExcel = $(useExportExcelDynPageField());
 
 /** 导出Excel */
 async function onExport() {
@@ -1813,7 +1813,7 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
     if (isSearchReset) {
       return;
     }
