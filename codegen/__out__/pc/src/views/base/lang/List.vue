@@ -1178,7 +1178,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $(useExportExcelLang());
+const exportExcel = $ref(useExportExcelLang());
 
 /** 导出Excel */
 async function onExport() {
