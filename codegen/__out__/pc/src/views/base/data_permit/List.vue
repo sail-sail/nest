@@ -829,7 +829,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<DataPermitModel>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -837,7 +837,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<DataPermitModel, DataPermitId>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -856,9 +856,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as DataPermitId[]);
 
 watch(
   () => selectedIds,
@@ -1131,7 +1131,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcelDataPermit());
+const exportExcel = $(useExportExcelDataPermit());
 
 /** 导出Excel */
 async function onExport() {
@@ -1556,7 +1556,7 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
     if (isSearchReset) {
       return;
     }

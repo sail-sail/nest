@@ -876,7 +876,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<OrgModel>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -884,7 +884,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<OrgModel, OrgId>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -903,9 +903,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as OrgId[]);
 
 watch(
   () => selectedIds,
@@ -1187,7 +1187,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcelOrg());
+const exportExcel = $(useExportExcelOrg());
 
 /** 导出Excel */
 async function onExport() {
@@ -1726,7 +1726,7 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
     if (isSearchReset) {
       return;
     }
