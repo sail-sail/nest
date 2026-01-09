@@ -11,11 +11,11 @@ description: Excel 导出功能开发. 移动端导出 Excel 时使用
 
 ```
 rust/app/spc/{mod}/
-├── {mod}_model.rs           # ExportExcelAsset
-├── {mod}_service.rs         # 导出逻辑
-├── {mod}_resful.rs          # HTTP 处理
-├── {mod}_router.rs          # 路由 handler
-└── export_excel_{mod}.xlsx  # 模板
+├── {table}_model.rs           # ExportExcelAsset
+├── {table}_service.rs         # 导出逻辑
+├── {table}_resful.rs          # HTTP 处理
+├── {table}_router.rs          # 路由 handler
+└── export_excel_{table}.xlsx  # 模板
 
 rust/app/lib.rs              # 注册路由
 ```
@@ -25,32 +25,37 @@ rust/app/lib.rs              # 注册路由
 ```rust
 #[derive(rust_embed::Embed)]
 #[folder = "spc/{mod}/"]
-#[include = "export_excel_{mod}.xlsx"]
-pub struct ExportExcel{Mod}Asset;
+#[include = "export_excel_{table}.xlsx"]
+pub struct ExportExcel{Table}Asset;
 ```
 
 ## 2. service.rs - 导出逻辑
 
 ```rust
-use generated::spc::{mod}::{mod}_service;
-use generated::spc::{mod}::{mod}_model::{ModSearch};
-use super::{mod}_model::ExportExcel{Mod}Asset;
+use generated::spc::{mod}::{table}_service;
+use generated::spc::{mod}::{table}_model::{TableSearch};
+use super::{mod}_model::ExportExcel{Table}Asset;
 
-pub async fn export_excel_{mod}(
-  search: Option<{Mod}Search>,
+pub async fn export_excel_{table}(
+  search: Option<{Table}Search>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<(Vec<u8>, String)> {
   
-  let models = {mod}_service::find_all_{mod}(search, page, sort, options).await?;
+  let models = {table}_service::find_all_{table}(
+    search,
+    page,
+    sort,
+    options,
+  ).await?;
   
-  let template = ExportExcel{Mod}Asset::get("export_excel_{mod}.xlsx")
+  let template = ExportExcel{Table}Asset::get("export_excel_{table}.xlsx")
     .ok_or_else(|| eyre!("模板不存在"))?;
   
   let buf = xlsx_handlebars::render_template(
     template.data.into_owned(),
-    &serde_json::json!({ "{mod}_models": models }),
+    &serde_json::json!({ "{table}_models": models }),
   ).map_err(|e| eyre!("渲染失败: {}", e))?;
   
   Ok((buf, "导出.xlsx".to_string()))
@@ -61,7 +66,7 @@ pub async fn export_excel_{mod}(
 
 ```rust
 #[function_name::named]
-pub async fn export_excel_{mod}(
+pub async fn export_excel_{table}(
   search: Option<String>,
   page: Option<String>,
   sort: Option<String>,
@@ -74,7 +79,7 @@ pub async fn export_excel_{mod}(
   
   info!("{} {}: {:?}", get_req_id(), function_name!(), search);
   
-  let (buf, filename) = {mod}_service::export_excel_{mod}(search, page, sort, options).await?;
+  let (buf, filename) = {table}_service::export_excel_{table}(search, page, sort, options).await?;
   
   Ok(Response::builder()
     .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
@@ -87,22 +92,27 @@ pub async fn export_excel_{mod}(
 
 ```rust
 #[derive(Deserialize)]
-struct ExportExcel{Mod}Request {
+struct ExportExcel{Table}Request {
   search: Option<String>,
   page: Option<String>,
   sort: Option<String>,
 }
 
 #[handler]
-pub async fn export_excel_{mod}(
+pub async fn export_excel_{table}(
   req: &Request,
-  Query(params): Query<ExportExcel{Mod}Request>,
+  Query(params): Query<ExportExcel{Table}Request>,
 ) -> Result<Response> {
   Ctx::resful_builder(Some(req))
     .with_auth()?
     .build()
     .resful_scope(async {
-      {mod}_resful::export_excel_{mod}(params.search, params.page, params.sort, None).await
+      {table}_resful::export_excel_{table}(
+        params.search,
+        params.page,
+        params.sort,
+        None,
+      ).await
     }).await
 }
 ```
@@ -111,14 +121,14 @@ pub async fn export_excel_{mod}(
 
 ```rust
 pub fn register_routes(app: Route) -> Route {
-  app.at("/api/{mod}/export_excel_{mod}", get(spc::{mod}::{mod}_router::export_excel_{mod}))
+  app.at("/api/{mod}/export_excel_{table}", get(spc::{mod}::{table}_router::export_excel_{table}))
 }
 ```
 
 ## Excel 模板语法
 
 ```handlebars
-{{#each {mod}_models}}
+{{#each {table}_models}}
   {{lbl}}
   {{order_date}}
 {{/each}}
@@ -128,12 +138,16 @@ pub fn register_routes(app: Route) -> Route {
 
 ```typescript
 // Api2.ts
-export function exportExcel(search: Search, page: PageInput, sort: SortInput[]) {
+export function exportExcel(
+  search: Search,
+  page: PageInput,
+  sort: SortInput[],
+) {
   const params = new URLSearchParams({
     search: JSON.stringify(search),
     page: JSON.stringify(page),
     sort: JSON.stringify(sort),
   });
-  return `${baseUrl}/api/{mod}/export_excel_{mod}?${params}`;
+  return `${ baseUrl }/api/{mod}/export_excel_{table}?${ params.toString() }`;
 }
 ```

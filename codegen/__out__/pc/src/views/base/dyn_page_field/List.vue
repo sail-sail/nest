@@ -881,6 +881,7 @@ async function onSearch(isFocus: boolean) {
   if (isFocus) {
     tableFocus();
   }
+  page.current = 1;
   await dataGrid(true);
 }
 
@@ -1268,7 +1269,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $(useExportExcelDynPageField());
+const exportExcel = $ref(useExportExcelDynPageField());
 
 /** 导出Excel */
 async function onExport() {

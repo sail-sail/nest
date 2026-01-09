@@ -3382,6 +3382,7 @@ async function onSearch(isFocus: boolean) {
   if (isFocus) {
     tableFocus();
   }
+  page.current = 1;
   await dataGrid(true);
 }
 
@@ -4046,7 +4047,7 @@ async function onSortChange(
   if (opts.noExport !== true) {
 #>
 
-const exportExcel = $(useExportExcel<#=Table_Up#>(<#
+const exportExcel = $ref(useExportExcel<#=Table_Up#>(<#
 if (isUseI18n) {
 #>pagePath<#
 }
