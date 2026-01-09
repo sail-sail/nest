@@ -520,66 +520,55 @@ pub async fn find_all_wx_pay_notice(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(vec![]);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(vec![]);
     }
   }
   // 交易类型
-  if let Some(search) = &search && search.trade_type.is_some() {
-    let len = search.trade_type.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(trade_type) = &search.trade_type {
+    let len = trade_type.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.trade_type.length > {ids_limit}"));
     }
   }
   // 交易状态
-  if let Some(search) = &search && search.trade_state.is_some() {
-    let len = search.trade_state.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(trade_state) = &search.trade_state {
+    let len = trade_state.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.trade_state.length > {ids_limit}"));
     }
   }
   // 货币类型
-  if let Some(search) = &search && search.currency.is_some() {
-    let len = search.currency.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(currency) = &search.currency {
+    let len = currency.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.currency.length > {ids_limit}"));
     }
   }
   // 用户支付币种
-  if let Some(search) = &search && search.payer_currency.is_some() {
-    let len = search.payer_currency.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(payer_currency) = &search.payer_currency {
+    let len = payer_currency.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.payer_currency.length > {ids_limit}"));
     }

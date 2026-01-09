@@ -684,108 +684,85 @@ pub async fn find_all_wxo_app(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(vec![]);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(vec![]);
     }
   }
   // 消息加解密方式
-  if let Some(search) = &search && search.encoding_type.is_some() {
-    let len = search.encoding_type.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(encoding_type) = &search.encoding_type {
+    let len = encoding_type.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.encoding_type.length > {ids_limit}"));
     }
   }
   // 授权作用域
-  if let Some(search) = &search && search.scope.is_some() {
-    let len = search.scope.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(scope) = &search.scope {
+    let len = scope.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.scope.length > {ids_limit}"));
     }
   }
   // 网页授权域名
-  if let Some(search) = &search && search.domain_id.is_some() {
-    let len = search.domain_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(domain_id) = &search.domain_id {
+    let len = domain_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.domain_id.length > {ids_limit}"));
     }
   }
   // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_locked) = &search.is_locked {
+    let len = is_locked.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_locked.length > {ids_limit}"));
     }
   }
   // 启用
-  if let Some(search) = &search && search.is_enabled.is_some() {
-    let len = search.is_enabled.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_enabled) = &search.is_enabled {
+    let len = is_enabled.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(create_usr_id) = &search.create_usr_id {
+    let len = create_usr_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(update_usr_id) = &search.update_usr_id {
+    let len = update_usr_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
