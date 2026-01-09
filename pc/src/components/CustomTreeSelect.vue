@@ -55,7 +55,7 @@
     un-box-border
     un-rounded
     un-w="full"
-    un-min="h-7.5"
+    un-min="h-8"
     un-line-height="normal"
     un-break-all
     class="custom_tree_select_readonly"

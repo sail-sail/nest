@@ -628,6 +628,7 @@ async function onSearch(isFocus: boolean) {
   if (isFocus) {
     tableFocus();
   }
+  page.current = 1;
   await dataGrid(true);
 }
 
@@ -682,7 +683,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<LoginLogModel>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -690,7 +691,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<LoginLogModel, LoginLogId>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -709,9 +710,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as LoginLogId[]);
 
 watch(
   () => selectedIds,
@@ -1155,7 +1156,7 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
     if (isSearchReset) {
       return;
     }

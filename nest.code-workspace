@@ -72,7 +72,6 @@
     "vue.editor.templateInterpolationDecorators": false,
     "vue.format.template.initialIndent": false,
     "vue.format.wrapAttributes": "force",
-    "chat.useClaudeSkills": true,
     "mcp": {
       "servers": {
         "utcp-codemode": {
@@ -89,6 +88,7 @@
       },
       "inputs": []
     },
+    "chat.useAgentSkills": true,
     "chat.useAgentsMdFile": true,
     "chat.useNestedAgentsMdFiles": true
   }

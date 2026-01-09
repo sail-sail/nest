@@ -3382,6 +3382,7 @@ async function onSearch(isFocus: boolean) {
   if (isFocus) {
     tableFocus();
   }
+  page.current = 1;
   await dataGrid(true);
 }
 
@@ -3440,7 +3441,7 @@ const {
   onPageDown,<#
   }
   #>
-} = $(usePage<<#=modelName#>>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -3454,7 +3455,7 @@ function tableSelectable(model: <#=modelName#>, index: number) {<#=opts?.tableSe
 #>
 
 /** 表格选择功能 */
-const tableSelected = useSelect<<#=modelName#>, <#=Table_Up#>Id>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -3478,9 +3479,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as <#=Table_Up#>Id[]);
 
 watch(
   () => selectedIds,
@@ -5465,7 +5466,7 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
     if (isSearchReset) {
       return;
     }

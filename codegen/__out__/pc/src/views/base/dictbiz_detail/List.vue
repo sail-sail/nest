@@ -858,6 +858,7 @@ async function onSearch(isFocus: boolean) {
   if (isFocus) {
     tableFocus();
   }
+  page.current = 1;
   await dataGrid(true);
 }
 
@@ -912,7 +913,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<DictbizDetailModel>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -920,7 +921,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<DictbizDetailModel, DictbizDetailId>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -939,9 +940,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as DictbizDetailId[]);
 
 watch(
   () => selectedIds,
@@ -1694,7 +1695,7 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
     if (isSearchReset) {
       return;
     }
