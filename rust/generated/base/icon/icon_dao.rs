@@ -560,6 +560,15 @@ pub async fn find_all_icon(
   #[allow(unused_variables)]
   for model in &mut res {
     
+    // svg
+    if !model.img.is_empty() {
+      let res = crate::common::oss::oss_dao::get_object(&model.img).await?;
+      if let Some(res) = res {
+        let content = res.to_string()?;
+        model.img_lbl_svg = content;
+      }
+    }
+    
     // 启用
     model.is_enabled_lbl = {
       is_enabled_dict
