@@ -2106,7 +2106,7 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_wxo_app_token();
   vec![
     table,
-    "wxo_app",
+    "wx_wxo_app",
   ]
 }
 
