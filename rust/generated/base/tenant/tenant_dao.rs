@@ -2970,6 +2970,9 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_tenant();
   vec![
     table,
+    "domain",
+    "menu",
+    "lang",
   ]
 }
 
@@ -2977,10 +2980,26 @@ fn get_cache_tables() -> Vec<&'static str> {
 /// 清空缓存
 #[allow(dead_code)]
 pub async fn del_cache_tenant() -> Result<()> {
+  
   let cache_key1s = get_cache_tables();
+  
+  let cache_key1s = cache_key1s
+    .into_iter()
+    .map(|x|
+      format!("dao.sql.{x}")
+    )
+    .chain(vec!["dao.sql.base_menu._getMenus".to_owned()])
+    .collect::<Vec<String>>();
+  
+  let cache_key1s_str = cache_key1s
+    .iter()
+    .map(|item| item.as_str())
+    .collect::<Vec<&str>>();
+  
   del_caches(
-    cache_key1s.as_slice(),
+    cache_key1s_str.as_slice(),
   ).await?;
+  
   Ok(())
 }
 
