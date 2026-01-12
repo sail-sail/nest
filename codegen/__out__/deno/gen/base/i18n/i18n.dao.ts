@@ -1506,6 +1506,8 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheI18n() {
   await delCacheCtx(`dao.sql.base_i18n`);
+  await delCacheCtx(`dao.sql.base_lang`);
+  await delCacheCtx(`dao.sql.base_menu`);
 }
 
 // MARK: updateByIdI18n

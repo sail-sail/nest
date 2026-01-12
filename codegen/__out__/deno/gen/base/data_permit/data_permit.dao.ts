@@ -1542,6 +1542,7 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheDataPermit() {
   await delCacheCtx(`dao.sql.base_data_permit`);
+  await delCacheCtx(`dao.sql.base_menu`);
 }
 
 // MARK: updateTenantByIdDataPermit

@@ -1517,6 +1517,7 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheDictDetail() {
   await delCacheCtx(`dao.sql.base_dict_detail`);
+  await delCacheCtx(`dao.sql.base_dict`);
 }
 
 // MARK: updateByIdDictDetail
