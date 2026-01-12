@@ -2191,8 +2191,8 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_i18n();
   vec![
     table,
-    "lang",
-    "menu",
+    "base_lang",
+    "base_menu",
   ]
 }
 

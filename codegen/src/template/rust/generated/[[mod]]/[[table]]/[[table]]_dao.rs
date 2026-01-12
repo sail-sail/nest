@@ -7545,7 +7545,7 @@ fn get_cache_tables() -> Vec<&'static str> {
         foreignKey.modelLabel
       ) continue;
     #>
-    "<#=foreignTable#>",<#
+    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
     }
     #>
   ]

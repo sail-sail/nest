@@ -3189,10 +3189,10 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_role();
   vec![
     table,
-    "menu",
-    "permit",
-    "data_permit",
-    "field_permit",
+    "base_menu",
+    "base_permit",
+    "base_data_permit",
+    "base_field_permit",
   ]
 }
 

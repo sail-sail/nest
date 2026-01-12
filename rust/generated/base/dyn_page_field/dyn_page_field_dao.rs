@@ -2891,7 +2891,7 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_dyn_page_field();
   vec![
     table,
-    "dyn_page",
+    "base_dyn_page",
   ]
 }
 

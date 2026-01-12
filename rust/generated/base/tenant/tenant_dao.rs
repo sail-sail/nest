@@ -2970,9 +2970,9 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_tenant();
   vec![
     table,
-    "domain",
-    "menu",
-    "lang",
+    "base_domain",
+    "base_menu",
+    "base_lang",
   ]
 }
 
