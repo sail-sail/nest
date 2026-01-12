@@ -3272,10 +3272,10 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_usr();
   vec![
     table,
-    "role",
-    "dept",
-    "org",
-    "org",
+    "base_role",
+    "base_dept",
+    "base_org",
+    "base_org",
   ]
 }
 

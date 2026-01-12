@@ -2227,7 +2227,7 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_dict_detail();
   vec![
     table,
-    "dict",
+    "base_dict",
   ]
 }
 

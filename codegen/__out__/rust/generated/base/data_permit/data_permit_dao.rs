@@ -2331,7 +2331,7 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_data_permit();
   vec![
     table,
-    "menu",
+    "base_menu",
   ]
 }
 
