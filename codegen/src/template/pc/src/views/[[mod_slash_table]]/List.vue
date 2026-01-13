@@ -3864,9 +3864,6 @@ const {
 
 const detailRef = $(useTemplateRef("detailRef"));
 
-/** 当前表格数据对应的搜索条件 */
-let currentSearch = $ref<<#=searchName#>>({ });
-
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
@@ -3883,7 +3880,6 @@ async function dataGrid(
   }
   #>
   const search = getDataSearch();
-  currentSearch = search;
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
@@ -3894,15 +3890,18 @@ async function dataGrid(
       }
       #>
     ]);
-  } else {
+  } else {<#
+    if (hasSummary) {
+    #>
     await Promise.all([
-      useFindAll(search, opt),<#
-      if (hasSummary) {
-      #>
-      dataSummary(search),<#
-      }
-      #>
-    ]);
+      useFindAll(search, opt),
+      dataSummary(search),
+    ]);<#
+    } else {
+    #>
+    await useFindAll(search, opt);<#
+    }
+    #>
   }
 }
 
@@ -5467,6 +5466,9 @@ watch(
     return rest;
   }),
   async function(oldVal, newVal) {
+    if (!inited) {
+      return;
+    }
     if (isSearchReset) {
       return;
     }
