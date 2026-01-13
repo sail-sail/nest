@@ -40,8 +40,6 @@ let indexIsEmptyHandle: ReturnType<typeof watch> | undefined = undefined;
 
 const menuStore = useMenuStore();
 
-let router: Router | undefined = undefined;
-
 export default function() {
   
   if (config.indexIsEmpty && !indexIsEmptyHandle) {
@@ -52,10 +50,12 @@ export default function() {
           setIndexTab(true);
           return;
         }
-        await removeTab({
-          name: "首页",
-          path: "/index",
-        });
+        await removeTab(
+          {
+            name: "首页",
+            path: "/index",
+          },
+        );
       },
     );
   }
@@ -183,11 +183,11 @@ export default function() {
     }
   }
   
-  async function removeTab(tab: TabInf, force = false) {
-    
-    if (!router) {
-      router = useRouter();
-    }
+  async function removeTab(
+    tab: TabInf,
+    force = false,
+    router?: Router,
+  ) {
     
     if (!tab) {
       return false;
@@ -215,6 +215,9 @@ export default function() {
           // fallback: 激活左边的
           activeTab(tabs.value[idx - 1]);
         } else {
+          if (!router) {
+            router = useRouter();
+          }
           await router.replace({ path: "/", query: { } });
         }
       }
@@ -234,6 +237,7 @@ export default function() {
   function closeCurrentTab(
     tab0: Pick<TabInf, "path" | "query">,
     force = false,
+    router?: Router,
   ) {
     const tab = findTab({
       path: tab0.path,
@@ -243,10 +247,13 @@ export default function() {
       return;
     }
     tab.active = false;
-    removeTab(tab, force);
+    removeTab(tab, force, router);
   }
   
-  async function closeOtherTabs(tab?: TabInf) {
+  async function closeOtherTabs(
+    tab?: TabInf,
+    router?: Router,
+  ) {
     
     if (!router) {
       router = useRouter();
@@ -280,7 +287,10 @@ export default function() {
     tabs.value.splice(newIndex, 0, tab);
   }
   
-  async function refreshTab(route: RouteLocationNormalizedLoaded) {
+  async function refreshTab(
+    route: RouteLocationNormalizedLoaded,
+    router?: Router,
+  ) {
     
     if (!router) {
       router = useRouter();

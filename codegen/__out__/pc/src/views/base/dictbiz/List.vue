@@ -1057,9 +1057,6 @@ const {
 
 const detailRef = $(useTemplateRef("detailRef"));
 
-/** 当前表格数据对应的搜索条件 */
-let currentSearch = $ref<DictbizSearch>({ });
-
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
@@ -1067,16 +1064,13 @@ async function dataGrid(
 ) {
   clearDirty();
   const search = getDataSearch();
-  currentSearch = search;
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
       useFindCount(search, opt),
     ]);
   } else {
-    await Promise.all([
-      useFindAll(search, opt),
-    ]);
+    await useFindAll(search, opt);
   }
 }
 
@@ -1666,6 +1660,9 @@ watch(
     return rest;
   }),
   async function(oldVal, newVal) {
+    if (!inited) {
+      return;
+    }
     if (isSearchReset) {
       return;
     }

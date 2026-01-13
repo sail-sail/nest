@@ -51,10 +51,11 @@ const {
 const tabsStore = useTabsStore();
 
 const route = useRoute();
+const router = useRouter();
 
 async function goHome() {
   if (tabsStore.actTab) {
-    tabsStore.closeCurrentTab(tabsStore.actTab);
+    tabsStore.closeCurrentTab(tabsStore.actTab, false, router);
   }
   window.location.href = "/";
 }
