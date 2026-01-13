@@ -8,6 +8,7 @@
   un-text="4"
   un-font="bold"
   un-whitespace-nowrap
+  un-bg="[var(--el-fill-color-extra-light)]"
 >
   <div
     v-if="!menuStore.isCollapse"
