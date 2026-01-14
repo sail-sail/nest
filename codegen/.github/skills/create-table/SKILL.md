@@ -1,9 +1,12 @@
 ---
 name: create-table
-description: 数据库建表规范。创建新表时必须遵循。
+description: 数据库建表规范。创建新表时必须遵循
 ---
 
 # 建表规范
+
+## 表路径
+`codegen/src/tables/{mod}/{mod}.sql`
 
 ## 表名格式
 
@@ -33,6 +36,20 @@ description: 数据库建表规范。创建新表时必须遵循。
 `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
 ```
 
+## 业务字典 dictbiz
+```sql
+`type` varchar(20) NOT NULL DEFAULT '' COMMENT '类型,dictbiz:{mod}_{table}_type',
+```
+
+## 系统字典 dict
+
+```sql
+`type` varchar(20) NOT NULL DEFAULT '' COMMENT '类型,dict:{mod}_{table}_type',
+```
+
+## 业务字典 跟 系统字典 dict + dictbiz 的 Skills
+- [dict/SKILL.md](../dict/SKILL.md)
+
 ## 可选系统字段
 
 | 字段 | 用途 |
@@ -46,6 +63,16 @@ description: 数据库建表规范。创建新表时必须遵循。
 | `is_hidden` | 隐藏记录 |
 | `parent_id` | 树形结构 |
 
+## 排序字段
+```sql
+`order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+```
+
+## 启用字段
+```sql
+`is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
+```
+
 ## 特殊字段命名
 
 | 后缀 | 用途 | 长度规则 |
@@ -54,6 +81,13 @@ description: 数据库建表规范。创建新表时必须遵循。
 | `att`/`_att` | 附件 | 22*N |
 | `icon`/`_icon` | 图标 | - |
 | `_code` | 省市区编码 | - |
+
+## 自动编码字段
+
+```sql
+`code_seq` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '编码-序列号',
+`code` varchar(45) NOT NULL DEFAULT '' COMMENT '编码',
+```
 
 ## 外键
 

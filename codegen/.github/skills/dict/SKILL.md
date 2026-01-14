@@ -1,6 +1,6 @@
 ---
 name: dict
-description: 系统字典和业务字典配置。添加枚举类字段时使用。
+description: 系统字典和业务字典配置。建表需要枚举字段或给表添加枚举类字段时使用
 ---
 
 # 字典配置
@@ -23,7 +23,7 @@ src/tables/{mod}/
 ├── base_dict.{mod}.sql.csv        # 系统字典
 ├── base_dict_detail.{mod}.sql.csv # 系统字典明细
 ├── base_dictbiz.{mod}.sql.csv     # 业务字典
-├── base_dictbiz_detail.{mod}.sql.csv
+├── base_dictbiz_detail.{mod}.sql.csv # 业务字典明细
 ```
 
 ### 2. 生成 UUID
@@ -33,10 +33,10 @@ nr uuid      # 生成1个
 nr uuid -- 3 # 生成3个
 ```
 
-### 3. 导入数据
+### 3. 导入业务字典
 
 ```bash
-nr importCsv {mod}/*
+nr importCsv {mod}/base_dictbiz.{mod}.sql.csv
 ```
 
 ## 内置系统字典
