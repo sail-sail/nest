@@ -1,9 +1,15 @@
 ---
 name: table-config
-description: 表字段配置规范。建表后配置 ts 文件时使用。
+description: 表字段配置规范。建表后配置 src/tables/{mod}/{mod}.ts 文件时使用
 ---
 
 # 表配置规范
+
+## 表配置路径
+`codegen/src/tables/{mod}/{mod}.ts`
+
+## 表配置结构详细文档和类型
+`codegen/src/config.ts`
 
 ## 默认值（无需配置）
 
@@ -17,12 +23,13 @@ description: 表字段配置规范。建表后配置 ts 文件时使用。
 | rem | width:280 |
 | `*_province_code` | 自动识别省份 |
 | `isFluentEditor` | noList 默认 true |
+| `建表语句中的 COMMENT '状态,dictbiz:{mod}_{table}_{column}' ` | `,dictbiz:` 表示业务字典,`:`后面的是业务字典编码,所以业务字典和系统字典都无需配置`foreignKey` |
 
 ## 需要配置的情况
 
 ### 外键数据量大
 
-```typescript
+```ts
 {
   COLUMN_NAME: "usr_id",
   foreignKey: {
@@ -35,7 +42,7 @@ description: 表字段配置规范。建表后配置 ts 文件时使用。
 
 ### 聚合关系
 
-```typescript
+```ts
 ec_order: {
   opts: {
     inlineForeignTabs: [{
@@ -50,12 +57,55 @@ ec_order: {
 }
 ```
 
+## 自动编码字段
+
+```ts
+{
+  COLUMN_NAME: "code_seq",
+  onlyCodegenDeno: true,
+},
+{
+  COLUMN_NAME: "code",
+  align: "center",
+  search: false,
+  width: 100,
+  readonly: true,
+  readonlyPlaceholder: "(自动生成)",
+  autoCode: {
+    prefix: "JS",
+    seq: "code_seq",
+    seqPadStart0: 3,
+  },
+  searchByArray: true,
+},
+```
+- onlyCodegenDeno: 代表此字段不生成到前端, 只生成后端
+- autoCode: 自动编码配置
+- autoCode.prefix: 编码前缀
+- autoCode.seq: 关联的序列号字段
+- autoCode.seqPadStart0: 序列号左侧补0到多少位
+
 ## 审计字段
 
 大部分表需要：
-```typescript
+```ts
 { COLUMN_NAME: "create_usr_id" },
 { COLUMN_NAME: "create_time" },
 { COLUMN_NAME: "update_usr_id" },
 { COLUMN_NAME: "update_time" },
+```
+
+## 配置文件结构需换行
+```ts
+ec_order: {
+  opts: {
+    ...
+  },
+  columns: [
+    {
+      COLUMN_NAME: "create_usr_id",
+      ...
+    },
+  ],
+},
 ```
