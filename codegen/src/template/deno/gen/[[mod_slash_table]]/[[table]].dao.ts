@@ -5260,6 +5260,32 @@ if (cache) {
 /** 删除缓存 */
 export async function delCache<#=Table_Up#>() {
   await delCacheCtx(`dao.sql.<#=mod#>_<#=table#>`);<#
+  /** 模板 dao 的 del_cache 函数在清空缓存时, 也要清空关联这张表的对应的dao的 find_all 的缓存 */
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    if (!foreignKey) continue;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    if (
+      [
+        "usr",
+      ].includes(foreignTable) ||
+      foreignKey.modelLabel
+    ) continue;
+  #>
+  await delCacheCtx(`dao.sql.<#=foreignKey.mod#>_<#=foreignTable#>`);<#
+  }
+  #><#
   if (
     (mod === "base" && table === "tenant") ||
     (mod === "base" && table === "role") ||

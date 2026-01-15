@@ -84,6 +84,7 @@ defineOptions({
 });
 
 const route = useRoute();
+const router = useRouter();
 const usrStore = useUsrStore();
 const tabStore = useTabsStore();
 
@@ -110,8 +111,9 @@ async function closeCurrentTab() {
       query: route.query,
     },
     true,
+    router,
   );
-  await tabStore.refreshTab(route);
+  await tabStore.refreshTab(route, router);
 }
 
 async function initFrame() {

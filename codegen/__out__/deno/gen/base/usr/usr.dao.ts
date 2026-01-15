@@ -2053,6 +2053,10 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheUsr() {
   await delCacheCtx(`dao.sql.base_usr`);
+  await delCacheCtx(`dao.sql.base_role`);
+  await delCacheCtx(`dao.sql.base_dept`);
+  await delCacheCtx(`dao.sql.base_org`);
+  await delCacheCtx(`dao.sql.base_org`);
   await delCacheCtx(`dao.sql.base_menu._getMenus`);
 }
 

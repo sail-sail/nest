@@ -1940,6 +1940,9 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheTenant() {
   await delCacheCtx(`dao.sql.base_tenant`);
+  await delCacheCtx(`dao.sql.base_domain`);
+  await delCacheCtx(`dao.sql.base_menu`);
+  await delCacheCtx(`dao.sql.base_lang`);
   await delCacheCtx(`dao.sql.base_menu._getMenus`);
 }
 

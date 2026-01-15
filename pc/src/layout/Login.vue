@@ -126,7 +126,7 @@ import type {
   MutationLoginArgs,
 } from "#/types";
 
-const route = useRouter();
+const router = useRouter();
 
 const usrStore = useUsrStore();
 const indexStore = useIndexStore();
@@ -311,9 +311,9 @@ async function onLogin() {
   const old_tenant_id = usrStore.tenant_id;
   const old_username = usrStore.username;
   if (old_username !== model.username) {
-    tabsStore.closeOtherTabs();
+    tabsStore.closeOtherTabs(undefined, router);
     if (tabsStore.actTab) {
-      tabsStore.closeCurrentTab(tabsStore.actTab);
+      tabsStore.closeCurrentTab(tabsStore.actTab, false, router);
     }
   }
   usrStore.authorization = loginModel.authorization;
@@ -328,7 +328,7 @@ async function onLogin() {
   if (old_username !== model.username || old_tenant_id !== model.tenant_id) {
     tabsStore.tabs = [ ];
     location.href = "/";
-  } else if (route.currentRoute.value.query.tenant_id) {
+  } else if (router.currentRoute.value.query.tenant_id) {
     tabsStore.tabs = [ ];
     location.href = "/";
   } else {
@@ -340,7 +340,7 @@ async function onLogin() {
  * 获取租户列表
  */
 async function onGetLoginTenants() {
-  const query = route.currentRoute.value.query;
+  const query = router.currentRoute.value.query;
   let tenant_ids: TenantId[] | undefined = undefined;
   let tenant_id_str = query.tenant_id as string | undefined;
   if (!tenant_id_str) {
