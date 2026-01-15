@@ -439,43 +439,50 @@ export interface TableCloumn {
   
   /**
    * 是否是省份代码
-   * 如果是, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
+   * 如果字段名为 province_code 或者 _province_code 结尾, 则 isProvinceCode 默认为 true
+   * 如果true, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
    */
   isProvinceCode?: boolean,
   
   /**
    * 是否是省份名称
-   * 如果是, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
+   * 如果字段名为 province_lbl 或者 _province_lbl 结尾, 则 isProvinceLbl 默认为 true
+   * 如果true, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
    */
   isProvinceLbl?: boolean,
   
   /**
    * 是否是城市代码
-   * 如果是, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
+   * 如果字段名为 city_code 或者 _city_code 结尾, 则 isCityCode 默认为 true
+   * 如果true, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
    */
   isCityCode?: boolean,
   
   /**
    * 是否是城市名称
-   * 如果是, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
+   * 如果字段名为 city_lbl 或者 _city_lbl 结尾, 则 isCityLbl 默认为 true
+   * 如果true, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
    */
   isCityLbl?: boolean,
   
   /**
    * 是否是区县代码
-   * 如果是, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
+   * 如果字段名为 county_code 或者 _county_code 结尾, 则 isCountyCode 默认为 true
+   * 如果true, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
    */
   isCountyCode?: boolean,
   
   /**
    * 是否是区县名称
-   * 如果是, 则默认: width = 160, align = "left"
+   * 如果字段名为 county_lbl 或者 _county_lbl 结尾, 则 isCountyLbl 默认为 true
+   * 如果true, 则默认: width = 160, align = "left"
    */
   isCountyLbl?: boolean,
   
   /**
    * 是否是详细地址
-   * 如果是, 则默认: width = 180, align = "left", isTextarea = true
+   * 如果字段名为 address 或者 _address 结尾, 则 isAddress 默认为 true
+   * 如果true, 则默认: width = 180, align = "left", isTextarea = true
    */
   isAddress?: boolean,
   

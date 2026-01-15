@@ -154,21 +154,21 @@ watch(
   },
 );
 
-const shouldShowPlaceholder = $computed<boolean>(() => {
+const shouldShowPlaceholder = computed<boolean>(() => {
   return modelValue == null || modelValue === "";
 });
 
-const inputRef = $ref<InstanceType<typeof ElInput>>();
-let textareaHeight = $shallowRef<number>();
+const inputRef = useTemplateRef("inputRef");
+const textareaHeight = ref<number>();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-useResizeObserver($$(inputRef) as any, (entries) => {
+useResizeObserver(inputRef as any, (entries) => {
   if (props.type !== "textarea") {
     return;
   }
   const [ entry ] = entries;
   const { height } = entry.contentRect;
-  textareaHeight = height - 2;
+  textareaHeight.value = height;
 });
 
 function onChange() {
@@ -183,15 +183,15 @@ function onClear() {
 }
 
 function focus() {
-  inputRef?.focus();
+  inputRef.value?.focus();
 }
 
 function blur() {
-  inputRef?.blur();
+  inputRef.value?.blur();
 }
 
 defineExpose({
-  inputRef: $$(inputRef),
+  inputRef,
   focus,
   blur,
 });

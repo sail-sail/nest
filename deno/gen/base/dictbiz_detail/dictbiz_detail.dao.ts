@@ -1547,6 +1547,7 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheDictbizDetail() {
   await delCacheCtx(`dao.sql.base_dictbiz_detail`);
+  await delCacheCtx(`dao.sql.base_dictbiz`);
 }
 
 // MARK: updateTenantByIdDictbizDetail

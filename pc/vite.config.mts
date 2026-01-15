@@ -50,6 +50,9 @@ export default defineConfig({
     }),
     Inspector({
       toggleButtonPos: "top-left",
+      lazyLoad: 500,
+      disableInspectorOnEditorOpen: true,
+      launchEditor: "code",
     }),
     // VueDevTools(),
     VueDevtoolsJson(),

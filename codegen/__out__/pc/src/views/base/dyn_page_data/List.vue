@@ -708,6 +708,7 @@ async function onSearch(isFocus: boolean) {
   if (isFocus) {
     tableFocus();
   }
+  page.current = 1;
   await dataGrid(true);
 }
 
@@ -762,7 +763,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<DynPageDataModel>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -770,7 +771,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<DynPageDataModel, DynPageDataId>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -789,9 +790,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as DynPageDataId[]);
 
 watch(
   () => selectedIds,
@@ -907,9 +908,6 @@ const {
 
 const detailRef = $(useTemplateRef("detailRef"));
 
-/** 当前表格数据对应的搜索条件 */
-let currentSearch = $ref<DynPageDataSearch>({ });
-
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
@@ -917,16 +915,13 @@ async function dataGrid(
 ) {
   clearDirty();
   const search = getDataSearch();
-  currentSearch = search;
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
       useFindCount(search, opt),
     ]);
   } else {
-    await Promise.all([
-      useFindAll(search, opt),
-    ]);
+    await useFindAll(search, opt);
   }
 }
 
@@ -1448,7 +1443,10 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
+    if (!inited) {
+      return;
+    }
     if (isSearchReset) {
       return;
     }
