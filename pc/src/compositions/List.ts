@@ -17,8 +17,8 @@ import {
 } from "@/views/base/dyn_page/Api.ts";
 
 /** 初始化内置搜索条件 */
-export function initBuiltInSearch<T>(
-  props: Record<string, any>,
+export function initBuiltInSearch(
+  props: any,
   builtInSearchType: { [key: string]: string },
   propsNotInSearch: string[],
 ) {
@@ -43,14 +43,14 @@ export function initBuiltInSearch<T>(
         continue;
       }
     }
-    return Object.fromEntries(entries) as unknown as T;
+    return Object.fromEntries(entries) as any;
   });
   return builtInSearch;
 }
 
 /** 初始化内置变量 */
-export function initBuiltInModel<T>(
-  props: Record<string, any>,
+export function initBuiltInModel(
+  props: any,
   builtInSearchType: { [key: string]: string },
   propsNotInSearch: string[],
 ) {
@@ -80,12 +80,12 @@ export function initBuiltInModel<T>(
         continue;
       }
     }
-    return Object.fromEntries(entries) as unknown as T;
+    return Object.fromEntries(entries) as any;
   });
   return builtInModel;
 }
 
-export function usePage<T>(
+export function usePage(
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   dataGrid: Function,
   opt?: {
@@ -154,11 +154,11 @@ export function usePage<T>(
   });
 }
 
-export function useSelect<T = any, Id = string>(
-  // tableRef: Ref<InstanceType<typeof ElTable> | null | undefined>,
-  tableRef: any,
+export function useSelect(
+  tableRef: Ref<InstanceType<typeof ElTable> | null | undefined>,
+  // tableRef: any,
   opts?: {
-    tableSelectable?: ((row: T, index: number) => boolean),
+    tableSelectable?: ((row: any, index: number) => boolean),
     multiple?: MaybeRefOrGetter<boolean>,
     tabIndex?: number,
     isListSelectDialog?: boolean,
@@ -180,7 +180,7 @@ export function useSelect<T = any, Id = string>(
     },
   );
   
-  function getRowKey(row?: T) {
+  function getRowKey(row?: any) {
     const rowKey = tableRef.value?.rowKey;
     if (!rowKey) {
       return "";
@@ -195,17 +195,17 @@ export function useSelect<T = any, Id = string>(
   }
   
   /** 当前多行选中的数据 */
-  let selectedIds: Id[] = $ref([ ]);
-  let prevSelectedIds: Id[] = $ref([ ]);
+  let selectedIds = $ref<string[]>([ ]);
+  let prevSelectedIds = $ref<string[]>([ ]);
   
   /**
    * 如果 selectedIds 跟 ids 不一样, 则设置 selectedIds, 避免触发 watch
    */
-  function setSelectIds(ids: Id[]) {
+  function setSelectIds(ids: string[]) {
     if (selectedIds.length === ids.length && selectedIds.every((item, index) => item === ids[index])) {
       return;
     }
-    selectedIds = [ ...ids ];
+    selectedIds = [ ...ids ] as any[];
   }
   
   function useSelectedIds() {
@@ -213,8 +213,8 @@ export function useSelect<T = any, Id = string>(
       return;
     }
     
-    const newSelectList: T[] = [ ];
-    const select2falseList: T[] = [ ];
+    const newSelectList: any[] = [ ];
+    const select2falseList: any[] = [ ];
     for (let i = 0; i < tableRef.value.data.length; i++) {
       const item = tableRef.value.data[i];
       const rowKey = getRowKey(item);
@@ -258,7 +258,7 @@ export function useSelect<T = any, Id = string>(
   
   const watch2Stop = watch(
     () => selectedIds,
-    (_newSelectIds: Id[], oldSelectIds: Id[]) => {
+    (_newSelectIds, oldSelectIds) => {
       if (!tableRef.value?.data) return;
       prevSelectedIds = oldSelectIds;
       useSelectedIds();
@@ -268,7 +268,7 @@ export function useSelect<T = any, Id = string>(
   /**
    * 多行或单行勾选
    */
-  function onSelect(list: T[], row?: T) {
+  function onSelect(list: any[], row?: any) {
     const rowKey = getRowKey(row);
     let multiple = true;
     if (opts?.multiple === false) {
@@ -364,7 +364,7 @@ export function useSelect<T = any, Id = string>(
         idx = 0;
       }
     }
-    const hasMoveMap = new Map<Id, boolean>();
+    const hasMoveMap = new Map<string, boolean>();
     while (true) {
       idx--;
       if (idx < 0) {
@@ -399,7 +399,7 @@ export function useSelect<T = any, Id = string>(
       return;
     }
     let idx = -1;
-    const hasMoveMap = new Map<Id, boolean>();
+    const hasMoveMap = new Map<string, boolean>();
     while (true) {
       idx++;
       if (idx >= data.length) {
@@ -440,7 +440,7 @@ export function useSelect<T = any, Id = string>(
         idx = 0;
       }
     }
-    const hasMoveMap = new Map<Id, boolean>();
+    const hasMoveMap = new Map<string, boolean>();
     while (true) {
       idx--;
       if (idx < 0) {
@@ -523,7 +523,7 @@ export function useSelect<T = any, Id = string>(
         idx = -1;
       }
     }
-    const hasMoveMap = new Map<Id, boolean>();
+    const hasMoveMap = new Map<string, boolean>();
     while (true) {
       idx++;
       if (idx >= data.length) {
@@ -668,7 +668,7 @@ export function useSelect<T = any, Id = string>(
       return;
     }
     let idx = data.length;
-    const hasMoveMap = new Map<Id, boolean>();
+    const hasMoveMap = new Map<string, boolean>();
     while (true) {
       idx--;
       if (idx < 0) {
@@ -709,7 +709,7 @@ export function useSelect<T = any, Id = string>(
         idx = 0;
       }
     }
-    const hasMoveMap = new Map<Id, boolean>();
+    const hasMoveMap = new Map<string, boolean>();
     while (true) {
       idx++;
       if (idx >= data.length) {
@@ -737,7 +737,7 @@ export function useSelect<T = any, Id = string>(
   /**
    * 点击一行
    */
-  function onRow(row: T, column?: TableColumnCtx<T>, e?: PointerEvent) {
+  function onRow(row: any, column?: TableColumnCtx<any>, e?: PointerEvent) {
     if (e && e.altKey) {
       return;
     }
@@ -822,7 +822,7 @@ export function useSelect<T = any, Id = string>(
   /**
    * 按住ctrl键之后点击一行
    */
-  function onRowCtrl(row: T, column?: TableColumnCtx<T>, e?: MouseEvent) {
+  function onRowCtrl(row: any, column?: TableColumnCtx<any>, e?: MouseEvent) {
     const rowKey = getRowKey();
     if (!rowKey) {
       return;
@@ -856,7 +856,7 @@ export function useSelect<T = any, Id = string>(
   /**
    * 按住shift键之后点击一行
    */
-  function onRowShift(row: T, column?: TableColumnCtx<T>, e?: MouseEvent) {
+  function onRowShift(row: any, column?: TableColumnCtx<any>, e?: MouseEvent) {
     if (e) {
       e.preventDefault();
     }
@@ -880,12 +880,12 @@ export function useSelect<T = any, Id = string>(
       setSelectIds([ id ]);
       return;
     }
-    const idx = tableData.findIndex((item) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
+    const idx = tableData.findIndex((item: any) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
     if (idx === -1) {
       setSelectIds([ id ]);
       return;
     }
-    const idx2 = tableData.findIndex((item) => item[rowKey] === id);
+    const idx2 = tableData.findIndex((item: any) => item[rowKey] === id);
     if (idx2 === -1) {
       setSelectIds([ id ]);
       return;
@@ -899,7 +899,7 @@ export function useSelect<T = any, Id = string>(
    * 表格每一行的css样式
    * @param {{ row: T, rowIndex: number }} { row, rowIndex }
    */
-  function rowClassName({ row, rowIndex }: { row: T, rowIndex: number }) {
+  function rowClassName({ row, rowIndex }: { row: any, rowIndex: number }) {
     return selectedIds.includes((row as any).id) ? "table_current_row" : "";
   }
   
@@ -917,8 +917,8 @@ export function useSelect<T = any, Id = string>(
     watch3Stop();
   });
   
-  return {
-    selectedIds: $$(selectedIds),
+  return $$({
+    selectedIds,
     onSelect,
     onRow,
     onRowUp,
@@ -929,13 +929,14 @@ export function useSelect<T = any, Id = string>(
     onRowEnd,
     rowClassName,
     tableFocus,
-  };
+  });
 }
 
-export function useSelectOne<T = any, Id = string>(
+export function useSelectOne(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
+  // tableRef: any,
   opts?: {
-    tableSelectable?: (row: T, index?: number) => boolean,
+    tableSelectable?: (row: any, index?: number) => boolean,
     tabIndex?: number,
   },
 ) {
@@ -943,7 +944,7 @@ export function useSelectOne<T = any, Id = string>(
   /**
    * 如果 selectedIds 跟 ids 不一样, 则设置 selectedIds, 避免触发 watch
    */
-  function setSelectIds(ids: Id[]) {
+  function setSelectIds(ids: any[]) {
     if (selectedIds.length === ids.length && selectedIds.every((item, index) => item === ids[index])) {
       return;
     }
@@ -1035,7 +1036,7 @@ export function useSelectOne<T = any, Id = string>(
   /**
    * 多行或单行勾选
    */
-  function onSelect(list: T[], row?: T) {
+  function onSelect(list: any[], row?: any) {
     const rowKey = getRowKey();
     if (!rowKey) {
       return;
@@ -1065,7 +1066,7 @@ export function useSelectOne<T = any, Id = string>(
   /**
    * 点击一行
    */
-  async function onRow(row: T, column: TableColumnCtx<T>, event: PointerEvent) {
+  async function onRow(row: any, column: TableColumnCtx<any>, event: PointerEvent) {
     const rowKey = getRowKey();
     if (!rowKey) {
       return;
@@ -1100,7 +1101,7 @@ export function useSelectOne<T = any, Id = string>(
   /**
    * 表格每一行的css样式
    */
-  function rowClassName({ row, rowIndex }: { row: T, rowIndex: number }) {
+  function rowClassName({ row, rowIndex }: { row: any, rowIndex: number }) {
     return selectedIds.includes((row as any).id) ? "table_current_row" : "";
   }
   

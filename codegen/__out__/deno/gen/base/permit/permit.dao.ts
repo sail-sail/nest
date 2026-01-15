@@ -1217,6 +1217,7 @@ async function _creates(
 /** 删除缓存 */
 export async function delCachePermit() {
   await delCacheCtx(`dao.sql.base_permit`);
+  await delCacheCtx(`dao.sql.base_menu`);
 }
 
 // MARK: updateByIdPermit

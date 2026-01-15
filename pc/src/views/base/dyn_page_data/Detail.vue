@@ -799,7 +799,7 @@ async function onDynPageFields() {
   } = await dynPageDetailRef.showDialog({
     action: "add",
     builtInModel: {
-      code: getPagePathUsr(),
+      code: pagePath,
     },
     title: "新增字段",
   });

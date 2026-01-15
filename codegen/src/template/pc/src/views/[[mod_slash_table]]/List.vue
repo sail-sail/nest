@@ -3382,6 +3382,7 @@ async function onSearch(isFocus: boolean) {
   if (isFocus) {
     tableFocus();
   }
+  page.current = 1;
   await dataGrid(true);
 }
 
@@ -3440,7 +3441,7 @@ const {
   onPageDown,<#
   }
   #>
-} = $(usePage<<#=modelName#>>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -3454,7 +3455,7 @@ function tableSelectable(model: <#=modelName#>, index: number) {<#=opts?.tableSe
 #>
 
 /** 表格选择功能 */
-const tableSelected = useSelect<<#=modelName#>, <#=Table_Up#>Id>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -3478,9 +3479,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as <#=Table_Up#>Id[]);
 
 watch(
   () => selectedIds,
@@ -3863,9 +3864,6 @@ const {
 
 const detailRef = $(useTemplateRef("detailRef"));
 
-/** 当前表格数据对应的搜索条件 */
-let currentSearch = $ref<<#=searchName#>>({ });
-
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
@@ -3882,7 +3880,6 @@ async function dataGrid(
   }
   #>
   const search = getDataSearch();
-  currentSearch = search;
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
@@ -3893,15 +3890,18 @@ async function dataGrid(
       }
       #>
     ]);
-  } else {
+  } else {<#
+    if (hasSummary) {
+    #>
     await Promise.all([
-      useFindAll(search, opt),<#
-      if (hasSummary) {
-      #>
-      dataSummary(search),<#
-      }
-      #>
-    ]);
+      useFindAll(search, opt),
+      dataSummary(search),
+    ]);<#
+    } else {
+    #>
+    await useFindAll(search, opt);<#
+    }
+    #>
   }
 }
 
@@ -5465,7 +5465,10 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
+    if (!inited) {
+      return;
+    }
     if (isSearchReset) {
       return;
     }

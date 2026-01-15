@@ -94,7 +94,6 @@
     un-rounded
     un-w="full"
     un-min="h-8"
-    un-line-height="normal"
     un-break-all
     class="dict_select_readonly"
     :class="{
@@ -194,7 +193,6 @@
     un-rounded
     un-w="full"
     un-min="h-8"
-    un-line-height="normal"
     un-break-all
     class="dict_select_readonly"
     :class="{
