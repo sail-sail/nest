@@ -73,6 +73,8 @@ description: 数据库建表规范。创建新表时必须遵循
 `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
 ```
 
+- 布尔值字段名 `is_xxx` `is_` 开头, 且 字段类型为 `tinyint unsigned`, 默认值为 `0` 或 `1`
+
 ## 特殊字段命名
 
 | 后缀 | 用途 | 长度规则 |
@@ -80,9 +82,8 @@ description: 数据库建表规范。创建新表时必须遵循
 | `img`/`_img` | 图片 | 22*N |
 | `att`/`_att` | 附件 | 22*N |
 | `icon`/`_icon` | 图标 | - |
-| `_code` | 省市区编码 | - |
 
-## 自动编码字段
+## 自动编码字段, 如订单编号, 如果表中已经有 `lbl` 字段, 则自动编码字段命名为 `code_seq` `code`，否则为 `lbl_seq` `lbl`
 
 ```sql
 `code_seq` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '编码-序列号',
@@ -125,6 +126,12 @@ CREATE TABLE `base_usr_role` (
 -- 业务字典
 `type` varchar(20) NOT NULL DEFAULT '' COMMENT '类型,dictbiz:example_type',
 ```
+
+## 表索引
+```sql
+INDEX (`lbl`, `tenant_id`, `is_deleted`),
+```
+- 注意通常有唯一性的字段才需要加索引, 但不能是唯一索引
 
 ## 完整示例
 
