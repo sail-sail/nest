@@ -24,17 +24,21 @@ ab -c100 -n10000 -p /data/software/test.json -T application/json -H "Content-Typ
 
 ## 换工程名字
 1. `ecosystem.config.json`
-    - 第3行: `name: "[工程名]"`
-    - 第4行: `script: "./[工程名]"`
+    - apps: `name: "[工程名]"`
+    - apps: `script: "./[工程名]"`
 2. `Cargo.toml`
-    - 第1行: `name = "[工程名]"`
-    - 第5行: `default-run = "[工程名]"`
-    - 第88行: `name = "[工程名]"`
+    - [package]: `name = "[工程名]"`
+    - [package]: `default-run = "[工程名]"`
+    - [[bin]]: `name = "[工程名]"`
 3. `.vscode\launch.json`
-    - 第8行: `"name": "[工程名]",`
+    - configurations: `"name": "[工程名]",`
+    - inputs: `"filter": "[工程名]"`
 4. `.env`
-    - 第1行: `RUST_LOG="[工程名]=info"`
-    - 第6行: `server_title = "[工程名]"`
+    - `RUST_LOG="[工程名]=info"`
+    - `server_title = "[工程名]4dev"`
+5. `.env.test`
+    - `RUST_LOG="[工程名]=info"`
+    - `server_title = "[工程名]4test"`
 5. `.env.prod`
-    - 第1行: `RUST_LOG="[工程名]=info"`
-    - 第8行: `server_title = "[工程名]"`
+    - `RUST_LOG="[工程名]=info"`
+    - `server_title = "[工程名]4prod"`
