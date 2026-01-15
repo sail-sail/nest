@@ -4,7 +4,9 @@
   un-items-center
   un-w="full"
   un-h="8"
+  class="custom_icon"
   :class="{
+    'custom_icon_readonly': !!props.readonly,
     'custom_icon_align_left': props.align === 'left',
     'custom_icon_align_center': props.align === 'center',
     'custom_icon_align_right': props.align === 'right',
@@ -12,12 +14,12 @@
 >
   <div
     ref="wrapDivRef"
-    un-b="1 solid transparent hover:[var(--el-border-color)]"
+    class="custom_icon_inner"
+    un-b="1 solid [var(--el-border-color)] hover:[var(--el-border-color-hover)] focus-visible:[var(--el-color-primary)]"
+    un-outline="none"
     un-transition="border-color 0.3s"
+    un-cursor="pointer"
     un-rounded
-    :style="{
-      cursor: props.readonly ? undefined : 'pointer',
-    }"
     un-flex="~"
     un-items-center
     un-justify-center
@@ -32,8 +34,8 @@
     <div
       v-if="modelLbl && modelLbl.startsWith('data:image/svg+xml;')"
       :style="{
-        'mask-image': `url(${ modelLbl })`,
-        '-webkit-mask-image': `url(${ modelLbl })`,
+        'mask-image': `url('${ modelLbl }')`,
+        '-webkit-mask-image': `url('${ modelLbl }')`,
       }"
       class="iconfont"
     ></div>
@@ -74,7 +76,45 @@
     :initial-index="0"
     :close-on-press-escape="true"
     @close="showViewer = false"
-  ></ElImageViewer>
+  >
+    
+    <template
+      #viewer-error="{ src }"
+    >
+      <div
+        un-flex="~"
+        un-items-center
+        un-justify-center
+        un-w="full"
+        un-h="full"
+        :style="{
+          'mask-image': `url('${ src }')`,
+        }"
+        @click="isSvg && (showViewer = false)"
+      >
+        
+        <!-- eslint-disable vue/no-v-html -->
+        <div
+          class="el-icon custom_icon_viewer"
+          un-w="full"
+          un-h="full"
+          v-html="src"  
+        >
+        </div>
+        
+      </div>
+    </template>
+    
+    <template
+      v-if="isSvg"
+      #toolbar
+    >
+      <div
+        class="custom_icon_toolbar"
+      ></div>
+    </template>
+    
+  </ElImageViewer>
   
 </div>
 </template>
@@ -137,16 +177,24 @@ watch(
 
 const showViewer = ref(false);
 
-const urlList = $computed(() => {
+const isSvg = computed(() => {
+  return modelLbl.value?.startsWith("data:image/svg+xml;utf8,");
+});
+
+const urlList = computed(() => {
   const list: string[] = [ ];
   if (modelLbl.value) {
-    list.push(modelLbl.value);
+    if (isSvg.value) {
+      const svgStr = decodeURIComponent(modelLbl.value.replace("data:image/svg+xml;utf8,", ""));
+      list.push(svgStr);
+    }
+    // list.push(modelLbl.value);
   }
   return list;
 });
 
-const wrapDivRef = $(useTemplateRef<InstanceType<typeof HTMLDivElement>>("wrapDivRef"));
-const customIconSelectRef = $(useTemplateRef<InstanceType<typeof CustomIconSelect>>("customIconSelectRef"));
+const wrapDivRef = $(useTemplateRef("wrapDivRef"));
+const customIconSelectRef = $(useTemplateRef("customIconSelectRef"));
 
 async function onIcon(e: KeyboardEvent | MouseEvent) {
   e.preventDefault();

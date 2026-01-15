@@ -1,6 +1,6 @@
 ---
 name: create-module
-description: 创建新的业务模块。当需要添加新模块如 ec、crm 时使用。
+description: 创建新的业务模块。当需要添加新模块如 ec、crm 时使用
 ---
 
 # 创建模块

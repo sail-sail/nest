@@ -2,6 +2,7 @@
 <Login
   v-if="!usrStore.authorization || usrStore.isLogining"
 ></Login>
+
 <div
   v-else
   un-w="full"
@@ -10,12 +11,14 @@
   un-flex
   un-pos-relative
 >
+  
+  <!-- 左侧菜单 -->
   <div
-    un-text="[#FFF]"
     un-flex="~ col"
     un-overflow-hidden
     :style="{ width: menuStore.isCollapse ? '60px': '250px' }"
   >
+    
     <div
       un-h="10"
       un-text="gray-500 dark:gray-300"
@@ -24,15 +27,20 @@
     >
       <Top></Top>
     </div>
+    
     <LeftMenu
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
     ></LeftMenu>
+    
   </div>
+  
   <div
     un-flex="~ [1_0_0] col"
     un-overflow-hidden
   >
+    
+    <!-- 顶部选项卡 -->
     <div
       ref="tabs_divRef"
       un-h="10"
@@ -40,6 +48,7 @@
       un-flex="~ row"
       un-pos-relative
     >
+      
       <Tabs
         ref="tabsRef"
         un-flex="~ [1_0_0]"
@@ -48,6 +57,7 @@
         @refresh-active_line="refreshTab_active_line"
         @refresh-scroll-visible="refreshScrollVisible"
       ></Tabs>
+      
       <div
         un-flex="~"
         un-h="full"
@@ -83,6 +93,7 @@
           </el-icon>
         </div>
       </div>
+      
       <div
         un-flex="~"
         un-items-center
@@ -283,7 +294,10 @@
           </el-dropdown>
         </div>
       </div>
+      
     </div>
+    
+    <!-- 选项卡下划线 -->
     <div
       un-h="0.5"
       un-w="full"
@@ -306,6 +320,8 @@
         un-ease-in
       ></div>
     </div>
+    
+    <!-- 主体内容 -->
     <div
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
@@ -322,12 +338,14 @@
         </KeepAlive>
       </router-view>
     </div>
+    
   </div>
   
   <!-- 修改密码 -->
   <ChangePassword
     ref="changePasswordRef"
   ></ChangePassword>
+  
 </div>
 </template>
 
@@ -646,20 +664,6 @@ initFrame();
 </script>
 
 <style lang="scss" scoped>
-.dept_select {
-  position: relative;
-  top: 2px;
-  width: 100px;
-  :deep(.el-input__inner) {
-    text-align: right;
-    background-color: transparent;
-  }
-  :deep(.el-input) {
-    --el-input-bg-color: transparent;
-    --el-input-text-color: #FFF;
-    --el-input-border-color: transparent;
-  }
-}
 .tab_active_line {
   transition-property: width, left;
   transition-duration: 300ms;
