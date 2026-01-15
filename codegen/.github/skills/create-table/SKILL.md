@@ -38,13 +38,13 @@ description: 数据库建表规范。创建新表时必须遵循
 
 ## 业务字典 dictbiz
 ```sql
-`type` varchar(20) NOT NULL DEFAULT '' COMMENT '类型,dictbiz:{mod}_{table}_type',
+`type` ENUM('unpaid', 'paid') NOT NULL DEFAULT 'unpaid' COMMENT '类型,dictbiz:{mod}_{table}_type',
 ```
 
 ## 系统字典 dict
 
 ```sql
-`type` varchar(20) NOT NULL DEFAULT '' COMMENT '类型,dict:{mod}_{table}_type',
+`type` ENUM('unpaid', 'paid') NOT NULL DEFAULT 'unpaid' COMMENT '类型,dict:{mod}_{table}_type',
 ```
 
 ## 业务字典 跟 系统字典 dict + dictbiz 的 Skills

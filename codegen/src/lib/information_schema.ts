@@ -595,36 +595,46 @@ async function getSchema0(
       }
     }
     
-    // 自动编码默认固定生成唯一索引配置
-    if (item.autoCode && !item.autoCode.dateSeq) {
-      tables[table_name].opts = tables[table_name].opts || { };
-      tables[table_name].opts.uniques = tables[table_name].opts.uniques || [ ];
-      if (
-        !tables[table_name].opts.uniques.some(
-          (uniqueItem) => {
-            if (uniqueItem.length !== 1) {
-              return false;
-            }
-            return uniqueItem[0] === column_name;
-          }
-        )
-      ) {
-        tables[table_name].opts.uniques.push([ column_name ]);
+    // 自动编码
+    if (item.autoCode) {
+      if (!item.autoCode.seq) {
+        throw new Error(`表: ${ table_name } 列: ${ column_name } autoCode 配置错误, 必须指定 seq 属性!`);
       }
-    } else if (item.autoCode && item.autoCode.dateSeq) {
-      tables[table_name].opts = tables[table_name].opts || { };
-      tables[table_name].opts.uniques = tables[table_name].opts.uniques || [ ];
-      if (
-        !tables[table_name].opts.uniques.some(
-          (uniqueItem) => {
-            if (uniqueItem.length !== 2) {
-              return false;
+      const seq = item.autoCode.seq;
+      if (!records.some((record: TableCloumn) => record.COLUMN_NAME === seq)) {
+        throw new Error(`表: ${ table_name } 列: ${ column_name }, autoCode 配置错误, seq 指定的列 ${ seq } 不存在`);
+      }
+      // 自动编码默认固定生成唯一索引配置
+      if (item.autoCode && !item.autoCode.dateSeq) {
+        tables[table_name].opts = tables[table_name].opts || { };
+        tables[table_name].opts.uniques = tables[table_name].opts.uniques || [ ];
+        if (
+          !tables[table_name].opts.uniques.some(
+            (uniqueItem) => {
+              if (uniqueItem.length !== 1) {
+                return false;
+              }
+              return uniqueItem[0] === column_name;
             }
-            return uniqueItem[0] === item.autoCode.dateSeq && uniqueItem[1] === column_name;
-          }
-        )
-      ) {
-        tables[table_name].opts.uniques.push([ item.autoCode.dateSeq, column_name ]);
+          )
+        ) {
+          tables[table_name].opts.uniques.push([ column_name ]);
+        }
+      } else if (item.autoCode && item.autoCode.dateSeq) {
+        tables[table_name].opts = tables[table_name].opts || { };
+        tables[table_name].opts.uniques = tables[table_name].opts.uniques || [ ];
+        if (
+          !tables[table_name].opts.uniques.some(
+            (uniqueItem) => {
+              if (uniqueItem.length !== 2) {
+                return false;
+              }
+              return uniqueItem[0] === item.autoCode.dateSeq && uniqueItem[1] === column_name;
+            }
+          )
+        ) {
+          tables[table_name].opts.uniques.push([ item.autoCode.dateSeq, column_name ]);
+        }
       }
     }
     
