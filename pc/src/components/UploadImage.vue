@@ -185,8 +185,8 @@
     }"
   >
     <div
-      un-m="l-.75 t-.1"
-      un-h="[calc(100%-1.8px)]"
+      un-m="l-.75 t-.3"
+      un-h="[calc(100%-2px)]"
       un-aspect="square"
       un-flex="~ [1_0_0] col"
       un-overflow-hidden

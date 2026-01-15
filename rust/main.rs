@@ -232,6 +232,7 @@ async fn main() -> Result<(), std::io::Error> {
   #[cfg(debug_assertions)]
   let _guard = {
     color_eyre::config::HookBuilder::default()
+      .theme(color_eyre::config::Theme::new())
       .add_frame_filter(Box::new(move |frames| {
         frames.retain(|frame| {
           let name = if let Some(name) = frame.name.as_ref() {
@@ -239,7 +240,18 @@ async fn main() -> Result<(), std::io::Error> {
           } else {
             return true;
           };
-          name.starts_with("app::") && !name.contains("::_::impl$")
+          (
+            name.starts_with("app::") &&
+            !name.starts_with("app::impl$") &&
+            !name.contains("::_::impl$")
+          ) ||
+          (
+            name.starts_with("generated::") &&
+            !name.starts_with("generated::base::permit::") &&
+            !name.starts_with("generated::common::") &&
+            !name.starts_with("generated::impl$") &&
+            !name.contains("::_::impl$")
+          )
         });
       }))
       .install()
@@ -266,6 +278,7 @@ async fn main() -> Result<(), std::io::Error> {
   #[cfg(not(debug_assertions))]
   let _guard = {
     color_eyre::config::HookBuilder::default()
+      .theme(color_eyre::config::Theme::new())
       .add_frame_filter(Box::new(move |frames| {
         frames.retain(|frame| {
           let name = if let Some(name) = frame.name.as_ref() {
@@ -273,7 +286,18 @@ async fn main() -> Result<(), std::io::Error> {
           } else {
             return true;
           };
-          name.starts_with("app::") && !name.contains("::_::impl$")
+          (
+            name.starts_with("app::") &&
+            !name.starts_with("app::impl$") &&
+            !name.contains("::_::impl$")
+          ) ||
+          (
+            name.starts_with("generated::") &&
+            !name.starts_with("generated::base::permit::") &&
+            !name.starts_with("generated::common::") &&
+            !name.starts_with("generated::impl$") &&
+            !name.contains("::_::impl$")
+          )
         });
       }))
       .install()

@@ -5,7 +5,11 @@ import {
 } from "node:crypto";
 
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import { parse } from "fast-csv";
+
+// @ts-ignore
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 import type {
   Context,

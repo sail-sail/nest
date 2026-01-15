@@ -560,6 +560,15 @@ pub async fn find_all_icon(
   #[allow(unused_variables)]
   for model in &mut res {
     
+    // svg
+    if !model.img.is_empty() {
+      let res = crate::common::oss::oss_dao::get_object(&model.img).await?;
+      if let Some(res) = res {
+        let content = res.to_string()?;
+        model.img_lbl_svg = content;
+      }
+    }
+    
     // 启用
     model.is_enabled_lbl = {
       is_enabled_dict
@@ -2118,10 +2127,25 @@ fn get_cache_tables() -> Vec<&'static str> {
 /// 清空缓存
 #[allow(dead_code)]
 pub async fn del_cache_icon() -> Result<()> {
+  
   let cache_key1s = get_cache_tables();
+  
+  let cache_key1s = cache_key1s
+    .into_iter()
+    .map(|x|
+      format!("dao.sql.{x}")
+    )
+    .collect::<Vec<String>>();
+  
+  let cache_key1s_str = cache_key1s
+    .iter()
+    .map(|item| item.as_str())
+    .collect::<Vec<&str>>();
+  
   del_caches(
-    cache_key1s.as_slice(),
+    cache_key1s_str.as_slice(),
   ).await?;
+  
   Ok(())
 }
 

@@ -7521,7 +7521,33 @@ pub async fn update_by_id_<#=table#>(
 fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_<#=table#>();
   vec![
-    table,
+    table,<#
+    /** 模板 dao 的 del_cache 函数在清空缓存时, 也要清空关联这张表的对应的dao的 find_all 的缓存 */
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+      if (column_name === "id") continue;
+      if (column_name === "create_usr_id") continue;
+      if (column_name === "create_time") continue;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const foreignKey = column.foreignKey;
+      if (!foreignKey) continue;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const many2many = column.many2many;
+      if (
+        [
+          "usr",
+        ].includes(foreignTable) ||
+        foreignKey.modelLabel
+      ) continue;
+    #>
+    "<#=foreignKey.mod#>_<#=foreignTable#>",<#
+    }
+    #>
   ]
 }
 
@@ -7529,10 +7555,36 @@ fn get_cache_tables() -> Vec<&'static str> {
 /// 清空缓存
 #[allow(dead_code)]
 pub async fn del_cache_<#=table#>() -> Result<()> {
+  
   let cache_key1s = get_cache_tables();
+  
+  let cache_key1s = cache_key1s
+    .into_iter()
+    .map(|x|
+      format!("dao.sql.{x}")
+    )<#
+    if (
+      cache &&
+      (mod === "base" && table === "tenant") ||
+      (mod === "base" && table === "role") ||
+      (mod === "base" && table === "menu") ||
+      (mod === "base" && table === "usr")
+    ) {
+    #>
+    .chain(vec!["dao.sql.base_menu._getMenus".to_owned()])<#
+    }
+    #>
+    .collect::<Vec<String>>();
+  
+  let cache_key1s_str = cache_key1s
+    .iter()
+    .map(|item| item.as_str())
+    .collect::<Vec<&str>>();
+  
   del_caches(
-    cache_key1s.as_slice(),
+    cache_key1s_str.as_slice(),
   ).await?;
+  
   Ok(())
 }
 

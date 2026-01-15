@@ -10,8 +10,10 @@ description: Rust GraphQL 接口开发. 创建自定义 API 时使用
 | 层 | 文件 | 职责 |
 |----|------|------|
 | GraphQL | `*_graphql.rs` | 接口定义/权限 |
+| Model  | `*_model.rs`   | 输入输出类型(给各层函数用的结构体) |
 | Resolver | `*_resolver.rs` | 参数解构/日志 |
-| Service | `*_service.rs` | 业务逻辑/DB |
+| Service | `*_service.rs` | 业务逻辑 |
+| DAO     | `*_dao.rs`     | 数据库操作(一般无需手动改动,已自动生成常用 DAO 函数) |
 
 ## GraphQL 层
 
@@ -50,14 +52,17 @@ impl XxxMutation {
     &self,
     ctx: &Context<'_>,
     #[graphql(name = "input")]
-    input: InputType,
-  ) -> Result<ReturnType> {
+    input: {Table}Input,
+  ) -> Result<Vec<{Table}Model>> {
     Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()            // 修改需事务
+      .with_auth()? // 是否登录之后才能调用
+      .with_tran() // 修改需事务
       .build()
       .scope({
-        xxx_resolver::mutate_method(input, None)
+        xxx_resolver::mutate_method(
+          input,
+          None,
+        )
       }).await
   }
 }
@@ -67,15 +72,28 @@ impl XxxMutation {
 
 ```rust
 use tracing::info;
-use generated::common::context::{Options, get_req_id};
+use generated::common::context::{
+  Options,
+  get_req_id,
+};
 
 #[function_name::named]
 pub async fn method_name(
   param: ParamType,
   options: Option<Options>,
 ) -> Result<ReturnType> {
-  info!("{} {}: {:?}", get_req_id(), function_name!(), param);
-  xxx_service::method_name(param, options).await
+  
+  info!(
+    "{} {}: {:?}",
+    get_req_id(),
+    function_name!(),
+    param,
+  );
+  
+  xxx_service::method_name(
+    param,
+    options,
+  ).await
 }
 ```
 
@@ -89,21 +107,50 @@ pub async fn method_name(
   param: ParamType,
   options: Option<Options>,
 ) -> Result<ReturnType> {
+  
   // 1. 参数校验
   if param.is_empty() {
     return Err(eyre!("参数不能为空"));
   }
   
   // 2. 获取当前用户
-  let usr_id = get_auth_id_ok()?;
+  let usr_id: UsrId = get_auth_id_ok()?;
   
   // 3. 查询数据
-  let model = validate_option_xxx(
-    find_one_xxx(Some(XxxSearch { ... }), None, options.clone()).await?,
+  let {table}_model = find_one_ok_xxx(
+    Some(XxxSearch {
+      field: Some(param),
+      ..Default::default()
+    }),
+    None,
+    options.clone(),
   ).await?;
   
-  // 4. 业务操作
-  Ok(result)
+  // 查询列表
+  let {table}_models = find_all_xxx(
+    Some(XxxSearch {
+      field: Some(param),
+      ..Default::default()
+    }),
+    Some(PageInput {
+      pg_offset: 0,
+      pg_size: 10,
+      is_result_limit: Some(false), // 不限制总数, 默认 find_all_xxx 会限制总数, 超过1000报错, 可配置, 默认true, 一般无需此参数
+    }),
+    Some(SortInput {
+      prop: "created_time".to_string(),
+      order: SortOrderEnum::Desc,
+    }), // 一般无需排序参数, 建表时已加默认排序
+    options.clone(),
+  ).await?;
+  
+  // 获取当前时间
+  let now = get_now();
+  
+  // 4. 业务操作 ...
+  
+  // 5. 返回结果
+  Ok({table}_models)
 }
 ```
 
@@ -112,14 +159,20 @@ pub async fn method_name(
 | 函数 | 用途 |
 |------|------|
 | `find_by_id_xxx` | ID查询 → `Option<Model>` |
-| `find_by_id_ok_xxx` | ID查询（必存在）|
-| `find_one_xxx` | 条件查单条 |
-| `find_all_xxx` | 条件查列表 |
+| `find_by_id_ok_xxx` | ID查询（必存在否则抛异常）|
+| `find_by_ids_xxx` | 多ID查询 → `Vec<Model>` |
+| `find_by_ids_ok_xxx` | 多ID查询（必存在且顺序跟ids一致）|
+| `find_one_xxx` | 条件查单条 包括搜索条件,排序参数 |
+| `find_one_ok_xxx` | 条件查单条（必存在）|
+| `find_all_xxx` | 条件查列表 包括搜索条件,分页,排序参数 |
 | `create_xxx` | 创建 → ID |
+| `create_return_xxx` | 创建 → 立即查询返回 |
 | `update_by_id_xxx` | 更新 |
-| `delete_by_ids_xxx` | 软删除 |
-| `validate_option_xxx` | None 时抛异常 |
-| `validate_is_enabled_xxx` | 禁用时抛异常 |
+| `update_by_id_return_xxx` | 更新 → 立即查询返回 |
+| `delete_by_ids_xxx` | 逻辑删除 |
+| `force_delete_by_ids_xxx` | 彻底删除 |
+| `validate_option_xxx` | 校验 None 时抛异常 |
+| `validate_is_enabled_xxx` | 校验禁用时抛异常 |
 
 ## 辅助函数
 

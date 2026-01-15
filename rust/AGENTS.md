@@ -7,7 +7,7 @@ Rust + async-graphql + sqlx 后端服务
 | 目录 | 说明 |
 |------|------|
 | `generated/{mod}/{table}/` | 生成代码(可改但尽量不改)|
-| `app/{mod}/` | 手写业务代码 |
+| `app/{mod}/{table}/` | 手写业务代码 |
 
 ## 三层架构
 
@@ -20,7 +20,7 @@ app/{mod}/{table}/
 └── {table}_service.rs   # 业务逻辑/数据库
 ```
 
-## 可用 Skills
+## 可用 Skills (.github/skills/)
 
 - `excel-export` - Excel 导出功能开发. 移动端导出 Excel 时使用
 - `graphql-api` - Rust GraphQL 接口开发. 创建自定义 API 时使用

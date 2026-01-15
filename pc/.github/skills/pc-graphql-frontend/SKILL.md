@@ -11,7 +11,7 @@ metadata:
 ## 文件结构
 
 ```
-src/views/{module}/{table}/
+src/views/{mod}/{table}/
 ├── Api.ts      # 自动生成(尽量不修改)
 └── Api2.ts     # 手写自定义接口
 ```
@@ -88,7 +88,7 @@ export async function updateXxx(
 
 | 规则 | 说明 |
 |------|------|
-| 类型导入 | 从 `#/types.ts` 导入 `Query`、`Mutation`、`XxxInput` 等,如果是标准的{table}Model,{table}Input,{table}Search就不需要引入,因为已经在Model.ts全局定义了 |
+| 类型导入 | 从 `#/types.ts` 导入 `Query`、`Mutation`、`XxxInput` 等,如果是标准的{Table}Model,{Table}Input,{Table}Search就不需要引入,因为已经在Model.ts全局定义了 |
 | 返回类型 | 使用 `Query["xxx"]` 或 `Mutation["xxx"]` 声明 |
 | 命名 | 函数驼峰式，参数蛇形式，与后端保持一致 |
 
