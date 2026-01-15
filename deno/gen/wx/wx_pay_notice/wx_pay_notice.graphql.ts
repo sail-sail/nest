@@ -103,8 +103,6 @@ type WxPayNoticeModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "已删除"
-  is_deleted: Int!
 }
 type WxPayNoticeFieldComment {
   "ID"
@@ -209,8 +207,6 @@ input WxPayNoticeInput {
   rem: String
 }
 input WxPayNoticeSearch {
-  "已删除"
-  is_deleted: Int
   "ID列表"
   ids: [WxPayNoticeId!]
   "ID"

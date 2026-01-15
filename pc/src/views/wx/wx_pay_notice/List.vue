@@ -110,17 +110,6 @@
               <ElIconRemove />
             </el-icon>
           </div>
-          
-          <el-checkbox
-            v-if="!isLocked"
-            v-model="search.is_deleted"
-            :set="search.is_deleted = search.is_deleted ?? 0"
-            :false-value="0"
-            :true-value="1"
-            @change="onRecycle"
-          >
-            <span>回收站</span>
-          </el-checkbox>
         </div>
       </div>
       
@@ -175,7 +164,7 @@
     un-m="x-1.5 t-1.5"
     un-flex="~ nowrap"
   >
-    <template v-if="search.is_deleted !== 1">
+    <template v-if="true">
       
       <el-button
         plain
@@ -662,7 +651,6 @@ const emit = defineEmits<{
 }>();
 
 const props = defineProps<{
-  is_deleted?: string;
   showBuildIn?: string;
   isPagination?: string;
   isLocked?: string;
@@ -681,7 +669,6 @@ const props = defineProps<{
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
-  is_deleted: "0|1",
   showBuildIn: "0|1",
   isPagination: "0|1",
   isMultiple: "0|1",
@@ -734,7 +721,6 @@ const tableRef = $(useTemplateRef("tableRef"));
 /** 查询 */
 function initSearch() {
   const search = {
-    is_deleted: 0,
   } as WxPayNoticeSearch;
   props.propsNotReset?.forEach((key) => {
     search[key] = builtInSearch[key];
@@ -773,6 +759,7 @@ async function onSearch(isFocus: boolean) {
   if (isFocus) {
     tableFocus();
   }
+  page.current = 1;
   await dataGrid(true);
 }
 
@@ -827,7 +814,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<WxPayNoticeModel>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -835,7 +822,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<WxPayNoticeModel, WxPayNoticeId>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -854,9 +841,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as WxPayNoticeId[]);
 
 watch(
   () => selectedIds,
@@ -1085,9 +1072,6 @@ const {
 
 const detailRef = $(useTemplateRef("detailRef"));
 
-/** 当前表格数据对应的搜索条件 */
-let currentSearch = $ref<WxPayNoticeSearch>({ });
-
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
@@ -1095,27 +1079,22 @@ async function dataGrid(
 ) {
   clearDirty();
   const search = getDataSearch();
-  currentSearch = search;
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
       useFindCount(search, opt),
     ]);
   } else {
-    await Promise.all([
-      useFindAll(search, opt),
-    ]);
+    await useFindAll(search, opt);
   }
 }
 
 function getDataSearch() {
-  const is_deleted = search.is_deleted;
   const search2 = {
     ...search,
     idsChecked: undefined,
   };
   Object.assign(search2, builtInSearch);
-  search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -1260,7 +1239,6 @@ async function openView() {
     return;
   }
   const search = getDataSearch();
-  const is_deleted = search.is_deleted;
   const ids = selectedIds;
   const {
     changedIds,
@@ -1272,7 +1250,6 @@ async function openView() {
     isLocked: $$(isLocked),
     model: {
       ids,
-      is_deleted,
     },
   });
   tableFocus();
@@ -1326,10 +1303,16 @@ watch(
       ...rest
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } = builtInSearch as any;
-    return rest
+    return rest;
   }),
-  async function() {
+  async function(oldVal, newVal) {
+    if (!inited) {
+      return;
+    }
     if (isSearchReset) {
+      return;
+    }
+    if (deepCompare(oldVal, newVal)) {
       return;
     }
     selectedIds = [ ];

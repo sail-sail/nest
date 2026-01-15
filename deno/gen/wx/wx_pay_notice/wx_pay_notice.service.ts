@@ -221,30 +221,6 @@ export async function deleteByIdsWxPayNotice(
 }
 
 /**
- * 根据 ids 还原微信支付通知
- */
-export async function revertByIdsWxPayNotice(
-  wx_pay_notice_ids: WxPayNoticeId[],
-): Promise<number> {
-  
-  const wx_pay_notice_num = await wx_pay_noticeDao.revertByIdsWxPayNotice(wx_pay_notice_ids);
-  
-  return wx_pay_notice_num;
-}
-
-/**
- * 根据 ids 彻底删除微信支付通知
- */
-export async function forceDeleteByIdsWxPayNotice(
-  wx_pay_notice_ids: WxPayNoticeId[],
-): Promise<number> {
-  
-  const wx_pay_notice_num = await wx_pay_noticeDao.forceDeleteByIdsWxPayNotice(wx_pay_notice_ids);
-  
-  return wx_pay_notice_num;
-}
-
-/**
  * 获取微信支付通知字段注释
  */
 export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldComment> {

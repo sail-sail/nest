@@ -75,10 +75,6 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findByIdUsr,
-} from "/gen/base/usr/usr.dao.ts";
-
-import {
   getPagePathWxPayNotice,
   getTableNameWxPayNotice,
 } from "./wx_pay_notice.model.ts";
@@ -91,7 +87,7 @@ async function getWhereQuery(
 ): Promise<string> {
   
   let whereQuery = "";
-  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += " 1=1"
   
   if (search?.tenant_id == null) {
     const usr_id = await get_usr_id();
@@ -212,38 +208,6 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.create_usr_id != null) {
-    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
-  }
-  if (search?.create_usr_id_is_null) {
-    whereQuery += ` and t.create_usr_id is null`;
-  }
-  if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and t.create_usr_id_lbl in (${ args.push(search.create_usr_id_lbl) })`;
-  }
-  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
-    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
-  }
-  if (search?.update_usr_id != null) {
-    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
-  }
-  if (search?.update_usr_id_is_null) {
-    whereQuery += ` and t.update_usr_id is null`;
-  }
-  if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and t.update_usr_id_lbl in (${ args.push(search.update_usr_id_lbl) })`;
-  }
-  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
-    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
-  }
-  if (search?.update_time != null) {
-    if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
-    }
-    if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
-    }
-  }
   return whereQuery;
 }
 
@@ -334,28 +298,6 @@ export async function findCountWxPayNotice(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.payer_currency.length > ${ ids_limit }`);
-    }
-  }
-  // 创建人
-  if (search && search.create_usr_id != null) {
-    const len = search.create_usr_id.length;
-    if (len === 0) {
-      return 0;
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
-    }
-  }
-  // 更新人
-  if (search && search.update_usr_id != null) {
-    const len = search.update_usr_id.length;
-    if (len === 0) {
-      return 0;
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
   
@@ -460,28 +402,6 @@ export async function findAllWxPayNotice(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.payer_currency.length > ${ ids_limit }`);
-    }
-  }
-  // 创建人
-  if (search && search.create_usr_id != null) {
-    const len = search.create_usr_id.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
-    }
-  }
-  // 更新人
-  if (search && search.update_usr_id != null) {
-    const len = search.update_usr_id.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
   
@@ -623,19 +543,6 @@ export async function findAllWxPayNotice(
       }
     } else {
       model.create_time_lbl = "";
-    }
-    
-    // 更新时间
-    if (model.update_time) {
-      const update_time = dayjs(model.update_time);
-      if (update_time.isValid()) {
-        model.update_time = update_time.format("YYYY-MM-DDTHH:mm:ss");
-        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
-      } else {
-        model.update_time_lbl = (model.update_time || "").toString();
-      }
-    } else {
-      model.update_time_lbl = "";
     }
   }
   
@@ -1203,7 +1110,7 @@ export async function existByIdWxPayNotice(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from wx_wx_pay_notice t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from wx_wx_pay_notice t where t.id=${ args.push(id) } limit 1`;
   
   interface Result {
     e: number,
@@ -1542,7 +1449,7 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wx_pay_notice(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,appid,mchid,openid,out_trade_no,transaction_id,trade_type,trade_state,trade_state_desc,bank_type,attach,success_time,total,payer_total,currency,payer_currency,device_id,rem)values";
+  let sql = "insert into wx_wx_pay_notice(id,create_time,tenant_id,appid,mchid,openid,out_trade_no,transaction_id,trade_type,trade_state,trade_state_desc,bank_type,attach,success_time,total,payer_total,currency,payer_currency,device_id,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1562,11 +1469,6 @@ async function _creates(
           sql += `,null`;
         }
       }
-      if (input.update_time != null || input.update_time_save_null) {
-        sql += `,${ args.push(input.update_time) }`;
-      } else {
-        sql += `,null`;
-      }
       if (input.tenant_id == null) {
         const usr_id = await get_usr_id();
         const tenant_id = await getTenant_id(usr_id);
@@ -1579,66 +1481,6 @@ async function _creates(
         sql += ",default";
       } else {
         sql += `,${ args.push(input.tenant_id) }`;
-      }
-      if (!is_silent_mode) {
-        if (input.create_usr_id == null) {
-          let usr_id = await get_usr_id();
-          let usr_lbl = "";
-          if (usr_id) {
-            const usr_model = await findByIdUsr(usr_id, options);
-            if (!usr_model) {
-              usr_id = undefined;
-            } else {
-              usr_lbl = usr_model.lbl;
-            }
-          }
-          if (usr_id != null) {
-            sql += `,${ args.push(usr_id) }`;
-          } else {
-            sql += ",default";
-          }
-          sql += `,${ args.push(usr_lbl) }`;
-        } else if (input.create_usr_id as unknown as string === "-") {
-          sql += ",default";
-          sql += ",default";
-        } else {
-          let usr_id: UsrId | undefined = input.create_usr_id;
-          let usr_lbl = "";
-          const usr_model = await findByIdUsr(usr_id, options);
-          if (!usr_model) {
-            usr_id = undefined;
-            usr_lbl = "";
-          } else {
-            usr_lbl = usr_model.lbl;
-          }
-          if (usr_id) {
-            sql += `,${ args.push(usr_id) }`;
-          } else {
-            sql += ",default";
-          }
-          sql += `,${ args.push(usr_lbl) }`;
-        }
-      } else {
-        if (input.create_usr_id == null) {
-          sql += ",default";
-        } else {
-          sql += `,${ args.push(input.create_usr_id) }`;
-        }
-        if (input.create_usr_id_lbl == null) {
-          sql += ",default";
-        } else {
-          sql += `,${ args.push(input.create_usr_id_lbl) }`;
-        }
-      }
-      if (input.update_usr_id != null) {
-        sql += `,${ args.push(input.update_usr_id) }`;
-      } else {
-        sql += ",default";
-      }
-      if (input.update_usr_id_lbl != null) {
-        sql += `,${ args.push(input.update_usr_id_lbl) }`;
-      } else {
-        sql += ",default";
       }
       if (input.appid != null) {
         sql += `,${ args.push(input.appid) }`;
@@ -1973,71 +1815,9 @@ export async function updateByIdWxPayNotice(
       updateFldNum++;
     }
   }
-  if (isNotEmpty(input.create_usr_id_lbl)) {
-    sql += `create_usr_id_lbl=?,`;
-    args.push(input.create_usr_id_lbl);
-    updateFldNum++;
-  }
-  if (input.create_usr_id != null) {
-    if (input.create_usr_id != oldModel.create_usr_id) {
-      sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
-      updateFldNum++;
-    }
-  }
   let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
-    if (!is_silent_mode && !is_creating) {
-      if (input.update_usr_id == null) {
-        let usr_id = await get_usr_id();
-        let usr_lbl = "";
-        if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id, options);
-          if (!usr_model) {
-            usr_id = undefined;
-          } else {
-            usr_lbl = usr_model.lbl;
-          }
-        }
-        if (usr_id != null) {
-          sql += `update_usr_id=${ args.push(usr_id) },`;
-        }
-        if (usr_lbl) {
-          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
-        }
-      } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-        let usr_id: UsrId | undefined = input.update_usr_id;
-        let usr_lbl = "";
-        if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id, options);
-          if (!usr_model) {
-            usr_id = undefined;
-          } else {
-            usr_lbl = usr_model.lbl;
-          }
-        }
-        if (usr_id) {
-          sql += `update_usr_id=${ args.push(usr_id) },`;
-          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
-        }
-      }
-    } else {
-      if (input.update_usr_id != null) {
-        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
-      }
-      if (input.update_usr_id_lbl != null) {
-        sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
-      }
-    }
-    if (!is_silent_mode && !is_creating) {
-      if (input.update_time != null || input.update_time_save_null) {
-        sql += `update_time=${ args.push(input.update_time) },`;
-      } else {
-        sql += `update_time=${ args.push(reqDate()) },`;
-      }
-    } else if (input.update_time != null || input.update_time_save_null) {
-      sql += `update_time=${ args.push(input.update_time) },`;
-    }
     if (sql.endsWith(",")) {
       sql = sql.substring(0, sql.length - 1);
     }
@@ -2110,27 +1890,7 @@ export async function deleteByIdsWxPayNotice(
       log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
     }
     const args = new QueryArgs();
-    let sql = `update wx_wx_pay_notice set is_deleted=1`;
-    if (!is_silent_mode && !is_creating) {
-      let usr_id = await get_usr_id();
-      if (usr_id != null) {
-        sql += `,delete_usr_id=${ args.push(usr_id) }`;
-      }
-      let usr_lbl = "";
-      if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id, options);
-        if (!usr_model) {
-          usr_id = undefined;
-        } else {
-          usr_lbl = usr_model.lbl;
-        }
-      }
-      if (usr_lbl) {
-        sql += `,delete_usr_id_lbl=${ args.push(usr_lbl) }`;
-      }
-      sql += `,delete_time=${ args.push(reqDate()) }`;
-    }
-    sql += ` where id=${ args.push(id) } limit 1`;
+    const sql = `delete from wx_wx_pay_notice where id=${ args.push(id) } limit 1`;
     const res = await execute(
       sql,
       args,
@@ -2142,135 +1902,4 @@ export async function deleteByIdsWxPayNotice(
   }
   
   return affectedRows;
-}
-
-// MARK: revertByIdsWxPayNotice
-/** 根据 ids 还原 微信支付通知 */
-export async function revertByIdsWxPayNotice(
-  ids: WxPayNoticeId[],
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<number> {
-  
-  const table = getTableNameWxPayNotice();
-  const method = "revertByIdsWxPayNotice";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (ids) {
-      msg += ` ids:${ JSON.stringify(ids) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  if (!ids || !ids.length) {
-    return 0;
-  }
-  
-  let num = 0;
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    let old_model = await findOneWxPayNotice(
-      {
-        id,
-        is_deleted: 1,
-      },
-      undefined,
-      options,
-    );
-    if (!old_model) {
-      old_model = await findByIdWxPayNotice(
-        id,
-        options,
-      );
-    }
-    if (!old_model) {
-      continue;
-    }
-    {
-      const input = {
-        ...old_model,
-        id: undefined,
-      } as WxPayNoticeInput;
-      const models = await findByUniqueWxPayNotice(input, options);
-      for (const model of models) {
-        if (model.id === id) {
-          continue;
-        }
-        throw "微信支付通知 重复";
-      }
-    }
-    const args = new QueryArgs();
-    const sql = `update wx_wx_pay_notice set is_deleted=0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-  }
-  
-  return num;
-}
-
-// MARK: forceDeleteByIdsWxPayNotice
-/** 根据 ids 彻底删除 微信支付通知 */
-export async function forceDeleteByIdsWxPayNotice(
-  ids: WxPayNoticeId[],
-  options?: {
-    is_debug?: boolean;
-    is_silent_mode?: boolean;
-  },
-): Promise<number> {
-  
-  const table = getTableNameWxPayNotice();
-  const method = "forceDeleteByIdsWxPayNotice";
-  
-  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (ids) {
-      msg += ` ids:${ JSON.stringify(ids) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  if (!ids || !ids.length) {
-    return 0;
-  }
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
-  
-  let num = 0;
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    const oldModel = await findOneWxPayNotice(
-      {
-        id,
-        is_deleted: 1,
-      },
-      undefined,
-      options,
-    );
-    if (oldModel && !is_silent_mode) {
-      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
-    }
-    const args = new QueryArgs();
-    const sql = `delete from wx_wx_pay_notice where id=${ args.push(id) } and is_deleted = 1 limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-  }
-  
-  return num;
 }

@@ -1885,6 +1885,7 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheWxoApp() {
   await delCacheCtx(`dao.sql.wx_wxo_app`);
+  await delCacheCtx(`dao.sql.base_domain`);
 }
 
 // MARK: updateTenantByIdWxoApp

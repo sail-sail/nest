@@ -1450,6 +1450,7 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheWxAppToken() {
   await delCacheCtx(`dao.sql.wx_wx_app_token`);
+  await delCacheCtx(`dao.sql.wx_wx_app`);
 }
 
 // MARK: updateByIdWxAppToken

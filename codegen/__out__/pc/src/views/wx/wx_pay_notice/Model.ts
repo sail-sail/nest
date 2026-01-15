@@ -18,7 +18,6 @@ declare global {
   
   /** 微信支付通知 */
   interface WxPayNoticeSearch extends WxPayNoticeSearchType {
-    is_deleted?: 0 | 1 | null;
   }
   
   /** 微信支付通知 */
@@ -72,7 +71,6 @@ export const wxPayNoticeFields = [
   // 创建时间
   "create_time",
   "create_time_lbl",
-  "is_deleted",
 ];
 
 export const wxPayNoticeQueryField = `
