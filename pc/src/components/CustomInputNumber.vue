@@ -44,7 +44,6 @@
       un-rounded
       un-w="full"
       un-min="h-8"
-      un-line-height="normal"
       un-whitespace-nowrap
       class="custom_input_number_readonly"
       :class="{
@@ -74,10 +73,6 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  InputNumberProps,
-} from "element-plus";
-
 import Decimal from "decimal.js";
 
 const emit = defineEmits<{
