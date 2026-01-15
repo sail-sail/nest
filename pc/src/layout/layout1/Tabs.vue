@@ -82,7 +82,7 @@
     >
       <ElIconClose
         class="tab_close"
-        @click.stop="onClose(item)"
+        @click.stop="onClose(item, router)"
       />
     </div>
   </div>
@@ -101,6 +101,10 @@ import type {
 import Sortable from "sortablejs";
 
 import config from "@/utils/config";
+
+import type {
+  Router,
+} from "vue-router";
 
 const router = useRouter();
 const tabsStore = useTabsStore();
@@ -131,8 +135,11 @@ async function activeTab(tab: TabInf) {
   });
 }
 
-async function onClose(tab: TabInf) {
-  await tabsStore.removeTab(tab);
+async function onClose(
+  tab: TabInf,
+  router?: Router,
+) {
+  await tabsStore.removeTab(tab, false, router);
   if (tabsStore.actTab) {
     await activeTab(tabsStore.actTab);
   }
@@ -141,13 +148,13 @@ async function onClose(tab: TabInf) {
 async function menuCommand(command: string, tab: TabInf) {
   switch (command) {
     case "close":
-      await onClose(tab);
+      await onClose(tab, router);
       break;
     case "closeOther":
-      await tabsStore.closeOtherTabs(tab);
+      await tabsStore.closeOtherTabs(tab, router);
       break;
     case "closeAll":
-      await tabsStore.closeOtherTabs();
+      await tabsStore.closeOtherTabs(undefined, router);
       break;
   }
 }

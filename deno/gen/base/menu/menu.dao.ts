@@ -1683,6 +1683,7 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheMenu() {
   await delCacheCtx(`dao.sql.base_menu`);
+  await delCacheCtx(`dao.sql.base_menu`);
   await delCacheCtx(`dao.sql.base_menu._getMenus`);
 }
 
