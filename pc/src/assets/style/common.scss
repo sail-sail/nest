@@ -452,6 +452,18 @@ html:is(.dark) {
   }
 }
 
+.el-form-item .custom_icon .custom_icon_inner {
+  background-color: var(--el-fill-color-blank);
+}
+
+.custom_icon_viewer svg {
+  height: 80%;
+  width: 80%;
+}
+.el-image-viewer__actions:has(.custom_icon_toolbar) {
+  display: none;
+}
+
 .el-form-item:has(
   .dict_select_readonly,
   .dictbiz_select_readonly,

@@ -35,13 +35,13 @@
       </div>
     </template>
   </router-view>
-  <Background_taskListDialog></Background_taskListDialog>
+  <!-- <Background_taskListDialog></Background_taskListDialog> -->
 </el-config-provider>
 </template>
 
 <script setup lang="ts">
 import locale from "@/locales";
-import Background_taskListDialog from "./views/base/background_task/ListDialog.vue";
+// import Background_taskListDialog from "./views/base/background_task/ListDialog.vue";
 
 const {
   ns,
@@ -51,10 +51,11 @@ const {
 const tabsStore = useTabsStore();
 
 const route = useRoute();
+const router = useRouter();
 
 async function goHome() {
   if (tabsStore.actTab) {
-    tabsStore.closeCurrentTab(tabsStore.actTab);
+    tabsStore.closeCurrentTab(tabsStore.actTab, false, router);
   }
   window.location.href = "/";
 }

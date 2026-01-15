@@ -1779,6 +1779,8 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheDept() {
   await delCacheCtx(`dao.sql.base_dept`);
+  await delCacheCtx(`dao.sql.base_dept`);
+  await delCacheCtx(`dao.sql.base_org`);
 }
 
 // MARK: updateTenantByIdDept

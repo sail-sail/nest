@@ -3,7 +3,10 @@
   un-flex="~ col"
   un-overflow-hidden
   un-w="full"
+  class="left_menu_div"
 >
+  
+  <!-- 菜单搜索与收起按钮 -->
   <div
     un-flex="~"
     un-overflow-hidden
@@ -102,6 +105,8 @@
       </div>
     </div>
   </div>
+  
+  <!-- 菜单 -->
   <div
     un-flex="~ [1_0_0] col"
     un-overflow="auto"
@@ -129,6 +134,7 @@
       ></AppSubMenu>
     </el-menu>
   </div>
+  
 </div>
 </template>
 
@@ -152,13 +158,13 @@ type MenuModel = MenuModel0 & {
 
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();
-const tabsStore = useTabsStore();
+// const tabsStore = useTabsStore();
 
 const {
   ns,
-  nsAsync,
-  initI18ns,
-  initSysI18ns,
+  // nsAsync,
+  // initI18ns,
+  // initSysI18ns,
 } = useI18n();
 
 let inited = $ref(false);
@@ -223,19 +229,18 @@ async function menuSelect(id: MenuId) {
     if (model.route_query) {
       query = JSON.parse(model.route_query);
     }
-    const hasTab = tabsStore.hasTab({
-      path,
-      query,
-    });
+    // const hasTab = tabsStore.hasTab({
+    //   path,
+    //   query,
+    // });
     await router.push({
       path,
       query,
     });
-    if (hasTab) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const comp = route.matched[1].instances?.default as any;
-      await comp?.refresh?.();
-    }
+    // if (hasTab) {
+    //   const comp = route.matched[1].instances?.default as any;
+    //   await comp?.refresh?.();
+    // }
   }
   setTimeout(() => {
     selectedRouteNext = false;
@@ -262,6 +267,10 @@ initFrame();
 </script>
 
 <style lang="scss" scoped>
+.left_menu_div {
+  --el-menu-bg-color: var(--el-fill-color-extra-light);
+  background-color: var(--el-menu-bg-color);
+}
 .AppMenu {
   --el-menu-item-height: 40px;
   --el-menu-sub-item-height: var(--el-menu-item-height);

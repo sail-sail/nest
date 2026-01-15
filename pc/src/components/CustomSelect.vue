@@ -141,7 +141,6 @@
     un-rounded
     un-w="full"
     un-min="h-8"
-    un-line-height="normal"
     un-break-all
     class="custom_select_readonly"
     :class="{
@@ -986,7 +985,7 @@ defineExpose({
   }
 }
 .custom_select_readonly {
-  min-height: 30px;
+  min-height: 32px;
   :deep(.el-tag) {
     padding-top: 2px;
     padding-bottom: 2px;
