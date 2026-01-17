@@ -25,6 +25,7 @@ async function dropTable(
 
 export async function coderemove(context: Context, table_name: string) {
   const mod_slash_table = table_name.replace("_", "/");
+  const table = table_name.substring(table_name.indexOf("_") + 1);
   
   console.log(`删除: ${ out }/deno/gen/${ mod_slash_table }/`);
   await rm(`${ out }/deno/gen/${ mod_slash_table }/`, { force: true, recursive: true });
@@ -43,6 +44,9 @@ export async function coderemove(context: Context, table_name: string) {
   
   console.log(`删除: ${ projectPh }/pc/public/excel_template/${ mod_slash_table }.xlsx`);
   await rm(`${ projectPh }/pc/public/excel_template/${ mod_slash_table }.xlsx`, { force: true, recursive: true });
+  
+  console.log(`删除: ${ projectPh }/uni/src/pages/${ table }/`);
+  await rm(`${ projectPh }/uni/src/pages/${ table }/`, { force: true, recursive: true });
   
   console.log(`删除表: ${ table_name }`);
   await dropTable(context, table_name);
