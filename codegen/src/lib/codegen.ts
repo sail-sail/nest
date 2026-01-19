@@ -180,23 +180,42 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     const hasAudit = !!opts?.audit;
     
     if (dir === "/pc/src/views/[[mod_slash_table]]/ForeignTabs.vue") {
-      if (!hasForeignTabs) return;
+      if (!hasForeignTabs) {
+        return;
+      }
     }
-    if (dir === "/pc/src/views/[[mod_slash_table]]/SelectInput.vue" || 
-        dir === "/pc/src/views/[[mod_slash_table]]/SelectList.vue") {
-      if (opts.hasSelectInput !== true) return;
+    if (dir === "/pc/src/views/[[mod_slash_table]]/SelectInput.vue") {
+      if (opts.hasSelectInput !== true) {
+        return;
+      }
     }
-    if (dir === "/pc/src/views/[[mod_slash_table]]/AuditDialog.vue" ||
-        dir === "/pc/src/views/[[mod_slash_table]]/AuditListDialog.vue") {
-      if (!hasAudit) return;
+    if (dir === "/pc/src/views/[[mod_slash_table]]/SelectList.vue") {
+      if (opts.hasSelectInput !== true) {
+        return;
+      }
+    }
+    if (
+      dir === "/pc/src/views/[[mod_slash_table]]/AuditDialog.vue" ||
+      dir === "/pc/src/views/[[mod_slash_table]]/AuditListDialog.vue"
+    ) {
+      if (!hasAudit) {
+        return;
+      }
     }
     if (dir === "/pc/src/views/[[mod_slash_table]]/TreeList.vue") {
-      if (!list_tree) return;
+      if (!list_tree) {
+        return;
+      }
     }
+    
     if (dir.startsWith("/uni/src/pages/[[table]]/")) {
-      if (dir === "/uni/src/pages/[[table]]/Api.ts" ||
-          dir === "/uni/src/pages/[[table]]/Model.ts") {
-        if (!opts.isUniApi && !opts.isUniPage) return;
+      if (
+        dir === "/uni/src/pages/[[table]]/Api.ts" ||
+        dir === "/uni/src/pages/[[table]]/Model.ts"
+      ) {
+        if (!opts.isUniApi && !opts.isUniPage) {
+          return;
+        }
       } else if (!opts.isUniPage) {
         return;
       }
