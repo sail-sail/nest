@@ -3631,6 +3631,8 @@ pub async fn find_by_unique_<#=table#>(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
+  
   if let Some(id) = search.id {
     let model = find_by_id_<#=table#>(
       id,
@@ -3646,6 +3648,18 @@ pub async fn find_by_unique_<#=table#>(
   #>
   
   let mut models: Vec<<#=tableUP#>Model> = vec![];<#
+  if (opts.uniques?.some((item) => item.includes("create_usr_id"))) {
+  #>
+  
+  let create_usr_id: Option<Vec<UsrId>> = {
+    if !is_silent_mode && search.create_usr_id.is_none() && let Some(auth_usr_id) = get_auth_id() {
+      Some(vec![auth_usr_id])
+    } else {
+      search.create_usr_id.clone()
+    }
+  };<#
+  }
+  #><#
   for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
     const uniques = opts.uniques[i];
   #>
@@ -3655,8 +3669,15 @@ pub async fn find_by_unique_<#=table#>(
       for (let k = 0; k < uniques.length; k++) {
         const unique = uniques[k];
         const unique_rust = rustKeyEscape(unique);
+      #><#
+        if (unique !== "create_usr_id") {
       #>
       search.<#=unique_rust#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
+        } else {
+      #>
+      create_usr_id.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
+        }
+      #><#
       }
       #>
     {
@@ -3677,12 +3698,19 @@ pub async fn find_by_unique_<#=table#>(
         if ([ "int", "decimal", "tinyint", "date", "datetime" ].includes(data_type)) {
           hasClone = false;
         }
+      #><#
+        if (unique !== "create_usr_id") {
       #>
       <#=unique_rust#>: search.<#=unique_rust#><#
         if (hasClone) {
       #>.clone()<#
         }
       #>,<#
+        } else {
+      #>
+      create_usr_id,<#
+        }
+      #><#
       }
       #>
       ..Default::default()
@@ -3705,14 +3733,29 @@ pub async fn find_by_unique_<#=table#>(
 }
 
 /// 根据唯一约束对比对象是否相等
-#[allow(dead_code)]
+#[allow(dead_code, unused_variables)]
 pub fn equals_by_unique(
   input: &<#=tableUP#>Input,
   model: &<#=tableUP#>Model,
+  options: Option<&Options>,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
-  }<#
+  }
+  
+  let is_silent_mode = get_is_silent_mode(options);<#
+  if (opts?.uniques?.some((item) => item.includes("create_usr_id"))) {
+  #>
+  
+  let create_usr_id: Option<UsrId> = {
+    if !is_silent_mode && input.create_usr_id.is_none() && let Some(auth_usr_id) = get_auth_id() {
+      Some(auth_usr_id)
+    } else {
+      input.create_usr_id
+    }
+  };<#
+  }
+  #><#
   if (opts.uniques && opts.uniques.length > 0) {
   #><#
   for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
@@ -3723,8 +3766,15 @@ pub fn equals_by_unique(
     for (let i = 0; i < uniques.length; i++) {
       const unique = uniques[i];
       const unique_rust = rustKeyEscape(unique);
+    #><#
+      if (unique !== "create_usr_id") {
     #>
     input.<#=unique_rust#>.as_ref().is_some() && input.<#=unique_rust#>.as_ref().unwrap() == &model.<#=unique_rust#><#
+      } else {
+    #>
+    create_usr_id.is_some() && create_usr_id.unwrap() == model.create_usr_id<#
+      }
+    #><#
       if (i !== uniques.length - 1) {
     #> &&<#
       }
@@ -3778,6 +3828,7 @@ pub async fn check_by_unique_<#=table#>(
   let is_equals = equals_by_unique(
     &input,
     &model,
+    options.as_ref(),
   );
   if !is_equals {
     return Ok(None);

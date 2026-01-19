@@ -1561,7 +1561,6 @@ watch(
     if (deepCompare(oldVal, newVal)) {
       return;
     }
-    selectedIds = [ ];
     await dataGrid(true);
   },
   {

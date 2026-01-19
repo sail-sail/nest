@@ -1401,6 +1401,8 @@ pub async fn find_by_unique_dictbiz(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
+  
   if let Some(id) = search.id {
     let model = find_by_id_dictbiz(
       id,
@@ -1457,14 +1459,17 @@ pub async fn find_by_unique_dictbiz(
 }
 
 /// 根据唯一约束对比对象是否相等
-#[allow(dead_code)]
+#[allow(dead_code, unused_variables)]
 pub fn equals_by_unique(
   input: &DictbizInput,
   model: &DictbizModel,
+  options: Option<&Options>,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }
+  
+  let is_silent_mode = get_is_silent_mode(options);
   
   if
     input.code.as_ref().is_some() && input.code.as_ref().unwrap() == &model.code
@@ -1514,6 +1519,7 @@ pub async fn check_by_unique_dictbiz(
   let is_equals = equals_by_unique(
     &input,
     &model,
+    options.as_ref(),
   );
   if !is_equals {
     return Ok(None);

@@ -1875,6 +1875,8 @@ pub async fn find_by_unique_usr(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
+  
   if let Some(id) = search.id {
     let model = find_by_id_usr(
       id,
@@ -1931,14 +1933,17 @@ pub async fn find_by_unique_usr(
 }
 
 /// 根据唯一约束对比对象是否相等
-#[allow(dead_code)]
+#[allow(dead_code, unused_variables)]
 pub fn equals_by_unique(
   input: &UsrInput,
   model: &UsrModel,
+  options: Option<&Options>,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }
+  
+  let is_silent_mode = get_is_silent_mode(options);
   
   if
     input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
@@ -1988,6 +1993,7 @@ pub async fn check_by_unique_usr(
   let is_equals = equals_by_unique(
     &input,
     &model,
+    options.as_ref(),
   );
   if !is_equals {
     return Ok(None);

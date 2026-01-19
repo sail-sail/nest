@@ -51,6 +51,9 @@ export async function coderemove(context: Context, table_name: string) {
   console.log(`删除: ${ projectPh }/pc/public/excel_template/${ mod_slash_table }.xlsx`);
   await rm(`${ projectPh }/pc/public/excel_template/${ mod_slash_table }.xlsx`, { force: true, recursive: true });
   
+  console.log(`删除: ${ out }/uni/src/pages/${ table }/`);
+  await rm(`${ out }/uni/src/pages/${ table }/`, { force: true, recursive: true });
+  
   console.log(`删除: ${ projectPh }/uni/src/pages/${ table }/`);
   await rm(`${ projectPh }/uni/src/pages/${ table }/`, { force: true, recursive: true });
   

@@ -1243,6 +1243,13 @@ async function onSave(
   }
   #>
   if (formSubmitResult?.isPass === false) {
+    const firstValid = formSubmitResult.firstValid;
+    if (firstValid) {
+      uni.showToast({
+        title: firstValid.message,
+        icon: "error",
+      });
+    }
     return;
   }
   
@@ -1257,6 +1264,10 @@ async function onSave(
     await create<#=Table_Up#>(
       <#=table#>_input,
     );
+    await uni.showModal({
+      content: "新增成功",
+      showCancel: false,
+    });
     await uni.navigateBack();
     uni.$emit("/pages/<#=table#>/List:refresh");
   } else if (dialogAction === "edit") {
@@ -1271,6 +1282,10 @@ async function onSave(
       <#=table#>_id,
       <#=table#>_input,
     );
+    await uni.showModal({
+      content: "修改成功",
+      showCancel: false,
+    });
     await uni.navigateBack();
     uni.$emit("/pages/<#=table#>/List:refresh");
   }
