@@ -96,6 +96,9 @@ description: 数据库建表规范。创建新表时必须遵循
 `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
 `usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '用户',
 ```
+- 外键命名通常是 `{foreignTable}_id`，如 `usr_id`, 注意不是 `base_user_id`, 没有模块名
+- 外键显示标签命名通常是 `{foreignTable}_id_lbl`，如 `usr_id_lbl` - 如果外键需要冗余字段的话才有这个字段, 一般业务表需要冗余
+- 外键字段长度通常为 `22`，显示标签长度通常为
 
 ## 多对多中间表
 

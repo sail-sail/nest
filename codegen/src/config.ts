@@ -298,7 +298,7 @@ export interface TableCloumn {
     },
     
     /**
-     * 列表页面上的显示方式 tag: 标签, dialog: 弹窗, link: 链接, 默认为: tag
+     * 多对多列表页面上的显示方式 tag: 标签, dialog: 弹窗, link: 链接, 默认为: tag
      */
     showType?: "tag" | "dialog" | "link";
     
