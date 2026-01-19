@@ -12,7 +12,7 @@
   
   <view
     un-flex="~ [1_0_0]"
-    un-overflow-hidden
+    un-overflow="hidden"
     un-items="center"
     un-h="full"
     un-p="l-3"
@@ -24,12 +24,16 @@
       v-if="(props.multiple || modelLabels[0]) && (!props.multiple || modelLabels.length > 0)"
     >
       
-      <text
+      <view
         v-if="!props.multiple || modelLabels.length === 1"
+        un-flex="~ [1_0_0] wrap"
+        un-overflow="hidden"
+        un-items="center"
+        un-h="full"
         un-cursor="pointer"
       >
         {{ modelLabels[0] || '' }}
-      </text>
+      </view>
       
       <template
         v-else
@@ -81,18 +85,17 @@
       
     </template>
     
-    <text
+    <view
       v-else
-      un-text="gray"
+      un-flex="~ [1_0_0] wrap"
+      un-overflow="hidden"
+      un-items="center"
+      un-h="full"
       un-cursor="pointer"
+      un-text="gray"
     >
       {{ props.pageInited ? (props.placeholder || '') : '' }}
-    </text>
-    
-    <view
-      un-flex="[1_0_0]"
-      un-overflow-hidden
-    ></view>
+    </view>
     
     <view
       v-if="props.clearable && !readonly && !modelValueIsEmpty"

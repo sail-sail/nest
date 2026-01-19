@@ -141,6 +141,81 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
   
   async function treeDir(dir: string, writeFnArr: Function[]) {
 		if(dir.endsWith(".bak")) return;
+    
+    // 提前拦截：避免不必要的文件系统操作
+    if (opts.onlyCodegenDeno && (dir.startsWith("/pc/") || dir.startsWith("/uni/"))) {
+      return;
+    }
+    if (dir === "/deno/gen/graphql.ts") {
+      return;
+    }
+    if (dir === "/deno/lib/script/graphql_codegen_scalars.ts") {
+      return;
+    }
+    if (dir === "/deno/lib/script/graphql_pc_ids.ts") {
+      return;
+    }
+    if (dir === "/pc/src/router/gen.ts") {
+      return;
+    }
+    if (dir === "/pc/src/components/ComponentMapSelectInput.ts") {
+      return;
+    }
+    if (dir === "/uni/src/pages.json") {
+      return;
+    }
+    if (dir === "/pc/src/typings/ids.d.ts") {
+      return;
+    }
+    if (dir === "/uni/src/typings/ids.d.ts") {
+      return;
+    }
+    
+    const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
+    const hasAudit = !!opts?.audit;
+    
+    if (dir === "/pc/src/views/[[mod_slash_table]]/ForeignTabs.vue") {
+      if (!hasForeignTabs) {
+        return;
+      }
+    }
+    if (dir === "/pc/src/views/[[mod_slash_table]]/SelectInput.vue") {
+      if (opts.hasSelectInput !== true) {
+        return;
+      }
+    }
+    if (dir === "/pc/src/views/[[mod_slash_table]]/SelectList.vue") {
+      if (opts.hasSelectInput !== true) {
+        return;
+      }
+    }
+    if (
+      dir === "/pc/src/views/[[mod_slash_table]]/AuditDialog.vue" ||
+      dir === "/pc/src/views/[[mod_slash_table]]/AuditListDialog.vue"
+    ) {
+      if (!hasAudit) {
+        return;
+      }
+    }
+    if (dir === "/pc/src/views/[[mod_slash_table]]/TreeList.vue") {
+      if (!list_tree) {
+        return;
+      }
+    }
+    
+    if (dir.startsWith("/uni/src/pages/[[table]]/")) {
+      if (
+        dir === "/uni/src/pages/[[table]]/Api.ts" ||
+        dir === "/uni/src/pages/[[table]]/Model.ts"
+      ) {
+        if (!opts.isUniApi && !opts.isUniPage) {
+          return;
+        }
+      } else if (!opts.isUniPage) {
+        return;
+      }
+    }
+    
     const dir2 = dir.replace(new RegExp("\\[\\[([\\s\\S]*?)\\]\\]","gm"), function(str) {
 			str = str.trim();
 			str = str.substring(2, str.length-2);
@@ -148,13 +223,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
 		});
     const fileTng = `${rootPh}${dir}`;
     const stats = await stat(fileTng);
-    const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
-    // 审核
-    const hasAudit = !!opts?.audit;
     if (stats.isFile()) {
-      if (opts.onlyCodegenDeno && (dir.startsWith("/pc/") || dir.startsWith("/uni/"))) {
-        return;
-      }
       if(dir.endsWith(".xlsx")) {
 				const buffer = await readFile(fileTng);
         const fields = [ ];
@@ -370,71 +439,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
         }
         return;
       }
-      if (dir === "/deno/gen/graphql.ts") {
-        return;
-      }
-      if (dir === "/deno/lib/script/graphql_codegen_scalars.ts") {
-        return;
-      }
-      if (dir === "/deno/lib/script/graphql_pc_ids.ts") {
-        return;
-      }
-      if (dir === "/pc/src/router/gen.ts") {
-        return;
-      }
-      if (dir === "/pc/src/components/ComponentMapSelectInput.ts") {
-        return;
-      }
-      if (dir === "/uni/src/pages.json") {
-        return;
-      }
-      if (dir === "/pc/src/typings/ids.d.ts") {
-        return;
-      }
-      if (dir === "/uni/src/typings/ids.d.ts") {
-        return;
-      }
-      if (dir === "/pc/src/views/[[mod_slash_table]]/ForeignTabs.vue") {
-        if (!hasForeignTabs) {
-          return;
-        }
-      }
-      if (dir === "/pc/src/views/[[mod_slash_table]]/SelectInput.vue") {
-        if (opts.hasSelectInput !== true) {
-          return;
-        }
-      }
-      if (dir === "/pc/src/views/[[mod_slash_table]]/SelectList.vue") {
-        if (opts.hasSelectInput !== true) {
-          return;
-        }
-      }
-      if (
-        dir === "/pc/src/views/[[mod_slash_table]]/AuditDialog.vue" ||
-        dir === "/pc/src/views/[[mod_slash_table]]/AuditListDialog.vue"
-      ) {
-        if (!hasAudit) {
-          return;
-        }
-      }
-      if (dir === "/pc/src/views/[[mod_slash_table]]/TreeList.vue") {
-        if (!list_tree) {
-          return;
-        }
-      }
-      
-      if (dir.startsWith("/uni/src/pages/[[table]]/")) {
-        if (
-          dir === "/uni/src/pages/[[table]]/Api.ts" ||
-          dir === "/uni/src/pages/[[table]]/Model.ts"
-        ) {
-          if (!opts.isUniApi && !opts.isUniPage) {
-            return;
-          }
-        } else if (!opts.isUniPage) {
-          return;
-        }
-      }
       
       let htmlStr = includeFtl(
         await readFile(fileTng ,"utf8"),
@@ -465,6 +469,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             graphqlHasChanged = true;
           }
           writeFnArr.push(async function() {
+            await mkdir(dirname(`${out}/${dir2}`), { recursive: true });
             await writeFile(`${out}/${dir2}`, str2);
             console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${dir2}`))}`);
           });
@@ -476,14 +481,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       }
       return;
     }
-    const dirTngArr = dir2.split("/");
-		let dirTng = "";
-		for(const dirTp of dirTngArr) {
-			dirTng += "/"+dirTp;
-			try {
-				await mkdir(`${out}/${dirTng}`);
-			} catch(err) { }
-		}
 		const fileArr = await readdir(fileTng);
 		for(let file of fileArr) {
       try {
