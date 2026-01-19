@@ -45,13 +45,17 @@ const defaultValidatorByType = (value: any, rule: TM.FORM_RULE_TYPE) => {
 
     return true
 }
-export const defaultValidator = (value: any, rule: TM.FORM_RULE_TYPE) => {
+export const defaultValidator = (value: any, rule: TM.FORM_RULE_TYPE, isForm?: boolean) => {
     if (!rule.required) return true;
     if(rule.validator) return rule.validator(value);
     if(rule.rule) {
         return rule.rule.test(value);
     }
     if (rule.type != 'auto') return defaultValidatorByType(value, rule)
+    
+    if (isForm && value == null) {
+        return false;
+    }
     
     if (typeof value == 'number') {
         // 对于 number 类型，只要不是 NaN 就算通过必填校验

@@ -1070,6 +1070,10 @@ export interface TablesConfigItem {
         right_field?: string;
         is_export_excel?: boolean;
       } | boolean;
+      /**
+       * Detail页面中是否有查看详情弹窗, 例如被外键关联引用时, 默认为false
+       */
+      hasDetailModal?: boolean;
     };
     
     /**

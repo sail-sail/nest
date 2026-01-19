@@ -293,6 +293,13 @@ async function onSave(
     return;
   }
   if (formSubmitResult?.isPass === false) {
+    const firstValid = formSubmitResult.firstValid;
+    if (firstValid) {
+      uni.showToast({
+        title: firstValid.message,
+        icon: "error",
+      });
+    }
     return;
   }
   
@@ -307,6 +314,10 @@ async function onSave(
     await createDynPageField(
       dyn_page_field_input,
     );
+    await uni.showModal({
+      content: "新增成功",
+      showCancel: false,
+    });
     await uni.navigateBack();
     uni.$emit("/pages/dyn_page_field/List:refresh");
   } else if (dialogAction === "edit") {
@@ -321,6 +332,10 @@ async function onSave(
       dyn_page_field_id,
       dyn_page_field_input,
     );
+    await uni.showModal({
+      content: "修改成功",
+      showCancel: false,
+    });
     await uni.navigateBack();
     uni.$emit("/pages/dyn_page_field/List:refresh");
   }
