@@ -211,6 +211,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
         if (!opts.isUniApi && !opts.isUniPage) {
           return;
         }
+      } else if (dir === "/uni/src/pages/[[table]]/DetailModal.vue") {
+        if (!opts.isUniPage?.hasDetailModal) {
+          return;
+        }
       } else if (!opts.isUniPage) {
         return;
       }
