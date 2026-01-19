@@ -21,7 +21,7 @@
     "mp-weixin" : {
         "appid" : "wxd4b24c53a1813485",
         "setting" : {
-            "es6": false,
+            "es6": true,
             "es7": false,
             "swc": true,
             "urlCheck": false,

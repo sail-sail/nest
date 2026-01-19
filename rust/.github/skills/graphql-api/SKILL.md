@@ -101,7 +101,13 @@ pub async fn method_name(
 
 ```rust
 use color_eyre::eyre::{Result, eyre};
-use generated::common::context::{Options, get_auth_id_ok, get_now, get_short_uuid};
+
+use generated::common::context::{
+  Options,
+  get_auth_id_ok,
+  get_now,
+  get_short_uuid,
+};
 
 pub async fn method_name(
   param: ParamType,
@@ -126,28 +132,29 @@ pub async fn method_name(
     options.clone(),
   ).await?;
   
-  // 查询列表
+  // 查询列表, 变量名命名通常是 {table}_models 或者 {table}_model
   let {table}_models = find_all_xxx(
     Some(XxxSearch {
       field: Some(param),
       ..Default::default()
     }),
     Some(PageInput {
-      pg_offset: 0,
-      pg_size: 10,
+      pg_offset: Some(0),
+      pg_size: Some(10),
       is_result_limit: Some(false), // 不限制总数, 默认 find_all_xxx 会限制总数, 超过1000报错, 可配置, 默认true, 一般无需此参数
-    }),
+    }), // 不分页则传入 None 即可
     Some(SortInput {
       prop: "created_time".to_string(),
       order: SortOrderEnum::Desc,
-    }), // 一般无需排序参数, 建表时已加默认排序
+    }), // 一般无需排序参数传入 None 即可, 建表时已加默认排序
     options.clone(),
   ).await?;
   
   // 获取当前时间
   let now = get_now();
   
-  // 4. 业务操作 ...
+  // 4. 业务操作, 业务操作过程中如果不清楚表结构则可以到这里查看表结构 `src/tables/{mod}/{mod}.sql`, `src/tables/{mod}/{mod}.ts`
+  // 注意: 业务逻辑开发过程中, 不需要写太多注释, 关键位置写一点业务注释即可
   
   // 5. 返回结果
   Ok({table}_models)
