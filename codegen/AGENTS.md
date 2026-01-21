@@ -24,6 +24,23 @@
 - `dict` - 系统字典和业务字典配置。建表需要枚举字段或给表添加枚举类字段时使用
 - `table-config` - 表字段配置规范。建表后配置 src/tables/{mod}/{mod}.ts 文件时使用
 
+## 代码格式规范
+- 无论是前端还是后端, 函数调用和定义的参数都尽量拆行, 例如:
+
+```typescript
+pay_order(booking_order_id, amt, success_time);
+```
+
+应改为:
+
+```typescript
+pay_order(
+  booking_order_id,
+  amt,
+  success_time
+);
+```
+
 ## 全局配置
 
 - **MCP 配置**：`/.utcp_config.json`

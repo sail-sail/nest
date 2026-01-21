@@ -11421,7 +11421,9 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=redirectto](http://uniapp.dcloud.io/api/router?id=redirectto)
      */
-    redirectTo(options: UniNamespace.RedirectToOptions): void;
+    redirectTo(options: UniNamespace.RedirectToOptions): Promise<{
+        errMsg: string;
+    }>;
     /**
      * 关闭所有页面，打开到应用内的某个页面
      *
