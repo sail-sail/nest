@@ -479,7 +479,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "appid",
         align: "left",
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "mchid",
@@ -559,7 +559,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "openid",
         align: "left",
-        width: 240,
+        width: 260,
       },
       {
         COLUMN_NAME: "prepay_id",
@@ -596,7 +596,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "appid",
-        width: 160,
+        width: 180,
       },
       {
         COLUMN_NAME: "mchid",
@@ -605,7 +605,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "openid",
         search: true,
-        width: 240,
+        width: 260,
       },
       {
         COLUMN_NAME: "out_trade_no",
@@ -653,7 +653,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "total",
-        width: 90,
+        width: 120,
       },
       {
         COLUMN_NAME: "payer_total",
