@@ -180,7 +180,7 @@ name = "rust"
 path = "main.rs"
 
 [profile.release]
-debug = 1
+debug = 0
 
 [profile.release.package.generated]
 debug = 1
@@ -189,7 +189,7 @@ debug = 1
 debug = 2
 
 [profile.dev]
-debug = 1
+debug = 0
 
 [profile.dev.package.generated]
 debug = 1
