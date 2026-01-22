@@ -65,10 +65,10 @@ const modelValue = defineModel<any>();
 </script>
 
 <style lang="scss" scoped>
-.custom_date_readonly {
-  cursor: default;
-}
 .custom_date {
   cursor: pointer;
+}
+.custom_date_readonly {
+  cursor: default;
 }
 </style>
