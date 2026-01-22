@@ -902,7 +902,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "开发者ID",
       prop: "appid",
-      width: 160,
+      width: 180,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -918,7 +918,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "用户标识",
       prop: "openid",
-      width: 240,
+      width: 260,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -994,7 +994,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "总金额(分)",
       prop: "total",
-      width: 90,
+      width: 120,
       align: "right",
       headerAlign: "center",
       showOverflowTooltip: true,

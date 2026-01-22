@@ -946,7 +946,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "开发者ID",
       prop: "appid",
-      width: 160,
+      width: 180,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1062,7 +1062,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "用户标识",
       prop: "openid",
-      width: 240,
+      width: 260,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
