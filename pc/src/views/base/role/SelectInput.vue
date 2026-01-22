@@ -58,6 +58,7 @@
           <el-icon
             un-cursor="pointer"
             un-m="r-0.5"
+            un-text="[var(--el-text-color-placeholder)]"
             size="14"
             @click="onClear"
           >
@@ -66,8 +67,10 @@
         </template>
         
         <el-icon
+          v-else
           un-cursor="pointer"
           un-m="r-0.5"
+          un-text="[var(--el-text-color-placeholder)]"
           size="14"
           @click="onInput('icon')"
         >
