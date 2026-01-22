@@ -10837,7 +10837,9 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/system/phone?id=makephonecall](http://uniapp.dcloud.io/api/system/phone?id=makephonecall)
      */
-    makePhoneCall(options: UniNamespace.MakePhoneCallOptions): void;
+    makePhoneCall(options: UniNamespace.MakePhoneCallOptions): Promise<{
+        errMsg: string;
+    }>;
     /**
      * 调用扫码界面，扫码成功后返回对应的结果
      *
@@ -11421,7 +11423,9 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/router?id=redirectto](http://uniapp.dcloud.io/api/router?id=redirectto)
      */
-    redirectTo(options: UniNamespace.RedirectToOptions): void;
+    redirectTo(options: UniNamespace.RedirectToOptions): Promise<{
+        errMsg: string;
+    }>;
     /**
      * 关闭所有页面，打开到应用内的某个页面
      *

@@ -290,11 +290,17 @@ export function useSelect(
           tableRef.value?.clearSelection();
           setSelectIds([ (list[0] as any)[rowKey] ]);
         } else {
+          const selectedIds2 = [ ...selectedIds ];
+          let isSelectChange = false;
           for (let i = 0; i < list.length; i++) {
             const item = list[i] as any;
-            if (!selectedIds.includes(item[rowKey])) {
-              selectedIds.push(item[rowKey]);
+            if (!selectedIds2.includes(item[rowKey])) {
+              isSelectChange = true;
+              selectedIds2.push(item[rowKey]);
             }
+          }
+          if (isSelectChange) {
+            selectedIds = selectedIds2;
           }
         }
       }
