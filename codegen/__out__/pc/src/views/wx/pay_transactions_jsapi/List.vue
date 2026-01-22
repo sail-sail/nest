@@ -946,7 +946,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "开发者ID",
       prop: "appid",
-      width: 160,
+      width: 180,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1363,17 +1363,16 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function(oldVal, newVal) {
+  async function(newVal, oldVal) {
     if (!inited) {
       return;
     }
     if (isSearchReset) {
       return;
     }
-    if (deepCompare(oldVal, newVal)) {
+    if (deepCompare(newVal, oldVal)) {
       return;
     }
-    selectedIds = [ ];
     await dataGrid(true);
   },
   {
