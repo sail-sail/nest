@@ -1793,7 +1793,7 @@ async fn _creates(
         }
         sql_values += ",?";
         args.push(usr_lbl.into());
-      } else if input.create_usr_id.unwrap().is_empty() {
+      } else if input.create_usr_id.is_none_or(|s| s.is_empty()) {
         sql_values += ",default";
         sql_values += ",default";
       } else {
@@ -2222,7 +2222,9 @@ pub async fn update_by_id_dictbiz_detail(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      } else if !input.update_usr_id.unwrap().is_empty() {
+      } else if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let mut usr_id = input.update_usr_id;
         let mut usr_id_lbl = String::new();
         if usr_id.is_some() {
@@ -2244,7 +2246,9 @@ pub async fn update_by_id_dictbiz_detail(
         }
       }
     } else {
-      if input.update_usr_id.is_some() && !input.update_usr_id.unwrap().is_empty() {
+      if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let usr_id = input.update_usr_id;
         if let Some(usr_id) = usr_id {
           sql_fields += "update_usr_id=?,";
