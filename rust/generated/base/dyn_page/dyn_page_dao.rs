@@ -1803,7 +1803,7 @@ async fn _creates(
         }
         sql_values += ",?";
         args.push(usr_lbl.into());
-      } else if input.create_usr_id.unwrap().is_empty() {
+      } else if input.create_usr_id.is_none_or(|s| s.is_empty()) {
         sql_values += ",default";
         sql_values += ",default";
       } else {
@@ -2004,7 +2004,7 @@ async fn _creates(
     // 查找旧的角色列表(拥有此菜单的角色)
     let old_role_models = find_all_role(
       Some(RoleSearch {
-        menu_ids: Some(vec![menu_id.clone()]),
+        menu_ids: Some(vec![menu_id]),
         ..Default::default()
       }),
       None,
@@ -2057,7 +2057,7 @@ async fn _creates(
         if menu_ids.contains(&menu_id) {
           continue;
         }
-        menu_ids.push(menu_id.clone());
+        menu_ids.push(menu_id);
         let role_options = Options::from(options.clone())
           .set_is_creating(Some(true));
         update_by_id_role(
@@ -2479,7 +2479,9 @@ pub async fn update_by_id_dyn_page(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      } else if !input.update_usr_id.unwrap().is_empty() {
+      } else if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let mut usr_id = input.update_usr_id;
         let mut usr_id_lbl = String::new();
         if usr_id.is_some() {
@@ -2501,7 +2503,9 @@ pub async fn update_by_id_dyn_page(
         }
       }
     } else {
-      if input.update_usr_id.is_some() && !input.update_usr_id.unwrap().is_empty() {
+      if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let usr_id = input.update_usr_id;
         if let Some(usr_id) = usr_id {
           sql_fields += "update_usr_id=?,";
@@ -2566,8 +2570,7 @@ pub async fn update_by_id_dyn_page(
   }
   
   // 根据 code 路由查找菜单, 如果菜单不存在则创建菜单, 否则更新菜单名称
-  if input.code.is_some() {
-    let code = input.code.as_ref().unwrap();
+  if let Some(code) = &input.code {
     let menu_model = find_one_menu(
       Some(MenuSearch {
         route_path: Some(code.clone()),
@@ -2581,7 +2584,7 @@ pub async fn update_by_id_dyn_page(
       let menu_options = Options::from(options.clone())
         .set_is_creating(Some(true));
       update_by_id_menu(
-        menu_model.id.clone(),
+        menu_model.id,
         MenuInput {
           parent_id: input.parent_menu_id,
           lbl: input.lbl.clone(),
@@ -2612,7 +2615,7 @@ pub async fn update_by_id_dyn_page(
     // 查找旧的角色列表(拥有此菜单的角色)
     let old_role_models = find_all_role(
       Some(RoleSearch {
-        menu_ids: Some(vec![menu_id.clone()]),
+        menu_ids: Some(vec![menu_id]),
         ..Default::default()
       }),
       None,
@@ -2665,7 +2668,7 @@ pub async fn update_by_id_dyn_page(
         if menu_ids.contains(&menu_id) {
           continue;
         }
-        menu_ids.push(menu_id.clone());
+        menu_ids.push(menu_id);
         let role_options = Options::from(options.clone())
           .set_is_creating(Some(true));
         update_by_id_role(
