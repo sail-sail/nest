@@ -2125,6 +2125,34 @@ pub async fn update_by_id_login_log(
   Ok(id)
 }
 
+// MARK: update_by_id_return_login_log
+/// 根据 id 更新登录日志, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_login_log(
+  id: LoginLogId,
+  input: LoginLogInput,
+  options: Option<Options>,
+) -> Result<LoginLogModel> {
+  
+  update_by_id_login_log(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_login_log(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "登录日志 update_by_id_return_login_log id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {

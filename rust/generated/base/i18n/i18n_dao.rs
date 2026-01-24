@@ -2195,6 +2195,34 @@ pub async fn update_by_id_i18n(
   Ok(id)
 }
 
+// MARK: update_by_id_return_i18n
+/// 根据 id 更新国际化, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_i18n(
+  id: I18nId,
+  input: I18nInput,
+  options: Option<Options>,
+) -> Result<I18nModel> {
+  
+  update_by_id_i18n(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_i18n(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "国际化 update_by_id_return_i18n id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {

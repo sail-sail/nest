@@ -7571,6 +7571,34 @@ pub async fn update_by_id_<#=table#>(
   Ok(id)
 }
 
+// MARK: update_by_id_return_<#=table#>
+/// 根据 id 更新<#=table_comment#>, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_<#=table#>(
+  id: <#=Table_Up#>Id,
+  input: <#=Table_Up#>Input,
+  options: Option<Options>,
+) -> Result<<#=Table_Up#>Model> {
+  
+  update_by_id_<#=table#>(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_<#=table#>(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "<#=table_comment#> update_by_id_return_<#=table#> id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
@@ -8121,6 +8149,27 @@ pub async fn delete_by_ids_<#=table#>(
       }
       #>
     }<#
+    }
+    #><#
+    }
+    #><#
+    if (!hasIsDeleted) {
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const isAtt = column.isAtt;
+      const isImg = column.isImg;
+      if (!isAtt && !isImg) continue;
+    #>
+    
+    // <#=column_comment#>
+    crate::common::oss::oss_dao::delete_object(
+      old_model.<#=column_name#>.as_str(),
+    ).await?;<#
     }
     #><#
     }
@@ -9202,6 +9251,23 @@ pub async fn force_delete_by_ids_<#=table#>(
     
     del_caches(
       vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const isAtt = column.isAtt;
+      const isImg = column.isImg;
+      if (!isAtt && !isImg) continue;
+    #>
+    
+    // <#=column_comment#>
+    crate::common::oss::oss_dao::delete_object(
+      old_model.<#=column_name#>.as_str(),
     ).await?;<#
     }
     #>

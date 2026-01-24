@@ -2605,6 +2605,34 @@ pub async fn update_by_id_menu(
   Ok(id)
 }
 
+// MARK: update_by_id_return_menu
+/// 根据 id 更新菜单, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_menu(
+  id: MenuId,
+  input: MenuInput,
+  options: Option<Options>,
+) -> Result<MenuModel> {
+  
+  update_by_id_menu(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_menu(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "菜单 update_by_id_return_menu id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {

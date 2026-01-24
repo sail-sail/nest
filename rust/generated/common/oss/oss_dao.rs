@@ -57,6 +57,15 @@ fn new_bucket() -> Result<Box<Bucket>> {
   Ok(bucket)
 }
 
+/// 上传对象到 OSS
+/// path: 存储路径, 通常是数据库存储的附件 id 号
+/// content: 文件内容字节数组
+/// content_type: 文件类型, 如 "image/png"
+/// filename: 文件名, 如 "picture.png"
+/// is_public: 是否不登录也可以访问, 默认为 false 私有
+/// tenant_id: 租户ID
+/// db: 数据库名
+/// id: 数据库行ID
 #[allow(clippy::too_many_arguments)]
 pub async fn put_object<S: AsRef<str>>(
   path: S,
@@ -89,6 +98,8 @@ pub async fn put_object<S: AsRef<str>>(
   Ok(res)
 }
 
+/// 获取对象元信息
+/// path: 存储路径, 通常是数据库存储的附件 id 号
 pub async fn head_object(
   path: &str,
 ) -> Result<Option<StatObject>> {
@@ -150,6 +161,8 @@ pub async fn head_object(
   Ok(stat.into())
 }
 
+/// 获取对象内容
+/// path: 存储路径, 通常是数据库存储的附件 id 号
 pub async fn get_object(
   path: &str,
 ) -> Result<Option<ResponseData>> {
@@ -161,6 +174,8 @@ pub async fn get_object(
   Ok(Some(res))
 }
 
+/// 获取对象内容流
+/// path: 存储路径, 通常是数据库存储的附件 id 号
 #[allow(dead_code)]
 pub async fn get_object_stream(
   path: &str,
@@ -173,9 +188,18 @@ pub async fn get_object_stream(
   Ok(Some(res))
 }
 
+/// 删除对象
+/// path: 存储路径, 通常是数据库存储的附件 id 号
 pub async fn delete_object(
   path: &str,
 ) -> Result<bool> {
+  tracing::info!(
+    "{req_id} oss_dao.delete_object: {path}",
+    req_id = crate::common::context::get_req_id(),
+  );
+  if path.is_empty() {
+    return Ok(false);
+  }
   let head = head_object(path).await?;
   if head.is_none() {
     return Ok(false);

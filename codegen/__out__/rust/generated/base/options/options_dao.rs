@@ -2297,6 +2297,34 @@ pub async fn update_by_id_options(
   Ok(id)
 }
 
+// MARK: update_by_id_return_options
+/// 根据 id 更新系统选项, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_options(
+  id: OptionsId,
+  input: OptionsInput,
+  options: Option<Options>,
+) -> Result<OptionsModel> {
+  
+  update_by_id_options(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_options(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "系统选项 update_by_id_return_options id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {

@@ -161,6 +161,8 @@ pub async fn method_name(
 }
 ```
 
+- 如需操作附件, 则使用 [oss_dao.rs](/generated/common/oss/oss_dao.rs) 提供的函数进行操作
+
 ## 常用 DAO 函数
 
 | 函数 | 用途 |
