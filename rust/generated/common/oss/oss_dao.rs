@@ -58,14 +58,25 @@ fn new_bucket() -> Result<Box<Bucket>> {
 }
 
 /// 上传对象到 OSS
-/// path: 存储路径, 通常是数据库存储的附件 id 号
-/// content: 文件内容字节数组
-/// content_type: 文件类型, 如 "image/png"
-/// filename: 文件名, 如 "picture.png"
-/// is_public: 是否不登录也可以访问, 默认为 false 私有
-/// tenant_id: 租户ID
-/// db: 数据库名
-/// id: 数据库行ID
+///
+/// # Arguments
+///
+/// * `path` - 存储路径, 通常是数据库存储的附件 id 号
+/// * `content` - 文件内容字节数组
+/// * `content_type` - 文件类型, 如 "image/png"
+/// * `filename` - 文件名, 如 "picture.png"
+/// * `is_public` - 是否不登录也可以访问, 默认为 false 私有
+/// * `tenant_id` - 租户ID
+/// * `db` - 数据库名
+/// * `id` - 数据库行ID
+///
+/// # Returns
+///
+/// 返回上传操作的响应数据
+///
+/// # Errors
+///
+/// 当 OSS bucket 不存在或网络错误时返回错误
 #[allow(clippy::too_many_arguments)]
 pub async fn put_object<S: AsRef<str>>(
   path: S,
@@ -99,7 +110,14 @@ pub async fn put_object<S: AsRef<str>>(
 }
 
 /// 获取对象元信息
-/// path: 存储路径, 通常是数据库存储的附件 id 号
+/// 
+/// # Arguments
+/// 
+/// * `path` - 存储路径, 通常是数据库存储的附件 id 号
+/// 
+/// # Returns
+/// 
+/// 返回对象的元信息，如果对象不存在则返回 None
 pub async fn head_object(
   path: &str,
 ) -> Result<Option<StatObject>> {
@@ -163,6 +181,14 @@ pub async fn head_object(
 
 /// 获取对象内容
 /// path: 存储路径, 通常是数据库存储的附件 id 号
+/// 
+/// # Arguments
+/// 
+/// * `path` - 存储路径, 通常是数据库存储的附件 id 号
+///
+/// # Returns
+///
+/// 返回对象的内容数据，如果对象不存在则返回 None
 pub async fn get_object(
   path: &str,
 ) -> Result<Option<ResponseData>> {
@@ -175,7 +201,14 @@ pub async fn get_object(
 }
 
 /// 获取对象内容流
-/// path: 存储路径, 通常是数据库存储的附件 id 号
+/// 
+/// # Arguments
+/// 
+/// * `path` - 存储路径, 通常是数据库存储的附件 id 号
+/// 
+/// # Returns
+///
+/// 返回对象的内容数据流，如果对象不存在则返回 None
 #[allow(dead_code)]
 pub async fn get_object_stream(
   path: &str,
@@ -189,7 +222,14 @@ pub async fn get_object_stream(
 }
 
 /// 删除对象
-/// path: 存储路径, 通常是数据库存储的附件 id 号
+/// 
+/// # Arguments
+/// 
+/// * `path` - 存储路径, 通常是数据库存储的附件 id 号
+/// 
+/// # Returns
+///
+/// 返回删除操作是否成功
 pub async fn delete_object(
   path: &str,
 ) -> Result<bool> {
