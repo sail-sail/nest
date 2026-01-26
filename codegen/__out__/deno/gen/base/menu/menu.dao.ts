@@ -1909,6 +1909,36 @@ export async function updateByIdMenu(
   return id;
 }
 
+// MARK: updateByIdMenu
+/** 根据 id 更新菜单, 并返回更新后的数据 */
+export async function updateByIdReturnMenu(
+  id: MenuId,
+  input: MenuInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<MenuModel> {
+  
+  await updateByIdMenu(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdMenu(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`菜单 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsMenu
 /** 根据 ids 删除 菜单 */
 export async function deleteByIdsMenu(

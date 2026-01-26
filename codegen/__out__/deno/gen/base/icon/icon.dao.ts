@@ -39,6 +39,10 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import {
+  deleteObject,
+} from "/lib/oss/oss.dao.ts";
+
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import * as validators from "/lib/validators/mod.ts";
@@ -1669,6 +1673,36 @@ export async function updateByIdIcon(
   return id;
 }
 
+// MARK: updateByIdIcon
+/** 根据 id 更新图标库, 并返回更新后的数据 */
+export async function updateByIdReturnIcon(
+  id: IconId,
+  input: IconInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<IconModel> {
+  
+  await updateByIdIcon(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdIcon(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`图标库 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsIcon
 /** 根据 ids 删除 图标库 */
 export async function deleteByIdsIcon(
@@ -1957,6 +1991,11 @@ export async function forceDeleteByIdsIcon(
     const sql = `delete from base_icon where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    
+    // 图标
+    await deleteObject(
+      oldModel.img,
+    );
   }
   
   await delCacheIcon();

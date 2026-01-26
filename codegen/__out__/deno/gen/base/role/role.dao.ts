@@ -2432,6 +2432,36 @@ export async function updateByIdRole(
   return id;
 }
 
+// MARK: updateByIdRole
+/** 根据 id 更新角色, 并返回更新后的数据 */
+export async function updateByIdReturnRole(
+  id: RoleId,
+  input: RoleInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<RoleModel> {
+  
+  await updateByIdRole(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdRole(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`角色 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsRole
 /** 根据 ids 删除 角色 */
 export async function deleteByIdsRole(

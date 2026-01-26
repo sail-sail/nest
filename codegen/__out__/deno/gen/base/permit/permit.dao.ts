@@ -1362,6 +1362,36 @@ export async function updateByIdPermit(
   return id;
 }
 
+// MARK: updateByIdPermit
+/** 根据 id 更新按钮权限, 并返回更新后的数据 */
+export async function updateByIdReturnPermit(
+  id: PermitId,
+  input: PermitInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<PermitModel> {
+  
+  await updateByIdPermit(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdPermit(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`按钮权限 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsPermit
 /** 根据 ids 删除 按钮权限 */
 export async function deleteByIdsPermit(

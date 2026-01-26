@@ -39,6 +39,10 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import {
+  deleteObject,
+} from "/lib/oss/oss.dao.ts";
+
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import * as validators from "/lib/validators/mod.ts";
@@ -2417,6 +2421,36 @@ export async function updateByIdUsr(
   return id;
 }
 
+// MARK: updateByIdUsr
+/** 根据 id 更新用户, 并返回更新后的数据 */
+export async function updateByIdReturnUsr(
+  id: UsrId,
+  input: UsrInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<UsrModel> {
+  
+  await updateByIdUsr(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdUsr(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`用户 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsUsr
 /** 根据 ids 删除 用户 */
 export async function deleteByIdsUsr(
@@ -2893,6 +2927,11 @@ export async function forceDeleteByIdsUsr(
         },
       );
     }
+    
+    // 头像
+    await deleteObject(
+      oldModel.img,
+    );
   }
   
   await delCacheUsr();

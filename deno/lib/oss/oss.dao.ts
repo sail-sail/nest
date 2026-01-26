@@ -129,6 +129,9 @@ export async function streamToString(
 }
 
 export async function deleteObject(id: string) {
+  if (!id) {
+    return;
+  }
   const bucket = await getBucket();
   await bucket.deleteObject(id);
 }

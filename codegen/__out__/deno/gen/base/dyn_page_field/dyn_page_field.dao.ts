@@ -2107,6 +2107,36 @@ export async function updateByIdDynPageField(
   return id;
 }
 
+// MARK: updateByIdDynPageField
+/** 根据 id 更新动态页面字段, 并返回更新后的数据 */
+export async function updateByIdReturnDynPageField(
+  id: DynPageFieldId,
+  input: DynPageFieldInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<DynPageFieldModel> {
+  
+  await updateByIdDynPageField(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdDynPageField(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`动态页面字段 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsDynPageField
 /** 根据 ids 删除 动态页面字段 */
 export async function deleteByIdsDynPageField(
