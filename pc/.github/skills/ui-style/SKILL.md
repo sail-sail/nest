@@ -1,7 +1,7 @@
 ---
 name: ui-style
 description: 页面开发样式规范。开发 UI 界面时使用
-compatibility: Vue 3 + UnoCSS
+compatibility: Vue 3 + Element Plus + UnoCSS
 metadata:
   version: "1.0"
 ---
@@ -15,12 +15,12 @@ metadata:
 
 ```html
 <!-- ❌ 传统方式 -->
-<button class="bg-blue-400 hover:bg-blue-500 text-sm text-white font-mono py-2 px-4 rounded border-2">
+<el-button class="bg-blue-400 hover:bg-blue-500 text-sm text-white font-mono py-2 px-4 rounded border-2">
   Button
-</button>
+</el-button>
 
 <!-- ✅ Attributify -->
-<button
+<el-button
   un-bg="blue-400 hover:blue-500"
   un-text="sm white"
   un-font="mono"
@@ -28,7 +28,7 @@ metadata:
   un-border="2 rounded"
 >
   Button
-</button>
+</el-button>
 ```
 
 ### 自引用前缀 `~`
@@ -36,12 +36,11 @@ metadata:
 
 ```html
 <!-- border border-red → un-border="~ red" -->
-<button
+<el-button
   un-border="~ red"
 >
   Button
-</button>
-
+</el-button>
 <!-- flex flex-col → un-flex="~ col" -->
 <div
   un-flex="~ col"
@@ -79,5 +78,5 @@ const now = dayjs().format('YYYY-MM-DD');
 `src/typings/components.d.ts` 中的组件可直接在模板中使用：
 
 ```vue
-<ElButton>Click Me</ElButton>
+<el-button>Click Me</el-button>
 ```
