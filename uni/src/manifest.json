@@ -62,7 +62,8 @@
             "ignoreDevUnusedFiles": true,
             "checkInvalidKey": false,
             "showES6CompileOption": false,
-            "compileHotReLoad": true
+            "compileHotReLoad": true,
+            "lazyCodeLoading": "requiredComponents"
         },
         "usingComponents" : true
     },
