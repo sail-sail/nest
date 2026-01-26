@@ -2271,6 +2271,34 @@ pub async fn update_by_id_dyn_page_data(
   Ok(id)
 }
 
+// MARK: update_by_id_return_dyn_page_data
+/// 根据 id 更新动态页面数据, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_dyn_page_data(
+  id: DynPageDataId,
+  input: DynPageDataInput,
+  options: Option<Options>,
+) -> Result<DynPageDataModel> {
+  
+  update_by_id_dyn_page_data(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_dyn_page_data(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "动态页面数据 update_by_id_return_dyn_page_data id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {

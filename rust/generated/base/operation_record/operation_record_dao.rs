@@ -2061,6 +2061,34 @@ pub async fn update_by_id_operation_record(
   Ok(id)
 }
 
+// MARK: update_by_id_return_operation_record
+/// 根据 id 更新操作记录, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_operation_record(
+  id: OperationRecordId,
+  input: OperationRecordInput,
+  options: Option<Options>,
+) -> Result<OperationRecordModel> {
+  
+  update_by_id_operation_record(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_operation_record(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "操作记录 update_by_id_return_operation_record id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {

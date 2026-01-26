@@ -13,6 +13,7 @@ declare module 'vue' {
     DictSelect: typeof import('./../components/DictSelect/DictSelect.vue')['default']
     DictbizSelect: typeof import('./../components/DictbizSelect/DictbizSelect.vue')['default']
     CustomInput: typeof import('./../components/CustomInput/CustomInput.vue')['default']
+    CustomDate: typeof import('./../components/CustomDate/CustomDate.vue')['default']
     CustomDivider: typeof import('./../components/CustomDivider/CustomDivider.vue')['default']
     CustomIcon: typeof import('./../components/CustomIcon/CustomIcon.vue')['default']
     TmAlert: typeof import('./../uni_modules/tm-ui/components/tm-alert/tm-alert.vue')['default']

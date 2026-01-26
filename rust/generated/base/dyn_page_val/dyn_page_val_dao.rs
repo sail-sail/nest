@@ -2007,6 +2007,34 @@ pub async fn update_by_id_dyn_page_val(
   Ok(id)
 }
 
+// MARK: update_by_id_return_dyn_page_val
+/// 根据 id 更新动态页面值, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_dyn_page_val(
+  id: DynPageValId,
+  input: DynPageValInput,
+  options: Option<Options>,
+) -> Result<DynPageValModel> {
+  
+  update_by_id_dyn_page_val(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_dyn_page_val(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "动态页面值 update_by_id_return_dyn_page_val id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {

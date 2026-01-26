@@ -2381,6 +2381,34 @@ pub async fn update_by_id_optbiz(
   Ok(id)
 }
 
+// MARK: update_by_id_return_optbiz
+/// 根据 id 更新业务选项, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_optbiz(
+  id: OptbizId,
+  input: OptbizInput,
+  options: Option<Options>,
+) -> Result<OptbizModel> {
+  
+  update_by_id_optbiz(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_optbiz(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "业务选项 update_by_id_return_optbiz id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {

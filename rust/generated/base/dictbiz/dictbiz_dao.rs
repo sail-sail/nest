@@ -2483,6 +2483,34 @@ pub async fn update_by_id_dictbiz(
   Ok(id)
 }
 
+// MARK: update_by_id_return_dictbiz
+/// 根据 id 更新业务字典, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_dictbiz(
+  id: DictbizId,
+  input: DictbizInput,
+  options: Option<Options>,
+) -> Result<DictbizModel> {
+  
+  update_by_id_dictbiz(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_dictbiz(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "业务字典 update_by_id_return_dictbiz id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
