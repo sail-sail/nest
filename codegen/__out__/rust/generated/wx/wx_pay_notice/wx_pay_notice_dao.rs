@@ -2382,6 +2382,34 @@ pub async fn update_by_id_wx_pay_notice(
   Ok(id)
 }
 
+// MARK: update_by_id_return_wx_pay_notice
+/// 根据 id 更新微信支付通知, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_wx_pay_notice(
+  id: WxPayNoticeId,
+  input: WxPayNoticeInput,
+  options: Option<Options>,
+) -> Result<WxPayNoticeModel> {
+  
+  update_by_id_wx_pay_notice(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_wx_pay_notice(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "微信支付通知 update_by_id_return_wx_pay_notice id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {

@@ -2540,6 +2540,34 @@ pub async fn update_by_id_wx_pay(
   Ok(id)
 }
 
+// MARK: update_by_id_return_wx_pay
+/// 根据 id 更新微信支付设置, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_wx_pay(
+  id: WxPayId,
+  input: WxPayInput,
+  options: Option<Options>,
+) -> Result<WxPayModel> {
+  
+  update_by_id_wx_pay(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_wx_pay(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "微信支付设置 update_by_id_return_wx_pay id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
@@ -3053,6 +3081,16 @@ pub async fn force_delete_by_ids_wx_pay(
       sql,
       args,
       options.clone(),
+    ).await?;
+    
+    // 公钥
+    crate::common::oss::oss_dao::delete_object(
+      old_model.public_key.as_str(),
+    ).await?;
+    
+    // 私钥
+    crate::common::oss::oss_dao::delete_object(
+      old_model.private_key.as_str(),
     ).await?;
   }
   

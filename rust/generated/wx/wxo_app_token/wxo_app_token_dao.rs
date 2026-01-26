@@ -2110,6 +2110,34 @@ pub async fn update_by_id_wxo_app_token(
   Ok(id)
 }
 
+// MARK: update_by_id_return_wxo_app_token
+/// 根据 id 更新小程序接口凭据, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_wxo_app_token(
+  id: WxoAppTokenId,
+  input: WxoAppTokenInput,
+  options: Option<Options>,
+) -> Result<WxoAppTokenModel> {
+  
+  update_by_id_wxo_app_token(
+    id,
+    input,
+    options.clone(),
+  ).await?;
+  
+  let model = find_by_id_wxo_app_token(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "小程序接口凭据 update_by_id_return_wxo_app_token id: {id}",
+    )),
+  }
+}
+
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
