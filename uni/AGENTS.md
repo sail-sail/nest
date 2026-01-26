@@ -17,3 +17,7 @@ src/pages/{table}/
 ├── Dialog.vue  # 新增/编辑页
 └── Api.ts      # GraphQL 操作
 ```
+
+## 可用 Skills (.github/skills/)
+
+- `ui-style` - 页面开发样式规范. 开发 UI 界面时使用
