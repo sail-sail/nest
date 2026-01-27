@@ -66,10 +66,12 @@
           name="type"
           :required="false"
         >
-          <CustomInput
+          <CustomSelectModal
             v-model="dyn_page_field_input.type"
-            placeholder="请输入 类型"
-          ></CustomInput>
+            placeholder="请选择 类型"
+            :method="getComponentKeys"
+            :options-map="(item) => ({ label: item.label, value: item.value })"
+          ></CustomSelectModal>
         </tm-form-item>
         
         <!-- 属性 -->
@@ -78,10 +80,28 @@
           name="attrs"
           :required="false"
         >
-          <CustomInput
-            v-model="dyn_page_field_input.attrs"
-            placeholder="请输入 属性"
-          ></CustomInput>
+          <view
+            un-flex="~"
+            un-items="center"
+            un-gap="2"
+            un-cursor="pointer"
+            un-min="h-10"
+            un-m="l-3"
+            @click="onEditAttrs"
+          >
+            <view
+              v-if="dyn_page_field_input.type"
+              un-text="primary"
+            >
+              配置属性 ({{ getAttrsCount(dyn_page_field_input.attrs) }})
+            </view>
+            <view
+              v-else
+              un-text="gray-400"
+            >
+              请先选择类型
+            </view>
+          </view>
         </tm-form-item>
         
         <!-- 计算公式 -->
@@ -206,6 +226,11 @@
   
   <AppLoading></AppLoading>
   
+  <!-- 属性编辑弹框 -->
+  <AttrsModal
+    ref="attrsModalRef"
+  ></AttrsModal>
+  
 </view>
 </template>
 
@@ -224,12 +249,60 @@ import {
 
 import TmForm from "@/uni_modules/tm-ui/components/tm-form/tm-form.vue";
 
+import {
+  componentKeys,
+} from "@/components/CustomDynComp/ComponentMap.ts";
+
+import AttrsModal from "./AttrsModal.vue";
+
 let inited = $ref(false);
 
 let dyn_page_field_id = $ref<DynPageFieldId>();
 
 let dyn_page_field_input = $ref<DynPageFieldInput>({ });
 let dyn_page_field_model = $ref<DynPageFieldModel>();
+
+// AttrsModal 引用
+const attrsModalRef = $ref<InstanceType<typeof AttrsModal>>();
+
+/** 获取组件类型列表 */
+function getComponentKeys() {
+  return componentKeys;
+}
+
+/** 获取 attrs 中的属性数量 */
+function getAttrsCount(attrs?: string | null): string {
+  if (!attrs) {
+    return "0";
+  }
+  try {
+    const obj = JSON.parse(attrs);
+    const count = Object.keys(obj).length;
+    return String(count);
+  } catch {
+    return "0";
+  }
+}
+
+/** 编辑属性 */
+async function onEditAttrs() {
+  if (!dyn_page_field_input.type) {
+    uni.showToast({
+      title: "请先选择类型",
+      icon: "none",
+    });
+    return;
+  }
+  
+  const result = await attrsModalRef?.showDialog({
+    componentType: dyn_page_field_input.type,
+    attrs: dyn_page_field_input.attrs || undefined,
+  });
+  
+  if (result?.type === "ok") {
+    dyn_page_field_input.attrs = result.attrs || "";
+  }
+}
 
 const form_rules: Record<string, TM.FORM_RULE[]> = {
   dyn_page_id: [
