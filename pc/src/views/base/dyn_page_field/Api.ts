@@ -65,6 +65,12 @@ export function intoInputDynPageField(
     // 对齐方式
     align: model?.align,
     align_lbl: model?.align_lbl,
+    // 手机列表显示
+    is_mobile_list: model?.is_mobile_list,
+    is_mobile_list_lbl: model?.is_mobile_list_lbl,
+    // 手机列表查询
+    is_mobile_search: model?.is_mobile_search,
+    is_mobile_search_lbl: model?.is_mobile_search_lbl,
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
@@ -577,6 +583,8 @@ export function useDownloadImportTemplateDynPageField() {
             is_search_lbl
             width
             align_lbl
+            is_mobile_list_lbl
+            is_mobile_search_lbl
             order_by
           }
           findAllDynPage {
@@ -587,6 +595,8 @@ export function useDownloadImportTemplateDynPageField() {
             "yes_no",
             "yes_no",
             "dyn_page_field_align",
+            "yes_no",
+            "yes_no",
           ]) {
             code
             lbl
@@ -654,6 +664,8 @@ export function useExportExcelDynPageField() {
               "yes_no",
               "yes_no",
               "dyn_page_field_align",
+              "yes_no",
+              "yes_no",
               "is_enabled",
             ]) {
               code
@@ -796,6 +808,10 @@ export async function getFieldCommentsDynPageField(
           width,
           align,
           align_lbl,
+          is_mobile_list,
+          is_mobile_list_lbl,
+          is_mobile_search,
+          is_mobile_search_lbl,
           is_enabled,
           is_enabled_lbl,
           order_by,
@@ -822,6 +838,8 @@ export async function getDefaultInputDynPageField() {
     is_search: 0,
     width: 0,
     align: DynPageFieldAlign.Center,
+    is_mobile_list: 0,
+    is_mobile_search: 0,
     is_enabled: 1,
     order_by: 1,
   };

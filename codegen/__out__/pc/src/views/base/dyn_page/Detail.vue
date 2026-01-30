@@ -370,6 +370,42 @@
               </el-table-column>
               
               <el-table-column
+                prop="is_mobile_list"
+                label="手机列表显示"
+                width="110"
+                header-align="center"
+                align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomCheckbox
+                      v-model="row.is_mobile_list"
+                      placeholder=" "
+                      :readonly="isLocked || isReadonly"
+                    ></CustomCheckbox>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
+                prop="is_mobile_search"
+                label="手机列表查询"
+                width="110"
+                header-align="center"
+                align="center"
+              >
+                <template #default="{ row }">
+                  <template v-if="row._type !== 'add'">
+                    <CustomCheckbox
+                      v-model="row.is_mobile_search"
+                      placeholder=" "
+                      :readonly="isLocked || isReadonly"
+                    ></CustomCheckbox>
+                  </template>
+                </template>
+              </el-table-column>
+              
+              <el-table-column
                 v-if="!isLocked &&
                   !isReadonly &&
                   dyn_page_fieldData.some((item) => item._type === 'add')
@@ -649,7 +685,7 @@ async function showDialog(
   oldDialogNotice = notice;
   dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
-    type: "medium",
+    type: "large",
     title: $$(dialogTitle),
     pointerPierce: true,
     notice: $$(dialogNotice),

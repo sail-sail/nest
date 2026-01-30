@@ -11333,7 +11333,9 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/ui/navigationbar?id=setnavigationbartitle](http://uniapp.dcloud.io/api/ui/navigationbar?id=setnavigationbartitle)
      */
-    setNavigationBarTitle(options: UniNamespace.SetNavigationBarTitleOptions): void;
+    setNavigationBarTitle(options: UniNamespace.SetNavigationBarTitleOptions): Promise<{
+        errMsg: string;
+    }>;
     /**
      * 在当前页面显示导航条加载动画
      *

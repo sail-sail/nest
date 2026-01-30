@@ -7115,7 +7115,7 @@ export async function deleteByIds<#=Table_Up#>(
     
     // <#=column_comment#>
     await deleteObject(
-      oldModel.<#=column_name#>,
+      oldModel?.<#=column_name#>,
     );<#
     }
     #><#
@@ -7895,7 +7895,7 @@ export async function forceDeleteByIds<#=Table_Up#>(
     
     // <#=column_comment#>
     await deleteObject(
-      oldModel.<#=column_name#>,
+      oldModel?.<#=column_name#>,
     );<#
     }
     #>

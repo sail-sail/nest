@@ -165,6 +165,30 @@
           ></DictSelect>
         </tm-form-item>
         
+        <!-- 手机列表显示 -->
+        <tm-form-item
+          label="手机列表显示"
+          name="is_mobile_list"
+        >
+          <DictSelect
+            v-model="dyn_page_field_input.is_mobile_list"
+            placeholder="请选择 手机列表显示"
+            code="yes_no"
+          ></DictSelect>
+        </tm-form-item>
+        
+        <!-- 手机列表查询 -->
+        <tm-form-item
+          label="手机列表查询"
+          name="is_mobile_search"
+        >
+          <DictSelect
+            v-model="dyn_page_field_input.is_mobile_search"
+            placeholder="请选择 手机列表查询"
+            code="yes_no"
+          ></DictSelect>
+        </tm-form-item>
+        
         <!-- 排序 -->
         <tm-form-item
           label="排序"
@@ -333,6 +357,18 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {
     {
       required: true,
       message: "请选择 对齐方式",
+    },
+  ],
+  is_mobile_list: [
+    {
+      required: true,
+      message: "请选择 手机列表显示",
+    },
+  ],
+  is_mobile_search: [
+    {
+      required: true,
+      message: "请选择 手机列表查询",
     },
   ],
   order_by: [

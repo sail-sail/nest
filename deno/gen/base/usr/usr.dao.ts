@@ -2930,7 +2930,7 @@ export async function forceDeleteByIdsUsr(
     
     // 头像
     await deleteObject(
-      oldModel.img,
+      oldModel?.img,
     );
   }
   

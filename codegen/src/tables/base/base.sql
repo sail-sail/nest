@@ -778,6 +778,8 @@ CREATE TABLE if not exists `base_dyn_page_field` (
   `is_search` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '查询条件,dict:yes_no',
   `width` int unsigned NOT NULL DEFAULT 0 COMMENT '宽度',
   `align` ENUM('left', 'center', 'right') NOT NULL DEFAULT 'center' COMMENT '对齐方式,dict:dyn_page_field_align',
+  `is_mobile_list` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '手机列表显示,dict:yes_no',
+  `is_mobile_search` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '手机列表查询,dict:yes_no',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',

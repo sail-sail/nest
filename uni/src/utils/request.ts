@@ -566,24 +566,27 @@ async function code2Session(
   },
 ) {
   if (code2SessionPromise) {
-    return code2SessionPromise;
+    return await code2SessionPromise;
   }
   code2SessionPromise = (async function() {
-  const appid = getAppid();
-  const loginModel: LoginModel | undefined = await request({
-    url: "wx_usr/code2Session",
-    method: "POST",
-    data: {
-      appid,
-      ...model,
-    },
-    showErrMsg: false,
-    notLogin: true,
-    notLoading: true,
-  });
     
-  return loginModel;
+    const appid = getAppid();
+    const loginModel: LoginModel | undefined = await request({
+      url: "wx_usr/code2Session",
+      method: "POST",
+      data: {
+        appid,
+        ...model,
+      },
+      showErrMsg: false,
+      notLogin: true,
+      notLoading: true,
+    });
+      
+    return loginModel;
+    
   })();
+  
   return await code2SessionPromise;
 }
 

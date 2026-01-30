@@ -898,9 +898,8 @@ async function useFindCount(
   search: LoginLogSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountLoginLog(
-    search2,
+    search,
     opt,
   );
 }

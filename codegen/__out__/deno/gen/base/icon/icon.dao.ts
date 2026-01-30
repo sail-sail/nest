@@ -1994,7 +1994,7 @@ export async function forceDeleteByIdsIcon(
     
     // 图标
     await deleteObject(
-      oldModel.img,
+      oldModel?.img,
     );
   }
   

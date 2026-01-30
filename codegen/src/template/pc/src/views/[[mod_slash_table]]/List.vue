@@ -3981,9 +3981,8 @@ async function useFindCount(
   search: <#=searchName#>,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCount<#=Table_Up#>(
-    search2,
+    search,
     opt,
   );
 }<#

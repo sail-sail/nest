@@ -6,6 +6,24 @@ metadata:
   version: "1.0"
 ---
 
+# form表单
+
+- `tm-form-item` 组件中如果不需要校验必填则必须添加 `:required="false"` 属性, 否则会默认校验必填, 例:
+
+```vue
+<!-- 编码 -->
+<tm-form-item
+  label="编码"
+  name="code"
+  :required="false"
+>
+  <CustomInput
+    v-model="dyn_page_field_input.code"
+    placeholder="请输入 编码"
+  ></CustomInput>
+</tm-form-item>
+```
+
 # 页面开发样式规范
 
 ## CSS - Attributify Mode
