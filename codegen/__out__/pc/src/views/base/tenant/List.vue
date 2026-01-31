@@ -1331,9 +1331,8 @@ async function useFindCount(
   search: TenantSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountTenant(
-    search2,
+    search,
     opt,
   );
 }

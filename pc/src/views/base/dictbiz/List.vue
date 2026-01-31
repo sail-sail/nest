@@ -1122,9 +1122,8 @@ async function useFindCount(
   search: DictbizSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountDictbiz(
-    search2,
+    search,
     opt,
   );
 }

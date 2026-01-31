@@ -1148,9 +1148,8 @@ async function useFindCount(
   search: DomainSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountDomain(
-    search2,
+    search,
     opt,
   );
 }

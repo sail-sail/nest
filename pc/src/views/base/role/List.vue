@@ -1399,9 +1399,8 @@ async function useFindCount(
   search: RoleSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountRole(
-    search2,
+    search,
     opt,
   );
 }

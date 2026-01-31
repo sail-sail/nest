@@ -680,8 +680,6 @@ const {
   refreshDynPageFields,
 } = $(useDynPageFields(pagePath));
 
-refreshDynPageFields();
-
 /** 表格 */
 const tableRef = $(useTemplateRef("tableRef"));
 
@@ -976,9 +974,8 @@ async function useFindCount(
   search: DynPageDataSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountDynPageData(
-    search2,
+    search,
     opt,
   );
 }
