@@ -71,7 +71,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 20 * 2);
+  let mut where_query = String::with_capacity(80 * 22 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -394,6 +394,54 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
+  // 手机列表显示
+  {
+    let is_mobile_list: Option<Vec<u8>> = match search {
+      Some(item) => item.is_mobile_list.clone(),
+      None => None,
+    };
+    if let Some(is_mobile_list) = is_mobile_list {
+      let arg = {
+        if is_mobile_list.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(is_mobile_list.len());
+          for item in is_mobile_list {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.is_mobile_list in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  // 手机列表查询
+  {
+    let is_mobile_search: Option<Vec<u8>> = match search {
+      Some(item) => item.is_mobile_search.clone(),
+      None => None,
+    };
+    if let Some(is_mobile_search) = is_mobile_search {
+      let arg = {
+        if is_mobile_search.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(is_mobile_search.len());
+          for item in is_mobile_search {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.is_mobile_search in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
   // 启用
   {
     let is_enabled: Option<Vec<u8>> = match search {
@@ -708,6 +756,26 @@ pub async fn find_all_dyn_page_field(
       return Err(eyre!("search.align.length > {ids_limit}"));
     }
   }
+  // 手机列表显示
+  if let Some(search) = &search && let Some(is_mobile_list) = &search.is_mobile_list {
+    let len = is_mobile_list.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_list.length > {ids_limit}"));
+    }
+  }
+  // 手机列表查询
+  if let Some(search) = &search && let Some(is_mobile_search) = &search.is_mobile_search {
+    let len = is_mobile_search.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_search.length > {ids_limit}"));
+    }
+  }
   // 启用
   if let Some(search) = &search && let Some(is_enabled) = &search.is_enabled {
     let len = is_enabled.len();
@@ -805,14 +873,18 @@ pub async fn find_all_dyn_page_field(
     "yes_no",
     "yes_no",
     "dyn_page_field_align",
+    "yes_no",
+    "yes_no",
     "is_enabled",
   ]).await?;
   let [
     is_required_dict,
     is_search_dict,
     align_dict,
+    is_mobile_list_dict,
+    is_mobile_search_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 4] = dict_vec
+  ]: [Vec<_>; 6] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -844,6 +916,24 @@ pub async fn find_all_dyn_page_field(
         .find(|item| item.val == model.align.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.align.to_string())
+    };
+    
+    // 手机列表显示
+    model.is_mobile_list_lbl = {
+      is_mobile_list_dict
+        .iter()
+        .find(|item| item.val == model.is_mobile_list.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_mobile_list.to_string())
+    };
+    
+    // 手机列表查询
+    model.is_mobile_search_lbl = {
+      is_mobile_search_dict
+        .iter()
+        .find(|item| item.val == model.is_mobile_search.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_mobile_search.to_string())
     };
     
     // 启用
@@ -950,6 +1040,34 @@ pub async fn find_count_dyn_page_field(
       return Err(eyre!("search.align.length > {ids_limit}"));
     }
   }
+  // 手机列表显示
+  if let Some(search) = &search && search.is_mobile_list.is_some() {
+    let len = search.is_mobile_list.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_list.length > {ids_limit}"));
+    }
+  }
+  // 手机列表查询
+  if let Some(search) = &search && search.is_mobile_search.is_some() {
+    let len = search.is_mobile_search.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_search.length > {ids_limit}"));
+    }
+  }
   // 启用
   if let Some(search) = &search && search.is_enabled.is_some() {
     let len = search.is_enabled.as_ref().unwrap().len();
@@ -1046,6 +1164,10 @@ pub async fn get_field_comments_dyn_page_field(
     width: "宽度".into(),
     align: "对齐方式".into(),
     align_lbl: "对齐方式".into(),
+    is_mobile_list: "手机列表显示".into(),
+    is_mobile_list_lbl: "手机列表显示".into(),
+    is_mobile_search: "手机列表查询".into(),
+    is_mobile_search_lbl: "手机列表查询".into(),
     is_enabled: "启用".into(),
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
@@ -1488,6 +1610,34 @@ pub async fn exists_dyn_page_field(
       return Err(eyre!("search.align.length > {ids_limit}"));
     }
   }
+  // 手机列表显示
+  if let Some(search) = &search && search.is_mobile_list.is_some() {
+    let len = search.is_mobile_list.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_list.length > {ids_limit}"));
+    }
+  }
+  // 手机列表查询
+  if let Some(search) = &search && search.is_mobile_search.is_some() {
+    let len = search.is_mobile_search.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_search.length > {ids_limit}"));
+    }
+  }
   // 启用
   if let Some(search) = &search && search.is_enabled.is_some() {
     let len = search.is_enabled.as_ref().unwrap().len();
@@ -1794,6 +1944,8 @@ pub async fn set_id_by_lbl_dyn_page_field(
     "yes_no",
     "yes_no",
     "dyn_page_field_align",
+    "yes_no",
+    "yes_no",
     "is_enabled",
   ]).await?;
   
@@ -1842,9 +1994,39 @@ pub async fn set_id_by_lbl_dyn_page_field(
     }
   }
   
+  // 手机列表显示
+  if input.is_mobile_list.is_none() {
+    let is_mobile_list_dict = &dict_vec[3];
+    if let Some(is_mobile_list_lbl) = input.is_mobile_list_lbl.clone() {
+      input.is_mobile_list = is_mobile_list_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_mobile_list_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
+  // 手机列表查询
+  if input.is_mobile_search.is_none() {
+    let is_mobile_search_dict = &dict_vec[4];
+    if let Some(is_mobile_search_lbl) = input.is_mobile_search_lbl.clone() {
+      input.is_mobile_search = is_mobile_search_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_mobile_search_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[3];
+    let is_enabled_dict = &dict_vec[5];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -1968,12 +2150,62 @@ pub async fn set_id_by_lbl_dyn_page_field(
     input.align_lbl = lbl;
   }
   
+  // 手机列表显示
+  if
+    input.is_mobile_list_lbl.is_some() && !input.is_mobile_list_lbl.as_ref().unwrap().is_empty()
+    && input.is_mobile_list.is_none()
+  {
+    let is_mobile_list_dict = &dict_vec[3];
+    let dict_model = is_mobile_list_dict.iter().find(|item| {
+      item.lbl == input.is_mobile_list_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_mobile_list = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_mobile_list_lbl.is_none() || input.is_mobile_list_lbl.as_ref().unwrap().is_empty())
+    && input.is_mobile_list.is_some()
+  {
+    let is_mobile_list_dict = &dict_vec[3];
+    let dict_model = is_mobile_list_dict.iter().find(|item| {
+      item.val == input.is_mobile_list.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_mobile_list_lbl = lbl;
+  }
+  
+  // 手机列表查询
+  if
+    input.is_mobile_search_lbl.is_some() && !input.is_mobile_search_lbl.as_ref().unwrap().is_empty()
+    && input.is_mobile_search.is_none()
+  {
+    let is_mobile_search_dict = &dict_vec[4];
+    let dict_model = is_mobile_search_dict.iter().find(|item| {
+      item.lbl == input.is_mobile_search_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_mobile_search = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_mobile_search_lbl.is_none() || input.is_mobile_search_lbl.as_ref().unwrap().is_empty())
+    && input.is_mobile_search.is_some()
+  {
+    let is_mobile_search_dict = &dict_vec[4];
+    let dict_model = is_mobile_search_dict.iter().find(|item| {
+      item.val == input.is_mobile_search.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_mobile_search_lbl = lbl;
+  }
+  
   // 启用
   if
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[3];
+    let is_enabled_dict = &dict_vec[5];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
@@ -1985,7 +2217,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[3];
+    let is_enabled_dict = &dict_vec[5];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
@@ -2145,7 +2377,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2177,13 +2409,17 @@ async fn _creates(
   sql_fields += ",width";
   // 对齐方式
   sql_fields += ",align";
+  // 手机列表显示
+  sql_fields += ",is_mobile_list";
+  // 手机列表查询
+  sql_fields += ",is_mobile_search";
   // 启用
   sql_fields += ",is_enabled";
   // 排序
   sql_fields += ",order_by";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 20 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 22 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2383,6 +2619,20 @@ async fn _creates(
     if let Some(align) = input.align {
       sql_values += ",?";
       args.push(align.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 手机列表显示
+    if let Some(is_mobile_list) = input.is_mobile_list {
+      sql_values += ",?";
+      args.push(is_mobile_list.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 手机列表查询
+    if let Some(is_mobile_search) = input.is_mobile_search {
+      sql_values += ",?";
+      args.push(is_mobile_search.into());
     } else {
       sql_values += ",default";
     }
@@ -2706,7 +2956,7 @@ pub async fn update_by_id_dyn_page_field(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2780,6 +3030,18 @@ pub async fn update_by_id_dyn_page_field(
     field_num += 1;
     sql_fields += "align=?,";
     args.push(align.into());
+  }
+  // 手机列表显示
+  if let Some(is_mobile_list) = input.is_mobile_list {
+    field_num += 1;
+    sql_fields += "is_mobile_list=?,";
+    args.push(is_mobile_list.into());
+  }
+  // 手机列表查询
+  if let Some(is_mobile_search) = input.is_mobile_search {
+    field_num += 1;
+    sql_fields += "is_mobile_search=?,";
+    args.push(is_mobile_search.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
