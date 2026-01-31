@@ -1146,9 +1146,8 @@ async function useFindCount(
   search: IconSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountIcon(
-    search2,
+    search,
     opt,
   );
 }

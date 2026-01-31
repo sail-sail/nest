@@ -1121,9 +1121,8 @@ async function useFindCount(
   search: LangSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountLang(
-    search2,
+    search,
     opt,
   );
 }

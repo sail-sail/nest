@@ -103,6 +103,18 @@ pub struct DynPageFieldModel {
   /// 对齐方式
   #[graphql(name = "align_lbl")]
   pub align_lbl: String,
+  /// 手机列表显示
+  #[graphql(name = "is_mobile_list")]
+  pub is_mobile_list: u8,
+  /// 手机列表显示
+  #[graphql(name = "is_mobile_list_lbl")]
+  pub is_mobile_list_lbl: String,
+  /// 手机列表查询
+  #[graphql(name = "is_mobile_search")]
+  pub is_mobile_search: u8,
+  /// 手机列表查询
+  #[graphql(name = "is_mobile_search_lbl")]
+  pub is_mobile_search_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
@@ -173,6 +185,12 @@ impl FromRow<'_, MySqlRow> for DynPageFieldModel {
     // 对齐方式
     let align_lbl: String = row.try_get("align")?;
     let align: DynPageFieldAlign = align_lbl.clone().try_into()?;
+    // 手机列表显示
+    let is_mobile_list: u8 = row.try_get("is_mobile_list")?;
+    let is_mobile_list_lbl: String = is_mobile_list.to_string();
+    // 手机列表查询
+    let is_mobile_search: u8 = row.try_get("is_mobile_search")?;
+    let is_mobile_search_lbl: String = is_mobile_search.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -220,6 +238,10 @@ impl FromRow<'_, MySqlRow> for DynPageFieldModel {
       width,
       align,
       align_lbl,
+      is_mobile_list,
+      is_mobile_list_lbl,
+      is_mobile_search,
+      is_mobile_search_lbl,
       is_enabled,
       is_enabled_lbl,
       order_by,
@@ -286,6 +308,18 @@ pub struct DynPageFieldFieldComment {
   /// 对齐方式
   #[graphql(name = "align_lbl")]
   pub align_lbl: String,
+  /// 手机列表显示
+  #[graphql(name = "is_mobile_list")]
+  pub is_mobile_list: String,
+  /// 手机列表显示
+  #[graphql(name = "is_mobile_list_lbl")]
+  pub is_mobile_list_lbl: String,
+  /// 手机列表查询
+  #[graphql(name = "is_mobile_search")]
+  pub is_mobile_search: String,
+  /// 手机列表查询
+  #[graphql(name = "is_mobile_search_lbl")]
+  pub is_mobile_search_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: String,
@@ -365,6 +399,12 @@ pub struct DynPageFieldSearch {
   /// 对齐方式
   #[graphql(skip)]
   pub align: Option<Vec<DynPageFieldAlign>>,
+  /// 手机列表显示
+  #[graphql(skip)]
+  pub is_mobile_list: Option<Vec<u8>>,
+  /// 手机列表查询
+  #[graphql(skip)]
+  pub is_mobile_search: Option<Vec<u8>>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
@@ -488,6 +528,14 @@ impl std::fmt::Debug for DynPageFieldSearch {
     if let Some(ref align) = self.align {
       item = item.field("align", align);
     }
+    // 手机列表显示
+    if let Some(ref is_mobile_list) = self.is_mobile_list {
+      item = item.field("is_mobile_list", is_mobile_list);
+    }
+    // 手机列表查询
+    if let Some(ref is_mobile_search) = self.is_mobile_search {
+      item = item.field("is_mobile_search", is_mobile_search);
+    }
     // 启用
     if let Some(ref is_enabled) = self.is_enabled {
       item = item.field("is_enabled", is_enabled);
@@ -591,6 +639,18 @@ pub struct DynPageFieldInput {
   /// 对齐方式
   #[graphql(name = "align_lbl")]
   pub align_lbl: Option<String>,
+  /// 手机列表显示
+  #[graphql(name = "is_mobile_list")]
+  pub is_mobile_list: Option<u8>,
+  /// 手机列表显示
+  #[graphql(name = "is_mobile_list_lbl")]
+  pub is_mobile_list_lbl: Option<String>,
+  /// 手机列表查询
+  #[graphql(name = "is_mobile_search")]
+  pub is_mobile_search: Option<u8>,
+  /// 手机列表查询
+  #[graphql(name = "is_mobile_search_lbl")]
+  pub is_mobile_search_lbl: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
@@ -664,6 +724,12 @@ impl From<DynPageFieldModel> for DynPageFieldInput {
       // 对齐方式
       align: model.align.into(),
       align_lbl: model.align_lbl.into(),
+      // 手机列表显示
+      is_mobile_list: model.is_mobile_list.into(),
+      is_mobile_list_lbl: model.is_mobile_list_lbl.into(),
+      // 手机列表查询
+      is_mobile_search: model.is_mobile_search.into(),
+      is_mobile_search_lbl: model.is_mobile_search_lbl.into(),
       // 启用
       is_enabled: model.is_enabled.into(),
       is_enabled_lbl: model.is_enabled_lbl.into(),
@@ -717,6 +783,10 @@ impl From<DynPageFieldInput> for DynPageFieldSearch {
       width: input.width.map(|x| [Some(x), Some(x)]),
       // 对齐方式
       align: input.align.map(|x| vec![x]),
+      // 手机列表显示
+      is_mobile_list: input.is_mobile_list.map(|x| vec![x]),
+      // 手机列表查询
+      is_mobile_search: input.is_mobile_search.map(|x| vec![x]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序

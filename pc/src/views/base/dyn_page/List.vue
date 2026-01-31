@@ -1170,9 +1170,8 @@ async function useFindCount(
   search: DynPageSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountDynPage(
-    search2,
+    search,
     opt,
   );
 }

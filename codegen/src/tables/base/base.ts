@@ -1508,7 +1508,7 @@ export default defineConfig({
         },
       ],
       hasSelectInput: true,
-      detailCustomDialogType: "medium",
+      detailCustomDialogType: "large",
       isUniPage: {
         list_page: {
           search_fields: [ "lbl", "code" ],
@@ -1654,6 +1654,16 @@ export default defineConfig({
         width: 100,
       },
       {
+        COLUMN_NAME: "is_mobile_list",
+        isCheckbox: true,
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "is_mobile_search",
+        isCheckbox: true,
+        width: 100,
+      },
+      {
         COLUMN_NAME: "is_enabled",
         isCheckbox: true,
       },
@@ -1704,6 +1714,14 @@ export default defineConfig({
   base_dyn_page_data: {
     opts: {
       isUseDynPageFields: true,
+      isUniPage: {
+        list_page: {
+          search_fields: [ "ref_code" ],
+          lbl_field: "ref_code",
+          lbl2_fields: [ "ref_code" ],
+          right_field: "",
+        },
+      },
     },
     columns: [
       {

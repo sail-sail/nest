@@ -21,7 +21,7 @@ export async function getStatsOss(
     getStatsOss: GetStatsOss[];
   } = await query({
     query: /* GraphQL */ `
-      query($ids: [ID!]!) {
+      query($ids: [String!]!) {
         getStatsOss(ids: $ids) {
           id
           lbl
