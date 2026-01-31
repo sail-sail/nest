@@ -1191,9 +1191,8 @@ async function useFindCount(
   search: PayTransactionsJsapiSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountPayTransactionsJsapi(
-    search2,
+    search,
     opt,
   );
 }

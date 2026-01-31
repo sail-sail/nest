@@ -1287,9 +1287,8 @@ async function useFindCount(
   search: WxoAppSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountWxoApp(
-    search2,
+    search,
     opt,
   );
 }
