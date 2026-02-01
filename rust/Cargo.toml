@@ -17,7 +17,7 @@ tokio = { version = "1.49.0", features = ["rt-multi-thread", "macros", "net", "f
 poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
 async-graphql = { version = "7.2.1", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
 smol_str = { version = "0.3.5", features = ["serde"] }
-slab = "0.4.11"
+slab = "0.4.12"
 chrono = { version = "0.4.43", features = ["serde"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15.0"
@@ -38,12 +38,12 @@ url = "2.5.8"
 # sqlformat = "0.3.5"
 smallvec = { version = "1.15.1", features = ["union", "serde"] }
 # downcast-rs = "2.0.1"
-uuid = { version = "1.19.0", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "1.20.0", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12.3"
 deadpool-redis = "0.22.1"
-redis = { version = "1.0.2", features = ["tokio-comp"], default-features = false }
+redis = { version = "1.0.3", features = ["tokio-comp"], default-features = false }
 bigdecimal = "0.4.10"
-time = "0.3.45"
+time = "0.3.46"
 rust_decimal = { version = "1.40.0", features = ["maths"]}
 rust_decimal_macros = "1.40.0"
 # enum_dispatch = "0.3.13"
