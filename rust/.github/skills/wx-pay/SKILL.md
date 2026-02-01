@@ -202,15 +202,37 @@ async function onPay() {
     return;
   }
   
-  // 5. 查询支付状态（等待回调处理完成）
-  const { trade_state, trade_state_desc } = await tradeStatePayTransactionsJsapi(
-    requestPaymentOptions.out_trade_no,
-  );
+  // 5. 查询支付状态（等待回调处理完成，最多轮询30次）
+  const maxRetries = 30; // 最多轮询30次
+  let trade_state: PayTransactionsJsapiTradeState | undefined;
+  let trade_state_desc = "";
   
+  for (let i = 0; i < maxRetries; i++) {
+    const result = await tradeStatePayTransactionsJsapi(
+      requestPaymentOptions.out_trade_no,
+    );
+    trade_state = result.trade_state;
+    trade_state_desc = result.trade_state_desc;
+    
+    if (trade_state === PayTransactionsJsapiTradeState.Success) {
+      // 支付成功，跳出循环
+      break;
+    }
+    
+    // 如果还没到最后一次，等待200ms后继续
+    if (i < maxRetries - 1) {
+      await new Promise(
+        resolve => setTimeout(resolve, 200)
+      );
+    }
+  }
+  
+  // 检查最终支付状态
   if (trade_state !== PayTransactionsJsapiTradeState.Success) {
     uni.showToast({
-      title: trade_state_desc,
-      icon: "error",
+      title: "未查询到支付结果，请稍后再刷新",
+      icon: "none",
+      duration: 3000,
     });
     return;
   }
