@@ -24,6 +24,31 @@ metadata:
 </tm-form-item>
 ```
 
+# 常用类库
+- `dayjs` - 处理日期时间, 可直接使用, 无需引入
+- `decimal.js` - 处理精确小数计算, 金额计算, 可直接使用, 无需引入
+- `numeral` - 数字格式化, 可直接使用, 无需引入
+
+# 常用开发技巧
+- 表单通常会有 `let inited = $ref(false);` 标记是否初始化完成, 避免在初始化前触发表单变更事件
+
+```vue
+watch(
+  () => dyn_page_field_input,
+  () => {
+    
+    if (!inited) {
+      return;
+    }
+    
+    // 处理表单变更逻辑
+  },
+  {
+    deep: true,
+  },
+);
+```
+
 # 页面开发样式规范
 
 ## CSS - Attributify Mode
