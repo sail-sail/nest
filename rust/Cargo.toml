@@ -76,6 +76,7 @@ docx-handlebars = "0.3.3"
 xlsx-handlebars = "0.2.2"
 tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"] }
 rust-embed = { version = "8.11.0", features = ["include-exclude"] }
+percent-encoding = "2.3.2"
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.2.0"
@@ -155,7 +156,7 @@ docx-handlebars.workspace = true
 xlsx-handlebars.workspace = true
 tokio-tungstenite.workspace = true
 rust-embed.workspace = true
-
+percent-encoding.workspace = true
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"
 

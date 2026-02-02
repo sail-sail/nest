@@ -74,6 +74,7 @@ aes-gcm.workspace = true
 pkcs8.workspace = true
 serde_with.workspace = true
 csv.workspace = true
+percent-encoding.workspace = true
 
 [lib]
 path = "lib.rs"
