@@ -39,6 +39,10 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import {
+  deleteObject,
+} from "/lib/oss/oss.dao.ts";
+
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import * as validators from "/lib/validators/mod.ts";
@@ -1962,6 +1966,36 @@ export async function updateByIdWxPay(
   return id;
 }
 
+// MARK: updateByIdWxPay
+/** 根据 id 更新微信支付设置, 并返回更新后的数据 */
+export async function updateByIdReturnWxPay(
+  id: WxPayId,
+  input: WxPayInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<WxPayModel> {
+  
+  await updateByIdWxPay(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdWxPay(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`微信支付设置 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsWxPay
 /** 根据 ids 删除 微信支付设置 */
 export async function deleteByIdsWxPay(
@@ -2326,6 +2360,16 @@ export async function forceDeleteByIdsWxPay(
     const sql = `delete from wx_wx_pay where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    
+    // 公钥
+    await deleteObject(
+      oldModel?.public_key,
+    );
+    
+    // 私钥
+    await deleteObject(
+      oldModel?.private_key,
+    );
   }
   
   await delCacheWxPay();

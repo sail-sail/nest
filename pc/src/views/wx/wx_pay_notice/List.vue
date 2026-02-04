@@ -1135,9 +1135,8 @@ async function useFindCount(
   search: WxPayNoticeSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountWxPayNotice(
-    search2,
+    search,
     opt,
   );
 }

@@ -1663,6 +1663,36 @@ export async function updateByIdWxoAppToken(
   return id;
 }
 
+// MARK: updateByIdWxoAppToken
+/** 根据 id 更新小程序接口凭据, 并返回更新后的数据 */
+export async function updateByIdReturnWxoAppToken(
+  id: WxoAppTokenId,
+  input: WxoAppTokenInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<WxoAppTokenModel> {
+  
+  await updateByIdWxoAppToken(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdWxoAppToken(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`小程序接口凭据 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsWxoAppToken
 /** 根据 ids 删除 小程序接口凭据 */
 export async function deleteByIdsWxoAppToken(

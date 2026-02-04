@@ -39,6 +39,10 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import {
+  deleteObject,
+} from "/lib/oss/oss.dao.ts";
+
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import * as validators from "/lib/validators/mod.ts";
@@ -1923,6 +1927,36 @@ export async function updateByIdWxoUsr(
   return id;
 }
 
+// MARK: updateByIdWxoUsr
+/** 根据 id 更新公众号用户, 并返回更新后的数据 */
+export async function updateByIdReturnWxoUsr(
+  id: WxoUsrId,
+  input: WxoUsrInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<WxoUsrModel> {
+  
+  await updateByIdWxoUsr(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdWxoUsr(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`公众号用户 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsWxoUsr
 /** 根据 ids 删除 公众号用户 */
 export async function deleteByIdsWxoUsr(
@@ -2141,6 +2175,11 @@ export async function forceDeleteByIdsWxoUsr(
     const sql = `delete from wx_wxo_usr where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    
+    // 头像
+    await deleteObject(
+      oldModel?.head_img,
+    );
   }
   
   await delCacheWxoUsr();

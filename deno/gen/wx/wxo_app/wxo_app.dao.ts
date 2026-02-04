@@ -2207,6 +2207,36 @@ export async function updateByIdWxoApp(
   return id;
 }
 
+// MARK: updateByIdWxoApp
+/** 根据 id 更新公众号设置, 并返回更新后的数据 */
+export async function updateByIdReturnWxoApp(
+  id: WxoAppId,
+  input: WxoAppInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<WxoAppModel> {
+  
+  await updateByIdWxoApp(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdWxoApp(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`公众号设置 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsWxoApp
 /** 根据 ids 删除 公众号设置 */
 export async function deleteByIdsWxoApp(

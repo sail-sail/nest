@@ -2003,6 +2003,36 @@ export async function updateByIdPayTransactionsJsapi(
   return id;
 }
 
+// MARK: updateByIdPayTransactionsJsapi
+/** 根据 id 更新微信JSAPI下单, 并返回更新后的数据 */
+export async function updateByIdReturnPayTransactionsJsapi(
+  id: PayTransactionsJsapiId,
+  input: PayTransactionsJsapiInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<PayTransactionsJsapiModel> {
+  
+  await updateByIdPayTransactionsJsapi(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdPayTransactionsJsapi(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`微信JSAPI下单 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsPayTransactionsJsapi
 /** 根据 ids 删除 微信JSAPI下单 */
 export async function deleteByIdsPayTransactionsJsapi(

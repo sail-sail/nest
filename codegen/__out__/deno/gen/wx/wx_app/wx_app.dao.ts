@@ -1882,6 +1882,36 @@ export async function updateByIdWxApp(
   return id;
 }
 
+// MARK: updateByIdWxApp
+/** 根据 id 更新小程序设置, 并返回更新后的数据 */
+export async function updateByIdReturnWxApp(
+  id: WxAppId,
+  input: WxAppInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<WxAppModel> {
+  
+  await updateByIdWxApp(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdWxApp(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`小程序设置 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsWxApp
 /** 根据 ids 删除 小程序设置 */
 export async function deleteByIdsWxApp(

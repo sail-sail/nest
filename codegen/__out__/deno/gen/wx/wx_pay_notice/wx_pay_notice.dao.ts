@@ -1842,6 +1842,36 @@ export async function updateByIdWxPayNotice(
   return id;
 }
 
+// MARK: updateByIdWxPayNotice
+/** 根据 id 更新微信支付通知, 并返回更新后的数据 */
+export async function updateByIdReturnWxPayNotice(
+  id: WxPayNoticeId,
+  input: WxPayNoticeInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<WxPayNoticeModel> {
+  
+  await updateByIdWxPayNotice(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdWxPayNotice(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`微信支付通知 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsWxPayNotice
 /** 根据 ids 删除 微信支付通知 */
 export async function deleteByIdsWxPayNotice(

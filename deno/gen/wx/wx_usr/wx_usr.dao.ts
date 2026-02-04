@@ -39,6 +39,10 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import {
+  deleteObject,
+} from "/lib/oss/oss.dao.ts";
+
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import * as validators from "/lib/validators/mod.ts";
@@ -1981,6 +1985,36 @@ export async function updateByIdWxUsr(
   return id;
 }
 
+// MARK: updateByIdWxUsr
+/** 根据 id 更新小程序用户, 并返回更新后的数据 */
+export async function updateByIdReturnWxUsr(
+  id: WxUsrId,
+  input: WxUsrInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<WxUsrModel> {
+  
+  await updateByIdWxUsr(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdWxUsr(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`小程序用户 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsWxUsr
 /** 根据 ids 删除 小程序用户 */
 export async function deleteByIdsWxUsr(
@@ -2199,6 +2233,11 @@ export async function forceDeleteByIdsWxUsr(
     const sql = `delete from wx_wx_usr where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    
+    // 头像
+    await deleteObject(
+      oldModel?.avatar_img,
+    );
   }
   
   await delCacheWxUsr();
