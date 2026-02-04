@@ -8,6 +8,8 @@ use generated::common::context::{
   get_req_id,
 };
 
+use smol_str::SmolStr;
+
 use generated::common::wx_pay::decode::{
   decode_wx_pay,
   WxPayNotify,
@@ -65,7 +67,7 @@ pub async fn wx_pay_notify(
   let wx_pay_model = validate_option_wx_pay(
     find_one_wx_pay(
       Some(WxPaySearch {
-        notify_url: Some(NOTIFY_URL.to_string()),
+        notify_url: Some(NOTIFY_URL.into()),
         ..Default::default()
       }),
       None,
@@ -87,9 +89,9 @@ pub async fn wx_pay_notify(
     req_id = get_req_id(),
   );
   
-  let openid = wx_pay_resource.payer.openid;
-  let out_trade_no = wx_pay_resource.out_trade_no;
-  let transaction_id = wx_pay_resource.transaction_id;
+  let openid = SmolStr::new(&wx_pay_resource.payer.openid);
+  let out_trade_no = SmolStr::new(&wx_pay_resource.out_trade_no);
+  let transaction_id = SmolStr::new(&wx_pay_resource.transaction_id);
   
   // 如果 out_trade_no 已经存在, 则不处理
   let pay_transactions_jsapi_model = validate_option_pay_transactions_jsapi(
@@ -132,11 +134,11 @@ pub async fn wx_pay_notify(
     TradeState::USERPAYING => WxPayNoticeTradeState::Userpaying,
     TradeState::PAYERROR => WxPayNoticeTradeState::Payerror,
   };
-  let trade_state_desc = wx_pay_resource.trade_state_desc;
-  let bank_type = wx_pay_resource.bank_type;
-  let attach = wx_pay_resource.attach.unwrap_or_default();
+  let trade_state_desc = SmolStr::new(&wx_pay_resource.trade_state_desc);
+  let bank_type = SmolStr::new(&wx_pay_resource.bank_type);
+  let attach = SmolStr::new(&wx_pay_resource.attach.unwrap_or_default());
   //  "2018-06-08T10:34:56+08:00"
-  let success_time = wx_pay_resource.success_time;
+  let success_time = SmolStr::new(wx_pay_resource.success_time);
   let success_time = chrono::NaiveDateTime::parse_from_str(&success_time, "%Y-%m-%dT%H:%M:%S%z")?;
   let total = wx_pay_resource.amount.total;
   if total > u32::MAX as u64 {
@@ -160,7 +162,8 @@ pub async fn wx_pay_notify(
   let device_id = wx_pay_resource.scene_info
     .map(|scene_info|
       scene_info.device_id.unwrap_or_default()
-    );
+    )
+    .map(SmolStr::new);
   
   let wx_pay_notice_id = create_wx_pay_notice(
     WxPayNoticeInput {
