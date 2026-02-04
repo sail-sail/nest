@@ -1628,6 +1628,36 @@ export async function updateByIdLoginLog(
   return id;
 }
 
+// MARK: updateByIdLoginLog
+/** 根据 id 更新登录日志, 并返回更新后的数据 */
+export async function updateByIdReturnLoginLog(
+  id: LoginLogId,
+  input: LoginLogInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<LoginLogModel> {
+  
+  await updateByIdLoginLog(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdLoginLog(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`登录日志 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsLoginLog
 /** 根据 ids 删除 登录日志 */
 export async function deleteByIdsLoginLog(

@@ -1130,9 +1130,8 @@ async function useFindCount(
   search: OrgSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountOrg(
-    search2,
+    search,
     opt,
   );
 }

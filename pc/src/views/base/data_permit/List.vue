@@ -1074,9 +1074,8 @@ async function useFindCount(
   search: DataPermitSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountDataPermit(
-    search2,
+    search,
     opt,
   );
 }

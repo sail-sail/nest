@@ -56,6 +56,12 @@ export const dynPageFieldFields = [
   // 对齐方式
   "align",
   "align_lbl",
+  // 手机列表显示
+  "is_mobile_list",
+  "is_mobile_list_lbl",
+  // 手机列表查询
+  "is_mobile_search",
+  "is_mobile_search_lbl",
   // 启用
   "is_enabled",
   "is_enabled_lbl",

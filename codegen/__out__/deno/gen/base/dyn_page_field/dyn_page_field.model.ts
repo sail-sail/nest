@@ -48,6 +48,10 @@ declare global {
     width?: [(number|undefined|null), (number|undefined|null)];
     /** 对齐方式 */
     align?: DynPageFieldAlign[];
+    /** 手机列表显示 */
+    is_mobile_list?: number[];
+    /** 手机列表查询 */
+    is_mobile_search?: number[];
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 创建人 */

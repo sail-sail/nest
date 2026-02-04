@@ -1175,9 +1175,8 @@ async function useFindCount(
   search: DictDetailSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountDictDetail(
-    search2,
+    search,
     opt,
   );
 }

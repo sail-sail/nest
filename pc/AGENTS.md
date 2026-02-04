@@ -29,3 +29,4 @@ src/views/{module}/{table}/
 ## 可用 Skills (.github/skills/)
 
 - `pc-graphql-frontend` - 前端自定义 GraphQL API 接口. 当需要在 Vue 3 前端调用后端自定义接口（非标准 CRUD）时使用此技能
+- `ui-style` - 页面开发样式规范. 开发 UI 界面时使用

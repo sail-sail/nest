@@ -1799,6 +1799,36 @@ export async function updateByIdDataPermit(
   return id;
 }
 
+// MARK: updateByIdDataPermit
+/** 根据 id 更新数据权限, 并返回更新后的数据 */
+export async function updateByIdReturnDataPermit(
+  id: DataPermitId,
+  input: DataPermitInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<DataPermitModel> {
+  
+  await updateByIdDataPermit(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdDataPermit(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`数据权限 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsDataPermit
 /** 根据 ids 删除 数据权限 */
 export async function deleteByIdsDataPermit(

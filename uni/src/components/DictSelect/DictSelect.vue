@@ -23,9 +23,10 @@ const emit = defineEmits<{
 
 const props = withDefaults(
   defineProps<{
-    code: string;
+    code?: string;
   }>(),
   {
+    code: undefined,
   },
 );
 

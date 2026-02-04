@@ -611,6 +611,38 @@
             </el-table-column>
           </template>
           
+          <!-- 手机列表显示 -->
+          <template v-else-if="'is_mobile_list_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_mobile_list"
+                  @change="onIs_mobile_list(row.id, row.is_mobile_list)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 手机列表查询 -->
+          <template v-else-if="'is_mobile_search_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_mobile_search"
+                  @change="onIs_mobile_search(row.id, row.is_mobile_search)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
@@ -1108,6 +1140,24 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "手机列表显示",
+      prop: "is_mobile_list_lbl",
+      sortBy: "is_mobile_list",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "手机列表查询",
+      prop: "is_mobile_search_lbl",
+      sortBy: "is_mobile_search",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "启用",
       prop: "is_enabled_lbl",
       sortBy: "is_enabled",
@@ -1211,9 +1261,8 @@ async function useFindCount(
   search: DynPageFieldSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountDynPageField(
-    search2,
+    search,
     opt,
   );
 }
@@ -1395,6 +1444,8 @@ async function onImportExcel() {
     [ "查询条件" ]: "is_search_lbl",
     [ "宽度" ]: "width",
     [ "对齐方式" ]: "align_lbl",
+    [ "手机列表显示" ]: "is_mobile_list_lbl",
+    [ "手机列表查询" ]: "is_mobile_search_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
   };
@@ -1428,6 +1479,8 @@ async function onImportExcel() {
           "is_search_lbl": "string",
           "width": "number",
           "align_lbl": "string",
+          "is_mobile_list_lbl": "string",
+          "is_mobile_search_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
         },
@@ -1493,6 +1546,54 @@ async function onIs_search(id: DynPageFieldId, is_search: 0 | 1) {
     id,
     {
       is_search,
+    },
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}
+
+/** 手机列表显示 */
+async function onIs_mobile_list(id: DynPageFieldId, is_mobile_list: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateByIdDynPageField(
+    id,
+    {
+      is_mobile_list,
+    },
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}
+
+/** 手机列表查询 */
+async function onIs_mobile_search(id: DynPageFieldId, is_mobile_search: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateByIdDynPageField(
+    id,
+    {
+      is_mobile_search,
     },
     {
       notLoading,

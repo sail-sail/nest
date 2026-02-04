@@ -11,7 +11,7 @@ import * as uuid from "uuid";
 import tables, { isUseI18n as isUseI18n0 } from "../tables/tables.ts";
 import { createHash } from "crypto";
 import { unlink } from "fs/promises";
-import { type TablesConfigItem } from "../config.ts";
+import type { TableCloumn, TablesConfigItem } from "../config.ts";
 import { getSchema } from "./information_schema.ts";
 
 import {

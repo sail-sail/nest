@@ -1016,9 +1016,8 @@ async function useFindCount(
   search: BackgroundTaskSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountBackgroundTask(
-    search2,
+    search,
     opt,
   );
 }
