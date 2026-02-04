@@ -1,3 +1,5 @@
+mod aliyun_model;
+
 use core::str;
 use std::collections::{BTreeMap, HashMap};
 use std::time::{SystemTime, SystemTimeError};
@@ -305,23 +307,52 @@ async fn send_request(
  */
 #[tokio::test]
 #[allow(unused_mut)]
-async fn test_aliyun_sign() {
+async fn test_aliyun_sign() -> Result<()> {
+  // dotenv::from_path("D:/hugjs/nest/rust/.env").ok();
   // 创建 HTTP 客户端
   let client = crate::common::util::http::client().clone();
   // env::var()表示通过环境变量获取Access Key ID和Access Key Secret
-  let access_key_id = "ALIBABA_CLOUD_ACCESS_KEY_ID";
-  let access_key_secret = "ALIBABA_CLOUD_ACCESS_KEY_SECRET";
+  // let access_key_id = std::env::var("ALIBABA_CLOUD_ACCESS_KEY_ID").expect("ALIBABA_CLOUD_ACCESS_KEY_ID not set");
+  // let access_key_secret = std::env::var("ALIBABA_CLOUD_ACCESS_KEY_SECRET").expect("ALIBABA_CLOUD_ACCESS_KEY_SECRET not set");
+  
+  let access_key_id = "".to_string();
+  let access_key_secret = "".to_string();
+  
   let access_key_id: &str = &access_key_id;
   let access_key_secret: &str = &access_key_secret;
   
   // RPC接口请求示例一：请求参数"in":"query"   POST
   let method = Method::POST; // 请求方法
-  let host = "ecs.cn-huhehaote.aliyuncs.com"; // endpoint
+  let host = "dysmsapi.aliyuncs.com"; // endpoint
   let canonical_uri = "/"; // RPC接口无资源路径，故使用正斜杠（/）作为CanonicalURI
-  let action = "SendMessageWithTemplate"; // API名称
-  let version = "2018-05-01"; // API版本号
+  let action = "SendSms"; // API名称
+  let version = "2017-05-25"; // API版本号
   
   let mut query: Vec<(String, String)> = Vec::new();
+  
+  /*
+  {
+    "PhoneNumbers":"18122120953"
+    "SignName":"广东南洋长胜酒店有限公司"
+    "TemplateCode":"SMS_501720244"
+    "TemplateParam":{
+      "code":"1234"
+      "room_type_id_lbl":"1234"
+      "check_in_date":"1234"
+      "check_out_date":"1234"
+    }
+  }
+  */
+  query.push( ("PhoneNumbers".to_string(), "18122120953".to_string()) );
+  query.push( ("SignName".to_string(), "广东南洋长胜酒店有限公司".to_string()) );
+  query.push( ("TemplateCode".to_string(), "SMS_501720244".to_string()) );
+  let template_param = json!({
+    "code":"1234",
+    "room_type_id_lbl":"测试房型",
+    "check_in_date":"2022-12-01",
+    "check_out_date":"2022-12-02"
+  });
+  query.push( ("TemplateParam".to_string(), template_param.to_string()) );
   
   // query 参数
   let query_params: Vec<(&str, &str)> = query
@@ -333,8 +364,8 @@ async fn test_aliyun_sign() {
   let body = RequestBody::None;
   
   // 发起请求
-  match call_api(
-    client.clone(),
+  let res = call_api(
+    client,
     method,                          // API请求方式 POST/GET/DELETE                
     host,                          // API服务地址
     canonical_uri,                       // API资源路径
@@ -344,9 +375,12 @@ async fn test_aliyun_sign() {
     body,                          // "in":"body" 请求体参数 支持Json/FormData/Binary类型
     access_key_id,                       
     access_key_secret,
-  )
-  .await {
-    Ok(response) => println!("响应信息: {}", response),
-    Err(error) => eprintln!("异常: {}", error),
-  }
+  ).await?;
+  
+  println!("Response: {}", res);
+  
+  let response: aliyun_model::SendSmsResponse = serde_json::from_str(&res)?;
+  println!("Parsed Response: {:?}", response);
+  
+  Ok(())
 }

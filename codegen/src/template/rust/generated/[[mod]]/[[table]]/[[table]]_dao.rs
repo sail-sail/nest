@@ -2488,8 +2488,7 @@ pub async fn find_all_<#=table#>(
         .iter()
         .find(|item| item.val == model.<#=column_name#>.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.<#=column_name#>.to_string())
-        .into()
+        .unwrap_or_else(|| model.<#=column_name#>.clone().into())
     };<#
     } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
       if (modelLabel) {
@@ -2503,8 +2502,7 @@ pub async fn find_all_<#=table#>(
         .iter()
         .find(|item| item.val == model.<#=column_name#>.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.<#=column_name#>.to_string())
-        .into()
+        .unwrap_or_else(|| model.<#=column_name#>.to_string().into())
     };<#
     }
     #><#
@@ -4324,7 +4322,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     let dictbiz_model = <#=column_name#>_dictbiz.iter().find(|item| {
       item.lbl == input.<#=column_name#>_lbl.clone().unwrap_or_default()
     });
-    let val = dictbiz_model.map(|item| SmolStr::new(item.val.to_string()));
+    let val = dictbiz_model.map(|item| item.val.clone());
     if let Some(val) = val {
       input.<#=column_name_rust#> = val<#
         if (columnDictModels.length > 0 && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
@@ -4350,11 +4348,11 @@ pub async fn set_id_by_lbl_<#=table#>(
         }
       #>.unwrap_or_default()<#
         if (columnDictModels.length > 0 || ![ "varchar", "char", "text" ].includes(data_type)) {
-      #>.to_string().into()<#
+      #>.as_str()<#
         }
       #>
     });
-    let lbl = dictbiz_model.map(|item| SmolStr::new(item.lbl.to_string()));
+    let lbl = dictbiz_model.map(|item| item.lbl.clone());
     input.<#=column_name#>_lbl = lbl;
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
@@ -5836,7 +5834,7 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
   if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
   #>.date()<#
   }
-  #>, <#=autoCodeColumn.autoCode.seq#>, SmolStr::new(&<#=autoCodeColumn.COLUMN_NAME#>))
+  #>, <#=autoCodeColumn.autoCode.seq#>, SmolStr::new(&<#=autoCodeColumn.COLUMN_NAME#>)))
 }<#
 }
 #>

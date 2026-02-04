@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+
 use smol_str::SmolStr;
 
 use crate::base::usr::usr_model::UsrId;

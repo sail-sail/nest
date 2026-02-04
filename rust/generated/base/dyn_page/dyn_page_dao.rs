@@ -697,8 +697,7 @@ pub async fn find_all_dyn_page(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_enabled.to_string().into())
     };
     
     // 动态页面字段
