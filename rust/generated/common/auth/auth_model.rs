@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use smol_str::SmolStr;
+
 use crate::base::usr::usr_model::UsrId;
 use crate::base::tenant::tenant_model::TenantId;
 use crate::base::org::org_model::OrgId;
