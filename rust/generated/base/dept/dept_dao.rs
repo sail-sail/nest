@@ -840,8 +840,7 @@ pub async fn find_all_dept(
         .iter()
         .find(|item| item.val == model.is_locked.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_locked.to_string().into())
     };
     
     // 启用
@@ -850,8 +849,7 @@ pub async fn find_all_dept(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_enabled.to_string().into())
     };
     
   }

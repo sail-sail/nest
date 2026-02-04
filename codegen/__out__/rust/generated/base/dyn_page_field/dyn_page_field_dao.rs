@@ -898,8 +898,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_required.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_required.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_required.to_string().into())
     };
     
     // 查询条件
@@ -908,8 +907,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_search.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_search.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_search.to_string().into())
     };
     
     // 对齐方式
@@ -918,8 +916,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.align.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.align.to_string())
-        .into()
+        .unwrap_or_else(|| model.align.clone().into())
     };
     
     // 手机列表显示
@@ -928,8 +925,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_mobile_list.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_mobile_list.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_mobile_list.to_string().into())
     };
     
     // 手机列表查询
@@ -938,8 +934,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_mobile_search.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_mobile_search.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_mobile_search.to_string().into())
     };
     
     // 启用
@@ -948,8 +943,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_enabled.to_string().into())
     };
     
   }

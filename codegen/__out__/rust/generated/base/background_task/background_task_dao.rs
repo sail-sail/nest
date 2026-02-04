@@ -638,8 +638,7 @@ pub async fn find_all_background_task(
         .iter()
         .find(|item| item.val == model.state.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.state.to_string())
-        .into()
+        .unwrap_or_else(|| model.state.clone().into())
     };
     
     // 类型
@@ -648,8 +647,7 @@ pub async fn find_all_background_task(
         .iter()
         .find(|item| item.val == model.r#type.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.r#type.to_string())
-        .into()
+        .unwrap_or_else(|| model.r#type.clone().into())
     };
     
   }
