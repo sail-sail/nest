@@ -10,9 +10,14 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
+
+use crate::common::cache::cache_dao;
 #[allow(unused_imports)]
 use crate::common::util::string::sql_like;
 #[allow(unused_imports)]
@@ -131,14 +136,14 @@ async fn get_where_query(
     if let Some(ids) = ids {
       let arg = {
         if ids.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.id in (");
@@ -246,14 +251,14 @@ async fn get_where_query(
     if let Some(is_enabled) = is_enabled {
       let arg = {
         if is_enabled.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(is_enabled.len());
           for item in is_enabled {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.is_enabled in (");
@@ -289,14 +294,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
         if create_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -314,21 +319,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<String>> = match search {
+    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -374,14 +379,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
         if update_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -399,21 +404,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<String>> = match search {
+    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -567,7 +572,7 @@ pub async fn find_all_dyn_page(
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
-      prop: "create_time".to_string(),
+      prop: "create_time".into(),
       order: SortOrderEnum::Asc,
     });
   }
@@ -583,15 +588,33 @@ pub async fn find_all_dyn_page(
   
   let args = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.set_cache_key(table, &sql, &args);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: Vec<DynPageModel>;
+      let res = serde_json::from_str::<Vec<DynPageModel>>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = vec![];
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
   let mut res: Vec<DynPageModel> = query(
     sql,
     args,
-    Some(options.clone()),
+    options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   let len = res.len();
   let result_limit_num = find_all_result_limit();
@@ -599,7 +622,7 @@ pub async fn find_all_dyn_page(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
         trace: true,
         ..Default::default()
       },
@@ -643,7 +666,7 @@ pub async fn find_all_dyn_page(
           ..Default::default()
         }),
         None,
-        Some(options.clone()),
+        options,
       ).await?;
       
       if let Some(menu_model) = menu_model {
@@ -660,7 +683,7 @@ pub async fn find_all_dyn_page(
           }),
           None,
           None,
-          Some(options.clone()),
+          options,
         ).await?;
         
         model.role_ids = role_models.iter().map(|item| item.id.clone()).collect();
@@ -675,6 +698,7 @@ pub async fn find_all_dyn_page(
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string())
+        .into()
     };
     
     // 动态页面字段
@@ -781,10 +805,25 @@ pub async fn find_count_dyn_page(
   
   let args = args.into();
   
-  let options = Options::from(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: u64;
+      let res = serde_json::from_str::<u64>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = 0;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let res: Option<CountModel> = query_one(
@@ -792,6 +831,11 @@ pub async fn find_count_dyn_page(
     args,
     options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   let total = res
     .map(|item| item.total)
@@ -976,13 +1020,13 @@ pub async fn find_by_id_ok_dyn_page(
   ).await?;
   
   let Some(dyn_page_model) = dyn_page_model else {
-    let err_msg = "此 动态页面 已被删除";
+    let err_msg = SmolStr::new("此 动态页面 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: err_msg.to_string(),
+      message: err_msg,
       trace: true,
       ..Default::default()
     }));
@@ -1075,7 +1119,7 @@ pub async fn find_by_ids_ok_dyn_page(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1088,7 +1132,7 @@ pub async fn find_by_ids_ok_dyn_page(
   ).await?;
   
   if dyn_page_models.len() != len {
-    let err_msg = "此 动态页面 已被删除";
+    let err_msg = SmolStr::new("此 动态页面 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1101,7 +1145,7 @@ pub async fn find_by_ids_ok_dyn_page(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = "此 动态页面 已经被删除";
+      let err_msg = SmolStr::new("此 动态页面 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<DynPageModel>>>()?;
@@ -1147,7 +1191,7 @@ pub async fn find_by_ids_dyn_page(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1270,10 +1314,25 @@ pub async fn exists_dyn_page(
   
   let args = args.into();
   
-  let options = Options::from(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: bool;
+      let res = serde_json::from_str::<bool>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = false;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let res: Option<(bool,)> = query_one(
@@ -1281,6 +1340,11 @@ pub async fn exists_dyn_page(
     args,
     options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   Ok(res
     .map(|item| item.0)
@@ -1367,7 +1431,7 @@ pub async fn find_by_unique_dyn_page(
   if let Some(id) = search.id {
     let model = find_by_id_dyn_page(
       id,
-      options.clone(),
+      options,
     ).await?;
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
@@ -1390,7 +1454,7 @@ pub async fn find_by_unique_dyn_page(
       search.into(),
       None,
       sort.clone(),
-      options.clone(),
+      options,
     ).await?
   };
   models.append(&mut models_tmp);
@@ -1411,7 +1475,7 @@ pub async fn find_by_unique_dyn_page(
       search.into(),
       None,
       sort.clone(),
-      options.clone(),
+      options,
     ).await?
   };
   models.append(&mut models_tmp);
@@ -1547,7 +1611,7 @@ pub async fn set_id_by_lbl_dyn_page(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.is_enabled = val.parse::<u8>()?.into();
     }
@@ -1559,7 +1623,7 @@ pub async fn set_id_by_lbl_dyn_page(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.is_enabled_lbl = lbl;
   }
   
@@ -1593,7 +1657,7 @@ pub async fn creates_return_dyn_page(
   
   let ids = _creates(
     inputs.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let models_dyn_page = find_by_ids_dyn_page(
@@ -1662,7 +1726,7 @@ async fn _creates(
     let (
       code_seq,
       code,
-    ) = find_auto_code_dyn_page(options.clone()).await?;
+    ) = find_auto_code_dyn_page(options).await?;
     input.code_seq = Some(code_seq);
     input.code = Some(code);
   }
@@ -1679,14 +1743,14 @@ async fn _creates(
     let old_models = find_by_unique_dyn_page(
       input.clone().into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if !old_models.is_empty() {
       let mut id: Option<DynPageId> = None;
       
       for old_model in old_models {
-        let options = Options::from(options.clone())
+        let options = Options::from(options)
           .set_unique_type(unique_type);
         
         id = check_by_unique_dyn_page(
@@ -1783,11 +1847,11 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_lbl = usr_model.lbl;
@@ -1808,10 +1872,10 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
-          options.clone(),
+          options,
         ).await?;
         if let Some(usr_model) = usr_model {
           usr_lbl = usr_model.lbl;
@@ -1919,17 +1983,15 @@ async fn _creates(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  let options = Some(options);
+  del_cache_dyn_page().await?;
   
   let affected_rows = execute(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
+  
+  del_cache_dyn_page().await?;
   
   if affected_rows != inputs2_len as u64 {
     return Err(eyre!("affectedRows: {affected_rows} != {inputs2_len}"));
@@ -1948,7 +2010,7 @@ async fn _creates(
         model.dyn_page_id = Some(id);
         create_dyn_page_field(
           model,
-          options.clone(),
+          options,
         ).await?;
       }
     }
@@ -1966,11 +2028,11 @@ async fn _creates(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     let menu_id = if let Some(menu_model) = menu_model {
       // 更新菜单名称
-      let menu_options = Options::from(options.clone())
+      let menu_options = Options::from(options)
         .set_is_creating(Some(true));
       update_by_id_menu(
         menu_model.id,
@@ -1994,7 +2056,7 @@ async fn _creates(
           is_enabled: input.is_enabled,
           ..Default::default()
         },
-        options.clone(),
+        options,
       ).await?
     };
     
@@ -2009,7 +2071,7 @@ async fn _creates(
       }),
       None,
       None,
-      options.clone(),
+      options,
     ).await?;
     let old_role_ids: Vec<RoleId> = old_role_models.iter().map(|item| item.id.clone()).collect();
     
@@ -2027,7 +2089,7 @@ async fn _creates(
           .filter(|id| *id != &menu_id)
           .cloned()
           .collect();
-        let role_options = Options::from(options.clone())
+        let role_options = Options::from(options)
           .set_is_creating(Some(true));
         update_by_id_role(
           role_id,
@@ -2049,7 +2111,7 @@ async fn _creates(
     if !add_role_ids.is_empty() {
       let add_role_models = find_by_ids_role(
         add_role_ids,
-        options.clone(),
+        options,
       ).await?;
       for role_model in add_role_models {
         let role_id = role_model.id.clone();
@@ -2058,7 +2120,7 @@ async fn _creates(
           continue;
         }
         menu_ids.push(menu_id);
-        let role_options = Options::from(options.clone())
+        let role_options = Options::from(options)
           .set_is_creating(Some(true));
         update_by_id_role(
           role_id,
@@ -2079,7 +2141,7 @@ async fn _creates(
 /// 获得 动态页面 自动编码
 pub async fn find_auto_code_dyn_page(
   options: Option<Options>,
-) -> Result<(u32, String)> {
+) -> Result<(u32, SmolStr)> {
   
   let table = get_table_name_dyn_page();
   let method = "find_auto_code_dyn_page";
@@ -2101,11 +2163,11 @@ pub async fn find_auto_code_dyn_page(
     None,
     Some(vec![
       SortInput {
-        prop: "code_seq".to_owned(),
+        prop: "code_seq".into(),
         order: SortOrderEnum::Desc,
       },
     ]),
-    options.clone(),
+    options,
   ).await?;
   
   let code_seq = model
@@ -2119,11 +2181,11 @@ pub async fn find_auto_code_dyn_page(
     }),
     Some(vec![
       SortInput {
-        prop: "code_seq".to_owned(),
+        prop: "code_seq".into(),
         order: SortOrderEnum::Desc,
       },
     ]),
-    options.clone(),
+    options,
   ).await?;
   
   let code_seq_deleted = model_deleted
@@ -2138,7 +2200,7 @@ pub async fn find_auto_code_dyn_page(
   
   let code = format!("/dyn/pg{code_seq:0}");
   
-  Ok((code_seq, code))
+  Ok((code_seq, SmolStr::new(&code)))
 }
 
 // MARK: create_return_dyn_page
@@ -2152,7 +2214,7 @@ pub async fn create_return_dyn_page(
   
   let id = create_dyn_page(
     input.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let model_dyn_page = find_by_id_dyn_page(
@@ -2166,7 +2228,7 @@ pub async fn create_return_dyn_page(
       let err_msg = "create_return_dyn_page: model_dyn_page.is_none()";
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg.into(),
           trace: true,
           ..Default::default()
         },
@@ -2243,6 +2305,7 @@ pub async fn update_tenant_by_id_dyn_page(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
@@ -2256,7 +2319,7 @@ pub async fn update_tenant_by_id_dyn_page(
   let num = execute(
     sql,
     args,
-    Some(options.clone()),
+    options,
   ).await?;
   
   Ok(num)
@@ -2299,7 +2362,7 @@ pub async fn update_by_id_dyn_page(
   
   let old_model = find_by_id_dyn_page(
     id,
-    options.clone(),
+    options,
   ).await?;
   
   let old_model = match old_model {
@@ -2327,7 +2390,7 @@ pub async fn update_by_id_dyn_page(
     let models = find_by_unique_dyn_page(
       input.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let models = models.into_iter()
@@ -2408,7 +2471,7 @@ pub async fn update_by_id_dyn_page(
       }.into(),
       None,
       None,
-      options.clone(),
+      options,
     ).await?;
     if !dyn_page_field_models.is_empty() && !dyn_page_field_input.is_empty() {
       field_num += 1;
@@ -2423,7 +2486,7 @@ pub async fn update_by_id_dyn_page(
       }
       delete_by_ids_dyn_page_field(
         vec![model.id],
-        options.clone(),
+        options,
       ).await?;
     }
     for mut input2 in dyn_page_field_input {
@@ -2431,7 +2494,7 @@ pub async fn update_by_id_dyn_page(
         input2.dyn_page_id = Some(id);
         create_dyn_page_field(
           input2,
-          options.clone(),
+          options,
         ).await?;
         continue;
       }
@@ -2442,7 +2505,7 @@ pub async fn update_by_id_dyn_page(
       {
         revert_by_ids_dyn_page_field(
           vec![id2.clone()],
-          options.clone(),
+          options,
         ).await?;
       }
       input2.id = None;
@@ -2450,20 +2513,24 @@ pub async fn update_by_id_dyn_page(
       update_by_id_dyn_page_field(
         id2.clone(),
         input2,
-        options.clone(),
+        options,
       ).await?;
     }
+  }
+  
+  if field_num > 0 {
+    del_cache_dyn_page().await?;
   }
   
   if field_num > 0 {
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2483,11 +2550,11 @@ pub async fn update_by_id_dyn_page(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2541,32 +2608,14 @@ pub async fn update_by_id_dyn_page(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
     execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
-  }
-  
-  if field_num > 0 {
-    let options = Options::from(options.clone());
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
-      del_caches(
-        del_cache_key1s
-          .iter()
-          .map(|item| item.as_str())
-          .collect::<Vec<&str>>()
-          .as_slice()
-      ).await?;
-    }
+    del_cache_dyn_page().await?;
+    
   }
   
   // 根据 code 路由查找菜单, 如果菜单不存在则创建菜单, 否则更新菜单名称
@@ -2577,11 +2626,11 @@ pub async fn update_by_id_dyn_page(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     let menu_id = if let Some(menu_model) = menu_model {
       // 更新菜单名称
-      let menu_options = Options::from(options.clone())
+      let menu_options = Options::from(options)
         .set_is_creating(Some(true));
       update_by_id_menu(
         menu_model.id,
@@ -2605,7 +2654,7 @@ pub async fn update_by_id_dyn_page(
           is_enabled: input.is_enabled,
           ..Default::default()
         },
-        options.clone(),
+        options,
       ).await?
     };
     
@@ -2620,7 +2669,7 @@ pub async fn update_by_id_dyn_page(
       }),
       None,
       None,
-      options.clone(),
+      options,
     ).await?;
     let old_role_ids: Vec<RoleId> = old_role_models.iter().map(|item| item.id.clone()).collect();
     
@@ -2638,7 +2687,7 @@ pub async fn update_by_id_dyn_page(
           .filter(|id| *id != &menu_id)
           .cloned()
           .collect();
-        let role_options = Options::from(options.clone())
+        let role_options = Options::from(options)
           .set_is_creating(Some(true));
         update_by_id_role(
           role_id,
@@ -2660,7 +2709,7 @@ pub async fn update_by_id_dyn_page(
     if !add_role_ids.is_empty() {
       let add_role_models = find_by_ids_role(
         add_role_ids,
-        options.clone(),
+        options,
       ).await?;
       for role_model in add_role_models {
         let role_id = role_model.id.clone();
@@ -2669,7 +2718,7 @@ pub async fn update_by_id_dyn_page(
           continue;
         }
         menu_ids.push(menu_id);
-        let role_options = Options::from(options.clone())
+        let role_options = Options::from(options)
           .set_is_creating(Some(true));
         update_by_id_role(
           role_id,
@@ -2698,7 +2747,7 @@ pub async fn update_by_id_return_dyn_page(
   update_by_id_dyn_page(
     id,
     input,
-    options.clone(),
+    options,
   ).await?;
   
   let model = find_by_id_dyn_page(
@@ -2789,6 +2838,8 @@ pub async fn delete_by_ids_dyn_page(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  del_cache_dyn_page().await?;
+  
   let mut num = 0;
   let mut menu_ids_to_delete: Vec<MenuId> = vec![];
   
@@ -2796,7 +2847,7 @@ pub async fn delete_by_ids_dyn_page(
     
     let old_model = find_by_id_dyn_page(
       id,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2823,7 +2874,7 @@ pub async fn delete_by_ids_dyn_page(
           ..Default::default()
         }),
         None,
-        options.clone(),
+        options,
       ).await?;
       if let Some(menu_model) = menu_model {
         if menu_model.is_dyn_page == 1 {
@@ -2837,11 +2888,11 @@ pub async fn delete_by_ids_dyn_page(
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = String::new();
+    let mut usr_lbl = SmolStr::new("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
-        options.clone(),
+        options,
       ).await?;
       if let Some(usr_model) = usr_model {
         usr_lbl = usr_model.lbl;
@@ -2875,18 +2926,14 @@ pub async fn delete_by_ids_dyn_page(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
+  
+  del_cache_dyn_page().await?;
   
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
@@ -2901,21 +2948,21 @@ pub async fn delete_by_ids_dyn_page(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   delete_by_ids_dyn_page_field(
     dyn_page_field_models.into_iter()
       .map(|item| item.id)
       .collect::<Vec<DynPageFieldId>>(),
-    options.clone(),
+    options,
   ).await?;
   
   // 级联删除菜单
   if !menu_ids_to_delete.is_empty() {
     delete_by_ids_menu(
       menu_ids_to_delete,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -2980,13 +3027,14 @@ pub async fn enable_by_ids_dyn_page(
     return Ok(0);
   }
   
+  del_cache_dyn_page().await?;
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
+  let options = Some(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!("update {table} set is_enabled=? where id=? limit 1");
@@ -2996,14 +3044,14 @@ pub async fn enable_by_ids_dyn_page(
     
     let args: Vec<_> = args.into();
     
-    let options = options.clone().into();
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
   }
+  
+  del_cache_dyn_page().await?;
   
   Ok(num)
 }
@@ -3036,9 +3084,10 @@ pub async fn revert_by_ids_dyn_page(
     return Ok(0);
   }
   
+  del_cache_dyn_page().await?;
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  let options = options.set_del_cache_key1s(get_cache_tables());
   let options = Some(options);
   
   let mut num = 0;
@@ -3060,13 +3109,13 @@ pub async fn revert_by_ids_dyn_page(
         ..Default::default()
       }.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if old_model.is_none() {
       old_model = find_by_id_dyn_page(
         id,
-        options.clone(),
+        options,
       ).await?;
     }
     
@@ -3082,7 +3131,7 @@ pub async fn revert_by_ids_dyn_page(
       let models = find_by_unique_dyn_page(
         input.into(),
         None,
-        options.clone(),
+        options,
       ).await?;
       
       let models: Vec<DynPageModel> = models
@@ -3108,7 +3157,7 @@ pub async fn revert_by_ids_dyn_page(
           ..Default::default()
         }),
         None,
-        options.clone(),
+        options,
       ).await?;
       if let Some(menu_model) = menu_model {
         if menu_model.is_dyn_page == 1 {
@@ -3120,10 +3169,12 @@ pub async fn revert_by_ids_dyn_page(
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
   }
+  
+  del_cache_dyn_page().await?;
   
   // 动态页面字段
   let dyn_page_field_models = find_all_dyn_page_field(
@@ -3134,7 +3185,7 @@ pub async fn revert_by_ids_dyn_page(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   revert_by_ids_dyn_page_field(
@@ -3142,14 +3193,14 @@ pub async fn revert_by_ids_dyn_page(
       .into_iter()
       .map(|item| item.id)
       .collect::<Vec<DynPageFieldId>>(),
-    options.clone(),
+    options,
   ).await?;
   
   // 级联还原菜单
   if !menu_ids_to_revert.is_empty() {
     revert_by_ids_menu(
       menu_ids_to_revert,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -3191,6 +3242,8 @@ pub async fn force_delete_by_ids_dyn_page(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  del_cache_dyn_page().await?;
+  
   let mut num = 0;
   let mut menu_ids_to_force_delete: Vec<MenuId> = vec![];
   
@@ -3203,7 +3256,7 @@ pub async fn force_delete_by_ids_dyn_page(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -3231,7 +3284,7 @@ pub async fn force_delete_by_ids_dyn_page(
           ..Default::default()
         }),
         None,
-        options.clone(),
+        options,
       ).await?;
       if let Some(menu_model) = menu_model {
         if menu_model.is_dyn_page == 1 {
@@ -3248,16 +3301,10 @@ pub async fn force_delete_by_ids_dyn_page(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -3270,15 +3317,17 @@ pub async fn force_delete_by_ids_dyn_page(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   force_delete_by_ids_dyn_page_field(
     dyn_page_field_models.into_iter()
       .map(|item| item.id)
       .collect::<Vec<DynPageFieldId>>(),
-    options.clone(),
+    options,
   ).await?;
+  
+  del_cache_dyn_page().await?;
   
   Ok(num)
 }
@@ -3317,16 +3366,31 @@ pub async fn find_last_order_by_dyn_page(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: u32;
+      let res = serde_json::from_str::<u32>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = 0;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let model = query_one::<OrderByModel>(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
   
   let order_by = {
@@ -3336,6 +3400,11 @@ pub async fn find_last_order_by_dyn_page(
       0
     }
   };
+  
+  {
+    let str = serde_json::to_string(&order_by)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   Ok(order_by)
 }
@@ -3347,7 +3416,7 @@ pub async fn validate_is_enabled_dyn_page(
   model: &DynPageModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let err_msg = "动态页面已禁用";
+    let err_msg = SmolStr::new("动态页面已禁用");
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -3363,14 +3432,14 @@ pub async fn validate_option_dyn_page(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = "动态页面不存在";
+      let err_msg = SmolStr::new("动态页面不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),
       );
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg,
           trace: true,
           ..Default::default()
         },

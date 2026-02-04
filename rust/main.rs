@@ -9,6 +9,8 @@ use std::time::Instant;
 
 use tracing::error;
 
+use smol_str::SmolStr;
+
 use poem::{
   handler, Response,
   web::{Data, Json, Query},
@@ -44,15 +46,15 @@ use generated::common::tmpfile::tmpfile_dao;
 #[derive(serde::Deserialize)]
 #[allow(non_snake_case)]
 pub struct AuthTokenParam {
-  pub Authorization: Option<String>,
+  pub Authorization: Option<SmolStr>,
 }
 
 #[derive(Debug, serde::Deserialize)]
 #[allow(non_snake_case)]
 pub struct GglParams {
-  pub query: String,
-  pub variables: Option<String>,
-  pub Authorization: Option<String>,
+  pub query: SmolStr,
+  pub variables: Option<SmolStr>,
+  pub Authorization: Option<SmolStr>,
 }
 
 #[handler]
@@ -63,7 +65,7 @@ pub async fn graphql_handler_get(
 ) -> Response {
   // x-request-id
   let request_id = req.header("x-request-id")
-    .map(ToString::to_string);
+    .map(SmolStr::new);
   if let Some(res) = handle_request_id(request_id).await {
     return res;
   }
@@ -72,11 +74,11 @@ pub async fn graphql_handler_get(
     Some(ip) => ip.to_string(),
     None => "127.0.0.1".to_string(),
   };
-  let ip = generated::common::gql::model::Ip(ip);
+  let ip = generated::common::gql::model::Ip(ip.into());
   
   let query = gql_params.query.replace("\\n", " ");
   let mut gql_req = Request::new(query);
-  match req.header(AUTHORIZATION).map(ToString::to_string) {
+  match req.header(AUTHORIZATION).map(SmolStr::new) {
     None => {
       if let Some(auth_token) = gql_params.Authorization {
         gql_req = gql_req.data::<AuthToken>(auth_token);
@@ -131,7 +133,7 @@ pub async fn graphql_handler(
 ) -> Response {
   // x-request-id
   let request_id = req.header("x-request-id")
-    .map(ToString::to_string);
+    .map(SmolStr::new);
   if let Some(res) = handle_request_id(request_id).await {
     return res;
   }
@@ -140,11 +142,11 @@ pub async fn graphql_handler(
     Some(ip) => ip.to_string(),
     None => "127.0.0.1".to_string(),
   };
-  let ip = generated::common::gql::model::Ip(ip);
+  let ip = generated::common::gql::model::Ip(ip.into());
   
   let now0 = Instant::now();
   let mut gql_req = data.0;
-  match req.header(AUTHORIZATION).map(ToString::to_string) {
+  match req.header(AUTHORIZATION).map(SmolStr::new) {
     None => {
       if let Some(auth_token) = token_param.Authorization {
         gql_req = gql_req.data::<AuthToken>(auth_token);

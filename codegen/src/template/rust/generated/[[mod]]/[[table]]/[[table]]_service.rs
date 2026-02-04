@@ -84,6 +84,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};<#
 if (table !== "i18n" && isUseI18n) {
 #>
@@ -169,7 +172,7 @@ async fn set_search_query(
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;<#
     if (hasOrgId) {
@@ -190,13 +193,13 @@ async fn set_search_query(
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if !is_admin(usr_id, options.clone()).await? {
+  if !is_admin(usr_id, options).await? {
     search.create_usr_id = Some(vec![usr_id]);
   }<#
   } else if (hasOrgId) {
   #>
   
-  if !is_admin(usr_id, options.clone()).await? {
+  if !is_admin(usr_id, options).await? {
     search.org_id = Some(org_ids);
   }<#
   }
@@ -216,7 +219,7 @@ pub async fn find_all_<#=table#>(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
@@ -247,7 +250,7 @@ pub async fn find_count_<#=table#>(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
@@ -277,7 +280,7 @@ pub async fn find_one_<#=table#>(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
@@ -308,7 +311,7 @@ pub async fn find_one_ok_<#=table#>(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
@@ -545,7 +548,7 @@ pub async fn update_by_id_<#=table#>(
   let old_model = validate_option_<#=table#>(
     <#=table#>_dao::find_by_id_<#=table#>(
       <#=table#>_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;<#
   }
@@ -554,7 +557,7 @@ pub async fn update_by_id_<#=table#>(
   #>
   
   let usr_id = get_auth_id_ok()?;
-  if !is_admin(usr_id, options.clone()).await? &&
+  if !is_admin(usr_id, options).await? &&
     old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
     old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected &&
     old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unaudited
@@ -660,7 +663,7 @@ pub async fn update_by_id_<#=table#>(
   let <#=table#>_id = <#=table#>_dao::update_by_id_<#=table#>(
     <#=table#>_id,
     <#=table#>_input,
-    options.clone(),
+    options,
   ).await?;<#
   if (mod === "base" && table === "i18n") {
   #>
@@ -694,7 +697,7 @@ pub async fn audit_submit_<#=table#>(
   let old_model = validate_option_<#=table#>(
     <#=table#>_dao::find_by_id_<#=table#>(
       <#=table#>_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -743,7 +746,7 @@ pub async fn audit_submit_<#=table#>(
   <#=table#>_dao::update_by_id_<#=table#>(
     <#=table#>_id,
     <#=table#>_input,
-    options.clone(),
+    options,
   ).await?;<#
   if (auditTable_Up) {
   #>
@@ -754,7 +757,7 @@ pub async fn audit_submit_<#=table#>(
   let audit_usr_model = validate_option_usr(
     find_by_id_usr(
       audit_usr_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -793,7 +796,7 @@ pub async fn audit_pass_<#=table#>(
   let old_model = validate_option_<#=table#>(
     <#=table#>_dao::find_by_id_<#=table#>(
       <#=table#>_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -841,7 +844,7 @@ pub async fn audit_pass_<#=table#>(
   <#=table#>_dao::update_by_id_<#=table#>(
     <#=table#>_id, 
     <#=table#>_input,
-    options.clone(),
+    options,
   ).await?;<#
   if (auditTable_Up) {
   #>
@@ -852,7 +855,7 @@ pub async fn audit_pass_<#=table#>(
   let audit_usr_model = validate_option_usr(
     find_by_id_usr(
       audit_usr_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -893,7 +896,7 @@ pub async fn audit_reject_<#=table#>(
   let old_model = validate_option_<#=table#>(
     <#=table#>_dao::find_by_id_<#=table#>(
       <#=table#>_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -946,7 +949,7 @@ pub async fn audit_reject_<#=table#>(
   <#=table#>_dao::update_by_id_<#=table#>(
     <#=table#>_id,
     <#=table#>_input,
-    options.clone(),
+    options,
   ).await?;<#
   if (auditTable_Up) {
   #>
@@ -957,7 +960,7 @@ pub async fn audit_reject_<#=table#>(
   let audit_usr_model = validate_option_usr(
     find_by_id_usr(
       audit_usr_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -999,7 +1002,7 @@ pub async fn audit_review_<#=table#>(
   let old_model = validate_option_<#=table#>(
     <#=table#>_dao::find_by_id_<#=table#>(
       <#=table#>_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -1008,7 +1011,7 @@ pub async fn audit_review_<#=table#>(
     #>
     let table_comment = ns(
       "<#=table_comment#>".to_owned(),
-      options.clone(),
+      options,
     ).await?;
     let map = HashMap::from([
       ("0".to_owned(), table_comment),
@@ -1047,7 +1050,7 @@ pub async fn audit_review_<#=table#>(
   <#=table#>_dao::update_by_id_<#=table#>(
     <#=table#>_id, 
     <#=table#>_input,
-    options.clone(),
+    options,
   ).await?;<#
   if (auditTable_Up) {
   #>
@@ -1058,7 +1061,7 @@ pub async fn audit_review_<#=table#>(
   let audit_usr_model = validate_option_usr(
     find_by_id_usr(
       audit_usr_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -1116,7 +1119,7 @@ pub async fn delete_by_ids_<#=table#>(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;<#
   }
   #><#
@@ -1129,7 +1132,7 @@ pub async fn delete_by_ids_<#=table#>(
       #>
       let table_comment = ns(
         "<#=table_comment#>".to_owned(),
-        options.clone(),
+        options,
       ).await?;
       let map = HashMap::from([
         ("0".to_owned(), table_comment),
@@ -1170,7 +1173,7 @@ pub async fn delete_by_ids_<#=table#>(
   #>
   
   let usr_id = get_auth_id_ok()?;
-  if !is_admin(usr_id, options.clone()).await? {
+  if !is_admin(usr_id, options).await? {
     for old_model in &old_models {
       if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
         old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected &&
@@ -1180,7 +1183,7 @@ pub async fn delete_by_ids_<#=table#>(
         #>
         let table_comment = ns(
           "<#=table_comment#>".to_owned(),
-          options.clone(),
+          options,
         ).await?;
         let map = HashMap::from([
           ("0".to_owned(), table_comment),
@@ -1230,7 +1233,7 @@ pub async fn delete_by_ids_<#=table#>(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   let <#=auditTable#>_ids = <#=auditTable#>_models
@@ -1455,7 +1458,7 @@ pub async fn revert_by_ids_<#=table#>(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   let <#=auditTable#>_ids = <#=auditTable#>_models
@@ -1516,7 +1519,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   let <#=auditTable#>_ids = <#=auditTable#>_models

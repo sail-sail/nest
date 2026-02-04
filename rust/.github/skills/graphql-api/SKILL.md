@@ -102,6 +102,8 @@ pub async fn method_name(
 ```rust
 use color_eyre::eyre::{Result, eyre};
 
+use smol_str::SmolStr;
+
 use generated::common::context::{
   Options,
   get_auth_id_ok,
@@ -129,7 +131,7 @@ pub async fn method_name(
       ..Default::default()
     }),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   // 查询列表, 变量名命名通常是 {table}_models 或者 {table}_model
@@ -144,10 +146,10 @@ pub async fn method_name(
       is_result_limit: Some(false), // 不限制总数, 默认 find_all_xxx 会限制总数, 超过1000报错, 可配置, 默认true, 一般无需此参数
     }), // 不分页则传入 None 即可
     Some(SortInput {
-      prop: "created_time".to_string(),
+      prop: SmolStr::new("created_time"),
       order: SortOrderEnum::Desc,
     }), // 一般无需排序参数传入 None 即可, 建表时已加默认排序
-    options.clone(),
+    options,
   ).await?;
   
   // 获取当前时间

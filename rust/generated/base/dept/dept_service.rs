@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -40,7 +43,7 @@ async fn set_search_query(
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -53,7 +56,7 @@ async fn set_search_query(
     org_ids.push(OrgId::default());
   }
   
-  if !is_admin(usr_id, options.clone()).await? {
+  if !is_admin(usr_id, options).await? {
     search.org_id = Some(org_ids);
   }
   Ok(())
@@ -71,7 +74,7 @@ pub async fn find_all_dept(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dept_models = dept_dao::find_all_dept(
@@ -94,7 +97,7 @@ pub async fn find_count_dept(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dept_num = dept_dao::find_count_dept(
@@ -116,7 +119,7 @@ pub async fn find_one_dept(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dept_model = dept_dao::find_one_dept(
@@ -139,7 +142,7 @@ pub async fn find_one_ok_dept(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dept_model = dept_dao::find_one_ok_dept(
@@ -273,7 +276,7 @@ pub async fn update_by_id_dept(
   let dept_id = dept_dao::update_by_id_dept(
     dept_id,
     dept_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(dept_id)
@@ -304,7 +307,7 @@ pub async fn delete_by_ids_dept(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

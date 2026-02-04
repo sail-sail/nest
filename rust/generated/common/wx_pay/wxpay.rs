@@ -76,8 +76,8 @@ impl WxPay<'_> {
       let message = message.unwrap_or_else(|| "预支付交易会话标识为空".to_string());
       return Err(eyre!(
         ServiceException {
-          code,
-          message,
+          code: code.into(),
+          message: message.into(),
           trace: true,
           ..Default::default()
         }

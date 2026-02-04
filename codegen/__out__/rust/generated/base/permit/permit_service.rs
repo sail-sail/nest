@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::permit_model::*;
@@ -39,7 +42,7 @@ pub async fn find_all_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let permit_models = permit_dao::find_all_permit(
@@ -62,7 +65,7 @@ pub async fn find_count_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let permit_num = permit_dao::find_count_permit(
@@ -84,7 +87,7 @@ pub async fn find_one_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let permit_model = permit_dao::find_one_permit(
@@ -107,7 +110,7 @@ pub async fn find_one_ok_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let permit_model = permit_dao::find_one_ok_permit(
@@ -214,7 +217,7 @@ pub async fn update_by_id_permit(
   let old_model = validate_option_permit(
     permit_dao::find_by_id_permit(
       permit_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -230,7 +233,7 @@ pub async fn update_by_id_permit(
   let permit_id = permit_dao::update_by_id_permit(
     permit_id,
     permit_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(permit_id)
@@ -261,7 +264,7 @@ pub async fn delete_by_ids_permit(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

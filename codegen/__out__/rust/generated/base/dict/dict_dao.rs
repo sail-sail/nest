@@ -10,9 +10,14 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
+
+use crate::common::cache::cache_dao;
 #[allow(unused_imports)]
 use crate::common::util::string::sql_like;
 #[allow(unused_imports)]
@@ -103,14 +108,14 @@ async fn get_where_query(
     if let Some(ids) = ids {
       let arg = {
         if ids.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.id in (");
@@ -119,7 +124,7 @@ async fn get_where_query(
     }
   }
   {
-    let keyword: Option<String> = match search {
+    let keyword: Option<SmolStr> = match search {
       Some(item) => item.keyword.clone(),
       None => None,
     };
@@ -185,14 +190,14 @@ async fn get_where_query(
     if let Some(r#type) = r#type {
       let arg = {
         if r#type.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(r#type.len());
           for item in r#type {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.type in (");
@@ -209,14 +214,14 @@ async fn get_where_query(
     if let Some(is_add) = is_add {
       let arg = {
         if is_add.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(is_add.len());
           for item in is_add {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.is_add in (");
@@ -233,14 +238,14 @@ async fn get_where_query(
     if let Some(is_enabled) = is_enabled {
       let arg = {
         if is_enabled.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(is_enabled.len());
           for item in is_enabled {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.is_enabled in (");
@@ -293,14 +298,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
         if create_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -318,21 +323,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<String>> = match search {
+    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -378,14 +383,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
         if update_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -403,21 +408,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<String>> = match search {
+    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -581,7 +586,7 @@ pub async fn find_all_dict(
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
-      prop: "create_time".to_string(),
+      prop: "create_time".into(),
       order: SortOrderEnum::Asc,
     });
   }
@@ -597,15 +602,33 @@ pub async fn find_all_dict(
   
   let args = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.set_cache_key(table, &sql, &args);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: Vec<DictModel>;
+      let res = serde_json::from_str::<Vec<DictModel>>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = vec![];
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
   let mut res: Vec<DictModel> = query(
     sql,
     args,
-    Some(options),
+    options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   let len = res.len();
   let result_limit_num = find_all_result_limit();
@@ -613,7 +636,7 @@ pub async fn find_all_dict(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
         trace: true,
         ..Default::default()
       },
@@ -657,6 +680,7 @@ pub async fn find_all_dict(
         .find(|item| item.val == model.r#type.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.r#type.to_string())
+        .into()
     };
     
     // 启用
@@ -666,6 +690,7 @@ pub async fn find_all_dict(
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string())
+        .into()
     };
     
     // 系统字典明细
@@ -786,10 +811,25 @@ pub async fn find_count_dict(
   
   let args = args.into();
   
-  let options = Options::from(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: u64;
+      let res = serde_json::from_str::<u64>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = 0;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let res: Option<CountModel> = query_one(
@@ -797,6 +837,11 @@ pub async fn find_count_dict(
     args,
     options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   let total = res
     .map(|item| item.total)
@@ -980,13 +1025,13 @@ pub async fn find_by_id_ok_dict(
   ).await?;
   
   let Some(dict_model) = dict_model else {
-    let err_msg = "此 系统字典 已被删除";
+    let err_msg = SmolStr::new("此 系统字典 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: err_msg.to_string(),
+      message: err_msg,
       trace: true,
       ..Default::default()
     }));
@@ -1079,7 +1124,7 @@ pub async fn find_by_ids_ok_dict(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1092,7 +1137,7 @@ pub async fn find_by_ids_ok_dict(
   ).await?;
   
   if dict_models.len() != len {
-    let err_msg = "此 系统字典 已被删除";
+    let err_msg = SmolStr::new("此 系统字典 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1105,7 +1150,7 @@ pub async fn find_by_ids_ok_dict(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = "此 系统字典 已经被删除";
+      let err_msg = SmolStr::new("此 系统字典 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<DictModel>>>()?;
@@ -1151,7 +1196,7 @@ pub async fn find_by_ids_dict(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1288,10 +1333,25 @@ pub async fn exists_dict(
   
   let args = args.into();
   
-  let options = Options::from(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: bool;
+      let res = serde_json::from_str::<bool>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = false;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let res: Option<(bool,)> = query_one(
@@ -1299,6 +1359,11 @@ pub async fn exists_dict(
     args,
     options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   Ok(res
     .map(|item| item.0)
@@ -1385,7 +1450,7 @@ pub async fn find_by_unique_dict(
   if let Some(id) = search.id {
     let model = find_by_id_dict(
       id,
-      options.clone(),
+      options,
     ).await?;
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
@@ -1408,7 +1473,7 @@ pub async fn find_by_unique_dict(
       search.into(),
       None,
       sort.clone(),
-      options.clone(),
+      options,
     ).await?
   };
   models.append(&mut models_tmp);
@@ -1429,7 +1494,7 @@ pub async fn find_by_unique_dict(
       search.into(),
       None,
       sort.clone(),
-      options.clone(),
+      options,
     ).await?
   };
   models.append(&mut models_tmp);
@@ -1581,7 +1646,7 @@ pub async fn set_id_by_lbl_dict(
     let dict_model = type_dict.iter().find(|item| {
       item.lbl == input.type_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.r#type = val.parse::<DictType>()?.into();
     }
@@ -1593,7 +1658,7 @@ pub async fn set_id_by_lbl_dict(
     let dict_model = type_dict.iter().find(|item| {
       item.val == input.r#type.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.type_lbl = lbl;
   }
   
@@ -1606,7 +1671,7 @@ pub async fn set_id_by_lbl_dict(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.is_enabled = val.parse::<u8>()?.into();
     }
@@ -1618,7 +1683,7 @@ pub async fn set_id_by_lbl_dict(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.is_enabled_lbl = lbl;
   }
   
@@ -1652,7 +1717,7 @@ pub async fn creates_return_dict(
   
   let ids = _creates(
     inputs.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let models_dict = find_by_ids_dict(
@@ -1724,14 +1789,14 @@ async fn _creates(
     let old_models = find_by_unique_dict(
       input.clone().into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if !old_models.is_empty() {
       let mut id: Option<DictId> = None;
       
       for old_model in old_models {
-        let options = Options::from(options.clone())
+        let options = Options::from(options)
           .set_unique_type(unique_type);
         
         id = check_by_unique_dict(
@@ -1831,11 +1896,11 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_lbl = usr_model.lbl;
@@ -1856,10 +1921,10 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
-          options.clone(),
+          options,
         ).await?;
         if let Some(usr_model) = usr_model {
           usr_lbl = usr_model.lbl;
@@ -1971,17 +2036,15 @@ async fn _creates(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  let options = Some(options);
+  del_cache_dict().await?;
   
   let affected_rows = execute(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
+  
+  del_cache_dict().await?;
   
   if affected_rows != inputs2_len as u64 {
     return Err(eyre!("affectedRows: {affected_rows} != {inputs2_len}"));
@@ -1999,7 +2062,7 @@ async fn _creates(
         model.dict_id = Some(id);
         create_dict_detail(
           model,
-          options.clone(),
+          options,
         ).await?;
       }
     }
@@ -2019,7 +2082,7 @@ pub async fn create_return_dict(
   
   let id = create_dict(
     input.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let model_dict = find_by_id_dict(
@@ -2033,7 +2096,7 @@ pub async fn create_return_dict(
       let err_msg = "create_return_dict: model_dict.is_none()";
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg.into(),
           trace: true,
           ..Default::default()
         },
@@ -2120,7 +2183,7 @@ pub async fn update_by_id_dict(
   
   let old_model = find_by_id_dict(
     id,
-    options.clone(),
+    options,
   ).await?;
   
   let old_model = match old_model {
@@ -2148,7 +2211,7 @@ pub async fn update_by_id_dict(
     let models = find_by_unique_dict(
       input.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let models = models.into_iter()
@@ -2235,7 +2298,7 @@ pub async fn update_by_id_dict(
       }.into(),
       None,
       None,
-      options.clone(),
+      options,
     ).await?;
     if !dict_detail_models.is_empty() && !dict_detail_input.is_empty() {
       field_num += 1;
@@ -2250,7 +2313,7 @@ pub async fn update_by_id_dict(
       }
       delete_by_ids_dict_detail(
         vec![model.id],
-        options.clone(),
+        options,
       ).await?;
     }
     for mut input2 in dict_detail_input {
@@ -2258,7 +2321,7 @@ pub async fn update_by_id_dict(
         input2.dict_id = Some(id);
         create_dict_detail(
           input2,
-          options.clone(),
+          options,
         ).await?;
         continue;
       }
@@ -2269,7 +2332,7 @@ pub async fn update_by_id_dict(
       {
         revert_by_ids_dict_detail(
           vec![id2.clone()],
-          options.clone(),
+          options,
         ).await?;
       }
       input2.id = None;
@@ -2277,20 +2340,24 @@ pub async fn update_by_id_dict(
       update_by_id_dict_detail(
         id2.clone(),
         input2,
-        options.clone(),
+        options,
       ).await?;
     }
+  }
+  
+  if field_num > 0 {
+    del_cache_dict().await?;
   }
   
   if field_num > 0 {
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2310,11 +2377,11 @@ pub async fn update_by_id_dict(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2368,32 +2435,14 @@ pub async fn update_by_id_dict(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
     execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
-  }
-  
-  if field_num > 0 {
-    let options = Options::from(options);
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
-      del_caches(
-        del_cache_key1s
-          .iter()
-          .map(|item| item.as_str())
-          .collect::<Vec<&str>>()
-          .as_slice()
-      ).await?;
-    }
+    del_cache_dict().await?;
+    
   }
   
   Ok(id)
@@ -2411,7 +2460,7 @@ pub async fn update_by_id_return_dict(
   update_by_id_dict(
     id,
     input,
-    options.clone(),
+    options,
   ).await?;
   
   let model = find_by_id_dict(
@@ -2502,12 +2551,14 @@ pub async fn delete_by_ids_dict(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  del_cache_dict().await?;
+  
   let mut num = 0;
   for id in ids.clone() {
     
     let old_model = find_by_id_dict(
       id,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2530,11 +2581,11 @@ pub async fn delete_by_ids_dict(
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = String::new();
+    let mut usr_lbl = SmolStr::new("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
-        options.clone(),
+        options,
       ).await?;
       if let Some(usr_model) = usr_model {
         usr_lbl = usr_model.lbl;
@@ -2568,18 +2619,14 @@ pub async fn delete_by_ids_dict(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
+  
+  del_cache_dict().await?;
   
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
@@ -2594,14 +2641,14 @@ pub async fn delete_by_ids_dict(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   delete_by_ids_dict_detail(
     dict_detail_models.into_iter()
       .map(|item| item.id)
       .collect::<Vec<DictDetailId>>(),
-    options.clone(),
+    options,
   ).await?;
   
   Ok(num)
@@ -2665,13 +2712,14 @@ pub async fn enable_by_ids_dict(
     return Ok(0);
   }
   
+  del_cache_dict().await?;
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
+  let options = Some(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!("update {table} set is_enabled=? where id=? limit 1");
@@ -2681,14 +2729,14 @@ pub async fn enable_by_ids_dict(
     
     let args: Vec<_> = args.into();
     
-    let options = options.clone().into();
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
   }
+  
+  del_cache_dict().await?;
   
   Ok(num)
 }
@@ -2721,9 +2769,10 @@ pub async fn revert_by_ids_dict(
     return Ok(0);
   }
   
+  del_cache_dict().await?;
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  let options = options.set_del_cache_key1s(get_cache_tables());
   let options = Some(options);
   
   let mut num = 0;
@@ -2743,13 +2792,13 @@ pub async fn revert_by_ids_dict(
         ..Default::default()
       }.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if old_model.is_none() {
       old_model = find_by_id_dict(
         id,
-        options.clone(),
+        options,
       ).await?;
     }
     
@@ -2765,7 +2814,7 @@ pub async fn revert_by_ids_dict(
       let models = find_by_unique_dict(
         input.into(),
         None,
-        options.clone(),
+        options,
       ).await?;
       
       let models: Vec<DictModel> = models
@@ -2784,7 +2833,7 @@ pub async fn revert_by_ids_dict(
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
   }
@@ -2798,7 +2847,7 @@ pub async fn revert_by_ids_dict(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   revert_by_ids_dict_detail(
@@ -2806,8 +2855,10 @@ pub async fn revert_by_ids_dict(
       .into_iter()
       .map(|item| item.id)
       .collect::<Vec<DictDetailId>>(),
-    options.clone(),
+    options,
   ).await?;
+  
+  del_cache_dict().await?;
   
   Ok(num)
 }
@@ -2847,6 +2898,8 @@ pub async fn force_delete_by_ids_dict(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  del_cache_dict().await?;
+  
   let mut num = 0;
   for id in ids.clone() {
     
@@ -2857,7 +2910,7 @@ pub async fn force_delete_by_ids_dict(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2883,16 +2936,10 @@ pub async fn force_delete_by_ids_dict(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -2905,15 +2952,17 @@ pub async fn force_delete_by_ids_dict(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   force_delete_by_ids_dict_detail(
     dict_detail_models.into_iter()
       .map(|item| item.id)
       .collect::<Vec<DictDetailId>>(),
-    options.clone(),
+    options,
   ).await?;
+  
+  del_cache_dict().await?;
   
   Ok(num)
 }
@@ -2952,16 +3001,31 @@ pub async fn find_last_order_by_dict(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: u32;
+      let res = serde_json::from_str::<u32>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = 0;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let model = query_one::<OrderByModel>(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
   
   let order_by = {
@@ -2971,6 +3035,11 @@ pub async fn find_last_order_by_dict(
       0
     }
   };
+  
+  {
+    let str = serde_json::to_string(&order_by)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   Ok(order_by)
 }
@@ -2982,7 +3051,7 @@ pub async fn validate_is_enabled_dict(
   model: &DictModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let err_msg = "系统字典已禁用";
+    let err_msg = SmolStr::new("系统字典已禁用");
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -2998,14 +3067,14 @@ pub async fn validate_option_dict(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = "系统字典不存在";
+      let err_msg = SmolStr::new("系统字典不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),
       );
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg,
           trace: true,
           ..Default::default()
         },

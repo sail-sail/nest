@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_org(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let org_models = org_dao::find_all_org(
@@ -64,7 +67,7 @@ pub async fn find_count_org(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let org_num = org_dao::find_count_org(
@@ -86,7 +89,7 @@ pub async fn find_one_org(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let org_model = org_dao::find_one_org(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_org(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let org_model = org_dao::find_one_ok_org(
@@ -243,7 +246,7 @@ pub async fn update_by_id_org(
   let org_id = org_dao::update_by_id_org(
     org_id,
     org_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(org_id)
@@ -274,7 +277,7 @@ pub async fn delete_by_ids_org(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

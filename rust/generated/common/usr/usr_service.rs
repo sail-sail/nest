@@ -7,6 +7,9 @@ use crate::common::context::{
   get_now,
   get_server_tokentimeout,
 };
+
+use smol_str::SmolStr;
+
 use crate::common::exceptions::service_exception::ServiceExceptionBuilder;
 
 use super::usr_model::LoginModel;
@@ -68,11 +71,11 @@ use chrono::{NaiveDateTime, Duration};
 /// 登录, 获得token
 #[allow(unused_variables)]
 pub async fn login(
-  ip: String,
+  ip: SmolStr,
   input: LoginInput,
 ) -> Result<LoginModel> {
   let n_route = NRoute {
-    route_path: "/base/usr".to_owned().into()
+    route_path: SmolStr::new("/base/usr").into()
   };
   
   let LoginInput {
@@ -83,14 +86,14 @@ pub async fn login(
   } = input;
   if username.is_empty() || password.is_empty() {
     let err_msg = n_route.n(
-      "用户名或密码不能为空".to_owned(),
+      SmolStr::new("用户名或密码不能为空"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
   }
   if tenant_id.is_empty() {
     let err_msg = n_route.n(
-      "请选择租户".to_owned(),
+      SmolStr::new("请选择租户"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
@@ -115,7 +118,7 @@ pub async fn login(
   ).await?;
   
   let lang = lang_model.map_or(
-    "zh-CN".to_owned(),
+    SmolStr::new("zh-CN"),
     |lang_model| lang_model.code,
   );
   
@@ -151,7 +154,7 @@ pub async fn login(
       ).await?;
       if count >= 6 {
         let err_msg = n_route.n(
-          "密码错误次数过多, 请10分钟后再试".to_owned(),
+          SmolStr::new("密码错误次数过多, 请10分钟后再试"),
           None,
         ).await?;
         return Err(eyre!(err_msg));
@@ -186,7 +189,7 @@ pub async fn login(
     }
     
     let err_msg = n_route.n(
-      "用户名或密码错误".to_owned(),
+      SmolStr::new("用户名或密码错误"),
       None,
     ).await?;
     return Err(
@@ -217,7 +220,7 @@ pub async fn login(
     }
     
     let err_msg = n_route.n(
-      "用户名或密码错误".to_owned(),
+      SmolStr::new("用户名或密码错误"),
       None,
     ).await?;
     return Err(
@@ -285,8 +288,8 @@ pub async fn login(
 /// 选择语言
 pub async fn select_lang(
   ctx: &mut Ctx,
-  lang: String,
-) -> Result<String> {
+  lang: SmolStr,
+) -> Result<SmolStr> {
   
   if lang.is_empty() {
     return Err(eyre!("语言编码不能为空"));
@@ -308,7 +311,7 @@ pub async fn change_password(
 ) -> Result<bool> {
   
   let n_route = NRoute {
-    route_path: "/base/usr".to_owned().into()
+    route_path: SmolStr::new("/base/usr").into()
   };
   
   let old_password = input.old_password;
@@ -317,28 +320,28 @@ pub async fn change_password(
   
   if old_password.is_empty() {
     let err_msg = n_route.n(
-      "旧密码不能为空".to_owned(),
+      SmolStr::new("旧密码不能为空"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
   }
   if password.is_empty() {
     let err_msg = n_route.n(
-      "新密码不能为空".to_owned(),
+      SmolStr::new("新密码不能为空"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
   }
   if confirm_password.is_empty() {
     let err_msg = n_route.n(
-      "确认密码不能为空".to_owned(),
+      SmolStr::new("确认密码不能为空"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
   }
   if password != confirm_password {
     let err_msg = n_route.n(
-      "两次输入的密码不一致".to_owned(),
+      SmolStr::new("两次输入的密码不一致"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
@@ -354,7 +357,7 @@ pub async fn change_password(
   
   let usr_model = find_by_id_usr(
     usr_id,
-    options.clone(),
+    options,
   ).await?;
   let usr_model = validate_option_usr(
     usr_model
@@ -367,7 +370,7 @@ pub async fn change_password(
   
   if usr_model.password != old_password {
     let err_msg = n_route.n(
-      "旧密码错误".to_owned(),
+      SmolStr::new("旧密码错误"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
@@ -379,7 +382,7 @@ pub async fn change_password(
       password: password.into(),
       ..Default::default()
     },
-    options.clone(),
+    options,
   ).await?;
   
   Ok(true)
@@ -396,7 +399,7 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
   let usr_model = validate_option_usr(
     find_by_id_usr(
       auth_model.id,
-      options.clone(),
+      options,
     ).await?
   ).await?;
   
@@ -408,7 +411,7 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
   // 角色
   let role_models = find_by_ids_role(
     role_ids,
-    options.clone(),
+    options,
   ).await?;
   
   let role_codes = role_models

@@ -10,6 +10,9 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -89,14 +92,14 @@ async fn get_where_query(
     if let Some(ids) = ids {
       let arg = {
         if ids.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.id in (");
@@ -282,14 +285,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
         if create_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -307,21 +310,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<String>> = match search {
+    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -367,14 +370,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
         if update_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -392,21 +395,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<String>> = match search {
+    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -559,12 +562,10 @@ pub async fn find_all_operation_record(
   
   let args = args.into();
   
-  let options = Options::from(options);
-  
   let mut res: Vec<OperationRecordModel> = query(
     sql,
     args,
-    Some(options),
+    options,
   ).await?;
   
   let len = res.len();
@@ -573,7 +574,7 @@ pub async fn find_all_operation_record(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
         trace: true,
         ..Default::default()
       },
@@ -663,6 +664,10 @@ pub async fn find_count_operation_record(
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
   let args = args.into();
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let res: Option<CountModel> = query_one(
     sql,
@@ -847,13 +852,13 @@ pub async fn find_by_id_ok_operation_record(
   ).await?;
   
   let Some(operation_record_model) = operation_record_model else {
-    let err_msg = "此 操作记录 已被删除";
+    let err_msg = SmolStr::new("此 操作记录 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: err_msg.to_string(),
+      message: err_msg,
       trace: true,
       ..Default::default()
     }));
@@ -946,7 +951,7 @@ pub async fn find_by_ids_ok_operation_record(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -959,7 +964,7 @@ pub async fn find_by_ids_ok_operation_record(
   ).await?;
   
   if operation_record_models.len() != len {
-    let err_msg = "此 操作记录 已被删除";
+    let err_msg = SmolStr::new("此 操作记录 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -972,7 +977,7 @@ pub async fn find_by_ids_ok_operation_record(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = "此 操作记录 已经被删除";
+      let err_msg = SmolStr::new("此 操作记录 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<OperationRecordModel>>>()?;
@@ -1018,7 +1023,7 @@ pub async fn find_by_ids_operation_record(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1127,6 +1132,10 @@ pub async fn exists_operation_record(
   
   let args = args.into();
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let res: Option<(bool,)> = query_one(
     sql,
     args,
@@ -1218,7 +1227,7 @@ pub async fn find_by_unique_operation_record(
   if let Some(id) = search.id {
     let model = find_by_id_operation_record(
       id,
-      options.clone(),
+      options,
     ).await?;
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
@@ -1344,7 +1353,7 @@ pub async fn creates_return_operation_record(
   
   let ids = _creates(
     inputs.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let models_operation_record = find_by_ids_operation_record(
@@ -1416,14 +1425,14 @@ async fn _creates(
     let old_models = find_by_unique_operation_record(
       input.clone().into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if !old_models.is_empty() {
       let mut id: Option<OperationRecordId> = None;
       
       for old_model in old_models {
-        let options = Options::from(options.clone())
+        let options = Options::from(options)
           .set_unique_type(unique_type);
         
         id = check_by_unique_operation_record(
@@ -1524,11 +1533,11 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_lbl = usr_model.lbl;
@@ -1549,10 +1558,10 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
-          options.clone(),
+          options,
         ).await?;
         if let Some(usr_model) = usr_model {
           usr_lbl = usr_model.lbl;
@@ -1674,14 +1683,10 @@ async fn _creates(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = Some(options);
-  
   let affected_rows = execute(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
   
   if affected_rows != inputs2_len as u64 {
@@ -1702,7 +1707,7 @@ pub async fn create_return_operation_record(
   
   let id = create_operation_record(
     input.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let model_operation_record = find_by_id_operation_record(
@@ -1716,7 +1721,7 @@ pub async fn create_return_operation_record(
       let err_msg = "create_return_operation_record: model_operation_record.is_none()";
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg.into(),
           trace: true,
           ..Default::default()
         },
@@ -1793,6 +1798,7 @@ pub async fn update_tenant_by_id_operation_record(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
@@ -1806,7 +1812,7 @@ pub async fn update_tenant_by_id_operation_record(
   let num = execute(
     sql,
     args,
-    Some(options.clone()),
+    options,
   ).await?;
   
   Ok(num)
@@ -1849,7 +1855,7 @@ pub async fn update_by_id_operation_record(
   
   let old_model = find_by_id_operation_record(
     id,
-    options.clone(),
+    options,
   ).await?;
   
   let old_model = match old_model {
@@ -1877,7 +1883,7 @@ pub async fn update_by_id_operation_record(
     let models = find_by_unique_operation_record(
       input.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let models = models.into_iter()
@@ -1964,11 +1970,11 @@ pub async fn update_by_id_operation_record(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -1988,11 +1994,11 @@ pub async fn update_by_id_operation_record(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2046,14 +2052,10 @@ pub async fn update_by_id_operation_record(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
   }
@@ -2073,7 +2075,7 @@ pub async fn update_by_id_return_operation_record(
   update_by_id_operation_record(
     id,
     input,
-    options.clone(),
+    options,
   ).await?;
   
   let model = find_by_id_operation_record(
@@ -2169,7 +2171,7 @@ pub async fn delete_by_ids_operation_record(
     
     let old_model = find_by_id_operation_record(
       id,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2192,11 +2194,11 @@ pub async fn delete_by_ids_operation_record(
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = String::new();
+    let mut usr_lbl = SmolStr::new("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
-        options.clone(),
+        options,
       ).await?;
       if let Some(usr_model) = usr_model {
         usr_lbl = usr_model.lbl;
@@ -2230,14 +2232,10 @@ pub async fn delete_by_ids_operation_record(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -2297,13 +2295,13 @@ pub async fn revert_by_ids_operation_record(
         ..Default::default()
       }.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if old_model.is_none() {
       old_model = find_by_id_operation_record(
         id,
-        options.clone(),
+        options,
       ).await?;
     }
     
@@ -2319,7 +2317,7 @@ pub async fn revert_by_ids_operation_record(
       let models = find_by_unique_operation_record(
         input.into(),
         None,
-        options.clone(),
+        options,
       ).await?;
       
       let models: Vec<OperationRecordModel> = models
@@ -2338,7 +2336,7 @@ pub async fn revert_by_ids_operation_record(
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
   }
@@ -2391,7 +2389,7 @@ pub async fn force_delete_by_ids_operation_record(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2417,14 +2415,10 @@ pub async fn force_delete_by_ids_operation_record(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -2441,14 +2435,14 @@ pub async fn validate_option_operation_record(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = "操作记录不存在";
+      let err_msg = SmolStr::new("操作记录不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),
       );
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg,
           trace: true,
           ..Default::default()
         },

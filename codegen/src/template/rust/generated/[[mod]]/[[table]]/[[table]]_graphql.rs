@@ -76,6 +76,9 @@ use crate::common::context::{
   UniqueType,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{
   PageInput,
   SortInput,

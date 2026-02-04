@@ -13,6 +13,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -234,8 +237,8 @@ pub async fn creates_org(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_org().to_string(),
-    "add".to_owned(),
+    SmolStr::new(get_page_path_org()),
+    SmolStr::new("add"),
   ).await?;
   
   let ids = org_service::creates_org(
@@ -294,8 +297,8 @@ pub async fn update_by_id_org(
   ).await?;
   
   use_permit(
-    get_page_path_org().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_org()),
+    SmolStr::new("edit"),
   ).await?;
   
   let res = org_service::update_by_id_org(
@@ -322,8 +325,8 @@ pub async fn delete_by_ids_org(
   );
   
   use_permit(
-    get_page_path_org().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_org()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = org_service::delete_by_ids_org(
@@ -373,8 +376,8 @@ pub async fn enable_by_ids_org(
   );
   
   use_permit(
-    get_page_path_org().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_org()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = org_service::enable_by_ids_org(
@@ -426,8 +429,8 @@ pub async fn lock_by_ids_org(
   );
   
   use_permit(
-    get_page_path_org().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_org()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = org_service::lock_by_ids_org(
@@ -473,8 +476,8 @@ pub async fn revert_by_ids_org(
   );
   
   use_permit(
-    get_page_path_org().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_org()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = org_service::revert_by_ids_org(
@@ -500,8 +503,8 @@ pub async fn force_delete_by_ids_org(
   );
   
   use_permit(
-    get_page_path_org().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_org()),
+    SmolStr::new("force_delete"),
   ).await?;
   
   let num = org_service::force_delete_by_ids_org(

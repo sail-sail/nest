@@ -6,6 +6,8 @@ use crate::common::context::{
   Options,
 };
 
+use crate::common::cache::cache_dao;
+
 use crate::common::i18n::i18n_dao::get_server_i18n_enable;
 
 use crate::common::lang::lang_dao::get_lang_id;
@@ -16,9 +18,14 @@ use super::dict_detail_model::GetDict;
 pub async fn get_dict<T: AsRef<str>>(
   codes: &[T],
 ) -> Result<Vec<Vec<GetDict>>> {
+  
   if codes.is_empty() {
     return Ok(vec![]);
   }
+  
+  let options = Options::new()
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let table = "base_dict";
   
@@ -55,10 +62,22 @@ pub async fn get_dict<T: AsRef<str>>(
   
   let args = args.value;
   
-  let options = Options::new()
-    .set_is_debug(Some(false))
-    .set_cache_key(table, &sql, &args);
-  let options = Some(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: Vec<Vec<GetDict>>;
+      let res = serde_json::from_str::<Vec<Vec<GetDict>>>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = vec![];
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
   let mut res: Vec<GetDict> = query(
     sql,
@@ -85,6 +104,11 @@ pub async fn get_dict<T: AsRef<str>>(
       }
     }
     data.push(item);
+  }
+  
+  {
+    let str = serde_json::to_string(&data)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
   }
   
   Ok(data)

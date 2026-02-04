@@ -80,7 +80,13 @@ pub async fn pay_xxx(
   let record_id = XxxRecordId::from(record_id);
   
   use crate::{mod}::{table}_service::pay_xxx_callback;
-  pay_xxx_callback(record_id, amt, success_time, options.clone()).await?;
+  pay_xxx_callback(
+    record_id,
+    amt,
+    success_time,
+    transaction_id,
+    options,
+  ).await?;
 }
 ```
 
@@ -91,7 +97,8 @@ pub async fn pay_xxx(
 pub async fn pay_xxx_callback(
   record_id: XxxRecordId,
   amt: Decimal,
-  success_time: NaiveDateTime,
+  pay_time: NaiveDateTime,
+  transaction_id: SmolStr,
   options: Option<Options>,
 ) -> Result<()> {
   // 更新业务记录状态
@@ -100,7 +107,8 @@ pub async fn pay_xxx_callback(
     XxxInput {
       pay_status: Some(PayStatus::Paid),
       pay_amount: Some(amt),
-      pay_time: Some(success_time),
+      pay_time: Some(pay_time),
+      transaction_id: Some(transaction_id),
       ..Default::default()
     },
     options,
@@ -125,6 +133,7 @@ import type {
 export async function payXxx(
   opt?: GqlOpt,
 ): Promise<RequestPaymentOptions> {
+  
   const res: {
     payXxx: Mutation["payXxx"],
   } = await mutation({
@@ -141,7 +150,10 @@ export async function payXxx(
       }
     `,
   }, opt);
-  return res.payXxx;
+  
+  const data = res.payXxx;
+  
+  return data;
 }
 ```
 

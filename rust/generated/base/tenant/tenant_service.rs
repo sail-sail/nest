@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::tenant_model::*;
@@ -39,7 +42,7 @@ pub async fn find_all_tenant(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let tenant_models = tenant_dao::find_all_tenant(
@@ -62,7 +65,7 @@ pub async fn find_count_tenant(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let tenant_num = tenant_dao::find_count_tenant(
@@ -84,7 +87,7 @@ pub async fn find_one_tenant(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let tenant_model = tenant_dao::find_one_tenant(
@@ -107,7 +110,7 @@ pub async fn find_one_ok_tenant(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let tenant_model = tenant_dao::find_one_ok_tenant(
@@ -224,7 +227,7 @@ pub async fn update_by_id_tenant(
   let tenant_id = tenant_dao::update_by_id_tenant(
     tenant_id,
     tenant_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(tenant_id)
@@ -255,7 +258,7 @@ pub async fn delete_by_ids_tenant(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

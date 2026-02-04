@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_login_log(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let login_log_models = login_log_dao::find_all_login_log(
@@ -64,7 +67,7 @@ pub async fn find_count_login_log(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let login_log_num = login_log_dao::find_count_login_log(
@@ -86,7 +89,7 @@ pub async fn find_one_login_log(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let login_log_model = login_log_dao::find_one_login_log(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_login_log(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let login_log_model = login_log_dao::find_one_ok_login_log(
@@ -233,7 +236,7 @@ pub async fn update_by_id_login_log(
   let login_log_id = login_log_dao::update_by_id_login_log(
     login_log_id,
     login_log_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(login_log_id)

@@ -8,6 +8,8 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+use smol_str::SmolStr;
+
 use crate::base::usr::usr_dao::find_by_id_usr;
 
 use crate::base::org::org_model::OrgId;
@@ -15,10 +17,10 @@ use crate::base::org::org_model::OrgId;
 pub async fn org_login_select(
   ctx: &mut Ctx,
   org_id: OrgId,
-) -> Result<String> {
+) -> Result<SmolStr> {
   let org_id2 = get_auth_org_id();
   if let Some(org_id2) = org_id2 && org_id == org_id2 {
-    return Ok("".to_owned());
+    return Ok(SmolStr::new(""));
   }
   let mut auth_model = get_auth_model()
     .ok_or_else(|| 

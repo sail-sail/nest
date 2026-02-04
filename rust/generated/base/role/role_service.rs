@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_role(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let role_models = role_dao::find_all_role(
@@ -64,7 +67,7 @@ pub async fn find_count_role(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let role_num = role_dao::find_count_role(
@@ -86,7 +89,7 @@ pub async fn find_one_role(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let role_model = role_dao::find_one_role(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_role(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let role_model = role_dao::find_one_ok_role(
@@ -243,7 +246,7 @@ pub async fn update_by_id_role(
   let role_id = role_dao::update_by_id_role(
     role_id,
     role_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(role_id)
@@ -274,7 +277,7 @@ pub async fn delete_by_ids_role(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

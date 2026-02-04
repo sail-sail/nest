@@ -96,6 +96,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -183,7 +186,7 @@ pub async fn find_all_<#=table#>(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = String::new();<#
+    model.<#=column_name_rust#> = SmolStr::new("");<#
       }
     #><#
     }
@@ -293,7 +296,7 @@ pub async fn find_one_<#=table#>(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = String::new();<#
+    model.<#=column_name_rust#> = SmolStr::new("");<#
       }
     #><#
     }
@@ -372,7 +375,7 @@ pub async fn find_one_ok_<#=table#>(
     if (isPassword) {
   #>
   // <#=column_comment#>
-  model.<#=column_name_rust#> = String::new();<#
+  model.<#=column_name_rust#> = SmolStr::new("");<#
     }
   #><#
   }
@@ -435,7 +438,7 @@ pub async fn find_by_id_<#=table#>(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = String::new();<#
+    model.<#=column_name_rust#> = SmolStr::new("");<#
       }
     #><#
     }
@@ -500,7 +503,7 @@ pub async fn find_by_id_ok_<#=table#>(
     if (isPassword) {
   #>
   // <#=column_comment#>
-  model.<#=column_name_rust#> = String::new();<#
+  model.<#=column_name_rust#> = SmolStr::new("");<#
     }
   #><#
   }
@@ -563,7 +566,7 @@ pub async fn find_by_ids_<#=table#>(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = String::new();<#
+    model.<#=column_name_rust#> = SmolStr::new("");<#
       }
     #><#
     }
@@ -629,7 +632,7 @@ pub async fn find_by_ids_ok_<#=table#>(
       if (isPassword) {
     #>
     // <#=column_comment#>
-    model.<#=column_name_rust#> = String::new();<#
+    model.<#=column_name_rust#> = SmolStr::new("");<#
       }
     #><#
     }
@@ -644,7 +647,7 @@ pub async fn find_by_ids_ok_<#=table#>(
   let mut models = models;
   {
     let fields = get_field_permit_<#=table#>(
-      get_page_path_<#=table#>().to_string(),
+      SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     
     for model in models.iter_mut() {
@@ -724,8 +727,8 @@ pub async fn creates_<#=table#>(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_<#=table#>().to_string(),
-    "add".to_owned(),
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("add"),
   ).await?;<#
   if (tableFieldPermit) {
   #>
@@ -733,7 +736,7 @@ pub async fn creates_<#=table#>(
   let mut inputs = inputs;
   {
     let fields = get_field_permit_<#=table#>(
-      get_page_path_<#=table#>().to_string(),
+      SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     for input in &mut inputs {
       field_permit_input_<#=table#>(
@@ -866,8 +869,8 @@ pub async fn update_by_id_<#=table#>(
   ).await?;
   
   use_permit(
-    get_page_path_<#=table#>().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("edit"),
   ).await?;<#
   if (tableFieldPermit) {
   #>
@@ -875,7 +878,7 @@ pub async fn update_by_id_<#=table#>(
   let mut input = input;
   {
     let fields = get_field_permit_<#=table#>(
-      get_page_path_<#=table#>().to_string(),
+      SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     field_permit_input_<#=table#>(
       &mut input,
@@ -974,8 +977,8 @@ pub async fn audit_submit_<#=table#>(
   #>
   
   use_permit(
-    get_page_path_<#=table#>().to_string(),
-    "audit_submit".to_owned(),
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("audit_submit"),
   ).await?;<#
   if (log) {
   #>
@@ -1052,8 +1055,8 @@ pub async fn audit_pass_<#=table#>(
   #>
   
   use_permit(
-    get_page_path_<#=table#>().to_string(),
-    "audit_pass".to_owned(),
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("audit_pass"),
   ).await?;<#
   if (log) {
   #>
@@ -1076,8 +1079,8 @@ pub async fn audit_pass_<#=table#>(
   } else {
   #>
   
-  let method_lbl = "审核通过".to_owned();
-  let table_comment = "<#=table_comment#>".to_owned();<#
+  let method_lbl = SmolStr::new("审核通过");
+  let table_comment = SmolStr::new("<#=table_comment#>");<#
   }
   #>
   
@@ -1094,9 +1097,9 @@ pub async fn audit_pass_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module: SmolStr::new(&format!("<#=mod#>_<#=table#>")),
       module_lbl: table_comment.clone().into(),
-      method: "auditPass".to_owned().into(),
+      method: SmolStr::new("auditPass"),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -1131,8 +1134,8 @@ pub async fn audit_reject_<#=table#>(
   #>
   
   use_permit(
-    get_page_path_<#=table#>().to_string(),
-    "audit_reject".to_owned(),
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("audit_reject"),
   ).await?;<#
   if (log) {
   #>
@@ -1151,13 +1154,13 @@ pub async fn audit_reject_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns("审核拒绝".to_owned(), options.clone()).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), options.clone()).await?;<#
+  let method_lbl = ns("审核拒绝".to_owned(), options).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), options).await?;<#
   } else {
   #>
   
-  let method_lbl = "审核拒绝".to_owned();
-  let table_comment = "<#=table_comment#>".to_owned();<#
+  let method_lbl = SmolStr::new("审核拒绝");
+  let table_comment = SmolStr::new("<#=table_comment#>");<#
   }
   #>
   
@@ -1174,9 +1177,9 @@ pub async fn audit_reject_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module: SmolStr::new(&format!("<#=mod#>_<#=table#>")),
       module_lbl: table_comment.clone().into(),
-      method: "auditReject".to_owned().into(),
+      method: SmolStr::new("auditReject"),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -1212,8 +1215,8 @@ pub async fn audit_review_<#=table#>(
   #>
   
   use_permit(
-    get_page_path_<#=table#>().to_string(),
-    "audit_review".to_owned(),
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("audit_review"),
   ).await?;<#
   if (log) {
   #>
@@ -1231,13 +1234,13 @@ pub async fn audit_review_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns("复核通过".to_owned(), options.clone()).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), options.clone()).await?;<#
+  let method_lbl = ns("复核通过".to_owned(), options).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), options).await?;<#
   } else {
   #>
   
-  let method_lbl = "复核通过".to_owned();
-  let table_comment = "<#=table_comment#>".to_owned();<#
+  let method_lbl = SmolStr::new("复核通过");
+  let table_comment = SmolStr::new("<#=table_comment#>");<#
   }
   #>
   
@@ -1254,9 +1257,9 @@ pub async fn audit_review_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: "auditReview".to_owned().into(),
+      method: SmolStr::new("auditReview").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -1297,8 +1300,8 @@ pub async fn delete_by_ids_<#=table#>(
   #>
   
   use_permit(
-    get_page_path_<#=table#>().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("delete"),
   ).await?;<#
   if (log) {
   #>
@@ -1324,13 +1327,13 @@ pub async fn delete_by_ids_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns("删除".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  let method_lbl = ns(SmolStr::new("删除"), None).await?;
+  let table_comment = ns(SmolStr::new("<#=table_comment#>"), None).await?;<#
   } else {
   #>
   
-  let method_lbl = "删除".to_owned();
-  let table_comment = "<#=table_comment#>".to_owned();<#
+  let method_lbl = SmolStr::new("删除");
+  let table_comment = SmolStr::new("<#=table_comment#>");<#
   }
   #>
   
@@ -1407,13 +1410,13 @@ pub async fn default_by_id_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns("默认".to_owned(), options.clone()).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), options.clone()).await?;<#
+  let method_lbl = ns("默认".to_owned(), options).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), options).await?;<#
   } else {
   #>
   
-  let method_lbl = "默认".to_owned();
-  let table_comment = "<#=table_comment#>".to_owned();<#
+  let method_lbl = SmolStr::new("默认");
+  let table_comment = SmolStr::new("<#=table_comment#>");<#
   }
   #>
   
@@ -1430,9 +1433,9 @@ pub async fn default_by_id_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: "defaultById".to_owned().into(),
+      method: SmolStr::new("defaultById").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -1495,8 +1498,8 @@ pub async fn enable_by_ids_<#=table#>(
   #>
   
   use_permit(
-    get_page_path_<#=table#>().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("edit"),
   ).await?;<#
   if (log) {
   #>
@@ -1629,8 +1632,8 @@ pub async fn lock_by_ids_<#=table#>(
   #>
   
   use_permit(
-    get_page_path_<#=table#>().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("edit"),
   ).await?;<#
   if (log) {
   #>
@@ -1743,8 +1746,8 @@ pub async fn revert_by_ids_<#=table#>(
   #>
   
   use_permit(
-    get_page_path_<#=table#>().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("delete"),
   ).await?;<#
   if (log) {
   #>
@@ -1762,8 +1765,8 @@ pub async fn revert_by_ids_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns("还原".to_owned(), options.clone()).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), options.clone()).await?;<#
+  let method_lbl = ns("还原".to_owned(), options).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), options).await?;<#
   } else {
   #>
   
@@ -1785,9 +1788,9 @@ pub async fn revert_by_ids_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: "revertByIds".to_owned().into(),
+      method: SmolStr::new("revertByIds").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -1826,8 +1829,8 @@ pub async fn force_delete_by_ids_<#=table#>(
   #>
   
   use_permit(
-    get_page_path_<#=table#>().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("force_delete"),
   ).await?;<#
   if (log) {
   #>
@@ -1845,13 +1848,13 @@ pub async fn force_delete_by_ids_<#=table#>(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns("彻底删除".to_owned(), options.clone()).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), options.clone()).await?;<#
+  let method_lbl = ns(SmolStr::new("彻底删除"), options).await?;
+  let table_comment = ns(SmolStr::new("<#=table_comment#>"), options).await?;<#
   } else {
   #>
   
-  let method_lbl = "彻底删除".to_owned();
-  let table_comment = "<#=table_comment#>".to_owned();<#
+  let method_lbl = SmolStr::new("彻底删除");
+  let table_comment = SmolStr::new("<#=table_comment#>");<#
   }
   #>
   
@@ -1868,9 +1871,9 @@ pub async fn force_delete_by_ids_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: "force_delete".to_owned().into(),
+      method: SmolStr::new("force_delete").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),

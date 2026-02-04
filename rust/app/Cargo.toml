@@ -77,6 +77,8 @@ csv.workspace = true
 docx-handlebars.workspace = true
 xlsx-handlebars.workspace = true
 tokio-tungstenite.workspace = true
+rust-embed.workspace = true
+percent-encoding.workspace = true
 
 generated = { path = "../generated" }
 

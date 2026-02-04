@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_optbiz(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let optbiz_models = optbiz_dao::find_all_optbiz(
@@ -64,7 +67,7 @@ pub async fn find_count_optbiz(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let optbiz_num = optbiz_dao::find_count_optbiz(
@@ -86,7 +89,7 @@ pub async fn find_one_optbiz(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let optbiz_model = optbiz_dao::find_one_optbiz(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_optbiz(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let optbiz_model = optbiz_dao::find_one_ok_optbiz(
@@ -233,7 +236,7 @@ pub async fn update_by_id_optbiz(
   let old_model = validate_option_optbiz(
     optbiz_dao::find_by_id_optbiz(
       optbiz_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -258,7 +261,7 @@ pub async fn update_by_id_optbiz(
   let optbiz_id = optbiz_dao::update_by_id_optbiz(
     optbiz_id,
     optbiz_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(optbiz_id)
@@ -289,7 +292,7 @@ pub async fn delete_by_ids_optbiz(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {
