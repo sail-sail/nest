@@ -873,8 +873,7 @@ pub async fn find_all_wxo_app(
         .iter()
         .find(|item| item.val == model.encoding_type.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.encoding_type.to_string())
-        .into()
+        .unwrap_or_else(|| model.encoding_type.clone().into())
     };
     
     // 授权作用域
@@ -883,8 +882,7 @@ pub async fn find_all_wxo_app(
         .iter()
         .find(|item| item.val == model.scope.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.scope.to_string())
-        .into()
+        .unwrap_or_else(|| model.scope.clone().into())
     };
     
     // 锁定
@@ -893,8 +891,7 @@ pub async fn find_all_wxo_app(
         .iter()
         .find(|item| item.val == model.is_locked.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_locked.to_string().into())
     };
     
     // 启用
@@ -903,8 +900,7 @@ pub async fn find_all_wxo_app(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_enabled.to_string().into())
     };
     
   }

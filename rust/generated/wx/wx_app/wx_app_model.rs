@@ -182,7 +182,7 @@ impl FromRow<'_, MySqlRow> for WxAppModel {
       appsecret,
       default_role_codes,
       default_role_ids: vec![],
-      default_role_ids_lbl: String::new(),
+      default_role_ids_lbl: SmolStr::new(""),
       is_locked,
       is_locked_lbl,
       is_enabled,

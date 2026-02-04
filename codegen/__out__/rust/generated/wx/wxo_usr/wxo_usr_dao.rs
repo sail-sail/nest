@@ -777,8 +777,7 @@ pub async fn find_all_wxo_usr(
         .iter()
         .find(|item| item.val == model.sex.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.sex.to_string())
-        .into()
+        .unwrap_or_else(|| model.sex.to_string().into())
     };
     
   }

@@ -871,11 +871,11 @@ pub async fn find_all_wxo_app(
     .map_err(|err| eyre!("{:#?}", err))?;
   
   // 收集所有不重复的 role_codes 并批量查询
-  let mut all_role_codes: Vec<String> = vec![];
+  let mut all_role_codes: Vec<SmolStr> = vec![];
   for model in &res {
     if !model.default_role_codes.is_empty() {
       for code in model.default_role_codes.split(",") {
-        let code = code.to_string();
+        let code = code.into();
         if !all_role_codes.contains(&code) {
           all_role_codes.push(code);
         }
@@ -890,7 +890,7 @@ pub async fn find_all_wxo_app(
     }),
     None,
     None,
-    Some(options).clone(),
+    options,
   ).await?;
   
   #[allow(unused_variables)]
@@ -902,8 +902,7 @@ pub async fn find_all_wxo_app(
         .iter()
         .find(|item| item.val == model.encoding_type.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.encoding_type.to_string())
-        .into()
+        .unwrap_or_else(|| model.encoding_type.clone().into())
     };
     
     // 授权作用域
@@ -912,8 +911,7 @@ pub async fn find_all_wxo_app(
         .iter()
         .find(|item| item.val == model.scope.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.scope.to_string())
-        .into()
+        .unwrap_or_else(|| model.scope.clone().into())
     };
     
     // 锁定
@@ -922,8 +920,7 @@ pub async fn find_all_wxo_app(
         .iter()
         .find(|item| item.val == model.is_locked.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_locked.to_string().into())
     };
     
     // 启用
@@ -932,8 +929,7 @@ pub async fn find_all_wxo_app(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string())
-        .into()
+        .unwrap_or_else(|| model.is_enabled.to_string().into())
     };
     
     // default_role_codes 转 default_role_ids
@@ -944,7 +940,7 @@ pub async fn find_all_wxo_app(
         .filter(|role| role_codes.contains(&role.code.as_str()))
         .collect();
       model.default_role_ids = filtered_roles.iter().map(|x| x.id).collect();
-      model.default_role_ids_lbl = filtered_roles.iter().map(|x| x.lbl.clone()).collect::<Vec<String>>().join(",");
+      model.default_role_ids_lbl = filtered_roles.iter().map(|x| x.lbl.clone()).collect::<Vec<SmolStr>>().join(",").into();
     }
     
   }
@@ -2272,14 +2268,14 @@ async fn _creates(
           options,
         ).await?;
         
-        let default_role_codes: Vec<String> = role_models
+        let default_role_codes: Vec<SmolStr> = role_models
           .into_iter()
           .map(|item| item.code)
           .collect();
         
-        input.default_role_codes = Some(default_role_codes.join(","));
+        input.default_role_codes = Some(default_role_codes.join(",").into());
       } else {
-        input.default_role_codes = Some(String::new());
+        input.default_role_codes = Some(SmolStr::new(""));
       }
     }
   }
@@ -2845,14 +2841,14 @@ pub async fn update_by_id_wxo_app(
         options,
       ).await?;
       
-      let default_role_codes: Vec<String> = role_models
+      let default_role_codes: Vec<SmolStr> = role_models
         .into_iter()
         .map(|item| item.code)
         .collect();
       
-      input.default_role_codes = Some(default_role_codes.join(","));
+      input.default_role_codes = Some(default_role_codes.join(",").into());
     } else {
-      input.default_role_codes = Some(String::new());
+      input.default_role_codes = Some(SmolStr::new(""));
     }
   }
   

@@ -3,6 +3,8 @@ use serde_json::json;
 
 use generated::common::context::Options;
 
+use smol_str::SmolStr;
+
 // wx_pay_transactions_jsapi
 use generated::wx::pay_transactions_jsapi::pay_transactions_jsapi_dao::{
   find_one_pay_transactions_jsapi,
@@ -25,13 +27,13 @@ use rust_decimal::Decimal;
 
 /// 微信支付测试, requestPayment 所需参数
 pub async fn get_test_pay_opt(
-  appid: String,
+  appid: SmolStr,
   options: Option<Options>,
 ) -> Result<RequestPaymentOptions> {
   
   let request_payment_options = transactions_jsapi(
     TransactionsJsapiInput {
-      appid,
+      appid: appid.into(),
       description: "测试支付".to_string(),
       amount: Decimal::new(1, 2),
       attach2: json!({
@@ -48,7 +50,7 @@ pub async fn get_test_pay_opt(
 
 /// 通过 out_trade_no 查询支付状态
 pub async fn trade_state_pay_transactions_jsapi(
-  out_trade_no: String,
+  out_trade_no: SmolStr,
   options: Option<Options>,
 ) -> Result<PayTransactionsJsapiModel> {
   

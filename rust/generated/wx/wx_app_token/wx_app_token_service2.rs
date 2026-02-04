@@ -1,44 +1,44 @@
 use tracing::{info, error};
 use color_eyre::eyre::{eyre, Result};
 
-use smol_str::SmolStr;
-
-use generated::common::context::{
+use crate::common::context::{
   Options,
   get_req_id,
   get_now,
 };
 
-use generated::common::util::http::client as reqwest_client;
+use smol_str::SmolStr;
+
+use crate::common::util::http::client as reqwest_client;
 
 use std::io::Cursor;
 use image::ImageReader;
 use image::ImageFormat;
 
 // wx_app
-use generated::wx::wx_app::wx_app_model::WxAppSearch;
-use generated::wx::wx_app::wx_app_dao::{
+use crate::wx::wx_app::wx_app_model::WxAppSearch;
+use crate::wx::wx_app::wx_app_dao::{
   find_one_wx_app,
   validate_option_wx_app,
   validate_is_enabled_wx_app,
 };
 
 // wx_app_token
-use generated::wx::wx_app_token::wx_app_token_model::{
+use crate::wx::wx_app_token::wx_app_token_model::{
   WxAppTokenInput,
   WxAppTokenSearch,
 };
-use generated::wx::wx_app_token::wx_app_token_dao::{
+use crate::wx::wx_app_token::wx_app_token_dao::{
   find_one_wx_app_token,
   create_wx_app_token,
   update_by_id_wx_app_token,
 };
 
-use super::wx_app_token_model::{
+use super::wx_app_token_model2::{
   GetAccessTokenModel,
   GetwxacodeunlimitInput,
 };
-use generated::common::exceptions::service_exception::ServiceException;
+use crate::common::exceptions::service_exception::ServiceException;
 
 #[allow(dead_code)]
 async fn fetch_access_token_model(
@@ -222,7 +222,7 @@ pub async fn get_wxa_code_unlimit(
   if !status.is_success() {
     let text = res.text().await?;
     error!(
-      "{req_id} WxAppTokenService.get_wxa_code_unlimit.res: {text:#?}",
+      "{req_id} WxAppTokenService.get_wxa_code_unlimit.res: {text}",
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
@@ -240,7 +240,7 @@ pub async fn get_wxa_code_unlimit(
   {
     let text = res.text().await?;
     println!(
-      "{req_id} WxAppTokenService.get_wxa_code_unlimit.res: {text:#?}",
+      "{req_id} WxAppTokenService.get_wxa_code_unlimit.res: {text}",
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
@@ -265,14 +265,14 @@ mod tests {
   
   use super::*;
   
-  use generated::common::context::Ctx;
+  use crate::common::context::Ctx;
   
   #[tokio::test]
   async fn test_get_access_token() -> () {
     let res = Ctx::test_builder()
       .build()
       .scope_fn(async || -> Result<()> {
-        let appid = "wxd4b24c53a1813485".to_string();
+        let appid = "wx5b1e3aa0399a5714".into();
         let options = None;
         
         let access_token = get_access_token(
@@ -293,7 +293,7 @@ mod tests {
   
   #[tokio::test]
   async fn test_get_wxa_code_unlimit() -> () {
-    use crate::wx::wx_app_token::wx_app_token_model::{
+    use crate::wx::wx_app_token::wx_app_token_model2::{
       GetwxacodeunlimitEnvVersion,
       GetwxacodeunlimitLineColor,
     };
@@ -302,8 +302,8 @@ mod tests {
       .scope_fn(async || -> Result<()> {
         let appid = "wx1749ec165167d4f3".into();
         let input = GetwxacodeunlimitInput {
-          scene: "123".into(),
-          page: Some("pages/index/index".into()),
+          scene: "123".to_string(),
+          page: Some("pages/index/index".to_string()),
           check_path: Some(false),
           env_version: Some(GetwxacodeunlimitEnvVersion::Release),
           width: Some(430),

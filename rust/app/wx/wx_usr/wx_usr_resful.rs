@@ -37,7 +37,7 @@ pub async fn code2session(
   
   Response::builder()
     .header("Content-Type", "application/json")
-    .header("authorization", &login_model.authorization)
+    .header("authorization", login_model.authorization.as_str())
     .body(json!({
       "code": 0,
       "data": &login_model,

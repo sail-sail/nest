@@ -821,8 +821,7 @@ pub async fn find_all_pay_transactions_jsapi(
         .iter()
         .find(|item| item.val == model.trade_state.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.trade_state.to_string())
-        .into()
+        .unwrap_or_else(|| model.trade_state.clone().into())
     };
     
     // 货币类型
@@ -831,8 +830,7 @@ pub async fn find_all_pay_transactions_jsapi(
         .iter()
         .find(|item| item.val == model.currency.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.currency.to_string())
-        .into()
+        .unwrap_or_else(|| model.currency.clone().into())
     };
     
   }

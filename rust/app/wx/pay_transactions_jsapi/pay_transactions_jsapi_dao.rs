@@ -7,6 +7,9 @@ use generated::common::context::{
   get_short_uuid,
   get_auth_model_ok,
 };
+
+use smol_str::SmolStr;
+
 use generated::common::wx_pay::{Amount, Jsapi, Payer, WxPayData, WxPay, SceneInfo};
 
 use super::pay_transactions_jsapi_model::RequestPaymentOptions;
@@ -77,8 +80,8 @@ pub async fn transactions_jsapi(
   options: Option<Options>,
 ) -> Result<RequestPaymentOptions> {
   
-  let mut appid = transactions_jsapi_input.appid;
-  let description = transactions_jsapi_input.description;
+  let mut appid = SmolStr::new(&transactions_jsapi_input.appid);
+  let description = SmolStr::new(&transactions_jsapi_input.description);
   let amount = transactions_jsapi_input.amount;
   
   // 当前登录用户有可能尚未绑定微信
@@ -87,7 +90,7 @@ pub async fn transactions_jsapi(
   let wx_usr_id = auth_model.wx_usr_id;
   let wxo_usr_id = auth_model.wxo_usr_id;
   
-  let mut openid: Option<String> = None;
+  let mut openid: Option<SmolStr> = None;
   let mut tenant_id: Option<TenantId> = None;
   
   if let Some(wx_usr_id) = wx_usr_id {
@@ -118,14 +121,14 @@ pub async fn transactions_jsapi(
   
   if appid.is_empty() {
     return Err(eyre!(ServiceException {
-      message: "appid 不能为空".to_string(),
+      message: "appid 不能为空".into(),
       trace: true,
       ..Default::default()
     }));
   }
   if openid.is_none() || openid.as_ref().unwrap().is_empty() {
     return Err(eyre!(ServiceException {
-      message: "openid 不能为空".to_string(),
+      message: "openid 不能为空".into(),
       trace: true,
       ..Default::default()
     }));
@@ -134,7 +137,7 @@ pub async fn transactions_jsapi(
   
   if tenant_id.is_none() || tenant_id.as_ref().unwrap().is_empty() {
     return Err(eyre!(ServiceException {
-      message: "tenant_id 不能为空".to_string(),
+      message: "tenant_id 不能为空".into(),
       trace: true,
       ..Default::default()
     }));
@@ -156,7 +159,7 @@ pub async fn transactions_jsapi(
   
   let domain_id = if domain_ids.is_empty() {
     return Err(eyre!(ServiceException {
-      message: "domain_ids 不能为空".to_string(),
+      message: "domain_ids 不能为空".into(),
       trace: true,
       ..Default::default()
     }));
@@ -178,7 +181,7 @@ pub async fn transactions_jsapi(
   
   if domain_protocol.is_empty() {
     return Err(eyre!(ServiceException {
-      message: "domain_protocol 不能为空".to_string(),
+      message: "domain_protocol 不能为空".into(),
       trace: true,
       ..Default::default()
     }));
@@ -186,7 +189,7 @@ pub async fn transactions_jsapi(
   
   if domain_lbl.is_empty() {
     return Err(eyre!(ServiceException {
-      message: "domain_lbl 不能为空".to_string(),
+      message: "domain_lbl 不能为空".into(),
       trace: true,
       ..Default::default()
     }));
@@ -224,7 +227,7 @@ pub async fn transactions_jsapi(
   };
   if private_key_str.is_none() || private_key_str.as_ref().unwrap().is_empty() {
     return Err(eyre!(ServiceException {
-      message: "私钥不存在".to_string(),
+      message: "私钥不存在".into(),
       trace: true,
       ..Default::default()
     }));
@@ -242,14 +245,14 @@ pub async fn transactions_jsapi(
     Some(wx_pay_model.payer_client_ip)
   };
   let scene_info: Option<SceneInfo> = payer_client_ip.map(|payer_client_ip| SceneInfo {
-    payer_client_ip: Some(payer_client_ip),
+    payer_client_ip: Some(payer_client_ip.into()),
     ..Default::default()
   });
-  let notify_url: String = wx_pay_model.notify_url;
+  let notify_url = wx_pay_model.notify_url;
   
   if notify_url.is_empty() {
     return Err(eyre!(ServiceException {
-      message: "notify_url 不能为空".to_string(),
+      message: "notify_url 不能为空".into(),
       trace: true,
       ..Default::default()
     }));
@@ -272,28 +275,28 @@ pub async fn transactions_jsapi(
     .round_dp(0)
     .to_u64()
     .ok_or_else(|| eyre!(ServiceException {
-      message: "金额计算错误".to_string(),
+      message: "金额计算错误".into(),
       trace: true,
       ..Default::default()
     }))?;
   
   if amount > u32::MAX as u64 {
     return Err(eyre!(ServiceException {
-      message: "金额超出范围".to_string(),
+      message: "金额超出范围".into(),
       trace: true,
       ..Default::default()
     }));
   }
   
   let jsapi = Jsapi {
-    description: description.clone(),
+    description: description.clone().to_string(),
     out_trade_no: out_trade_no.clone(),
     amount: Amount {
       total: amount,
       ..Default::default()
     },
     payer: Payer {
-      openid: openid.clone(),
+      openid: openid.clone().to_string(),
     },
     time_expire: transactions_jsapi_input.time_expire.clone(),
     attach: transactions_jsapi_input.attach.clone(),
@@ -325,9 +328,9 @@ pub async fn transactions_jsapi(
   };
   
   let profit_sharing = if transactions_jsapi_input.profit_sharing.unwrap_or_default() {
-    Some("Y".to_string())
+    Some(SmolStr::new("Y"))
   } else {
-    Some("N".to_string())
+    Some(SmolStr::new("N"))
   };
   
   let amount = amount as u32;
@@ -337,19 +340,19 @@ pub async fn transactions_jsapi(
     PayTransactionsJsapiInput {
       appid: Some(appid),
       mchid: Some(mchid),
-      description: Some(description),
-      out_trade_no: Some(out_trade_no),
-      transaction_id: Some("".to_string()),
+      description: Some(description.clone()),
+      out_trade_no: Some(out_trade_no.into()),
+      transaction_id: Some(SmolStr::new("")),
       trade_state: Some(PayTransactionsJsapiTradeState::Notpay),
-      time_expire: transactions_jsapi_input.time_expire.clone(),
-      attach: transactions_jsapi_input.attach.clone(),
-      attach2: Some(transactions_jsapi_input.attach2),
-      notify_url: Some(notify_url),
-      receipt: transactions_jsapi_input.receipt,
+      time_expire: transactions_jsapi_input.time_expire.clone().map(SmolStr::new),
+      attach: transactions_jsapi_input.attach.clone().map(SmolStr::new),
+      attach2: Some(transactions_jsapi_input.attach2.into()),
+      notify_url: Some(notify_url.into()),
+      receipt: transactions_jsapi_input.receipt.map(SmolStr::new),
       profit_sharing,
       total_fee: Some(amount),
       openid: Some(openid),
-      prepay_id: Some(wx_pay_data.package),
+      prepay_id: Some(wx_pay_data.package.into()),
       tenant_id: Some(tenant_id),
       ..Default::default()
     },

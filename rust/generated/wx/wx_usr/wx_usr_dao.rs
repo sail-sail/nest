@@ -815,8 +815,7 @@ pub async fn find_all_wx_usr(
         .iter()
         .find(|item| item.val == model.gender.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.gender.to_string())
-        .into()
+        .unwrap_or_else(|| model.gender.to_string().into())
     };
     
   }

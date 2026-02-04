@@ -656,8 +656,7 @@ pub async fn find_all_wx_pay_notice(
         .iter()
         .find(|item| item.val == model.trade_type.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.trade_type.to_string())
-        .into()
+        .unwrap_or_else(|| model.trade_type.clone().into())
     };
     
     // 交易状态
@@ -666,8 +665,7 @@ pub async fn find_all_wx_pay_notice(
         .iter()
         .find(|item| item.val == model.trade_state.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.trade_state.to_string())
-        .into()
+        .unwrap_or_else(|| model.trade_state.clone().into())
     };
     
     // 货币类型
@@ -676,8 +674,7 @@ pub async fn find_all_wx_pay_notice(
         .iter()
         .find(|item| item.val == model.currency.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.currency.to_string())
-        .into()
+        .unwrap_or_else(|| model.currency.clone().into())
     };
     
     // 用户支付币种
@@ -686,8 +683,7 @@ pub async fn find_all_wx_pay_notice(
         .iter()
         .find(|item| item.val == model.payer_currency.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.payer_currency.to_string())
-        .into()
+        .unwrap_or_else(|| model.payer_currency.clone().into())
     };
     
   }

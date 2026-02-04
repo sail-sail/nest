@@ -8,6 +8,8 @@ use generated::common::context::{
   get_server_tokentimeout,
 };
 
+use smol_str::SmolStr;
+
 use super::wx_usr_model::{
   Code2sessionInput,
   Code2sessionModel,
@@ -135,7 +137,7 @@ pub async fn code2session(
   {
     return Err(eyre!(
       ServiceException {
-        code: errcode.unwrap_or_default().to_string(),
+        code: errcode.unwrap_or_default().to_string().into(),
         message: errmsg.unwrap_or_default(),
         trace: true,
         ..Default::default()
@@ -212,7 +214,7 @@ pub async fn code2session(
         codes: if default_role_codes.is_empty() {
           None
         } else {
-          Some(default_role_codes.split(",").map(|s| s.to_string()).collect())
+          Some(default_role_codes.split(",").map(|s| s.to_string().into()).collect::<Vec<SmolStr>>())
         },
         ..Default::default()
       }),
@@ -315,6 +317,6 @@ pub async fn code2session(
     tenant_id,
     org_id,
     authorization,
-    lang: lang.unwrap_or_else(|| "zh-CN".to_owned()),
+    lang: lang.unwrap_or(SmolStr::new("zh-CN")),
   })
 }
