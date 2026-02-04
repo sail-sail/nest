@@ -77,7 +77,7 @@ use generated::common::exceptions::service_exception::ServiceException;
 #[allow(unused_variables)]
 pub async fn code2session(
   code2session_input: Code2sessionInput,
-  ip: String,
+  ip: SmolStr,
   options: Option<Options>,
 ) -> Result<LoginModel> {
   

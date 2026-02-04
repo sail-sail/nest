@@ -272,7 +272,7 @@ mod tests {
     let res = Ctx::test_builder()
       .build()
       .scope_fn(async || -> Result<()> {
-        let appid = "wxd4b24c53a1813485".to_string();
+        let appid = "wxd4b24c53a1813485".into();
         let options = None;
         
         let access_token = get_access_token(

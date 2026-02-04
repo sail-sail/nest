@@ -8,12 +8,14 @@ use generated::common::context::{
   get_req_id,
 };
 
+use smol_str::SmolStr;
+
 use super::wx_usr_model::Code2sessionInput;
 use super::wx_usr_service::code2session as code2session_service;
 
 pub async fn code2session(
   code2session_input: Code2sessionInput,
-  ip: String,
+  ip: SmolStr,
   options: Option<Options>,
 ) -> Response {
   
