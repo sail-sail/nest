@@ -1714,6 +1714,36 @@ export async function updateByIdI18n(
   return id;
 }
 
+// MARK: updateByIdI18n
+/** 根据 id 更新国际化, 并返回更新后的数据 */
+export async function updateByIdReturnI18n(
+  id: I18nId,
+  input: I18nInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<I18nModel> {
+  
+  await updateByIdI18n(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdI18n(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`国际化 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsI18n
 /** 根据 ids 删除 国际化 */
 export async function deleteByIdsI18n(

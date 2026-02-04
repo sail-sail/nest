@@ -7,8 +7,15 @@ import type {
 import * as dyn_page_dataDao from "./dyn_page_data.dao.ts";
 
 async function setSearchQuery(
-  _search: DynPageDataSearch,
+  search: DynPageDataSearch,
 ) {
+  
+  if (
+    !search.ref_code &&
+    (!search.id && !search.ids)
+  ) {
+    search.ref_code = "";
+  }
   
 }
 

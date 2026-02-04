@@ -225,9 +225,19 @@ if (right_field && !right_field_column) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item
+        <tm-form-item<#
+          if (column.noAdd === true) {
+          #>
+          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+          }
+          #>
           label="<#=column_comment#>"
           name="<#=column_name#>"<#
+          if (column.readonly) {
+          #>
+          :readonly="true"<#
+          }
+          #><#
           if (!require) {
           #>
           :required="false"<#
@@ -243,11 +253,6 @@ if (right_field && !right_field_column) {
             multiple<#
             }
             #><#
-            if (column.readonly) {
-            #>
-            :readonly="true"<#
-            }
-            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -259,37 +264,52 @@ if (right_field && !right_field_column) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item
+        <tm-form-item<#
+          if (column.noAdd === true) {
+          #>
+          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+          }
+          #>
           label="<#=column_comment#>"
           name="<#=column_name#>"<#
+          if (column.readonly) {
+          #>
+          :readonly="true"<#
+          }
+          #><#
           if (!require) {
           #>
           :required="false"<#
           }
           #>
         >
-          <CustomInput
+          <CustomDate
             v-model="<#=table#>_input.<#=column_name#>"
             placeholder="请选择 <#=column_comment#>"<#
-            if (column.readonly) {
-            #>
-            :readonly="true"<#
-            }
-            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
             }
             #>
-          ></CustomInput>
+          ></CustomDate>
         </tm-form-item><#
         } else if (column.dict) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item
+        <tm-form-item<#
+          if (column.noAdd === true) {
+          #>
+          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+          }
+          #>
           label="<#=column_comment#>"
           name="<#=column_name#>"<#
+          if (column.readonly) {
+          #>
+          :readonly="true"<#
+          }
+          #><#
           if (!require) {
           #>
           :required="false"<#
@@ -300,11 +320,6 @@ if (right_field && !right_field_column) {
             v-model="<#=table#>_input.<#=column_name#>"
             placeholder="请选择 <#=column_comment#>"
             code="<#=column.dict#>"<#
-            if (column.readonly) {
-            #>
-            :readonly="true"<#
-            }
-            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -316,30 +331,35 @@ if (right_field && !right_field_column) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item
+        <tm-form-item<#
+          if (column.noAdd === true) {
+          #>
+          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+          }
+          #>
           label="<#=column_comment#>"
           name="<#=column_name#>"<#
+          if (column.readonly) {
+          #>
+          :readonly="true"<#
+          }
+          #><#
           if (!require) {
           #>
           :required="false"<#
           }
           #>
         >
-          <DictSelect
+          <DictbizSelect
             v-model="<#=table#>_input.<#=column_name#>"
             placeholder="请选择 <#=column_comment#>"
             code="<#=column.dictbiz#>"<#
-            if (column.readonly) {
-            #>
-            :readonly="true"<#
-            }
-            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
             }
             #>
-          ></DictSelect>
+          ></DictbizSelect>
         </tm-form-item><#
         } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
           /* TODO: 是否生成开关 */
@@ -348,9 +368,19 @@ if (right_field && !right_field_column) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item
+        <tm-form-item<#
+          if (column.noAdd === true) {
+          #>
+          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+          }
+          #>
           label="<#=column_comment#>"
           name="<#=column_name#>"<#
+          if (column.readonly) {
+          #>
+          :readonly="true"<#
+          }
+          #><#
           if (!require) {
           #>
           :required="false"<#
@@ -361,11 +391,6 @@ if (right_field && !right_field_column) {
             v-model="<#=table#>_input.<#=column_name#>"
             type="number"
             placeholder="请输入 <#=column_comment#>"<#
-            if (column.readonly) {
-            #>
-            :readonly="true"<#
-            }
-            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -377,9 +402,19 @@ if (right_field && !right_field_column) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item
+        <tm-form-item<#
+          if (column.noAdd === true) {
+          #>
+          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+          }
+          #>
           label="<#=column_comment#>"
           name="<#=column_name#>"<#
+          if (column.readonly) {
+          #>
+          :readonly="true"<#
+          }
+          #><#
           if (!require) {
           #>
           :required="false"<#
@@ -390,11 +425,6 @@ if (right_field && !right_field_column) {
             v-model="<#=table#>_input.<#=column_name#>"
             type="decimal"
             placeholder="请输入 <#=column_comment#>"<#
-            if (column.readonly) {
-            #>
-            :readonly="true"<#
-            }
-            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -406,9 +436,19 @@ if (right_field && !right_field_column) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item
+        <tm-form-item<#
+          if (column.noAdd === true) {
+          #>
+          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+          }
+          #>
           label="<#=column_comment#>"
           name="<#=column_name#>"<#
+          if (column.readonly) {
+          #>
+          :readonly="true"<#
+          }
+          #><#
           if (!require) {
           #>
           :required="false"<#
@@ -424,11 +464,6 @@ if (right_field && !right_field_column) {
             }
             #>
             placeholder="请输入 <#=column_comment#>"<#
-            if (column.readonly) {
-            #>
-            :readonly="true"<#
-            }
-            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -964,7 +999,7 @@ if (right_field && !right_field_column) {
     ></view>
     
   </scroll-view><#
-  if (opts.noAdd !== true || opts.noEdit !== true) {
+  if (opts.noCopy !== true || opts.noEdit !== true) {
   #>
   
   <view<#
@@ -986,7 +1021,9 @@ if (right_field && !right_field_column) {
     un-justify="center"
     un-items="center"
     un-gap="x-4"
-  >
+  ><#
+    if (opts.noCopy !== true) {
+    #>
     
     <view
       v-if="dialogAction === 'edit' && <#=table#>_id"
@@ -999,7 +1036,9 @@ if (right_field && !right_field_column) {
       >
         复制
       </tm-button>
-    </view>
+    </view><#
+    }
+    #>
     
     <view
       un-flex="1"
@@ -1243,6 +1282,13 @@ async function onSave(
   }
   #>
   if (formSubmitResult?.isPass === false) {
+    const firstValid = formSubmitResult.firstValid;
+    if (firstValid) {
+      uni.showToast({
+        title: firstValid.message,
+        icon: "error",
+      });
+    }
     return;
   }
   
@@ -1257,6 +1303,10 @@ async function onSave(
     await create<#=Table_Up#>(
       <#=table#>_input,
     );
+    await uni.showModal({
+      content: "新增成功",
+      showCancel: false,
+    });
     await uni.navigateBack();
     uni.$emit("/pages/<#=table#>/List:refresh");
   } else if (dialogAction === "edit") {
@@ -1271,6 +1321,10 @@ async function onSave(
       <#=table#>_id,
       <#=table#>_input,
     );
+    await uni.showModal({
+      content: "修改成功",
+      showCancel: false,
+    });
     await uni.navigateBack();
     uni.$emit("/pages/<#=table#>/List:refresh");
   }

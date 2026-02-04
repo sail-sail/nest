@@ -1608,6 +1608,36 @@ export async function updateByIdDynPageVal(
   return id;
 }
 
+// MARK: updateByIdDynPageVal
+/** 根据 id 更新动态页面值, 并返回更新后的数据 */
+export async function updateByIdReturnDynPageVal(
+  id: DynPageValId,
+  input: DynPageValInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<DynPageValModel> {
+  
+  await updateByIdDynPageVal(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdDynPageVal(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`动态页面值 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsDynPageVal
 /** 根据 ids 删除 动态页面值 */
 export async function deleteByIdsDynPageVal(

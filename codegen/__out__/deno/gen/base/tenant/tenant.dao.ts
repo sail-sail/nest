@@ -2225,6 +2225,36 @@ export async function updateByIdTenant(
   return id;
 }
 
+// MARK: updateByIdTenant
+/** 根据 id 更新租户, 并返回更新后的数据 */
+export async function updateByIdReturnTenant(
+  id: TenantId,
+  input: TenantInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<TenantModel> {
+  
+  await updateByIdTenant(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdTenant(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`租户 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsTenant
 /** 根据 ids 删除 租户 */
 export async function deleteByIdsTenant(

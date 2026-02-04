@@ -47,6 +47,14 @@ type DynPageFieldModel {
   align: DynPageFieldAlign!
   "对齐方式"
   align_lbl: String!
+  "手机列表显示"
+  is_mobile_list: Int!
+  "手机列表显示"
+  is_mobile_list_lbl: String!
+  "手机列表查询"
+  is_mobile_search: Int!
+  "手机列表查询"
+  is_mobile_search_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
@@ -87,6 +95,14 @@ type DynPageFieldFieldComment {
   align: String!
   "对齐方式"
   align_lbl: String!
+  "手机列表显示"
+  is_mobile_list: String!
+  "手机列表显示"
+  is_mobile_list_lbl: String!
+  "手机列表查询"
+  is_mobile_search: String!
+  "手机列表查询"
+  is_mobile_search_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -125,6 +141,14 @@ input DynPageFieldInput {
   align: DynPageFieldAlign
   "对齐方式"
   align_lbl: String
+  "手机列表显示"
+  is_mobile_list: Int
+  "手机列表显示"
+  is_mobile_list_lbl: String
+  "手机列表查询"
+  is_mobile_search: Int
+  "手机列表查询"
+  is_mobile_search_lbl: String
   "启用"
   is_enabled: Int
   "启用"

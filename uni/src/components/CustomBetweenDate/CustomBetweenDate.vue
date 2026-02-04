@@ -91,6 +91,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: "change", value?: string[]): void;
+  (e: "confirm", value?: string[]): void;
 }>();
 
 const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
@@ -113,6 +114,7 @@ const modelValue = defineModel<any[]>({
 
 function onConfirm(value: string[]) {
   emit("change", value);
+  emit("confirm", value);
 }
 </script>
 

@@ -92,9 +92,11 @@ ec_order: {
 - autoCode.seqPadStart0: 序列号左侧补0到多少位
 
 - rem: 备注, 默认已经是 align: "left"
-- decimal类型的字段: 默认已经是 width: 100, align: "right", require: true,
 - is_enabled: 默认已经是 isSwitch: true,
 - order_by: 无需配置, 默认值即可
+
+- date/datetime类型的字段: 默认已经是 width: 160, align: "center", 无需配置 width 和 align
+- decimal类型的字段: 默认已经是 width: 100, align: "right", require: true,
 
 ## 审计字段
 
