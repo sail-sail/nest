@@ -164,7 +164,7 @@ type Query {
   "根据 ids 查找SEO优化"
   findByIdsSeo(ids: [SeoId!]!): [SeoModel]!
   "查找SEO优化 order_by 字段的最大值"
-  findLastOrderBySeo: Int!
+  findLastOrderBySeo(search: SeoSearch): Int!
 }
 type Mutation {
   "批量创建SEO优化"

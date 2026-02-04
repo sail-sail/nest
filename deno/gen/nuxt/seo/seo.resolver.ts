@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./seo.model.ts";
-
 /**
  * 根据条件查找SEO优化总数
  */
@@ -188,11 +184,15 @@ export async function createsSeo(
     createsSeo,
   } = await import("./seo.service.ts");
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathSeo(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdSeo(
     updateByIdSeo,
   } = await import("./seo.service.ts");
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblSeo(input);
   
   await usePermit(
-    route_path,
+    getPagePathSeo(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsSeo(
     deleteByIdsSeo,
   } = await import("./seo.service.ts");
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSeo(),
     "delete",
   );
   
@@ -273,10 +281,14 @@ export async function defaultByIdSeo(
     defaultByIdSeo,
   } = await import("./seo.service.ts");
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSeo(),
     "edit",
   );
   
@@ -300,10 +312,14 @@ export async function lockByIdsSeo(
     throw new Error(`lockByIdsSeo.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSeo(),
     "edit",
   );
   
@@ -323,10 +339,14 @@ export async function revertByIdsSeo(
     revertByIdsSeo,
   } = await import("./seo.service.ts");
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSeo(),
     "delete",
   );
   
@@ -346,10 +366,14 @@ export async function forceDeleteByIdsSeo(
     forceDeleteByIdsSeo,
   } = await import("./seo.service.ts");
   
+  const {
+    getPagePathSeo,
+  } = await import("./seo.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSeo(),
     "force_delete",
   );
   
@@ -361,13 +385,15 @@ export async function forceDeleteByIdsSeo(
 /**
  * 查找 SEO优化 order_by 字段的最大值
  */
-export async function findLastOrderBySeo(): Promise<number> {
+export async function findLastOrderBySeo(
+  search?: SeoSearch,
+): Promise<number> {
   
   const {
     findLastOrderBySeo,
   } = await import("./seo.service.ts");
   
-  const res = findLastOrderBySeo();
+  const order_by = findLastOrderBySeo(search);
   
-  return res;
+  return order_by;
 }

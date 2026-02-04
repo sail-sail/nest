@@ -13,7 +13,7 @@ import {
   seoQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdSeo(
   model?: SeoModel | null,
   isExcelExport = false,
 ) {
@@ -55,7 +55,7 @@ export function intoInputSeo(
     is_default: model?.is_default,
     is_default_lbl: model?.is_default_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -90,7 +90,7 @@ export async function findAllSeo(
   const models = data.findAllSeo;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdSeo(model);
   }
   return models;
 }
@@ -122,7 +122,7 @@ export async function findOneSeo(
   
   const model = data.findOneSeo;
   
-  await setLblById(model);
+  await setLblByIdSeo(model);
   
   return model;
 }
@@ -154,7 +154,7 @@ export async function findOneOkSeo(
   
   const model = data.findOneOkSeo;
   
-  await setLblById(model);
+  await setLblByIdSeo(model);
   
   return model;
 }
@@ -280,7 +280,7 @@ export async function findByIdSeo(
   
   const model = data.findByIdSeo;
   
-  await setLblById(model);
+  await setLblByIdSeo(model);
   
   return model;
 }
@@ -310,7 +310,7 @@ export async function findByIdOkSeo(
   
   const model = data.findByIdOkSeo;
   
-  await setLblById(model);
+  await setLblByIdSeo(model);
   
   return model;
 }
@@ -346,7 +346,7 @@ export async function findByIdsSeo(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdSeo(model);
   }
   
   return models;
@@ -383,7 +383,7 @@ export async function findByIdsOkSeo(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdSeo(model);
   }
   
   return models;
@@ -596,8 +596,8 @@ export function useExportExcelSeo() {
     try {
       const data = await query({
         query: `
-          query($search: SeoSearch, $sort: [SortInput!]) {
-            findAllSeo(search: $search, page: null, sort: $sort) {
+          query($search: SeoSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllSeo(search: $search, page: $page, sort: $sort) {
               ${ seoQueryField }
             }
             getDict(codes: [
@@ -611,11 +611,14 @@ export function useExportExcelSeo() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllSeo) {
-        await setLblById(model, true);
+        await setLblByIdSeo(model, true);
       }
       try {
         const sheetName = "SEO优化";
@@ -695,19 +698,68 @@ export async function importModelsSeo(
  * 查找 SEO优化 order_by 字段的最大值
  */
 export async function findLastOrderBySeo(
+  search?: SeoSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderBySeo: Query["findLastOrderBySeo"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderBySeo
+      query($search: SeoSearch) {
+        findLastOrderBySeo(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderBySeo;
-  return res;
+  
+  const order_by = data.findLastOrderBySeo;
+  
+  return order_by;
+}
+
+/**
+ * 获取 SEO优化 字段注释
+ */
+export async function getFieldCommentsSeo(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsSeo: Query["getFieldCommentsSeo"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsSeo {
+          id,
+          title,
+          description,
+          keywords,
+          og_image,
+          og_title,
+          og_description,
+          is_locked,
+          is_locked_lbl,
+          is_default,
+          is_default_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsSeo as SeoFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathSeo() {

@@ -290,7 +290,10 @@ export async function getFieldCommentsSeo(): Promise<SeoFieldComment> {
  * 查找 SEO优化 order_by 字段的最大值
  */
 export async function findLastOrderBySeo(
+  search?: SeoSearch,
 ): Promise<number> {
-  const seo_sort = await seoDao.findLastOrderBySeo();
-  return seo_sort;
+  
+  const order_by = await seoDao.findLastOrderBySeo(search);
+  
+  return order_by;
 }

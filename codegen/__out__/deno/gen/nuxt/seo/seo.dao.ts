@@ -39,6 +39,12 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import {
+  deleteObject,
+} from "/lib/oss/oss.dao.ts";
+
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -73,6 +79,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathSeo,
+  getTableNameSeo,
+} from "./seo.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -219,7 +230,7 @@ export async function findCountSeo(
   },
 ): Promise<number> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "findCountSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -320,7 +331,7 @@ export async function findAllSeo(
   },
 ): Promise<SeoModel[]> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "findAllSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -452,6 +463,14 @@ export async function findAllSeo(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_lockedDict, // 锁定
     is_defaultDict, // 默认
@@ -557,7 +576,7 @@ export async function setIdByLblSeo(
 // MARK: getFieldCommentsSeo
 /** 获取SEO优化字段注释 */
 export async function getFieldCommentsSeo(): Promise<SeoFieldComment> {
-  const fieldComments: SeoFieldComment = {
+  const field_comments: SeoFieldComment = {
     id: "ID",
     title: "标题",
     description: "描述",
@@ -580,7 +599,8 @@ export async function getFieldCommentsSeo(): Promise<SeoFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueSeo
@@ -592,7 +612,7 @@ export async function findByUniqueSeo(
   },
 ): Promise<SeoModel[]> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "findByUniqueSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -658,7 +678,7 @@ export async function checkByUniqueSeo(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 SEO优化 已经存在");
+      throw new UniqueException("SEO优化 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: SeoId = await updateByIdSeo(
@@ -688,7 +708,7 @@ export async function findOneSeo(
   },
 ): Promise<SeoModel | undefined> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "findOneSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -736,7 +756,7 @@ export async function findOneOkSeo(
   },
 ): Promise<SeoModel> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "findOneOkSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -788,7 +808,7 @@ export async function findByIdSeo(
   },
 ): Promise<SeoModel | undefined> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "findByIdSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -830,7 +850,7 @@ export async function findByIdOkSeo(
   },
 ): Promise<SeoModel> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "findByIdOkSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -871,7 +891,7 @@ export async function findByIdsSeo(
   },
 ): Promise<SeoModel[]> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "findByIdsSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -918,7 +938,7 @@ export async function findByIdsOkSeo(
   },
 ): Promise<SeoModel[]> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "findByIdsOkSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -967,7 +987,7 @@ export async function existSeo(
   },
 ): Promise<boolean> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "existSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -999,7 +1019,7 @@ export async function existByIdSeo(
   },
 ) {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "existByIdSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1146,7 +1166,7 @@ export async function createReturnSeo(
   },
 ): Promise<SeoModel> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "createReturnSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1197,7 +1217,7 @@ export async function createSeo(
   },
 ): Promise<SeoId> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "createSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1238,7 +1258,7 @@ export async function createsReturnSeo(
   },
 ): Promise<SeoModel[]> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "createsReturnSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1275,7 +1295,7 @@ export async function createsSeo(
   },
 ): Promise<SeoId[]> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "createsSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1312,7 +1332,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1547,7 +1567,7 @@ export async function updateTenantByIdSeo(
   },
 ): Promise<number> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "updateTenantByIdSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1595,7 +1615,7 @@ export async function updateByIdSeo(
   },
 ): Promise<SeoId> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "updateByIdSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1639,7 +1659,7 @@ export async function updateByIdSeo(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 SEO优化 已经存在";
+        throw "SEO优化 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1649,7 +1669,12 @@ export async function updateByIdSeo(
   const oldModel = await findByIdSeo(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 SEO优化 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 SEO优化 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1794,7 +1819,14 @@ export async function updateByIdSeo(
     await delCacheSeo();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1809,6 +1841,36 @@ export async function updateByIdSeo(
   return id;
 }
 
+// MARK: updateByIdSeo
+/** 根据 id 更新SEO优化, 并返回更新后的数据 */
+export async function updateByIdReturnSeo(
+  id: SeoId,
+  input: SeoInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<SeoModel> {
+  
+  await updateByIdSeo(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdSeo(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`SEO优化 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsSeo
 /** 根据 ids 删除 SEO优化 */
 export async function deleteByIdsSeo(
@@ -1820,7 +1882,7 @@ export async function deleteByIdsSeo(
   },
 ): Promise<number> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "deleteByIdsSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1843,6 +1905,8 @@ export async function deleteByIdsSeo(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheSeo();
   
@@ -1878,7 +1942,13 @@ export async function deleteByIdsSeo(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1895,7 +1965,7 @@ export async function defaultByIdSeo(
   },
 ): Promise<number> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "defaultByIdSeo";
   
   if (!id) {
@@ -1951,7 +2021,7 @@ export async function lockByIdsSeo(
   },
 ): Promise<number> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "lockByIdsSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1976,11 +2046,19 @@ export async function lockByIdsSeo(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheSeo();
   
   const args = new QueryArgs();
   let sql = `update nuxt_seo set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheSeo();
@@ -1997,7 +2075,7 @@ export async function revertByIdsSeo(
   },
 ): Promise<number> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "revertByIdsSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2051,7 +2129,7 @@ export async function revertByIdsSeo(
         if (model.id === id) {
           continue;
         }
-        throw "此 SEO优化 已经存在";
+        throw "SEO优化 重复";
       }
     }
     const args = new QueryArgs();
@@ -2075,7 +2153,7 @@ export async function forceDeleteByIdsSeo(
   },
 ): Promise<number> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "forceDeleteByIdsSeo";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2098,6 +2176,8 @@ export async function forceDeleteByIdsSeo(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheSeo();
   
   let num = 0;
@@ -2118,6 +2198,11 @@ export async function forceDeleteByIdsSeo(
     const sql = `delete from nuxt_seo where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    
+    // 分享图片
+    await deleteObject(
+      oldModel?.og_image,
+    );
   }
   
   await delCacheSeo();
@@ -2128,18 +2213,22 @@ export async function forceDeleteByIdsSeo(
 // MARK: findLastOrderBySeo
 /** 查找 SEO优化 order_by 字段的最大值 */
 export async function findLastOrderBySeo(
+  search?: Readonly<SeoSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "nuxt_seo";
+  const table = getTableNameSeo();
   const method = "findLastOrderBySeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2148,24 +2237,29 @@ export async function findLastOrderBySeo(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from nuxt_seo t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from nuxt_seo t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;
