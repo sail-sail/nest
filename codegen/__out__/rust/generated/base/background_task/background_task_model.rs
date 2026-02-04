@@ -60,58 +60,58 @@ pub struct BackgroundTaskModel {
   pub id: BackgroundTaskId,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 状态
   #[graphql(name = "state")]
   pub state: BackgroundTaskState,
   /// 状态
   #[graphql(name = "state_lbl")]
-  pub state_lbl: String,
+  pub state_lbl: SmolStr,
   /// 类型
   #[graphql(name = "type")]
   pub r#type: BackgroundTaskType,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: String,
+  pub type_lbl: SmolStr,
   /// 执行结果
   #[graphql(name = "result")]
-  pub result: String,
+  pub result: SmolStr,
   /// 错误信息
   #[graphql(name = "err_msg")]
-  pub err_msg: String,
+  pub err_msg: SmolStr,
   /// 开始时间
   #[graphql(name = "begin_time")]
   pub begin_time: Option<chrono::NaiveDateTime>,
   /// 开始时间
   #[graphql(name = "begin_time_lbl")]
-  pub begin_time_lbl: String,
+  pub begin_time_lbl: SmolStr,
   /// 结束时间
   #[graphql(name = "end_time")]
   pub end_time: Option<chrono::NaiveDateTime>,
   /// 结束时间
   #[graphql(name = "end_time_lbl")]
-  pub end_time_lbl: String,
+  pub end_time_lbl: SmolStr,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
@@ -121,50 +121,56 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
     // ID
     let id: BackgroundTaskId = row.try_get("id")?;
     // 名称
-    let lbl: String = row.try_get("lbl")?;
+    let lbl: &str = row.try_get("lbl")?;
+    let lbl = SmolStr::new(lbl);
     // 状态
-    let state_lbl: String = row.try_get("state")?;
-    let state: BackgroundTaskState = state_lbl.clone().try_into()?;
+    let state_lbl: &str = row.try_get("state")?;
+    let state: BackgroundTaskState = state_lbl.try_into()?;
+    let state_lbl = SmolStr::new(state_lbl);
     // 类型
-    let type_lbl: String = row.try_get("type")?;
-    let r#type: BackgroundTaskType = type_lbl.clone().try_into()?;
+    let type_lbl: &str = row.try_get("type")?;
+    let r#type: BackgroundTaskType = type_lbl.try_into()?;
+    let type_lbl = SmolStr::new(type_lbl);
     // 执行结果
-    let result: String = row.try_get("result")?;
+    let result: &str = row.try_get("result")?;
+    let result = SmolStr::new(result);
     // 错误信息
-    let err_msg: String = row.try_get("err_msg")?;
+    let err_msg: &str = row.try_get("err_msg")?;
+    let err_msg = SmolStr::new(err_msg);
     // 开始时间
     let begin_time: Option<chrono::NaiveDateTime> = row.try_get("begin_time")?;
-    let begin_time_lbl: String = match begin_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let begin_time_lbl: SmolStr = match begin_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 结束时间
     let end_time: Option<chrono::NaiveDateTime> = row.try_get("end_time")?;
-    let end_time_lbl: String = match end_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let end_time_lbl: SmolStr = match end_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 备注
-    let rem: String = row.try_get("rem")?;
+    let rem: &str = row.try_get("rem")?;
+    let rem = SmolStr::new(rem);
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let create_time_lbl: SmolStr = match create_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let update_time_lbl: SmolStr = match update_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -205,67 +211,67 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
 pub struct BackgroundTaskFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 状态
   #[graphql(name = "state")]
-  pub state: String,
+  pub state: SmolStr,
   /// 状态
   #[graphql(name = "state_lbl")]
-  pub state_lbl: String,
+  pub state_lbl: SmolStr,
   /// 类型
   #[graphql(name = "type")]
-  pub r#type: String,
+  pub r#type: SmolStr,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: String,
+  pub type_lbl: SmolStr,
   /// 执行结果
   #[graphql(name = "result")]
-  pub result: String,
+  pub result: SmolStr,
   /// 错误信息
   #[graphql(name = "err_msg")]
-  pub err_msg: String,
+  pub err_msg: SmolStr,
   /// 开始时间
   #[graphql(name = "begin_time")]
-  pub begin_time: String,
+  pub begin_time: SmolStr,
   /// 开始时间
   #[graphql(name = "begin_time_lbl")]
-  pub begin_time_lbl: String,
+  pub begin_time_lbl: SmolStr,
   /// 结束时间
   #[graphql(name = "end_time")]
-  pub end_time: String,
+  pub end_time: SmolStr,
   /// 结束时间
   #[graphql(name = "end_time_lbl")]
-  pub end_time_lbl: String,
+  pub end_time_lbl: SmolStr,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: String,
+  pub create_usr_id: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: String,
+  pub create_time: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: String,
+  pub update_usr_id: SmolStr,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: String,
+  pub update_time: SmolStr,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -281,10 +287,10 @@ pub struct BackgroundTaskSearch {
   pub is_deleted: Option<u8>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<String>,
+  pub lbl_like: Option<SmolStr>,
   /// 状态
   #[graphql(name = "state")]
   pub state: Option<Vec<BackgroundTaskState>>,
@@ -293,16 +299,16 @@ pub struct BackgroundTaskSearch {
   pub r#type: Option<Vec<BackgroundTaskType>>,
   /// 执行结果
   #[graphql(skip)]
-  pub result: Option<String>,
+  pub result: Option<SmolStr>,
   /// 执行结果
   #[graphql(skip)]
-  pub result_like: Option<String>,
+  pub result_like: Option<SmolStr>,
   /// 错误信息
   #[graphql(skip)]
-  pub err_msg: Option<String>,
+  pub err_msg: Option<SmolStr>,
   /// 错误信息
   #[graphql(skip)]
-  pub err_msg_like: Option<String>,
+  pub err_msg_like: Option<SmolStr>,
   /// 开始时间
   #[graphql(name = "begin_time")]
   pub begin_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -311,10 +317,10 @@ pub struct BackgroundTaskSearch {
   pub end_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<String>,
+  pub rem_like: Option<SmolStr>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -323,10 +329,10 @@ pub struct BackgroundTaskSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<String>>,
+  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<String>,
+  pub create_usr_id_lbl_like: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -338,10 +344,10 @@ pub struct BackgroundTaskSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<String>>,
+  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<String>,
+  pub update_usr_id_lbl_like: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -460,31 +466,31 @@ pub struct BackgroundTaskInput {
   pub tenant_id: Option<TenantId>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 状态
   #[graphql(name = "state")]
   pub state: Option<BackgroundTaskState>,
   /// 状态
   #[graphql(name = "state_lbl")]
-  pub state_lbl: Option<String>,
+  pub state_lbl: Option<SmolStr>,
   /// 类型
   #[graphql(name = "type")]
   pub r#type: Option<BackgroundTaskType>,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: Option<String>,
+  pub type_lbl: Option<SmolStr>,
   /// 执行结果
   #[graphql(name = "result")]
-  pub result: Option<String>,
+  pub result: Option<SmolStr>,
   /// 错误信息
   #[graphql(name = "err_msg")]
-  pub err_msg: Option<String>,
+  pub err_msg: Option<SmolStr>,
   /// 开始时间
   #[graphql(name = "begin_time")]
   pub begin_time: Option<chrono::NaiveDateTime>,
   /// 开始时间
   #[graphql(name = "begin_time_lbl")]
-  pub begin_time_lbl: Option<String>,
+  pub begin_time_lbl: Option<SmolStr>,
   /// 开始时间
   #[graphql(name = "begin_time_save_null")]
   pub begin_time_save_null: Option<bool>,
@@ -493,25 +499,25 @@ pub struct BackgroundTaskInput {
   pub end_time: Option<chrono::NaiveDateTime>,
   /// 结束时间
   #[graphql(name = "end_time_lbl")]
-  pub end_time_lbl: Option<String>,
+  pub end_time_lbl: Option<SmolStr>,
   /// 结束时间
   #[graphql(name = "end_time_save_null")]
   pub end_time_save_null: Option<bool>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<String>,
+  pub create_usr_id_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,
+  pub create_time_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -520,13 +526,13 @@ pub struct BackgroundTaskInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<String>,
+  pub update_usr_id_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,
+  pub update_time_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -687,7 +693,49 @@ impl FromStr for BackgroundTaskState {
       "success" => Ok(Self::Success),
       "fail" => Ok(Self::Fail),
       "cancel" => Ok(Self::Cancel),
-      _ => Err(eyre!("BackgroundTaskState can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 状态")),
+    }
+  }
+}
+
+impl TryFrom<&str> for BackgroundTaskState {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "running" => Ok(Self::Running),
+      "success" => Ok(Self::Success),
+      "fail" => Ok(Self::Fail),
+      "cancel" => Ok(Self::Cancel),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "state".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 状态".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for BackgroundTaskState {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "running" => Ok(Self::Running),
+      "success" => Ok(Self::Success),
+      "fail" => Ok(Self::Fail),
+      "cancel" => Ok(Self::Cancel),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "state".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 状态".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -716,7 +764,7 @@ impl TryFrom<String> for BackgroundTaskState {
         Box::new(sqlx::Error::ColumnDecode {
           index: "state".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "BackgroundTaskState can't convert from {s}".to_owned(),
+            "{s} 无法转换到 状态".to_owned(),
           )),
         }),
       )),
@@ -790,7 +838,49 @@ impl FromStr for BackgroundTaskType {
       "download" => Ok(Self::Download),
       "inline" => Ok(Self::Inline),
       "tag" => Ok(Self::Tag),
-      _ => Err(eyre!("BackgroundTaskType can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 类型")),
+    }
+  }
+}
+
+impl TryFrom<&str> for BackgroundTaskType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "text" => Ok(Self::Text),
+      "download" => Ok(Self::Download),
+      "inline" => Ok(Self::Inline),
+      "tag" => Ok(Self::Tag),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 类型".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for BackgroundTaskType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "text" => Ok(Self::Text),
+      "download" => Ok(Self::Download),
+      "inline" => Ok(Self::Inline),
+      "tag" => Ok(Self::Tag),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 类型".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -819,7 +909,7 @@ impl TryFrom<String> for BackgroundTaskType {
         Box::new(sqlx::Error::ColumnDecode {
           index: "type".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "BackgroundTaskType can't convert from {s}".to_owned(),
+            "{s} 无法转换到 类型".to_owned(),
           )),
         }),
       )),

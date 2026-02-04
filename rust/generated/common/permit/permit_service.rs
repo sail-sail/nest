@@ -7,6 +7,8 @@ use crate::common::context::{
   Options,
 };
 
+use smol_str::SmolStr;
+
 use crate::common::i18n::i18n_dao::ns;
 
 use crate::base::menu::menu_dao::{
@@ -44,7 +46,7 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
   
   let usr_model = find_by_id_usr(
     auth_model.id,
-    options.clone(),
+    options,
   ).await?;
   if usr_model.is_none() {
     return Ok(Vec::new());
@@ -64,7 +66,7 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   let mut permit_ids = Vec::<PermitId>::new();
@@ -107,13 +109,13 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
       }.into(),
       None,
       None,
-      options.clone(),
+      options,
     ).await?;
     permit_models.append(&mut permit_models_tmp);
   }
   let permit_models = permit_models;
   
-  let mut menu_id_map = HashMap::<MenuId, String>::with_capacity(permit_len);
+  let mut menu_id_map = HashMap::<MenuId, SmolStr>::with_capacity(permit_len);
   
   for permit_model in permit_models.iter() {
     let menu_id = permit_model.menu_id;
@@ -121,16 +123,16 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
       continue;
     }
     if menu_id.is_empty() {
-      menu_id_map.insert(menu_id, "".to_owned());
+      menu_id_map.insert(menu_id, SmolStr::new(""));
     }
     
     let menu_model = find_by_id_menu(
       menu_id,
-      options.clone(),
+      options,
     ).await?;
     
     if menu_model.is_none() {
-      menu_id_map.insert(menu_id, "".to_owned());
+      menu_id_map.insert(menu_id, SmolStr::new(""));
       continue;
     }
     let menu_model = menu_model.unwrap();
@@ -142,11 +144,11 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
   let permits: Vec<GetUsrPermits> = permit_models.into_iter()
     .map(|item| {
       let menu_id = item.menu_id;
-      let route_path: Option<&String> = menu_id_map.get(&menu_id);
-      let route_path: String = route_path
+      let route_path: Option<&SmolStr> = menu_id_map.get(&menu_id);
+      let route_path: SmolStr = route_path
         .map_or_else(
-          || "".to_owned(),
-          |item| item.to_owned()
+          || SmolStr::new(""),
+          |item| item.clone()
         );
       GetUsrPermits {
         id: item.id,
@@ -163,8 +165,8 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
 
 /// 后端按钮权限校验
 pub async fn use_permit(
-  route_path: String,
-  code: String,
+  route_path: SmolStr,
+  code: SmolStr,
 ) -> Result<()> {
   
   let options = Options::new()
@@ -178,7 +180,7 @@ pub async fn use_permit(
       ..Default::default()
     }.into(),
     None,
-    options.clone(),
+    options,
   ).await?;
   if menu_model.is_none() {
     return Ok(());
@@ -189,7 +191,7 @@ pub async fn use_permit(
   
   if auth_model.is_none() {
     let err_msg = ns(
-      "无权限".to_owned(),
+      SmolStr::new("无权限"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
@@ -201,12 +203,12 @@ pub async fn use_permit(
   
   let usr_model = find_by_id_usr(
     usr_id,
-    options.clone(),
+    options,
   ).await?;
   
   if usr_model.is_none() {
     let err_msg = ns(
-      "无权限".to_owned(),
+      SmolStr::new("无权限"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
@@ -222,7 +224,7 @@ pub async fn use_permit(
   
   if role_ids.is_empty() {
     let err_msg = ns(
-      "无权限".to_owned(),
+      SmolStr::new("无权限"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
@@ -236,7 +238,7 @@ pub async fn use_permit(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   // 过滤掉重复的 permit_ids
@@ -276,7 +278,7 @@ pub async fn use_permit(
         ..Default::default()
       }.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if permit_model.is_some() {
@@ -284,12 +286,12 @@ pub async fn use_permit(
     }
   }
   
-  let mut map: HashMap<String, String> = HashMap::with_capacity(2);
-  map.insert("0".to_owned(), menu_model.lbl);
-  map.insert("1".to_owned(), code);
+  let mut map: HashMap<SmolStr, SmolStr> = HashMap::with_capacity(2);
+  map.insert(SmolStr::new("0"), menu_model.lbl);
+  map.insert(SmolStr::new("1"), code);
   
   let err_msg = ns(
-    "{0} {1} 无权限".to_owned(),
+    SmolStr::new("{0} {1} 无权限"),
     Some(map),
   ).await?;
   

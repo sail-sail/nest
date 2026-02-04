@@ -13,6 +13,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -232,8 +235,8 @@ pub async fn creates_domain(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_domain().to_string(),
-    "add".to_owned(),
+    SmolStr::new(get_page_path_domain()),
+    SmolStr::new("add"),
   ).await?;
   
   let ids = domain_service::creates_domain(
@@ -268,8 +271,8 @@ pub async fn update_by_id_domain(
   ).await?;
   
   use_permit(
-    get_page_path_domain().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_domain()),
+    SmolStr::new("edit"),
   ).await?;
   
   let res = domain_service::update_by_id_domain(
@@ -296,8 +299,8 @@ pub async fn delete_by_ids_domain(
   );
   
   use_permit(
-    get_page_path_domain().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_domain()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = domain_service::delete_by_ids_domain(
@@ -347,8 +350,8 @@ pub async fn enable_by_ids_domain(
   );
   
   use_permit(
-    get_page_path_domain().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_domain()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = domain_service::enable_by_ids_domain(
@@ -400,8 +403,8 @@ pub async fn lock_by_ids_domain(
   );
   
   use_permit(
-    get_page_path_domain().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_domain()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = domain_service::lock_by_ids_domain(
@@ -447,8 +450,8 @@ pub async fn revert_by_ids_domain(
   );
   
   use_permit(
-    get_page_path_domain().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_domain()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = domain_service::revert_by_ids_domain(
@@ -474,8 +477,8 @@ pub async fn force_delete_by_ids_domain(
   );
   
   use_permit(
-    get_page_path_domain().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_domain()),
+    SmolStr::new("force_delete"),
   ).await?;
   
   let num = domain_service::force_delete_by_ids_domain(

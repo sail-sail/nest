@@ -8,8 +8,8 @@ use crate::base::org::org_model::OrgId;
 pub const SECRET_KEY: &str = "38e52379-9e94-467c-8e63-17ad318fc845";
 pub const AUTHORIZATION: &str = "authorization";
 
-fn default_lang() -> Option<String> {
-  Some("zh-CN".to_string())
+fn default_lang() -> Option<SmolStr> {
+  Some("zh-CN".into())
 }
 
 #[derive(Deserialize, Serialize, Clone, Default)]
@@ -24,7 +24,7 @@ pub struct AuthModel {
   pub org_id: Option<OrgId>,
   
   #[serde(skip_serializing_if = "Option::is_none", default = "default_lang")]
-  pub lang: Option<String>,
+  pub lang: Option<SmolStr>,
   
   pub tenant_id: TenantId,
   
@@ -32,6 +32,6 @@ pub struct AuthModel {
   
 }
 
-pub type AuthToken = String;
+pub type AuthToken = SmolStr;
 
 pub type ClientTenantId = TenantId;

@@ -6,6 +6,8 @@ use std::sync::OnceLock;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
+use smol_str::SmolStr;
+
 use poem::Response;
 
 use crate::common::cache::cache_dao::{
@@ -14,12 +16,12 @@ use crate::common::cache::cache_dao::{
   expire as cache_expire,
 };
 
-static REQUEST_ID_MAP: OnceLock<Arc<Mutex<HashMap<String, NaiveDateTime>>>> = OnceLock::new();
+static REQUEST_ID_MAP: OnceLock<Arc<Mutex<HashMap<SmolStr, NaiveDateTime>>>> = OnceLock::new();
 static CACHE_X_REQUEST_ID: OnceLock<String> = OnceLock::new();
 
 const REQUEST_TIMEOUT: u32 = 60;
 
-fn request_id_map() -> &'static Arc<Mutex<HashMap<String, NaiveDateTime>>> {
+fn request_id_map() -> &'static Arc<Mutex<HashMap<SmolStr, NaiveDateTime>>> {
   REQUEST_ID_MAP.get_or_init(|| Arc::new(Mutex::new(HashMap::new())))
 }
 fn cache_x_request_id() -> &'static str {
@@ -27,7 +29,7 @@ fn cache_x_request_id() -> &'static str {
 }
 
 pub async fn handle_request_id(
-    request_id: Option<String>,
+    request_id: Option<SmolStr>,
 ) -> Option<Response> {
   
   request_id.as_ref()?;

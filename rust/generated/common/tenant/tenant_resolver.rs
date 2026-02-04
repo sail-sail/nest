@@ -1,5 +1,7 @@
 use color_eyre::eyre::Result;
 
+use smol_str::SmolStr;
+
 use super::tenant_service;
 
 use super::tenant_model::GetLoginTenants;
@@ -9,7 +11,7 @@ use crate::base::tenant::tenant_model::TenantId;
 
 /// 根据 当前网址的域名+端口 获取 租户列表
 pub async fn get_login_tenants(
-  domain: String,
+  domain: SmolStr,
 ) -> Result<Vec<GetLoginTenants>> {
   
   let res = tenant_service::get_login_tenants(

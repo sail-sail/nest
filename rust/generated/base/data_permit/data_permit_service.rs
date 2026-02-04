@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_data_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let data_permit_models = data_permit_dao::find_all_data_permit(
@@ -64,7 +67,7 @@ pub async fn find_count_data_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let data_permit_num = data_permit_dao::find_count_data_permit(
@@ -86,7 +89,7 @@ pub async fn find_one_data_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let data_permit_model = data_permit_dao::find_one_data_permit(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_data_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let data_permit_model = data_permit_dao::find_one_ok_data_permit(
@@ -233,7 +236,7 @@ pub async fn update_by_id_data_permit(
   let old_model = validate_option_data_permit(
     data_permit_dao::find_by_id_data_permit(
       data_permit_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -250,7 +253,7 @@ pub async fn update_by_id_data_permit(
   let data_permit_id = data_permit_dao::update_by_id_data_permit(
     data_permit_id,
     data_permit_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(data_permit_id)
@@ -281,7 +284,7 @@ pub async fn delete_by_ids_data_permit(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

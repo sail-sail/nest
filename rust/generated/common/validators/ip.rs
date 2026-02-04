@@ -20,7 +20,7 @@ pub async fn ip(
   }
   
   let msg = ns(
-    "IP地址格式不正确".to_owned(),
+    "IP地址格式不正确".into(),
     None,
   ).await?;
   

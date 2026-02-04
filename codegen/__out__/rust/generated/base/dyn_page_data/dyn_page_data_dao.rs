@@ -10,6 +10,9 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -109,14 +112,14 @@ async fn get_where_query(
     if let Some(ids) = ids {
       let arg = {
         if ids.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.id in (");
@@ -171,14 +174,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
         if create_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -196,21 +199,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<String>> = match search {
+    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -256,14 +259,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
         if update_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -281,21 +284,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<String>> = match search {
+    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -360,7 +363,7 @@ async fn get_where_query(
             let field_code = &field.code;
             let field_type = &field.r#type;
             
-            if let Some(val) = dyn_page_data.0.get(field_code) {
+            if let Some(val) = dyn_page_data.0.get(field_code.as_str()) {
               let range_types = ["CustomCheckbox", "CustomInputNumber", "CustomSwitch", "CustomDatePicker"];
               
               if range_types.contains(&field_type.as_str()) {
@@ -433,12 +436,12 @@ pub async fn set_dyn_page_data_dyn_page_data(
   
   let dyn_page_model = find_one_dyn_page(
     Some(DynPageSearch {
-      code: Some(page_path.to_string()),
+      code: Some(page_path.clone()),
       is_enabled: Some(vec![1]),
       ..Default::default()
     }),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   let dyn_page_model = match dyn_page_model {
@@ -459,18 +462,18 @@ pub async fn set_dyn_page_data_dyn_page_data(
   
   let dyn_page_val_models = find_all_dyn_page_val(
     Some(DynPageValSearch {
-      ref_code: Some(page_path.to_string()),
+      ref_code: Some(page_path.clone()),
       ref_ids: Some(
         ids
           .into_iter()
-          .map(|item| item.to_string())
-          .collect::<Vec<String>>()
+          .map(|item| SmolStr::new(item.as_str()))
+          .collect::<Vec<SmolStr>>()
       ),
       ..Default::default()
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for model in models.iter_mut() {
@@ -612,12 +615,10 @@ pub async fn find_all_dyn_page_data(
   
   let args = args.into();
   
-  let options = Options::from(options);
-  
   let mut res: Vec<DynPageDataModel> = query(
     sql,
     args,
-    Some(options.clone()),
+    options,
   ).await?;
   
   let len = res.len();
@@ -626,7 +627,7 @@ pub async fn find_all_dyn_page_data(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
         trace: true,
         ..Default::default()
       },
@@ -635,7 +636,7 @@ pub async fn find_all_dyn_page_data(
   
   set_dyn_page_data_dyn_page_data(
     &mut res,
-    Some(options.clone()),
+    options,
   ).await?;
   
   
@@ -723,6 +724,10 @@ pub async fn find_count_dyn_page_data(
   
   let args = args.into();
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let res: Option<CountModel> = query_one(
     sql,
     args,
@@ -765,12 +770,12 @@ pub async fn get_field_comments_dyn_page_data(
   
   let dyn_page_model = find_one_dyn_page(
     Some(DynPageSearch {
-      code: Some(page_path.to_string()),
+      code: Some(page_path.clone()),
       is_enabled: Some(vec![1]),
       ..Default::default()
     }),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   if let Some(dyn_page_model) = dyn_page_model {
@@ -784,7 +789,7 @@ pub async fn get_field_comments_dyn_page_data(
       field_comments
         .dyn_page_data
         .0
-        .insert(field_code.clone(), serde_json::json!(field_lbl));
+        .insert(field_code.to_string(), serde_json::json!(field_lbl));
     }
     
   }
@@ -932,13 +937,13 @@ pub async fn find_by_id_ok_dyn_page_data(
   ).await?;
   
   let Some(dyn_page_data_model) = dyn_page_data_model else {
-    let err_msg = "此 动态页面数据 已被删除";
+    let err_msg = SmolStr::new("此 动态页面数据 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: err_msg.to_string(),
+      message: err_msg,
       trace: true,
       ..Default::default()
     }));
@@ -1031,7 +1036,7 @@ pub async fn find_by_ids_ok_dyn_page_data(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1044,7 +1049,7 @@ pub async fn find_by_ids_ok_dyn_page_data(
   ).await?;
   
   if dyn_page_data_models.len() != len {
-    let err_msg = "此 动态页面数据 已被删除";
+    let err_msg = SmolStr::new("此 动态页面数据 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1057,7 +1062,7 @@ pub async fn find_by_ids_ok_dyn_page_data(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = "此 动态页面数据 已经被删除";
+      let err_msg = SmolStr::new("此 动态页面数据 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<DynPageDataModel>>>()?;
@@ -1103,7 +1108,7 @@ pub async fn find_by_ids_dyn_page_data(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1212,6 +1217,10 @@ pub async fn exists_dyn_page_data(
   
   let args = args.into();
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let res: Option<(bool,)> = query_one(
     sql,
     args,
@@ -1303,7 +1312,7 @@ pub async fn find_by_unique_dyn_page_data(
   if let Some(id) = search.id {
     let model = find_by_id_dyn_page_data(
       id,
-      options.clone(),
+      options,
     ).await?;
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
@@ -1429,7 +1438,7 @@ pub async fn creates_return_dyn_page_data(
   
   let ids = _creates(
     inputs.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let models_dyn_page_data = find_by_ids_dyn_page_data(
@@ -1501,14 +1510,14 @@ async fn _creates(
     let old_models = find_by_unique_dyn_page_data(
       input.clone().into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if !old_models.is_empty() {
       let mut id: Option<DynPageDataId> = None;
       
       for old_model in old_models {
-        let options = Options::from(options.clone())
+        let options = Options::from(options)
           .set_unique_type(unique_type);
         
         id = check_by_unique_dyn_page_data(
@@ -1595,11 +1604,11 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_lbl = usr_model.lbl;
@@ -1620,10 +1629,10 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
-          options.clone(),
+          options,
         ).await?;
         if let Some(usr_model) = usr_model {
           usr_lbl = usr_model.lbl;
@@ -1696,14 +1705,10 @@ async fn _creates(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = Some(options);
-  
   let affected_rows = execute(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
   
   // 更新动态字段
@@ -1711,12 +1716,12 @@ async fn _creates(
   
   let dyn_page_model = find_one_dyn_page(
     Some(DynPageSearch {
-      code: Some(page_path.to_string()),
+      code: Some(page_path.clone()),
       is_enabled: Some(vec![1]),
       ..Default::default()
     }),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   if let Some(dyn_page_model) = dyn_page_model {
@@ -1726,18 +1731,18 @@ async fn _creates(
       // 查询所有已存在的动态字段值
       let dyn_page_val_models = find_all_dyn_page_val(
         Some(DynPageValSearch {
-          ref_code: Some(page_path.to_string()),
+          ref_code: Some(page_path.clone()),
           ref_ids: Some(
             inputs2_ids
               .iter()
-              .map(|id| id.to_string())
-              .collect::<Vec<String>>()
+              .map(|id| SmolStr::new(id.as_str()))
+              .collect::<Vec<SmolStr>>()
           ),
           ..Default::default()
         }),
         None,
         None,
-        options.clone(),
+        options,
       ).await?;
       
       for (i, input) in inputs2.clone()
@@ -1756,7 +1761,7 @@ async fn _creates(
           
           let field_code = dyn_page_field_model.code;
           let field_type = dyn_page_field_model.r#type;
-          let new_value0 = dyn_page_data.0.get(&field_code);
+          let new_value0 = dyn_page_data.0.get(&field_code.to_string());
           let new_value: String = if [
             "CustomCheckbox",
             "CustomInputNumber",
@@ -1800,22 +1805,22 @@ async fn _creates(
               update_by_id_dyn_page_val(
                 old_value_model.id,
                 DynPageValInput {
-                  lbl: Some(new_value.clone()),
+                  lbl: Some(SmolStr::new(new_value.clone())),
                   ..Default::default()
                 },
-                options.clone(),
+                options,
               ).await?;
             }
           } else {
             create_dyn_page_val(
               DynPageValInput {
-                ref_code: Some(page_path.to_string()),
-                ref_id: Some(id.to_string()),
+                ref_code: Some(page_path.clone()),
+                ref_id: Some(SmolStr::new(id.as_str())),
                 code: Some(field_code),
-                lbl: Some(new_value.clone()),
+                lbl: Some(SmolStr::new(new_value.clone())),
                 ..Default::default()
               },
-              options.clone(),
+              options,
             ).await?;
           }
           
@@ -1842,7 +1847,7 @@ pub async fn create_return_dyn_page_data(
   
   let id = create_dyn_page_data(
     input.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let model_dyn_page_data = find_by_id_dyn_page_data(
@@ -1856,7 +1861,7 @@ pub async fn create_return_dyn_page_data(
       let err_msg = "create_return_dyn_page_data: model_dyn_page_data.is_none()";
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg.into(),
           trace: true,
           ..Default::default()
         },
@@ -1933,6 +1938,7 @@ pub async fn update_tenant_by_id_dyn_page_data(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
@@ -1946,7 +1952,7 @@ pub async fn update_tenant_by_id_dyn_page_data(
   let num = execute(
     sql,
     args,
-    Some(options.clone()),
+    options,
   ).await?;
   
   Ok(num)
@@ -1989,7 +1995,7 @@ pub async fn update_by_id_dyn_page_data(
   
   let old_model = find_by_id_dyn_page_data(
     id,
-    options.clone(),
+    options,
   ).await?;
   
   let old_model = match old_model {
@@ -2017,7 +2023,7 @@ pub async fn update_by_id_dyn_page_data(
     let models = find_by_unique_dyn_page_data(
       input.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let models = models.into_iter()
@@ -2066,12 +2072,12 @@ pub async fn update_by_id_dyn_page_data(
     
     let dyn_page_model = find_one_dyn_page(
       Some(DynPageSearch {
-        code: Some(page_path.to_string()),
+        code: Some(page_path.clone()),
         is_enabled: Some(vec![1]),
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if let Some(dyn_page_model) = dyn_page_model {
@@ -2080,20 +2086,20 @@ pub async fn update_by_id_dyn_page_data(
       
       let dyn_page_val_models = find_all_dyn_page_val(
         Some(DynPageValSearch {
-          ref_code: Some(page_path.to_string()),
-          ref_ids: Some(vec![ id.to_string() ]),
+          ref_code: Some(page_path.clone()),
+          ref_ids: Some(vec![ SmolStr::new(id.as_str()) ]),
           ..Default::default()
         }),
         None,
         None,
-        options.clone(),
+        options,
       ).await?;
       
       for dyn_page_field_model in dyn_page_field_models {
         
         let field_code = dyn_page_field_model.code;
         let field_type = dyn_page_field_model.r#type;
-        let new_value0 = dyn_page_data.0.get(&field_code);
+        let new_value0 = dyn_page_data.0.get(&field_code.to_string());
         let new_value: String = if [
           "CustomCheckbox",
           "CustomInputNumber",
@@ -2137,23 +2143,23 @@ pub async fn update_by_id_dyn_page_data(
             update_by_id_dyn_page_val(
               old_value_model.id,
               DynPageValInput {
-                lbl: Some(new_value.clone()),
+                lbl: Some(SmolStr::new(new_value.clone())),
                 ..Default::default()
               },
-              options.clone(),
+              options,
             ).await?;
             field_num += 1;
           }
         } else {
           create_dyn_page_val(
             DynPageValInput {
-              ref_code: Some(page_path.to_string()),
-              ref_id: Some(id.to_string()),
+              ref_code: Some(page_path.clone()),
+              ref_id: Some(SmolStr::new(id.as_str())),
               code: Some(field_code),
-              lbl: Some(new_value.clone()),
+              lbl: Some(SmolStr::new(new_value.clone())),
               ..Default::default()
             },
-            options.clone(),
+            options,
           ).await?;
           field_num += 1;
         }
@@ -2168,11 +2174,11 @@ pub async fn update_by_id_dyn_page_data(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2192,11 +2198,11 @@ pub async fn update_by_id_dyn_page_data(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2250,14 +2256,10 @@ pub async fn update_by_id_dyn_page_data(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
   }
@@ -2277,7 +2279,7 @@ pub async fn update_by_id_return_dyn_page_data(
   update_by_id_dyn_page_data(
     id,
     input,
-    options.clone(),
+    options,
   ).await?;
   
   let model = find_by_id_dyn_page_data(
@@ -2373,7 +2375,7 @@ pub async fn delete_by_ids_dyn_page_data(
     
     let old_model = find_by_id_dyn_page_data(
       id,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2396,11 +2398,11 @@ pub async fn delete_by_ids_dyn_page_data(
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = String::new();
+    let mut usr_lbl = SmolStr::new("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
-        options.clone(),
+        options,
       ).await?;
       if let Some(usr_model) = usr_model {
         usr_lbl = usr_model.lbl;
@@ -2434,14 +2436,10 @@ pub async fn delete_by_ids_dyn_page_data(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
     // 删除动态页面值
@@ -2452,7 +2450,7 @@ pub async fn delete_by_ids_dyn_page_data(
       execute(
         sql,
         args.into(),
-        options.clone(),
+        options,
       ).await?;
     }
   }
@@ -2513,13 +2511,13 @@ pub async fn revert_by_ids_dyn_page_data(
         ..Default::default()
       }.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if old_model.is_none() {
       old_model = find_by_id_dyn_page_data(
         id,
-        options.clone(),
+        options,
       ).await?;
     }
     
@@ -2535,7 +2533,7 @@ pub async fn revert_by_ids_dyn_page_data(
       let models = find_by_unique_dyn_page_data(
         input.into(),
         None,
-        options.clone(),
+        options,
       ).await?;
       
       let models: Vec<DynPageDataModel> = models
@@ -2554,7 +2552,7 @@ pub async fn revert_by_ids_dyn_page_data(
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     // 还原动态页面值
     {
@@ -2564,7 +2562,7 @@ pub async fn revert_by_ids_dyn_page_data(
       execute(
         sql,
         args.into(),
-        options.clone(),
+        options,
       ).await?;
     }
     
@@ -2618,7 +2616,7 @@ pub async fn force_delete_by_ids_dyn_page_data(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2644,14 +2642,10 @@ pub async fn force_delete_by_ids_dyn_page_data(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     // 彻底删除动态页面值
     {
@@ -2661,7 +2655,7 @@ pub async fn force_delete_by_ids_dyn_page_data(
       execute(
         sql,
         args.into(),
-        options.clone(),
+        options,
       ).await?;
     }
   }
@@ -2679,14 +2673,14 @@ pub async fn validate_option_dyn_page_data(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = "动态页面数据不存在";
+      let err_msg = SmolStr::new("动态页面数据不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),
       );
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg,
           trace: true,
           ..Default::default()
         },

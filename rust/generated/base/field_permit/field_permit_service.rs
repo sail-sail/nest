@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::field_permit_model::*;
@@ -39,7 +42,7 @@ pub async fn find_all_field_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let field_permit_models = field_permit_dao::find_all_field_permit(
@@ -62,7 +65,7 @@ pub async fn find_count_field_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let field_permit_num = field_permit_dao::find_count_field_permit(
@@ -84,7 +87,7 @@ pub async fn find_one_field_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let field_permit_model = field_permit_dao::find_one_field_permit(
@@ -107,7 +110,7 @@ pub async fn find_one_ok_field_permit(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let field_permit_model = field_permit_dao::find_one_ok_field_permit(
@@ -214,7 +217,7 @@ pub async fn update_by_id_field_permit(
   let old_model = validate_option_field_permit(
     field_permit_dao::find_by_id_field_permit(
       field_permit_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -230,7 +233,7 @@ pub async fn update_by_id_field_permit(
   let field_permit_id = field_permit_dao::update_by_id_field_permit(
     field_permit_id,
     field_permit_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(field_permit_id)
@@ -261,7 +264,7 @@ pub async fn delete_by_ids_field_permit(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

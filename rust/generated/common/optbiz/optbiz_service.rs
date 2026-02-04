@@ -12,11 +12,11 @@ pub async fn get_uni_releasing(
   
   let optbiz_model = find_one_optbiz(
     Some(OptbizSearch {
-      ky: Some("uni_releasing".to_string()),
+      ky: Some("uni_releasing".into()),
       ..Default::default()
     }),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   if optbiz_model.is_none() {

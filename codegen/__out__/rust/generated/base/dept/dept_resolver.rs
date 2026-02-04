@@ -13,6 +13,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -234,8 +237,8 @@ pub async fn creates_dept(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_dept().to_string(),
-    "add".to_owned(),
+    SmolStr::new(get_page_path_dept()),
+    SmolStr::new("add"),
   ).await?;
   
   let ids = dept_service::creates_dept(
@@ -294,8 +297,8 @@ pub async fn update_by_id_dept(
   ).await?;
   
   use_permit(
-    get_page_path_dept().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_dept()),
+    SmolStr::new("edit"),
   ).await?;
   
   let res = dept_service::update_by_id_dept(
@@ -322,8 +325,8 @@ pub async fn delete_by_ids_dept(
   );
   
   use_permit(
-    get_page_path_dept().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_dept()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = dept_service::delete_by_ids_dept(
@@ -373,8 +376,8 @@ pub async fn enable_by_ids_dept(
   );
   
   use_permit(
-    get_page_path_dept().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_dept()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = dept_service::enable_by_ids_dept(
@@ -426,8 +429,8 @@ pub async fn lock_by_ids_dept(
   );
   
   use_permit(
-    get_page_path_dept().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_dept()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = dept_service::lock_by_ids_dept(
@@ -473,8 +476,8 @@ pub async fn revert_by_ids_dept(
   );
   
   use_permit(
-    get_page_path_dept().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_dept()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = dept_service::revert_by_ids_dept(
@@ -500,8 +503,8 @@ pub async fn force_delete_by_ids_dept(
   );
   
   use_permit(
-    get_page_path_dept().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_dept()),
+    SmolStr::new("force_delete"),
   ).await?;
   
   let num = dept_service::force_delete_by_ids_dept(

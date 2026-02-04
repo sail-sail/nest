@@ -32,6 +32,8 @@ pub struct ExportExcel{Table}Asset;
 ## 2. service.rs - 导出逻辑
 
 ```rust
+use smol_str::SmolStr;
+
 use generated::spc::{mod}::{table}_service;
 use generated::spc::{mod}::{table}_model::{TableSearch};
 use super::{mod}_model::ExportExcel{Table}Asset;
@@ -41,7 +43,7 @@ pub async fn export_excel_{table}(
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<(Vec<u8>, String)> {
+) -> Result<(Vec<u8>, SmolStr)> {
   
   let models = {table}_service::find_all_{table}(
     search,
@@ -56,9 +58,9 @@ pub async fn export_excel_{table}(
   let buf = xlsx_handlebars::render_template(
     template.data.into_owned(),
     &serde_json::json!({ "{table}_models": models }),
-  ).map_err(|e| eyre!("渲染失败: {}", e))?;
+  ).map_err(|e| eyre!("渲染失败: {e}"))?;
   
-  Ok((buf, "导出.xlsx".to_string()))
+  Ok((buf, SmolStr::new("导出.xlsx")))
 }
 ```
 
@@ -67,9 +69,9 @@ pub async fn export_excel_{table}(
 ```rust
 #[function_name::named]
 pub async fn export_excel_{table}(
-  search: Option<String>,
-  page: Option<String>,
-  sort: Option<String>,
+  search: Option<SmolStr>,
+  page: Option<SmolStr>,
+  sort: Option<SmolStr>,
   options: Option<Options>,
 ) -> Result<Response> {
   
@@ -77,7 +79,12 @@ pub async fn export_excel_{table}(
   let page = page.and_then(|s| serde_json::from_str(&s).ok());
   let sort = sort.and_then(|s| serde_json::from_str(&s).ok());
   
-  info!("{} {}: {:?}", get_req_id(), function_name!(), search);
+  info!(
+    "{} {}: {:?}",
+    get_req_id(),
+    function_name!(),
+    search,
+  );
   
   let (buf, filename) = {table}_service::export_excel_{table}(search, page, sort, options).await?;
   
@@ -93,9 +100,9 @@ pub async fn export_excel_{table}(
 ```rust
 #[derive(Deserialize)]
 struct ExportExcel{Table}Request {
-  search: Option<String>,
-  page: Option<String>,
-  sort: Option<String>,
+  search: Option<SmolStr>,
+  page: Option<SmolStr>,
+  sort: Option<SmolStr>,
 }
 
 #[handler]

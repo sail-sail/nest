@@ -7,7 +7,6 @@ use async_graphql::SimpleObject;
 use poem::http::{HeaderName, HeaderValue};
 use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
-use serde_json::json;
 use uuid::Uuid;
 use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
@@ -27,7 +26,6 @@ use sqlx::pool::PoolConnection;
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
-use super::cache::cache_dao::{get_cache, set_cache, del_cache};
 
 pub use super::cache::cache_dao::del_caches;
 
@@ -162,7 +160,7 @@ pub fn get_server_tokentimeout() -> i64 {
 }
 
 /// 获取当前请求id, 不保证唯一, 仅用于日志
-pub fn get_req_id() -> Arc<String> {
+pub fn get_req_id() -> Arc<SmolStr> {
   CTX.with(|ctx| {
     ctx.req_id.clone()
   })
@@ -261,7 +259,7 @@ pub fn get_auth_org_id_ok() -> Result<OrgId> {
 }
 
 /// 获取当前登录用户的语言
-pub fn get_auth_lang() -> Option<String> {
+pub fn get_auth_lang() -> Option<SmolStr> {
   CTX.with(|ctx| {
     ctx.auth_model
       .as_ref()
@@ -518,21 +516,11 @@ impl Ctx {
   ) -> Result<u64> {
     
     let mut is_tran = self.is_tran;
-    if let Some(options) = &options
-      && let Some(is_tran0) = options.get_is_tran() {
-        is_tran = is_tran0;
-      }
-    
-    if let Some(options) = &options
-      && let Some(del_cache_key1s) = &options.del_cache_key1s {
-        del_caches(
-          del_cache_key1s
-            .iter()
-            .map(|item| item.as_str())
-            .collect::<Vec<&str>>()
-            .as_slice()
-        ).await?;
-      }
+    if let Some(options) = &options &&
+      let Some(is_tran0) = options.get_is_tran()
+    {
+      is_tran = is_tran0;
+    }
     
     if is_tran {
       let mut query = sqlx::query(&sql);
@@ -577,6 +565,9 @@ impl Ctx {
           ArgType::String(s) => {
             query = query.bind(s);
           }
+          ArgType::ArcStr(s) => {
+            query = query.bind(s.as_ref());
+          }
           ArgType::CowStr(s) => {
             query = query.bind(s);
           }
@@ -599,7 +590,7 @@ impl Ctx {
             query = query.bind(s);
           }
           ArgType::SmolStr(s) => {
-            query = query.bind(s.to_string());
+            query = query.bind(s.as_str());
           }
         };
       }
@@ -621,18 +612,6 @@ impl Ctx {
         res?
       };
       let rows_affected = res.rows_affected();
-      if rows_affected > 0 &&
-        let Some(options) = &options &&
-        let Some(del_cache_key1s) = &options.del_cache_key1s
-      {
-        del_caches(
-          del_cache_key1s
-            .iter()
-            .map(|item| item.as_str())
-            .collect::<Vec<&str>>()
-            .as_slice()
-        ).await?;
-      }
       return Ok(rows_affected);
     }
     let mut query = sqlx::query(&sql);
@@ -677,6 +656,9 @@ impl Ctx {
         ArgType::String(s) => {
           query = query.bind(s);
         }
+        ArgType::ArcStr(s) => {
+          query = query.bind(s.as_ref());
+        }
         ArgType::CowStr(s) => {
           query = query.bind(s);
         }
@@ -699,7 +681,7 @@ impl Ctx {
           query = query.bind(s);
         }
         ArgType::SmolStr(s) => {
-          query = query.bind(s.to_string());
+          query = query.bind(s.as_str());
         }
       };
     }
@@ -714,18 +696,6 @@ impl Ctx {
     }
     let res = res?;
     let rows_affected = res.rows_affected();
-    if rows_affected > 0 &&
-      let Some(options) = &options &&
-      let Some(del_cache_key1s) = &options.del_cache_key1s
-    {
-      del_caches(
-        del_cache_key1s
-          .iter()
-          .map(|item| item.as_str())
-          .collect::<Vec<&str>>()
-          .as_slice()
-      ).await?;
-    }
     Ok(rows_affected)
   }
   
@@ -739,23 +709,6 @@ impl Ctx {
   where
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r>,
   {
-    if let Some(options) = &options &&
-      let Some(cache_key1) = &options.cache_key1 &&
-      let Some(cache_key2) = &options.cache_key2
-    {
-      let str = get_cache(cache_key1, cache_key2).await?;
-      if let Some(str) = str {
-        let res2: Vec<R>;
-        let res = serde_json::from_str::<Vec<R>>(&str);
-        if let Ok(res) = res {
-          res2 = res;
-        } else {
-          res2 = vec![];
-          del_cache(cache_key1).await?;
-        }
-        return Ok(res2);
-      }
-    }
     
     let mut is_tran = self.is_tran;
     if let Some(options) = options.as_ref() &&
@@ -807,6 +760,9 @@ impl Ctx {
           ArgType::String(s) => {
             query = query.bind(s);
           }
+          ArgType::ArcStr(s) => {
+            query = query.bind(s.as_ref());
+          }
           ArgType::CowStr(s) => {
             query = query.bind(s);
           }
@@ -829,7 +785,7 @@ impl Ctx {
             query = query.bind(s);
           }
           ArgType::SmolStr(s) => {
-            query = query.bind(s.to_string());
+            query = query.bind(s.as_str());
           }
         };
       }
@@ -851,13 +807,6 @@ impl Ctx {
         res?
       };
       
-      if let Some(options) = &options
-        && let Some(cache_key1) = &options.cache_key1
-          && let Some(cache_key2) = &options.cache_key2
-        {
-          let str = serde_json::to_string(&res)?;
-          set_cache(cache_key1, cache_key2, &str).await?;
-        }
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(&sql);
@@ -902,6 +851,9 @@ impl Ctx {
         ArgType::String(s) => {
           query = query.bind(s);
         }
+        ArgType::ArcStr(s) => {
+          query = query.bind(s.as_ref());
+        }
         ArgType::CowStr(s) => {
           query = query.bind(s);
         }
@@ -924,7 +876,7 @@ impl Ctx {
           query = query.bind(s);
         }
         ArgType::SmolStr(s) => {
-          query = query.bind(s.to_string());
+          query = query.bind(s.as_str());
         }
       };
     }
@@ -945,15 +897,7 @@ impl Ctx {
         req_id = self.req_id,
       );
     }
-    let res = res?;
-    if let Some(options) = &options
-      && let Some(cache_key1) = &options.cache_key1
-        && let Some(cache_key2) = &options.cache_key2
-      {
-        let str = serde_json::to_string(&res)?;
-        set_cache(cache_key1, cache_key2, &str).await?;
-      }
-    Ok(res)
+    Ok(res?)
   }
   
   /// 查询一条记录
@@ -966,22 +910,6 @@ impl Ctx {
   where
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r> + Sync,
   {
-    if let Some(options) = &options
-      && let Some(cache_key1) = &options.cache_key1
-        && let Some(cache_key2) = &options.cache_key2
-      {
-        let str = get_cache(cache_key1, cache_key2).await?;
-        if let Some(str) = str {
-          let res = serde_json::from_str::<R>(&str);
-          let res2: Option<R> = if let Ok(res) = res {
-            res.into()
-          } else {
-            del_cache(cache_key1).await?;
-            None
-          };
-          return Ok(res2);
-        }
-      }
     
     let mut is_tran = self.is_tran;
     if let Some(options) = &options
@@ -1032,6 +960,9 @@ impl Ctx {
           ArgType::String(s) => {
             query = query.bind(s);
           }
+          ArgType::ArcStr(s) => {
+            query = query.bind(s.as_ref());
+          }
           ArgType::CowStr(s) => {
             query = query.bind(s);
           }
@@ -1054,7 +985,7 @@ impl Ctx {
             query = query.bind(s);
           }
           ArgType::SmolStr(s) => {
-            query = query.bind(s.to_string());
+            query = query.bind(s.as_str());
           }
         };
       }
@@ -1075,14 +1006,6 @@ impl Ctx {
         }
         res?
       };
-      if let Some(res) = &res
-        && let Some(options) = &options
-          && let Some(cache_key1) = &options.cache_key1
-            && let Some(cache_key2) = &options.cache_key2
-          {
-            let str = serde_json::to_string(res)?;
-            set_cache(cache_key1, cache_key2, &str).await?;
-          }
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(&sql);
@@ -1127,6 +1050,9 @@ impl Ctx {
         ArgType::String(s) => {
           query = query.bind(s);
         }
+        ArgType::ArcStr(s) => {
+          query = query.bind(s.as_ref());
+        }
         ArgType::CowStr(s) => {
           query = query.bind(s);
         }
@@ -1149,7 +1075,7 @@ impl Ctx {
           query = query.bind(s);
         }
         ArgType::SmolStr(s) => {
-          query = query.bind(s.to_string());
+          query = query.bind(s.as_str());
         }
       };
     }
@@ -1170,16 +1096,7 @@ impl Ctx {
         req_id = self.req_id,
       );
     }
-    let res = res?;
-    if let Some(res) = &res
-      && let Some(options) = &options
-        && let Some(cache_key1) = &options.cache_key1
-          && let Some(cache_key2) = &options.cache_key2
-        {
-          let str = serde_json::to_string(res)?;
-          set_cache(cache_key1, cache_key2, &str).await?;
-        }
-    Ok(res)
+    Ok(res?)
   }
   
 }
@@ -1188,15 +1105,15 @@ pub struct Ctx {
   
   is_tran: bool,
   
-  req_id: Arc<String>,
+  req_id: Arc<SmolStr>,
   
   tran: Arc<Mutex<Option<PoolConnection<MySql>>>>,
   
   is_resful: bool,
   
-  old_auth_token: Option<String>,
+  old_auth_token: Option<SmolStr>,
   
-  auth_token: Option<String>,
+  auth_token: Option<SmolStr>,
   
   auth_model: Option<AuthModel>,
   
@@ -1404,6 +1321,7 @@ pub enum ArgType {
   F32(f32),
   F64(f64),
   String(String),
+  ArcStr(Arc<str>),
   CowStr(Cow<'static, str>),
   TimeStamp(NaiveDateTime),
   Date(NaiveDate),
@@ -1433,6 +1351,7 @@ impl Serialize for ArgType {
       ArgType::F32(value) => serializer.serialize_f32(*value),
       ArgType::F64(value) => serializer.serialize_f64(*value),
       ArgType::String(value) => serializer.serialize_str(value),
+      ArgType::ArcStr(value) => serializer.serialize_str(value),
       ArgType::CowStr(value) => serializer.serialize_str(value),
       ArgType::TimeStamp(value) => serializer.serialize_str(&value.format("%Y-%m-%d %H:%M:%S").to_string()),
       ArgType::Date(value) => serializer.serialize_str(&value.format("%Y-%m-%d").to_string()),
@@ -1461,6 +1380,7 @@ impl Display for ArgType {
       ArgType::F32(value) => write!(f, "{value}"),
       ArgType::F64(value) => write!(f, "{value}"),
       ArgType::String(value) => write!(f, "{value}"),
+      ArgType::ArcStr(value) => write!(f, "{value}"),
       ArgType::CowStr(value) => write!(f, "{value}"),
       ArgType::TimeStamp(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
       ArgType::Date(value) => write!(f, "{}", value.format("%Y-%m-%d")),
@@ -1593,6 +1513,12 @@ impl From<&str> for ArgType {
   }
 }
 
+impl From<Arc<str>> for ArgType {
+  fn from(value: Arc<str>) -> Self {
+    ArgType::ArcStr(value)
+  }
+}
+
 impl From<Cow<'static, str>> for ArgType {
   fn from(value: Cow<'static, str>) -> Self {
     ArgType::CowStr(value)
@@ -1655,7 +1581,7 @@ impl From<&[u8; 22]> for ArgType {
   }
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Copy, Clone)]
 pub struct Options {
   
   /// 是否打印sql调试语句
@@ -1663,12 +1589,6 @@ pub struct Options {
   
   /// 指定当前函数的sql是否开启事务
   is_tran: Option<bool>,
-  
-  cache_key1: Option<String>,
-  
-  cache_key2: Option<String>,
-  
-  del_cache_key1s: Option<Vec<String>>,
   
   #[allow(dead_code)]
   unique_type: Option<UniqueType>,
@@ -1698,9 +1618,6 @@ impl Options {
     Options {
       is_debug: None,
       is_tran: None,
-      cache_key1: None,
-      cache_key2: None,
-      del_cache_key1s: None,
       unique_type: None,
       is_encrypt: None,
       has_data_permit: None,
@@ -1723,15 +1640,6 @@ impl Debug for Options {
       && is_tran {
         item = item.field("is_tran", &is_tran);
       }
-    if let Some(cache_key1) = &self.cache_key1 {
-      item = item.field("cache_key1", cache_key1);
-    }
-    if let Some(cache_key2) = &self.cache_key2 {
-      item = item.field("cache_key2", cache_key2);
-    }
-    if let Some(del_cache_key1s) = &self.del_cache_key1s {
-      item = item.field("del_cache_key1s", del_cache_key1s);
-    }
     if let Some(unique_type) = &self.unique_type {
       item = item.field("unique_type", unique_type);
     }
@@ -1774,28 +1682,6 @@ impl Options {
     let mut self_ = self;
     self_.is_debug = is_debug;
     self_
-  }
-  
-  pub fn set_cache_key(self, table: &str, sql: &str, args: &Vec<ArgType>) -> Self {
-    let mut self_ = self;
-    self_.cache_key1 = Some(format!("dao.sql.{table}"));
-    self_.cache_key2 = Some(hash(json!([ &sql, args ]).to_string().as_bytes()));
-    self_
-  }
-  
-  pub fn set_del_cache_key1s(self, tables: Vec<&str>) -> Self {
-    let mut self_ = self;
-    self_.del_cache_key1s = tables.into_iter()
-      .map(|table|
-        format!("dao.sql.{table}")
-      )
-      .collect::<Vec<String>>()
-      .into();
-    self_
-  }
-  
-  pub fn get_del_cache_key1s(&self) -> Option<&Vec<String>> {
-    self.del_cache_key1s.as_ref()
   }
   
   #[inline]
@@ -1896,13 +1782,13 @@ pub struct CtxBuilder<'a> {
   
   is_tran: Option<bool>,
   
-  old_auth_token: Option<String>,
+  old_auth_token: Option<SmolStr>,
   
-  auth_token: Option<String>,
+  auth_token: Option<SmolStr>,
   
   auth_model: Option<AuthModel>,
   
-  req_id: String,
+  req_id: SmolStr,
   
   now: NaiveDateTime,
   
@@ -1922,7 +1808,7 @@ impl <'a> CtxBuilder<'a> {
     gql_ctx: Option<&'a async_graphql::Context<'a>>,
   ) -> CtxBuilder<'a> {
     let now = Local::now().naive_local();
-    let req_id = now.and_utc().timestamp_millis().to_string();
+    let req_id = now.and_utc().timestamp_millis().to_string().into();
     
     let client_tenant_id = if let Some(gql_ctx) = gql_ctx {
       gql_ctx.data_opt::<super::auth::auth_model::ClientTenantId>().cloned()
@@ -1967,17 +1853,17 @@ impl <'a> CtxBuilder<'a> {
   }
   
   /// 获取token, graphql跟restful的获取方式不一样
-  fn get_auth_token(&self) -> Option<String> {
+  fn get_auth_token(&self) -> Option<SmolStr> {
     if let Some(gql_ctx) = self.gql_ctx {
       gql_ctx.data_opt
         ::<super::auth::auth_model::AuthToken>()
-        .map(ToString::to_string)
+        .map(SmolStr::new)
     } else if let Some(resful_req) = self.resful_req {
       let auth_token = resful_req
         .headers()
         .get(AUTHORIZATION)
         .and_then(|value| value.to_str().ok())
-        .map(ToString::to_string);
+        .map(SmolStr::new);
       if auth_token.is_some()  {
         return auth_token;
       }
@@ -1987,6 +1873,7 @@ impl <'a> CtxBuilder<'a> {
           url::form_urlencoded::parse(q.as_bytes())
             .find(|(key, _)| key == AUTHORIZATION)
             .map(|(_, value)| value.into_owned())
+            .map(SmolStr::new)
         })
     } else {
       None
@@ -1994,7 +1881,7 @@ impl <'a> CtxBuilder<'a> {
   }
   
   /// 设置token, graphql跟restful的设置方式不一样
-  fn set_auth_token(&mut self, auth_token: String) -> Result<()> {
+  fn set_auth_token(&mut self, auth_token: SmolStr) -> Result<()> {
     if let Some(gql_ctx) = self.gql_ctx {
       gql_ctx.insert_http_header(
         AUTHORIZATION.parse::<HeaderName>()?,
@@ -2239,7 +2126,7 @@ pub fn get_is_creating(
 }
 
 #[must_use]
-pub fn get_auth_token() -> Option<String> {
+pub fn get_auth_token() -> Option<SmolStr> {
   let ctx = CTX.with(|ctx| ctx.clone());
   if let Some(auth_token) = ctx.old_auth_token.as_ref() {
     return Some(auth_token.clone());
@@ -2250,7 +2137,7 @@ pub fn get_auth_token() -> Option<String> {
   None
 }
 
-pub fn get_auth_token_ok() -> Result<String> {
+pub fn get_auth_token_ok() -> Result<SmolStr> {
   let ctx = CTX.with(|ctx| ctx.clone());
   if let Some(auth_token) = ctx.old_auth_token.as_ref() {
     return Ok(auth_token.clone());
@@ -2260,7 +2147,7 @@ pub fn get_auth_token_ok() -> Result<String> {
   }
   Err(eyre!(
     ServiceException {
-      message: "未登录".to_string(),
+      message: "未登录".into(),
       trace: true,
       ..Default::default()
     }

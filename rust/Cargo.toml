@@ -15,7 +15,7 @@ tracing-appender = "0.2.4"
 tracing-attributes = "0.1.31"
 tokio = { version = "1.49.0", features = ["rt-multi-thread", "macros", "net", "fs"] }
 poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
-async-graphql = { version = "7.2.1", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
+async-graphql = { version = "7.2.1", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing", "raw_value"] }
 smol_str = { version = "0.3.5", features = ["serde"] }
 slab = "0.4.12"
 chrono = { version = "0.4.43", features = ["serde"] }
@@ -49,7 +49,7 @@ rust_decimal_macros = "1.40.0"
 # enum_dispatch = "0.3.13"
 # pin-project-lite = "0.2.16"
 # rayon = "1.11.0"
-regex = "1.12.2"
+regex = "1.12.3"
 # yarte = "0.15.7"
 image = { version = "0.25.9", features = ["webp"] }
 delay_timer = "0.11.6"

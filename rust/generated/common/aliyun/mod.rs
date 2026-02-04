@@ -117,6 +117,7 @@ pub enum RequestBody {
   None,
 }
 // 规范化请求
+#[allow(clippy::too_many_arguments)]
 pub async fn call_api(
   client: Client,
   method: Method,
@@ -142,7 +143,7 @@ pub async fn call_api(
       .flat_map(|(k, v)| {
         match v {
           FormValue::String(s) => {
-            vec![format!("{}={}", percent_code(k), percent_code(&s))]
+            vec![format!("{}={}", percent_code(k), percent_code(s))]
           },
           FormValue::Vec(vec) => {
             vec.iter()
@@ -221,12 +222,11 @@ pub async fn call_api(
   // 6.构建 Authorization
   headers.insert("Authorization", HeaderValue::from_str(&auth_data)?);
   // 构造 url 拼接请求参数
-  let url: String;
-  if !query_params.is_empty() {
-    url = format!("https://{}{}?{}", host, canonical_uri,canonical_query_string);
+  let url: String = if !query_params.is_empty() {
+    format!("https://{}{}?{}", host, canonical_uri,canonical_query_string)
   } else {
-    url = format!("https://{}{}", host, canonical_uri);
-  }    
+    format!("https://{}{}", host, canonical_uri)
+  };
   // 调用发送请求
   let response = send_request(
     &client,

@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_operation_record(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let operation_record_models = operation_record_dao::find_all_operation_record(
@@ -64,7 +67,7 @@ pub async fn find_count_operation_record(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let operation_record_num = operation_record_dao::find_count_operation_record(
@@ -86,7 +89,7 @@ pub async fn find_one_operation_record(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let operation_record_model = operation_record_dao::find_one_operation_record(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_operation_record(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let operation_record_model = operation_record_dao::find_one_ok_operation_record(
@@ -233,7 +236,7 @@ pub async fn update_by_id_operation_record(
   let operation_record_id = operation_record_dao::update_by_id_operation_record(
     operation_record_id,
     operation_record_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(operation_record_id)

@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::dict_detail_model::*;
@@ -39,7 +42,7 @@ pub async fn find_all_dict_detail(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dict_detail_models = dict_detail_dao::find_all_dict_detail(
@@ -62,7 +65,7 @@ pub async fn find_count_dict_detail(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dict_detail_num = dict_detail_dao::find_count_dict_detail(
@@ -84,7 +87,7 @@ pub async fn find_one_dict_detail(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dict_detail_model = dict_detail_dao::find_one_dict_detail(
@@ -107,7 +110,7 @@ pub async fn find_one_ok_dict_detail(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dict_detail_model = dict_detail_dao::find_one_ok_dict_detail(
@@ -214,7 +217,7 @@ pub async fn update_by_id_dict_detail(
   let old_model = validate_option_dict_detail(
     dict_detail_dao::find_by_id_dict_detail(
       dict_detail_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -227,7 +230,7 @@ pub async fn update_by_id_dict_detail(
   let dict_detail_id = dict_detail_dao::update_by_id_dict_detail(
     dict_detail_id,
     dict_detail_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(dict_detail_id)
@@ -258,7 +261,7 @@ pub async fn delete_by_ids_dict_detail(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

@@ -13,6 +13,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -232,8 +235,8 @@ pub async fn creates_i18n(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_i18n().to_string(),
-    "add".to_owned(),
+    SmolStr::new(get_page_path_i18n()),
+    SmolStr::new("add"),
   ).await?;
   
   let ids = i18n_service::creates_i18n(
@@ -268,8 +271,8 @@ pub async fn update_by_id_i18n(
   ).await?;
   
   use_permit(
-    get_page_path_i18n().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_i18n()),
+    SmolStr::new("edit"),
   ).await?;
   
   let res = i18n_service::update_by_id_i18n(
@@ -296,8 +299,8 @@ pub async fn delete_by_ids_i18n(
   );
   
   use_permit(
-    get_page_path_i18n().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_i18n()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = i18n_service::delete_by_ids_i18n(
@@ -342,8 +345,8 @@ pub async fn revert_by_ids_i18n(
   );
   
   use_permit(
-    get_page_path_i18n().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_i18n()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = i18n_service::revert_by_ids_i18n(
@@ -369,8 +372,8 @@ pub async fn force_delete_by_ids_i18n(
   );
   
   use_permit(
-    get_page_path_i18n().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_i18n()),
+    SmolStr::new("force_delete"),
   ).await?;
   
   let num = i18n_service::force_delete_by_ids_i18n(

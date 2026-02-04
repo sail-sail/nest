@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::domain_model::*;
@@ -39,7 +42,7 @@ pub async fn find_all_domain(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let domain_models = domain_dao::find_all_domain(
@@ -62,7 +65,7 @@ pub async fn find_count_domain(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let domain_num = domain_dao::find_count_domain(
@@ -84,7 +87,7 @@ pub async fn find_one_domain(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let domain_model = domain_dao::find_one_domain(
@@ -107,7 +110,7 @@ pub async fn find_one_ok_domain(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let domain_model = domain_dao::find_one_ok_domain(
@@ -224,7 +227,7 @@ pub async fn update_by_id_domain(
   let domain_id = domain_dao::update_by_id_domain(
     domain_id,
     domain_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(domain_id)
@@ -255,7 +258,7 @@ pub async fn delete_by_ids_domain(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

@@ -22,7 +22,7 @@ pub async fn get_home_urls() -> Result<Vec<String>> {
   // 获取当前登录用户
   let usr_model = find_by_id_usr(
     usr_id,
-    options.clone(),
+    options,
   ).await?;
   let usr_model = validate_option_usr(
     usr_model,
@@ -40,7 +40,7 @@ pub async fn get_home_urls() -> Result<Vec<String>> {
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   let home_urls = role_models
