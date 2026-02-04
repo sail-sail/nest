@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_wx_usr(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_usr_models = wx_usr_dao::find_all_wx_usr(
@@ -64,7 +67,7 @@ pub async fn find_count_wx_usr(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_usr_num = wx_usr_dao::find_count_wx_usr(
@@ -86,7 +89,7 @@ pub async fn find_one_wx_usr(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_usr_model = wx_usr_dao::find_one_wx_usr(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_wx_usr(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_usr_model = wx_usr_dao::find_one_ok_wx_usr(
@@ -233,7 +236,7 @@ pub async fn update_by_id_wx_usr(
   let wx_usr_id = wx_usr_dao::update_by_id_wx_usr(
     wx_usr_id,
     wx_usr_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(wx_usr_id)

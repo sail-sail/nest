@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_wx_pay_notice(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_pay_notice_models = wx_pay_notice_dao::find_all_wx_pay_notice(
@@ -64,7 +67,7 @@ pub async fn find_count_wx_pay_notice(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_pay_notice_num = wx_pay_notice_dao::find_count_wx_pay_notice(
@@ -86,7 +89,7 @@ pub async fn find_one_wx_pay_notice(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_pay_notice_model = wx_pay_notice_dao::find_one_wx_pay_notice(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_wx_pay_notice(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_pay_notice_model = wx_pay_notice_dao::find_one_ok_wx_pay_notice(
@@ -233,7 +236,7 @@ pub async fn update_by_id_wx_pay_notice(
   let wx_pay_notice_id = wx_pay_notice_dao::update_by_id_wx_pay_notice(
     wx_pay_notice_id,
     wx_pay_notice_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(wx_pay_notice_id)

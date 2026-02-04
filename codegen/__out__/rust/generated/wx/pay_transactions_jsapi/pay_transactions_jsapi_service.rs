@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_pay_transactions_jsapi(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let pay_transactions_jsapi_models = pay_transactions_jsapi_dao::find_all_pay_transactions_jsapi(
@@ -64,7 +67,7 @@ pub async fn find_count_pay_transactions_jsapi(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let pay_transactions_jsapi_num = pay_transactions_jsapi_dao::find_count_pay_transactions_jsapi(
@@ -86,7 +89,7 @@ pub async fn find_one_pay_transactions_jsapi(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let pay_transactions_jsapi_model = pay_transactions_jsapi_dao::find_one_pay_transactions_jsapi(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_pay_transactions_jsapi(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let pay_transactions_jsapi_model = pay_transactions_jsapi_dao::find_one_ok_pay_transactions_jsapi(
@@ -233,7 +236,7 @@ pub async fn update_by_id_pay_transactions_jsapi(
   let pay_transactions_jsapi_id = pay_transactions_jsapi_dao::update_by_id_pay_transactions_jsapi(
     pay_transactions_jsapi_id,
     pay_transactions_jsapi_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(pay_transactions_jsapi_id)

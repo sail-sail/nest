@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_wx_pay(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_pay_models = wx_pay_dao::find_all_wx_pay(
@@ -64,7 +67,7 @@ pub async fn find_count_wx_pay(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_pay_num = wx_pay_dao::find_count_wx_pay(
@@ -86,7 +89,7 @@ pub async fn find_one_wx_pay(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_pay_model = wx_pay_dao::find_one_wx_pay(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_wx_pay(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wx_pay_model = wx_pay_dao::find_one_ok_wx_pay(
@@ -243,7 +246,7 @@ pub async fn update_by_id_wx_pay(
   let wx_pay_id = wx_pay_dao::update_by_id_wx_pay(
     wx_pay_id,
     wx_pay_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(wx_pay_id)
@@ -274,7 +277,7 @@ pub async fn delete_by_ids_wx_pay(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

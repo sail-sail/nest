@@ -57,46 +57,46 @@ pub struct WxPayNoticeModel {
   pub id: WxPayNoticeId,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: String,
+  pub appid: SmolStr,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: String,
+  pub mchid: SmolStr,
   /// 用户标识
   #[graphql(name = "openid")]
-  pub openid: String,
+  pub openid: SmolStr,
   /// 商户订单号
   #[graphql(name = "out_trade_no")]
-  pub out_trade_no: String,
+  pub out_trade_no: SmolStr,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: String,
+  pub transaction_id: SmolStr,
   /// 交易类型
   #[graphql(name = "trade_type")]
   pub trade_type: WxPayNoticeTradeType,
   /// 交易类型
   #[graphql(name = "trade_type_lbl")]
-  pub trade_type_lbl: String,
+  pub trade_type_lbl: SmolStr,
   /// 交易状态
   #[graphql(name = "trade_state")]
   pub trade_state: WxPayNoticeTradeState,
   /// 交易状态
   #[graphql(name = "trade_state_lbl")]
-  pub trade_state_lbl: String,
+  pub trade_state_lbl: SmolStr,
   /// 交易状态描述
   #[graphql(name = "trade_state_desc")]
-  pub trade_state_desc: String,
+  pub trade_state_desc: SmolStr,
   /// 付款银行
   #[graphql(name = "bank_type")]
-  pub bank_type: String,
+  pub bank_type: SmolStr,
   /// 附加数据
   #[graphql(name = "attach")]
-  pub attach: String,
+  pub attach: SmolStr,
   /// 支付完成时间
   #[graphql(name = "success_time")]
   pub success_time: Option<chrono::NaiveDateTime>,
   /// 支付完成时间
   #[graphql(name = "success_time_lbl")]
-  pub success_time_lbl: String,
+  pub success_time_lbl: SmolStr,
   /// 总金额(分)
   #[graphql(name = "total")]
   pub total: u32,
@@ -108,23 +108,23 @@ pub struct WxPayNoticeModel {
   pub currency: WxPayNoticeCurrency,
   /// 货币类型
   #[graphql(name = "currency_lbl")]
-  pub currency_lbl: String,
+  pub currency_lbl: SmolStr,
   /// 用户支付币种
   #[graphql(name = "payer_currency")]
   pub payer_currency: WxPayNoticePayerCurrency,
   /// 用户支付币种
   #[graphql(name = "payer_currency_lbl")]
-  pub payer_currency_lbl: String,
+  pub payer_currency_lbl: SmolStr,
   /// 商户端设备号
   #[graphql(name = "device_id")]
-  pub device_id: String,
+  pub device_id: SmolStr,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for WxPayNoticeModel {
@@ -134,52 +134,66 @@ impl FromRow<'_, MySqlRow> for WxPayNoticeModel {
     // ID
     let id: WxPayNoticeId = row.try_get("id")?;
     // 开发者ID
-    let appid: String = row.try_get("appid")?;
+    let appid: &str = row.try_get("appid")?;
+    let appid = SmolStr::new(appid);
     // 商户号
-    let mchid: String = row.try_get("mchid")?;
+    let mchid: &str = row.try_get("mchid")?;
+    let mchid = SmolStr::new(mchid);
     // 用户标识
-    let openid: String = row.try_get("openid")?;
+    let openid: &str = row.try_get("openid")?;
+    let openid = SmolStr::new(openid);
     // 商户订单号
-    let out_trade_no: String = row.try_get("out_trade_no")?;
+    let out_trade_no: &str = row.try_get("out_trade_no")?;
+    let out_trade_no = SmolStr::new(out_trade_no);
     // 微信支付订单号
-    let transaction_id: String = row.try_get("transaction_id")?;
+    let transaction_id: &str = row.try_get("transaction_id")?;
+    let transaction_id = SmolStr::new(transaction_id);
     // 交易类型
-    let trade_type_lbl: String = row.try_get("trade_type")?;
-    let trade_type: WxPayNoticeTradeType = trade_type_lbl.clone().try_into()?;
+    let trade_type_lbl: &str = row.try_get("trade_type")?;
+    let trade_type: WxPayNoticeTradeType = trade_type_lbl.try_into()?;
+    let trade_type_lbl = SmolStr::new(trade_type_lbl);
     // 交易状态
-    let trade_state_lbl: String = row.try_get("trade_state")?;
-    let trade_state: WxPayNoticeTradeState = trade_state_lbl.clone().try_into()?;
+    let trade_state_lbl: &str = row.try_get("trade_state")?;
+    let trade_state: WxPayNoticeTradeState = trade_state_lbl.try_into()?;
+    let trade_state_lbl = SmolStr::new(trade_state_lbl);
     // 交易状态描述
-    let trade_state_desc: String = row.try_get("trade_state_desc")?;
+    let trade_state_desc: &str = row.try_get("trade_state_desc")?;
+    let trade_state_desc = SmolStr::new(trade_state_desc);
     // 付款银行
-    let bank_type: String = row.try_get("bank_type")?;
+    let bank_type: &str = row.try_get("bank_type")?;
+    let bank_type = SmolStr::new(bank_type);
     // 附加数据
-    let attach: String = row.try_get("attach")?;
+    let attach: &str = row.try_get("attach")?;
+    let attach = SmolStr::new(attach);
     // 支付完成时间
     let success_time: Option<chrono::NaiveDateTime> = row.try_get("success_time")?;
-    let success_time_lbl: String = match success_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let success_time_lbl: SmolStr = match success_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 总金额(分)
     let total: u32 = row.try_get("total")?;
     // 用户支付金额(分)
     let payer_total: u32 = row.try_get("payer_total")?;
     // 货币类型
-    let currency_lbl: String = row.try_get("currency")?;
-    let currency: WxPayNoticeCurrency = currency_lbl.clone().try_into()?;
+    let currency_lbl: &str = row.try_get("currency")?;
+    let currency: WxPayNoticeCurrency = currency_lbl.try_into()?;
+    let currency_lbl = SmolStr::new(currency_lbl);
     // 用户支付币种
-    let payer_currency_lbl: String = row.try_get("payer_currency")?;
-    let payer_currency: WxPayNoticePayerCurrency = payer_currency_lbl.clone().try_into()?;
+    let payer_currency_lbl: &str = row.try_get("payer_currency")?;
+    let payer_currency: WxPayNoticePayerCurrency = payer_currency_lbl.try_into()?;
+    let payer_currency_lbl = SmolStr::new(payer_currency_lbl);
     // 商户端设备号
-    let device_id: String = row.try_get("device_id")?;
+    let device_id: &str = row.try_get("device_id")?;
+    let device_id = SmolStr::new(device_id);
     // 备注
-    let rem: String = row.try_get("rem")?;
+    let rem: &str = row.try_get("rem")?;
+    let rem = SmolStr::new(rem);
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let create_time_lbl: SmolStr = match create_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     
     let model = Self {
@@ -221,79 +235,79 @@ impl FromRow<'_, MySqlRow> for WxPayNoticeModel {
 pub struct WxPayNoticeFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: String,
+  pub appid: SmolStr,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: String,
+  pub mchid: SmolStr,
   /// 用户标识
   #[graphql(name = "openid")]
-  pub openid: String,
+  pub openid: SmolStr,
   /// 商户订单号
   #[graphql(name = "out_trade_no")]
-  pub out_trade_no: String,
+  pub out_trade_no: SmolStr,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: String,
+  pub transaction_id: SmolStr,
   /// 交易类型
   #[graphql(name = "trade_type")]
-  pub trade_type: String,
+  pub trade_type: SmolStr,
   /// 交易类型
   #[graphql(name = "trade_type_lbl")]
-  pub trade_type_lbl: String,
+  pub trade_type_lbl: SmolStr,
   /// 交易状态
   #[graphql(name = "trade_state")]
-  pub trade_state: String,
+  pub trade_state: SmolStr,
   /// 交易状态
   #[graphql(name = "trade_state_lbl")]
-  pub trade_state_lbl: String,
+  pub trade_state_lbl: SmolStr,
   /// 交易状态描述
   #[graphql(name = "trade_state_desc")]
-  pub trade_state_desc: String,
+  pub trade_state_desc: SmolStr,
   /// 付款银行
   #[graphql(name = "bank_type")]
-  pub bank_type: String,
+  pub bank_type: SmolStr,
   /// 附加数据
   #[graphql(name = "attach")]
-  pub attach: String,
+  pub attach: SmolStr,
   /// 支付完成时间
   #[graphql(name = "success_time")]
-  pub success_time: String,
+  pub success_time: SmolStr,
   /// 支付完成时间
   #[graphql(name = "success_time_lbl")]
-  pub success_time_lbl: String,
+  pub success_time_lbl: SmolStr,
   /// 总金额(分)
   #[graphql(name = "total")]
-  pub total: String,
+  pub total: SmolStr,
   /// 用户支付金额(分)
   #[graphql(name = "payer_total")]
-  pub payer_total: String,
+  pub payer_total: SmolStr,
   /// 货币类型
   #[graphql(name = "currency")]
-  pub currency: String,
+  pub currency: SmolStr,
   /// 货币类型
   #[graphql(name = "currency_lbl")]
-  pub currency_lbl: String,
+  pub currency_lbl: SmolStr,
   /// 用户支付币种
   #[graphql(name = "payer_currency")]
-  pub payer_currency: String,
+  pub payer_currency: SmolStr,
   /// 用户支付币种
   #[graphql(name = "payer_currency_lbl")]
-  pub payer_currency_lbl: String,
+  pub payer_currency_lbl: SmolStr,
   /// 商户端设备号
   #[graphql(name = "device_id")]
-  pub device_id: String,
+  pub device_id: SmolStr,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: String,
+  pub create_time: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -308,34 +322,34 @@ pub struct WxPayNoticeSearch {
   pub tenant_id: Option<TenantId>,
   /// 开发者ID
   #[graphql(skip)]
-  pub appid: Option<String>,
+  pub appid: Option<SmolStr>,
   /// 开发者ID
   #[graphql(skip)]
-  pub appid_like: Option<String>,
+  pub appid_like: Option<SmolStr>,
   /// 商户号
   #[graphql(skip)]
-  pub mchid: Option<String>,
+  pub mchid: Option<SmolStr>,
   /// 商户号
   #[graphql(skip)]
-  pub mchid_like: Option<String>,
+  pub mchid_like: Option<SmolStr>,
   /// 用户标识
   #[graphql(name = "openid")]
-  pub openid: Option<String>,
+  pub openid: Option<SmolStr>,
   /// 用户标识
   #[graphql(name = "openid_like")]
-  pub openid_like: Option<String>,
+  pub openid_like: Option<SmolStr>,
   /// 商户订单号
   #[graphql(skip)]
-  pub out_trade_no: Option<String>,
+  pub out_trade_no: Option<SmolStr>,
   /// 商户订单号
   #[graphql(skip)]
-  pub out_trade_no_like: Option<String>,
+  pub out_trade_no_like: Option<SmolStr>,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: Option<String>,
+  pub transaction_id: Option<SmolStr>,
   /// 微信支付订单号
   #[graphql(name = "transaction_id_like")]
-  pub transaction_id_like: Option<String>,
+  pub transaction_id_like: Option<SmolStr>,
   /// 交易类型
   #[graphql(skip)]
   pub trade_type: Option<Vec<WxPayNoticeTradeType>>,
@@ -344,22 +358,22 @@ pub struct WxPayNoticeSearch {
   pub trade_state: Option<Vec<WxPayNoticeTradeState>>,
   /// 交易状态描述
   #[graphql(skip)]
-  pub trade_state_desc: Option<String>,
+  pub trade_state_desc: Option<SmolStr>,
   /// 交易状态描述
   #[graphql(skip)]
-  pub trade_state_desc_like: Option<String>,
+  pub trade_state_desc_like: Option<SmolStr>,
   /// 付款银行
   #[graphql(skip)]
-  pub bank_type: Option<String>,
+  pub bank_type: Option<SmolStr>,
   /// 付款银行
   #[graphql(skip)]
-  pub bank_type_like: Option<String>,
+  pub bank_type_like: Option<SmolStr>,
   /// 附加数据
   #[graphql(skip)]
-  pub attach: Option<String>,
+  pub attach: Option<SmolStr>,
   /// 附加数据
   #[graphql(skip)]
-  pub attach_like: Option<String>,
+  pub attach_like: Option<SmolStr>,
   /// 支付完成时间
   #[graphql(name = "success_time")]
   pub success_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -377,16 +391,16 @@ pub struct WxPayNoticeSearch {
   pub payer_currency: Option<Vec<WxPayNoticePayerCurrency>>,
   /// 商户端设备号
   #[graphql(skip)]
-  pub device_id: Option<String>,
+  pub device_id: Option<SmolStr>,
   /// 商户端设备号
   #[graphql(skip)]
-  pub device_id_like: Option<String>,
+  pub device_id_like: Option<SmolStr>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<String>,
+  pub rem_like: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -521,46 +535,46 @@ pub struct WxPayNoticeInput {
   pub tenant_id: Option<TenantId>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<String>,
+  pub appid: Option<SmolStr>,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: Option<String>,
+  pub mchid: Option<SmolStr>,
   /// 用户标识
   #[graphql(name = "openid")]
-  pub openid: Option<String>,
+  pub openid: Option<SmolStr>,
   /// 商户订单号
   #[graphql(name = "out_trade_no")]
-  pub out_trade_no: Option<String>,
+  pub out_trade_no: Option<SmolStr>,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: Option<String>,
+  pub transaction_id: Option<SmolStr>,
   /// 交易类型
   #[graphql(name = "trade_type")]
   pub trade_type: Option<WxPayNoticeTradeType>,
   /// 交易类型
   #[graphql(name = "trade_type_lbl")]
-  pub trade_type_lbl: Option<String>,
+  pub trade_type_lbl: Option<SmolStr>,
   /// 交易状态
   #[graphql(name = "trade_state")]
   pub trade_state: Option<WxPayNoticeTradeState>,
   /// 交易状态
   #[graphql(name = "trade_state_lbl")]
-  pub trade_state_lbl: Option<String>,
+  pub trade_state_lbl: Option<SmolStr>,
   /// 交易状态描述
   #[graphql(name = "trade_state_desc")]
-  pub trade_state_desc: Option<String>,
+  pub trade_state_desc: Option<SmolStr>,
   /// 付款银行
   #[graphql(name = "bank_type")]
-  pub bank_type: Option<String>,
+  pub bank_type: Option<SmolStr>,
   /// 附加数据
   #[graphql(name = "attach")]
-  pub attach: Option<String>,
+  pub attach: Option<SmolStr>,
   /// 支付完成时间
   #[graphql(name = "success_time")]
   pub success_time: Option<chrono::NaiveDateTime>,
   /// 支付完成时间
   #[graphql(name = "success_time_lbl")]
-  pub success_time_lbl: Option<String>,
+  pub success_time_lbl: Option<SmolStr>,
   /// 支付完成时间
   #[graphql(name = "success_time_save_null")]
   pub success_time_save_null: Option<bool>,
@@ -575,25 +589,25 @@ pub struct WxPayNoticeInput {
   pub currency: Option<WxPayNoticeCurrency>,
   /// 货币类型
   #[graphql(name = "currency_lbl")]
-  pub currency_lbl: Option<String>,
+  pub currency_lbl: Option<SmolStr>,
   /// 用户支付币种
   #[graphql(name = "payer_currency")]
   pub payer_currency: Option<WxPayNoticePayerCurrency>,
   /// 用户支付币种
   #[graphql(name = "payer_currency_lbl")]
-  pub payer_currency_lbl: Option<String>,
+  pub payer_currency_lbl: Option<SmolStr>,
   /// 商户端设备号
   #[graphql(name = "device_id")]
-  pub device_id: Option<String>,
+  pub device_id: Option<SmolStr>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,
+  pub create_time_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -782,7 +796,53 @@ impl FromStr for WxPayNoticeTradeType {
       "MICROPAY" => Ok(Self::Micropay),
       "MWEB" => Ok(Self::Mweb),
       "FACEPAY" => Ok(Self::Facepay),
-      _ => Err(eyre!("WxPayNoticeTradeType can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 交易类型")),
+    }
+  }
+}
+
+impl TryFrom<&str> for WxPayNoticeTradeType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "JSAPI" => Ok(Self::Jsapi),
+      "NATIVE" => Ok(Self::Native),
+      "APP" => Ok(Self::App),
+      "MICROPAY" => Ok(Self::Micropay),
+      "MWEB" => Ok(Self::Mweb),
+      "FACEPAY" => Ok(Self::Facepay),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "trade_type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 交易类型".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for WxPayNoticeTradeType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "JSAPI" => Ok(Self::Jsapi),
+      "NATIVE" => Ok(Self::Native),
+      "APP" => Ok(Self::App),
+      "MICROPAY" => Ok(Self::Micropay),
+      "MWEB" => Ok(Self::Mweb),
+      "FACEPAY" => Ok(Self::Facepay),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "trade_type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 交易类型".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -815,7 +875,7 @@ impl TryFrom<String> for WxPayNoticeTradeType {
         Box::new(sqlx::Error::ColumnDecode {
           index: "trade_type".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "WxPayNoticeTradeType can't convert from {s}".to_owned(),
+            "{s} 无法转换到 交易类型".to_owned(),
           )),
         }),
       )),
@@ -910,7 +970,55 @@ impl FromStr for WxPayNoticeTradeState {
       "REVOKED" => Ok(Self::Revoked),
       "USERPAYING" => Ok(Self::Userpaying),
       "PAYERROR" => Ok(Self::Payerror),
-      _ => Err(eyre!("WxPayNoticeTradeState can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 交易状态")),
+    }
+  }
+}
+
+impl TryFrom<&str> for WxPayNoticeTradeState {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "SUCCESS" => Ok(Self::Success),
+      "REFUND" => Ok(Self::Refund),
+      "NOTPAY" => Ok(Self::Notpay),
+      "CLOSED" => Ok(Self::Closed),
+      "REVOKED" => Ok(Self::Revoked),
+      "USERPAYING" => Ok(Self::Userpaying),
+      "PAYERROR" => Ok(Self::Payerror),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "trade_state".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 交易状态".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for WxPayNoticeTradeState {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "SUCCESS" => Ok(Self::Success),
+      "REFUND" => Ok(Self::Refund),
+      "NOTPAY" => Ok(Self::Notpay),
+      "CLOSED" => Ok(Self::Closed),
+      "REVOKED" => Ok(Self::Revoked),
+      "USERPAYING" => Ok(Self::Userpaying),
+      "PAYERROR" => Ok(Self::Payerror),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "trade_state".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 交易状态".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -945,7 +1053,7 @@ impl TryFrom<String> for WxPayNoticeTradeState {
         Box::new(sqlx::Error::ColumnDecode {
           index: "trade_state".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "WxPayNoticeTradeState can't convert from {s}".to_owned(),
+            "{s} 无法转换到 交易状态".to_owned(),
           )),
         }),
       )),
@@ -998,7 +1106,43 @@ impl FromStr for WxPayNoticeCurrency {
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
       "CNY" => Ok(Self::Cny),
-      _ => Err(eyre!("WxPayNoticeCurrency can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 货币类型")),
+    }
+  }
+}
+
+impl TryFrom<&str> for WxPayNoticeCurrency {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "CNY" => Ok(Self::Cny),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "currency".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 货币类型".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for WxPayNoticeCurrency {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "CNY" => Ok(Self::Cny),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "currency".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 货币类型".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -1021,7 +1165,7 @@ impl TryFrom<String> for WxPayNoticeCurrency {
         Box::new(sqlx::Error::ColumnDecode {
           index: "currency".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "WxPayNoticeCurrency can't convert from {s}".to_owned(),
+            "{s} 无法转换到 货币类型".to_owned(),
           )),
         }),
       )),
@@ -1074,7 +1218,43 @@ impl FromStr for WxPayNoticePayerCurrency {
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
       "CNY" => Ok(Self::Cny),
-      _ => Err(eyre!("WxPayNoticePayerCurrency can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 用户支付币种")),
+    }
+  }
+}
+
+impl TryFrom<&str> for WxPayNoticePayerCurrency {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "CNY" => Ok(Self::Cny),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "payer_currency".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 用户支付币种".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for WxPayNoticePayerCurrency {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "CNY" => Ok(Self::Cny),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "payer_currency".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 用户支付币种".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -1097,7 +1277,7 @@ impl TryFrom<String> for WxPayNoticePayerCurrency {
         Box::new(sqlx::Error::ColumnDecode {
           index: "payer_currency".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "WxPayNoticePayerCurrency can't convert from {s}".to_owned(),
+            "{s} 无法转换到 用户支付币种".to_owned(),
           )),
         }),
       )),

@@ -58,64 +58,64 @@ pub struct WxoUsrModel {
   pub id: WxoUsrId,
   /// 昵称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 头像
   #[graphql(name = "head_img")]
-  pub head_img: String,
+  pub head_img: SmolStr,
   /// 绑定用户
   #[graphql(name = "usr_id")]
   pub usr_id: UsrId,
   /// 绑定用户
   #[graphql(name = "usr_id_lbl")]
-  pub usr_id_lbl: String,
+  pub usr_id_lbl: SmolStr,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: String,
+  pub appid: SmolStr,
   /// 公众号用户唯一标识
   #[graphql(name = "openid")]
-  pub openid: String,
+  pub openid: SmolStr,
   /// 用户统一标识
   #[graphql(name = "unionid")]
-  pub unionid: String,
+  pub unionid: SmolStr,
   /// 性别
   #[graphql(name = "sex")]
   pub sex: u32,
   /// 性别
   #[graphql(name = "sex_lbl")]
-  pub sex_lbl: String,
+  pub sex_lbl: SmolStr,
   /// 省份
   #[graphql(name = "province")]
-  pub province: String,
+  pub province: SmolStr,
   /// 城市
   #[graphql(name = "city")]
-  pub city: String,
+  pub city: SmolStr,
   /// 国家
   #[graphql(name = "country")]
-  pub country: String,
+  pub country: SmolStr,
   /// 特权
   #[graphql(skip)]
-  pub privilege: String,
+  pub privilege: SmolStr,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for WxoUsrModel {
@@ -125,51 +125,61 @@ impl FromRow<'_, MySqlRow> for WxoUsrModel {
     // ID
     let id: WxoUsrId = row.try_get("id")?;
     // 昵称
-    let lbl: String = row.try_get("lbl")?;
+    let lbl: &str = row.try_get("lbl")?;
+    let lbl = SmolStr::new(lbl);
     // 头像
-    let head_img: String = row.try_get("head_img")?;
+    let head_img: &str = row.try_get("head_img")?;
+    let head_img = SmolStr::new(head_img);
     // 绑定用户
     let usr_id: UsrId = row.try_get("usr_id")?;
-    let usr_id_lbl: Option<String> = row.try_get("usr_id_lbl")?;
-    let usr_id_lbl = usr_id_lbl.unwrap_or_default();
+    let usr_id_lbl: Option<&str> = row.try_get("usr_id_lbl")?;
+    let usr_id_lbl = SmolStr::new(usr_id_lbl.unwrap_or_default());
     // 开发者ID
-    let appid: String = row.try_get("appid")?;
+    let appid: &str = row.try_get("appid")?;
+    let appid = SmolStr::new(appid);
     // 公众号用户唯一标识
-    let openid: String = row.try_get("openid")?;
+    let openid: &str = row.try_get("openid")?;
+    let openid = SmolStr::new(openid);
     // 用户统一标识
-    let unionid: String = row.try_get("unionid")?;
+    let unionid: &str = row.try_get("unionid")?;
+    let unionid = SmolStr::new(unionid);
     // 性别
     let sex: u32 = row.try_get("sex")?;
-    let sex_lbl: String = sex.to_string();
+    let sex_lbl = SmolStr::new(sex.to_string());
     // 省份
-    let province: String = row.try_get("province")?;
+    let province: &str = row.try_get("province")?;
+    let province = SmolStr::new(province);
     // 城市
-    let city: String = row.try_get("city")?;
+    let city: &str = row.try_get("city")?;
+    let city = SmolStr::new(city);
     // 国家
-    let country: String = row.try_get("country")?;
+    let country: &str = row.try_get("country")?;
+    let country = SmolStr::new(country);
     // 特权
-    let privilege: String = row.try_get("privilege")?;
+    let privilege: &str = row.try_get("privilege")?;
+    let privilege = SmolStr::new(privilege);
     // 备注
-    let rem: String = row.try_get("rem")?;
+    let rem: &str = row.try_get("rem")?;
+    let rem = SmolStr::new(rem);
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let create_time_lbl: SmolStr = match create_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let update_time_lbl: SmolStr = match update_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -212,70 +222,70 @@ impl FromRow<'_, MySqlRow> for WxoUsrModel {
 pub struct WxoUsrFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 昵称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 头像
   #[graphql(name = "head_img")]
-  pub head_img: String,
+  pub head_img: SmolStr,
   /// 绑定用户
   #[graphql(name = "usr_id")]
-  pub usr_id: String,
+  pub usr_id: SmolStr,
   /// 绑定用户
   #[graphql(name = "usr_id_lbl")]
-  pub usr_id_lbl: String,
+  pub usr_id_lbl: SmolStr,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: String,
+  pub appid: SmolStr,
   /// 公众号用户唯一标识
   #[graphql(name = "openid")]
-  pub openid: String,
+  pub openid: SmolStr,
   /// 用户统一标识
   #[graphql(name = "unionid")]
-  pub unionid: String,
+  pub unionid: SmolStr,
   /// 性别
   #[graphql(name = "sex")]
-  pub sex: String,
+  pub sex: SmolStr,
   /// 性别
   #[graphql(name = "sex_lbl")]
-  pub sex_lbl: String,
+  pub sex_lbl: SmolStr,
   /// 省份
   #[graphql(name = "province")]
-  pub province: String,
+  pub province: SmolStr,
   /// 城市
   #[graphql(name = "city")]
-  pub city: String,
+  pub city: SmolStr,
   /// 国家
   #[graphql(name = "country")]
-  pub country: String,
+  pub country: SmolStr,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: String,
+  pub create_usr_id: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: String,
+  pub create_time: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: String,
+  pub update_usr_id: SmolStr,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: String,
+  pub update_time: SmolStr,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -291,16 +301,16 @@ pub struct WxoUsrSearch {
   pub is_deleted: Option<u8>,
   /// 昵称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 昵称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<String>,
+  pub lbl_like: Option<SmolStr>,
   /// 头像
   #[graphql(skip)]
-  pub head_img: Option<String>,
+  pub head_img: Option<SmolStr>,
   /// 头像
   #[graphql(skip)]
-  pub head_img_like: Option<String>,
+  pub head_img_like: Option<SmolStr>,
   /// 绑定用户
   #[graphql(name = "usr_id")]
   pub usr_id: Option<Vec<UsrId>>,
@@ -309,61 +319,61 @@ pub struct WxoUsrSearch {
   pub usr_id_is_null: Option<bool>,
   /// 绑定用户
   #[graphql(name = "usr_id_lbl")]
-  pub usr_id_lbl: Option<Vec<String>>,
+  pub usr_id_lbl: Option<Vec<SmolStr>>,
   /// 绑定用户
   #[graphql(name = "usr_id_lbl_like")]
-  pub usr_id_lbl_like: Option<String>,
+  pub usr_id_lbl_like: Option<SmolStr>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<String>,
+  pub appid: Option<SmolStr>,
   /// 开发者ID
   #[graphql(name = "appid_like")]
-  pub appid_like: Option<String>,
+  pub appid_like: Option<SmolStr>,
   /// 公众号用户唯一标识
   #[graphql(skip)]
-  pub openid: Option<String>,
+  pub openid: Option<SmolStr>,
   /// 公众号用户唯一标识
   #[graphql(skip)]
-  pub openid_like: Option<String>,
+  pub openid_like: Option<SmolStr>,
   /// 用户统一标识
   #[graphql(skip)]
-  pub unionid: Option<String>,
+  pub unionid: Option<SmolStr>,
   /// 用户统一标识
   #[graphql(skip)]
-  pub unionid_like: Option<String>,
+  pub unionid_like: Option<SmolStr>,
   /// 性别
   #[graphql(skip)]
   pub sex: Option<Vec<u32>>,
   /// 省份
   #[graphql(skip)]
-  pub province: Option<String>,
+  pub province: Option<SmolStr>,
   /// 省份
   #[graphql(skip)]
-  pub province_like: Option<String>,
+  pub province_like: Option<SmolStr>,
   /// 城市
   #[graphql(skip)]
-  pub city: Option<String>,
+  pub city: Option<SmolStr>,
   /// 城市
   #[graphql(skip)]
-  pub city_like: Option<String>,
+  pub city_like: Option<SmolStr>,
   /// 国家
   #[graphql(skip)]
-  pub country: Option<String>,
+  pub country: Option<SmolStr>,
   /// 国家
   #[graphql(skip)]
-  pub country_like: Option<String>,
+  pub country_like: Option<SmolStr>,
   /// 特权
   #[graphql(skip)]
-  pub privilege: Option<String>,
+  pub privilege: Option<SmolStr>,
   /// 特权
   #[graphql(skip)]
-  pub privilege_like: Option<String>,
+  pub privilege_like: Option<SmolStr>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<String>,
+  pub rem_like: Option<SmolStr>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -372,10 +382,10 @@ pub struct WxoUsrSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<String>>,
+  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<String>,
+  pub create_usr_id_lbl_like: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -387,10 +397,10 @@ pub struct WxoUsrSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<String>>,
+  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<String>,
+  pub update_usr_id_lbl_like: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -552,58 +562,58 @@ pub struct WxoUsrInput {
   pub tenant_id: Option<TenantId>,
   /// 昵称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 头像
   #[graphql(name = "head_img")]
-  pub head_img: Option<String>,
+  pub head_img: Option<SmolStr>,
   /// 绑定用户
   #[graphql(name = "usr_id")]
   pub usr_id: Option<UsrId>,
   /// 绑定用户
   #[graphql(name = "usr_id_lbl")]
-  pub usr_id_lbl: Option<String>,
+  pub usr_id_lbl: Option<SmolStr>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<String>,
+  pub appid: Option<SmolStr>,
   /// 公众号用户唯一标识
   #[graphql(name = "openid")]
-  pub openid: Option<String>,
+  pub openid: Option<SmolStr>,
   /// 用户统一标识
   #[graphql(name = "unionid")]
-  pub unionid: Option<String>,
+  pub unionid: Option<SmolStr>,
   /// 性别
   #[graphql(name = "sex")]
   pub sex: Option<u32>,
   /// 性别
   #[graphql(name = "sex_lbl")]
-  pub sex_lbl: Option<String>,
+  pub sex_lbl: Option<SmolStr>,
   /// 省份
   #[graphql(name = "province")]
-  pub province: Option<String>,
+  pub province: Option<SmolStr>,
   /// 城市
   #[graphql(name = "city")]
-  pub city: Option<String>,
+  pub city: Option<SmolStr>,
   /// 国家
   #[graphql(name = "country")]
-  pub country: Option<String>,
+  pub country: Option<SmolStr>,
   /// 特权
   #[graphql(skip)]
-  pub privilege: Option<String>,
+  pub privilege: Option<SmolStr>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<String>,
+  pub create_usr_id_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,
+  pub create_time_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -612,13 +622,13 @@ pub struct WxoUsrInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<String>,
+  pub update_usr_id_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,
+  pub update_time_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,

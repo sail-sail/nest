@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_wxo_app(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxo_app_models = wxo_app_dao::find_all_wxo_app(
@@ -64,7 +67,7 @@ pub async fn find_count_wxo_app(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxo_app_num = wxo_app_dao::find_count_wxo_app(
@@ -86,7 +89,7 @@ pub async fn find_one_wxo_app(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxo_app_model = wxo_app_dao::find_one_wxo_app(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_wxo_app(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxo_app_model = wxo_app_dao::find_one_ok_wxo_app(
@@ -243,7 +246,7 @@ pub async fn update_by_id_wxo_app(
   let wxo_app_id = wxo_app_dao::update_by_id_wxo_app(
     wxo_app_id,
     wxo_app_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(wxo_app_id)
@@ -274,7 +277,7 @@ pub async fn delete_by_ids_wxo_app(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

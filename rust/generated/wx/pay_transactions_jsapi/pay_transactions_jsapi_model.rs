@@ -59,52 +59,52 @@ pub struct PayTransactionsJsapiModel {
   pub id: PayTransactionsJsapiId,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: String,
+  pub appid: SmolStr,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: String,
+  pub mchid: SmolStr,
   /// 商品描述
   #[graphql(name = "description")]
-  pub description: String,
+  pub description: SmolStr,
   /// 商户订单号
   #[graphql(name = "out_trade_no")]
-  pub out_trade_no: String,
+  pub out_trade_no: SmolStr,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: String,
+  pub transaction_id: SmolStr,
   /// 交易状态
   #[graphql(name = "trade_state")]
   pub trade_state: PayTransactionsJsapiTradeState,
   /// 交易状态
   #[graphql(name = "trade_state_lbl")]
-  pub trade_state_lbl: String,
+  pub trade_state_lbl: SmolStr,
   /// 交易状态描述
   #[graphql(name = "trade_state_desc")]
-  pub trade_state_desc: String,
+  pub trade_state_desc: SmolStr,
   /// 支付完成时间
   #[graphql(name = "success_time")]
   pub success_time: Option<chrono::NaiveDateTime>,
   /// 支付完成时间
   #[graphql(name = "success_time_lbl")]
-  pub success_time_lbl: String,
+  pub success_time_lbl: SmolStr,
   /// 交易限制时间
   #[graphql(name = "time_expire")]
-  pub time_expire: String,
+  pub time_expire: SmolStr,
   /// 附加数据
   #[graphql(name = "attach")]
-  pub attach: String,
+  pub attach: SmolStr,
   /// 附加数据2
   #[graphql(skip)]
-  pub attach2: String,
+  pub attach2: SmolStr,
   /// 通知地址
   #[graphql(skip)]
-  pub notify_url: String,
+  pub notify_url: SmolStr,
   /// 开发票
   #[graphql(name = "receipt")]
-  pub receipt: String,
+  pub receipt: SmolStr,
   /// 分账
   #[graphql(name = "profit_sharing")]
-  pub profit_sharing: String,
+  pub profit_sharing: SmolStr,
   /// 订单金额(分)
   #[graphql(name = "total_fee")]
   pub total_fee: u32,
@@ -113,31 +113,31 @@ pub struct PayTransactionsJsapiModel {
   pub currency: PayTransactionsJsapiCurrency,
   /// 货币类型
   #[graphql(name = "currency_lbl")]
-  pub currency_lbl: String,
+  pub currency_lbl: SmolStr,
   /// 用户标识
   #[graphql(name = "openid")]
-  pub openid: String,
+  pub openid: SmolStr,
   /// 预支付交易会话标识
   #[graphql(skip)]
-  pub prepay_id: String,
+  pub prepay_id: SmolStr,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for PayTransactionsJsapiModel {
@@ -147,66 +147,82 @@ impl FromRow<'_, MySqlRow> for PayTransactionsJsapiModel {
     // ID
     let id: PayTransactionsJsapiId = row.try_get("id")?;
     // 开发者ID
-    let appid: String = row.try_get("appid")?;
+    let appid: &str = row.try_get("appid")?;
+    let appid = SmolStr::new(appid);
     // 商户号
-    let mchid: String = row.try_get("mchid")?;
+    let mchid: &str = row.try_get("mchid")?;
+    let mchid = SmolStr::new(mchid);
     // 商品描述
-    let description: String = row.try_get("description")?;
+    let description: &str = row.try_get("description")?;
+    let description = SmolStr::new(description);
     // 商户订单号
-    let out_trade_no: String = row.try_get("out_trade_no")?;
+    let out_trade_no: &str = row.try_get("out_trade_no")?;
+    let out_trade_no = SmolStr::new(out_trade_no);
     // 微信支付订单号
-    let transaction_id: String = row.try_get("transaction_id")?;
+    let transaction_id: &str = row.try_get("transaction_id")?;
+    let transaction_id = SmolStr::new(transaction_id);
     // 交易状态
-    let trade_state_lbl: String = row.try_get("trade_state")?;
-    let trade_state: PayTransactionsJsapiTradeState = trade_state_lbl.clone().try_into()?;
+    let trade_state_lbl: &str = row.try_get("trade_state")?;
+    let trade_state: PayTransactionsJsapiTradeState = trade_state_lbl.try_into()?;
+    let trade_state_lbl = SmolStr::new(trade_state_lbl);
     // 交易状态描述
-    let trade_state_desc: String = row.try_get("trade_state_desc")?;
+    let trade_state_desc: &str = row.try_get("trade_state_desc")?;
+    let trade_state_desc = SmolStr::new(trade_state_desc);
     // 支付完成时间
     let success_time: Option<chrono::NaiveDateTime> = row.try_get("success_time")?;
-    let success_time_lbl: String = match success_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let success_time_lbl: SmolStr = match success_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 交易限制时间
-    let time_expire: String = row.try_get("time_expire")?;
+    let time_expire: &str = row.try_get("time_expire")?;
+    let time_expire = SmolStr::new(time_expire);
     // 附加数据
-    let attach: String = row.try_get("attach")?;
+    let attach: &str = row.try_get("attach")?;
+    let attach = SmolStr::new(attach);
     // 附加数据2
-    let attach2: String = row.try_get("attach2")?;
+    let attach2: &str = row.try_get("attach2")?;
+    let attach2 = SmolStr::new(attach2);
     // 通知地址
-    let notify_url: String = row.try_get("notify_url")?;
+    let notify_url: &str = row.try_get("notify_url")?;
+    let notify_url = SmolStr::new(notify_url);
     // 开发票
-    let receipt: String = row.try_get("receipt")?;
+    let receipt: &str = row.try_get("receipt")?;
+    let receipt = SmolStr::new(receipt);
     // 分账
-    let profit_sharing: String = row.try_get("profit_sharing")?;
+    let profit_sharing: &str = row.try_get("profit_sharing")?;
+    let profit_sharing = SmolStr::new(profit_sharing);
     // 订单金额(分)
     let total_fee: u32 = row.try_get("total_fee")?;
     // 货币类型
-    let currency_lbl: String = row.try_get("currency")?;
-    let currency: PayTransactionsJsapiCurrency = currency_lbl.clone().try_into()?;
+    let currency_lbl: &str = row.try_get("currency")?;
+    let currency: PayTransactionsJsapiCurrency = currency_lbl.try_into()?;
+    let currency_lbl = SmolStr::new(currency_lbl);
     // 用户标识
-    let openid: String = row.try_get("openid")?;
+    let openid: &str = row.try_get("openid")?;
+    let openid = SmolStr::new(openid);
     // 预支付交易会话标识
-    let prepay_id: String = row.try_get("prepay_id")?;
+    let prepay_id: &str = row.try_get("prepay_id")?;
+    let prepay_id = SmolStr::new(prepay_id);
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let create_time_lbl: SmolStr = match create_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let update_time_lbl: SmolStr = match update_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -256,85 +272,85 @@ impl FromRow<'_, MySqlRow> for PayTransactionsJsapiModel {
 pub struct PayTransactionsJsapiFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: String,
+  pub appid: SmolStr,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: String,
+  pub mchid: SmolStr,
   /// 商品描述
   #[graphql(name = "description")]
-  pub description: String,
+  pub description: SmolStr,
   /// 商户订单号
   #[graphql(name = "out_trade_no")]
-  pub out_trade_no: String,
+  pub out_trade_no: SmolStr,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: String,
+  pub transaction_id: SmolStr,
   /// 交易状态
   #[graphql(name = "trade_state")]
-  pub trade_state: String,
+  pub trade_state: SmolStr,
   /// 交易状态
   #[graphql(name = "trade_state_lbl")]
-  pub trade_state_lbl: String,
+  pub trade_state_lbl: SmolStr,
   /// 交易状态描述
   #[graphql(name = "trade_state_desc")]
-  pub trade_state_desc: String,
+  pub trade_state_desc: SmolStr,
   /// 支付完成时间
   #[graphql(name = "success_time")]
-  pub success_time: String,
+  pub success_time: SmolStr,
   /// 支付完成时间
   #[graphql(name = "success_time_lbl")]
-  pub success_time_lbl: String,
+  pub success_time_lbl: SmolStr,
   /// 交易限制时间
   #[graphql(name = "time_expire")]
-  pub time_expire: String,
+  pub time_expire: SmolStr,
   /// 附加数据
   #[graphql(name = "attach")]
-  pub attach: String,
+  pub attach: SmolStr,
   /// 开发票
   #[graphql(name = "receipt")]
-  pub receipt: String,
+  pub receipt: SmolStr,
   /// 分账
   #[graphql(name = "profit_sharing")]
-  pub profit_sharing: String,
+  pub profit_sharing: SmolStr,
   /// 订单金额(分)
   #[graphql(name = "total_fee")]
-  pub total_fee: String,
+  pub total_fee: SmolStr,
   /// 货币类型
   #[graphql(name = "currency")]
-  pub currency: String,
+  pub currency: SmolStr,
   /// 货币类型
   #[graphql(name = "currency_lbl")]
-  pub currency_lbl: String,
+  pub currency_lbl: SmolStr,
   /// 用户标识
   #[graphql(name = "openid")]
-  pub openid: String,
+  pub openid: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: String,
+  pub create_usr_id: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: String,
+  pub create_time: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: String,
+  pub update_usr_id: SmolStr,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: String,
+  pub update_time: SmolStr,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -350,82 +366,82 @@ pub struct PayTransactionsJsapiSearch {
   pub is_deleted: Option<u8>,
   /// 开发者ID
   #[graphql(skip)]
-  pub appid: Option<String>,
+  pub appid: Option<SmolStr>,
   /// 开发者ID
   #[graphql(skip)]
-  pub appid_like: Option<String>,
+  pub appid_like: Option<SmolStr>,
   /// 商户号
   #[graphql(skip)]
-  pub mchid: Option<String>,
+  pub mchid: Option<SmolStr>,
   /// 商户号
   #[graphql(skip)]
-  pub mchid_like: Option<String>,
+  pub mchid_like: Option<SmolStr>,
   /// 商品描述
   #[graphql(skip)]
-  pub description: Option<String>,
+  pub description: Option<SmolStr>,
   /// 商品描述
   #[graphql(skip)]
-  pub description_like: Option<String>,
+  pub description_like: Option<SmolStr>,
   /// 商户订单号
   #[graphql(skip)]
-  pub out_trade_no: Option<String>,
+  pub out_trade_no: Option<SmolStr>,
   /// 商户订单号
   #[graphql(skip)]
-  pub out_trade_no_like: Option<String>,
+  pub out_trade_no_like: Option<SmolStr>,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: Option<String>,
+  pub transaction_id: Option<SmolStr>,
   /// 微信支付订单号
   #[graphql(name = "transaction_id_like")]
-  pub transaction_id_like: Option<String>,
+  pub transaction_id_like: Option<SmolStr>,
   /// 交易状态
   #[graphql(name = "trade_state")]
   pub trade_state: Option<Vec<PayTransactionsJsapiTradeState>>,
   /// 交易状态描述
   #[graphql(skip)]
-  pub trade_state_desc: Option<String>,
+  pub trade_state_desc: Option<SmolStr>,
   /// 交易状态描述
   #[graphql(skip)]
-  pub trade_state_desc_like: Option<String>,
+  pub trade_state_desc_like: Option<SmolStr>,
   /// 支付完成时间
   #[graphql(name = "success_time")]
   pub success_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 交易限制时间
   #[graphql(skip)]
-  pub time_expire: Option<String>,
+  pub time_expire: Option<SmolStr>,
   /// 交易限制时间
   #[graphql(skip)]
-  pub time_expire_like: Option<String>,
+  pub time_expire_like: Option<SmolStr>,
   /// 附加数据
   #[graphql(skip)]
-  pub attach: Option<String>,
+  pub attach: Option<SmolStr>,
   /// 附加数据
   #[graphql(skip)]
-  pub attach_like: Option<String>,
+  pub attach_like: Option<SmolStr>,
   /// 附加数据2
   #[graphql(skip)]
-  pub attach2: Option<String>,
+  pub attach2: Option<SmolStr>,
   /// 附加数据2
   #[graphql(skip)]
-  pub attach2_like: Option<String>,
+  pub attach2_like: Option<SmolStr>,
   /// 通知地址
   #[graphql(skip)]
-  pub notify_url: Option<String>,
+  pub notify_url: Option<SmolStr>,
   /// 通知地址
   #[graphql(skip)]
-  pub notify_url_like: Option<String>,
+  pub notify_url_like: Option<SmolStr>,
   /// 开发票
   #[graphql(skip)]
-  pub receipt: Option<String>,
+  pub receipt: Option<SmolStr>,
   /// 开发票
   #[graphql(skip)]
-  pub receipt_like: Option<String>,
+  pub receipt_like: Option<SmolStr>,
   /// 分账
   #[graphql(skip)]
-  pub profit_sharing: Option<String>,
+  pub profit_sharing: Option<SmolStr>,
   /// 分账
   #[graphql(skip)]
-  pub profit_sharing_like: Option<String>,
+  pub profit_sharing_like: Option<SmolStr>,
   /// 订单金额(分)
   #[graphql(skip)]
   pub total_fee: Option<[Option<u32>; 2]>,
@@ -434,16 +450,16 @@ pub struct PayTransactionsJsapiSearch {
   pub currency: Option<Vec<PayTransactionsJsapiCurrency>>,
   /// 用户标识
   #[graphql(skip)]
-  pub openid: Option<String>,
+  pub openid: Option<SmolStr>,
   /// 用户标识
   #[graphql(skip)]
-  pub openid_like: Option<String>,
+  pub openid_like: Option<SmolStr>,
   /// 预支付交易会话标识
   #[graphql(skip)]
-  pub prepay_id: Option<String>,
+  pub prepay_id: Option<SmolStr>,
   /// 预支付交易会话标识
   #[graphql(skip)]
-  pub prepay_id_like: Option<String>,
+  pub prepay_id_like: Option<SmolStr>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -452,10 +468,10 @@ pub struct PayTransactionsJsapiSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<String>>,
+  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<String>,
+  pub create_usr_id_lbl_like: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -467,10 +483,10 @@ pub struct PayTransactionsJsapiSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<String>>,
+  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<String>,
+  pub update_usr_id_lbl_like: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -659,55 +675,55 @@ pub struct PayTransactionsJsapiInput {
   pub tenant_id: Option<TenantId>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<String>,
+  pub appid: Option<SmolStr>,
   /// 商户号
   #[graphql(name = "mchid")]
-  pub mchid: Option<String>,
+  pub mchid: Option<SmolStr>,
   /// 商品描述
   #[graphql(name = "description")]
-  pub description: Option<String>,
+  pub description: Option<SmolStr>,
   /// 商户订单号
   #[graphql(name = "out_trade_no")]
-  pub out_trade_no: Option<String>,
+  pub out_trade_no: Option<SmolStr>,
   /// 微信支付订单号
   #[graphql(name = "transaction_id")]
-  pub transaction_id: Option<String>,
+  pub transaction_id: Option<SmolStr>,
   /// 交易状态
   #[graphql(name = "trade_state")]
   pub trade_state: Option<PayTransactionsJsapiTradeState>,
   /// 交易状态
   #[graphql(name = "trade_state_lbl")]
-  pub trade_state_lbl: Option<String>,
+  pub trade_state_lbl: Option<SmolStr>,
   /// 交易状态描述
   #[graphql(name = "trade_state_desc")]
-  pub trade_state_desc: Option<String>,
+  pub trade_state_desc: Option<SmolStr>,
   /// 支付完成时间
   #[graphql(name = "success_time")]
   pub success_time: Option<chrono::NaiveDateTime>,
   /// 支付完成时间
   #[graphql(name = "success_time_lbl")]
-  pub success_time_lbl: Option<String>,
+  pub success_time_lbl: Option<SmolStr>,
   /// 支付完成时间
   #[graphql(name = "success_time_save_null")]
   pub success_time_save_null: Option<bool>,
   /// 交易限制时间
   #[graphql(name = "time_expire")]
-  pub time_expire: Option<String>,
+  pub time_expire: Option<SmolStr>,
   /// 附加数据
   #[graphql(name = "attach")]
-  pub attach: Option<String>,
+  pub attach: Option<SmolStr>,
   /// 附加数据2
   #[graphql(skip)]
-  pub attach2: Option<String>,
+  pub attach2: Option<SmolStr>,
   /// 通知地址
   #[graphql(skip)]
-  pub notify_url: Option<String>,
+  pub notify_url: Option<SmolStr>,
   /// 开发票
   #[graphql(name = "receipt")]
-  pub receipt: Option<String>,
+  pub receipt: Option<SmolStr>,
   /// 分账
   #[graphql(name = "profit_sharing")]
-  pub profit_sharing: Option<String>,
+  pub profit_sharing: Option<SmolStr>,
   /// 订单金额(分)
   #[graphql(name = "total_fee")]
   pub total_fee: Option<u32>,
@@ -716,25 +732,25 @@ pub struct PayTransactionsJsapiInput {
   pub currency: Option<PayTransactionsJsapiCurrency>,
   /// 货币类型
   #[graphql(name = "currency_lbl")]
-  pub currency_lbl: Option<String>,
+  pub currency_lbl: Option<SmolStr>,
   /// 用户标识
   #[graphql(name = "openid")]
-  pub openid: Option<String>,
+  pub openid: Option<SmolStr>,
   /// 预支付交易会话标识
   #[graphql(skip)]
-  pub prepay_id: Option<String>,
+  pub prepay_id: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<String>,
+  pub create_usr_id_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,
+  pub create_time_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -743,13 +759,13 @@ pub struct PayTransactionsJsapiInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<String>,
+  pub update_usr_id_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,
+  pub update_time_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -969,7 +985,55 @@ impl FromStr for PayTransactionsJsapiTradeState {
       "REVOKED" => Ok(Self::Revoked),
       "USERPAYING" => Ok(Self::Userpaying),
       "PAYERROR" => Ok(Self::Payerror),
-      _ => Err(eyre!("PayTransactionsJsapiTradeState can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 交易状态")),
+    }
+  }
+}
+
+impl TryFrom<&str> for PayTransactionsJsapiTradeState {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "SUCCESS" => Ok(Self::Success),
+      "REFUND" => Ok(Self::Refund),
+      "NOTPAY" => Ok(Self::Notpay),
+      "CLOSED" => Ok(Self::Closed),
+      "REVOKED" => Ok(Self::Revoked),
+      "USERPAYING" => Ok(Self::Userpaying),
+      "PAYERROR" => Ok(Self::Payerror),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "trade_state".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 交易状态".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for PayTransactionsJsapiTradeState {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "SUCCESS" => Ok(Self::Success),
+      "REFUND" => Ok(Self::Refund),
+      "NOTPAY" => Ok(Self::Notpay),
+      "CLOSED" => Ok(Self::Closed),
+      "REVOKED" => Ok(Self::Revoked),
+      "USERPAYING" => Ok(Self::Userpaying),
+      "PAYERROR" => Ok(Self::Payerror),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "trade_state".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 交易状态".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -1004,7 +1068,7 @@ impl TryFrom<String> for PayTransactionsJsapiTradeState {
         Box::new(sqlx::Error::ColumnDecode {
           index: "trade_state".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "PayTransactionsJsapiTradeState can't convert from {s}".to_owned(),
+            "{s} 无法转换到 交易状态".to_owned(),
           )),
         }),
       )),
@@ -1057,7 +1121,43 @@ impl FromStr for PayTransactionsJsapiCurrency {
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
       "CNY" => Ok(Self::Cny),
-      _ => Err(eyre!("PayTransactionsJsapiCurrency can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 货币类型")),
+    }
+  }
+}
+
+impl TryFrom<&str> for PayTransactionsJsapiCurrency {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "CNY" => Ok(Self::Cny),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "currency".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 货币类型".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for PayTransactionsJsapiCurrency {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "CNY" => Ok(Self::Cny),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "currency".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 货币类型".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -1080,7 +1180,7 @@ impl TryFrom<String> for PayTransactionsJsapiCurrency {
         Box::new(sqlx::Error::ColumnDecode {
           index: "currency".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "PayTransactionsJsapiCurrency can't convert from {s}".to_owned(),
+            "{s} 无法转换到 货币类型".to_owned(),
           )),
         }),
       )),

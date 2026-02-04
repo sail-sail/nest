@@ -10,6 +10,9 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -83,14 +86,14 @@ async fn get_where_query(
     if let Some(ids) = ids {
       let arg = {
         if ids.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.id in (");
@@ -221,14 +224,14 @@ async fn get_where_query(
     if let Some(trade_type) = trade_type {
       let arg = {
         if trade_type.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(trade_type.len());
           for item in trade_type {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.trade_type in (");
@@ -245,14 +248,14 @@ async fn get_where_query(
     if let Some(trade_state) = trade_state {
       let arg = {
         if trade_state.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(trade_state.len());
           for item in trade_state {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.trade_state in (");
@@ -377,14 +380,14 @@ async fn get_where_query(
     if let Some(currency) = currency {
       let arg = {
         if currency.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(currency.len());
           for item in currency {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.currency in (");
@@ -401,14 +404,14 @@ async fn get_where_query(
     if let Some(payer_currency) = payer_currency {
       let arg = {
         if payer_currency.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(payer_currency.len());
           for item in payer_currency {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.payer_currency in (");
@@ -594,7 +597,7 @@ pub async fn find_all_wx_pay_notice(
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
-      prop: "create_time".to_string(),
+      prop: "create_time".into(),
       order: SortOrderEnum::Asc,
     });
   }
@@ -610,12 +613,10 @@ pub async fn find_all_wx_pay_notice(
   
   let args = args.into();
   
-  let options = Options::from(options);
-  
   let mut res: Vec<WxPayNoticeModel> = query(
     sql,
     args,
-    Some(options),
+    options,
   ).await?;
   
   let len = res.len();
@@ -624,7 +625,7 @@ pub async fn find_all_wx_pay_notice(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
         trace: true,
         ..Default::default()
       },
@@ -656,6 +657,7 @@ pub async fn find_all_wx_pay_notice(
         .find(|item| item.val == model.trade_type.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.trade_type.to_string())
+        .into()
     };
     
     // 交易状态
@@ -665,6 +667,7 @@ pub async fn find_all_wx_pay_notice(
         .find(|item| item.val == model.trade_state.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.trade_state.to_string())
+        .into()
     };
     
     // 货币类型
@@ -674,6 +677,7 @@ pub async fn find_all_wx_pay_notice(
         .find(|item| item.val == model.currency.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.currency.to_string())
+        .into()
     };
     
     // 用户支付币种
@@ -683,6 +687,7 @@ pub async fn find_all_wx_pay_notice(
         .find(|item| item.val == model.payer_currency.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.payer_currency.to_string())
+        .into()
     };
     
   }
@@ -793,6 +798,10 @@ pub async fn find_count_wx_pay_notice(
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
   let args = args.into();
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let res: Option<CountModel> = query_one(
     sql,
@@ -989,13 +998,13 @@ pub async fn find_by_id_ok_wx_pay_notice(
   ).await?;
   
   let Some(wx_pay_notice_model) = wx_pay_notice_model else {
-    let err_msg = "此 微信支付通知 已被删除";
+    let err_msg = SmolStr::new("此 微信支付通知 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: err_msg.to_string(),
+      message: err_msg,
       trace: true,
       ..Default::default()
     }));
@@ -1088,7 +1097,7 @@ pub async fn find_by_ids_ok_wx_pay_notice(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1101,7 +1110,7 @@ pub async fn find_by_ids_ok_wx_pay_notice(
   ).await?;
   
   if wx_pay_notice_models.len() != len {
-    let err_msg = "此 微信支付通知 已被删除";
+    let err_msg = SmolStr::new("此 微信支付通知 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1114,7 +1123,7 @@ pub async fn find_by_ids_ok_wx_pay_notice(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = "此 微信支付通知 已经被删除";
+      let err_msg = SmolStr::new("此 微信支付通知 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<WxPayNoticeModel>>>()?;
@@ -1160,7 +1169,7 @@ pub async fn find_by_ids_wx_pay_notice(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1297,6 +1306,10 @@ pub async fn exists_wx_pay_notice(
   
   let args = args.into();
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let res: Option<(bool,)> = query_one(
     sql,
     args,
@@ -1388,7 +1401,7 @@ pub async fn find_by_unique_wx_pay_notice(
   if let Some(id) = search.id {
     let model = find_by_id_wx_pay_notice(
       id,
-      options.clone(),
+      options,
     ).await?;
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
@@ -1577,7 +1590,7 @@ pub async fn set_id_by_lbl_wx_pay_notice(
     let dict_model = trade_type_dict.iter().find(|item| {
       item.lbl == input.trade_type_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.trade_type = val.parse::<WxPayNoticeTradeType>()?.into();
     }
@@ -1589,7 +1602,7 @@ pub async fn set_id_by_lbl_wx_pay_notice(
     let dict_model = trade_type_dict.iter().find(|item| {
       item.val == input.trade_type.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.trade_type_lbl = lbl;
   }
   
@@ -1602,7 +1615,7 @@ pub async fn set_id_by_lbl_wx_pay_notice(
     let dict_model = trade_state_dict.iter().find(|item| {
       item.lbl == input.trade_state_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.trade_state = val.parse::<WxPayNoticeTradeState>()?.into();
     }
@@ -1614,7 +1627,7 @@ pub async fn set_id_by_lbl_wx_pay_notice(
     let dict_model = trade_state_dict.iter().find(|item| {
       item.val == input.trade_state.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.trade_state_lbl = lbl;
   }
   
@@ -1627,7 +1640,7 @@ pub async fn set_id_by_lbl_wx_pay_notice(
     let dict_model = currency_dict.iter().find(|item| {
       item.lbl == input.currency_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.currency = val.parse::<WxPayNoticeCurrency>()?.into();
     }
@@ -1639,7 +1652,7 @@ pub async fn set_id_by_lbl_wx_pay_notice(
     let dict_model = currency_dict.iter().find(|item| {
       item.val == input.currency.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.currency_lbl = lbl;
   }
   
@@ -1652,7 +1665,7 @@ pub async fn set_id_by_lbl_wx_pay_notice(
     let dict_model = payer_currency_dict.iter().find(|item| {
       item.lbl == input.payer_currency_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.payer_currency = val.parse::<WxPayNoticePayerCurrency>()?.into();
     }
@@ -1664,7 +1677,7 @@ pub async fn set_id_by_lbl_wx_pay_notice(
     let dict_model = payer_currency_dict.iter().find(|item| {
       item.val == input.payer_currency.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.payer_currency_lbl = lbl;
   }
   
@@ -1698,7 +1711,7 @@ pub async fn creates_return_wx_pay_notice(
   
   let ids = _creates(
     inputs.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let models_wx_pay_notice = find_by_ids_wx_pay_notice(
@@ -1770,14 +1783,14 @@ async fn _creates(
     let old_models = find_by_unique_wx_pay_notice(
       input.clone().into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if !old_models.is_empty() {
       let mut id: Option<WxPayNoticeId> = None;
       
       for old_model in old_models {
-        let options = Options::from(options.clone())
+        let options = Options::from(options)
           .set_unique_type(unique_type);
         
         id = check_by_unique_wx_pay_notice(
@@ -2023,14 +2036,10 @@ async fn _creates(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = Some(options);
-  
   let affected_rows = execute(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
   
   if affected_rows != inputs2_len as u64 {
@@ -2051,7 +2060,7 @@ pub async fn create_return_wx_pay_notice(
   
   let id = create_wx_pay_notice(
     input.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let model_wx_pay_notice = find_by_id_wx_pay_notice(
@@ -2065,7 +2074,7 @@ pub async fn create_return_wx_pay_notice(
       let err_msg = "create_return_wx_pay_notice: model_wx_pay_notice.is_none()";
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg.into(),
           trace: true,
           ..Default::default()
         },
@@ -2142,6 +2151,7 @@ pub async fn update_tenant_by_id_wx_pay_notice(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
@@ -2155,7 +2165,7 @@ pub async fn update_tenant_by_id_wx_pay_notice(
   let num = execute(
     sql,
     args,
-    Some(options.clone()),
+    options,
   ).await?;
   
   Ok(num)
@@ -2196,7 +2206,7 @@ pub async fn update_by_id_wx_pay_notice(
   
   let old_model = find_by_id_wx_pay_notice(
     id,
-    options.clone(),
+    options,
   ).await?;
   
   let old_model = match old_model {
@@ -2214,7 +2224,7 @@ pub async fn update_by_id_wx_pay_notice(
     let models = find_by_unique_wx_pay_notice(
       input.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let models = models.into_iter()
@@ -2367,14 +2377,10 @@ pub async fn update_by_id_wx_pay_notice(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
   }
@@ -2394,7 +2400,7 @@ pub async fn update_by_id_return_wx_pay_notice(
   update_by_id_wx_pay_notice(
     id,
     input,
-    options.clone(),
+    options,
   ).await?;
   
   let model = find_by_id_wx_pay_notice(
@@ -2490,7 +2496,7 @@ pub async fn delete_by_ids_wx_pay_notice(
     
     let old_model = find_by_id_wx_pay_notice(
       id,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2516,14 +2522,10 @@ pub async fn delete_by_ids_wx_pay_notice(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -2544,14 +2546,14 @@ pub async fn validate_option_wx_pay_notice(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = "微信支付通知不存在";
+      let err_msg = SmolStr::new("微信支付通知不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),
       );
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg,
           trace: true,
           ..Default::default()
         },

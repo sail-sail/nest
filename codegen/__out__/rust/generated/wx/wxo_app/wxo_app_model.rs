@@ -60,79 +60,79 @@ pub struct WxoAppModel {
   pub id: WxoAppId,
   /// 原始ID
   #[graphql(name = "code")]
-  pub code: String,
+  pub code: SmolStr,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: String,
+  pub appid: SmolStr,
   /// 开发者密码
   #[graphql(name = "appsecret")]
-  pub appsecret: String,
+  pub appsecret: SmolStr,
   /// 令牌
   #[graphql(name = "token")]
-  pub token: String,
+  pub token: SmolStr,
   /// 消息加解密密钥
   #[graphql(name = "encoding_aes_key")]
-  pub encoding_aes_key: String,
+  pub encoding_aes_key: SmolStr,
   /// 消息加解密方式
   #[graphql(name = "encoding_type")]
   pub encoding_type: WxoAppEncodingType,
   /// 消息加解密方式
   #[graphql(name = "encoding_type_lbl")]
-  pub encoding_type_lbl: String,
+  pub encoding_type_lbl: SmolStr,
   /// 授权作用域
   #[graphql(name = "scope")]
   pub scope: WxoAppScope,
   /// 授权作用域
   #[graphql(name = "scope_lbl")]
-  pub scope_lbl: String,
+  pub scope_lbl: SmolStr,
   /// 网页授权域名
   #[graphql(name = "domain_id")]
   pub domain_id: DomainId,
   /// 网页授权域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: String,
+  pub domain_id_lbl: SmolStr,
   /// 默认角色
   #[graphql(name = "default_role_codes")]
-  pub default_role_codes: String,
+  pub default_role_codes: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
+  pub is_locked_lbl: SmolStr,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: String,
+  pub is_enabled_lbl: SmolStr,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for WxoAppModel {
@@ -142,58 +142,68 @@ impl FromRow<'_, MySqlRow> for WxoAppModel {
     // ID
     let id: WxoAppId = row.try_get("id")?;
     // 原始ID
-    let code: String = row.try_get("code")?;
+    let code: &str = row.try_get("code")?;
+    let code = SmolStr::new(code);
     // 名称
-    let lbl: String = row.try_get("lbl")?;
+    let lbl: &str = row.try_get("lbl")?;
+    let lbl = SmolStr::new(lbl);
     // 开发者ID
-    let appid: String = row.try_get("appid")?;
+    let appid: &str = row.try_get("appid")?;
+    let appid = SmolStr::new(appid);
     // 开发者密码
-    let appsecret: String = row.try_get("appsecret")?;
+    let appsecret: &str = row.try_get("appsecret")?;
+    let appsecret = SmolStr::new(appsecret);
     // 令牌
-    let token: String = row.try_get("token")?;
+    let token: &str = row.try_get("token")?;
+    let token = SmolStr::new(token);
     // 消息加解密密钥
-    let encoding_aes_key: String = row.try_get("encoding_aes_key")?;
+    let encoding_aes_key: &str = row.try_get("encoding_aes_key")?;
+    let encoding_aes_key = SmolStr::new(encoding_aes_key);
     // 消息加解密方式
-    let encoding_type_lbl: String = row.try_get("encoding_type")?;
-    let encoding_type: WxoAppEncodingType = encoding_type_lbl.clone().try_into()?;
+    let encoding_type_lbl: &str = row.try_get("encoding_type")?;
+    let encoding_type: WxoAppEncodingType = encoding_type_lbl.try_into()?;
+    let encoding_type_lbl = SmolStr::new(encoding_type_lbl);
     // 授权作用域
-    let scope_lbl: String = row.try_get("scope")?;
-    let scope: WxoAppScope = scope_lbl.clone().try_into()?;
+    let scope_lbl: &str = row.try_get("scope")?;
+    let scope: WxoAppScope = scope_lbl.try_into()?;
+    let scope_lbl = SmolStr::new(scope_lbl);
     // 网页授权域名
     let domain_id: DomainId = row.try_get("domain_id")?;
-    let domain_id_lbl: Option<String> = row.try_get("domain_id_lbl")?;
-    let domain_id_lbl = domain_id_lbl.unwrap_or_default();
+    let domain_id_lbl: Option<&str> = row.try_get("domain_id_lbl")?;
+    let domain_id_lbl = SmolStr::new(domain_id_lbl.unwrap_or_default());
     // 默认角色
-    let default_role_codes: String = row.try_get("default_role_codes")?;
+    let default_role_codes: &str = row.try_get("default_role_codes")?;
+    let default_role_codes = SmolStr::new(default_role_codes);
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl: String = is_locked.to_string();
+    let is_locked_lbl = SmolStr::new(is_locked.to_string());
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl: String = is_enabled.to_string();
+    let is_enabled_lbl = SmolStr::new(is_enabled.to_string());
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
-    let rem: String = row.try_get("rem")?;
+    let rem: &str = row.try_get("rem")?;
+    let rem = SmolStr::new(rem);
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let create_time_lbl: SmolStr = match create_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let update_time_lbl: SmolStr = match update_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -241,88 +251,88 @@ impl FromRow<'_, MySqlRow> for WxoAppModel {
 pub struct WxoAppFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 原始ID
   #[graphql(name = "code")]
-  pub code: String,
+  pub code: SmolStr,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: String,
+  pub appid: SmolStr,
   /// 开发者密码
   #[graphql(name = "appsecret")]
-  pub appsecret: String,
+  pub appsecret: SmolStr,
   /// 令牌
   #[graphql(name = "token")]
-  pub token: String,
+  pub token: SmolStr,
   /// 消息加解密密钥
   #[graphql(name = "encoding_aes_key")]
-  pub encoding_aes_key: String,
+  pub encoding_aes_key: SmolStr,
   /// 消息加解密方式
   #[graphql(name = "encoding_type")]
-  pub encoding_type: String,
+  pub encoding_type: SmolStr,
   /// 消息加解密方式
   #[graphql(name = "encoding_type_lbl")]
-  pub encoding_type_lbl: String,
+  pub encoding_type_lbl: SmolStr,
   /// 授权作用域
   #[graphql(name = "scope")]
-  pub scope: String,
+  pub scope: SmolStr,
   /// 授权作用域
   #[graphql(name = "scope_lbl")]
-  pub scope_lbl: String,
+  pub scope_lbl: SmolStr,
   /// 网页授权域名
   #[graphql(name = "domain_id")]
-  pub domain_id: String,
+  pub domain_id: SmolStr,
   /// 网页授权域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: String,
+  pub domain_id_lbl: SmolStr,
   /// 默认角色
   #[graphql(name = "default_role_codes")]
-  pub default_role_codes: String,
+  pub default_role_codes: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
-  pub is_locked: String,
+  pub is_locked: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
+  pub is_locked_lbl: SmolStr,
   /// 启用
   #[graphql(name = "is_enabled")]
-  pub is_enabled: String,
+  pub is_enabled: SmolStr,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: String,
+  pub is_enabled_lbl: SmolStr,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: String,
+  pub order_by: SmolStr,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: String,
+  pub create_usr_id: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: String,
+  pub create_time: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: String,
+  pub update_usr_id: SmolStr,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: String,
+  pub update_time: SmolStr,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -338,40 +348,40 @@ pub struct WxoAppSearch {
   pub is_deleted: Option<u8>,
   /// 原始ID
   #[graphql(name = "code")]
-  pub code: Option<String>,
+  pub code: Option<SmolStr>,
   /// 原始ID
   #[graphql(name = "code_like")]
-  pub code_like: Option<String>,
+  pub code_like: Option<SmolStr>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<String>,
+  pub lbl_like: Option<SmolStr>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<String>,
+  pub appid: Option<SmolStr>,
   /// 开发者ID
   #[graphql(name = "appid_like")]
-  pub appid_like: Option<String>,
+  pub appid_like: Option<SmolStr>,
   /// 开发者密码
   #[graphql(skip)]
-  pub appsecret: Option<String>,
+  pub appsecret: Option<SmolStr>,
   /// 开发者密码
   #[graphql(skip)]
-  pub appsecret_like: Option<String>,
+  pub appsecret_like: Option<SmolStr>,
   /// 令牌
   #[graphql(skip)]
-  pub token: Option<String>,
+  pub token: Option<SmolStr>,
   /// 令牌
   #[graphql(skip)]
-  pub token_like: Option<String>,
+  pub token_like: Option<SmolStr>,
   /// 消息加解密密钥
   #[graphql(skip)]
-  pub encoding_aes_key: Option<String>,
+  pub encoding_aes_key: Option<SmolStr>,
   /// 消息加解密密钥
   #[graphql(skip)]
-  pub encoding_aes_key_like: Option<String>,
+  pub encoding_aes_key_like: Option<SmolStr>,
   /// 消息加解密方式
   #[graphql(skip)]
   pub encoding_type: Option<Vec<WxoAppEncodingType>>,
@@ -386,16 +396,16 @@ pub struct WxoAppSearch {
   pub domain_id_is_null: Option<bool>,
   /// 网页授权域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: Option<Vec<String>>,
+  pub domain_id_lbl: Option<Vec<SmolStr>>,
   /// 网页授权域名
   #[graphql(name = "domain_id_lbl_like")]
-  pub domain_id_lbl_like: Option<String>,
+  pub domain_id_lbl_like: Option<SmolStr>,
   /// 默认角色
   #[graphql(skip)]
-  pub default_role_codes: Option<String>,
+  pub default_role_codes: Option<SmolStr>,
   /// 默认角色
   #[graphql(skip)]
-  pub default_role_codes_like: Option<String>,
+  pub default_role_codes_like: Option<SmolStr>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -407,10 +417,10 @@ pub struct WxoAppSearch {
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<String>,
+  pub rem_like: Option<SmolStr>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -419,10 +429,10 @@ pub struct WxoAppSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<String>>,
+  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<String>,
+  pub create_usr_id_lbl_like: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -434,10 +444,10 @@ pub struct WxoAppSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<String>>,
+  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<String>,
+  pub update_usr_id_lbl_like: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -601,73 +611,73 @@ pub struct WxoAppInput {
   pub tenant_id: Option<TenantId>,
   /// 原始ID
   #[graphql(name = "code")]
-  pub code: Option<String>,
+  pub code: Option<SmolStr>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 开发者ID
   #[graphql(name = "appid")]
-  pub appid: Option<String>,
+  pub appid: Option<SmolStr>,
   /// 开发者密码
   #[graphql(name = "appsecret")]
-  pub appsecret: Option<String>,
+  pub appsecret: Option<SmolStr>,
   /// 令牌
   #[graphql(name = "token")]
-  pub token: Option<String>,
+  pub token: Option<SmolStr>,
   /// 消息加解密密钥
   #[graphql(name = "encoding_aes_key")]
-  pub encoding_aes_key: Option<String>,
+  pub encoding_aes_key: Option<SmolStr>,
   /// 消息加解密方式
   #[graphql(name = "encoding_type")]
   pub encoding_type: Option<WxoAppEncodingType>,
   /// 消息加解密方式
   #[graphql(name = "encoding_type_lbl")]
-  pub encoding_type_lbl: Option<String>,
+  pub encoding_type_lbl: Option<SmolStr>,
   /// 授权作用域
   #[graphql(name = "scope")]
   pub scope: Option<WxoAppScope>,
   /// 授权作用域
   #[graphql(name = "scope_lbl")]
-  pub scope_lbl: Option<String>,
+  pub scope_lbl: Option<SmolStr>,
   /// 网页授权域名
   #[graphql(name = "domain_id")]
   pub domain_id: Option<DomainId>,
   /// 网页授权域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: Option<String>,
+  pub domain_id_lbl: Option<SmolStr>,
   /// 默认角色
   #[graphql(name = "default_role_codes")]
-  pub default_role_codes: Option<String>,
+  pub default_role_codes: Option<SmolStr>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: Option<String>,
+  pub is_locked_lbl: Option<SmolStr>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: Option<String>,
+  pub is_enabled_lbl: Option<SmolStr>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<String>,
+  pub create_usr_id_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,
+  pub create_time_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -676,13 +686,13 @@ pub struct WxoAppInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<String>,
+  pub update_usr_id_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,
+  pub update_time_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -859,7 +869,47 @@ impl FromStr for WxoAppEncodingType {
       "plaintext" => Ok(Self::Plaintext),
       "compatible" => Ok(Self::Compatible),
       "safe" => Ok(Self::Safe),
-      _ => Err(eyre!("WxoAppEncodingType can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 消息加解密方式")),
+    }
+  }
+}
+
+impl TryFrom<&str> for WxoAppEncodingType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "plaintext" => Ok(Self::Plaintext),
+      "compatible" => Ok(Self::Compatible),
+      "safe" => Ok(Self::Safe),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "encoding_type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 消息加解密方式".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for WxoAppEncodingType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "plaintext" => Ok(Self::Plaintext),
+      "compatible" => Ok(Self::Compatible),
+      "safe" => Ok(Self::Safe),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "encoding_type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 消息加解密方式".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -886,7 +936,7 @@ impl TryFrom<String> for WxoAppEncodingType {
         Box::new(sqlx::Error::ColumnDecode {
           index: "encoding_type".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "WxoAppEncodingType can't convert from {s}".to_owned(),
+            "{s} 无法转换到 消息加解密方式".to_owned(),
           )),
         }),
       )),
@@ -946,7 +996,45 @@ impl FromStr for WxoAppScope {
     match s {
       "snsapi_base" => Ok(Self::SnsapiBase),
       "snsapi_userinfo" => Ok(Self::SnsapiUserinfo),
-      _ => Err(eyre!("WxoAppScope can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 授权作用域")),
+    }
+  }
+}
+
+impl TryFrom<&str> for WxoAppScope {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "snsapi_base" => Ok(Self::SnsapiBase),
+      "snsapi_userinfo" => Ok(Self::SnsapiUserinfo),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "scope".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 授权作用域".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for WxoAppScope {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "snsapi_base" => Ok(Self::SnsapiBase),
+      "snsapi_userinfo" => Ok(Self::SnsapiUserinfo),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "scope".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 授权作用域".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -971,7 +1059,7 @@ impl TryFrom<String> for WxoAppScope {
         Box::new(sqlx::Error::ColumnDecode {
           index: "scope".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "WxoAppScope can't convert from {s}".to_owned(),
+            "{s} 无法转换到 授权作用域".to_owned(),
           )),
         }),
       )),

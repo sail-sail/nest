@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::wxo_app_token_model::*;
@@ -39,7 +42,7 @@ pub async fn find_all_wxo_app_token(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxo_app_token_models = wxo_app_token_dao::find_all_wxo_app_token(
@@ -62,7 +65,7 @@ pub async fn find_count_wxo_app_token(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxo_app_token_num = wxo_app_token_dao::find_count_wxo_app_token(
@@ -84,7 +87,7 @@ pub async fn find_one_wxo_app_token(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxo_app_token_model = wxo_app_token_dao::find_one_wxo_app_token(
@@ -107,7 +110,7 @@ pub async fn find_one_ok_wxo_app_token(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxo_app_token_model = wxo_app_token_dao::find_one_ok_wxo_app_token(
@@ -214,7 +217,7 @@ pub async fn update_by_id_wxo_app_token(
   let wxo_app_token_id = wxo_app_token_dao::update_by_id_wxo_app_token(
     wxo_app_token_id,
     wxo_app_token_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(wxo_app_token_id)
