@@ -79,7 +79,7 @@ pub async fn get_access_token(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -99,7 +99,7 @@ pub async fn get_access_token(
       ..Default::default()
     }),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   if wx_app_token_model.is_none() {
@@ -121,7 +121,7 @@ pub async fn get_access_token(
         token_time: Some(now),
         ..Default::default()
       },
-      options.clone(),
+      options,
     ).await?;
     return Ok(access_token);
   }
@@ -172,7 +172,7 @@ pub async fn get_access_token(
         token_time: Some(now),
         ..Default::default()
       },
-      options.clone(),
+      options,
     ).await?;
     
     return Ok(access_token);
@@ -195,7 +195,7 @@ pub async fn get_wxa_code_unlimit(
   let access_token = get_access_token(
     appid,
     false,
-    options.clone(),
+    options,
   ).await?;
   
   let url = format!(

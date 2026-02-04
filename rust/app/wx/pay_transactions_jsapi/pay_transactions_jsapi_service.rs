@@ -40,7 +40,7 @@ pub async fn get_test_pay_opt(
       }).to_string(),
       ..Default::default()
     },
-    options.clone(),
+    options,
   ).await?;
   
   Ok(request_payment_options)
@@ -59,7 +59,7 @@ pub async fn trade_state_pay_transactions_jsapi(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -82,7 +82,7 @@ pub async fn trade_state_pay_transactions_jsapi(
           ..Default::default()
         }),
         None,
-        options.clone(),
+        options,
       ).await?,
     ).await?;
     

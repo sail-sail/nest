@@ -2269,7 +2269,7 @@ async fn _creates(
         
         let role_models = find_by_ids_ok_role(
           default_role_ids.clone(),
-          options.clone(),
+          options,
         ).await?;
         
         let default_role_codes: Vec<String> = role_models
@@ -2842,7 +2842,7 @@ pub async fn update_by_id_wxo_app(
       
       let role_models = find_by_ids_ok_role(
         default_role_ids.clone(),
-        options.clone(),
+        options,
       ).await?;
       
       let default_role_codes: Vec<String> = role_models

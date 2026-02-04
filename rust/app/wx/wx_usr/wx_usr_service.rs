@@ -90,7 +90,7 @@ pub async fn code2session(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -149,7 +149,7 @@ pub async fn code2session(
       ..Default::default()
     }),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   if wx_usr_model.is_none() {
@@ -161,16 +161,16 @@ pub async fn code2session(
         unionid: Some(unionid.clone()),
         ..Default::default()
       },
-      options.clone(),
+      options,
     ).await?;
     update_tenant_by_id_wx_usr(
       wx_usr_id,
       tenant_id,
-      options.clone(),
+      options,
     ).await?;
     wx_usr_model = find_by_id_wx_usr(
       wx_usr_id,
-      options.clone(),
+      options,
     ).await?;
   }
   let mut wx_usr_model = validate_option_wx_usr(
@@ -181,7 +181,7 @@ pub async fn code2session(
     update_tenant_by_id_wx_usr(
       wx_usr_model.id,
       tenant_id,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -192,13 +192,13 @@ pub async fn code2session(
         unionid: Some(unionid.clone()),
         ..Default::default()
       },
-      options.clone(),
+      options,
     ).await?;
   }
   
   let usr_model = find_by_id_usr(
     wx_usr_model.usr_id,
-    options.clone(),
+    options,
   ).await?;
   
   if usr_model.is_none() {
@@ -218,7 +218,7 @@ pub async fn code2session(
       }),
       None,
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let default_role_ids: Vec<generated::base::role::role_model::RoleId> = role_models
@@ -234,7 +234,7 @@ pub async fn code2session(
         ..Default::default()
       },
       Some(
-        options.clone()
+        options
           .unwrap_or_default()
           .set_unique_type(UniqueType::Update)
       ),
@@ -243,7 +243,7 @@ pub async fn code2session(
     update_tenant_by_id_usr(
       usr_id,
       tenant_id,
-      options.clone(),
+      options,
     ).await?;
     update_by_id_wx_usr(
       wx_usr_model.id,
@@ -251,12 +251,12 @@ pub async fn code2session(
         usr_id: Some(usr_id),
         ..Default::default()
       },
-      options.clone(),
+      options,
     ).await?;
     wx_usr_model = validate_option_wx_usr(
       find_by_id_wx_usr(
         wx_usr_model.id,
-        options.clone(),
+        options,
       ).await?,
     ).await?;
   }
@@ -267,7 +267,7 @@ pub async fn code2session(
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -291,7 +291,7 @@ pub async fn code2session(
         tenant_id: tenant_id.into(),
         ..Default::default()
       },
-      options.clone(),
+      options,
     ).await?;
   }
   

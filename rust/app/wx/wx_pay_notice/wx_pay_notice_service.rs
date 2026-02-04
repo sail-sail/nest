@@ -69,7 +69,7 @@ pub async fn wx_pay_notify(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -99,7 +99,7 @@ pub async fn wx_pay_notify(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -182,13 +182,13 @@ pub async fn wx_pay_notify(
       device_id,
       ..Default::default()
     },
-    options.clone(),
+    options,
   ).await?;
   
   update_tenant_by_id_wx_pay_notice(
     wx_pay_notice_id,
     tenant_id,
-    options.clone(),
+    options,
   ).await?;
   
   let trade_state = match trade_state {
@@ -210,7 +210,7 @@ pub async fn wx_pay_notify(
       success_time: Some(success_time),
       ..Default::default()
     },
-    options.clone(),
+    options,
   ).await?;
   
   if trade_state != PayTransactionsJsapiTradeState::Success {

@@ -94,7 +94,7 @@ pub async fn transactions_jsapi(
     let wx_usr_model = validate_option_wx_usr(
       find_by_id_wx_usr(
         wx_usr_id,
-        options.clone(),
+        options,
       ).await?
     ).await?;
     openid = Some(wx_usr_model.openid);
@@ -106,7 +106,7 @@ pub async fn transactions_jsapi(
     let wx_usr_model = validate_option_wxo_usr(
       find_by_id_wxo_usr(
         wxo_usr_id,
-        options.clone(),
+        options,
       ).await?
     ).await?;
     openid = Some(wx_usr_model.openid);
@@ -144,7 +144,7 @@ pub async fn transactions_jsapi(
   let tenant_model = validate_option_tenant(
     find_by_id_tenant(
       tenant_id,
-      options.clone(),
+      options,
     ).await?
   ).await?;
   
@@ -166,7 +166,7 @@ pub async fn transactions_jsapi(
   
   let domain_model = find_by_id_ok_domain(
     domain_id,
-    options.clone(),
+    options,
   ).await?;
   
   validate_is_enabled_domain(
@@ -200,7 +200,7 @@ pub async fn transactions_jsapi(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?
   ).await?;
   
@@ -353,7 +353,7 @@ pub async fn transactions_jsapi(
       tenant_id: Some(tenant_id),
       ..Default::default()
     },
-    options.clone(),
+    options,
   ).await?;
   
   Ok(request_payment_options)
