@@ -238,6 +238,29 @@ if (searchByKeyword) {
         }
         const fieldPermit = column.fieldPermit;
         const isVirtual = column.isVirtual;
+        
+        let modelLabel = column.modelLabel;
+        let cascade_fields = [ ];
+        if (foreignKey) {
+          cascade_fields = foreignKey.cascade_fields || [ ];
+          if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+          } else if (modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+          }
+        }
+        if (foreignKey && foreignKey.lbl && !modelLabel) {
+          modelLabel = column_name + "_" + foreignKey.lbl;
+        } else if (!foreignKey && !modelLabel) {
+          modelLabel = column_name + "_lbl";
+        }
+        let hasModelLabel = !!column.modelLabel;
+        if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+          hasModelLabel = true;
+        } else if (foreignKey && foreignKey.lbl) {
+          hasModelLabel = true;
+        }
+        
       #><#
         if (search) {
       #>
@@ -474,7 +497,7 @@ if (searchByKeyword) {
         >
           <SelectInput<#=Foreign_Table_Up#>
             v-model="<#=column_name#>_search"
-            v-model:model-label="search.<#=column_name#>_like"<#
+            v-model:model-label="search.<#=modelLabel#>_like"<#
             if (isUseI18n) {
             #>
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
