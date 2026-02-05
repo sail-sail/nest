@@ -681,7 +681,7 @@
             </el-table-column>
           </template>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -881,7 +881,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
+const tableRef = $(useTemplateRef("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -936,6 +936,7 @@ async function onSearch(isFocus: boolean) {
   if (isFocus) {
     tableFocus();
   }
+  page.current = 1;
   await dataGrid(true);
 }
 
@@ -990,7 +991,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<CronJobModel>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -998,7 +999,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<CronJobModel, CronJobId>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -1017,9 +1018,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as CronJobId[]);
 
 watch(
   () => selectedIds,
@@ -1202,10 +1203,7 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
-
-/** 当前表格数据对应的搜索条件 */
-let currentSearch = $ref<CronJobSearch>({ });
+const detailRef = $(useTemplateRef("detailRef"));
 
 /** 刷新表格 */
 async function dataGrid(
@@ -1214,16 +1212,13 @@ async function dataGrid(
 ) {
   clearDirty();
   const search = getDataSearch();
-  currentSearch = search;
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
       useFindCount(search, opt),
     ]);
   } else {
-    await Promise.all([
-      useFindAll(search, opt),
-    ]);
+    await useFindAll(search, opt);
   }
 }
 
@@ -1233,9 +1228,7 @@ function getDataSearch() {
     ...search,
     idsChecked: undefined,
   };
-  if (!showBuildIn) {
-    Object.assign(search2, builtInSearch);
-  }
+  Object.assign(search2, builtInSearch);
   search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
@@ -1277,9 +1270,8 @@ async function useFindCount(
   search: CronJobSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountCronJob(
-    search2,
+    search,
     opt,
   );
 }
@@ -1427,7 +1419,7 @@ async function onInsert() {
   await openAdd();
 }
 
-const uploadFileDialogRef = $(useTemplateRef<InstanceType<typeof UploadFileDialog>>("uploadFileDialogRef"));
+const uploadFileDialogRef = $(useTemplateRef("uploadFileDialogRef"));
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -1620,13 +1612,10 @@ async function onRowDblclick(
   row: CronJobModel,
   column: TableColumnCtx<CronJobModel>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }
@@ -1851,7 +1840,7 @@ async function onRunCronJob(
   ElMessage.success(await nsAsync("手动执行定时任务 {0} 成功", lbl));
 }
 
-const foreignTabsRef = $(useTemplateRef<InstanceType<typeof ForeignTabs>>("foreignTabsRef"));
+const foreignTabsRef = $(useTemplateRef("foreignTabsRef"));
 
 async function openForeignTabs(
   id: CronJobId,
@@ -1902,19 +1891,29 @@ async function initFrame() {
 }
 
 watch(
-  () => [ builtInSearch, showBuildIn ],
-  async function() {
+  computed(() => {
+    const {
+      selectedIds,
+      isMultiple,
+      showBuildIn,
+      isPagination,
+      isLocked,
+      isFocus,
+      propsNotReset,
+      isListSelectDialog,
+      ...rest
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } = builtInSearch as any;
+    return rest;
+  }),
+  async function(newVal, oldVal) {
+    if (!inited) {
+      return;
+    }
     if (isSearchReset) {
       return;
     }
-    if (builtInSearch.is_deleted != null) {
-      search.is_deleted = builtInSearch.is_deleted;
-    }
-    if (showBuildIn) {
-      Object.assign(search, builtInSearch);
-    }
-    const search2 = getDataSearch();
-    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
+    if (deepCompare(newVal, oldVal)) {
       return;
     }
     await dataGrid(true);

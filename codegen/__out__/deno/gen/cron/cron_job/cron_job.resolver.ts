@@ -20,10 +20,6 @@ import {
 
 import "./cron_job.service.ts";
 
-import {
-  route_path,
-} from "./cron_job.model.ts";
-
 /**
  * 根据条件查找定时任务总数
  */
@@ -190,11 +186,15 @@ export async function createsCronJob(
     createsCronJob,
   } = await import("./cron_job.service.ts");
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathCronJob(),
     "add",
   );
   
@@ -227,12 +227,16 @@ export async function updateByIdCronJob(
     updateByIdCronJob,
   } = await import("./cron_job.service.ts");
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblCronJob(input);
   
   await usePermit(
-    route_path,
+    getPagePathCronJob(),
     "edit",
   );
   
@@ -252,10 +256,14 @@ export async function deleteByIdsCronJob(
     deleteByIdsCronJob,
   } = await import("./cron_job.service.ts");
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathCronJob(),
     "delete",
   );
   
@@ -280,10 +288,14 @@ export async function enableByIdsCronJob(
     throw new Error(`enableByIdsCronJob.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathCronJob(),
     "edit",
   );
   const res = await enableByIdsCronJob(ids, is_enabled);
@@ -307,10 +319,14 @@ export async function lockByIdsCronJob(
     throw new Error(`lockByIdsCronJob.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathCronJob(),
     "edit",
   );
   
@@ -330,10 +346,14 @@ export async function revertByIdsCronJob(
     revertByIdsCronJob,
   } = await import("./cron_job.service.ts");
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathCronJob(),
     "delete",
   );
   
@@ -353,10 +373,14 @@ export async function forceDeleteByIdsCronJob(
     forceDeleteByIdsCronJob,
   } = await import("./cron_job.service.ts");
   
+  const {
+    getPagePathCronJob,
+  } = await import("./cron_job.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathCronJob(),
     "force_delete",
   );
   
@@ -368,13 +392,15 @@ export async function forceDeleteByIdsCronJob(
 /**
  * 查找 定时任务 order_by 字段的最大值
  */
-export async function findLastOrderByCronJob(): Promise<number> {
+export async function findLastOrderByCronJob(
+  search?: CronJobSearch,
+): Promise<number> {
   
   const {
     findLastOrderByCronJob,
   } = await import("./cron_job.service.ts");
   
-  const res = findLastOrderByCronJob();
+  const order_by = findLastOrderByCronJob(search);
   
-  return res;
+  return order_by;
 }

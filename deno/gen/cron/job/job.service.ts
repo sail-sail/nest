@@ -307,7 +307,10 @@ export async function getFieldCommentsJob(): Promise<JobFieldComment> {
  * 查找 任务 order_by 字段的最大值
  */
 export async function findLastOrderByJob(
+  search?: JobSearch,
 ): Promise<number> {
-  const job_sort = await jobDao.findLastOrderByJob();
-  return job_sort;
+  
+  const order_by = await jobDao.findLastOrderByJob(search);
+  
+  return order_by;
 }

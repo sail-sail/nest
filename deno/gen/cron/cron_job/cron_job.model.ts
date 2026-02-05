@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/cron/cron_job";
+export function getPagePathCronJob() {
+  return "/cron/cron_job";
+}
+
+export function getTableNameCronJob() {
+  return "cron_cron_job";
+}
 
 declare const cronJobId: unique symbol;
 

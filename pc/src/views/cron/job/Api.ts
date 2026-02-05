@@ -13,7 +13,7 @@ import {
   jobQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdJob(
   model?: JobModel | null,
   isExcelExport = false,
 ) {
@@ -39,7 +39,7 @@ export function intoInputJob(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -74,7 +74,7 @@ export async function findAllJob(
   const models = data.findAllJob;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdJob(model);
   }
   return models;
 }
@@ -106,7 +106,7 @@ export async function findOneJob(
   
   const model = data.findOneJob;
   
-  await setLblById(model);
+  await setLblByIdJob(model);
   
   return model;
 }
@@ -138,7 +138,7 @@ export async function findOneOkJob(
   
   const model = data.findOneOkJob;
   
-  await setLblById(model);
+  await setLblByIdJob(model);
   
   return model;
 }
@@ -264,7 +264,7 @@ export async function findByIdJob(
   
   const model = data.findByIdJob;
   
-  await setLblById(model);
+  await setLblByIdJob(model);
   
   return model;
 }
@@ -294,7 +294,7 @@ export async function findByIdOkJob(
   
   const model = data.findByIdOkJob;
   
-  await setLblById(model);
+  await setLblByIdJob(model);
   
   return model;
 }
@@ -330,7 +330,7 @@ export async function findByIdsJob(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdJob(model);
   }
   
   return models;
@@ -367,7 +367,7 @@ export async function findByIdsOkJob(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdJob(model);
   }
   
   return models;
@@ -578,8 +578,8 @@ export function useExportExcelJob() {
     try {
       const data = await query({
         query: `
-          query($search: JobSearch, $sort: [SortInput!]) {
-            findAllJob(search: $search, page: null, sort: $sort) {
+          query($search: JobSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllJob(search: $search, page: $page, sort: $sort) {
               ${ jobQueryField }
             }
             getDict(codes: [
@@ -593,11 +593,14 @@ export function useExportExcelJob() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllJob) {
-        await setLblById(model, true);
+        await setLblByIdJob(model, true);
       }
       try {
         const sheetName = "任务";
@@ -677,19 +680,64 @@ export async function importModelsJob(
  * 查找 任务 order_by 字段的最大值
  */
 export async function findLastOrderByJob(
+  search?: JobSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByJob: Query["findLastOrderByJob"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByJob
+      query($search: JobSearch) {
+        findLastOrderByJob(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByJob;
-  return res;
+  
+  const order_by = data.findLastOrderByJob;
+  
+  return order_by;
+}
+
+/**
+ * 获取 任务 字段注释
+ */
+export async function getFieldCommentsJob(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsJob: Query["getFieldCommentsJob"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsJob {
+          id,
+          code,
+          lbl,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsJob as JobFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathJob() {

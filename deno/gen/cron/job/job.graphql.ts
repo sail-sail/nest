@@ -148,7 +148,7 @@ type Query {
   "根据 ids 查找任务"
   findByIdsJob(ids: [JobId!]!): [JobModel]!
   "查找任务 order_by 字段的最大值"
-  findLastOrderByJob: Int!
+  findLastOrderByJob(search: JobSearch): Int!
 }
 type Mutation {
   "批量创建任务"

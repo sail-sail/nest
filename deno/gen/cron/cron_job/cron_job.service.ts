@@ -291,7 +291,10 @@ export async function getFieldCommentsCronJob(): Promise<CronJobFieldComment> {
  * 查找 定时任务 order_by 字段的最大值
  */
 export async function findLastOrderByCronJob(
+  search?: CronJobSearch,
 ): Promise<number> {
-  const cron_job_sort = await cron_jobDao.findLastOrderByCronJob();
-  return cron_job_sort;
+  
+  const order_by = await cron_jobDao.findLastOrderByCronJob(search);
+  
+  return order_by;
 }

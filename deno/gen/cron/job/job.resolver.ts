@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./job.model.ts";
-
 /**
  * 根据条件查找任务总数
  */
@@ -188,11 +184,15 @@ export async function createsJob(
     createsJob,
   } = await import("./job.service.ts");
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathJob(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdJob(
     updateByIdJob,
   } = await import("./job.service.ts");
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblJob(input);
   
   await usePermit(
-    route_path,
+    getPagePathJob(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsJob(
     deleteByIdsJob,
   } = await import("./job.service.ts");
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathJob(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsJob(
     throw new Error(`enableByIdsJob.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathJob(),
     "edit",
   );
   const res = await enableByIdsJob(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsJob(
     throw new Error(`lockByIdsJob.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathJob(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsJob(
     revertByIdsJob,
   } = await import("./job.service.ts");
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathJob(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsJob(
     forceDeleteByIdsJob,
   } = await import("./job.service.ts");
   
+  const {
+    getPagePathJob,
+  } = await import("./job.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathJob(),
     "force_delete",
   );
   
@@ -366,13 +390,15 @@ export async function forceDeleteByIdsJob(
 /**
  * 查找 任务 order_by 字段的最大值
  */
-export async function findLastOrderByJob(): Promise<number> {
+export async function findLastOrderByJob(
+  search?: JobSearch,
+): Promise<number> {
   
   const {
     findLastOrderByJob,
   } = await import("./job.service.ts");
   
-  const res = findLastOrderByJob();
+  const order_by = findLastOrderByJob(search);
   
-  return res;
+  return order_by;
 }
