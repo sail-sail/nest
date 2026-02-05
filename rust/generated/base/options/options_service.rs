@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::options_model::*;
@@ -39,7 +42,7 @@ pub async fn find_all_options(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let options_models = options_dao::find_all_options(
@@ -62,7 +65,7 @@ pub async fn find_count_options(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let options_num = options_dao::find_count_options(
@@ -84,7 +87,7 @@ pub async fn find_one_options(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let options_model = options_dao::find_one_options(
@@ -107,7 +110,7 @@ pub async fn find_one_ok_options(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let options_model = options_dao::find_one_ok_options(
@@ -214,7 +217,7 @@ pub async fn update_by_id_options(
   let old_model = validate_option_options(
     options_dao::find_by_id_options(
       options_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -239,7 +242,7 @@ pub async fn update_by_id_options(
   let options_id = options_dao::update_by_id_options(
     options_id,
     options_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(options_id)
@@ -270,7 +273,7 @@ pub async fn delete_by_ids_options(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

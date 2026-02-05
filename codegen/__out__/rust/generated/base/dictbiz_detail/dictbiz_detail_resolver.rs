@@ -13,6 +13,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -234,8 +237,8 @@ pub async fn creates_dictbiz_detail(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_dictbiz_detail().to_string(),
-    "add".to_owned(),
+    SmolStr::new(get_page_path_dictbiz_detail()),
+    SmolStr::new("add"),
   ).await?;
   
   let ids = dictbiz_detail_service::creates_dictbiz_detail(
@@ -294,8 +297,8 @@ pub async fn update_by_id_dictbiz_detail(
   ).await?;
   
   use_permit(
-    get_page_path_dictbiz_detail().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_dictbiz_detail()),
+    SmolStr::new("edit"),
   ).await?;
   
   let res = dictbiz_detail_service::update_by_id_dictbiz_detail(
@@ -322,8 +325,8 @@ pub async fn delete_by_ids_dictbiz_detail(
   );
   
   use_permit(
-    get_page_path_dictbiz_detail().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_dictbiz_detail()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = dictbiz_detail_service::delete_by_ids_dictbiz_detail(
@@ -373,8 +376,8 @@ pub async fn enable_by_ids_dictbiz_detail(
   );
   
   use_permit(
-    get_page_path_dictbiz_detail().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_dictbiz_detail()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = dictbiz_detail_service::enable_by_ids_dictbiz_detail(
@@ -420,8 +423,8 @@ pub async fn revert_by_ids_dictbiz_detail(
   );
   
   use_permit(
-    get_page_path_dictbiz_detail().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_dictbiz_detail()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = dictbiz_detail_service::revert_by_ids_dictbiz_detail(
@@ -447,8 +450,8 @@ pub async fn force_delete_by_ids_dictbiz_detail(
   );
   
   use_permit(
-    get_page_path_dictbiz_detail().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_dictbiz_detail()),
+    SmolStr::new("force_delete"),
   ).await?;
   
   let num = dictbiz_detail_service::force_delete_by_ids_dictbiz_detail(

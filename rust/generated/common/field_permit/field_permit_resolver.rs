@@ -3,16 +3,18 @@ use tracing::info;
 
 use crate::common::context::get_req_id;
 
+use smol_str::SmolStr;
+
 use super::field_permit_service::get_field_permit as get_field_permit_service;
 
 /// 字段权限
 #[function_name::named]
 pub async fn get_field_permit(
-  route_path: String,
-) -> Result<Option<Vec<String>>> {
+  route_path: SmolStr,
+) -> Result<Option<Vec<SmolStr>>> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: route_path: {route_path}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );

@@ -61,19 +61,19 @@ pub struct LoginLogModel {
   pub r#type: LoginLogType,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: String,
+  pub type_lbl: SmolStr,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: String,
+  pub username: SmolStr,
   /// 登录成功
   #[graphql(name = "is_succ")]
   pub is_succ: u8,
   /// 登录成功
   #[graphql(name = "is_succ_lbl")]
-  pub is_succ_lbl: String,
+  pub is_succ_lbl: SmolStr,
   /// IP
   #[graphql(name = "ip")]
-  pub ip: String,
+  pub ip: SmolStr,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -81,23 +81,23 @@ pub struct LoginLogModel {
   pub create_usr_id: UsrId,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: UsrId,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for LoginLogModel {
@@ -107,34 +107,37 @@ impl FromRow<'_, MySqlRow> for LoginLogModel {
     // ID
     let id: LoginLogId = row.try_get("id")?;
     // 类型
-    let type_lbl: String = row.try_get("type")?;
-    let r#type: LoginLogType = type_lbl.clone().try_into()?;
+    let type_lbl: &str = row.try_get("type")?;
+    let r#type: LoginLogType = type_lbl.try_into()?;
+    let type_lbl = SmolStr::new(type_lbl);
     // 用户名
-    let username: String = row.try_get("username")?;
+    let username: &str = row.try_get("username")?;
+    let username = SmolStr::new(username);
     // 登录成功
     let is_succ: u8 = row.try_get("is_succ")?;
-    let is_succ_lbl: String = is_succ.to_string();
+    let is_succ_lbl = SmolStr::new(is_succ.to_string());
     // IP
-    let ip: String = row.try_get("ip")?;
+    let ip: &str = row.try_get("ip")?;
+    let ip = SmolStr::new(ip);
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let create_time_lbl: SmolStr = match create_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let update_time_lbl: SmolStr = match update_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -169,31 +172,31 @@ impl FromRow<'_, MySqlRow> for LoginLogModel {
 pub struct LoginLogFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 类型
   #[graphql(name = "type")]
-  pub r#type: String,
+  pub r#type: SmolStr,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: String,
+  pub type_lbl: SmolStr,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: String,
+  pub username: SmolStr,
   /// 登录成功
   #[graphql(name = "is_succ")]
-  pub is_succ: String,
+  pub is_succ: SmolStr,
   /// 登录成功
   #[graphql(name = "is_succ_lbl")]
-  pub is_succ_lbl: String,
+  pub is_succ_lbl: SmolStr,
   /// IP
   #[graphql(name = "ip")]
-  pub ip: String,
+  pub ip: SmolStr,
   /// 登录时间
   #[graphql(name = "create_time")]
-  pub create_time: String,
+  pub create_time: SmolStr,
   /// 登录时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -212,19 +215,19 @@ pub struct LoginLogSearch {
   pub r#type: Option<Vec<LoginLogType>>,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: Option<String>,
+  pub username: Option<SmolStr>,
   /// 用户名
   #[graphql(name = "username_like")]
-  pub username_like: Option<String>,
+  pub username_like: Option<SmolStr>,
   /// 登录成功
   #[graphql(name = "is_succ")]
   pub is_succ: Option<Vec<u8>>,
   /// IP
   #[graphql(name = "ip")]
-  pub ip: Option<String>,
+  pub ip: Option<SmolStr>,
   /// IP
   #[graphql(name = "ip_like")]
-  pub ip_like: Option<String>,
+  pub ip_like: Option<SmolStr>,
   /// 登录时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -236,10 +239,10 @@ pub struct LoginLogSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<Vec<String>>,
+  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl_like: Option<String>,
+  pub create_usr_id_lbl_like: Option<SmolStr>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
@@ -248,10 +251,10 @@ pub struct LoginLogSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<Vec<String>>,
+  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl_like: Option<String>,
+  pub update_usr_id_lbl_like: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -351,31 +354,31 @@ pub struct LoginLogInput {
   pub r#type: Option<LoginLogType>,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: Option<String>,
+  pub type_lbl: Option<SmolStr>,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: Option<String>,
+  pub username: Option<SmolStr>,
   /// 登录成功
   #[graphql(name = "is_succ")]
   pub is_succ: Option<u8>,
   /// 登录成功
   #[graphql(name = "is_succ_lbl")]
-  pub is_succ_lbl: Option<String>,
+  pub is_succ_lbl: Option<SmolStr>,
   /// IP
   #[graphql(name = "ip")]
-  pub ip: Option<String>,
+  pub ip: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<String>,
+  pub create_usr_id_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,
+  pub create_time_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -384,13 +387,13 @@ pub struct LoginLogInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<String>,
+  pub update_usr_id_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,
+  pub update_time_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -524,7 +527,47 @@ impl FromStr for LoginLogType {
       "account" => Ok(Self::Account),
       "wxapp" => Ok(Self::Wxapp),
       "wxo" => Ok(Self::Wxo),
-      _ => Err(eyre!("LoginLogType can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 类型")),
+    }
+  }
+}
+
+impl TryFrom<&str> for LoginLogType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "account" => Ok(Self::Account),
+      "wxapp" => Ok(Self::Wxapp),
+      "wxo" => Ok(Self::Wxo),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 类型".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for LoginLogType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "account" => Ok(Self::Account),
+      "wxapp" => Ok(Self::Wxapp),
+      "wxo" => Ok(Self::Wxo),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 类型".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -551,7 +594,7 @@ impl TryFrom<String> for LoginLogType {
         Box::new(sqlx::Error::ColumnDecode {
           index: "type".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "LoginLogType can't convert from {s}".to_owned(),
+            "{s} 无法转换到 类型".to_owned(),
           )),
         }),
       )),

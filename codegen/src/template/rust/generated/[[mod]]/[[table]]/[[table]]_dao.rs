@@ -178,6 +178,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 // 根据关键字搜索
 const searchByKeyword = opts?.searchByKeyword;
 
+const hasSummary = columns.some((column) => column.showSummary);
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -190,9 +191,18 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};<#
+if (cache) {
+#>
+
+use crate::common::cache::cache_dao;<#
+}
+#><#
 if (hasPassword) {
 #>
 use crate::common::auth::auth_dao::get_password;<#
@@ -831,14 +841,14 @@ async fn get_where_query(
     if let Some(ids) = ids {
       let arg = {
         if ids.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.id in (");
@@ -856,14 +866,14 @@ async fn get_where_query(
     let dept_ids = get_auth_and_children_dept_ids().await?;
     let arg = {
       if dept_ids.is_empty() {
-        "null".to_string()
+        SmolStr::new("null")
       } else {
         let mut items = Vec::with_capacity(dept_ids.len());
         for dept_id in dept_ids {
           args.push(dept_id.into());
           items.push("?");
         }
-        items.join(",")
+        SmolStr::new(items.join(","))
       }
     };
     where_query.push_str(" and _permit_usr_dept_.dept_id in (");
@@ -873,14 +883,14 @@ async fn get_where_query(
     let dept_ids = get_auth_dept_ids().await?;
     let arg = {
       if dept_ids.is_empty() {
-        "null".to_string()
+        SmolStr::new("null")
       } else {
         let mut items = Vec::with_capacity(dept_ids.len());
         for dept_id in dept_ids {
           args.push(dept_id.into());
           items.push("?");
         }
-        items.join(",")
+        SmolStr::new(items.join(","))
       }
     };
     where_query.push_str(" and _permit_usr_dept_.dept_id in (");
@@ -890,14 +900,14 @@ async fn get_where_query(
     let role_ids = get_auth_role_ids().await?;
     let arg = {
       if role_ids.is_empty() {
-        "null".to_string()
+        SmolStr::new("null")
       } else {
         let mut items = Vec::with_capacity(role_ids.len());
         for role_id in role_ids {
           args.push(role_id.into());
           items.push("?");
         }
-        items.join(",")
+        SmolStr::new(items.join(","))
       }
     };
     where_query.push_str(" and _permit_usr_role_.role_id in (");
@@ -935,7 +945,7 @@ async fn get_where_query(
     const fields = searchByKeyword.fields;
   #>
   {
-    let <#=prop_rust#>: Option<String> = match search {
+    let <#=prop_rust#>: Option<SmolStr> = match search {
       Some(item) => item.<#=prop_rust#>.clone(),
       None => None,
     };
@@ -991,14 +1001,14 @@ async fn get_where_query(
     const modelLabel = column.modelLabel;
     const modelLabel_rust = rustKeyEscape(modelLabel);
     let is_nullable = column.IS_NULLABLE === "YES";
-    let _data_type = "String";
+    let _data_type = "SmolStr";
     if (foreignKey && foreignKey.multiple) {
       _data_type = `Vec<${ foreignTable_Up }Id>`;
       is_nullable = true;
     } else if (foreignKey && !foreignKey.multiple) {
       _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
-      _data_type = 'String';
+      _data_type = 'SmolStr';
     } else if (data_type === 'date') {
       _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
@@ -1010,9 +1020,9 @@ async fn get_where_query(
     } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
       _data_type = 'u32';
     } else if (data_type === 'json') {
-      _data_type = 'String';
+      _data_type = 'SmolStr';
     } else if (data_type === 'text') {
-      _data_type = 'String';
+      _data_type = 'SmolStr';
     } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
       _data_type = 'i8';
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
@@ -1048,14 +1058,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1074,14 +1084,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1103,21 +1113,21 @@ async fn get_where_query(
   {<#
     if (!langTableRecords.some((record) => record.COLUMN_NAME === modelLabel)) {
     #>
-    let <#=modelLabel_rust#>: Option<Vec<String>> = match search {
+    let <#=modelLabel_rust#>: Option<Vec<SmolStr>> = match search {
       Some(item) => item.<#=modelLabel_rust#>.clone(),
       None => None,
     };
     if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
       let arg = {
         if <#=modelLabel_rust#>.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
           for item in <#=modelLabel_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.<#=modelLabel#> in (");
@@ -1126,14 +1136,14 @@ async fn get_where_query(
     }<#
     } else {
     #>
-    let <#=modelLabel_rust#>: Option<Vec<String>> = match search {
+    let <#=modelLabel_rust#>: Option<Vec<SmolStr>> = match search {
       Some(item) => item.<#=modelLabel_rust#>.clone(),
       None => None,
     };
     if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
       let arg = {
         if <#=modelLabel_rust#>.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
           for item in <#=modelLabel_rust#> {
@@ -1141,7 +1151,7 @@ async fn get_where_query(
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and (t.<#=modelLabel#> in (");
@@ -1201,21 +1211,21 @@ async fn get_where_query(
     } else if (foreignKey.lbl) {
   #>
   {
-    let <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<String>> = match search {
+    let <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<SmolStr>> = match search {
       Some(item) => item.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
       None => None,
     };
     if let Some(<#=column_name#>_<#=foreignKey.lbl#>) = <#=column_name#>_<#=foreignKey.lbl#> {
       let arg = {
         if <#=column_name#>_<#=foreignKey.lbl#>.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name#>_<#=foreignKey.lbl#>.len());
           for item in <#=column_name#>_<#=foreignKey.lbl#> {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> in (");
@@ -1256,14 +1266,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in (");
@@ -1321,14 +1331,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1379,14 +1389,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1437,14 +1447,14 @@ async fn get_where_query(
     if let Some(<#=column_name#>s) = <#=column_name#>s {
       let arg = {
         if <#=column_name#>s.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name#>s.len());
           for item in <#=column_name#>s {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1554,7 +1564,7 @@ async fn get_where_query(
             let field_code = &field.code;
             let field_type = &field.r#type;
             
-            if let Some(val) = dyn_page_data.0.get(field_code) {
+            if let Some(val) = dyn_page_data.0.get(field_code.as_str()) {
               let range_types = ["CustomCheckbox", "CustomInputNumber", "CustomSwitch", "CustomDatePicker"];
               
               if range_types.contains(&field_type.as_str()) {
@@ -1759,12 +1769,12 @@ pub async fn set_dyn_page_data_<#=table#>(
   
   let dyn_page_model = find_one_dyn_page(
     Some(DynPageSearch {
-      code: Some(page_path.to_string()),
+      code: Some(page_path.clone()),
       is_enabled: Some(vec![1]),
       ..Default::default()
     }),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   let dyn_page_model = match dyn_page_model {
@@ -1785,18 +1795,18 @@ pub async fn set_dyn_page_data_<#=table#>(
   
   let dyn_page_val_models = find_all_dyn_page_val(
     Some(DynPageValSearch {
-      ref_code: Some(page_path.to_string()),
+      ref_code: Some(page_path.clone()),
       ref_ids: Some(
         ids
           .into_iter()
-          .map(|item| item.to_string())
-          .collect::<Vec<String>>()
+          .map(|item| SmolStr::new(item.as_str()))
+          .collect::<Vec<SmolStr>>()
       ),
       ..Default::default()
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for model in models.iter_mut() {
@@ -2036,7 +2046,7 @@ pub async fn find_all_<#=table#>(
   #>
   
   sort.push(SortInput {
-    prop: "<#=prop#>".to_string(),
+    prop: "<#=prop#>".into(),
     order: <#=order#>,
   });<#
   }
@@ -2046,7 +2056,7 @@ pub async fn find_all_<#=table#>(
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
-      prop: "create_time".to_string(),
+      prop: "create_time".into(),
       order: SortOrderEnum::Asc,
     });
   }<#
@@ -2131,25 +2141,43 @@ pub async fn find_all_<#=table#>(
   #>
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
-  let args = args.into();
-  
-  let options = Options::from(options);<#
+  let args = args.into();<#
   if (cache) {
   #>
   
-  let options = options.set_cache_key(table, &sql, &args);<#
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: Vec<<#=tableUP#>Model>;
+      let res = serde_json::from_str::<Vec<<#=tableUP#>Model>>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = vec![];
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }<#
   }
   #>
   
   let mut res: Vec<<#=tableUP#>Model> = query(
     sql,
     args,
-    Some(options<#
-    if (opts?.isUseDynPageFields) {
-    #>.clone()<#
-    }
-    #>),
-  ).await?;
+    options,
+  ).await?;<#
+  if (cache) {
+  #>
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }<#
+  }
+  #>
   
   let len = res.len();
   let result_limit_num = find_all_result_limit();
@@ -2157,7 +2185,7 @@ pub async fn find_all_<#=table#>(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
         trace: true,
         ..Default::default()
       },
@@ -2168,7 +2196,7 @@ pub async fn find_all_<#=table#>(
   
   set_dyn_page_data_<#=table#>(
     &mut res,
-    Some(options.clone()),
+    options,
   ).await?;
   <#
   }
@@ -2385,7 +2413,7 @@ pub async fn find_all_<#=table#>(
     }.into(),
     None,
     vec![SortInput {
-      prop: "audit_time".to_string(),
+      prop: "audit_time".into(),
       order: SortOrderEnum::Desc,
     }].into(),
     None,
@@ -2419,9 +2447,9 @@ pub async fn find_all_<#=table#>(
     model.<#=column_name#>_lbl = {
       let res = get_object(&model.<#=column_name#>).await?;
       if let Some(res) = res {
-        String::from_utf8(res.to_vec())?
+        SmolStr::new(String::from_utf8(res.to_vec())?)
       } else {
-        String::new()
+        SmolStr::new("")
       }
     };<#
     }
@@ -2461,7 +2489,7 @@ pub async fn find_all_<#=table#>(
         .iter()
         .find(|item| item.val == model.<#=column_name#>.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.<#=column_name#>.to_string())
+        .unwrap_or_else(|| model.<#=column_name#>.clone().into())
     };<#
     } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
       if (modelLabel) {
@@ -2475,7 +2503,7 @@ pub async fn find_all_<#=table#>(
         .iter()
         .find(|item| item.val == model.<#=column_name#>.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.<#=column_name#>.to_string())
+        .unwrap_or_else(|| model.<#=column_name#>.to_string().into())
     };<#
     }
     #><#
@@ -2705,19 +2733,43 @@ pub async fn find_count_<#=table#>(
   if (cache) {
   #>
   
-  let options = Options::from(options);
-  
-  let options = options.set_cache_key(table, &sql, &args);
-  
-  let options = Some(options);<#
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: u64;
+      let res = serde_json::from_str::<u64>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = 0;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }<#
   }
   #>
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let res: Option<CountModel> = query_one(
     sql,
     args,
     options,
-  ).await?;
+  ).await?;<#
+  if (cache) {
+  #>
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }<#
+  }
+  #>
   
   let total = res
     .map(|item| item.total)
@@ -2990,12 +3042,12 @@ pub async fn get_field_comments_<#=table#>(<#
   
   let dyn_page_model = find_one_dyn_page(
     Some(DynPageSearch {
-      code: Some(page_path.to_string()),
+      code: Some(page_path.clone()),
       is_enabled: Some(vec![1]),
       ..Default::default()
     }),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   if let Some(dyn_page_model) = dyn_page_model {
@@ -3009,7 +3061,7 @@ pub async fn get_field_comments_<#=table#>(<#
       field_comments
         .dyn_page_data
         .0
-        .insert(field_code.clone(), serde_json::json!(field_lbl));
+        .insert(field_code.to_string(), serde_json::json!(field_lbl));
     }
     
   }<#
@@ -3179,19 +3231,19 @@ pub async fn find_by_id_ok_<#=table#>(
     if (isUseI18n) {
     #>
     let table_comment = i18n_dao::ns(
-      "<#=table_comment#>".to_owned(),
+      SmolStr::new("<#=table_comment#>"),
       None,
     ).await?;
     let map = HashMap::from([
-      ("0".to_owned(), table_comment),
+      (SmolStr::new("0"), table_comment),
     ]);
     let err_msg = i18n_dao::ns(
-      "此 {0} 已被删除".to_owned(),
+      SmolStr::new("此 {0} 已被删除"),
       map.into(),
     ).await?;<#
     } else {
     #>
-    let err_msg = "此 <#=table_comment#> 已被删除";<#
+    let err_msg = SmolStr::new("此 <#=table_comment#> 已被删除");<#
     }
     #>
     error!(
@@ -3199,7 +3251,7 @@ pub async fn find_by_id_ok_<#=table#>(
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: err_msg.to_string(),
+      message: err_msg,
       trace: true,
       ..Default::default()
     }));
@@ -3292,7 +3344,7 @@ pub async fn find_by_ids_ok_<#=table#>(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -3312,15 +3364,15 @@ pub async fn find_by_ids_ok_<#=table#>(
       None,
     ).await?;
     let map = HashMap::from([
-      ("0".to_owned(), table_comment),
+      (SmolStr::new("0"), table_comment),
     ]);
     let err_msg = i18n_dao::ns(
-      "此 {0} 已被删除".to_owned(),
+      SmolStr::new("此 {0} 已被删除"),
       map.into(),
     ).await?;<#
     } else {
     #>
-    let err_msg = "此 <#=table_comment#> 已被删除";<#
+    let err_msg = SmolStr::new("此 <#=table_comment#> 已被删除");<#
     }
     #>
     return Err(eyre!(err_msg));
@@ -3345,12 +3397,12 @@ pub async fn find_by_ids_ok_<#=table#>(
         ("0".to_owned(), table_comment),
       ]);
       let err_msg = i18n_dao::ns(
-        "此 {0} 已经被删除".to_owned(),
+        SmolStr::new("此 {0} 已经被删除"),
         map.into(),
       ).await?;<#
       } else {
       #>
-      let err_msg = "此 <#=table_comment#> 已经被删除";<#
+      let err_msg = SmolStr::new("此 <#=table_comment#> 已经被删除");<#
       }
       #>
       Err(eyre!(err_msg))
@@ -3398,7 +3450,7 @@ pub async fn find_by_ids_<#=table#>(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -3537,19 +3589,43 @@ pub async fn exists_<#=table#>(
   if (cache) {
   #>
   
-  let options = Options::from(options);
-  
-  let options = options.set_cache_key(table, &sql, &args);
-  
-  let options = Some(options);<#
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: bool;
+      let res = serde_json::from_str::<bool>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = false;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }<#
   }
   #>
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let res: Option<(bool,)> = query_one(
     sql,
     args,
     options,
-  ).await?;
+  ).await?;<#
+  if (cache) {
+  #>
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }<#
+  }
+  #>
   
   Ok(res
     .map(|item| item.0)
@@ -3631,10 +3707,12 @@ pub async fn find_by_unique_<#=table#>(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
+  
   if let Some(id) = search.id {
     let model = find_by_id_<#=table#>(
       id,
-      options.clone(),
+      options,
     ).await?;
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }<#
@@ -3646,6 +3724,18 @@ pub async fn find_by_unique_<#=table#>(
   #>
   
   let mut models: Vec<<#=tableUP#>Model> = vec![];<#
+  if (opts.uniques?.some((item) => item.includes("create_usr_id"))) {
+  #>
+  
+  let create_usr_id: Option<Vec<UsrId>> = {
+    if !is_silent_mode && search.create_usr_id.is_none() && let Some(auth_usr_id) = get_auth_id() {
+      Some(vec![auth_usr_id])
+    } else {
+      search.create_usr_id.clone()
+    }
+  };<#
+  }
+  #><#
   for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
     const uniques = opts.uniques[i];
   #>
@@ -3655,8 +3745,15 @@ pub async fn find_by_unique_<#=table#>(
       for (let k = 0; k < uniques.length; k++) {
         const unique = uniques[k];
         const unique_rust = rustKeyEscape(unique);
+      #><#
+        if (unique !== "create_usr_id") {
       #>
       search.<#=unique_rust#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
+        } else {
+      #>
+      create_usr_id.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
+        }
+      #><#
       }
       #>
     {
@@ -3677,12 +3774,19 @@ pub async fn find_by_unique_<#=table#>(
         if ([ "int", "decimal", "tinyint", "date", "datetime" ].includes(data_type)) {
           hasClone = false;
         }
+      #><#
+        if (unique !== "create_usr_id") {
       #>
       <#=unique_rust#>: search.<#=unique_rust#><#
         if (hasClone) {
       #>.clone()<#
         }
       #>,<#
+        } else {
+      #>
+      create_usr_id,<#
+        }
+      #><#
       }
       #>
       ..Default::default()
@@ -3692,7 +3796,7 @@ pub async fn find_by_unique_<#=table#>(
       search.into(),
       None,
       sort.clone(),
-      options.clone(),
+      options,
     ).await?
   };
   models.append(&mut models_tmp);<#
@@ -3705,14 +3809,29 @@ pub async fn find_by_unique_<#=table#>(
 }
 
 /// 根据唯一约束对比对象是否相等
-#[allow(dead_code)]
+#[allow(dead_code, unused_variables)]
 pub fn equals_by_unique(
   input: &<#=tableUP#>Input,
   model: &<#=tableUP#>Model,
+  options: Option<&Options>,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
-  }<#
+  }
+  
+  let is_silent_mode = get_is_silent_mode(options);<#
+  if (opts?.uniques?.some((item) => item.includes("create_usr_id"))) {
+  #>
+  
+  let create_usr_id: Option<UsrId> = {
+    if !is_silent_mode && input.create_usr_id.is_none() && let Some(auth_usr_id) = get_auth_id() {
+      Some(auth_usr_id)
+    } else {
+      input.create_usr_id
+    }
+  };<#
+  }
+  #><#
   if (opts.uniques && opts.uniques.length > 0) {
   #><#
   for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
@@ -3723,8 +3842,15 @@ pub fn equals_by_unique(
     for (let i = 0; i < uniques.length; i++) {
       const unique = uniques[i];
       const unique_rust = rustKeyEscape(unique);
+    #><#
+      if (unique !== "create_usr_id") {
     #>
     input.<#=unique_rust#>.as_ref().is_some() && input.<#=unique_rust#>.as_ref().unwrap() == &model.<#=unique_rust#><#
+      } else {
+    #>
+    create_usr_id.is_some() && create_usr_id.unwrap() == model.create_usr_id<#
+      }
+    #><#
       if (i !== uniques.length - 1) {
     #> &&<#
       }
@@ -3778,6 +3904,7 @@ pub async fn check_by_unique_<#=table#>(
   let is_equals = equals_by_unique(
     &input,
     &model,
+    options.as_ref(),
   );
   if !is_equals {
     return Ok(None);
@@ -4134,7 +4261,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     let dict_model = <#=column_name#>_dict.iter().find(|item| {
       item.lbl == input.<#=column_name#>_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.<#=column_name_rust#> = val<#
         if (columnDictModels.length > 0 && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
@@ -4168,7 +4295,7 @@ pub async fn set_id_by_lbl_<#=table#>(
         }
       #>
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.<#=column_name#>_lbl = lbl;
   }<#
     } else if (column.dictbiz) {
@@ -4196,7 +4323,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     let dictbiz_model = <#=column_name#>_dictbiz.iter().find(|item| {
       item.lbl == input.<#=column_name#>_lbl.clone().unwrap_or_default()
     });
-    let val = dictbiz_model.map(|item| item.val.to_string());
+    let val = dictbiz_model.map(|item| item.val.clone());
     if let Some(val) = val {
       input.<#=column_name_rust#> = val<#
         if (columnDictModels.length > 0 && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
@@ -4222,11 +4349,11 @@ pub async fn set_id_by_lbl_<#=table#>(
         }
       #>.unwrap_or_default()<#
         if (columnDictModels.length > 0 || ![ "varchar", "char", "text" ].includes(data_type)) {
-      #>.to_string()<#
+      #>.as_str()<#
         }
       #>
     });
-    let lbl = dictbiz_model.map(|item| item.lbl.to_string());
+    let lbl = dictbiz_model.map(|item| item.lbl.clone());
     input.<#=column_name#>_lbl = lbl;
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
@@ -4238,7 +4365,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     && input.<#=column_name_rust#>.is_none()
   {
     input.<#=column_name#>_<#=foreignKey.lbl#> = input.<#=column_name#>_<#=foreignKey.lbl#>.map(|item| 
-      item.trim().to_owned()
+      SmolStr::new(item.trim())
     );<#
     if (foreignTableUp !== tableUP) {
     #>
@@ -4302,15 +4429,15 @@ pub async fn set_id_by_lbl_<#=table#>(
   if input.<#=column_name#>_<#=foreignKey.lbl#>.is_some() && input.<#=column_name_rust#>.is_none() {
     input.<#=column_name_rust#>_<#=foreignKey.lbl#> = input.<#=column_name_rust#>_<#=foreignKey.lbl#>.map(|item| 
       item.into_iter()
-        .map(|item| item.trim().to_owned())
+        .map(|item| SmolStr::new(item.trim()))
         .filter(|item| !item.is_empty())
-        .collect::<Vec<String>>()
+        .collect::<Vec<SmolStr>>()
     );
     input.<#=column_name_rust#>_<#=foreignKey.lbl#> = input.<#=column_name_rust#>_<#=foreignKey.lbl#>.map(|item| {
       let mut set = HashSet::new();
       item.into_iter()
         .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<String>>()
+        .collect::<Vec<SmolStr>>()
     });
     let mut models = vec![];
     for lbl in input.<#=column_name_rust#>_<#=foreignKey.lbl#>.clone().unwrap_or_default() {
@@ -4470,7 +4597,7 @@ pub async fn creates_return_<#=table#>(
   
   let ids = _creates(
     inputs.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let models_<#=table#> = find_by_ids_<#=table#>(
@@ -4547,7 +4674,7 @@ async fn _creates(
       #>
       <#=autoCodeColumn.autoCode.seq#>,
       <#=autoCodeColumn.COLUMN_NAME#>,
-    ) = find_auto_code_<#=table#>(options.clone()).await?;<#
+    ) = find_auto_code_<#=table#>(options).await?;<#
     if (dateSeq) {
     #>
     input.<#=dateSeq#> = Some(<#=dateSeq#>);<#
@@ -4683,14 +4810,14 @@ async fn _creates(
     let old_models = find_by_unique_<#=table#>(
       input.clone().into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if !old_models.is_empty() {
       let mut id: Option<<#=Table_Up#>Id> = None;
       
       for old_model in old_models {
-        let options = Options::from(options.clone())
+        let options = Options::from(options)
           .set_unique_type(unique_type);
         
         id = check_by_unique_<#=table#>(
@@ -4921,11 +5048,11 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_lbl = usr_model.lbl;
@@ -4941,15 +5068,15 @@ async fn _creates(
         }
         sql_values += ",?";
         args.push(usr_lbl.into());
-      } else if input.create_usr_id.unwrap().is_empty() {
+      } else if input.create_usr_id.is_none_or(|s| s.is_empty()) {
         sql_values += ",default";
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
-          options.clone(),
+          options,
         ).await?;
         if let Some(usr_model) = usr_model {
           usr_lbl = usr_model.lbl;
@@ -5161,17 +5288,13 @@ async fn _creates(
   
   let sql = format!("insert into {table} ({sql_fields}) values {sql_values}");
   
-  let args: Vec<_> = args.into();
-  
-  let options = Options::from(options);<#
+  let args: Vec<_> = args.into();<#
   if (cache) {
   #>
   
-  let options = options.set_del_cache_key1s(get_cache_tables());<#
+  del_cache_<#=table#>().await?;<#
   }
-  #>
-  
-  let options = Some(options);<#
+  #><#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -5190,7 +5313,7 @@ async fn _creates(
   let affected_rows = execute(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;<#
   if (opts?.isUseDynPageFields) {
   #>
@@ -5200,12 +5323,12 @@ async fn _creates(
   
   let dyn_page_model = find_one_dyn_page(
     Some(DynPageSearch {
-      code: Some(page_path.to_string()),
+      code: Some(page_path.clone()),
       is_enabled: Some(vec![1]),
       ..Default::default()
     }),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   if let Some(dyn_page_model) = dyn_page_model {
@@ -5215,18 +5338,18 @@ async fn _creates(
       // 查询所有已存在的动态字段值
       let dyn_page_val_models = find_all_dyn_page_val(
         Some(DynPageValSearch {
-          ref_code: Some(page_path.to_string()),
+          ref_code: Some(page_path.clone()),
           ref_ids: Some(
             inputs2_ids
               .iter()
-              .map(|id| id.to_string())
-              .collect::<Vec<String>>()
+              .map(|id| SmolStr::new(id.as_str()))
+              .collect::<Vec<SmolStr>>()
           ),
           ..Default::default()
         }),
         None,
         None,
-        options.clone(),
+        options,
       ).await?;
       
       for (i, input) in inputs2.clone()
@@ -5245,7 +5368,7 @@ async fn _creates(
           
           let field_code = dyn_page_field_model.code;
           let field_type = dyn_page_field_model.r#type;
-          let new_value0 = dyn_page_data.0.get(&field_code);
+          let new_value0 = dyn_page_data.0.get(&field_code.to_string());
           let new_value: String = if [
             "CustomCheckbox",
             "CustomInputNumber",
@@ -5289,22 +5412,22 @@ async fn _creates(
               update_by_id_dyn_page_val(
                 old_value_model.id,
                 DynPageValInput {
-                  lbl: Some(new_value.clone()),
+                  lbl: Some(SmolStr::new(new_value.clone())),
                   ..Default::default()
                 },
-                options.clone(),
+                options,
               ).await?;
             }
           } else {
             create_dyn_page_val(
               DynPageValInput {
-                ref_code: Some(page_path.to_string()),
-                ref_id: Some(id.to_string()),
+                ref_code: Some(page_path.clone()),
+                ref_id: Some(SmolStr::new(id.as_str())),
                 code: Some(field_code),
-                lbl: Some(new_value.clone()),
+                lbl: Some(SmolStr::new(new_value.clone())),
                 ..Default::default()
               },
-              options.clone(),
+              options,
             ).await?;
           }
           
@@ -5312,6 +5435,12 @@ async fn _creates(
       }
     }
   }<#
+  }
+  #><#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
   }
   #><#
   if (
@@ -5335,7 +5464,7 @@ async fn _creates(
   if (opts.langTable && isUseI18n) {
   #>
   for input in inputs.iter() {
-    refresh_lang_by_input(input, options.clone()).await?;
+    refresh_lang_by_input(input, options).await?;
   }<#
   }
   #><#
@@ -5454,7 +5583,7 @@ async fn _creates(
         #>
         create_<#=table#>(
           model,
-          options.clone(),
+          options,
         ).await?;
       }
     }<#
@@ -5471,7 +5600,7 @@ async fn _creates(
       #>
       create_<#=table#>(
         <#=inline_column_name#>,
-        options.clone(),
+        options,
       ).await?;
     }<#
       }
@@ -5521,7 +5650,7 @@ async fn _creates(
         #>
         create_<#=table#>(
           input2,
-          options.clone(),
+          options,
         ).await?;
       }
     }<#
@@ -5541,7 +5670,7 @@ if (autoCodeColumn && !dateSeq) {
 /// 获得 <#=table_comment#> 自动编码
 pub async fn find_auto_code_<#=table#>(
   options: Option<Options>,
-) -> Result<(u32, String)> {
+) -> Result<(u32, SmolStr)> {
   
   let table = get_table_name_<#=table#>();
   let method = "find_auto_code_<#=table#>";
@@ -5563,11 +5692,11 @@ pub async fn find_auto_code_<#=table#>(
     None,
     Some(vec![
       SortInput {
-        prop: "<#=autoCodeColumn.autoCode.seq#>".to_owned(),
+        prop: "<#=autoCodeColumn.autoCode.seq#>".into(),
         order: SortOrderEnum::Desc,
       },
     ]),
-    options.clone(),
+    options,
   ).await?;
   
   let <#=autoCodeColumn.autoCode.seq#> = model
@@ -5581,11 +5710,11 @@ pub async fn find_auto_code_<#=table#>(
     }),
     Some(vec![
       SortInput {
-        prop: "<#=autoCodeColumn.autoCode.seq#>".to_owned(),
+        prop: "<#=autoCodeColumn.autoCode.seq#>".into(),
         order: SortOrderEnum::Desc,
       },
     ]),
-    options.clone(),
+    options,
   ).await?;
   
   let <#=autoCodeColumn.autoCode.seq#>_deleted = model_deleted
@@ -5600,7 +5729,7 @@ pub async fn find_auto_code_<#=table#>(
   
   let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=autoCodeColumn.autoCode.seq#>:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
   
-  Ok((<#=autoCodeColumn.autoCode.seq#>, <#=autoCodeColumn.COLUMN_NAME#>))
+  Ok((<#=autoCodeColumn.autoCode.seq#>, SmolStr::new(&<#=autoCodeColumn.COLUMN_NAME#>)))
 }<#
 } else if (autoCodeColumn && dateSeq) {
   const dateSeqColumn = columns.find(function(item) {
@@ -5618,7 +5747,7 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
 } else if (dateSeqColumn.DATA_TYPE.toLowerCase() === "datetime") {
 #>chrono::NaiveDateTime<#
 }
-#>, u32, String)> {
+#>, u32, SmolStr)> {
   
   let table = get_table_name_<#=table#>();
   let method = "find_auto_code_<#=table#>";
@@ -5640,15 +5769,15 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
     None,
     Some(vec![
       SortInput {
-        prop: "<#=dateSeq#>".to_owned(),
+        prop: "<#=dateSeq#>".into(),
         order: SortOrderEnum::Desc,
       },
       SortInput {
-        prop: "<#=autoCodeColumn.autoCode.seq#>".to_owned(),
+        prop: "<#=autoCodeColumn.autoCode.seq#>".into(),
         order: SortOrderEnum::Desc,
       },
     ]),
-    options.clone(),
+    options,
   ).await?;
   
   let now = get_now();
@@ -5673,11 +5802,11 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
         }),
         Some(vec![
           SortInput {
-            prop: "<#=dateSeq#>".to_owned(),
+            prop: "<#=dateSeq#>".into(),
             order: SortOrderEnum::Desc,
           },
           SortInput {
-            prop: "<#=autoCodeColumn.autoCode.seq#>".to_owned(),
+            prop: "<#=autoCodeColumn.autoCode.seq#>".into(),
             order: SortOrderEnum::Desc,
           },
         ]),
@@ -5706,7 +5835,7 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
   if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
   #>.date()<#
   }
-  #>, <#=autoCodeColumn.autoCode.seq#>, <#=autoCodeColumn.COLUMN_NAME#>))
+  #>, <#=autoCodeColumn.autoCode.seq#>, SmolStr::new(&<#=autoCodeColumn.COLUMN_NAME#>)))
 }<#
 }
 #>
@@ -5722,7 +5851,7 @@ pub async fn create_return_<#=table#>(
   
   let id = create_<#=table#>(
     input.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let model_<#=table#> = find_by_id_<#=table#>(
@@ -5736,7 +5865,7 @@ pub async fn create_return_<#=table#>(
       let err_msg = "create_return_<#=table#>: model_<#=table#>.is_none()";
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg.into(),
           trace: true,
           ..Default::default()
         },
@@ -5815,6 +5944,7 @@ pub async fn update_tenant_by_id_<#=table#>(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
@@ -5828,7 +5958,7 @@ pub async fn update_tenant_by_id_<#=table#>(
   let num = execute(
     sql,
     args,
-    Some(options.clone()),
+    options,
   ).await?;
   
   Ok(num)
@@ -6051,7 +6181,7 @@ async fn refresh_lang_by_input(
     let models = query::<ResultTmp>(
       sql,
       args.into(),
-      options.clone(),
+      options,
     ).await?;
     for model in models {
       let sql = "select id,<#=modelLabel#> from <#=opts.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?";
@@ -6061,7 +6191,7 @@ async fn refresh_lang_by_input(
       let lang_model = query_one::<ResultTmp2>(
         sql,
         args.into(),
-        options.clone(),
+        options,
       ).await?;
       let lang_id: Option<LangId> = lang_model.map(|item| item.lang_id.unwrap_or_default()).into();
       if lang_id.is_none() {
@@ -6075,7 +6205,7 @@ async fn refresh_lang_by_input(
         execute(
           lang_sql,
           lang_args.into(),
-          options.clone(),
+          options,
         ).await?;
         continue;
       }
@@ -6089,7 +6219,7 @@ async fn refresh_lang_by_input(
         execute(
           lang_sql,
           lang_args.into(),
-          options.clone(),
+          options,
         ).await?;
       }
     }
@@ -6107,7 +6237,7 @@ async fn refresh_lang_by_input(
   let model = query_one::<ResultTmp>(
     lang_sql,
     lang_args.into(),
-    options.clone(),
+    options,
   ).await?;
   let lang_id: Option<LangId> = model.map(|item| item.id).map(|item| item.into());
   if let Some(lang_id) = lang_id {
@@ -6133,7 +6263,7 @@ async fn refresh_lang_by_input(
     execute(
       lang_sql,
       lang_args.into(),
-      options.clone(),
+      options,
     ).await?;
   } else {
     let mut sql_fields: Vec<&'static str> = vec![];
@@ -6170,7 +6300,7 @@ async fn refresh_lang_by_input(
     execute(
       lang_sql,
       lang_args.into(),
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -6315,7 +6445,7 @@ pub async fn update_by_id_<#=table#>(
   
   let old_model = find_by_id_<#=table#>(
     id,
-    options.clone(),
+    options,
   ).await?;
   
   let old_model = match old_model {
@@ -6444,7 +6574,7 @@ pub async fn update_by_id_<#=table#>(
     input.id = Some(id);
     refresh_lang_by_input(
       &input,
-      options.clone(),
+      options,
     ).await?;
   }<#
   }
@@ -6457,7 +6587,7 @@ pub async fn update_by_id_<#=table#>(
     let models = find_by_unique_<#=table#>(
       input.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let models = models.into_iter()
@@ -6693,12 +6823,12 @@ pub async fn update_by_id_<#=table#>(
     
     let dyn_page_model = find_one_dyn_page(
       Some(DynPageSearch {
-        code: Some(page_path.to_string()),
+        code: Some(page_path.clone()),
         is_enabled: Some(vec![1]),
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if let Some(dyn_page_model) = dyn_page_model {
@@ -6707,20 +6837,20 @@ pub async fn update_by_id_<#=table#>(
       
       let dyn_page_val_models = find_all_dyn_page_val(
         Some(DynPageValSearch {
-          ref_code: Some(page_path.to_string()),
-          ref_ids: Some(vec![ id.to_string() ]),
+          ref_code: Some(page_path.clone()),
+          ref_ids: Some(vec![ SmolStr::new(id.as_str()) ]),
           ..Default::default()
         }),
         None,
         None,
-        options.clone(),
+        options,
       ).await?;
       
       for dyn_page_field_model in dyn_page_field_models {
         
         let field_code = dyn_page_field_model.code;
         let field_type = dyn_page_field_model.r#type;
-        let new_value0 = dyn_page_data.0.get(&field_code);
+        let new_value0 = dyn_page_data.0.get(&field_code.to_string());
         let new_value: String = if [
           "CustomCheckbox",
           "CustomInputNumber",
@@ -6764,23 +6894,23 @@ pub async fn update_by_id_<#=table#>(
             update_by_id_dyn_page_val(
               old_value_model.id,
               DynPageValInput {
-                lbl: Some(new_value.clone()),
+                lbl: Some(SmolStr::new(new_value.clone())),
                 ..Default::default()
               },
-              options.clone(),
+              options,
             ).await?;
             field_num += 1;
           }
         } else {
           create_dyn_page_val(
             DynPageValInput {
-              ref_code: Some(page_path.to_string()),
-              ref_id: Some(id.to_string()),
+              ref_code: Some(page_path.clone()),
+              ref_id: Some(SmolStr::new(id.as_str())),
               code: Some(field_code),
-              lbl: Some(new_value.clone()),
+              lbl: Some(SmolStr::new(new_value.clone())),
               ..Default::default()
             },
-            options.clone(),
+            options,
           ).await?;
           field_num += 1;
         }
@@ -6884,7 +7014,7 @@ pub async fn update_by_id_<#=table#>(
       }.into(),
       None,
       None,
-      options.clone(),
+      options,
     ).await?;
     if !<#=inline_column_name#>_models.is_empty() && !<#=inline_column_name#>_input.is_empty() {
       field_num += 1;
@@ -6899,7 +7029,7 @@ pub async fn update_by_id_<#=table#>(
       }
       delete_by_ids_<#=table#>(
         vec![model.id],
-        options.clone(),
+        options,
       ).await?;
     }
     for mut input2 in <#=inline_column_name#>_input {
@@ -6912,7 +7042,7 @@ pub async fn update_by_id_<#=table#>(
         #>
         create_<#=table#>(
           input2,
-          options.clone(),
+          options,
         ).await?;
         continue;
       }
@@ -6923,7 +7053,7 @@ pub async fn update_by_id_<#=table#>(
       {
         revert_by_ids_<#=table#>(
           vec![id2.clone()],
-          options.clone(),
+          options,
         ).await?;
       }
       input2.id = None;
@@ -6936,7 +7066,7 @@ pub async fn update_by_id_<#=table#>(
       update_by_id_<#=table#>(
         id2.clone(),
         input2,
-        options.clone(),
+        options,
       ).await?;
     }
   }<#
@@ -6964,7 +7094,7 @@ pub async fn update_by_id_<#=table#>(
       }.into(),
       None,
       None,
-      options.clone(),
+      options,
     ).await?;
     for model in <#=inline_column_name#>_models.clone() {
       if <#=inline_column_name#>_input.id == model.id.into() {
@@ -6972,7 +7102,7 @@ pub async fn update_by_id_<#=table#>(
       }
       delete_by_ids_<#=table#>(
         vec![model.id],
-        options.clone(),
+        options,
       ).await?;
     }
     if let Some(id2) = <#=inline_column_name#>_input.id {
@@ -6982,7 +7112,7 @@ pub async fn update_by_id_<#=table#>(
       {
         revert_by_ids_<#=table#>(
           vec![id2.clone()],
-          options.clone(),
+          options,
         ).await?;
       }
       let mut <#=inline_column_name#>_input = <#=inline_column_name#>_input;
@@ -6995,7 +7125,7 @@ pub async fn update_by_id_<#=table#>(
       update_by_id_<#=table#>(
         id2.clone(),
         <#=inline_column_name#>_input,
-        options.clone(),
+        options,
       ).await?;
     } else {
       let mut <#=inline_column_name#>_input = <#=inline_column_name#>_input;
@@ -7007,7 +7137,7 @@ pub async fn update_by_id_<#=table#>(
       #>
       create_<#=table#>(
         <#=inline_column_name#>_input,
-        options.clone(),
+        options,
       ).await?;
     }
   }<#
@@ -7054,7 +7184,7 @@ pub async fn update_by_id_<#=table#>(
       }.into(),
       None,
       None,
-      options.clone(),
+      options,
     ).await?;
     
     struct UpdateModel {
@@ -7120,7 +7250,7 @@ pub async fn update_by_id_<#=table#>(
       input.<#=many2many.column1#> = id.into();
       create_<#=table#>(
         input,
-        options.clone(),
+        options,
       ).await?;
     }
     
@@ -7130,18 +7260,18 @@ pub async fn update_by_id_<#=table#>(
       update_by_id_<#=table#>(
         id,
         input,
-        options.clone(),
+        options,
       ).await?;
     }
     
     delete_by_ids_<#=table#>(
       <#=table#>_delete_ids.clone(),
-      options.clone(),
+      options,
     ).await?;
     
     force_delete_by_ids_<#=table#>(
       <#=table#>_delete_ids,
-      options.clone(),
+      options,
     ).await?;
     
     field_num += 1;
@@ -7174,6 +7304,30 @@ pub async fn update_by_id_<#=table#>(
   }
   #><#
   }
+  #><#
+  if (cache) {
+  #>
+  
+  if field_num > 0 {
+    del_cache_<#=table#>().await?;
+  }<#
+  }
+  #><#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  if field_num > 0 {
+    del_caches(
+      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;
+  }<#
+  }
   #>
   
   if field_num > 0 {<#
@@ -7182,7 +7336,7 @@ pub async fn update_by_id_<#=table#>(
     if !is_silent_mode {
       if let Some(version) = input.version {
         if version > 0 {
-          let version2 = get_version_by_id_<#=table#>(id, options.clone()).await?;
+          let version2 = get_version_by_id_<#=table#>(id, options).await?;
           if let Some(version2) = version2 {
             if version2 > version {<#
               if (isUseI18n) {
@@ -7242,11 +7396,11 @@ pub async fn update_by_id_<#=table#>(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -7262,13 +7416,15 @@ pub async fn update_by_id_<#=table#>(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      } else if !input.update_usr_id.unwrap().is_empty() {
+      } else if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -7284,7 +7440,9 @@ pub async fn update_by_id_<#=table#>(
         }
       }
     } else {
-      if input.update_usr_id.is_some() && !input.update_usr_id.unwrap().is_empty() {
+      if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let usr_id = input.update_usr_id;
         if let Some(usr_id) = usr_id {
           sql_fields += "update_usr_id=?,";
@@ -7326,34 +7484,10 @@ pub async fn update_by_id_<#=table#>(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());<#
-    if (cache) {
-    #>
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());<#
-    }
-    #>
-    
-    let options = Some(options);<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
-    
     execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;<#
     if (cascadeUpdateFieldWatchColumns.length > 0) {
     #>
@@ -7387,7 +7521,7 @@ pub async fn update_by_id_<#=table#>(
         }),
         None,
         None,
-        options.clone(),
+        options,
       ).await?;
       
       for <#=table#>_model in <#=table#>_models {
@@ -7405,12 +7539,18 @@ pub async fn update_by_id_<#=table#>(
         update_by_id_<#=table#>(
           <#=table#>_id,
           <#=table#>_input,
-          options.clone(),
+          options,
         ).await?;
       }<#
       }
       #>
     }<#
+    }
+    #><#
+    if (cache) {
+    #>
+    
+    del_cache_<#=table#>().await?;<#
     }
     #><#
     if (
@@ -7468,24 +7608,6 @@ pub async fn update_by_id_<#=table#>(
   #><#
   }
   #><#
-  if (cache) {
-  #>
-  
-  if field_num > 0 {
-    let options = Options::from(options);
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
-      del_caches(
-        del_cache_key1s
-          .iter()
-          .map(|item| item.as_str())
-          .collect::<Vec<&str>>()
-          .as_slice()
-      ).await?;
-    }
-  }<#
-  }
-  #><#
   if (opts?.history_table) {
     const historyTable = opts.history_table;
     const historyTableUp = historyTable.split("_").map(function(item) {
@@ -7496,7 +7618,7 @@ pub async fn update_by_id_<#=table#>(
   if field_num > 0 {
     let old_model = match find_by_id_<#=table#>(
       id,
-      options.clone(),
+      options,
     ).await? {
       Some(model) => model,
       None => {
@@ -7514,6 +7636,34 @@ pub async fn update_by_id_<#=table#>(
   #>
   
   Ok(id)
+}
+
+// MARK: update_by_id_return_<#=table#>
+/// 根据 id 更新<#=table_comment#>, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_<#=table#>(
+  id: <#=Table_Up#>Id,
+  input: <#=Table_Up#>Input,
+  options: Option<Options>,
+) -> Result<<#=Table_Up#>Model> {
+  
+  update_by_id_<#=table#>(
+    id,
+    input,
+    options,
+  ).await?;
+  
+  let model = find_by_id_<#=table#>(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "<#=table_comment#> update_by_id_return_<#=table#> id: {id}",
+    )),
+  }
 }
 
 /// 获取需要清空缓存的表名
@@ -7627,7 +7777,17 @@ pub async fn delete_by_ids_<#=table#>(
   
   if ids.len() as u64 > MAX_SAFE_INTEGER {
     return Err(eyre!("ids.len(): {} > MAX_SAFE_INTEGER", ids.len()));
-  }<#
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);<#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
+  }
+  #><#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -7689,16 +7849,12 @@ pub async fn delete_by_ids_<#=table#>(
   }
   #>
   
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
   let mut num = 0;
   for id in ids.clone() {
     
     let old_model = find_by_id_<#=table#>(
       id,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -7762,11 +7918,11 @@ pub async fn delete_by_ids_<#=table#>(
     if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
     #>
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = String::new();
+    let mut usr_lbl = SmolStr::new("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
-        options.clone(),
+        options,
       ).await?;
       if let Some(usr_model) = usr_model {
         usr_lbl = usr_model.lbl;
@@ -7820,20 +7976,10 @@ pub async fn delete_by_ids_<#=table#>(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());<#
-    if (cache) {
-    #>
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());<#
-    }
-    #>
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;<#
     if (opts?.isUseDynPageFields) {
     #>
@@ -7848,7 +7994,7 @@ pub async fn delete_by_ids_<#=table#>(
       execute(
         sql,
         args.into(),
-        options.clone(),
+        options,
       ).await?;
     }<#
       } else {
@@ -7860,7 +8006,7 @@ pub async fn delete_by_ids_<#=table#>(
       execute(
         sql,
         args.into(),
-        options.clone(),
+        options,
       ).await?;
     }<#
       }
@@ -7884,7 +8030,7 @@ pub async fn delete_by_ids_<#=table#>(
       execute(
         sql,
         args.into(),
-        options.clone(),
+        options,
       ).await?;
     }<#
     }
@@ -7955,7 +8101,7 @@ pub async fn delete_by_ids_<#=table#>(
         execute(
           sql,
           args,
-          options.clone(),
+          options,
         ).await?;<#
         } else {
         #>
@@ -7977,7 +8123,7 @@ pub async fn delete_by_ids_<#=table#>(
         let res: Option<CountModel> = query_one(
           sql,
           args,
-          options.clone(),
+          options,
         ).await?;
         
         let total = res
@@ -8033,7 +8179,7 @@ pub async fn delete_by_ids_<#=table#>(
       execute(
         sql,
         args,
-        options.clone(),
+        options,
       ).await?;<#
       } else {
       #>
@@ -8042,7 +8188,7 @@ pub async fn delete_by_ids_<#=table#>(
       let res: Option<CountModel> = query_one(
         sql,
         args,
-        options.clone(),
+        options,
       ).await?;
         
       let total = res
@@ -8069,8 +8215,49 @@ pub async fn delete_by_ids_<#=table#>(
     }
     #><#
     }
+    #><#
+    if (!hasIsDeleted) {
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const isAtt = column.isAtt;
+      const isImg = column.isImg;
+      if (!isAtt && !isImg) continue;
     #>
+    
+    // <#=column_comment#>
+    crate::common::oss::oss_dao::delete_object(
+      old_model.<#=column_name#>.as_str(),
+    ).await?;<#
+    }
+    #><#
+    }
+    #>
+  }<#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
   }
+  #><#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
+  }
+  #>
   
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
@@ -8098,14 +8285,14 @@ pub async fn delete_by_ids_<#=table#>(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   delete_by_ids_<#=table#>(
     <#=table#>_models.into_iter()
       .map(|item| item.id)
       .collect::<Vec<<#=Table_Up#>Id>>(),
-    options.clone(),
+    options,
   ).await?;<#
   }
   #><#
@@ -8148,7 +8335,7 @@ pub async fn delete_by_ids_<#=table#>(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   force_delete_by_ids_<#=table#>(
@@ -8156,7 +8343,7 @@ pub async fn delete_by_ids_<#=table#>(
       .into_iter()
       .map(|item| item.id)
       .collect::<Vec<_>>(),
-    options.clone(),
+    options,
   ).await?;
   
   let <#=table#>_models = find_all_<#=table#>(
@@ -8166,7 +8353,7 @@ pub async fn delete_by_ids_<#=table#>(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   delete_by_ids_<#=table#>(
@@ -8174,7 +8361,7 @@ pub async fn delete_by_ids_<#=table#>(
       .into_iter()
       .map(|item| item.id)
       .collect::<Vec<_>>(),
-    options.clone(),
+    options,
   ).await?;<#
   }
   #><#
@@ -8221,6 +8408,12 @@ pub async fn default_by_id_<#=table#>(
       req_id = get_req_id(),
     );
   }<#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
+  }
+  #><#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -8238,8 +8431,7 @@ pub async fn default_by_id_<#=table#>(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
+  let options = Some(options);
   
   {
     let mut args = QueryArgs::new();
@@ -8249,8 +8441,6 @@ pub async fn default_by_id_<#=table#>(
     args.push(id.into());
     
     let args: Vec<_> = args.into();
-    
-    let options = options.clone().into();
     
     execute(
       sql,
@@ -8269,13 +8459,17 @@ pub async fn default_by_id_<#=table#>(
   
   let args: Vec<_> = args.into();
   
-  let options = options.clone().into();
-  
   num += execute(
     sql,
     args,
     options,
   ).await?;<#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
+  }
+  #><#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -8355,6 +8549,12 @@ pub async fn enable_by_ids_<#=table#>(
   if ids.is_empty() {
     return Ok(0);
   }<#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
+  }
+  #><#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -8372,11 +8572,10 @@ pub async fn enable_by_ids_<#=table#>(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
+  let options = Some(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!("update {table} set is_enabled=? where id=? limit 1");
@@ -8386,14 +8585,18 @@ pub async fn enable_by_ids_<#=table#>(
     
     let args: Vec<_> = args.into();
     
-    let options = options.clone().into();
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
   }<#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
+  }
+  #><#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -8474,6 +8677,12 @@ pub async fn lock_by_ids_<#=table#>(
   if ids.is_empty() {
     return Ok(0);
   }<#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
+  }
+  #><#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -8489,12 +8698,12 @@ pub async fn lock_by_ids_<#=table#>(
   }
   #>
   
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!("update {table} set is_locked=? where id=? limit 1");
@@ -8504,14 +8713,18 @@ pub async fn lock_by_ids_<#=table#>(
     
     let args: Vec<_> = args.into();
     
-    let options = options.clone().into();
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
   }<#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
+  }
+  #><#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -8566,6 +8779,12 @@ pub async fn revert_by_ids_<#=table#>(
   if ids.is_empty() {
     return Ok(0);
   }<#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
+  }
+  #><#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -8582,12 +8801,7 @@ pub async fn revert_by_ids_<#=table#>(
   #>
   
   let options = Options::from(options)
-    .set_is_debug(Some(false));<#
-  if (cache) {
-  #>
-  let options = options.set_del_cache_key1s(get_cache_tables());<#
-  }
-  #>
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let mut num = 0;
@@ -8607,13 +8821,13 @@ pub async fn revert_by_ids_<#=table#>(
         ..Default::default()
       }.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if old_model.is_none() {
       old_model = find_by_id_<#=table#>(
         id,
-        options.clone(),
+        options,
       ).await?;
     }
     
@@ -8629,7 +8843,7 @@ pub async fn revert_by_ids_<#=table#>(
       let models = find_by_unique_<#=table#>(
         input.into(),
         None,
-        options.clone(),
+        options,
       ).await?;
       
       let models: Vec<<#=tableUP#>Model> = models
@@ -8665,7 +8879,7 @@ pub async fn revert_by_ids_<#=table#>(
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;<#
     if (opts?.isUseDynPageFields) {
     #>
@@ -8677,7 +8891,7 @@ pub async fn revert_by_ids_<#=table#>(
       execute(
         sql,
         args.into(),
-        options.clone(),
+        options,
       ).await?;
     }<#
     }
@@ -8692,7 +8906,7 @@ pub async fn revert_by_ids_<#=table#>(
       execute(
         sql,
         args.into(),
-        options.clone(),
+        options,
       ).await?;
     }<#
     }
@@ -8771,7 +8985,7 @@ pub async fn revert_by_ids_<#=table#>(
         execute(
           sql,
           args,
-          options.clone(),
+          options,
         ).await?;
       }
     }<#
@@ -8807,7 +9021,7 @@ pub async fn revert_by_ids_<#=table#>(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   revert_by_ids_<#=table#>(
@@ -8815,7 +9029,7 @@ pub async fn revert_by_ids_<#=table#>(
       .into_iter()
       .map(|item| item.id)
       .collect::<Vec<<#=Table_Up#>Id>>(),
-    options.clone(),
+    options,
   ).await?;<#
     } else if (inline_foreign_type === "one2one") {
   #>
@@ -8833,7 +9047,7 @@ pub async fn revert_by_ids_<#=table#>(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   revert_by_ids_<#=table#>(
@@ -8842,7 +9056,7 @@ pub async fn revert_by_ids_<#=table#>(
       .take(1)
       .map(|item| item.id)
       .collect::<Vec<<#=Table_Up#>Id>>(),
-    options.clone(),
+    options,
   ).await?;<#
     }
   #><#
@@ -8887,7 +9101,7 @@ pub async fn revert_by_ids_<#=table#>(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   revert_by_ids_<#=table#>(
@@ -8895,8 +9109,14 @@ pub async fn revert_by_ids_<#=table#>(
       .into_iter()
       .map(|item| item.id)
       .collect::<Vec<_>>(),
-    options.clone(),
+    options,
   ).await?;<#
+  }
+  #><#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
   }
   #><#
   if (
@@ -8959,7 +9179,27 @@ pub async fn force_delete_by_ids_<#=table#>(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  let options = Some(options);
+  let options = Some(options);<#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
+  }
+  #><#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
+  }
+  #>
   
   let mut num = 0;
   for id in ids.clone() {
@@ -8975,7 +9215,7 @@ pub async fn force_delete_by_ids_<#=table#>(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -9005,34 +9245,10 @@ pub async fn force_delete_by_ids_<#=table#>(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());<#
-    if (cache) {
-    #>
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());<#
-    }
-    #>
-    
-    let options = Some(options);<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;<#
     if (opts?.isUseDynPageFields) {
     #>
@@ -9044,7 +9260,7 @@ pub async fn force_delete_by_ids_<#=table#>(
       execute(
         sql,
         args.into(),
-        options.clone(),
+        options,
       ).await?;
     }<#
     }
@@ -9059,7 +9275,7 @@ pub async fn force_delete_by_ids_<#=table#>(
       execute(
         sql,
         args.into(),
-        options.clone(),
+        options,
       ).await?;
     }<#
     }
@@ -9104,7 +9320,7 @@ pub async fn force_delete_by_ids_<#=table#>(
         execute(
           sql,
           args,
-          options.clone(),
+          options,
         ).await?;
       }
     }<#
@@ -9129,7 +9345,7 @@ pub async fn force_delete_by_ids_<#=table#>(
       execute(
         sql,
         args,
-        options.clone(),
+        options,
       ).await?;
     }<#
     }
@@ -9147,6 +9363,23 @@ pub async fn force_delete_by_ids_<#=table#>(
     
     del_caches(
       vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+    ).await?;<#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const isAtt = column.isAtt;
+      const isImg = column.isImg;
+      if (!isAtt && !isImg) continue;
+    #>
+    
+    // <#=column_comment#>
+    crate::common::oss::oss_dao::delete_object(
+      old_model.<#=column_name#>.as_str(),
     ).await?;<#
     }
     #>
@@ -9170,14 +9403,14 @@ pub async fn force_delete_by_ids_<#=table#>(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   force_delete_by_ids_<#=table#>(
     <#=table#>_models.into_iter()
       .map(|item| item.id)
       .collect::<Vec<<#=Table_Up#>Id>>(),
-    options.clone(),
+    options,
   ).await?;<#
   }
   #><#
@@ -9219,7 +9452,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   delete_by_ids_<#=table#>(
@@ -9227,7 +9460,7 @@ pub async fn force_delete_by_ids_<#=table#>(
       .into_iter()
       .map(|item| item.id)
       .collect::<Vec<_>>(),
-    options.clone(),
+    options,
   ).await?;
   
   let <#=table#>_models = find_all_<#=table#>(
@@ -9238,7 +9471,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   force_delete_by_ids_<#=table#>(
@@ -9246,12 +9479,119 @@ pub async fn force_delete_by_ids_<#=table#>(
       .into_iter()
       .map(|item| item.id)
       .collect::<Vec<_>>(),
-    options.clone(),
+    options,
+  ).await?;<#
+  }
+  #><#
+  if (cache) {
+  #>
+  
+  del_cache_<#=table#>().await?;<#
+  }
+  #><#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
   ).await?;<#
   }
   #>
   
   Ok(num)
+}<#
+}
+#><#
+if (hasSummary) {
+#>
+
+// MARK: find_summary_<#=table#>
+pub async fn find_summary_<#=table#>(
+  search: Option<<#=Table_Up#>Search>,
+  options: Option<Options>,
+) -> Result<<#=tableUP#>Summary> {
+  
+  let table = get_table_name_<#=table#>();
+  let method = "find_last_order_by_<#=table#>";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let msg = format!("{table}.{method}:");
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let mut args = QueryArgs::new();<#
+  const findSummaryColumns = [ ];
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column.showSummary) {
+      findSummaryColumns.push(column);
+    }
+  }
+  #>
+  
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  
+  let sql = format!(r#"select <#=findSummaryColumns.map(function(column) { return "sum(t." + column.COLUMN_NAME + ") as " + mysqlKeyEscape(column.COLUMN_NAME); }).join(", ")#>
+  from {from_query} where {where_query}"#);
+  
+  let args: Vec<_> = args.into();<#
+  if (cache) {
+  #>
+  
+  let cache_key1 = format!("dao.sql.{table}");;
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2:<#=tableUP#>Summary;
+      let res = serde_json::from_str::<<#=tableUP#>Summary>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = <#=tableUP#>Summary::default();
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }<#
+  }
+  #>
+  
+  let summary = query_one::<<#=tableUP#>Summary>(
+    sql,
+    args,
+    options,
+  ).await?.unwrap_or_default();<#
+  if (cache) {
+  #>
+  
+  {
+    let str = serde_json::to_string(&summary)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }<#
+  }
+  #>
+  
+  Ok(summary)
 }<#
 }
 #><#
@@ -9290,22 +9630,33 @@ pub async fn find_last_order_by_<#=table#>(
   let sql = format!(r#"select f.order_by from (select t.order_by
   from {from_query} where {where_query} group by t.id order by t.order_by desc limit 1) f"#);
   
-  let args: Vec<_> = args.into();
-  
-  let options = Options::from(options);<#
+  let args: Vec<_> = args.into();<#
   if (cache) {
   #>
   
-  let options = options.set_cache_key(table, &sql, &args);<#
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: u32;
+      let res = serde_json::from_str::<u32>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = 0;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }<#
   }
   #>
-  
-  let options = Some(options);
   
   let model = query_one::<OrderByModel>(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
   
   let order_by = {
@@ -9314,7 +9665,16 @@ pub async fn find_last_order_by_<#=table#>(
     } else {
       0
     }
-  };
+  };<#
+  if (cache) {
+  #>
+  
+  {
+    let str = serde_json::to_string(&order_by)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }<#
+  }
+  #>
   
   Ok(order_by)
 }<#
@@ -9333,17 +9693,17 @@ pub async fn validate_is_enabled_<#=table#>(
     if (isUseI18n) {
     #>
     let table_comment = i18n_dao::ns(
-      "<#=table_comment#>".to_owned(),
+      SmolStr::new("<#=table_comment#>"),
       None,
     ).await?;
     let msg1 = i18n_dao::ns(
-      "已禁用".to_owned(),
+      SmolStr::new("已禁用"),
       None,
     ).await?;
-    let err_msg = table_comment + msg1.as_str();<#
+    let err_msg = SmolStr::new(format!("{table_comment}{msg1}"));<#
     } else {
     #>
-    let err_msg = "<#=table_comment#>已禁用";<#
+    let err_msg = SmolStr::new("<#=table_comment#>已禁用");<#
     }
     #>
     return Err(eyre!(err_msg));
@@ -9366,17 +9726,17 @@ pub async fn validate_option_<#=table#>(
       if (isUseI18n) {
       #>
       let table_comment = i18n_dao::ns(
-        "<#=table_comment#>".to_owned(),
+        SmolStr::new("<#=table_comment#>"),
         None,
       ).await?;
       let msg1 = i18n_dao::ns(
-        "不存在".to_owned(),
+        SmolStr::new("不存在"),
         None,
       ).await?;
-      let err_msg = table_comment + msg1.as_str();<#
+      let err_msg = SmolStr::new(format!("{table_comment}{msg1}"));<#
       } else {
       #>
-      let err_msg = "<#=table_comment#>不存在";<#
+      let err_msg = SmolStr::new("<#=table_comment#>不存在");<#
       }
       #>
       error!(
@@ -9385,7 +9745,7 @@ pub async fn validate_option_<#=table#>(
       );
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg,
           trace: true,
           ..Default::default()
         },

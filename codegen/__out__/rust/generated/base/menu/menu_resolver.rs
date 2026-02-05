@@ -13,6 +13,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -256,8 +259,8 @@ pub async fn creates_menu(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_menu().to_string(),
-    "add".to_owned(),
+    SmolStr::new(get_page_path_menu()),
+    SmolStr::new("add"),
   ).await?;
   
   let ids = menu_service::creates_menu(
@@ -292,8 +295,8 @@ pub async fn update_by_id_menu(
   ).await?;
   
   use_permit(
-    get_page_path_menu().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_menu()),
+    SmolStr::new("edit"),
   ).await?;
   
   let res = menu_service::update_by_id_menu(
@@ -320,8 +323,8 @@ pub async fn delete_by_ids_menu(
   );
   
   use_permit(
-    get_page_path_menu().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_menu()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = menu_service::delete_by_ids_menu(
@@ -371,8 +374,8 @@ pub async fn enable_by_ids_menu(
   );
   
   use_permit(
-    get_page_path_menu().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_menu()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = menu_service::enable_by_ids_menu(
@@ -418,8 +421,8 @@ pub async fn revert_by_ids_menu(
   );
   
   use_permit(
-    get_page_path_menu().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_menu()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = menu_service::revert_by_ids_menu(
@@ -445,8 +448,8 @@ pub async fn force_delete_by_ids_menu(
   );
   
   use_permit(
-    get_page_path_menu().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_menu()),
+    SmolStr::new("force_delete"),
   ).await?;
   
   let num = menu_service::force_delete_by_ids_menu(

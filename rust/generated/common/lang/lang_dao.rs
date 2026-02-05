@@ -9,6 +9,8 @@ use crate::common::context::{
   get_auth_lang,
 };
 
+use crate::common::cache::cache_dao;
+
 use crate::base::lang::lang_dao;
 use crate::base::lang::lang_model::{
   LangId,
@@ -59,11 +61,22 @@ pub async fn get_lang_id() -> Result<Option<LangId>> {
   
   let args: Vec<ArgType> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.set_cache_key(table, &sql, &args);
-  
-  let options = Some(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: Option<LangId>;
+      let res = serde_json::from_str::<Option<LangId>>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = None;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
   let res: Option<LangIdModel> = query_one(
     sql,
@@ -76,7 +89,12 @@ pub async fn get_lang_id() -> Result<Option<LangId>> {
   }
   let res = res.unwrap();
   
-  let lang_id = LangId::from(res.id);
+  let lang_id = Some(LangId::from(res.id));
   
-  Ok(Some(lang_id))
+  {
+    let str = serde_json::to_string(&lang_id)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
+  
+  Ok(lang_id)
 }

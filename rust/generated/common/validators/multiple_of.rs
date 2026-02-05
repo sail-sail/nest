@@ -3,6 +3,8 @@ use std::fmt::Display;
 use color_eyre::eyre::{Result, eyre};
 use std::ops::Rem;
 
+use smol_str::SmolStr;
+
 use num_traits::{AsPrimitive, Zero};
 
 use crate::common::i18n::i18n_dao;
@@ -26,11 +28,11 @@ where
     return Ok(());
   }
   
-  let mut map: HashMap<String, String> = HashMap::new();
-  map.insert("0".to_owned(), n.to_string());
+  let mut map: HashMap<SmolStr, SmolStr> = HashMap::new();
+  map.insert("0".into(), n.to_string().into());
   
   let msg = i18n_dao::ns(
-    "必须为 {0} 的整数倍".to_owned(),
+    "必须为 {0} 的整数倍".into(),
     map.into(),
   ).await?;
   

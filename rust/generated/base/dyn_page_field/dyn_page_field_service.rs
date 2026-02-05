@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_dyn_page_field(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dyn_page_field_models = dyn_page_field_dao::find_all_dyn_page_field(
@@ -64,7 +67,7 @@ pub async fn find_count_dyn_page_field(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dyn_page_field_num = dyn_page_field_dao::find_count_dyn_page_field(
@@ -86,7 +89,7 @@ pub async fn find_one_dyn_page_field(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dyn_page_field_model = dyn_page_field_dao::find_one_dyn_page_field(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_dyn_page_field(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dyn_page_field_model = dyn_page_field_dao::find_one_ok_dyn_page_field(
@@ -233,7 +236,7 @@ pub async fn update_by_id_dyn_page_field(
   let dyn_page_field_id = dyn_page_field_dao::update_by_id_dyn_page_field(
     dyn_page_field_id,
     dyn_page_field_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(dyn_page_field_id)

@@ -10,9 +10,14 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
+
+use crate::common::cache::cache_dao;
 #[allow(unused_imports)]
 use crate::common::util::string::sql_like;
 #[allow(unused_imports)]
@@ -81,14 +86,14 @@ async fn get_where_query(
     if let Some(ids) = ids {
       let arg = {
         if ids.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.id in (");
@@ -105,14 +110,14 @@ async fn get_where_query(
     if let Some(menu_id) = menu_id {
       let arg = {
         if menu_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(menu_id.len());
           for item in menu_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.menu_id in (");
@@ -130,21 +135,21 @@ async fn get_where_query(
     }
   }
   {
-    let menu_id_lbl: Option<Vec<String>> = match search {
+    let menu_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.menu_id_lbl.clone(),
       None => None,
     };
     if let Some(menu_id_lbl) = menu_id_lbl {
       let arg = {
         if menu_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(menu_id_lbl.len());
           for item in menu_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and menu_id_lbl.lbl in (");
@@ -340,15 +345,33 @@ pub async fn find_all_field_permit(
   
   let args = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.set_cache_key(table, &sql, &args);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: Vec<FieldPermitModel>;
+      let res = serde_json::from_str::<Vec<FieldPermitModel>>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = vec![];
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
   let mut res: Vec<FieldPermitModel> = query(
     sql,
     args,
-    Some(options),
+    options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   let len = res.len();
   let result_limit_num = find_all_result_limit();
@@ -356,7 +379,7 @@ pub async fn find_all_field_permit(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
         trace: true,
         ..Default::default()
       },
@@ -433,10 +456,25 @@ pub async fn find_count_field_permit(
   
   let args = args.into();
   
-  let options = Options::from(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: u64;
+      let res = serde_json::from_str::<u64>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = 0;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let res: Option<CountModel> = query_one(
@@ -444,6 +482,11 @@ pub async fn find_count_field_permit(
     args,
     options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   let total = res
     .map(|item| item.total)
@@ -616,13 +659,13 @@ pub async fn find_by_id_ok_field_permit(
   ).await?;
   
   let Some(field_permit_model) = field_permit_model else {
-    let err_msg = "此 字段权限 已被删除";
+    let err_msg = SmolStr::new("此 字段权限 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: err_msg.to_string(),
+      message: err_msg,
       trace: true,
       ..Default::default()
     }));
@@ -715,7 +758,7 @@ pub async fn find_by_ids_ok_field_permit(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -728,7 +771,7 @@ pub async fn find_by_ids_ok_field_permit(
   ).await?;
   
   if field_permit_models.len() != len {
-    let err_msg = "此 字段权限 已被删除";
+    let err_msg = SmolStr::new("此 字段权限 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -741,7 +784,7 @@ pub async fn find_by_ids_ok_field_permit(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = "此 字段权限 已经被删除";
+      let err_msg = SmolStr::new("此 字段权限 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<FieldPermitModel>>>()?;
@@ -787,7 +830,7 @@ pub async fn find_by_ids_field_permit(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -882,10 +925,25 @@ pub async fn exists_field_permit(
   
   let args = args.into();
   
-  let options = Options::from(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: bool;
+      let res = serde_json::from_str::<bool>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = false;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let res: Option<(bool,)> = query_one(
@@ -893,6 +951,11 @@ pub async fn exists_field_permit(
     args,
     options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   Ok(res
     .map(|item| item.0)
@@ -974,10 +1037,12 @@ pub async fn find_by_unique_field_permit(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
+  
   if let Some(id) = search.id {
     let model = find_by_id_field_permit(
       id,
-      options.clone(),
+      options,
     ).await?;
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
@@ -1002,7 +1067,7 @@ pub async fn find_by_unique_field_permit(
       search.into(),
       None,
       sort.clone(),
-      options.clone(),
+      options,
     ).await?
   };
   models.append(&mut models_tmp);
@@ -1011,14 +1076,17 @@ pub async fn find_by_unique_field_permit(
 }
 
 /// 根据唯一约束对比对象是否相等
-#[allow(dead_code)]
+#[allow(dead_code, unused_variables)]
 pub fn equals_by_unique(
   input: &FieldPermitInput,
   model: &FieldPermitModel,
+  options: Option<&Options>,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }
+  
+  let is_silent_mode = get_is_silent_mode(options);
   
   if
     input.menu_id.as_ref().is_some() && input.menu_id.as_ref().unwrap() == &model.menu_id &&
@@ -1063,6 +1131,7 @@ pub async fn check_by_unique_field_permit(
   let is_equals = equals_by_unique(
     &input,
     &model,
+    options.as_ref(),
   );
   if !is_equals {
     return Ok(None);
@@ -1107,7 +1176,7 @@ pub async fn set_id_by_lbl_field_permit(
     && input.menu_id.is_none()
   {
     input.menu_id_lbl = input.menu_id_lbl.map(|item| 
-      item.trim().to_owned()
+      SmolStr::new(item.trim())
     );
     let model = crate::base::menu::menu_dao::find_one_menu(
       crate::base::menu::menu_model::MenuSearch {
@@ -1167,7 +1236,7 @@ pub async fn creates_return_field_permit(
   
   let ids = _creates(
     inputs.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let models_field_permit = find_by_ids_field_permit(
@@ -1239,14 +1308,14 @@ async fn _creates(
     let old_models = find_by_unique_field_permit(
       input.clone().into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if !old_models.is_empty() {
       let mut id: Option<FieldPermitId> = None;
       
       for old_model in old_models {
-        let options = Options::from(options.clone())
+        let options = Options::from(options)
           .set_unique_type(unique_type);
         
         id = check_by_unique_field_permit(
@@ -1362,17 +1431,15 @@ async fn _creates(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  let options = Some(options);
+  del_cache_field_permit().await?;
   
   let affected_rows = execute(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
+  
+  del_cache_field_permit().await?;
   
   if affected_rows != inputs2_len as u64 {
     return Err(eyre!("affectedRows: {affected_rows} != {inputs2_len}"));
@@ -1392,7 +1459,7 @@ pub async fn create_return_field_permit(
   
   let id = create_field_permit(
     input.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let model_field_permit = find_by_id_field_permit(
@@ -1406,7 +1473,7 @@ pub async fn create_return_field_permit(
       let err_msg = "create_return_field_permit: model_field_permit.is_none()";
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg.into(),
           trace: true,
           ..Default::default()
         },
@@ -1491,7 +1558,7 @@ pub async fn update_by_id_field_permit(
   
   let old_model = find_by_id_field_permit(
     id,
-    options.clone(),
+    options,
   ).await?;
   
   let old_model = match old_model {
@@ -1509,7 +1576,7 @@ pub async fn update_by_id_field_permit(
     let models = find_by_unique_field_permit(
       input.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let models = models.into_iter()
@@ -1575,6 +1642,10 @@ pub async fn update_by_id_field_permit(
   }
   
   if field_num > 0 {
+    del_cache_field_permit().await?;
+  }
+  
+  if field_num > 0 {
     
     if sql_fields.ends_with(',') {
       sql_fields.pop();
@@ -1587,35 +1658,45 @@ pub async fn update_by_id_field_permit(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
     execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
+    
+    del_cache_field_permit().await?;
     
   }
   
-  if field_num > 0 {
-    let options = Options::from(options);
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
-      del_caches(
-        del_cache_key1s
-          .iter()
-          .map(|item| item.as_str())
-          .collect::<Vec<&str>>()
-          .as_slice()
-      ).await?;
-    }
-  }
-  
   Ok(id)
+}
+
+// MARK: update_by_id_return_field_permit
+/// 根据 id 更新字段权限, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_field_permit(
+  id: FieldPermitId,
+  input: FieldPermitInput,
+  options: Option<Options>,
+) -> Result<FieldPermitModel> {
+  
+  update_by_id_field_permit(
+    id,
+    input,
+    options,
+  ).await?;
+  
+  let model = find_by_id_field_permit(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "字段权限 update_by_id_return_field_permit id: {id}",
+    )),
+  }
 }
 
 /// 获取需要清空缓存的表名
@@ -1694,12 +1775,14 @@ pub async fn delete_by_ids_field_permit(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  del_cache_field_permit().await?;
+  
   let mut num = 0;
   for id in ids.clone() {
     
     let old_model = find_by_id_field_permit(
       id,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -1725,16 +1808,10 @@ pub async fn delete_by_ids_field_permit(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     {
       let mut args = QueryArgs::new();
@@ -1744,10 +1821,12 @@ pub async fn delete_by_ids_field_permit(
       execute(
         sql,
         args,
-        options.clone(),
+        options,
       ).await?;
     }
   }
+  
+  del_cache_field_permit().await?;
   
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
@@ -1790,16 +1869,27 @@ pub async fn find_last_order_by_field_permit(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.set_cache_key(table, &sql, &args);
-  
-  let options = Some(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: u32;
+      let res = serde_json::from_str::<u32>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = 0;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
   let model = query_one::<OrderByModel>(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
   
   let order_by = {
@@ -1809,6 +1899,11 @@ pub async fn find_last_order_by_field_permit(
       0
     }
   };
+  
+  {
+    let str = serde_json::to_string(&order_by)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   Ok(order_by)
 }
@@ -1823,14 +1918,14 @@ pub async fn validate_option_field_permit(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = "字段权限不存在";
+      let err_msg = SmolStr::new("字段权限不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),
       );
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg,
           trace: true,
           ..Default::default()
         },

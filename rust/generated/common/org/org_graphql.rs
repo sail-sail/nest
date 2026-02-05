@@ -3,6 +3,8 @@ use async_graphql::{Context, Object};
 
 use crate::common::context::Ctx;
 
+use smol_str::SmolStr;
+
 use super::org_resolver;
 
 use crate::base::org::org_model::OrgId;
@@ -19,7 +21,7 @@ impl OrgMutation {
     &self,
     ctx: &Context<'_>,
     org_id: OrgId,
-  ) -> Result<String> {
+  ) -> Result<SmolStr> {
     
     let mut ctx = Ctx::builder(ctx)
       .with_tran()

@@ -19,7 +19,7 @@ pub async fn email(
   }
   
   let msg = ns(
-    "邮件格式不正确".to_owned(),
+    "邮件格式不正确".into(),
     None,
   ).await?;
   

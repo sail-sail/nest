@@ -12,6 +12,8 @@ pub struct OssQuery;
 #[Object(rename_args = "snake_case")]
 impl OssQuery {
   
+  /// 获取OSS文件统计信息
+  #[graphql(name = "getStatsOss")]
   async fn get_stats_oss(
     &self,
     ctx: &Context<'_>,

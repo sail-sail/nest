@@ -5,6 +5,8 @@ use crate::common::context::{
   get_auth_id,
 };
 
+use smol_str::SmolStr;
+
 use crate::base::menu::menu_dao::find_one_menu;
 use crate::base::menu::menu_model::MenuSearch;
 
@@ -26,7 +28,7 @@ use crate::base::role::role_model::RoleSearch;
 /// 获取数据权限列表
 #[allow(dead_code)]
 pub async fn get_data_permits(
-  route_path: String,
+  route_path: SmolStr,
   options: Option<&Options>,
 ) -> Result<Vec<DataPermitModel>> {
   
@@ -54,7 +56,7 @@ pub async fn get_data_permits(
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   validate_is_enabled_usr(&usr_model).await?;
@@ -72,7 +74,7 @@ pub async fn get_data_permits(
       ..Default::default()
     }.into(),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   if menu_model.is_none() {
@@ -88,7 +90,7 @@ pub async fn get_data_permits(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   let data_permit_ids = role_models

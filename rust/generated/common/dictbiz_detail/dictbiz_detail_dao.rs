@@ -6,15 +6,22 @@ use crate::common::context::{
   Options,
 };
 
+use crate::common::cache::cache_dao;
+
 use super::dictbiz_detail_model::GetDictbiz;
 
 /// 获取业务字典
 pub async fn get_dictbiz<T: AsRef<str>>(
   codes: &[T],
 ) -> Result<Vec<Vec<GetDictbiz>>> {
+  
   if codes.is_empty() {
     return Ok(vec![]);
   }
+  
+  let options = Options::new()
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let table = "base_dictbiz";
   
@@ -49,10 +56,22 @@ pub async fn get_dictbiz<T: AsRef<str>>(
   
   let args = args.value;
   
-  let options = Options::new()
-    .set_is_debug(Some(false))
-    .set_cache_key(table, &sql, &args);
-  let options = Some(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: Vec<Vec<GetDictbiz>>;
+      let res = serde_json::from_str::<Vec<Vec<GetDictbiz>>>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = vec![];
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
   let res: Vec<GetDictbiz> = query(
     sql,
@@ -72,6 +91,11 @@ pub async fn get_dictbiz<T: AsRef<str>>(
       }
     }
     data.push(item);
+  }
+  
+  {
+    let str = serde_json::to_string(&data)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
   }
   
   Ok(data)

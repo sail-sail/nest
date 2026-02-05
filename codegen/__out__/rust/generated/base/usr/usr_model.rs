@@ -65,82 +65,82 @@ pub struct UsrModel {
   pub id: UsrId,
   /// 头像
   #[graphql(name = "img")]
-  pub img: String,
+  pub img: SmolStr,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: String,
+  pub username: SmolStr,
   /// 密码
   #[graphql(name = "password")]
-  pub password: String,
+  pub password: SmolStr,
   /// 所属角色
   #[graphql(name = "role_ids")]
   pub role_ids: Vec<RoleId>,
   /// 所属角色
   #[graphql(name = "role_ids_lbl")]
-  pub role_ids_lbl: Vec<String>,
+  pub role_ids_lbl: Vec<SmolStr>,
   /// 所属部门
   #[graphql(name = "dept_ids")]
   pub dept_ids: Vec<DeptId>,
   /// 所属部门
   #[graphql(name = "dept_ids_lbl")]
-  pub dept_ids_lbl: Vec<String>,
+  pub dept_ids_lbl: Vec<SmolStr>,
   /// 所属组织
   #[graphql(name = "org_ids")]
   pub org_ids: Vec<OrgId>,
   /// 所属组织
   #[graphql(name = "org_ids_lbl")]
-  pub org_ids_lbl: Vec<String>,
+  pub org_ids_lbl: Vec<SmolStr>,
   /// 默认组织
   #[graphql(name = "default_org_id")]
   pub default_org_id: OrgId,
   /// 默认组织
   #[graphql(name = "default_org_id_lbl")]
-  pub default_org_id_lbl: String,
+  pub default_org_id_lbl: SmolStr,
   /// 类型
   #[graphql(name = "type")]
   pub r#type: UsrType,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: String,
+  pub type_lbl: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
+  pub is_locked_lbl: SmolStr,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: String,
+  pub is_enabled_lbl: SmolStr,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for UsrModel {
@@ -152,15 +152,19 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     // ID
     let id: UsrId = row.try_get("id")?;
     // 头像
-    let img: String = row.try_get("img")?;
+    let img: &str = row.try_get("img")?;
+    let img = SmolStr::new(img);
     // 名称
-    let lbl: String = row.try_get("lbl")?;
+    let lbl: &str = row.try_get("lbl")?;
+    let lbl = SmolStr::new(lbl);
     // 用户名
-    let username: String = row.try_get("username")?;
+    let username: &str = row.try_get("username")?;
+    let username = SmolStr::new(username);
     // 密码
-    let password: String = row.try_get("password")?;
+    let password: &str = row.try_get("password")?;
+    let password = SmolStr::new(password);
     // 所属角色
-    let role_ids: Option<sqlx::types::Json<HashMap<String, RoleId>>> = row.try_get("role_ids")?;
+    let role_ids: Option<sqlx::types::Json<HashMap<&str, RoleId>>> = row.try_get("role_ids")?;
     let role_ids = role_ids.unwrap_or_default().0;
     let role_ids = {
       let mut keys: Vec<u32> = role_ids.keys()
@@ -171,13 +175,13 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys.sort();
       keys.into_iter()
         .map(|x| 
-          role_ids.get(&x.to_string())
+          role_ids.get(x.to_string().as_str())
             .unwrap_or(&RoleId::default())
             .to_owned()
         )
         .collect::<Vec<RoleId>>()
     };
-    let role_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("role_ids_lbl")?;
+    let role_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("role_ids_lbl")?;
     let role_ids_lbl = role_ids_lbl.unwrap_or_default().0;
     let role_ids_lbl = {
       let mut keys: Vec<u32> = role_ids_lbl.keys()
@@ -194,14 +198,14 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys
         .into_iter()
         .map(|x| 
-          role_ids_lbl.get(&x.to_string())
-            .map(|x| x.to_owned())
+          role_ids_lbl.get(x.to_string().as_str())
+            .map(SmolStr::new)
             .unwrap_or_default()
         )
-        .collect::<Vec<String>>()
+        .collect::<Vec<SmolStr>>()
     };
     // 所属部门
-    let dept_ids: Option<sqlx::types::Json<HashMap<String, DeptId>>> = row.try_get("dept_ids")?;
+    let dept_ids: Option<sqlx::types::Json<HashMap<&str, DeptId>>> = row.try_get("dept_ids")?;
     let dept_ids = dept_ids.unwrap_or_default().0;
     let dept_ids = {
       let mut keys: Vec<u32> = dept_ids.keys()
@@ -212,13 +216,13 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys.sort();
       keys.into_iter()
         .map(|x| 
-          dept_ids.get(&x.to_string())
+          dept_ids.get(x.to_string().as_str())
             .unwrap_or(&DeptId::default())
             .to_owned()
         )
         .collect::<Vec<DeptId>>()
     };
-    let dept_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("dept_ids_lbl")?;
+    let dept_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("dept_ids_lbl")?;
     let dept_ids_lbl = dept_ids_lbl.unwrap_or_default().0;
     let dept_ids_lbl = {
       let mut keys: Vec<u32> = dept_ids_lbl.keys()
@@ -235,14 +239,14 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys
         .into_iter()
         .map(|x| 
-          dept_ids_lbl.get(&x.to_string())
-            .map(|x| x.to_owned())
+          dept_ids_lbl.get(x.to_string().as_str())
+            .map(SmolStr::new)
             .unwrap_or_default()
         )
-        .collect::<Vec<String>>()
+        .collect::<Vec<SmolStr>>()
     };
     // 所属组织
-    let org_ids: Option<sqlx::types::Json<HashMap<String, OrgId>>> = row.try_get("org_ids")?;
+    let org_ids: Option<sqlx::types::Json<HashMap<&str, OrgId>>> = row.try_get("org_ids")?;
     let org_ids = org_ids.unwrap_or_default().0;
     let org_ids = {
       let mut keys: Vec<u32> = org_ids.keys()
@@ -253,13 +257,13 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys.sort();
       keys.into_iter()
         .map(|x| 
-          org_ids.get(&x.to_string())
+          org_ids.get(x.to_string().as_str())
             .unwrap_or(&OrgId::default())
             .to_owned()
         )
         .collect::<Vec<OrgId>>()
     };
-    let org_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("org_ids_lbl")?;
+    let org_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("org_ids_lbl")?;
     let org_ids_lbl = org_ids_lbl.unwrap_or_default().0;
     let org_ids_lbl = {
       let mut keys: Vec<u32> = org_ids_lbl.keys()
@@ -276,48 +280,50 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       keys
         .into_iter()
         .map(|x| 
-          org_ids_lbl.get(&x.to_string())
-            .map(|x| x.to_owned())
+          org_ids_lbl.get(x.to_string().as_str())
+            .map(SmolStr::new)
             .unwrap_or_default()
         )
-        .collect::<Vec<String>>()
+        .collect::<Vec<SmolStr>>()
     };
     // 默认组织
     let default_org_id: OrgId = row.try_get("default_org_id")?;
-    let default_org_id_lbl: Option<String> = row.try_get("default_org_id_lbl")?;
-    let default_org_id_lbl = default_org_id_lbl.unwrap_or_default();
+    let default_org_id_lbl: Option<&str> = row.try_get("default_org_id_lbl")?;
+    let default_org_id_lbl = SmolStr::new(default_org_id_lbl.unwrap_or_default());
     // 类型
-    let type_lbl: String = row.try_get("type")?;
-    let r#type: UsrType = type_lbl.clone().try_into()?;
+    let type_lbl: &str = row.try_get("type")?;
+    let r#type: UsrType = type_lbl.try_into()?;
+    let type_lbl = SmolStr::new(type_lbl);
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl: String = is_locked.to_string();
+    let is_locked_lbl = SmolStr::new(is_locked.to_string());
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl: String = is_enabled.to_string();
+    let is_enabled_lbl = SmolStr::new(is_enabled.to_string());
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
-    let rem: String = row.try_get("rem")?;
+    let rem: &str = row.try_get("rem")?;
+    let rem = SmolStr::new(rem);
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let create_time_lbl: SmolStr = match create_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let update_time_lbl: SmolStr = match update_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -367,88 +373,88 @@ impl FromRow<'_, MySqlRow> for UsrModel {
 pub struct UsrFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 头像
   #[graphql(name = "img")]
-  pub img: String,
+  pub img: SmolStr,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: String,
+  pub username: SmolStr,
   /// 所属角色
   #[graphql(name = "role_ids")]
-  pub role_ids: String,
+  pub role_ids: SmolStr,
   /// 所属角色
   #[graphql(name = "role_ids_lbl")]
-  pub role_ids_lbl: String,
+  pub role_ids_lbl: SmolStr,
   /// 所属部门
   #[graphql(name = "dept_ids")]
-  pub dept_ids: String,
+  pub dept_ids: SmolStr,
   /// 所属部门
   #[graphql(name = "dept_ids_lbl")]
-  pub dept_ids_lbl: String,
+  pub dept_ids_lbl: SmolStr,
   /// 所属组织
   #[graphql(name = "org_ids")]
-  pub org_ids: String,
+  pub org_ids: SmolStr,
   /// 所属组织
   #[graphql(name = "org_ids_lbl")]
-  pub org_ids_lbl: String,
+  pub org_ids_lbl: SmolStr,
   /// 默认组织
   #[graphql(name = "default_org_id")]
-  pub default_org_id: String,
+  pub default_org_id: SmolStr,
   /// 默认组织
   #[graphql(name = "default_org_id_lbl")]
-  pub default_org_id_lbl: String,
+  pub default_org_id_lbl: SmolStr,
   /// 类型
   #[graphql(name = "type")]
-  pub r#type: String,
+  pub r#type: SmolStr,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: String,
+  pub type_lbl: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
-  pub is_locked: String,
+  pub is_locked: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
+  pub is_locked_lbl: SmolStr,
   /// 启用
   #[graphql(name = "is_enabled")]
-  pub is_enabled: String,
+  pub is_enabled: SmolStr,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: String,
+  pub is_enabled_lbl: SmolStr,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: String,
+  pub order_by: SmolStr,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: String,
+  pub create_usr_id: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: String,
+  pub create_time: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: String,
+  pub update_usr_id: SmolStr,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: String,
+  pub update_time: SmolStr,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -466,28 +472,28 @@ pub struct UsrSearch {
   pub is_deleted: Option<u8>,
   /// 头像
   #[graphql(skip)]
-  pub img: Option<String>,
+  pub img: Option<SmolStr>,
   /// 头像
   #[graphql(skip)]
-  pub img_like: Option<String>,
+  pub img_like: Option<SmolStr>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<String>,
+  pub lbl_like: Option<SmolStr>,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: Option<String>,
+  pub username: Option<SmolStr>,
   /// 用户名
   #[graphql(name = "username_like")]
-  pub username_like: Option<String>,
+  pub username_like: Option<SmolStr>,
   /// 密码
   #[graphql(skip)]
-  pub password: Option<String>,
+  pub password: Option<SmolStr>,
   /// 密码
   #[graphql(skip)]
-  pub password_like: Option<String>,
+  pub password_like: Option<SmolStr>,
   /// 所属角色
   #[graphql(name = "role_ids")]
   pub role_ids: Option<Vec<RoleId>>,
@@ -496,7 +502,7 @@ pub struct UsrSearch {
   pub role_ids_is_null: Option<bool>,
   /// 所属角色
   #[graphql(name = "role_ids_lbl_like")]
-  pub role_ids_lbl_like: Option<String>,
+  pub role_ids_lbl_like: Option<SmolStr>,
   /// 所属部门
   #[graphql(name = "dept_ids")]
   pub dept_ids: Option<Vec<DeptId>>,
@@ -505,7 +511,7 @@ pub struct UsrSearch {
   pub dept_ids_is_null: Option<bool>,
   /// 所属部门
   #[graphql(name = "dept_ids_lbl_like")]
-  pub dept_ids_lbl_like: Option<String>,
+  pub dept_ids_lbl_like: Option<SmolStr>,
   /// 所属组织
   #[graphql(name = "org_ids")]
   pub org_ids: Option<Vec<OrgId>>,
@@ -514,7 +520,7 @@ pub struct UsrSearch {
   pub org_ids_is_null: Option<bool>,
   /// 所属组织
   #[graphql(name = "org_ids_lbl_like")]
-  pub org_ids_lbl_like: Option<String>,
+  pub org_ids_lbl_like: Option<SmolStr>,
   /// 默认组织
   #[graphql(name = "default_org_id")]
   pub default_org_id: Option<Vec<OrgId>>,
@@ -523,10 +529,10 @@ pub struct UsrSearch {
   pub default_org_id_is_null: Option<bool>,
   /// 默认组织
   #[graphql(name = "default_org_id_lbl")]
-  pub default_org_id_lbl: Option<Vec<String>>,
+  pub default_org_id_lbl: Option<Vec<SmolStr>>,
   /// 默认组织
   #[graphql(name = "default_org_id_lbl_like")]
-  pub default_org_id_lbl_like: Option<String>,
+  pub default_org_id_lbl_like: Option<SmolStr>,
   /// 类型
   #[graphql(skip)]
   pub r#type: Option<Vec<UsrType>>,
@@ -541,10 +547,10 @@ pub struct UsrSearch {
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<String>,
+  pub rem_like: Option<SmolStr>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -553,10 +559,10 @@ pub struct UsrSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<String>>,
+  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<String>,
+  pub create_usr_id_lbl_like: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -568,10 +574,10 @@ pub struct UsrSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<String>>,
+  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<String>,
+  pub update_usr_id_lbl_like: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -728,76 +734,76 @@ pub struct UsrInput {
   pub is_hidden: Option<u8>,
   /// 头像
   #[graphql(name = "img")]
-  pub img: Option<String>,
+  pub img: Option<SmolStr>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 用户名
   #[graphql(name = "username")]
-  pub username: Option<String>,
+  pub username: Option<SmolStr>,
   /// 密码
   #[graphql(name = "password")]
-  pub password: Option<String>,
+  pub password: Option<SmolStr>,
   /// 所属角色
   #[graphql(name = "role_ids")]
   pub role_ids: Option<Vec<RoleId>>,
   /// 所属角色
   #[graphql(name = "role_ids_lbl")]
-  pub role_ids_lbl: Option<Vec<String>>,
+  pub role_ids_lbl: Option<Vec<SmolStr>>,
   /// 所属部门
   #[graphql(name = "dept_ids")]
   pub dept_ids: Option<Vec<DeptId>>,
   /// 所属部门
   #[graphql(name = "dept_ids_lbl")]
-  pub dept_ids_lbl: Option<Vec<String>>,
+  pub dept_ids_lbl: Option<Vec<SmolStr>>,
   /// 所属组织
   #[graphql(name = "org_ids")]
   pub org_ids: Option<Vec<OrgId>>,
   /// 所属组织
   #[graphql(name = "org_ids_lbl")]
-  pub org_ids_lbl: Option<Vec<String>>,
+  pub org_ids_lbl: Option<Vec<SmolStr>>,
   /// 默认组织
   #[graphql(name = "default_org_id")]
   pub default_org_id: Option<OrgId>,
   /// 默认组织
   #[graphql(name = "default_org_id_lbl")]
-  pub default_org_id_lbl: Option<String>,
+  pub default_org_id_lbl: Option<SmolStr>,
   /// 类型
   #[graphql(name = "type")]
   pub r#type: Option<UsrType>,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: Option<String>,
+  pub type_lbl: Option<SmolStr>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: Option<String>,
+  pub is_locked_lbl: Option<SmolStr>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: Option<String>,
+  pub is_enabled_lbl: Option<SmolStr>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<String>,
+  pub create_usr_id_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,
+  pub create_time_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -806,13 +812,13 @@ pub struct UsrInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<String>,
+  pub update_usr_id_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,
+  pub update_time_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -983,7 +989,45 @@ impl FromStr for UsrType {
     match s {
       "login" => Ok(Self::Login),
       "api" => Ok(Self::Api),
-      _ => Err(eyre!("UsrType can't convert from {s}")),
+      _ => Err(eyre!("{s} 无法转换到 类型")),
+    }
+  }
+}
+
+impl TryFrom<&str> for UsrType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "login" => Ok(Self::Login),
+      "api" => Ok(Self::Api),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 类型".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for UsrType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "login" => Ok(Self::Login),
+      "api" => Ok(Self::Api),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 类型".to_owned(),
+          )),
+        }),
+      )),
     }
   }
 }
@@ -1008,7 +1052,7 @@ impl TryFrom<String> for UsrType {
         Box::new(sqlx::Error::ColumnDecode {
           index: "type".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
-            "UsrType can't convert from {s}".to_owned(),
+            "{s} 无法转换到 类型".to_owned(),
           )),
         }),
       )),

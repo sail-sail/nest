@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -38,11 +41,11 @@ async fn set_search_query(
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
-  if !is_admin(usr_id, options.clone()).await? {
+  if !is_admin(usr_id, options).await? {
     search.create_usr_id = Some(vec![usr_id]);
   }
   Ok(())
@@ -60,7 +63,7 @@ pub async fn find_all_background_task(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let background_task_models = background_task_dao::find_all_background_task(
@@ -83,7 +86,7 @@ pub async fn find_count_background_task(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let background_task_num = background_task_dao::find_count_background_task(
@@ -105,7 +108,7 @@ pub async fn find_one_background_task(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let background_task_model = background_task_dao::find_one_background_task(
@@ -128,7 +131,7 @@ pub async fn find_one_ok_background_task(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let background_task_model = background_task_dao::find_one_ok_background_task(
@@ -252,7 +255,7 @@ pub async fn update_by_id_background_task(
   let background_task_id = background_task_dao::update_by_id_background_task(
     background_task_id,
     background_task_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(background_task_id)

@@ -15,10 +15,10 @@ tracing-appender = "0.2.4"
 tracing-attributes = "0.1.31"
 tokio = { version = "1.49.0", features = ["rt-multi-thread", "macros", "net", "fs"] }
 poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
-async-graphql = { version = "7.1.0", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
+async-graphql = { version = "7.2.1", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing", "raw_value"] }
 smol_str = { version = "0.3.5", features = ["serde"] }
-slab = "0.4.11"
-chrono = { version = "0.4.42", features = ["serde"] }
+slab = "0.4.12"
+chrono = { version = "0.4.43", features = ["serde"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15.0"
 rust-s3 = { version = "0.37.1", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
@@ -38,18 +38,18 @@ url = "2.5.8"
 # sqlformat = "0.3.5"
 smallvec = { version = "1.15.1", features = ["union", "serde"] }
 # downcast-rs = "2.0.1"
-uuid = { version = "1.19.0", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "1.20.0", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12.3"
-deadpool-redis = "0.22.0"
-redis = { version = "1.0.2", features = ["tokio-comp"], default-features = false }
+deadpool-redis = "0.22.1"
+redis = { version = "1.0.3", features = ["tokio-comp"], default-features = false }
 bigdecimal = "0.4.10"
-time = "0.3.44"
-rust_decimal = { version = "1.39.0", features = ["maths"]}
-rust_decimal_macros = "1.39.0"
+time = "0.3.46"
+rust_decimal = { version = "1.40.0", features = ["maths"]}
+rust_decimal_macros = "1.40.0"
 # enum_dispatch = "0.3.13"
 # pin-project-lite = "0.2.16"
 # rayon = "1.11.0"
-regex = "1.12.2"
+regex = "1.12.3"
 # yarte = "0.15.7"
 image = { version = "0.25.9", features = ["webp"] }
 delay_timer = "0.11.6"
@@ -75,7 +75,8 @@ csv = "1.4.0"
 docx-handlebars = "0.3.3"
 xlsx-handlebars = "0.2.2"
 tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"] }
-rust-embed = { version = "8.9.0", features = ["include-exclude"] }
+rust-embed = { version = "8.11.0", features = ["include-exclude"] }
+percent-encoding = "2.3.2"
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.2.0"
@@ -155,7 +156,7 @@ docx-handlebars.workspace = true
 xlsx-handlebars.workspace = true
 tokio-tungstenite.workspace = true
 rust-embed.workspace = true
-
+percent-encoding.workspace = true
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"
 
@@ -180,29 +181,22 @@ name = "rust"
 path = "main.rs"
 
 [profile.release]
-panic = "unwind"
 debug = 0
-strip = true           # 剥离符号表，大幅减小体积
-lto = "thin"          # 链接时优化（thin 比 true 编译更快）
-codegen-units = 16    # 平衡编译速度和优化
-opt-level = 3         # 最高性能优化（若要最小体积用 "z"）
 
 [profile.release.package.generated]
-debug = 1             # 只保留行号和函数名
-strip = false         # 保留 generated 的基本符号用于错误追踪
+debug = 0
 
 [profile.release.package.app]
-debug = 2             # 完整调试信息和堆栈
-strip = false         # 保留完整符号
+debug = 1
 
 [profile.dev]
-debug = 1
+debug = 0
 
 [profile.dev.package.generated]
-debug = 1
+debug = 0
 
 [profile.dev.package.app]
-debug = 2
+debug = 1
 
 [[bin]]
 name = "schema"

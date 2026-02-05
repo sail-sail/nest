@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::icon_model::*;
@@ -39,7 +42,7 @@ pub async fn find_all_icon(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let icon_models = icon_dao::find_all_icon(
@@ -62,7 +65,7 @@ pub async fn find_count_icon(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let icon_num = icon_dao::find_count_icon(
@@ -84,7 +87,7 @@ pub async fn find_one_icon(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let icon_model = icon_dao::find_one_icon(
@@ -107,7 +110,7 @@ pub async fn find_one_ok_icon(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let icon_model = icon_dao::find_one_ok_icon(
@@ -214,7 +217,7 @@ pub async fn update_by_id_icon(
   let icon_id = icon_dao::update_by_id_icon(
     icon_id,
     icon_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(icon_id)

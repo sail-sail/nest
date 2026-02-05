@@ -20,7 +20,7 @@ pub async fn regex(
   }
   
   let msg = ns(
-    "格式不正确".to_owned(),
+    "格式不正确".into(),
     None,
   ).await?;
   

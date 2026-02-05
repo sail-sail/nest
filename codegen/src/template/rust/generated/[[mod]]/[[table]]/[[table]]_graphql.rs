@@ -61,6 +61,7 @@ if (hasAudit) {
   auditModelLabel = auditTableIdColumn.modelLabel;
 }
 
+const hasSummary = columns.some((column) => column.showSummary);
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -75,6 +76,9 @@ use crate::common::context::{
   Options,
   UniqueType,
 };
+
+#[allow(unused_imports)]
+use smol_str::SmolStr;
 
 use crate::common::gql::model::{
   PageInput,
@@ -337,6 +341,28 @@ impl <#=tableUP#>GenQuery {
         )
       }).await
   }<#
+  if (hasSummary) {
+  #>
+  
+  /// 根据搜索条件查找<#=table_comment#>合计
+  #[graphql(name = "findSummary<#=Table_Up#>")]
+  async fn find_summary_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    search: Option<<#=tableUP#>Search>,
+  ) -> Result<<#=Table_Up#>Summary> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        <#=table#>_resolver::find_summary_<#=table#>(
+          search,
+          None,
+        )
+      }).await
+  }<#
+  }
+  #><#
   if (hasOrderBy) {
   #>
   

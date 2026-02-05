@@ -6,6 +6,10 @@ import type {
 /** 小程序升级检测 */
 export function appCheckUpgrade() {
   const updateManager = uni.getUpdateManager();
+  
+  if (!updateManager) {
+    return;
+  }
 
   updateManager.onCheckForUpdate(function (res) {
     // 请求完新版本信息的回调

@@ -79,6 +79,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
           <el-icon
             un-cursor="pointer"
             un-m="r-0.5"
+            un-text="[var(--el-text-color-placeholder)]"
             size="14"
             @click="onClear"
           >
@@ -87,8 +88,10 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
         </template>
         
         <el-icon
+          v-else
           un-cursor="pointer"
           un-m="r-0.5"
+          un-text="[var(--el-text-color-placeholder)]"
           size="14"
           @click="onInput('icon')"
         >

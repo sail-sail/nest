@@ -17,6 +17,11 @@ export default {
 };
 
 export interface TableCloumn {
+  /**
+   * Rust 字符串类型是否使用 SmolStr 代替 String
+   * 默认为 true
+   */
+  isSmolStrRust?: boolean;
   
   /**
    * 是否忽略生成代码
@@ -298,7 +303,7 @@ export interface TableCloumn {
     },
     
     /**
-     * 列表页面上的显示方式 tag: 标签, dialog: 弹窗, link: 链接, 默认为: tag
+     * 多对多列表页面上的显示方式 tag: 标签, dialog: 弹窗, link: 链接, 默认为: tag
      */
     showType?: "tag" | "dialog" | "link";
     
@@ -1070,6 +1075,10 @@ export interface TablesConfigItem {
         right_field?: string;
         is_export_excel?: boolean;
       } | boolean;
+      /**
+       * Detail页面中是否有查看详情弹窗, 例如被外键关联引用时, 默认为false
+       */
+      hasDetailModal?: boolean;
     };
     
     /**

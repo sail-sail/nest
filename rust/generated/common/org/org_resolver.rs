@@ -3,6 +3,8 @@ use tracing::info;
 
 use crate::common::context::{Ctx, get_req_id};
 
+use smol_str::SmolStr;
+
 use super::org_service;
 
 use crate::base::org::org_model::OrgId;
@@ -11,7 +13,7 @@ use crate::base::org::org_model::OrgId;
 pub async fn org_login_select(
   ctx: &mut Ctx,
   org_id: OrgId,
-) -> Result<String> {
+) -> Result<SmolStr> {
   
   info!(
     "{req_id} {function_name}",

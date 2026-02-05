@@ -11,8 +11,8 @@
   <slot name="left"></slot>
   
   <view
-    un-flex="~ [1_0_0] wrap"
-    un-overflow-hidden
+    un-flex="~ [1_0_0]"
+    un-overflow="hidden"
     un-items="center"
     un-h="full"
     un-w="full"
@@ -26,12 +26,16 @@
       v-if="(props.multiple || modelLabels[0]) && (!props.multiple || modelLabels.length > 0)"
     >
       
-      <text
+      <view
         v-if="!props.multiple || modelLabels.length === 1"
+        un-flex="~ [1_0_0] wrap"
+        un-overflow="hidden"
+        un-items="center"
+        un-h="full"
         un-cursor="pointer"
       >
         {{ modelLabels[0] || '' }}
-      </text>
+      </view>
       
       <template
         v-else
@@ -83,19 +87,18 @@
       
     </template>
     
-    <text
+    <view
       v-else
-      un-text="gray"
+      un-flex="~ [1_0_0] wrap"
+      un-overflow="hidden"
+      un-items="center"
+      un-h="full"
       un-cursor="pointer"
+      un-text="gray"
     >
       {{ props.pageInited ? (props.placeholder || '') : '' }}
-    </text>
+    </view>
     
-    <view
-      un-flex="[1_0_0]"
-      un-overflow-hidden
-    ></view>
-  
     <view
       v-if="props.clearable && !readonly && !modelValueIsEmpty"
       @tap.stop=""
@@ -359,7 +362,7 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    method: () => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]; // 用于获取数据的方法
+    method?: () => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]; // 用于获取数据的方法
     optionsMap?: OptionsMap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
@@ -375,6 +378,7 @@ const props = withDefaults(
     searchStr?: string | null;
   }>(),
   {
+    method: undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     optionsMap: function(item: any) {
       const item2 = item as { lbl: string; id: string; };

@@ -13,6 +13,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -232,8 +235,8 @@ pub async fn creates_dict(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_dict().to_string(),
-    "add".to_owned(),
+    SmolStr::new(get_page_path_dict()),
+    SmolStr::new("add"),
   ).await?;
   
   let ids = dict_service::creates_dict(
@@ -268,8 +271,8 @@ pub async fn update_by_id_dict(
   ).await?;
   
   use_permit(
-    get_page_path_dict().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_dict()),
+    SmolStr::new("edit"),
   ).await?;
   
   let res = dict_service::update_by_id_dict(
@@ -296,8 +299,8 @@ pub async fn delete_by_ids_dict(
   );
   
   use_permit(
-    get_page_path_dict().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_dict()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = dict_service::delete_by_ids_dict(
@@ -347,8 +350,8 @@ pub async fn enable_by_ids_dict(
   );
   
   use_permit(
-    get_page_path_dict().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_dict()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = dict_service::enable_by_ids_dict(
@@ -394,8 +397,8 @@ pub async fn revert_by_ids_dict(
   );
   
   use_permit(
-    get_page_path_dict().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_dict()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = dict_service::revert_by_ids_dict(
@@ -421,8 +424,8 @@ pub async fn force_delete_by_ids_dict(
   );
   
   use_permit(
-    get_page_path_dict().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_dict()),
+    SmolStr::new("force_delete"),
   ).await?;
   
   let num = dict_service::force_delete_by_ids_dict(
