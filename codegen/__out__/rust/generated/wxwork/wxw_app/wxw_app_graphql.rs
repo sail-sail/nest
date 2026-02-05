@@ -13,6 +13,9 @@ use crate::common::context::{
   UniqueType,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -240,12 +243,14 @@ impl WxwAppGenQuery {
   async fn find_last_order_by_wxw_app(
     &self,
     ctx: &Context<'_>,
+    search: Option<WxwAppSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         wxw_app_resolver::find_last_order_by_wxw_app(
+          search,
           None,
         )
       }).await

@@ -3,6 +3,8 @@ use async_graphql::{Context, Object};
 
 use generated::common::context::Ctx;
 
+use smol_str::SmolStr;
+
 use super::wxw_app_token_model::WxwGetConfigSignature;
 use super::wxw_app_token_resolver;
 
@@ -16,9 +18,9 @@ impl WxwAppTokenQuery {
   async fn wxw_get_config_signature(
     &self,
     ctx: &Context<'_>,
-    appid: String,
-    agentid: String,
-    url: String,
+    appid: SmolStr,
+    agentid: SmolStr,
+    url: SmolStr,
   ) -> Result<WxwGetConfigSignature> {
     Ctx::builder(ctx)
       .build()
@@ -35,9 +37,9 @@ impl WxwAppTokenQuery {
   async fn wxw_get_agent_config_signature(
     &self,
     ctx: &Context<'_>,
-    appid: String,
-    agentid: String,
-    url: String,
+    appid: SmolStr,
+    agentid: SmolStr,
+    url: SmolStr,
   ) -> Result<WxwGetConfigSignature> {
     Ctx::builder(ctx)
       .build()

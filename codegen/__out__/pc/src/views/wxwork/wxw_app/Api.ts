@@ -48,7 +48,7 @@ export function intoInputWxwApp(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -641,8 +641,8 @@ export function useExportExcelWxwApp() {
     try {
       const data = await query({
         query: `
-          query($search: WxwAppSearch, $sort: [SortInput!]) {
-            findAllWxwApp(search: $search, page: null, sort: $sort) {
+          query($search: WxwAppSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllWxwApp(search: $search, page: $page, sort: $sort) {
               ${ wxwAppQueryField }
             }
             findAllDomain {
@@ -659,6 +659,9 @@ export function useExportExcelWxwApp() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -743,19 +746,22 @@ export async function importModelsWxwApp(
  * 查找 企微应用 order_by 字段的最大值
  */
 export async function findLastOrderByWxwApp(
+  search?: WxwAppSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByWxwApp: Query["findLastOrderByWxwApp"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByWxwApp
+      query($search: WxwAppSearch) {
+        findLastOrderByWxwApp(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByWxwApp;
-  return res;
+  
+  const order_by = data.findLastOrderByWxwApp;
+  
+  return order_by;
 }
 
 /**

@@ -1,5 +1,7 @@
 use color_eyre::eyre::Result;
 
+use smol_str::SmolStr;
+
 use super::wxw_usr_service;
 
 use super::wxw_usr_model::{
@@ -10,7 +12,7 @@ use super::wxw_usr_model::{
 
 /// 通过host获取appid, agentid
 pub async fn wxw_get_appid(
-  host: String,
+  host: SmolStr,
 ) -> Result<WxwGetAppid> {
   
   let res = wxw_usr_service::wxw_get_appid(
@@ -34,7 +36,7 @@ pub async fn wxw_login_by_code(
 
 /// 同步企业微信用户
 pub async fn wxw_sync_usr(
-  host: String,
+  host: SmolStr,
 ) -> Result<i32> {
   
   let res = wxw_usr_service::wxw_sync_usr(

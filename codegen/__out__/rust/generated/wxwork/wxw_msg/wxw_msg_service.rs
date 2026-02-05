@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_wxw_msg(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxw_msg_models = wxw_msg_dao::find_all_wxw_msg(
@@ -64,7 +67,7 @@ pub async fn find_count_wxw_msg(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxw_msg_num = wxw_msg_dao::find_count_wxw_msg(
@@ -86,7 +89,7 @@ pub async fn find_one_wxw_msg(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxw_msg_model = wxw_msg_dao::find_one_wxw_msg(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_wxw_msg(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxw_msg_model = wxw_msg_dao::find_one_ok_wxw_msg(
@@ -233,7 +236,7 @@ pub async fn update_by_id_wxw_msg(
   let wxw_msg_id = wxw_msg_dao::update_by_id_wxw_msg(
     wxw_msg_id,
     wxw_msg_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(wxw_msg_id)

@@ -10,6 +10,9 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -31,6 +34,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
+  find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -91,14 +95,14 @@ async fn get_where_query(
     if let Some(ids) = ids {
       let arg = {
         if ids.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.id in (");
@@ -134,14 +138,14 @@ async fn get_where_query(
     if let Some(wxw_app_id) = wxw_app_id {
       let arg = {
         if wxw_app_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(wxw_app_id.len());
           for item in wxw_app_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.wxw_app_id in (");
@@ -159,21 +163,21 @@ async fn get_where_query(
     }
   }
   {
-    let wxw_app_id_lbl: Option<Vec<String>> = match search {
+    let wxw_app_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.wxw_app_id_lbl.clone(),
       None => None,
     };
     if let Some(wxw_app_id_lbl) = wxw_app_id_lbl {
       let arg = {
         if wxw_app_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(wxw_app_id_lbl.len());
           for item in wxw_app_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and wxw_app_id_lbl.lbl in (");
@@ -193,21 +197,21 @@ async fn get_where_query(
   }
   // 发送状态
   {
-    let errcode: Option<Vec<String>> = match search {
+    let errcode: Option<Vec<SmolStr>> = match search {
       Some(item) => item.errcode.clone(),
       None => None,
     };
     if let Some(errcode) = errcode {
       let arg = {
         if errcode.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(errcode.len());
           for item in errcode {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.errcode in (");
@@ -374,14 +378,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
         if create_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -399,21 +403,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<String>> = match search {
+    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -442,14 +446,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
         if update_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -467,21 +471,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<String>> = match search {
+    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -568,66 +572,55 @@ pub async fn find_all_wxw_msg(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(vec![]);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(vec![]);
     }
   }
   // 企微应用
-  if let Some(search) = &search && search.wxw_app_id.is_some() {
-    let len = search.wxw_app_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(wxw_app_id) = &search.wxw_app_id {
+    let len = wxw_app_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.wxw_app_id.length > {ids_limit}"));
     }
   }
   // 发送状态
-  if let Some(search) = &search && search.errcode.is_some() {
-    let len = search.errcode.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(errcode) = &search.errcode {
+    let len = errcode.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.errcode.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(create_usr_id) = &search.create_usr_id {
+    let len = create_usr_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(update_usr_id) = &search.update_usr_id {
+    let len = update_usr_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
@@ -656,6 +649,9 @@ pub async fn find_all_wxw_msg(
   }
   
   let order_by_query = get_order_by_query(Some(sort));
+  let is_result_limit = page.as_ref()
+    .and_then(|item| item.is_result_limit)
+    .unwrap_or(true);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -664,13 +660,24 @@ pub async fn find_all_wxw_msg(
   
   let args = args.into();
   
-  let options = Options::from(options);
-  
   let mut res: Vec<WxwMsgModel> = query(
     sql,
     args,
-    Some(options),
+    options,
   ).await?;
+  
+  let len = res.len();
+  let result_limit_num = find_all_result_limit();
+  
+  if is_result_limit && len > result_limit_num {
+    return Err(eyre!(
+      ServiceException {
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
   
   let dict_vec = get_dict(&[
     "wxw_msg_errcode",
@@ -690,7 +697,7 @@ pub async fn find_all_wxw_msg(
         .iter()
         .find(|item| item.val == model.errcode.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.errcode.to_string())
+        .unwrap_or_else(|| model.errcode.clone())
     };
     
   }
@@ -801,6 +808,10 @@ pub async fn find_count_wxw_msg(
   let sql = format!(r#"select count(1) total from(select 1 from {from_query} where {where_query} group by t.id) t"#);
   
   let args = args.into();
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let res: Option<CountModel> = query_one(
     sql,
@@ -931,10 +942,11 @@ pub async fn find_one_wxw_msg(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let page = PageInput {
-    pg_offset: 0.into(),
-    pg_size: 1.into(),
-  }.into();
+  let page = Some(PageInput {
+    pg_offset: Some(0),
+    pg_size: Some(1),
+    is_result_limit: Some(true),
+  });
   
   let res = find_all_wxw_msg(
     search,
@@ -983,13 +995,13 @@ pub async fn find_by_id_ok_wxw_msg(
   ).await?;
   
   let Some(wxw_msg_model) = wxw_msg_model else {
-    let err_msg = "此 企微消息 已被删除";
+    let err_msg = SmolStr::new("此 企微消息 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: err_msg.to_string(),
+      message: err_msg,
       trace: true,
       ..Default::default()
     }));
@@ -1082,7 +1094,7 @@ pub async fn find_by_ids_ok_wxw_msg(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1095,7 +1107,7 @@ pub async fn find_by_ids_ok_wxw_msg(
   ).await?;
   
   if wxw_msg_models.len() != len {
-    let err_msg = "此 企微消息 已被删除";
+    let err_msg = SmolStr::new("此 企微消息 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1108,7 +1120,7 @@ pub async fn find_by_ids_ok_wxw_msg(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = "此 企微消息 已经被删除";
+      let err_msg = SmolStr::new("此 企微消息 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<WxwMsgModel>>>()?;
@@ -1154,7 +1166,7 @@ pub async fn find_by_ids_wxw_msg(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1291,6 +1303,10 @@ pub async fn exists_wxw_msg(
   
   let args = args.into();
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let res: Option<(bool,)> = query_one(
     sql,
     args,
@@ -1377,10 +1393,12 @@ pub async fn find_by_unique_wxw_msg(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
+  
   if let Some(id) = search.id {
     let model = find_by_id_wxw_msg(
       id,
-      options.clone(),
+      options,
     ).await?;
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
@@ -1389,14 +1407,17 @@ pub async fn find_by_unique_wxw_msg(
 }
 
 /// 根据唯一约束对比对象是否相等
-#[allow(dead_code)]
+#[allow(dead_code, unused_variables)]
 pub fn equals_by_unique(
   input: &WxwMsgInput,
   model: &WxwMsgModel,
+  options: Option<&Options>,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }
+  
+  let is_silent_mode = get_is_silent_mode(options);
   false
 }
 
@@ -1434,6 +1455,7 @@ pub async fn check_by_unique_wxw_msg(
   let is_equals = equals_by_unique(
     &input,
     &model,
+    options.as_ref(),
   );
   if !is_equals {
     return Ok(None);
@@ -1497,7 +1519,7 @@ pub async fn set_id_by_lbl_wxw_msg(
     && input.wxw_app_id.is_none()
   {
     input.wxw_app_id_lbl = input.wxw_app_id_lbl.map(|item| 
-      item.trim().to_owned()
+      SmolStr::new(item.trim())
     );
     let model = crate::wxwork::wxw_app::wxw_app_dao::find_one_wxw_app(
       crate::wxwork::wxw_app::wxw_app_model::WxwAppSearch {
@@ -1536,7 +1558,7 @@ pub async fn set_id_by_lbl_wxw_msg(
     let dict_model = errcode_dict.iter().find(|item| {
       item.lbl == input.errcode_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.errcode = val.into();
     }
@@ -1548,7 +1570,7 @@ pub async fn set_id_by_lbl_wxw_msg(
     let dict_model = errcode_dict.iter().find(|item| {
       item.val == input.errcode.clone().unwrap_or_default()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.errcode_lbl = lbl;
   }
   
@@ -1582,7 +1604,7 @@ pub async fn creates_return_wxw_msg(
   
   let ids = _creates(
     inputs.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let models_wxw_msg = find_by_ids_wxw_msg(
@@ -1654,14 +1676,14 @@ async fn _creates(
     let old_models = find_by_unique_wxw_msg(
       input.clone().into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if !old_models.is_empty() {
       let mut id: Option<WxwMsgId> = None;
       
       for old_model in old_models {
-        let options = Options::from(options.clone())
+        let options = Options::from(options)
           .set_unique_type(unique_type);
         
         id = check_by_unique_wxw_msg(
@@ -1764,11 +1786,11 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_lbl = usr_model.lbl;
@@ -1784,15 +1806,15 @@ async fn _creates(
         }
         sql_values += ",?";
         args.push(usr_lbl.into());
-      } else if input.create_usr_id.unwrap().is_empty() {
+      } else if input.create_usr_id.is_none_or(|s| s.is_empty()) {
         sql_values += ",default";
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
-          options.clone(),
+          options,
         ).await?;
         if let Some(usr_model) = usr_model {
           usr_lbl = usr_model.lbl;
@@ -1921,14 +1943,10 @@ async fn _creates(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = Some(options);
-  
   let affected_rows = execute(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
   
   if affected_rows != inputs2_len as u64 {
@@ -1949,7 +1967,7 @@ pub async fn create_return_wxw_msg(
   
   let id = create_wxw_msg(
     input.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let model_wxw_msg = find_by_id_wxw_msg(
@@ -1957,17 +1975,19 @@ pub async fn create_return_wxw_msg(
     options,
   ).await?;
   
-  if model_wxw_msg.is_none() {
-    let err_msg = "create_return_wxw_msg: model_wxw_msg.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_wxw_msg = model_wxw_msg.unwrap();
+  let model_wxw_msg = match model_wxw_msg {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_wxw_msg: model_wxw_msg.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.into(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_wxw_msg)
 }
@@ -2038,6 +2058,7 @@ pub async fn update_tenant_by_id_wxw_msg(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
@@ -2051,7 +2072,7 @@ pub async fn update_tenant_by_id_wxw_msg(
   let num = execute(
     sql,
     args,
-    Some(options.clone()),
+    options,
   ).await?;
   
   Ok(num)
@@ -2094,14 +2115,16 @@ pub async fn update_by_id_wxw_msg(
   
   let old_model = find_by_id_wxw_msg(
     id,
-    options.clone(),
+    options,
   ).await?;
   
-  if old_model.is_none() {
-    let err_msg = "编辑失败, 此 企微消息 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {
+      let err_msg = "编辑失败, 此 企微消息 已被删除";
+      return Err(eyre!(err_msg));
+    }
+  };
   
   if !is_silent_mode {
     info!(
@@ -2120,7 +2143,7 @@ pub async fn update_by_id_wxw_msg(
     let models = find_by_unique_wxw_msg(
       input.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let models = models.into_iter()
@@ -2213,11 +2236,11 @@ pub async fn update_by_id_wxw_msg(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2233,13 +2256,15 @@ pub async fn update_by_id_wxw_msg(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      } else if !input.update_usr_id.unwrap().is_empty() {
+      } else if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2255,7 +2280,9 @@ pub async fn update_by_id_wxw_msg(
         }
       }
     } else {
-      if input.update_usr_id.is_some() && !input.update_usr_id.unwrap().is_empty() {
+      if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let usr_id = input.update_usr_id;
         if let Some(usr_id) = usr_id {
           sql_fields += "update_usr_id=?,";
@@ -2291,19 +2318,43 @@ pub async fn update_by_id_wxw_msg(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
   }
   
   Ok(id)
+}
+
+// MARK: update_by_id_return_wxw_msg
+/// 根据 id 更新企微消息, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_wxw_msg(
+  id: WxwMsgId,
+  input: WxwMsgInput,
+  options: Option<Options>,
+) -> Result<WxwMsgModel> {
+  
+  update_by_id_wxw_msg(
+    id,
+    input,
+    options,
+  ).await?;
+  
+  let model = find_by_id_wxw_msg(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "企微消息 update_by_id_return_wxw_msg id: {id}",
+    )),
+  }
 }
 
 /// 获取需要清空缓存的表名
@@ -2312,6 +2363,7 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_wxw_msg();
   vec![
     table,
+    "wxwork_wxw_app",
   ]
 }
 
@@ -2319,10 +2371,25 @@ fn get_cache_tables() -> Vec<&'static str> {
 /// 清空缓存
 #[allow(dead_code)]
 pub async fn del_cache_wxw_msg() -> Result<()> {
+  
   let cache_key1s = get_cache_tables();
+  
+  let cache_key1s = cache_key1s
+    .into_iter()
+    .map(|x|
+      format!("dao.sql.{x}")
+    )
+    .collect::<Vec<String>>();
+  
+  let cache_key1s_str = cache_key1s
+    .iter()
+    .map(|item| item.as_str())
+    .collect::<Vec<&str>>();
+  
   del_caches(
-    cache_key1s.as_slice(),
+    cache_key1s_str.as_slice(),
   ).await?;
+  
   Ok(())
 }
 
@@ -2371,7 +2438,7 @@ pub async fn delete_by_ids_wxw_msg(
     
     let old_model = find_by_id_wxw_msg(
       id,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2394,11 +2461,11 @@ pub async fn delete_by_ids_wxw_msg(
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = String::new();
+    let mut usr_lbl = SmolStr::new("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
-        options.clone(),
+        options,
       ).await?;
       if let Some(usr_model) = usr_model {
         usr_lbl = usr_model.lbl;
@@ -2432,14 +2499,10 @@ pub async fn delete_by_ids_wxw_msg(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -2499,13 +2562,13 @@ pub async fn revert_by_ids_wxw_msg(
         ..Default::default()
       }.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if old_model.is_none() {
       old_model = find_by_id_wxw_msg(
         id,
-        options.clone(),
+        options,
       ).await?;
     }
     
@@ -2521,7 +2584,7 @@ pub async fn revert_by_ids_wxw_msg(
       let models = find_by_unique_wxw_msg(
         input.into(),
         None,
-        options.clone(),
+        options,
       ).await?;
       
       let models: Vec<WxwMsgModel> = models
@@ -2540,7 +2603,7 @@ pub async fn revert_by_ids_wxw_msg(
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
   }
@@ -2593,7 +2656,7 @@ pub async fn force_delete_by_ids_wxw_msg(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2619,14 +2682,10 @@ pub async fn force_delete_by_ids_wxw_msg(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -2639,20 +2698,24 @@ pub async fn force_delete_by_ids_wxw_msg(
 pub async fn validate_option_wxw_msg(
   model: Option<WxwMsgModel>,
 ) -> Result<WxwMsgModel> {
-  if model.is_none() {
-    let err_msg = "企微消息不存在";
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {
+      let err_msg = SmolStr::new("企微消息不存在");
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg,
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }

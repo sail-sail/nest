@@ -62,34 +62,34 @@ pub struct WxwMsgModel {
   pub wxw_app_id: WxwAppId,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: String,
+  pub wxw_app_id_lbl: SmolStr,
   /// 发送状态
   #[graphql(name = "errcode")]
-  pub errcode: String,
+  pub errcode: SmolStr,
   /// 发送状态
   #[graphql(name = "errcode_lbl")]
-  pub errcode_lbl: String,
+  pub errcode_lbl: SmolStr,
   /// 成员ID
   #[graphql(name = "touser")]
-  pub touser: String,
+  pub touser: SmolStr,
   /// 标题
   #[graphql(name = "title")]
-  pub title: String,
+  pub title: SmolStr,
   /// 描述
   #[graphql(name = "description")]
-  pub description: String,
+  pub description: SmolStr,
   /// 链接
   #[graphql(skip)]
-  pub url: String,
+  pub url: SmolStr,
   /// 按钮文字
   #[graphql(name = "btntxt")]
-  pub btntxt: String,
+  pub btntxt: SmolStr,
   /// 错误信息
   #[graphql(name = "errmsg")]
-  pub errmsg: String,
+  pub errmsg: SmolStr,
   /// 消息ID
   #[graphql(skip)]
-  pub msgid: String,
+  pub msgid: SmolStr,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -97,23 +97,23 @@ pub struct WxwMsgModel {
   pub create_usr_id: UsrId,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: UsrId,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for WxwMsgModel {
@@ -124,44 +124,52 @@ impl FromRow<'_, MySqlRow> for WxwMsgModel {
     let id: WxwMsgId = row.try_get("id")?;
     // 企微应用
     let wxw_app_id: WxwAppId = row.try_get("wxw_app_id")?;
-    let wxw_app_id_lbl: Option<String> = row.try_get("wxw_app_id_lbl")?;
-    let wxw_app_id_lbl = wxw_app_id_lbl.unwrap_or_default();
+    let wxw_app_id_lbl: Option<&str> = row.try_get("wxw_app_id_lbl")?;
+    let wxw_app_id_lbl = SmolStr::new(wxw_app_id_lbl.unwrap_or_default());
     // 发送状态
-    let errcode_lbl: String = row.try_get("errcode")?;
-    let errcode: String = errcode_lbl.clone();
+    let errcode: &str = row.try_get("errcode")?;
+    let errcode = SmolStr::new(errcode);
+    let errcode_lbl = errcode.clone();
     // 成员ID
-    let touser: String = row.try_get("touser")?;
+    let touser: &str = row.try_get("touser")?;
+    let touser = SmolStr::new(touser);
     // 标题
-    let title: String = row.try_get("title")?;
+    let title: &str = row.try_get("title")?;
+    let title = SmolStr::new(title);
     // 描述
-    let description: String = row.try_get("description")?;
+    let description: &str = row.try_get("description")?;
+    let description = SmolStr::new(description);
     // 链接
-    let url: String = row.try_get("url")?;
+    let url: &str = row.try_get("url")?;
+    let url = SmolStr::new(url);
     // 按钮文字
-    let btntxt: String = row.try_get("btntxt")?;
+    let btntxt: &str = row.try_get("btntxt")?;
+    let btntxt = SmolStr::new(btntxt);
     // 错误信息
-    let errmsg: String = row.try_get("errmsg")?;
+    let errmsg: &str = row.try_get("errmsg")?;
+    let errmsg = SmolStr::new(errmsg);
     // 消息ID
-    let msgid: String = row.try_get("msgid")?;
+    let msgid: &str = row.try_get("msgid")?;
+    let msgid = SmolStr::new(msgid);
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let create_time_lbl: SmolStr = match create_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let update_time_lbl: SmolStr = match update_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -201,40 +209,40 @@ impl FromRow<'_, MySqlRow> for WxwMsgModel {
 pub struct WxwMsgFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 企微应用
   #[graphql(name = "wxw_app_id")]
-  pub wxw_app_id: String,
+  pub wxw_app_id: SmolStr,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: String,
+  pub wxw_app_id_lbl: SmolStr,
   /// 发送状态
   #[graphql(name = "errcode")]
-  pub errcode: String,
+  pub errcode: SmolStr,
   /// 发送状态
   #[graphql(name = "errcode_lbl")]
-  pub errcode_lbl: String,
+  pub errcode_lbl: SmolStr,
   /// 成员ID
   #[graphql(name = "touser")]
-  pub touser: String,
+  pub touser: SmolStr,
   /// 标题
   #[graphql(name = "title")]
-  pub title: String,
+  pub title: SmolStr,
   /// 描述
   #[graphql(name = "description")]
-  pub description: String,
+  pub description: SmolStr,
   /// 按钮文字
   #[graphql(name = "btntxt")]
-  pub btntxt: String,
+  pub btntxt: SmolStr,
   /// 发送时间
   #[graphql(name = "create_time")]
-  pub create_time: String,
+  pub create_time: SmolStr,
   /// 发送时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 错误信息
   #[graphql(name = "errmsg")]
-  pub errmsg: String,
+  pub errmsg: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -256,58 +264,58 @@ pub struct WxwMsgSearch {
   pub wxw_app_id_is_null: Option<bool>,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: Option<Vec<String>>,
+  pub wxw_app_id_lbl: Option<Vec<SmolStr>>,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl_like")]
-  pub wxw_app_id_lbl_like: Option<String>,
+  pub wxw_app_id_lbl_like: Option<SmolStr>,
   /// 发送状态
   #[graphql(name = "errcode")]
-  pub errcode: Option<Vec<String>>,
+  pub errcode: Option<Vec<SmolStr>>,
   /// 成员ID
   #[graphql(skip)]
-  pub touser: Option<String>,
+  pub touser: Option<SmolStr>,
   /// 成员ID
   #[graphql(skip)]
-  pub touser_like: Option<String>,
+  pub touser_like: Option<SmolStr>,
   /// 标题
   #[graphql(skip)]
-  pub title: Option<String>,
+  pub title: Option<SmolStr>,
   /// 标题
   #[graphql(skip)]
-  pub title_like: Option<String>,
+  pub title_like: Option<SmolStr>,
   /// 描述
   #[graphql(skip)]
-  pub description: Option<String>,
+  pub description: Option<SmolStr>,
   /// 描述
   #[graphql(skip)]
-  pub description_like: Option<String>,
+  pub description_like: Option<SmolStr>,
   /// 链接
   #[graphql(skip)]
-  pub url: Option<String>,
+  pub url: Option<SmolStr>,
   /// 链接
   #[graphql(skip)]
-  pub url_like: Option<String>,
+  pub url_like: Option<SmolStr>,
   /// 按钮文字
   #[graphql(skip)]
-  pub btntxt: Option<String>,
+  pub btntxt: Option<SmolStr>,
   /// 按钮文字
   #[graphql(skip)]
-  pub btntxt_like: Option<String>,
+  pub btntxt_like: Option<SmolStr>,
   /// 发送时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 错误信息
   #[graphql(skip)]
-  pub errmsg: Option<String>,
+  pub errmsg: Option<SmolStr>,
   /// 错误信息
   #[graphql(skip)]
-  pub errmsg_like: Option<String>,
+  pub errmsg_like: Option<SmolStr>,
   /// 消息ID
   #[graphql(skip)]
-  pub msgid: Option<String>,
+  pub msgid: Option<SmolStr>,
   /// 消息ID
   #[graphql(skip)]
-  pub msgid_like: Option<String>,
+  pub msgid_like: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -316,10 +324,10 @@ pub struct WxwMsgSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<Vec<String>>,
+  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl_like: Option<String>,
+  pub create_usr_id_lbl_like: Option<SmolStr>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
@@ -328,10 +336,10 @@ pub struct WxwMsgSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<Vec<String>>,
+  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl_like: Option<String>,
+  pub update_usr_id_lbl_like: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -458,7 +466,7 @@ impl std::fmt::Debug for WxwMsgSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxwMsgInput")]
 #[allow(dead_code)]
 pub struct WxwMsgInput {
@@ -475,46 +483,46 @@ pub struct WxwMsgInput {
   pub wxw_app_id: Option<WxwAppId>,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: Option<String>,
+  pub wxw_app_id_lbl: Option<SmolStr>,
   /// 发送状态
   #[graphql(name = "errcode")]
-  pub errcode: Option<String>,
+  pub errcode: Option<SmolStr>,
   /// 发送状态
   #[graphql(name = "errcode_lbl")]
-  pub errcode_lbl: Option<String>,
+  pub errcode_lbl: Option<SmolStr>,
   /// 成员ID
   #[graphql(name = "touser")]
-  pub touser: Option<String>,
+  pub touser: Option<SmolStr>,
   /// 标题
   #[graphql(name = "title")]
-  pub title: Option<String>,
+  pub title: Option<SmolStr>,
   /// 描述
   #[graphql(name = "description")]
-  pub description: Option<String>,
+  pub description: Option<SmolStr>,
   /// 链接
   #[graphql(skip)]
-  pub url: Option<String>,
+  pub url: Option<SmolStr>,
   /// 按钮文字
   #[graphql(name = "btntxt")]
-  pub btntxt: Option<String>,
+  pub btntxt: Option<SmolStr>,
   /// 错误信息
   #[graphql(name = "errmsg")]
-  pub errmsg: Option<String>,
+  pub errmsg: Option<SmolStr>,
   /// 消息ID
   #[graphql(skip)]
-  pub msgid: Option<String>,
+  pub msgid: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<String>,
+  pub create_usr_id_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,
+  pub create_time_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -523,13 +531,13 @@ pub struct WxwMsgInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<String>,
+  pub update_usr_id_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,
+  pub update_time_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,

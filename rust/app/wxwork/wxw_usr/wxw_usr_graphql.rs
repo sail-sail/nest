@@ -3,6 +3,8 @@ use async_graphql::{Context, Object};
 
 use generated::common::context::Ctx;
 
+use smol_str::SmolStr;
+
 use super::wxw_usr_resolver;
 
 use super::wxw_usr_model::{
@@ -21,7 +23,7 @@ impl WxwUsrQuery {
   async fn wxw_get_appid(
     &self,
     ctx: &Context<'_>,
-    host: String,
+    host: SmolStr,
   ) -> Result<WxwGetAppid> {
     Ctx::builder(ctx)
       .build()
@@ -55,7 +57,7 @@ impl WxwUsrMutation {
   async fn wxw_sync_usr(
     &self,
     ctx: &Context<'_>,
-    host: String,
+    host: SmolStr,
   ) -> Result<i32> {
     Ctx::builder(ctx)
       .build()

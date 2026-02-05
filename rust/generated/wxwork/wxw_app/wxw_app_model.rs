@@ -62,43 +62,43 @@ pub struct WxwAppModel {
   pub id: WxwAppId,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 企业ID
   #[graphql(name = "corpid")]
-  pub corpid: String,
+  pub corpid: SmolStr,
   /// 应用ID
   #[graphql(name = "agentid")]
-  pub agentid: String,
+  pub agentid: SmolStr,
   /// 可信域名
   #[graphql(name = "domain_id")]
   pub domain_id: DomainId,
   /// 可信域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: String,
+  pub domain_id_lbl: SmolStr,
   /// 应用密钥
   #[graphql(name = "corpsecret")]
-  pub corpsecret: String,
+  pub corpsecret: SmolStr,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
-  pub contactsecret: String,
+  pub contactsecret: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
+  pub is_locked_lbl: SmolStr,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: String,
+  pub is_enabled_lbl: SmolStr,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -106,25 +106,25 @@ pub struct WxwAppModel {
   pub create_usr_id: UsrId,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: UsrId,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for WxwAppModel {
@@ -134,50 +134,54 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
     // ID
     let id: WxwAppId = row.try_get("id")?;
     // 名称
-    let lbl: String = row.try_get("lbl")?;
+    let lbl: &str = row.try_get("lbl")?;
+    let lbl = SmolStr::new(lbl);
     // 企业ID
-    let corpid: String = row.try_get("corpid")?;
+    let corpid: &str = row.try_get("corpid")?;
+    let corpid = SmolStr::new(corpid);
     // 应用ID
-    let agentid: String = row.try_get("agentid")?;
+    let agentid: &str = row.try_get("agentid")?;
+    let agentid = SmolStr::new(agentid);
     // 可信域名
     let domain_id: DomainId = row.try_get("domain_id")?;
-    let domain_id_lbl: Option<String> = row.try_get("domain_id_lbl")?;
-    let domain_id_lbl = domain_id_lbl.unwrap_or_default();
+    let domain_id_lbl: Option<&str> = row.try_get("domain_id_lbl")?;
+    let domain_id_lbl = SmolStr::new(domain_id_lbl.unwrap_or_default());
     // 应用密钥
-    let corpsecret: String = row.try_get("corpsecret")?;
-    let corpsecret: String = decrypt(corpsecret.as_str());
+    let corpsecret: &str = row.try_get("corpsecret")?;
+    let corpsecret = SmolStr::new(decrypt(corpsecret));
     // 通讯录密钥
-    let contactsecret: String = row.try_get("contactsecret")?;
-    let contactsecret: String = decrypt(contactsecret.as_str());
+    let contactsecret: &str = row.try_get("contactsecret")?;
+    let contactsecret = SmolStr::new(decrypt(contactsecret));
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl: String = is_locked.to_string();
+    let is_locked_lbl = SmolStr::new(is_locked.to_string());
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl: String = is_enabled.to_string();
+    let is_enabled_lbl = SmolStr::new(is_enabled.to_string());
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
-    let rem: String = row.try_get("rem")?;
+    let rem: &str = row.try_get("rem")?;
+    let rem = SmolStr::new(rem);
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let create_time_lbl: SmolStr = match create_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let update_time_lbl: SmolStr = match update_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -219,46 +223,46 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
 pub struct WxwAppFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 企业ID
   #[graphql(name = "corpid")]
-  pub corpid: String,
+  pub corpid: SmolStr,
   /// 应用ID
   #[graphql(name = "agentid")]
-  pub agentid: String,
+  pub agentid: SmolStr,
   /// 可信域名
   #[graphql(name = "domain_id")]
-  pub domain_id: String,
+  pub domain_id: SmolStr,
   /// 可信域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: String,
+  pub domain_id_lbl: SmolStr,
   /// 应用密钥
   #[graphql(name = "corpsecret")]
-  pub corpsecret: String,
+  pub corpsecret: SmolStr,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
-  pub contactsecret: String,
+  pub contactsecret: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
-  pub is_locked: String,
+  pub is_locked: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
+  pub is_locked_lbl: SmolStr,
   /// 启用
   #[graphql(name = "is_enabled")]
-  pub is_enabled: String,
+  pub is_enabled: SmolStr,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: String,
+  pub is_enabled_lbl: SmolStr,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: String,
+  pub order_by: SmolStr,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -274,22 +278,22 @@ pub struct WxwAppSearch {
   pub is_deleted: Option<u8>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<String>,
+  pub lbl_like: Option<SmolStr>,
   /// 企业ID
   #[graphql(name = "corpid")]
-  pub corpid: Option<String>,
+  pub corpid: Option<SmolStr>,
   /// 企业ID
   #[graphql(name = "corpid_like")]
-  pub corpid_like: Option<String>,
+  pub corpid_like: Option<SmolStr>,
   /// 应用ID
   #[graphql(name = "agentid")]
-  pub agentid: Option<String>,
+  pub agentid: Option<SmolStr>,
   /// 应用ID
   #[graphql(name = "agentid_like")]
-  pub agentid_like: Option<String>,
+  pub agentid_like: Option<SmolStr>,
   /// 可信域名
   #[graphql(name = "domain_id")]
   pub domain_id: Option<Vec<DomainId>>,
@@ -298,10 +302,10 @@ pub struct WxwAppSearch {
   pub domain_id_is_null: Option<bool>,
   /// 可信域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: Option<Vec<String>>,
+  pub domain_id_lbl: Option<Vec<SmolStr>>,
   /// 可信域名
   #[graphql(name = "domain_id_lbl_like")]
-  pub domain_id_lbl_like: Option<String>,
+  pub domain_id_lbl_like: Option<SmolStr>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -313,10 +317,10 @@ pub struct WxwAppSearch {
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<String>,
+  pub rem_like: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -325,10 +329,10 @@ pub struct WxwAppSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<Vec<String>>,
+  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl_like: Option<String>,
+  pub create_usr_id_lbl_like: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -340,10 +344,10 @@ pub struct WxwAppSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<Vec<String>>,
+  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl_like: Option<String>,
+  pub update_usr_id_lbl_like: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -457,7 +461,7 @@ impl std::fmt::Debug for WxwAppSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxwAppInput")]
 #[allow(dead_code)]
 pub struct WxwAppInput {
@@ -471,55 +475,55 @@ pub struct WxwAppInput {
   pub tenant_id: Option<TenantId>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 企业ID
   #[graphql(name = "corpid")]
-  pub corpid: Option<String>,
+  pub corpid: Option<SmolStr>,
   /// 应用ID
   #[graphql(name = "agentid")]
-  pub agentid: Option<String>,
+  pub agentid: Option<SmolStr>,
   /// 可信域名
   #[graphql(name = "domain_id")]
   pub domain_id: Option<DomainId>,
   /// 可信域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: Option<String>,
+  pub domain_id_lbl: Option<SmolStr>,
   /// 应用密钥
   #[graphql(name = "corpsecret")]
-  pub corpsecret: Option<String>,
+  pub corpsecret: Option<SmolStr>,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
-  pub contactsecret: Option<String>,
+  pub contactsecret: Option<SmolStr>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: Option<String>,
+  pub is_locked_lbl: Option<SmolStr>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: Option<String>,
+  pub is_enabled_lbl: Option<SmolStr>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<String>,
+  pub create_usr_id_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,
+  pub create_time_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -528,13 +532,13 @@ pub struct WxwAppInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<String>,
+  pub update_usr_id_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,
+  pub update_time_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,

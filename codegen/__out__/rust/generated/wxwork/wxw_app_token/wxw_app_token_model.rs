@@ -62,52 +62,52 @@ pub struct WxwAppTokenModel {
   pub wxw_app_id: WxwAppId,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: String,
+  pub wxw_app_id_lbl: SmolStr,
   /// 类型corp和contact
   #[graphql(name = "type")]
-  pub r#type: String,
+  pub r#type: SmolStr,
   /// 企业ID
   #[graphql(name = "corpid")]
-  pub corpid: String,
+  pub corpid: SmolStr,
   /// 密钥
   #[graphql(name = "corpsecret")]
-  pub corpsecret: String,
+  pub corpsecret: SmolStr,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
-  pub contactsecret: String,
+  pub contactsecret: SmolStr,
   /// 令牌
   #[graphql(name = "access_token")]
-  pub access_token: String,
+  pub access_token: SmolStr,
   /// 令牌创建时间
   #[graphql(name = "token_time")]
   pub token_time: Option<chrono::NaiveDateTime>,
   /// 令牌创建时间
   #[graphql(name = "token_time_lbl")]
-  pub token_time_lbl: String,
+  pub token_time_lbl: SmolStr,
   /// 令牌超时时间
   #[graphql(name = "expires_in")]
   pub expires_in: u32,
   /// 企业jsapi_ticket
   #[graphql(name = "jsapi_ticket")]
-  pub jsapi_ticket: String,
+  pub jsapi_ticket: SmolStr,
   /// 企业jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_time")]
   pub jsapi_ticket_time: Option<chrono::NaiveDateTime>,
   /// 企业jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_time_lbl")]
-  pub jsapi_ticket_time_lbl: String,
+  pub jsapi_ticket_time_lbl: SmolStr,
   /// 企业jsapi_ticket超时时间
   #[graphql(name = "jsapi_ticket_expires_in")]
   pub jsapi_ticket_expires_in: u32,
   /// 应用jsapi_ticket
   #[graphql(name = "jsapi_ticket_agent_config")]
-  pub jsapi_ticket_agent_config: String,
+  pub jsapi_ticket_agent_config: SmolStr,
   /// 应用jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_agent_config_time")]
   pub jsapi_ticket_agent_config_time: Option<chrono::NaiveDateTime>,
   /// 应用jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_agent_config_time_lbl")]
-  pub jsapi_ticket_agent_config_time_lbl: String,
+  pub jsapi_ticket_agent_config_time_lbl: SmolStr,
   /// 应用jsapi_ticket超时时间
   #[graphql(name = "jsapi_ticket_agent_config_expires_in")]
   pub jsapi_ticket_agent_config_expires_in: u32,
@@ -118,25 +118,25 @@ pub struct WxwAppTokenModel {
   pub create_usr_id: UsrId,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: UsrId,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
@@ -147,65 +147,72 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
     let id: WxwAppTokenId = row.try_get("id")?;
     // 企微应用
     let wxw_app_id: WxwAppId = row.try_get("wxw_app_id")?;
-    let wxw_app_id_lbl: Option<String> = row.try_get("wxw_app_id_lbl")?;
-    let wxw_app_id_lbl = wxw_app_id_lbl.unwrap_or_default();
+    let wxw_app_id_lbl: Option<&str> = row.try_get("wxw_app_id_lbl")?;
+    let wxw_app_id_lbl = SmolStr::new(wxw_app_id_lbl.unwrap_or_default());
     // 类型corp和contact
-    let r#type: String = row.try_get("type")?;
+    let r#type: &str = row.try_get("type")?;
+    let r#type = SmolStr::new(r#type);
     // 企业ID
-    let corpid: String = row.try_get("corpid")?;
+    let corpid: &str = row.try_get("corpid")?;
+    let corpid = SmolStr::new(corpid);
     // 密钥
-    let corpsecret: String = row.try_get("corpsecret")?;
+    let corpsecret: &str = row.try_get("corpsecret")?;
+    let corpsecret = SmolStr::new(corpsecret);
     // 通讯录密钥
-    let contactsecret: String = row.try_get("contactsecret")?;
+    let contactsecret: &str = row.try_get("contactsecret")?;
+    let contactsecret = SmolStr::new(contactsecret);
     // 令牌
-    let access_token: String = row.try_get("access_token")?;
+    let access_token: &str = row.try_get("access_token")?;
+    let access_token = SmolStr::new(access_token);
     // 令牌创建时间
     let token_time: Option<chrono::NaiveDateTime> = row.try_get("token_time")?;
-    let token_time_lbl: String = match token_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let token_time_lbl: SmolStr = match token_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 令牌超时时间
     let expires_in: u32 = row.try_get("expires_in")?;
     // 企业jsapi_ticket
-    let jsapi_ticket: String = row.try_get("jsapi_ticket")?;
+    let jsapi_ticket: &str = row.try_get("jsapi_ticket")?;
+    let jsapi_ticket = SmolStr::new(jsapi_ticket);
     // 企业jsapi_ticket创建时间
     let jsapi_ticket_time: Option<chrono::NaiveDateTime> = row.try_get("jsapi_ticket_time")?;
-    let jsapi_ticket_time_lbl: String = match jsapi_ticket_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let jsapi_ticket_time_lbl: SmolStr = match jsapi_ticket_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 企业jsapi_ticket超时时间
     let jsapi_ticket_expires_in: u32 = row.try_get("jsapi_ticket_expires_in")?;
     // 应用jsapi_ticket
-    let jsapi_ticket_agent_config: String = row.try_get("jsapi_ticket_agent_config")?;
+    let jsapi_ticket_agent_config: &str = row.try_get("jsapi_ticket_agent_config")?;
+    let jsapi_ticket_agent_config = SmolStr::new(jsapi_ticket_agent_config);
     // 应用jsapi_ticket创建时间
     let jsapi_ticket_agent_config_time: Option<chrono::NaiveDateTime> = row.try_get("jsapi_ticket_agent_config_time")?;
-    let jsapi_ticket_agent_config_time_lbl: String = match jsapi_ticket_agent_config_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let jsapi_ticket_agent_config_time_lbl: SmolStr = match jsapi_ticket_agent_config_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 应用jsapi_ticket超时时间
     let jsapi_ticket_agent_config_expires_in: u32 = row.try_get("jsapi_ticket_agent_config_expires_in")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let create_time_lbl: SmolStr = match create_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let update_time_lbl: SmolStr = match update_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -252,61 +259,61 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
 pub struct WxwAppTokenFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 企微应用
   #[graphql(name = "wxw_app_id")]
-  pub wxw_app_id: String,
+  pub wxw_app_id: SmolStr,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: String,
+  pub wxw_app_id_lbl: SmolStr,
   /// 类型corp和contact
   #[graphql(name = "type")]
-  pub r#type: String,
+  pub r#type: SmolStr,
   /// 企业ID
   #[graphql(name = "corpid")]
-  pub corpid: String,
+  pub corpid: SmolStr,
   /// 密钥
   #[graphql(name = "corpsecret")]
-  pub corpsecret: String,
+  pub corpsecret: SmolStr,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
-  pub contactsecret: String,
+  pub contactsecret: SmolStr,
   /// 令牌
   #[graphql(name = "access_token")]
-  pub access_token: String,
+  pub access_token: SmolStr,
   /// 令牌创建时间
   #[graphql(name = "token_time")]
-  pub token_time: String,
+  pub token_time: SmolStr,
   /// 令牌创建时间
   #[graphql(name = "token_time_lbl")]
-  pub token_time_lbl: String,
+  pub token_time_lbl: SmolStr,
   /// 令牌超时时间
   #[graphql(name = "expires_in")]
-  pub expires_in: String,
+  pub expires_in: SmolStr,
   /// 企业jsapi_ticket
   #[graphql(name = "jsapi_ticket")]
-  pub jsapi_ticket: String,
+  pub jsapi_ticket: SmolStr,
   /// 企业jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_time")]
-  pub jsapi_ticket_time: String,
+  pub jsapi_ticket_time: SmolStr,
   /// 企业jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_time_lbl")]
-  pub jsapi_ticket_time_lbl: String,
+  pub jsapi_ticket_time_lbl: SmolStr,
   /// 企业jsapi_ticket超时时间
   #[graphql(name = "jsapi_ticket_expires_in")]
-  pub jsapi_ticket_expires_in: String,
+  pub jsapi_ticket_expires_in: SmolStr,
   /// 应用jsapi_ticket
   #[graphql(name = "jsapi_ticket_agent_config")]
-  pub jsapi_ticket_agent_config: String,
+  pub jsapi_ticket_agent_config: SmolStr,
   /// 应用jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_agent_config_time")]
-  pub jsapi_ticket_agent_config_time: String,
+  pub jsapi_ticket_agent_config_time: SmolStr,
   /// 应用jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_agent_config_time_lbl")]
-  pub jsapi_ticket_agent_config_time_lbl: String,
+  pub jsapi_ticket_agent_config_time_lbl: SmolStr,
   /// 应用jsapi_ticket超时时间
   #[graphql(name = "jsapi_ticket_agent_config_expires_in")]
-  pub jsapi_ticket_agent_config_expires_in: String,
+  pub jsapi_ticket_agent_config_expires_in: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -328,40 +335,40 @@ pub struct WxwAppTokenSearch {
   pub wxw_app_id_is_null: Option<bool>,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: Option<Vec<String>>,
+  pub wxw_app_id_lbl: Option<Vec<SmolStr>>,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl_like")]
-  pub wxw_app_id_lbl_like: Option<String>,
+  pub wxw_app_id_lbl_like: Option<SmolStr>,
   /// 类型corp和contact
   #[graphql(skip)]
-  pub r#type: Option<String>,
+  pub r#type: Option<SmolStr>,
   /// 类型corp和contact
   #[graphql(skip)]
-  pub type_like: Option<String>,
+  pub type_like: Option<SmolStr>,
   /// 企业ID
   #[graphql(skip)]
-  pub corpid: Option<String>,
+  pub corpid: Option<SmolStr>,
   /// 企业ID
   #[graphql(skip)]
-  pub corpid_like: Option<String>,
+  pub corpid_like: Option<SmolStr>,
   /// 密钥
   #[graphql(skip)]
-  pub corpsecret: Option<String>,
+  pub corpsecret: Option<SmolStr>,
   /// 密钥
   #[graphql(skip)]
-  pub corpsecret_like: Option<String>,
+  pub corpsecret_like: Option<SmolStr>,
   /// 通讯录密钥
   #[graphql(skip)]
-  pub contactsecret: Option<String>,
+  pub contactsecret: Option<SmolStr>,
   /// 通讯录密钥
   #[graphql(skip)]
-  pub contactsecret_like: Option<String>,
+  pub contactsecret_like: Option<SmolStr>,
   /// 令牌
   #[graphql(skip)]
-  pub access_token: Option<String>,
+  pub access_token: Option<SmolStr>,
   /// 令牌
   #[graphql(skip)]
-  pub access_token_like: Option<String>,
+  pub access_token_like: Option<SmolStr>,
   /// 令牌创建时间
   #[graphql(skip)]
   pub token_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -370,10 +377,10 @@ pub struct WxwAppTokenSearch {
   pub expires_in: Option<[Option<u32>; 2]>,
   /// 企业jsapi_ticket
   #[graphql(skip)]
-  pub jsapi_ticket: Option<String>,
+  pub jsapi_ticket: Option<SmolStr>,
   /// 企业jsapi_ticket
   #[graphql(skip)]
-  pub jsapi_ticket_like: Option<String>,
+  pub jsapi_ticket_like: Option<SmolStr>,
   /// 企业jsapi_ticket创建时间
   #[graphql(skip)]
   pub jsapi_ticket_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -382,10 +389,10 @@ pub struct WxwAppTokenSearch {
   pub jsapi_ticket_expires_in: Option<[Option<u32>; 2]>,
   /// 应用jsapi_ticket
   #[graphql(skip)]
-  pub jsapi_ticket_agent_config: Option<String>,
+  pub jsapi_ticket_agent_config: Option<SmolStr>,
   /// 应用jsapi_ticket
   #[graphql(skip)]
-  pub jsapi_ticket_agent_config_like: Option<String>,
+  pub jsapi_ticket_agent_config_like: Option<SmolStr>,
   /// 应用jsapi_ticket创建时间
   #[graphql(skip)]
   pub jsapi_ticket_agent_config_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -400,10 +407,10 @@ pub struct WxwAppTokenSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<Vec<String>>,
+  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl_like: Option<String>,
+  pub create_usr_id_lbl_like: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -415,10 +422,10 @@ pub struct WxwAppTokenSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<Vec<String>>,
+  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl_like: Option<String>,
+  pub update_usr_id_lbl_like: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -565,7 +572,7 @@ impl std::fmt::Debug for WxwAppTokenSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxwAppTokenInput")]
 #[allow(dead_code)]
 pub struct WxwAppTokenInput {
@@ -582,28 +589,28 @@ pub struct WxwAppTokenInput {
   pub wxw_app_id: Option<WxwAppId>,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: Option<String>,
+  pub wxw_app_id_lbl: Option<SmolStr>,
   /// 类型corp和contact
   #[graphql(name = "type")]
-  pub r#type: Option<String>,
+  pub r#type: Option<SmolStr>,
   /// 企业ID
   #[graphql(name = "corpid")]
-  pub corpid: Option<String>,
+  pub corpid: Option<SmolStr>,
   /// 密钥
   #[graphql(name = "corpsecret")]
-  pub corpsecret: Option<String>,
+  pub corpsecret: Option<SmolStr>,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
-  pub contactsecret: Option<String>,
+  pub contactsecret: Option<SmolStr>,
   /// 令牌
   #[graphql(name = "access_token")]
-  pub access_token: Option<String>,
+  pub access_token: Option<SmolStr>,
   /// 令牌创建时间
   #[graphql(name = "token_time")]
   pub token_time: Option<chrono::NaiveDateTime>,
   /// 令牌创建时间
   #[graphql(name = "token_time_lbl")]
-  pub token_time_lbl: Option<String>,
+  pub token_time_lbl: Option<SmolStr>,
   /// 令牌创建时间
   #[graphql(name = "token_time_save_null")]
   pub token_time_save_null: Option<bool>,
@@ -612,13 +619,13 @@ pub struct WxwAppTokenInput {
   pub expires_in: Option<u32>,
   /// 企业jsapi_ticket
   #[graphql(name = "jsapi_ticket")]
-  pub jsapi_ticket: Option<String>,
+  pub jsapi_ticket: Option<SmolStr>,
   /// 企业jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_time")]
   pub jsapi_ticket_time: Option<chrono::NaiveDateTime>,
   /// 企业jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_time_lbl")]
-  pub jsapi_ticket_time_lbl: Option<String>,
+  pub jsapi_ticket_time_lbl: Option<SmolStr>,
   /// 企业jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_time_save_null")]
   pub jsapi_ticket_time_save_null: Option<bool>,
@@ -627,13 +634,13 @@ pub struct WxwAppTokenInput {
   pub jsapi_ticket_expires_in: Option<u32>,
   /// 应用jsapi_ticket
   #[graphql(name = "jsapi_ticket_agent_config")]
-  pub jsapi_ticket_agent_config: Option<String>,
+  pub jsapi_ticket_agent_config: Option<SmolStr>,
   /// 应用jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_agent_config_time")]
   pub jsapi_ticket_agent_config_time: Option<chrono::NaiveDateTime>,
   /// 应用jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_agent_config_time_lbl")]
-  pub jsapi_ticket_agent_config_time_lbl: Option<String>,
+  pub jsapi_ticket_agent_config_time_lbl: Option<SmolStr>,
   /// 应用jsapi_ticket创建时间
   #[graphql(name = "jsapi_ticket_agent_config_time_save_null")]
   pub jsapi_ticket_agent_config_time_save_null: Option<bool>,
@@ -645,13 +652,13 @@ pub struct WxwAppTokenInput {
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<String>,
+  pub create_usr_id_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,
+  pub create_time_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -660,13 +667,13 @@ pub struct WxwAppTokenInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<String>,
+  pub update_usr_id_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,
+  pub update_time_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,

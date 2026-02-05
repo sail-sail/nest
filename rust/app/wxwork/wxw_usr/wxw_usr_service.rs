@@ -9,6 +9,8 @@ use generated::common::context::{
   get_server_tokentimeout,
 };
 
+use smol_str::SmolStr;
+
 use super::wxw_usr_model::{
   WxwGetAppid,
   WxwLoginByCodeInput,
@@ -70,7 +72,7 @@ use generated::base::org::org_model::OrgId;
 
 /// 通过host获取appid, agentid
 pub async fn wxw_get_appid(
-  host: String,
+  host: SmolStr,
 ) -> Result<WxwGetAppid> {
   
   // 获取域名
@@ -121,7 +123,7 @@ pub async fn wxw_login_by_code(
   
   let host = input.host;
   let code = input.code;
-  let lang = input.lang.unwrap_or("zh_cn".to_string());
+  let lang = input.lang.unwrap_or("zh_cn".into());
   
   // 获取域名
   let domain_model = find_one_domain(
@@ -164,12 +166,12 @@ pub async fn wxw_login_by_code(
     userid,
     ..
   } = getuserinfo_by_code(
-    wxw_app_id.clone(),
+    wxw_app_id,
     code,
   ).await?;
   
   let get_user_res = getuser(
-    wxw_app_id.clone(),
+    wxw_app_id,
     userid.clone(),
   ).await?;
   if get_user_res.is_none() {
@@ -193,19 +195,19 @@ pub async fn wxw_login_by_code(
     None,
   ).await?;
   if let Some(wxw_usr_model) = wxw_usr_model {
-    let id = wxw_usr_model.id.clone();
+    let id = wxw_usr_model.id;
     if wxw_usr_model.userid != userid ||
       wxw_usr_model.lbl != name ||
       wxw_usr_model.position != position ||
       wxw_usr_model.tenant_id.as_str() != tenant_id.as_str()
     {
       update_by_id_wxw_usr(
-        id.clone(),
+        id,
         WxwUsrInput {
           userid: userid.clone().into(),
           lbl: name.clone().into(),
           position: position.clone().into(),
-          tenant_id: tenant_id.clone().into(),
+          tenant_id: tenant_id.into(),
           ..Default::default()
         },
         None,
@@ -217,7 +219,7 @@ pub async fn wxw_login_by_code(
         userid: userid.clone().into(),
         lbl: name.clone().into(),
         position: position.clone().into(),
-        tenant_id: tenant_id.clone().into(),
+        tenant_id: tenant_id.into(),
         ..Default::default()
       },
       None,
@@ -242,11 +244,11 @@ pub async fn wxw_login_by_code(
       usr_model.tenant_id.as_str() != tenant_id.as_str()
     {
       update_by_id_usr(
-        id.clone(),
+        id,
         UsrInput {
           username: name.clone().into(),
           lbl: name.clone().into(),
-          tenant_id: tenant_id.clone().into(),
+          tenant_id: tenant_id.into(),
           ..Default::default()
         },
         None,
@@ -257,14 +259,14 @@ pub async fn wxw_login_by_code(
       UsrInput {
         username: name.clone().into(),
         lbl: name.clone().into(),
-        tenant_id: tenant_id.clone().into(),
+        tenant_id: tenant_id.into(),
         ..Default::default()
       },
       None,
     ).await?;
   }
   let usr_model = find_by_id_usr(
-    id.clone(),
+    id,
     None,
   ).await?;
   let usr_model = validate_option_usr(
@@ -277,7 +279,7 @@ pub async fn wxw_login_by_code(
   let org_ids = usr_model.org_ids;
   let mut org_id = usr_model.default_org_id;
   if !org_id.is_empty() {
-    org_id = org_ids[0].clone();
+    org_id = org_ids[0];
   }
   if !org_id.is_empty() && !org_ids.contains(&org_id) {
     org_id = OrgId::default();
@@ -288,8 +290,8 @@ pub async fn wxw_login_by_code(
   
   let authorization = get_token_by_auth_model(&AuthModel {
     id: usr_model.id,
-    tenant_id: tenant_id.clone(),
-    org_id: org_id.clone().into(),
+    tenant_id,
+    org_id: org_id.into(),
     lang: Some(lang.clone()),
     exp,
     ..Default::default()
@@ -315,7 +317,7 @@ fn get_wxw_sync_usr_lock() -> &'static Arc<Mutex<bool>> {
 
 /// 同步企微用户
 pub async fn wxw_sync_usr(
-  host: String,
+  host: SmolStr,
 ) -> Result<i32> {
   let mut wxw_sync_usr_lock = get_wxw_sync_usr_lock().lock().await;
   if *wxw_sync_usr_lock {
@@ -333,7 +335,7 @@ pub async fn wxw_sync_usr(
 
 /// 同步企微用户
 async fn _wxw_sync_usr(
-  host: String,
+  host: SmolStr,
 ) -> Result<i32> {
   
   // 获取域名
@@ -373,8 +375,8 @@ async fn _wxw_sync_usr(
   let corpid = wxw_app_model.corpid;
   let agentid = wxw_app_model.agentid;
   
-  let userids: Vec<String> = getuseridlist(
-    wxw_app_id.clone(),
+  let userids: Vec<SmolStr> = getuseridlist(
+    wxw_app_id,
   ).await?;
   let wxw_usr_models = find_all_wxw_usr(
     None,
@@ -390,11 +392,11 @@ async fn _wxw_sync_usr(
             && wxw_usr_model.corpid.as_str() == corpid
         )
     })
-    .collect::<Vec<String>>();
+    .collect::<Vec<SmolStr>>();
   let mut wxw_usr_models4add: Vec<WxwUsrInput> = Vec::with_capacity(userids4add.len());
   for userid in userids4add {
     let get_user_res = getuser(
-      wxw_app_id.clone(),
+      wxw_app_id,
       userid.clone(),
     ).await?;
     if get_user_res.is_none() {
@@ -407,13 +409,13 @@ async fn _wxw_sync_usr(
       ..
     } = get_user_res;
     wxw_usr_models4add.push(WxwUsrInput {
-      wxw_app_id: Some(wxw_app_id.clone()),
+      wxw_app_id: Some(wxw_app_id),
       corpid: Some(corpid.clone()),
       agentid: Some(agentid.clone()),
       userid: userid.clone().into(),
       lbl: name.clone().into(),
       position: position.clone().into(),
-      tenant_id: wxw_app_model.tenant_id.clone().into(),
+      tenant_id: wxw_app_model.tenant_id.into(),
       ..Default::default()
     });
   }

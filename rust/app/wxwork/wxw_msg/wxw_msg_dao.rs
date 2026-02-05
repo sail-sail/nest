@@ -5,6 +5,8 @@ use tracing::{info, error};
 use color_eyre::eyre::{Result, eyre};
 use generated::common::context::get_req_id;
 
+use smol_str::SmolStr;
+
 use crate::wxwork::wxw_app_token::wxw_app_token_dao::get_access_token;
 
 use generated::wxwork::wxw_app::wxw_app_dao::{
@@ -24,11 +26,11 @@ use generated::common::util::http::client;
 struct SendRes {
   errcode: i32,
   #[serde(default)]
-  errmsg: String,
+  errmsg: SmolStr,
   #[serde(default)]
-  msgid: String,
+  msgid: SmolStr,
   #[serde(default)]
-  response_code: String,
+  response_code: SmolStr,
 }
 
 #[allow(dead_code)]
@@ -36,9 +38,9 @@ async fn fetch_send_card_msg(
   input: SendCardMsgInput,
   force: bool,
 ) -> Result<SendRes> {
-  let wxw_app_id = input.wxw_app_id.clone();
+  let wxw_app_id = input.wxw_app_id;
   let access_token = get_access_token(
-    wxw_app_id.clone(),
+    wxw_app_id,
     force.into(),
   ).await?;
   let url = format!(
@@ -54,7 +56,7 @@ async fn fetch_send_card_msg(
     return Err(eyre!("description 不能为空"));
   }
   let wxw_app_model = find_by_id_wxw_app(
-    wxw_app_id.clone(),
+    wxw_app_id,
     None,
   ).await?;
   let wxw_app_model = validate_option_wxw_app(
@@ -87,9 +89,9 @@ pub async fn send_card_msg(
   input: SendCardMsgInput,
 ) -> Result<bool> {
   let req_id = get_req_id();
-  let wxw_app_id = input.wxw_app_id.clone();
+  let wxw_app_id = input.wxw_app_id;
   let wxw_app_model = find_by_id_wxw_app(
-    wxw_app_id.clone(),
+    wxw_app_id,
     None,
   ).await?;
   let wxw_app_model = validate_option_wxw_app(
@@ -127,15 +129,15 @@ pub async fn send_card_msg(
     "{req_id} 发送卡片消息结果: {msg}",
     msg = &data_str,
   );
-  let errmsg: String = if errcode == 0 {
-    "".to_owned()
+  let errmsg: SmolStr = if errcode == 0 {
+    SmolStr::new("")
   } else {
-    errmsg.chars().take(256).collect()
+    errmsg.chars().take(256).collect::<String>().into()
   };
   create_wxw_msg(
     WxwMsgInput {
       wxw_app_id: wxw_app_id.into(),
-      errcode: errcode.to_string().into(),
+      errcode: SmolStr::new(errcode.to_string()).into(),
       touser: input.touser.into(),
       title: input.title.into(),
       description: input.description.into(),

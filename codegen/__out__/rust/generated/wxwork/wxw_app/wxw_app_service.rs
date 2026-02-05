@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_wxw_app(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxw_app_models = wxw_app_dao::find_all_wxw_app(
@@ -64,7 +67,7 @@ pub async fn find_count_wxw_app(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxw_app_num = wxw_app_dao::find_count_wxw_app(
@@ -86,7 +89,7 @@ pub async fn find_one_wxw_app(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxw_app_model = wxw_app_dao::find_one_wxw_app(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_wxw_app(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let wxw_app_model = wxw_app_dao::find_one_ok_wxw_app(
@@ -243,7 +246,7 @@ pub async fn update_by_id_wxw_app(
   let wxw_app_id = wxw_app_dao::update_by_id_wxw_app(
     wxw_app_id,
     wxw_app_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(wxw_app_id)
@@ -274,7 +277,7 @@ pub async fn delete_by_ids_wxw_app(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {
@@ -403,12 +406,14 @@ pub async fn force_delete_by_ids_wxw_app(
 
 /// 查找 企微应用 order_by 字段的最大值
 pub async fn find_last_order_by_wxw_app(
+  search: Option<WxwAppSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = wxw_app_dao::find_last_order_by_wxw_app(
+  let order_by = wxw_app_dao::find_last_order_by_wxw_app(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

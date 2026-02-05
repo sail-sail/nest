@@ -8,6 +8,8 @@ use async_graphql::{
   SimpleObject,
 };
 
+use smol_str::SmolStr;
+
 use generated::base::org::org_model::OrgId;
 use generated::base::tenant::tenant_model::TenantId;
 
@@ -17,10 +19,10 @@ use generated::base::tenant::tenant_model::TenantId;
 pub struct WxwGetAppid {
   
   /// 企业微信appid
-  pub appid: String,
+  pub appid: SmolStr,
   
   /// 企业微信agentid
-  pub agentid: String,
+  pub agentid: SmolStr,
   
 }
 
@@ -29,13 +31,13 @@ pub struct WxwGetAppid {
 pub struct WxwLoginByCodeInput {
   
   /// 域名
-  pub host: String,
+  pub host: SmolStr,
   
   /// 企业微信登录时获取的code
-  pub code: String,
+  pub code: SmolStr,
   
   /// 语言
-  pub lang: Option<String>,
+  pub lang: Option<SmolStr>,
   
 }
 
@@ -44,21 +46,21 @@ pub struct WxwLoginByCodeInput {
 pub struct WxwLoginByCode {
   
   /// 授权码
-  pub authorization: String,
+  pub authorization: SmolStr,
   
   /// 组织id
   pub org_id: Option<OrgId>,
   
   /// 用户名
-  pub username: String,
+  pub username: SmolStr,
   
   /// 姓名
-  pub name: String,
+  pub name: SmolStr,
   
   /// 租户id
   pub tenant_id: TenantId,
   
   /// 语言
-  pub lang: String,
+  pub lang: SmolStr,
   
 }

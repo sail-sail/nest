@@ -13,6 +13,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -234,8 +237,8 @@ pub async fn creates_wxw_app(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_wxw_app().to_string(),
-    "add".to_owned(),
+    SmolStr::new(get_page_path_wxw_app()),
+    SmolStr::new("add"),
   ).await?;
   
   let ids = wxw_app_service::creates_wxw_app(
@@ -294,8 +297,8 @@ pub async fn update_by_id_wxw_app(
   ).await?;
   
   use_permit(
-    get_page_path_wxw_app().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_wxw_app()),
+    SmolStr::new("edit"),
   ).await?;
   
   let res = wxw_app_service::update_by_id_wxw_app(
@@ -322,8 +325,8 @@ pub async fn delete_by_ids_wxw_app(
   );
   
   use_permit(
-    get_page_path_wxw_app().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_wxw_app()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = wxw_app_service::delete_by_ids_wxw_app(
@@ -373,8 +376,8 @@ pub async fn enable_by_ids_wxw_app(
   );
   
   use_permit(
-    get_page_path_wxw_app().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_wxw_app()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = wxw_app_service::enable_by_ids_wxw_app(
@@ -426,8 +429,8 @@ pub async fn lock_by_ids_wxw_app(
   );
   
   use_permit(
-    get_page_path_wxw_app().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_wxw_app()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = wxw_app_service::lock_by_ids_wxw_app(
@@ -473,8 +476,8 @@ pub async fn revert_by_ids_wxw_app(
   );
   
   use_permit(
-    get_page_path_wxw_app().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_wxw_app()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = wxw_app_service::revert_by_ids_wxw_app(
@@ -500,8 +503,8 @@ pub async fn force_delete_by_ids_wxw_app(
   );
   
   use_permit(
-    get_page_path_wxw_app().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_wxw_app()),
+    SmolStr::new("force_delete"),
   ).await?;
   
   let num = wxw_app_service::force_delete_by_ids_wxw_app(
@@ -515,18 +518,20 @@ pub async fn force_delete_by_ids_wxw_app(
 /// 查找 企微应用 order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_wxw_app(
+  search: Option<WxwAppSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = wxw_app_service::find_last_order_by_wxw_app(
+  let order_by = wxw_app_service::find_last_order_by_wxw_app(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }
