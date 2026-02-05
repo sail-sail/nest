@@ -10,9 +10,14 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
+
+use crate::common::cache::cache_dao;
 #[allow(unused_imports)]
 use crate::common::util::string::sql_like;
 #[allow(unused_imports)]
@@ -31,6 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
+  find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -92,14 +98,14 @@ async fn get_where_query(
     if let Some(ids) = ids {
       let arg = {
         if ids.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.id in (");
@@ -171,14 +177,14 @@ async fn get_where_query(
     if let Some(job_id) = job_id {
       let arg = {
         if job_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(job_id.len());
           for item in job_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.job_id in (");
@@ -196,21 +202,21 @@ async fn get_where_query(
     }
   }
   {
-    let job_id_lbl: Option<Vec<String>> = match search {
+    let job_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.job_id_lbl.clone(),
       None => None,
     };
     if let Some(job_id_lbl) = job_id_lbl {
       let arg = {
         if job_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(job_id_lbl.len());
           for item in job_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and job_id_lbl.lbl in (");
@@ -249,21 +255,21 @@ async fn get_where_query(
   }
   // 时区
   {
-    let timezone: Option<Vec<String>> = match search {
+    let timezone: Option<Vec<SmolStr>> = match search {
       Some(item) => item.timezone.clone(),
       None => None,
     };
     if let Some(timezone) = timezone {
       let arg = {
         if timezone.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(timezone.len());
           for item in timezone {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.timezone in (");
@@ -280,14 +286,14 @@ async fn get_where_query(
     if let Some(is_locked) = is_locked {
       let arg = {
         if is_locked.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(is_locked.len());
           for item in is_locked {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.is_locked in (");
@@ -304,14 +310,14 @@ async fn get_where_query(
     if let Some(is_enabled) = is_enabled {
       let arg = {
         if is_enabled.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(is_enabled.len());
           for item in is_enabled {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.is_enabled in (");
@@ -364,14 +370,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
         if create_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -389,21 +395,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<String>> = match search {
+    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -449,14 +455,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
         if update_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -474,21 +480,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<String>> = match search {
+    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -575,94 +581,75 @@ pub async fn find_all_cron_job(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(vec![]);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(vec![]);
     }
   }
   // 任务
-  if let Some(search) = &search && search.job_id.is_some() {
-    let len = search.job_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(job_id) = &search.job_id {
+    let len = job_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.job_id.length > {ids_limit}"));
     }
   }
   // 时区
-  if let Some(search) = &search && search.timezone.is_some() {
-    let len = search.timezone.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(timezone) = &search.timezone {
+    let len = timezone.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.timezone.length > {ids_limit}"));
     }
   }
   // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_locked) = &search.is_locked {
+    let len = is_locked.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_locked.length > {ids_limit}"));
     }
   }
   // 启用
-  if let Some(search) = &search && search.is_enabled.is_some() {
-    let len = search.is_enabled.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_enabled) = &search.is_enabled {
+    let len = is_enabled.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(create_usr_id) = &search.create_usr_id {
+    let len = create_usr_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(update_usr_id) = &search.update_usr_id {
+    let len = update_usr_id.len();
     if len == 0 {
       return Ok(vec![]);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
@@ -692,12 +679,15 @@ pub async fn find_all_cron_job(
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
-      prop: "create_time".to_string(),
+      prop: "create_time".into(),
       order: SortOrderEnum::Asc,
     });
   }
   
   let order_by_query = get_order_by_query(Some(sort));
+  let is_result_limit = page.as_ref()
+    .and_then(|item| item.is_result_limit)
+    .unwrap_or(true);
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -706,15 +696,46 @@ pub async fn find_all_cron_job(
   
   let args = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.set_cache_key(table, &sql, &args);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: Vec<CronJobModel>;
+      let res = serde_json::from_str::<Vec<CronJobModel>>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = vec![];
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
   let mut res: Vec<CronJobModel> = query(
     sql,
     args,
-    Some(options),
+    options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
+  
+  let len = res.len();
+  let result_limit_num = find_all_result_limit();
+  
+  if is_result_limit && len > result_limit_num {
+    return Err(eyre!(
+      ServiceException {
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
+  }
   
   let dict_vec = get_dict(&[
     "cron_job_timezone",
@@ -738,7 +759,7 @@ pub async fn find_all_cron_job(
         .iter()
         .find(|item| item.val == model.timezone.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.timezone.to_string())
+        .unwrap_or_else(|| model.timezone.clone())
     };
     
     // 锁定
@@ -747,7 +768,7 @@ pub async fn find_all_cron_job(
         .iter()
         .find(|item| item.val == model.is_locked.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string())
+        .unwrap_or_else(|| model.is_locked.to_string().into())
     };
     
     // 启用
@@ -756,7 +777,7 @@ pub async fn find_all_cron_job(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string())
+        .unwrap_or_else(|| model.is_enabled.to_string().into())
     };
     
   }
@@ -896,10 +917,25 @@ pub async fn find_count_cron_job(
   
   let args = args.into();
   
-  let options = Options::from(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: u64;
+      let res = serde_json::from_str::<u64>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = 0;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let res: Option<CountModel> = query_one(
@@ -907,6 +943,11 @@ pub async fn find_count_cron_job(
     args,
     options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   let total = res
     .map(|item| item.total)
@@ -1040,10 +1081,11 @@ pub async fn find_one_cron_job(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let page = PageInput {
-    pg_offset: 0.into(),
-    pg_size: 1.into(),
-  }.into();
+  let page = Some(PageInput {
+    pg_offset: Some(0),
+    pg_size: Some(1),
+    is_result_limit: Some(true),
+  });
   
   let res = find_all_cron_job(
     search,
@@ -1092,13 +1134,13 @@ pub async fn find_by_id_ok_cron_job(
   ).await?;
   
   let Some(cron_job_model) = cron_job_model else {
-    let err_msg = "此 定时任务 已被删除";
+    let err_msg = SmolStr::new("此 定时任务 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: err_msg.to_string(),
+      message: err_msg,
       trace: true,
       ..Default::default()
     }));
@@ -1191,7 +1233,7 @@ pub async fn find_by_ids_ok_cron_job(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1204,7 +1246,7 @@ pub async fn find_by_ids_ok_cron_job(
   ).await?;
   
   if cron_job_models.len() != len {
-    let err_msg = "此 定时任务 已被删除";
+    let err_msg = SmolStr::new("此 定时任务 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1217,7 +1259,7 @@ pub async fn find_by_ids_ok_cron_job(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = "此 定时任务 已经被删除";
+      let err_msg = SmolStr::new("此 定时任务 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<CronJobModel>>>()?;
@@ -1263,7 +1305,7 @@ pub async fn find_by_ids_cron_job(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1428,10 +1470,25 @@ pub async fn exists_cron_job(
   
   let args = args.into();
   
-  let options = Options::from(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: bool;
+      let res = serde_json::from_str::<bool>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = false;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
-  let options = options.set_cache_key(table, &sql, &args);
-  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let res: Option<(bool,)> = query_one(
@@ -1439,6 +1496,11 @@ pub async fn exists_cron_job(
     args,
     options,
   ).await?;
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   Ok(res
     .map(|item| item.0)
@@ -1520,10 +1582,12 @@ pub async fn find_by_unique_cron_job(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
+  
   if let Some(id) = search.id {
     let model = find_by_id_cron_job(
       id,
-      options.clone(),
+      options,
     ).await?;
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
@@ -1548,7 +1612,7 @@ pub async fn find_by_unique_cron_job(
       search.into(),
       None,
       sort.clone(),
-      options.clone(),
+      options,
     ).await?
   };
   models.append(&mut models_tmp);
@@ -1557,14 +1621,17 @@ pub async fn find_by_unique_cron_job(
 }
 
 /// 根据唯一约束对比对象是否相等
-#[allow(dead_code)]
+#[allow(dead_code, unused_variables)]
 pub fn equals_by_unique(
   input: &CronJobInput,
   model: &CronJobModel,
+  options: Option<&Options>,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }
+  
+  let is_silent_mode = get_is_silent_mode(options);
   
   if
     input.job_id.as_ref().is_some() && input.job_id.as_ref().unwrap() == &model.job_id &&
@@ -1609,6 +1676,7 @@ pub async fn check_by_unique_cron_job(
   let is_equals = equals_by_unique(
     &input,
     &model,
+    options.as_ref(),
   );
   if !is_equals {
     return Ok(None);
@@ -1704,7 +1772,7 @@ pub async fn set_id_by_lbl_cron_job(
     && input.job_id.is_none()
   {
     input.job_id_lbl = input.job_id_lbl.map(|item| 
-      item.trim().to_owned()
+      SmolStr::new(item.trim())
     );
     let model = crate::cron::job::job_dao::find_one_job(
       crate::cron::job::job_model::JobSearch {
@@ -1743,7 +1811,7 @@ pub async fn set_id_by_lbl_cron_job(
     let dict_model = timezone_dict.iter().find(|item| {
       item.lbl == input.timezone_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.timezone = val.into();
     }
@@ -1755,7 +1823,7 @@ pub async fn set_id_by_lbl_cron_job(
     let dict_model = timezone_dict.iter().find(|item| {
       item.val == input.timezone.clone().unwrap_or_default()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.timezone_lbl = lbl;
   }
   
@@ -1768,7 +1836,7 @@ pub async fn set_id_by_lbl_cron_job(
     let dict_model = is_locked_dict.iter().find(|item| {
       item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.is_locked = val.parse::<u8>()?.into();
     }
@@ -1780,7 +1848,7 @@ pub async fn set_id_by_lbl_cron_job(
     let dict_model = is_locked_dict.iter().find(|item| {
       item.val == input.is_locked.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.is_locked_lbl = lbl;
   }
   
@@ -1793,7 +1861,7 @@ pub async fn set_id_by_lbl_cron_job(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.is_enabled = val.parse::<u8>()?.into();
     }
@@ -1805,7 +1873,7 @@ pub async fn set_id_by_lbl_cron_job(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.is_enabled_lbl = lbl;
   }
   
@@ -1839,7 +1907,7 @@ pub async fn creates_return_cron_job(
   
   let ids = _creates(
     inputs.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let models_cron_job = find_by_ids_cron_job(
@@ -1911,14 +1979,14 @@ async fn _creates(
     let old_models = find_by_unique_cron_job(
       input.clone().into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if !old_models.is_empty() {
       let mut id: Option<CronJobId> = None;
       
       for old_model in old_models {
-        let options = Options::from(options.clone())
+        let options = Options::from(options)
           .set_unique_type(unique_type);
         
         id = check_by_unique_cron_job(
@@ -2021,11 +2089,11 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_lbl = usr_model.lbl;
@@ -2041,15 +2109,15 @@ async fn _creates(
         }
         sql_values += ",?";
         args.push(usr_lbl.into());
-      } else if input.create_usr_id.unwrap().is_empty() {
+      } else if input.create_usr_id.is_none_or(|s| s.is_empty()) {
         sql_values += ",default";
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
-          options.clone(),
+          options,
         ).await?;
         if let Some(usr_model) = usr_model {
           usr_lbl = usr_model.lbl;
@@ -2178,17 +2246,15 @@ async fn _creates(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  let options = Some(options);
+  del_cache_cron_job().await?;
   
   let affected_rows = execute(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
+  
+  del_cache_cron_job().await?;
   
   if affected_rows != inputs2_len as u64 {
     return Err(eyre!("affectedRows: {affected_rows} != {inputs2_len}"));
@@ -2208,7 +2274,7 @@ pub async fn create_return_cron_job(
   
   let id = create_cron_job(
     input.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let model_cron_job = find_by_id_cron_job(
@@ -2216,17 +2282,19 @@ pub async fn create_return_cron_job(
     options,
   ).await?;
   
-  if model_cron_job.is_none() {
-    let err_msg = "create_return_cron_job: model_cron_job.is_none()";
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model_cron_job = model_cron_job.unwrap();
+  let model_cron_job = match model_cron_job {
+    Some(model) => model,
+    None => {
+      let err_msg = "create_return_cron_job: model_cron_job.is_none()";
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg.into(),
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    }
+  };
   
   Ok(model_cron_job)
 }
@@ -2297,6 +2365,7 @@ pub async fn update_tenant_by_id_cron_job(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
@@ -2310,7 +2379,7 @@ pub async fn update_tenant_by_id_cron_job(
   let num = execute(
     sql,
     args,
-    Some(options.clone()),
+    options,
   ).await?;
   
   Ok(num)
@@ -2353,14 +2422,16 @@ pub async fn update_by_id_cron_job(
   
   let old_model = find_by_id_cron_job(
     id,
-    options.clone(),
+    options,
   ).await?;
   
-  if old_model.is_none() {
-    let err_msg = "编辑失败, 此 定时任务 已被删除";
-    return Err(eyre!(err_msg));
-  }
-  let old_model = old_model.unwrap();
+  let old_model = match old_model {
+    Some(model) => model,
+    None => {
+      let err_msg = "编辑失败, 此 定时任务 已被删除";
+      return Err(eyre!(err_msg));
+    }
+  };
   
   if !is_silent_mode {
     info!(
@@ -2379,7 +2450,7 @@ pub async fn update_by_id_cron_job(
     let models = find_by_unique_cron_job(
       input.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let models = models.into_iter()
@@ -2469,14 +2540,18 @@ pub async fn update_by_id_cron_job(
   }
   
   if field_num > 0 {
+    del_cache_cron_job().await?;
+  }
+  
+  if field_num > 0 {
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2492,13 +2567,15 @@ pub async fn update_by_id_cron_job(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      } else if !input.update_usr_id.unwrap().is_empty() {
+      } else if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2514,7 +2591,9 @@ pub async fn update_by_id_cron_job(
         }
       }
     } else {
-      if input.update_usr_id.is_some() && !input.update_usr_id.unwrap().is_empty() {
+      if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let usr_id = input.update_usr_id;
         if let Some(usr_id) = usr_id {
           sql_fields += "update_usr_id=?,";
@@ -2550,35 +2629,45 @@ pub async fn update_by_id_cron_job(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
     execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
+    
+    del_cache_cron_job().await?;
     
   }
   
-  if field_num > 0 {
-    let options = Options::from(options);
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
-      del_caches(
-        del_cache_key1s
-          .iter()
-          .map(|item| item.as_str())
-          .collect::<Vec<&str>>()
-          .as_slice()
-      ).await?;
-    }
-  }
-  
   Ok(id)
+}
+
+// MARK: update_by_id_return_cron_job
+/// 根据 id 更新定时任务, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_cron_job(
+  id: CronJobId,
+  input: CronJobInput,
+  options: Option<Options>,
+) -> Result<CronJobModel> {
+  
+  update_by_id_cron_job(
+    id,
+    input,
+    options,
+  ).await?;
+  
+  let model = find_by_id_cron_job(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "定时任务 update_by_id_return_cron_job id: {id}",
+    )),
+  }
 }
 
 /// 获取需要清空缓存的表名
@@ -2587,6 +2676,7 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_cron_job();
   vec![
     table,
+    "cron_job",
   ]
 }
 
@@ -2594,10 +2684,25 @@ fn get_cache_tables() -> Vec<&'static str> {
 /// 清空缓存
 #[allow(dead_code)]
 pub async fn del_cache_cron_job() -> Result<()> {
+  
   let cache_key1s = get_cache_tables();
+  
+  let cache_key1s = cache_key1s
+    .into_iter()
+    .map(|x|
+      format!("dao.sql.{x}")
+    )
+    .collect::<Vec<String>>();
+  
+  let cache_key1s_str = cache_key1s
+    .iter()
+    .map(|item| item.as_str())
+    .collect::<Vec<&str>>();
+  
   del_caches(
-    cache_key1s.as_slice(),
+    cache_key1s_str.as_slice(),
   ).await?;
+  
   Ok(())
 }
 
@@ -2641,12 +2746,14 @@ pub async fn delete_by_ids_cron_job(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  del_cache_cron_job().await?;
+  
   let mut num = 0;
   for id in ids.clone() {
     
     let old_model = find_by_id_cron_job(
       id,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2669,11 +2776,11 @@ pub async fn delete_by_ids_cron_job(
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = String::new();
+    let mut usr_lbl = SmolStr::new("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
-        options.clone(),
+        options,
       ).await?;
       if let Some(usr_model) = usr_model {
         usr_lbl = usr_model.lbl;
@@ -2707,18 +2814,14 @@ pub async fn delete_by_ids_cron_job(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
+  
+  del_cache_cron_job().await?;
   
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
@@ -2785,13 +2888,14 @@ pub async fn enable_by_ids_cron_job(
     return Ok(0);
   }
   
+  del_cache_cron_job().await?;
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
+  let options = Some(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!("update {table} set is_enabled=? where id=? limit 1");
@@ -2801,14 +2905,14 @@ pub async fn enable_by_ids_cron_job(
     
     let args: Vec<_> = args.into();
     
-    let options = options.clone().into();
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
   }
+  
+  del_cache_cron_job().await?;
   
   Ok(num)
 }
@@ -2872,12 +2976,14 @@ pub async fn lock_by_ids_cron_job(
     return Ok(0);
   }
   
-  let options = Options::from(options);
+  del_cache_cron_job().await?;
   
-  let options = options.set_del_cache_key1s(get_cache_tables());
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!("update {table} set is_locked=? where id=? limit 1");
@@ -2887,14 +2993,14 @@ pub async fn lock_by_ids_cron_job(
     
     let args: Vec<_> = args.into();
     
-    let options = options.clone().into();
-    
     num += execute(
       sql,
       args,
       options,
     ).await?;
   }
+  
+  del_cache_cron_job().await?;
   
   Ok(num)
 }
@@ -2927,9 +3033,10 @@ pub async fn revert_by_ids_cron_job(
     return Ok(0);
   }
   
+  del_cache_cron_job().await?;
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  let options = options.set_del_cache_key1s(get_cache_tables());
   let options = Some(options);
   
   let mut num = 0;
@@ -2949,13 +3056,13 @@ pub async fn revert_by_ids_cron_job(
         ..Default::default()
       }.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if old_model.is_none() {
       old_model = find_by_id_cron_job(
         id,
-        options.clone(),
+        options,
       ).await?;
     }
     
@@ -2971,7 +3078,7 @@ pub async fn revert_by_ids_cron_job(
       let models = find_by_unique_cron_job(
         input.into(),
         None,
-        options.clone(),
+        options,
       ).await?;
       
       let models: Vec<CronJobModel> = models
@@ -2990,10 +3097,12 @@ pub async fn revert_by_ids_cron_job(
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
   }
+  
+  del_cache_cron_job().await?;
   
   Ok(num)
 }
@@ -3033,6 +3142,8 @@ pub async fn force_delete_by_ids_cron_job(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  del_cache_cron_job().await?;
+  
   let mut num = 0;
   for id in ids.clone() {
     
@@ -3043,7 +3154,7 @@ pub async fn force_delete_by_ids_cron_job(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -3069,18 +3180,14 @@ pub async fn force_delete_by_ids_cron_job(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
+  
+  del_cache_cron_job().await?;
   
   Ok(num)
 }
@@ -3088,6 +3195,7 @@ pub async fn force_delete_by_ids_cron_job(
 // MARK: find_last_order_by_cron_job
 /// 查找 定时任务 order_by 字段的最大值
 pub async fn find_last_order_by_cron_job(
+  search: Option<CronJobSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -3108,33 +3216,37 @@ pub async fn find_last_order_by_cron_job(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  #[allow(unused_mut)]
-  let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);
   
-  sql_wheres.push("t.is_deleted=0");
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
-  if let Some(tenant_id) = get_auth_tenant_id() {
-    sql_wheres.push("t.tenant_id=?");
-    args.push(tenant_id.into());
-  }
-  
-  let sql_where = sql_wheres.join(" and ");
-  let sql = format!("select t.order_by order_by from {table} t where {sql_where} order by t.order_by desc limit 1");
+  let sql = format!(r#"select f.order_by from (select t.order_by
+  from {from_query} where {where_query} group by t.id order by t.order_by desc limit 1) f"#);
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = options.set_cache_key(table, &sql, &args);
-  
-  let options = Some(options);
+  let cache_key1 = format!("dao.sql.{table}");
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: u32;
+      let res = serde_json::from_str::<u32>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = 0;
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
   let model = query_one::<OrderByModel>(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
   
   let order_by = {
@@ -3144,6 +3256,11 @@ pub async fn find_last_order_by_cron_job(
       0
     }
   };
+  
+  {
+    let str = serde_json::to_string(&order_by)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }
   
   Ok(order_by)
 }
@@ -3155,7 +3272,7 @@ pub async fn validate_is_enabled_cron_job(
   model: &CronJobModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let err_msg = "定时任务已禁用";
+    let err_msg = SmolStr::new("定时任务已禁用");
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -3167,20 +3284,24 @@ pub async fn validate_is_enabled_cron_job(
 pub async fn validate_option_cron_job(
   model: Option<CronJobModel>,
 ) -> Result<CronJobModel> {
-  if model.is_none() {
-    let err_msg = "定时任务不存在";
-    error!(
-      "{req_id} {err_msg}",
-      req_id = get_req_id(),
-    );
-    return Err(eyre!(
-      ServiceException {
-        message: err_msg.to_owned(),
-        trace: true,
-        ..Default::default()
-      },
-    ));
-  }
-  let model = model.unwrap();
+  
+  let model = match model {
+    Some(model) => model,
+    None => {
+      let err_msg = SmolStr::new("定时任务不存在");
+      error!(
+        "{req_id} {err_msg}",
+        req_id = get_req_id(),
+      );
+      return Err(eyre!(
+        ServiceException {
+          message: err_msg,
+          trace: true,
+          ..Default::default()
+        },
+      ));
+    },
+  };
+  
   Ok(model)
 }

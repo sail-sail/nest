@@ -62,7 +62,7 @@ pub struct CronJobLogDetailModel {
   pub cron_job_log_id: CronJobLogId,
   /// 日志明细
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -70,23 +70,23 @@ pub struct CronJobLogDetailModel {
   pub create_usr_id: UsrId,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: String,
+  pub create_usr_id_lbl: SmolStr,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: UsrId,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: String,
+  pub update_usr_id_lbl: SmolStr,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: String,
+  pub update_time_lbl: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for CronJobLogDetailModel {
@@ -98,26 +98,27 @@ impl FromRow<'_, MySqlRow> for CronJobLogDetailModel {
     // 定时任务日志
     let cron_job_log_id: CronJobLogId = row.try_get("cron_job_log_id")?;
     // 日志明细
-    let lbl: String = row.try_get("lbl")?;
+    let lbl: &str = row.try_get("lbl")?;
+    let lbl = SmolStr::new(lbl);
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
+    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: String = match create_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let create_time_lbl: SmolStr = match create_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
+    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: String = match update_time {
-      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
-      None => String::new(),
+    let update_time_lbl: SmolStr = match update_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -148,22 +149,22 @@ impl FromRow<'_, MySqlRow> for CronJobLogDetailModel {
 pub struct CronJobLogDetailFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 定时任务日志
   #[graphql(name = "cron_job_log_id")]
-  pub cron_job_log_id: String,
+  pub cron_job_log_id: SmolStr,
   /// 定时任务日志
   #[graphql(name = "cron_job_log_id_lbl")]
-  pub cron_job_log_id_lbl: String,
+  pub cron_job_log_id_lbl: SmolStr,
   /// 日志明细
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: String,
+  pub create_time: SmolStr,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: String,
+  pub create_time_lbl: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -185,10 +186,10 @@ pub struct CronJobLogDetailSearch {
   pub cron_job_log_id_is_null: Option<bool>,
   /// 日志明细
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 日志明细
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<String>,
+  pub lbl_like: Option<SmolStr>,
   /// 创建时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -200,10 +201,10 @@ pub struct CronJobLogDetailSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<Vec<String>>,
+  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl_like: Option<String>,
+  pub create_usr_id_lbl_like: Option<SmolStr>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
@@ -212,10 +213,10 @@ pub struct CronJobLogDetailSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<Vec<String>>,
+  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl_like: Option<String>,
+  pub update_usr_id_lbl_like: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -241,12 +242,6 @@ impl std::fmt::Debug for CronJobLogDetailSearch {
     // 定时任务日志
     if let Some(ref cron_job_log_id) = self.cron_job_log_id {
       item = item.field("cron_job_log_id", cron_job_log_id);
-    }
-    if let Some(ref cron_job_log_id_) = self.cron_job_log_id_ {
-      item = item.field("cron_job_log_id_", cron_job_log_id_);
-    }
-    if let Some(ref cron_job_log_id__like) = self.cron_job_log_id__like {
-      item = item.field("cron_job_log_id__like", cron_job_log_id__like);
     }
     if let Some(ref cron_job_log_id_is_null) = self.cron_job_log_id_is_null {
       item = item.field("cron_job_log_id_is_null", cron_job_log_id_is_null);
@@ -296,7 +291,7 @@ impl std::fmt::Debug for CronJobLogDetailSearch {
   }
 }
 
-#[derive(InputObject, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "CronJobLogDetailInput")]
 #[allow(dead_code)]
 pub struct CronJobLogDetailInput {
@@ -313,19 +308,19 @@ pub struct CronJobLogDetailInput {
   pub cron_job_log_id: Option<CronJobLogId>,
   /// 日志明细
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<String>,
+  pub create_usr_id_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,
+  pub create_time_lbl: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -334,13 +329,13 @@ pub struct CronJobLogDetailInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<String>,
+  pub update_usr_id_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,
+  pub update_time_lbl: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,

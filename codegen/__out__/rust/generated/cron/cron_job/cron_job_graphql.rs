@@ -13,6 +13,9 @@ use crate::common::context::{
   UniqueType,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -240,12 +243,14 @@ impl CronJobGenQuery {
   async fn find_last_order_by_cron_job(
     &self,
     ctx: &Context<'_>,
+    search: Option<CronJobSearch>,
   ) -> Result<u32> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
         cron_job_resolver::find_last_order_by_cron_job(
+          search,
           None,
         )
       }).await

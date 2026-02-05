@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_cron_job_log_detail(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_log_detail_models = cron_job_log_detail_dao::find_all_cron_job_log_detail(
@@ -64,7 +67,7 @@ pub async fn find_count_cron_job_log_detail(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_log_detail_num = cron_job_log_detail_dao::find_count_cron_job_log_detail(
@@ -86,7 +89,7 @@ pub async fn find_one_cron_job_log_detail(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_log_detail_model = cron_job_log_detail_dao::find_one_cron_job_log_detail(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_cron_job_log_detail(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_log_detail_model = cron_job_log_detail_dao::find_one_ok_cron_job_log_detail(
@@ -233,7 +236,7 @@ pub async fn update_by_id_cron_job_log_detail(
   let cron_job_log_detail_id = cron_job_log_detail_dao::update_by_id_cron_job_log_detail(
     cron_job_log_detail_id,
     cron_job_log_detail_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(cron_job_log_detail_id)

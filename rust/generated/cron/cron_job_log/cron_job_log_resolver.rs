@@ -13,6 +13,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -243,8 +246,8 @@ pub async fn delete_by_ids_cron_job_log(
   );
   
   use_permit(
-    get_page_path_cron_job_log().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_cron_job_log()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = cron_job_log_service::delete_by_ids_cron_job_log(
@@ -289,8 +292,8 @@ pub async fn revert_by_ids_cron_job_log(
   );
   
   use_permit(
-    get_page_path_cron_job_log().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_cron_job_log()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = cron_job_log_service::revert_by_ids_cron_job_log(
@@ -316,8 +319,8 @@ pub async fn force_delete_by_ids_cron_job_log(
   );
   
   use_permit(
-    get_page_path_cron_job_log().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_cron_job_log()),
+    SmolStr::new("force_delete"),
   ).await?;
   
   let num = cron_job_log_service::force_delete_by_ids_cron_job_log(

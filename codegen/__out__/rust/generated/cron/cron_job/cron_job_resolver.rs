@@ -13,6 +13,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -234,8 +237,8 @@ pub async fn creates_cron_job(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_cron_job().to_string(),
-    "add".to_owned(),
+    SmolStr::new(get_page_path_cron_job()),
+    SmolStr::new("add"),
   ).await?;
   
   let ids = cron_job_service::creates_cron_job(
@@ -294,8 +297,8 @@ pub async fn update_by_id_cron_job(
   ).await?;
   
   use_permit(
-    get_page_path_cron_job().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_cron_job()),
+    SmolStr::new("edit"),
   ).await?;
   
   let res = cron_job_service::update_by_id_cron_job(
@@ -322,8 +325,8 @@ pub async fn delete_by_ids_cron_job(
   );
   
   use_permit(
-    get_page_path_cron_job().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_cron_job()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = cron_job_service::delete_by_ids_cron_job(
@@ -373,8 +376,8 @@ pub async fn enable_by_ids_cron_job(
   );
   
   use_permit(
-    get_page_path_cron_job().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_cron_job()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = cron_job_service::enable_by_ids_cron_job(
@@ -426,8 +429,8 @@ pub async fn lock_by_ids_cron_job(
   );
   
   use_permit(
-    get_page_path_cron_job().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_cron_job()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = cron_job_service::lock_by_ids_cron_job(
@@ -473,8 +476,8 @@ pub async fn revert_by_ids_cron_job(
   );
   
   use_permit(
-    get_page_path_cron_job().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_cron_job()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = cron_job_service::revert_by_ids_cron_job(
@@ -500,8 +503,8 @@ pub async fn force_delete_by_ids_cron_job(
   );
   
   use_permit(
-    get_page_path_cron_job().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_cron_job()),
+    SmolStr::new("force_delete"),
   ).await?;
   
   let num = cron_job_service::force_delete_by_ids_cron_job(
@@ -515,18 +518,20 @@ pub async fn force_delete_by_ids_cron_job(
 /// 查找 定时任务 order_by 字段的最大值
 #[function_name::named]
 pub async fn find_last_order_by_cron_job(
+  search: Option<CronJobSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
   
-  let res = cron_job_service::find_last_order_by_cron_job(
+  let order_by = cron_job_service::find_last_order_by_cron_job(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

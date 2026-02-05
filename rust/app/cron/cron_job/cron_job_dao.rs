@@ -108,10 +108,10 @@ async fn new_task(
     .set_frequency_repeated_by_cron_str(cron.clone().as_str())
     .set_task_id(seq as u64)
     .spawn_async_routine(move || {
-      let job_id = job_id.clone();
-      let cron_job_id = cron_job_id.clone();
+      let job_id = job_id;
+      let cron_job_id = cron_job_id;
       let cron = cron.clone();
-      let tenant_id = tenant_id.clone();
+      let tenant_id = tenant_id;
       async move {
         CtxBuilder::new(None)
           .build()

@@ -458,8 +458,8 @@ export function useExportExcelCronJobLog() {
     try {
       const data = await query({
         query: `
-          query($search: CronJobLogSearch, $sort: [SortInput!]) {
-            findAllCronJobLog(search: $search, page: null, sort: $sort) {
+          query($search: CronJobLogSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllCronJobLog(search: $search, page: $page, sort: $sort) {
               ${ cronJobLogQueryField }
             }
             findAllCronJob {
@@ -475,6 +475,9 @@ export function useExportExcelCronJobLog() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

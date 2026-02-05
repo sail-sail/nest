@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_cron_job(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_models = cron_job_dao::find_all_cron_job(
@@ -64,7 +67,7 @@ pub async fn find_count_cron_job(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_num = cron_job_dao::find_count_cron_job(
@@ -86,7 +89,7 @@ pub async fn find_one_cron_job(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_model = cron_job_dao::find_one_cron_job(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_cron_job(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_model = cron_job_dao::find_one_ok_cron_job(
@@ -243,7 +246,7 @@ pub async fn update_by_id_cron_job(
   let cron_job_id = cron_job_dao::update_by_id_cron_job(
     cron_job_id,
     cron_job_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(cron_job_id)
@@ -274,7 +277,7 @@ pub async fn delete_by_ids_cron_job(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {
@@ -403,12 +406,14 @@ pub async fn force_delete_by_ids_cron_job(
 
 /// 查找 定时任务 order_by 字段的最大值
 pub async fn find_last_order_by_cron_job(
+  search: Option<CronJobSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = cron_job_dao::find_last_order_by_cron_job(
+  let order_by = cron_job_dao::find_last_order_by_cron_job(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

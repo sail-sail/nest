@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_job(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let job_models = job_dao::find_all_job(
@@ -64,7 +67,7 @@ pub async fn find_count_job(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let job_num = job_dao::find_count_job(
@@ -86,7 +89,7 @@ pub async fn find_one_job(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let job_model = job_dao::find_one_job(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_job(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let job_model = job_dao::find_one_ok_job(
@@ -233,7 +236,7 @@ pub async fn update_by_id_job(
   let old_model = validate_option_job(
     job_dao::find_by_id_job(
       job_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -256,7 +259,7 @@ pub async fn update_by_id_job(
   let job_id = job_dao::update_by_id_job(
     job_id,
     job_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(job_id)
@@ -287,7 +290,7 @@ pub async fn delete_by_ids_job(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {
@@ -423,12 +426,14 @@ pub async fn force_delete_by_ids_job(
 
 /// 查找 任务 order_by 字段的最大值
 pub async fn find_last_order_by_job(
+  search: Option<JobSearch>,
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = job_dao::find_last_order_by_job(
+  let order_by = job_dao::find_last_order_by_job(
+    search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(order_by)
 }

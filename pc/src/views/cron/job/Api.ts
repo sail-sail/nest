@@ -39,7 +39,7 @@ export function intoInputJob(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -578,8 +578,8 @@ export function useExportExcelJob() {
     try {
       const data = await query({
         query: `
-          query($search: JobSearch, $sort: [SortInput!]) {
-            findAllJob(search: $search, page: null, sort: $sort) {
+          query($search: JobSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllJob(search: $search, page: $page, sort: $sort) {
               ${ jobQueryField }
             }
             getDict(codes: [
@@ -593,6 +593,9 @@ export function useExportExcelJob() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -677,19 +680,22 @@ export async function importModelsJob(
  * 查找 任务 order_by 字段的最大值
  */
 export async function findLastOrderByJob(
+  search?: JobSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByJob: Query["findLastOrderByJob"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByJob
+      query($search: JobSearch) {
+        findLastOrderByJob(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByJob;
-  return res;
+  
+  const order_by = data.findLastOrderByJob;
+  
+  return order_by;
 }
 
 /**

@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_cron_job_log(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_log_models = cron_job_log_dao::find_all_cron_job_log(
@@ -64,7 +67,7 @@ pub async fn find_count_cron_job_log(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_log_num = cron_job_log_dao::find_count_cron_job_log(
@@ -86,7 +89,7 @@ pub async fn find_one_cron_job_log(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_log_model = cron_job_log_dao::find_one_cron_job_log(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_cron_job_log(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let cron_job_log_model = cron_job_log_dao::find_one_ok_cron_job_log(
@@ -233,7 +236,7 @@ pub async fn update_by_id_cron_job_log(
   let cron_job_log_id = cron_job_log_dao::update_by_id_cron_job_log(
     cron_job_log_id,
     cron_job_log_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(cron_job_log_id)

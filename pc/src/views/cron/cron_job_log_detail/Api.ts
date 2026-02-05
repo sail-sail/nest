@@ -438,14 +438,17 @@ export function useExportExcelCronJobLogDetail() {
     try {
       const data = await query({
         query: `
-          query($search: CronJobLogDetailSearch, $sort: [SortInput!]) {
-            findAllCronJobLogDetail(search: $search, page: null, sort: $sort) {
+          query($search: CronJobLogDetailSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllCronJobLogDetail(search: $search, page: $page, sort: $sort) {
               ${ cronJobLogDetailQueryField }
             }
           }
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);

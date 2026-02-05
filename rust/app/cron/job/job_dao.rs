@@ -3,6 +3,8 @@ use tracing::info;
 
 use generated::common::context::Options;
 
+use smol_str::SmolStr;
+
 use generated::base::tenant::tenant_model::TenantId;
 use generated::cron::job::job_model::JobId;
 use generated::cron::cron_job::cron_job_model::CronJobId;
@@ -29,15 +31,15 @@ use generated::cron::cron_job_log_detail::cron_job_log_detail_dao::create_cron_j
 pub async fn run_job(
   id: JobId,
   cron_job_id: CronJobId,
-  cron: String,
+  cron: SmolStr,
   tenant_id: TenantId,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<SmolStr> {
   
   let job_model = validate_option_job(
     find_by_id_job(
       id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   
@@ -45,38 +47,39 @@ pub async fn run_job(
     &job_model,
   ).await?;
   
-  info!("cron_job begin: {}: {}", cron_job_id, cron);
+  info!("cron_job begin: {cron_job_id}: {cron}");
   
   let begin_time = chrono::Local::now().naive_local();
   let id = create_cron_job_log(
     CronJobLogInput {
-      cron_job_id: Some(cron_job_id.clone()),
+      cron_job_id: Some(cron_job_id),
       begin_time: Some(begin_time),
-      exec_result: Some(String::new()),
-      tenant_id: Some(tenant_id.clone()),
+      exec_result: Some(SmolStr::new("")),
+      tenant_id: Some(tenant_id),
       ..Default::default()
     },
-    options.clone(),
+    options,
   ).await?;
   
   let code = job_model.code;
   
-  let exec_result: Option<Result<String>> = if code == "test" {
+  let exec_result: Option<Result<SmolStr>> = if code == "test" {
     test(
-      id.clone(),
+      id,
       tenant_id,
     ).await.into()
   } else {
     None
   };
   
-  info!("cron_job end: {}: {}", cron_job_id, cron);
+  info!("cron_job end: {cron_job_id}: {cron}");
   
   let end_time = chrono::Local::now().naive_local();
   
-  if exec_result.is_some() && exec_result.as_ref().unwrap().is_err() {
-    let exec_result = exec_result.unwrap();
-    let exec_result = exec_result.unwrap_err().to_string();
+  if let Some(exec_result) = &exec_result &&
+    let Err(exec_result) = &exec_result
+  {
+    let exec_result = SmolStr::new(exec_result.to_string());
     update_by_id_cron_job_log(
       id,
       CronJobLogInput {
@@ -85,17 +88,17 @@ pub async fn run_job(
         end_time: Some(end_time),
         ..Default::default()
       },
-      options.clone(),
+      options,
     ).await?;
     
     return Err(eyre!(exec_result));
   }
   
-  let exec_result: String = {
+  let exec_result: SmolStr = {
     if let Some(exec_result) = exec_result {
       exec_result.unwrap()
     } else {
-      String::new()
+      SmolStr::new("")
     }
   };
   
@@ -107,7 +110,7 @@ pub async fn run_job(
       end_time: Some(end_time),
       ..Default::default()
     },
-    options.clone(),
+    options,
   ).await?;
   
   Ok(exec_result)
@@ -116,11 +119,11 @@ pub async fn run_job(
 async fn test(
   cron_job_log_id: CronJobLogId,
   tenant_id: TenantId,
-) ->Result<String> {
+) ->Result<SmolStr> {
   
   create_cron_job_log_detail(
     CronJobLogDetailInput {
-      lbl: Some("测试日志".to_string()),
+      lbl: Some("测试日志".into()),
       cron_job_log_id: Some(cron_job_log_id),
       tenant_id: Some(tenant_id),
       ..Default::default()
@@ -132,5 +135,5 @@ async fn test(
   
   info!("test");
   
-  Ok(String::new())
+  Ok(SmolStr::new(""))
 }

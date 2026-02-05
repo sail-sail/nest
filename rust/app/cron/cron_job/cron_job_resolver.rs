@@ -2,6 +2,8 @@ use color_eyre::eyre::Result;
 
 use generated::common::context::Options;
 
+use smol_str::SmolStr;
+
 use generated::cron::cron_job::cron_job_model::CronJobId;
 
 use super::cron_job_service;
@@ -10,7 +12,7 @@ use super::cron_job_service;
 pub async fn run_cron_job(
   id: CronJobId,
   options: Option<Options>,
-) -> Result<String> {
+) -> Result<SmolStr> {
   
   let res = cron_job_service::run_cron_job(
     id,

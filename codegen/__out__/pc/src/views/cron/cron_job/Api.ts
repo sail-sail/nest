@@ -45,7 +45,7 @@ export function intoInputCronJob(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -642,8 +642,8 @@ export function useExportExcelCronJob() {
     try {
       const data = await query({
         query: `
-          query($search: CronJobSearch, $sort: [SortInput!]) {
-            findAllCronJob(search: $search, page: null, sort: $sort) {
+          query($search: CronJobSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllCronJob(search: $search, page: $page, sort: $sort) {
               ${ cronJobQueryField }
             }
             findAllJob {
@@ -661,6 +661,9 @@ export function useExportExcelCronJob() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
@@ -745,19 +748,22 @@ export async function importModelsCronJob(
  * 查找 定时任务 order_by 字段的最大值
  */
 export async function findLastOrderByCronJob(
+  search?: CronJobSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByCronJob: Query["findLastOrderByCronJob"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByCronJob
+      query($search: CronJobSearch) {
+        findLastOrderByCronJob(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByCronJob;
-  return res;
+  
+  const order_by = data.findLastOrderByCronJob;
+  
+  return order_by;
 }
 
 /**

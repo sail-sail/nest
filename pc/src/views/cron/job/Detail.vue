@@ -19,6 +19,7 @@
     >
       <ElIconRefresh
         class="reset_but"
+        @dblclick.stop
         @click="onReset"
       ></ElIconRefresh>
     </div>
@@ -29,6 +30,7 @@
       >
         <ElIconUnlock
           class="unlock_but"
+          @dblclick.stop
           @click="isReadonly = true;"
         >
         </ElIconUnlock>
@@ -39,6 +41,7 @@
       >
         <ElIconLock
           class="lock_but"
+          @dblclick.stop
           @click="isReadonly = false;"
         ></ElIconLock>
       </div>
@@ -215,6 +218,7 @@
       
     </div>
   </div>
+  
 </CustomDialog>
 </template>
 
@@ -268,7 +272,7 @@ let ids = $ref<JobId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<JobId[]>([ ]);
 
-const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
+const formRef = $(useTemplateRef("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -335,7 +339,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOneJob;
 
@@ -400,6 +404,7 @@ async function showDialog(
     }
   });
   dialogAction = action || "add";
+  nextTick(() => formRef?.clearValidate());
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
@@ -414,9 +419,12 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       getDefaultInputJob(),
-      findLastOrderByJob({
-        notLoading: !inited,
-      }),
+      findLastOrderByJob(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -437,9 +445,12 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderByJob({
-        notLoading: !inited,
-      }),
+      findLastOrderByJob(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     if (data) {
       dialogModel = {
@@ -539,9 +550,12 @@ async function onRefresh() {
       order_by,
     ] = await Promise.all([
       getDefaultInputJob(),
-      findLastOrderByJob({
-        notLoading: !inited,
-      }),
+      findLastOrderByJob(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -665,7 +679,7 @@ async function onSaveKeydown(e: KeyboardEvent) {
 
 /** 保存并返回id */
 async function save() {
-  if (isReadonly) {
+  if (!inited || isReadonly) {
     return;
   }
   if (!formRef) {
