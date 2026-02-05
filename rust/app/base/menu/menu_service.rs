@@ -30,7 +30,7 @@ pub async fn find_menu_and_roles(
   let menu_model = find_one_menu(
     Some(search),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   // 3. 查询拥有此菜单权限的角色列表
@@ -42,7 +42,7 @@ pub async fn find_menu_and_roles(
       }),
       None,
       None,
-      options.clone(),
+      options,
     ).await?
   } else {
     vec![]

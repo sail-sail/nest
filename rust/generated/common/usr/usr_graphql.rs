@@ -3,6 +3,8 @@ use async_graphql::{Context, Object};
 
 use crate::common::context::Ctx;
 
+use smol_str::SmolStr;
+
 use super::usr_resolver;
 
 use super::usr_model::{
@@ -28,7 +30,7 @@ impl UsrMutation {
       .with_tran()
       .build()
       .scope({
-        let ip: String = ctx.data_opt::<crate::common::gql::model::Ip>()
+        let ip: SmolStr = ctx.data_opt::<crate::common::gql::model::Ip>()
           .map(|item| item.clone().0)
           .unwrap_or_default();
         usr_resolver::login(ip, input)
@@ -39,8 +41,8 @@ impl UsrMutation {
   async fn select_lang(
     &self,
     ctx: &Context<'_>,
-    lang: String,
-  ) -> Result<String> {
+    lang: SmolStr,
+  ) -> Result<SmolStr> {
     let mut ctx = Ctx::builder(ctx)
       .with_auth()?
       .build();

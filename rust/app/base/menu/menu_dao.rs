@@ -7,6 +7,8 @@ use generated::common::context::{
   Options,
 };
 
+use generated::common::cache::cache_dao;
+
 use super::menu_model::GetMenus;
 
 use generated::base::usr::usr_dao::{
@@ -111,13 +113,22 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let args = args.into();
   
-  let options = Options::new();
-  
-  let options = options.set_is_debug(Some(false));
-  
-  let options = options.set_cache_key("base_menu._getMenus", &sql, &args);
-  
-  let options = Some(options);
+  let cache_key1 = "dao.sql.base_menu._getMenus";
+  let cache_key2 = generated::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2: Vec<GetMenus>;
+      let res = serde_json::from_str::<Vec<GetMenus>>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = vec![];
+        cache_dao::del_cache(cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }
   
   let mut res: Vec<GetMenus> = query(
     sql,
@@ -133,6 +144,11 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
         item.lbl = item.lbl_lang.clone();
       }
     }
+  }
+  
+  {
+    let str = serde_json::to_string(&res)?;
+    cache_dao::set_cache(cache_key1, &cache_key2, &str).await?;
   }
   
   Ok(res)

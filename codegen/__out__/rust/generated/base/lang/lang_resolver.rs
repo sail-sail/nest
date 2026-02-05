@@ -13,6 +13,9 @@ use crate::common::context::{
   Options,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -232,8 +235,8 @@ pub async fn creates_lang(
   let inputs = inputs2;
   
   use_permit(
-    get_page_path_lang().to_string(),
-    "add".to_owned(),
+    SmolStr::new(get_page_path_lang()),
+    SmolStr::new("add"),
   ).await?;
   
   let ids = lang_service::creates_lang(
@@ -268,8 +271,8 @@ pub async fn update_by_id_lang(
   ).await?;
   
   use_permit(
-    get_page_path_lang().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_lang()),
+    SmolStr::new("edit"),
   ).await?;
   
   let res = lang_service::update_by_id_lang(
@@ -296,8 +299,8 @@ pub async fn delete_by_ids_lang(
   );
   
   use_permit(
-    get_page_path_lang().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_lang()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = lang_service::delete_by_ids_lang(
@@ -347,8 +350,8 @@ pub async fn enable_by_ids_lang(
   );
   
   use_permit(
-    get_page_path_lang().to_string(),
-    "edit".to_owned(),
+    SmolStr::new(get_page_path_lang()),
+    SmolStr::new("edit"),
   ).await?;
   
   let num = lang_service::enable_by_ids_lang(
@@ -394,8 +397,8 @@ pub async fn revert_by_ids_lang(
   );
   
   use_permit(
-    get_page_path_lang().to_string(),
-    "delete".to_owned(),
+    SmolStr::new(get_page_path_lang()),
+    SmolStr::new("delete"),
   ).await?;
   
   let num = lang_service::revert_by_ids_lang(
@@ -421,8 +424,8 @@ pub async fn force_delete_by_ids_lang(
   );
   
   use_permit(
-    get_page_path_lang().to_string(),
-    "force_delete".to_owned(),
+    SmolStr::new(get_page_path_lang()),
+    SmolStr::new("force_delete"),
   ).await?;
   
   let num = lang_service::force_delete_by_ids_lang(

@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use color_eyre::eyre::{Result, eyre};
 
+use smol_str::SmolStr;
+
 use crate::common::i18n::i18n_dao;
 
 #[allow(dead_code)]
@@ -20,11 +22,11 @@ pub async fn min_items<T: Deref<Target = [E]>, E>(
     return Ok(());
   }
   
-  let mut map: HashMap<String, String> = HashMap::new();
-  map.insert("0".to_owned(), len.to_string());
+  let mut map: HashMap<SmolStr, SmolStr> = HashMap::new();
+  map.insert("0".into(), len.to_string().into());
   
   let msg = i18n_dao::ns(
-    "数量不能小于 {0}".to_owned(),
+    "数量不能小于 {0}".into(),
     map.into(),
   ).await?;
   

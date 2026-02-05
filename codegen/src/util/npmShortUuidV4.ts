@@ -19,6 +19,6 @@ for (let i = 0; i < num; i++) {
 }
 const idStr = ids.join("\n");
 
+console.log();
 console.log(idStr);
 clipboardy.writeSync(idStr);
-console.log("\n已复制到剪贴板");

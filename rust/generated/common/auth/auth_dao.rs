@@ -8,6 +8,8 @@ use hmac::Mac;
 
 use base64::{engine::general_purpose, Engine};
 
+use smol_str::SmolStr;
+
 pub fn get_auth_model_by_token(
   token: impl AsRef<str>,
 ) -> Result<AuthModel> {
@@ -23,18 +25,18 @@ pub fn get_auth_model_by_token(
 
 pub fn get_token_by_auth_model(
   auth_model: &AuthModel,
-) -> Result<String> {
+) -> Result<SmolStr> {
   if auth_model.exp <= 0 {
     return Err(eyre!("token过期时间不能为空"));
   }
   let key: hmac::Hmac<sha2::Sha256> = hmac::Hmac::new_from_slice(SECRET_KEY.as_bytes())?;
-  Ok(SignWithKey::sign_with_key(auth_model, &key)?.to_string())
+  Ok(SignWithKey::sign_with_key(auth_model, &key)?.to_string().into())
 }
 
-pub fn get_password(str: String) -> Result<String> {
+pub fn get_password(str: SmolStr) -> Result<SmolStr> {
   let str = {
     let mut hasher = sha2::Sha256::new();
-    hasher.update(str + SECRET_KEY);
+    hasher.update(str.to_string() + SECRET_KEY);
     let result = hasher.finalize();
     general_purpose::STANDARD.encode(result)
   };
@@ -45,7 +47,7 @@ pub fn get_password(str: String) -> Result<String> {
     general_purpose::STANDARD.encode(result)
   };
   let str = utf8_slice::slice(&str, 0, 43);
-  Ok(str.to_owned())
+  Ok(str.into())
 }
 
 
@@ -83,7 +85,7 @@ mod test {
   
   #[test]
   fn test_get_password() {
-    let str = get_password("a".to_owned()).unwrap();
+    let str = get_password("a".into()).unwrap();
     assert!(str == "RoZMvtNCRmGuZCdQ2FoRdhfYFQ0GBNu/JDaKdRx5o7A");
   }
   

@@ -10,7 +10,7 @@ pub async fn get_uni_releasing(
 ) -> Result<bool> {
   
   let res = optbiz_service::get_uni_releasing(
-    options.clone(),
+    options,
   ).await?;
   
   Ok(res)

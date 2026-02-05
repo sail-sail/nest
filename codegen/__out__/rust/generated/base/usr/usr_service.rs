@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_usr(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let usr_models = usr_dao::find_all_usr(
@@ -64,7 +67,7 @@ pub async fn find_count_usr(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let usr_num = usr_dao::find_count_usr(
@@ -86,7 +89,7 @@ pub async fn find_one_usr(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let usr_model = usr_dao::find_one_usr(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_usr(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let usr_model = usr_dao::find_one_ok_usr(
@@ -243,7 +246,7 @@ pub async fn update_by_id_usr(
   let usr_id = usr_dao::update_by_id_usr(
     usr_id,
     usr_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(usr_id)
@@ -274,7 +277,7 @@ pub async fn delete_by_ids_usr(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

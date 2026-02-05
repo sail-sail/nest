@@ -10,6 +10,9 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -71,7 +74,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 20 * 2);
+  let mut where_query = String::with_capacity(80 * 22 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -93,14 +96,14 @@ async fn get_where_query(
     if let Some(ids) = ids {
       let arg = {
         if ids.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.id in (");
@@ -172,14 +175,14 @@ async fn get_where_query(
     if let Some(dyn_page_id) = dyn_page_id {
       let arg = {
         if dyn_page_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(dyn_page_id.len());
           for item in dyn_page_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.dyn_page_id in (");
@@ -197,21 +200,21 @@ async fn get_where_query(
     }
   }
   {
-    let dyn_page_id_lbl: Option<Vec<String>> = match search {
+    let dyn_page_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.dyn_page_id_lbl.clone(),
       None => None,
     };
     if let Some(dyn_page_id_lbl) = dyn_page_id_lbl {
       let arg = {
         if dyn_page_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(dyn_page_id_lbl.len());
           for item in dyn_page_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and dyn_page_id_lbl.lbl in (");
@@ -314,14 +317,14 @@ async fn get_where_query(
     if let Some(is_required) = is_required {
       let arg = {
         if is_required.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(is_required.len());
           for item in is_required {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.is_required in (");
@@ -338,14 +341,14 @@ async fn get_where_query(
     if let Some(is_search) = is_search {
       let arg = {
         if is_search.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(is_search.len());
           for item in is_search {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.is_search in (");
@@ -379,17 +382,65 @@ async fn get_where_query(
     if let Some(align) = align {
       let arg = {
         if align.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(align.len());
           for item in align {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.align in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  // 手机列表显示
+  {
+    let is_mobile_list: Option<Vec<u8>> = match search {
+      Some(item) => item.is_mobile_list.clone(),
+      None => None,
+    };
+    if let Some(is_mobile_list) = is_mobile_list {
+      let arg = {
+        if is_mobile_list.is_empty() {
+          SmolStr::new("null")
+        } else {
+          let mut items = Vec::with_capacity(is_mobile_list.len());
+          for item in is_mobile_list {
+            args.push(item.into());
+            items.push("?");
+          }
+          SmolStr::new(items.join(","))
+        }
+      };
+      where_query.push_str(" and t.is_mobile_list in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  // 手机列表查询
+  {
+    let is_mobile_search: Option<Vec<u8>> = match search {
+      Some(item) => item.is_mobile_search.clone(),
+      None => None,
+    };
+    if let Some(is_mobile_search) = is_mobile_search {
+      let arg = {
+        if is_mobile_search.is_empty() {
+          SmolStr::new("null")
+        } else {
+          let mut items = Vec::with_capacity(is_mobile_search.len());
+          for item in is_mobile_search {
+            args.push(item.into());
+            items.push("?");
+          }
+          SmolStr::new(items.join(","))
+        }
+      };
+      where_query.push_str(" and t.is_mobile_search in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
@@ -403,14 +454,14 @@ async fn get_where_query(
     if let Some(is_enabled) = is_enabled {
       let arg = {
         if is_enabled.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(is_enabled.len());
           for item in is_enabled {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.is_enabled in (");
@@ -444,14 +495,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
         if create_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -469,21 +520,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<String>> = match search {
+    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -529,14 +580,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
         if update_usr_id.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -554,21 +605,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<String>> = match search {
+    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          "null".to_string()
+          SmolStr::new("null")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          items.join(",")
+          SmolStr::new(items.join(","))
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -708,6 +759,26 @@ pub async fn find_all_dyn_page_field(
       return Err(eyre!("search.align.length > {ids_limit}"));
     }
   }
+  // 手机列表显示
+  if let Some(search) = &search && let Some(is_mobile_list) = &search.is_mobile_list {
+    let len = is_mobile_list.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_list.length > {ids_limit}"));
+    }
+  }
+  // 手机列表查询
+  if let Some(search) = &search && let Some(is_mobile_search) = &search.is_mobile_search {
+    let len = is_mobile_search.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_search.length > {ids_limit}"));
+    }
+  }
   // 启用
   if let Some(search) = &search && let Some(is_enabled) = &search.is_enabled {
     let len = is_enabled.len();
@@ -763,7 +834,7 @@ pub async fn find_all_dyn_page_field(
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
-      prop: "create_time".to_string(),
+      prop: "create_time".into(),
       order: SortOrderEnum::Asc,
     });
   }
@@ -780,12 +851,10 @@ pub async fn find_all_dyn_page_field(
   
   let args = args.into();
   
-  let options = Options::from(options);
-  
   let mut res: Vec<DynPageFieldModel> = query(
     sql,
     args,
-    Some(options),
+    options,
   ).await?;
   
   let len = res.len();
@@ -794,7 +863,7 @@ pub async fn find_all_dyn_page_field(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
         trace: true,
         ..Default::default()
       },
@@ -805,14 +874,18 @@ pub async fn find_all_dyn_page_field(
     "yes_no",
     "yes_no",
     "dyn_page_field_align",
+    "yes_no",
+    "yes_no",
     "is_enabled",
   ]).await?;
   let [
     is_required_dict,
     is_search_dict,
     align_dict,
+    is_mobile_list_dict,
+    is_mobile_search_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 4] = dict_vec
+  ]: [Vec<_>; 6] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -825,7 +898,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_required.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_required.to_string())
+        .unwrap_or_else(|| model.is_required.to_string().into())
     };
     
     // 查询条件
@@ -834,7 +907,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_search.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_search.to_string())
+        .unwrap_or_else(|| model.is_search.to_string().into())
     };
     
     // 对齐方式
@@ -843,7 +916,25 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.align.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.align.to_string())
+        .unwrap_or_else(|| model.align.clone().into())
+    };
+    
+    // 手机列表显示
+    model.is_mobile_list_lbl = {
+      is_mobile_list_dict
+        .iter()
+        .find(|item| item.val == model.is_mobile_list.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_mobile_list.to_string().into())
+    };
+    
+    // 手机列表查询
+    model.is_mobile_search_lbl = {
+      is_mobile_search_dict
+        .iter()
+        .find(|item| item.val == model.is_mobile_search.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_mobile_search.to_string().into())
     };
     
     // 启用
@@ -852,7 +943,7 @@ pub async fn find_all_dyn_page_field(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string())
+        .unwrap_or_else(|| model.is_enabled.to_string().into())
     };
     
   }
@@ -950,6 +1041,34 @@ pub async fn find_count_dyn_page_field(
       return Err(eyre!("search.align.length > {ids_limit}"));
     }
   }
+  // 手机列表显示
+  if let Some(search) = &search && search.is_mobile_list.is_some() {
+    let len = search.is_mobile_list.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_list.length > {ids_limit}"));
+    }
+  }
+  // 手机列表查询
+  if let Some(search) = &search && search.is_mobile_search.is_some() {
+    let len = search.is_mobile_search.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_search.length > {ids_limit}"));
+    }
+  }
   // 启用
   if let Some(search) = &search && search.is_enabled.is_some() {
     let len = search.is_enabled.as_ref().unwrap().len();
@@ -1006,6 +1125,10 @@ pub async fn find_count_dyn_page_field(
   
   let args = args.into();
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let res: Option<CountModel> = query_one(
     sql,
     args,
@@ -1046,6 +1169,10 @@ pub async fn get_field_comments_dyn_page_field(
     width: "宽度".into(),
     align: "对齐方式".into(),
     align_lbl: "对齐方式".into(),
+    is_mobile_list: "手机列表显示".into(),
+    is_mobile_list_lbl: "手机列表显示".into(),
+    is_mobile_search: "手机列表查询".into(),
+    is_mobile_search_lbl: "手机列表查询".into(),
     is_enabled: "启用".into(),
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
@@ -1194,13 +1321,13 @@ pub async fn find_by_id_ok_dyn_page_field(
   ).await?;
   
   let Some(dyn_page_field_model) = dyn_page_field_model else {
-    let err_msg = "此 动态页面字段 已被删除";
+    let err_msg = SmolStr::new("此 动态页面字段 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
     );
     return Err(eyre!(ServiceException {
-      message: err_msg.to_string(),
+      message: err_msg,
       trace: true,
       ..Default::default()
     }));
@@ -1293,7 +1420,7 @@ pub async fn find_by_ids_ok_dyn_page_field(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1306,7 +1433,7 @@ pub async fn find_by_ids_ok_dyn_page_field(
   ).await?;
   
   if dyn_page_field_models.len() != len {
-    let err_msg = "此 动态页面字段 已被删除";
+    let err_msg = SmolStr::new("此 动态页面字段 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1319,7 +1446,7 @@ pub async fn find_by_ids_ok_dyn_page_field(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = "此 动态页面字段 已经被删除";
+      let err_msg = SmolStr::new("此 动态页面字段 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<DynPageFieldModel>>>()?;
@@ -1365,7 +1492,7 @@ pub async fn find_by_ids_dyn_page_field(
   if len > FIND_ALL_IDS_LIMIT {
     return Err(eyre!(
       ServiceException {
-        message: "ids.length > FIND_ALL_IDS_LIMIT".to_string(),
+        message: "ids.length > FIND_ALL_IDS_LIMIT".into(),
         trace: true,
         ..Default::default()
       },
@@ -1488,6 +1615,34 @@ pub async fn exists_dyn_page_field(
       return Err(eyre!("search.align.length > {ids_limit}"));
     }
   }
+  // 手机列表显示
+  if let Some(search) = &search && search.is_mobile_list.is_some() {
+    let len = search.is_mobile_list.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_list.length > {ids_limit}"));
+    }
+  }
+  // 手机列表查询
+  if let Some(search) = &search && search.is_mobile_search.is_some() {
+    let len = search.is_mobile_search.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_mobile_search.length > {ids_limit}"));
+    }
+  }
   // 启用
   if let Some(search) = &search && search.is_enabled.is_some() {
     let len = search.is_enabled.as_ref().unwrap().len();
@@ -1543,6 +1698,10 @@ pub async fn exists_dyn_page_field(
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
   
   let args = args.into();
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let res: Option<(bool,)> = query_one(
     sql,
@@ -1630,10 +1789,12 @@ pub async fn find_by_unique_dyn_page_field(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
+  
   if let Some(id) = search.id {
     let model = find_by_id_dyn_page_field(
       id,
-      options.clone(),
+      options,
     ).await?;
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
@@ -1658,7 +1819,7 @@ pub async fn find_by_unique_dyn_page_field(
       search.into(),
       None,
       sort.clone(),
-      options.clone(),
+      options,
     ).await?
   };
   models.append(&mut models_tmp);
@@ -1679,7 +1840,7 @@ pub async fn find_by_unique_dyn_page_field(
       search.into(),
       None,
       sort.clone(),
-      options.clone(),
+      options,
     ).await?
   };
   models.append(&mut models_tmp);
@@ -1688,14 +1849,17 @@ pub async fn find_by_unique_dyn_page_field(
 }
 
 /// 根据唯一约束对比对象是否相等
-#[allow(dead_code)]
+#[allow(dead_code, unused_variables)]
 pub fn equals_by_unique(
   input: &DynPageFieldInput,
   model: &DynPageFieldModel,
+  options: Option<&Options>,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
   }
+  
+  let is_silent_mode = get_is_silent_mode(options);
   
   if
     input.dyn_page_id.as_ref().is_some() && input.dyn_page_id.as_ref().unwrap() == &model.dyn_page_id &&
@@ -1746,6 +1910,7 @@ pub async fn check_by_unique_dyn_page_field(
   let is_equals = equals_by_unique(
     &input,
     &model,
+    options.as_ref(),
   );
   if !is_equals {
     return Ok(None);
@@ -1788,6 +1953,8 @@ pub async fn set_id_by_lbl_dyn_page_field(
     "yes_no",
     "yes_no",
     "dyn_page_field_align",
+    "yes_no",
+    "yes_no",
     "is_enabled",
   ]).await?;
   
@@ -1836,9 +2003,39 @@ pub async fn set_id_by_lbl_dyn_page_field(
     }
   }
   
+  // 手机列表显示
+  if input.is_mobile_list.is_none() {
+    let is_mobile_list_dict = &dict_vec[3];
+    if let Some(is_mobile_list_lbl) = input.is_mobile_list_lbl.clone() {
+      input.is_mobile_list = is_mobile_list_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_mobile_list_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
+  // 手机列表查询
+  if input.is_mobile_search.is_none() {
+    let is_mobile_search_dict = &dict_vec[4];
+    if let Some(is_mobile_search_lbl) = input.is_mobile_search_lbl.clone() {
+      input.is_mobile_search = is_mobile_search_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_mobile_search_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[3];
+    let is_enabled_dict = &dict_vec[5];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -1857,7 +2054,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     && input.dyn_page_id.is_none()
   {
     input.dyn_page_id_lbl = input.dyn_page_id_lbl.map(|item| 
-      item.trim().to_owned()
+      SmolStr::new(item.trim())
     );
     let model = crate::base::dyn_page::dyn_page_dao::find_one_dyn_page(
       crate::base::dyn_page::dyn_page_model::DynPageSearch {
@@ -1896,7 +2093,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_required_dict.iter().find(|item| {
       item.lbl == input.is_required_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.is_required = val.parse::<u8>()?.into();
     }
@@ -1908,7 +2105,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_required_dict.iter().find(|item| {
       item.val == input.is_required.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.is_required_lbl = lbl;
   }
   
@@ -1921,7 +2118,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_search_dict.iter().find(|item| {
       item.lbl == input.is_search_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.is_search = val.parse::<u8>()?.into();
     }
@@ -1933,7 +2130,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = is_search_dict.iter().find(|item| {
       item.val == input.is_search.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.is_search_lbl = lbl;
   }
   
@@ -1946,7 +2143,7 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = align_dict.iter().find(|item| {
       item.lbl == input.align_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.align = val.parse::<DynPageFieldAlign>()?.into();
     }
@@ -1958,8 +2155,58 @@ pub async fn set_id_by_lbl_dyn_page_field(
     let dict_model = align_dict.iter().find(|item| {
       item.val == input.align.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.align_lbl = lbl;
+  }
+  
+  // 手机列表显示
+  if
+    input.is_mobile_list_lbl.is_some() && !input.is_mobile_list_lbl.as_ref().unwrap().is_empty()
+    && input.is_mobile_list.is_none()
+  {
+    let is_mobile_list_dict = &dict_vec[3];
+    let dict_model = is_mobile_list_dict.iter().find(|item| {
+      item.lbl == input.is_mobile_list_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    if let Some(val) = val {
+      input.is_mobile_list = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_mobile_list_lbl.is_none() || input.is_mobile_list_lbl.as_ref().unwrap().is_empty())
+    && input.is_mobile_list.is_some()
+  {
+    let is_mobile_list_dict = &dict_vec[3];
+    let dict_model = is_mobile_list_dict.iter().find(|item| {
+      item.val == input.is_mobile_list.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    input.is_mobile_list_lbl = lbl;
+  }
+  
+  // 手机列表查询
+  if
+    input.is_mobile_search_lbl.is_some() && !input.is_mobile_search_lbl.as_ref().unwrap().is_empty()
+    && input.is_mobile_search.is_none()
+  {
+    let is_mobile_search_dict = &dict_vec[4];
+    let dict_model = is_mobile_search_dict.iter().find(|item| {
+      item.lbl == input.is_mobile_search_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    if let Some(val) = val {
+      input.is_mobile_search = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_mobile_search_lbl.is_none() || input.is_mobile_search_lbl.as_ref().unwrap().is_empty())
+    && input.is_mobile_search.is_some()
+  {
+    let is_mobile_search_dict = &dict_vec[4];
+    let dict_model = is_mobile_search_dict.iter().find(|item| {
+      item.val == input.is_mobile_search.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    input.is_mobile_search_lbl = lbl;
   }
   
   // 启用
@@ -1967,11 +2214,11 @@ pub async fn set_id_by_lbl_dyn_page_field(
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[3];
+    let is_enabled_dict = &dict_vec[5];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| item.val.to_string());
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
       input.is_enabled = val.parse::<u8>()?.into();
     }
@@ -1979,11 +2226,11 @@ pub async fn set_id_by_lbl_dyn_page_field(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[3];
+    let is_enabled_dict = &dict_vec[5];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.is_enabled_lbl = lbl;
   }
   
@@ -2017,7 +2264,7 @@ pub async fn creates_return_dyn_page_field(
   
   let ids = _creates(
     inputs.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let models_dyn_page_field = find_by_ids_dyn_page_field(
@@ -2086,7 +2333,7 @@ async fn _creates(
     let (
       code_seq,
       code,
-    ) = find_auto_code_dyn_page_field(options.clone()).await?;
+    ) = find_auto_code_dyn_page_field(options).await?;
     input.code_seq = Some(code_seq);
     input.code = Some(code);
   }
@@ -2103,14 +2350,14 @@ async fn _creates(
     let old_models = find_by_unique_dyn_page_field(
       input.clone().into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if !old_models.is_empty() {
       let mut id: Option<DynPageFieldId> = None;
       
       for old_model in old_models {
-        let options = Options::from(options.clone())
+        let options = Options::from(options)
           .set_unique_type(unique_type);
         
         id = check_by_unique_dyn_page_field(
@@ -2139,7 +2386,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2171,13 +2418,17 @@ async fn _creates(
   sql_fields += ",width";
   // 对齐方式
   sql_fields += ",align";
+  // 手机列表显示
+  sql_fields += ",is_mobile_list";
+  // 手机列表查询
+  sql_fields += ",is_mobile_search";
   // 启用
   sql_fields += ",is_enabled";
   // 排序
   sql_fields += ",order_by";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 20 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 22 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2221,11 +2472,11 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_lbl = usr_model.lbl;
@@ -2241,15 +2492,15 @@ async fn _creates(
         }
         sql_values += ",?";
         args.push(usr_lbl.into());
-      } else if input.create_usr_id.unwrap().is_empty() {
+      } else if input.create_usr_id.is_none_or(|s| s.is_empty()) {
         sql_values += ",default";
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = String::new();
+        let mut usr_lbl = SmolStr::new("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
-          options.clone(),
+          options,
         ).await?;
         if let Some(usr_model) = usr_model {
           usr_lbl = usr_model.lbl;
@@ -2380,6 +2631,20 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
+    // 手机列表显示
+    if let Some(is_mobile_list) = input.is_mobile_list {
+      sql_values += ",?";
+      args.push(is_mobile_list.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 手机列表查询
+    if let Some(is_mobile_search) = input.is_mobile_search {
+      sql_values += ",?";
+      args.push(is_mobile_search.into());
+    } else {
+      sql_values += ",default";
+    }
     // 启用
     if let Some(is_enabled) = input.is_enabled {
       sql_values += ",?";
@@ -2406,14 +2671,10 @@ async fn _creates(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = Some(options);
-  
   let affected_rows = execute(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
   
   if affected_rows != inputs2_len as u64 {
@@ -2427,7 +2688,7 @@ async fn _creates(
 /// 获得 动态页面字段 自动编码
 pub async fn find_auto_code_dyn_page_field(
   options: Option<Options>,
-) -> Result<(u32, String)> {
+) -> Result<(u32, SmolStr)> {
   
   let table = get_table_name_dyn_page_field();
   let method = "find_auto_code_dyn_page_field";
@@ -2449,11 +2710,11 @@ pub async fn find_auto_code_dyn_page_field(
     None,
     Some(vec![
       SortInput {
-        prop: "code_seq".to_owned(),
+        prop: "code_seq".into(),
         order: SortOrderEnum::Desc,
       },
     ]),
-    options.clone(),
+    options,
   ).await?;
   
   let code_seq = model
@@ -2467,11 +2728,11 @@ pub async fn find_auto_code_dyn_page_field(
     }),
     Some(vec![
       SortInput {
-        prop: "code_seq".to_owned(),
+        prop: "code_seq".into(),
         order: SortOrderEnum::Desc,
       },
     ]),
-    options.clone(),
+    options,
   ).await?;
   
   let code_seq_deleted = model_deleted
@@ -2486,7 +2747,7 @@ pub async fn find_auto_code_dyn_page_field(
   
   let code = format!("fld_{code_seq:0}");
   
-  Ok((code_seq, code))
+  Ok((code_seq, SmolStr::new(&code)))
 }
 
 // MARK: create_return_dyn_page_field
@@ -2500,7 +2761,7 @@ pub async fn create_return_dyn_page_field(
   
   let id = create_dyn_page_field(
     input.clone(),
-    options.clone(),
+    options,
   ).await?;
   
   let model_dyn_page_field = find_by_id_dyn_page_field(
@@ -2514,7 +2775,7 @@ pub async fn create_return_dyn_page_field(
       let err_msg = "create_return_dyn_page_field: model_dyn_page_field.is_none()";
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg.into(),
           trace: true,
           ..Default::default()
         },
@@ -2591,6 +2852,7 @@ pub async fn update_tenant_by_id_dyn_page_field(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
@@ -2604,7 +2866,7 @@ pub async fn update_tenant_by_id_dyn_page_field(
   let num = execute(
     sql,
     args,
-    Some(options.clone()),
+    options,
   ).await?;
   
   Ok(num)
@@ -2647,7 +2909,7 @@ pub async fn update_by_id_dyn_page_field(
   
   let old_model = find_by_id_dyn_page_field(
     id,
-    options.clone(),
+    options,
   ).await?;
   
   let old_model = match old_model {
@@ -2675,7 +2937,7 @@ pub async fn update_by_id_dyn_page_field(
     let models = find_by_unique_dyn_page_field(
       input.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let models = models.into_iter()
@@ -2700,7 +2962,7 @@ pub async fn update_by_id_dyn_page_field(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2775,6 +3037,18 @@ pub async fn update_by_id_dyn_page_field(
     sql_fields += "align=?,";
     args.push(align.into());
   }
+  // 手机列表显示
+  if let Some(is_mobile_list) = input.is_mobile_list {
+    field_num += 1;
+    sql_fields += "is_mobile_list=?,";
+    args.push(is_mobile_list.into());
+  }
+  // 手机列表查询
+  if let Some(is_mobile_search) = input.is_mobile_search {
+    field_num += 1;
+    sql_fields += "is_mobile_search=?,";
+    args.push(is_mobile_search.into());
+  }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
     field_num += 1;
@@ -2792,11 +3066,11 @@ pub async fn update_by_id_dyn_page_field(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2812,13 +3086,15 @@ pub async fn update_by_id_dyn_page_field(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      } else if !input.update_usr_id.unwrap().is_empty() {
+      } else if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = String::new();
+        let mut usr_id_lbl = SmolStr::new("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
-            options.clone(),
+            options,
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -2834,7 +3110,9 @@ pub async fn update_by_id_dyn_page_field(
         }
       }
     } else {
-      if input.update_usr_id.is_some() && !input.update_usr_id.unwrap().is_empty() {
+      if input.update_usr_id.is_some_and(
+        |s| !s.is_empty()
+      ) {
         let usr_id = input.update_usr_id;
         if let Some(usr_id) = usr_id {
           sql_fields += "update_usr_id=?,";
@@ -2870,19 +3148,43 @@ pub async fn update_by_id_dyn_page_field(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
   }
   
   Ok(id)
+}
+
+// MARK: update_by_id_return_dyn_page_field
+/// 根据 id 更新动态页面字段, 并返回更新后的数据
+#[allow(dead_code)]
+pub async fn update_by_id_return_dyn_page_field(
+  id: DynPageFieldId,
+  input: DynPageFieldInput,
+  options: Option<Options>,
+) -> Result<DynPageFieldModel> {
+  
+  update_by_id_dyn_page_field(
+    id,
+    input,
+    options,
+  ).await?;
+  
+  let model = find_by_id_dyn_page_field(
+    id,
+    options,
+  ).await?;
+  
+  match model {
+    Some(model) => Ok(model),
+    None => Err(eyre!(
+      "动态页面字段 update_by_id_return_dyn_page_field id: {id}",
+    )),
+  }
 }
 
 /// 获取需要清空缓存的表名
@@ -2966,7 +3268,7 @@ pub async fn delete_by_ids_dyn_page_field(
     
     let old_model = find_by_id_dyn_page_field(
       id,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -2989,11 +3291,11 @@ pub async fn delete_by_ids_dyn_page_field(
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = String::new();
+    let mut usr_lbl = SmolStr::new("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
-        options.clone(),
+        options,
       ).await?;
       if let Some(usr_model) = usr_model {
         usr_lbl = usr_model.lbl;
@@ -3027,14 +3329,10 @@ pub async fn delete_by_ids_dyn_page_field(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -3105,11 +3403,10 @@ pub async fn enable_by_ids_dyn_page_field(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
+  let options = Some(options);
   
   let mut num = 0;
-  for id in ids {
+  for id in ids.clone() {
     let mut args = QueryArgs::new();
     
     let sql = format!("update {table} set is_enabled=? where id=? limit 1");
@@ -3118,8 +3415,6 @@ pub async fn enable_by_ids_dyn_page_field(
     args.push(id.into());
     
     let args: Vec<_> = args.into();
-    
-    let options = options.clone().into();
     
     num += execute(
       sql,
@@ -3180,13 +3475,13 @@ pub async fn revert_by_ids_dyn_page_field(
         ..Default::default()
       }.into(),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     if old_model.is_none() {
       old_model = find_by_id_dyn_page_field(
         id,
-        options.clone(),
+        options,
       ).await?;
     }
     
@@ -3202,7 +3497,7 @@ pub async fn revert_by_ids_dyn_page_field(
       let models = find_by_unique_dyn_page_field(
         input.into(),
         None,
-        options.clone(),
+        options,
       ).await?;
       
       let models: Vec<DynPageFieldModel> = models
@@ -3221,7 +3516,7 @@ pub async fn revert_by_ids_dyn_page_field(
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
     
   }
@@ -3274,7 +3569,7 @@ pub async fn force_delete_by_ids_dyn_page_field(
         ..Default::default()
       }),
       None,
-      options.clone(),
+      options,
     ).await?;
     
     let old_model = match old_model {
@@ -3300,14 +3595,10 @@ pub async fn force_delete_by_ids_dyn_page_field(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
     num += execute(
       sql,
       args,
-      options.clone(),
+      options,
     ).await?;
   }
   
@@ -3348,14 +3639,10 @@ pub async fn find_last_order_by_dyn_page_field(
   
   let args: Vec<_> = args.into();
   
-  let options = Options::from(options);
-  
-  let options = Some(options);
-  
   let model = query_one::<OrderByModel>(
     sql,
     args,
-    options.clone(),
+    options,
   ).await?;
   
   let order_by = {
@@ -3376,7 +3663,7 @@ pub async fn validate_is_enabled_dyn_page_field(
   model: &DynPageFieldModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let err_msg = "动态页面字段已禁用";
+    let err_msg = SmolStr::new("动态页面字段已禁用");
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -3392,14 +3679,14 @@ pub async fn validate_option_dyn_page_field(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = "动态页面字段不存在";
+      let err_msg = SmolStr::new("动态页面字段不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),
       );
       return Err(eyre!(
         ServiceException {
-          message: err_msg.to_owned(),
+          message: err_msg,
           trace: true,
           ..Default::default()
         },

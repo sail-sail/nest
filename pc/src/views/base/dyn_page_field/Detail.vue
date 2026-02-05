@@ -214,6 +214,36 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_mobile_list == null)">
+          <el-form-item
+            label="手机列表显示"
+            prop="is_mobile_list"
+          >
+            <DictSelect
+              v-model="dialogModel.is_mobile_list"
+              :set="dialogModel.is_mobile_list = dialogModel.is_mobile_list ?? undefined"
+              code="yes_no"
+              placeholder="请选择 手机列表显示"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.is_mobile_search == null)">
+          <el-form-item
+            label="手机列表查询"
+            prop="is_mobile_search"
+          >
+            <DictSelect
+              v-model="dialogModel.is_mobile_search"
+              :set="dialogModel.is_mobile_search = dialogModel.is_mobile_search ?? undefined"
+              code="yes_no"
+              placeholder="请选择 手机列表查询"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"
@@ -419,6 +449,20 @@ watchEffect(async () => {
       {
         required: true,
         message: "请选择 对齐方式",
+      },
+    ],
+    // 手机列表显示
+    is_mobile_list: [
+      {
+        required: true,
+        message: "请选择 手机列表显示",
+      },
+    ],
+    // 手机列表查询
+    is_mobile_search: [
+      {
+        required: true,
+        message: "请选择 手机列表查询",
       },
     ],
     // 排序
@@ -761,6 +805,8 @@ watch(
     dialogModel.is_required,
     dialogModel.is_search,
     dialogModel.align,
+    dialogModel.is_mobile_list,
+    dialogModel.is_mobile_search,
   ],
   () => {
     if (!inited) {
@@ -777,6 +823,12 @@ watch(
     }
     if (!dialogModel.align) {
       dialogModel.align_lbl = "";
+    }
+    if (!dialogModel.is_mobile_list) {
+      dialogModel.is_mobile_list_lbl = "";
+    }
+    if (!dialogModel.is_mobile_search) {
+      dialogModel.is_mobile_search_lbl = "";
     }
   },
 );

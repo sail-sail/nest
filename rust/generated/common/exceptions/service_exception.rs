@@ -3,12 +3,14 @@ use std::error::Error;
 
 use derive_builder::Builder;
 
+use smol_str::SmolStr;
+
 #[derive(Builder, Debug, Clone)]
 #[builder(setter(into))]
 #[allow(dead_code)]
 pub struct ServiceException {
-  pub code: String,
-  pub message: String,
+  pub code: SmolStr,
+  pub message: SmolStr,
   #[builder(default = "true")]
   pub rollback: bool,
   // 是否打印堆栈信息
@@ -20,8 +22,8 @@ pub struct ServiceException {
 impl Default for ServiceException {
   fn default() -> Self {
     ServiceException {
-      code: "500".to_string(),
-      message: "Internal Server Error".to_string(),
+      code: "500".into(),
+      message: "Internal Server Error".into(),
       rollback: true,
       trace: false,
     }

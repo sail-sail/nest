@@ -1399,9 +1399,8 @@ async function useFindCount(
   search: RoleSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountRole(
-    search2,
+    search,
     opt,
   );
 }
@@ -2000,17 +1999,16 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function(oldVal, newVal) {
+  async function(newVal, oldVal) {
     if (!inited) {
       return;
     }
     if (isSearchReset) {
       return;
     }
-    if (deepCompare(oldVal, newVal)) {
+    if (deepCompare(newVal, oldVal)) {
       return;
     }
-    selectedIds = [ ];
     await dataGrid(true);
   },
   {

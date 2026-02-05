@@ -5,6 +5,8 @@ use crate::common::context::{
   get_auth_id_ok,
 };
 
+use smol_str::SmolStr;
+
 use crate::base::usr::usr_dao::{
   find_by_id_usr,
   validate_option_usr,
@@ -22,8 +24,8 @@ use crate::base::menu::menu_model::MenuSearch;
 
 /// 字段权限
 pub async fn get_field_permit(
-  route_path: String,
-) -> Result<Option<Vec<String>>> {
+  route_path: SmolStr,
+) -> Result<Option<Vec<SmolStr>>> {
   
   if route_path.is_empty() {
     return Ok(None);
@@ -38,7 +40,7 @@ pub async fn get_field_permit(
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id,
-      options.clone(),
+      options,
     ).await?,
   ).await?;
   validate_is_enabled_usr(&usr_model).await?;
@@ -56,7 +58,7 @@ pub async fn get_field_permit(
       ..Default::default()
     }.into(),
     None,
-    options.clone(),
+    options,
   ).await?;
   
   if menu_model.is_none() {
@@ -73,7 +75,7 @@ pub async fn get_field_permit(
     }.into(),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   let field_permit_ids = role_models

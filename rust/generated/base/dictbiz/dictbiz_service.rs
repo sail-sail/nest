@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -41,7 +44,7 @@ pub async fn find_all_dictbiz(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dictbiz_models = dictbiz_dao::find_all_dictbiz(
@@ -64,7 +67,7 @@ pub async fn find_count_dictbiz(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dictbiz_num = dictbiz_dao::find_count_dictbiz(
@@ -86,7 +89,7 @@ pub async fn find_one_dictbiz(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dictbiz_model = dictbiz_dao::find_one_dictbiz(
@@ -109,7 +112,7 @@ pub async fn find_one_ok_dictbiz(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let dictbiz_model = dictbiz_dao::find_one_ok_dictbiz(
@@ -233,7 +236,7 @@ pub async fn update_by_id_dictbiz(
   let dictbiz_id = dictbiz_dao::update_by_id_dictbiz(
     dictbiz_id,
     dictbiz_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(dictbiz_id)
@@ -264,7 +267,7 @@ pub async fn delete_by_ids_dictbiz(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::lang_model::*;
@@ -39,7 +42,7 @@ pub async fn find_all_lang(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let lang_models = lang_dao::find_all_lang(
@@ -62,7 +65,7 @@ pub async fn find_count_lang(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let lang_num = lang_dao::find_count_lang(
@@ -84,7 +87,7 @@ pub async fn find_one_lang(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let lang_model = lang_dao::find_one_lang(
@@ -107,7 +110,7 @@ pub async fn find_one_ok_lang(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let lang_model = lang_dao::find_one_ok_lang(
@@ -214,7 +217,7 @@ pub async fn update_by_id_lang(
   let lang_id = lang_dao::update_by_id_lang(
     lang_id,
     lang_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(lang_id)
@@ -245,7 +248,7 @@ pub async fn delete_by_ids_lang(
     }),
     None,
     None,
-    options.clone(),
+    options,
   ).await?;
   
   for old_model in &old_models {

@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::menu_model::*;
@@ -39,7 +42,7 @@ pub async fn find_all_menu(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let menu_models = menu_dao::find_all_menu(
@@ -62,7 +65,7 @@ pub async fn find_count_menu(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let menu_num = menu_dao::find_count_menu(
@@ -84,7 +87,7 @@ pub async fn find_one_menu(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let menu_model = menu_dao::find_one_menu(
@@ -107,7 +110,7 @@ pub async fn find_one_ok_menu(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let menu_model = menu_dao::find_one_ok_menu(
@@ -214,7 +217,7 @@ pub async fn update_by_id_menu(
   let menu_id = menu_dao::update_by_id_menu(
     menu_id,
     menu_input,
-    options.clone(),
+    options,
   ).await?;
   
   Ok(menu_id)

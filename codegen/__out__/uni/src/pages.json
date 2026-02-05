@@ -22,6 +22,18 @@
       }
     },
     {
+      "path": "pages/dyn_page_data/List",
+      "style": {
+        "navigationBarTitleText": "动态页面数据列表"
+      }
+    },
+    {
+      "path": "pages/dyn_page_data/Detail",
+      "style": {
+        "navigationBarTitleText": "动态页面数据详情"
+      }
+    },
+    {
       "path": "pages/dyn_page_field/List",
       "style": {
         "navigationBarTitleText": "动态页面字段列表"

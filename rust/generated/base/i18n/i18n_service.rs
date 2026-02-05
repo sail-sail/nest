@@ -14,6 +14,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
+#[allow(unused_imports)]
+use smol_str::SmolStr;
+
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::common::options::options_dao::update_i18n_version;
 
@@ -40,7 +43,7 @@ pub async fn find_all_i18n(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let i18n_models = i18n_dao::find_all_i18n(
@@ -63,7 +66,7 @@ pub async fn find_count_i18n(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let i18n_num = i18n_dao::find_count_i18n(
@@ -85,7 +88,7 @@ pub async fn find_one_i18n(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let i18n_model = i18n_dao::find_one_i18n(
@@ -108,7 +111,7 @@ pub async fn find_one_ok_i18n(
   
   set_search_query(
     &mut search,
-    options.clone(),
+    options,
   ).await?;
   
   let i18n_model = i18n_dao::find_one_ok_i18n(
@@ -217,7 +220,7 @@ pub async fn update_by_id_i18n(
   let i18n_id = i18n_dao::update_by_id_i18n(
     i18n_id,
     i18n_input,
-    options.clone(),
+    options,
   ).await?;
   
   update_i18n_version().await?;

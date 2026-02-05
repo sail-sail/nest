@@ -57,19 +57,19 @@ pub struct PermitModel {
   pub menu_id: MenuId,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: String,
+  pub menu_id_lbl: SmolStr,
   /// 编码
   #[graphql(name = "code")]
-  pub code: String,
+  pub code: SmolStr,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
 }
 
 impl FromRow<'_, MySqlRow> for PermitModel {
@@ -80,16 +80,19 @@ impl FromRow<'_, MySqlRow> for PermitModel {
     let id: PermitId = row.try_get("id")?;
     // 菜单
     let menu_id: MenuId = row.try_get("menu_id")?;
-    let menu_id_lbl: Option<String> = row.try_get("menu_id_lbl")?;
-    let menu_id_lbl = menu_id_lbl.unwrap_or_default();
+    let menu_id_lbl: Option<&str> = row.try_get("menu_id_lbl")?;
+    let menu_id_lbl = SmolStr::new(menu_id_lbl.unwrap_or_default());
     // 编码
-    let code: String = row.try_get("code")?;
+    let code: &str = row.try_get("code")?;
+    let code = SmolStr::new(code);
     // 名称
-    let lbl: String = row.try_get("lbl")?;
+    let lbl: &str = row.try_get("lbl")?;
+    let lbl = SmolStr::new(lbl);
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
-    let rem: String = row.try_get("rem")?;
+    let rem: &str = row.try_get("rem")?;
+    let rem = SmolStr::new(rem);
     
     let model = Self {
       is_sys,
@@ -112,25 +115,25 @@ impl FromRow<'_, MySqlRow> for PermitModel {
 pub struct PermitFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: String,
+  pub id: SmolStr,
   /// 菜单
   #[graphql(name = "menu_id")]
-  pub menu_id: String,
+  pub menu_id: SmolStr,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: String,
+  pub menu_id_lbl: SmolStr,
   /// 编码
   #[graphql(name = "code")]
-  pub code: String,
+  pub code: SmolStr,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: String,
+  pub lbl: SmolStr,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: String,
+  pub order_by: SmolStr,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: String,
+  pub rem: SmolStr,
 }
 
 #[derive(InputObject, Default)]
@@ -149,31 +152,31 @@ pub struct PermitSearch {
   pub menu_id_is_null: Option<bool>,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: Option<Vec<String>>,
+  pub menu_id_lbl: Option<Vec<SmolStr>>,
   /// 菜单
   #[graphql(name = "menu_id_lbl_like")]
-  pub menu_id_lbl_like: Option<String>,
+  pub menu_id_lbl_like: Option<SmolStr>,
   /// 编码
   #[graphql(name = "code")]
-  pub code: Option<String>,
+  pub code: Option<SmolStr>,
   /// 编码
   #[graphql(name = "code_like")]
-  pub code_like: Option<String>,
+  pub code_like: Option<SmolStr>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<String>,
+  pub lbl_like: Option<SmolStr>,
   /// 排序
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<String>,
+  pub rem_like: Option<SmolStr>,
 }
 
 impl std::fmt::Debug for PermitSearch {
@@ -240,19 +243,19 @@ pub struct PermitInput {
   pub menu_id: Option<MenuId>,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: Option<String>,
+  pub menu_id_lbl: Option<SmolStr>,
   /// 编码
   #[graphql(name = "code")]
-  pub code: Option<String>,
+  pub code: Option<SmolStr>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<String>,
+  pub lbl: Option<SmolStr>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<String>,
+  pub rem: Option<SmolStr>,
 }
 
 impl From<PermitModel> for PermitInput {

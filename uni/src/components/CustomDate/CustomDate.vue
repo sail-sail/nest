@@ -4,7 +4,6 @@
   v-model="modelValue"
   format="YYYY-MM-DD"
   format-sync-value
-  un-cursor="pointer"
   class="custom_date"
   :class="{
     'custom_date_readonly': readonly,
@@ -18,7 +17,9 @@
     :clearable="props.clearable == null ? (readonly ? false : true) : props.clearable"
     :readonly-placeholder="(readonly || !props.pageInited) ? (props.pageInited ? props.readonlyPlaceholder : '') : props.placeholder"
     :color="props.color"
-    :font-color="props.fontColor ? props.fontColor : (readonly ? 'var(--color-readonly)' : 'var(--font-color)')"
+    :font-color="readonly ? 
+      (modelValue ? 'var(--color-readonly)' :'var(--color-placeholder)') :
+      (modelValue ? props.fontColor || 'var(--font-color)' : 'var(--color-placeholder)')"
     type="text"
   ></CustomInput>
 </tm-picker-date>
@@ -64,6 +65,9 @@ const modelValue = defineModel<any>();
 </script>
 
 <style lang="scss" scoped>
+.custom_date {
+  cursor: pointer;
+}
 .custom_date_readonly {
   cursor: default;
 }

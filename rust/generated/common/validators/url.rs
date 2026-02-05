@@ -23,7 +23,7 @@ pub async fn url(
   }
   
   let msg = ns(
-    "网址格式不正确".to_owned(),
+    "网址格式不正确".into(),
     None,
   ).await?;
   
