@@ -1289,14 +1289,15 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     // <#=column_comment#><#
       if (!column.modelLabel) {
     #>
-    let <#=modelLabel#>: &str = row.try_get("<#=column_name#>")?;
-    let <#=modelLabel#> = SmolStr::new(<#=modelLabel#>);
-    let <#=column_name_rust#>: <#=enumColumnName#> = <#=modelLabel#>.try_into()?;<#
+    let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#> = SmolStr::new(<#=column_name_rust#>);
+    let <#=modelLabel#> = <#=column_name_rust#>.clone();<#
       } else {
     #>
     let <#=modelLabel#>: &str = row.try_get("<#=modelLabel#>")?;
     let <#=modelLabel#> = SmolStr::new(<#=modelLabel#>);
-    let <#=column_name_rust#>: <#=enumColumnName#> = row.try_get("<#=column_name#>")?.try_into()?;<#
+    let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: SmolStr = <#=column_name_rust#>.try_into()?;<#
       }
     #><#
       }

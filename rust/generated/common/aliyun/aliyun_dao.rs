@@ -45,11 +45,12 @@ pub async fn send_sms(
   
   let template_param = template_param.to_string();
   
-  let mut query: Vec<(&str, &str)> = Vec::new();
-  query.push(("PhoneNumbers", phone_numbers));
-  query.push(("SignName", sign_name));
-  query.push(("TemplateCode", template_code));
-  query.push(("TemplateParam", template_param.as_str()));
+  let query: Vec<(&str, &str)> = vec![
+    ("PhoneNumbers", phone_numbers),
+    ("SignName", sign_name),
+    ("TemplateCode", template_code),
+    ("TemplateParam", template_param.as_str()),
+  ];
   
   let res = call_api(
     client,
@@ -71,18 +72,18 @@ pub async fn send_sms(
   
   let response: SendSmsResponse = serde_json::from_str(&res)?;
   
-  if let Some(code) = &response.code {
-    if code != "OK" {
-      error!(
-        "{req_id} Failed to send SMS: {response:?}",
-        req_id = get_req_id(),
-      );
-      return Err(eyre!(ServiceException {
-        message: "发送短信失败".into(),
-        trace: true,
-        ..Default::default()
-      }));
-    }
+  let code = response.code.as_deref().unwrap_or_default();
+  
+  if code != "OK" {
+    error!(
+      "{req_id} Failed to send SMS: {response:?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: "发送短信失败".into(),
+      trace: true,
+      ..Default::default()
+    }));
   }
   
   Ok(response)

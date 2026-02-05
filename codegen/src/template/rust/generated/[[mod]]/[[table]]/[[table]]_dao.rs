@@ -1307,7 +1307,7 @@ async fn get_where_query(
     } else if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dict;
+          return item.code === column.dict || item.code === column.dictbiz;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -2481,6 +2481,19 @@ pub async fn find_all_<#=table#>(
       if (modelLabel) {
         continue;
       }
+      let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+      Column_Up = Column_Up.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const enumColumnName = Table_Up + Column_Up;
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
     #>
     
     // <#=column_comment#>
@@ -2489,7 +2502,11 @@ pub async fn find_all_<#=table#>(
         .iter()
         .find(|item| item.val == model.<#=column_name#>.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.<#=column_name#>.clone().into())
+        .unwrap_or_else(|| model.<#=column_name#>.clone()<#
+          if (columnDictModels.length > 0) {
+        #>.into()<#
+          }
+        #>)
     };<#
     } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
       if (modelLabel) {
@@ -4244,7 +4261,7 @@ pub async fn set_id_by_lbl_<#=table#>(
       const enumColumnName = Table_Up + Column_Up;
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dict;
+          return item.code === column.dict || item.code === column.dictbiz;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -4306,7 +4323,7 @@ pub async fn set_id_by_lbl_<#=table#>(
       const enumColumnName = Table_Up + Column_Up;
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dict;
+          return item.code === column.dict || item.code === column.dictbiz;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
