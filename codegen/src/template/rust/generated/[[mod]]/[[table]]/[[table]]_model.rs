@@ -2193,7 +2193,7 @@ impl std::fmt::Debug for <#=tableUP#>Search {
     if let Some(ref <#=modelLabel#>_like) = self.<#=modelLabel#>_like {
       item = item.field("<#=modelLabel#>_like", <#=modelLabel#>_like);
     }<#
-    } else {
+    } else if (foreignKey.lbl) {
     #>
     if let Some(ref <#=column_name#>_<#=foreignKey.lbl#>) = self.<#=column_name#>_<#=foreignKey.lbl#> {
       item = item.field("<#=column_name#>_<#=foreignKey.lbl#>", <#=column_name#>_<#=foreignKey.lbl#>);
