@@ -223,11 +223,9 @@ pub fn graphql_playground(
 #[allow(clippy::too_many_lines)]
 async fn main() -> Result<(), std::io::Error> {
   dotenv().ok();
-  let server_title = std::env::var_os("server_title").expect("server_title not found in .env");
-  let server_title = server_title.to_str().expect("server_title is not valid utf-8");
-  let git_hash = std::env::var_os("GIT_HASH");
+  let server_title = std::env::var("server_title").expect("server_title not found in .env");
+  let git_hash = std::env::var("GIT_HASH").ok();
   if let Some(git_hash) = git_hash {
-    let git_hash = git_hash.to_str().expect("GIT_HASH is not valid utf-8");
     info!("git_hash: {git_hash}");
   }
   
@@ -258,7 +256,7 @@ async fn main() -> Result<(), std::io::Error> {
       }))
       .install()
       .expect("Failed to install color_eyre hook");
-    let log_path = std::env::var_os("log_path");
+    let log_path = std::env::var("log_path").ok();
     if let Some(log_path) = log_path {
       let file_appender = tracing_appender::rolling::daily(
         log_path,
@@ -304,7 +302,7 @@ async fn main() -> Result<(), std::io::Error> {
       }))
       .install()
       .expect("Failed to install color_eyre hook");
-    let log_path = std::env::var_os("log_path");
+    let log_path = std::env::var("log_path").ok();
     if log_path.is_none() {
       tracing_subscriber::fmt()
         .with_ansi(false)

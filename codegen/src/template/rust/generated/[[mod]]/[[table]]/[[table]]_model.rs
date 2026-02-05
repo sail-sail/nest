@@ -93,6 +93,8 @@ if (searchByKeyword) {
   }
 }
 
+const hasSummary = columns.some((column) => column.showSummary);
+
 #>#![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
 #![allow(clippy::collapsible_if)]
@@ -3032,6 +3034,176 @@ impl From<<#=tableUP#>Model> for crate::<#=mod#>::<#=historyTable#>::<#=historyT
       <#=table#>_id: model.id.into(),
       ..Default::default()
     }
+  }
+}<#
+}
+#><#
+if (hasSummary) {
+#>
+
+#[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
+#[graphql(rename_fields = "snake_case", name = "<#=Table_Up#>Summary")]
+pub struct <#=Table_Up#>Summary {
+  <#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    const showSummary = column.showSummary;
+    if (!showSummary) continue;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      let _data_type = "SmolStr";
+      if (foreignKey && foreignKey.multiple) {
+        _data_type = `Vec<${ foreignTable_Up }Id>`;
+        is_nullable = false;
+      } else if (foreignKey && !foreignKey.multiple) {
+        _data_type = `${ foreignTable_Up }Id`;
+      } else if (data_type === 'varchar') {
+        _data_type = "SmolStr";
+      } else if (data_type === 'date') {
+        _data_type = "chrono::NaiveDate";
+      } else if (data_type === 'datetime') {
+        _data_type = "chrono::NaiveDateTime";
+      } else if (data_type === 'time') {
+        _data_type = "chrono::NaiveTime";
+      } else if (data_type === 'int' && !column_type.endsWith("unsigned")) {
+        _data_type = 'i32';
+      } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
+        _data_type = 'u32';
+      } else if (data_type === 'json') {
+        _data_type = "SmolStr";
+      } else if (data_type === 'text') {
+        _data_type = "SmolStr";
+      } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
+        _data_type = 'i8';
+      } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
+        _data_type = 'u8';
+      } else if (data_type === 'decimal') {
+        _data_type = "Decimal";
+      }
+      if (is_nullable) {
+        _data_type = "Option<"+_data_type+">";
+      }
+      const isVirtual = column.isVirtual;
+      const isEncrypt = column.isEncrypt;
+      let precision = 0;
+      if (data_type === "decimal") {
+        const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+        precision = Number(arr[1]);
+      }
+      const column_default = column.COLUMN_DEFAULT || "";
+  #>
+  /// <#=column_comment#>
+  #[graphql(name = "<#=column_name#>")]
+  pub <#=column_name#>: <#=_data_type#>,<#
+  }
+  #>
+  
+}
+
+impl FromRow<'_, MySqlRow> for <#=Table_Up#>Summary {
+  fn from_row(row: &MySqlRow) -> Result<Self, sqlx::Error> {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      const showSummary = column.showSummary;
+      if (!showSummary) continue;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+      const column_comment = column.COLUMN_COMMENT || "";
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const foreignKey = column.foreignKey;
+      let _data_type = "SmolStr";
+      if (foreignKey && foreignKey.multiple) {
+        _data_type = `Vec<${ foreignTable_Up }Id>`;
+        is_nullable = false;
+      } else if (foreignKey && !foreignKey.multiple) {
+        _data_type = `${ foreignTable_Up }Id`;
+      } else if (data_type === 'varchar') {
+        _data_type = "SmolStr";
+      } else if (data_type === 'date') {
+        _data_type = "chrono::NaiveDate";
+      } else if (data_type === 'datetime') {
+        _data_type = "chrono::NaiveDateTime";
+      } else if (data_type === 'time') {
+        _data_type = "chrono::NaiveTime";
+      } else if (data_type === 'int' && !column_type.endsWith("unsigned")) {
+        _data_type = 'i32';
+      } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
+        _data_type = 'u32';
+      } else if (data_type === 'json') {
+        _data_type = "SmolStr";
+      } else if (data_type === 'text') {
+        _data_type = "SmolStr";
+      } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
+        _data_type = 'i8';
+      } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
+        _data_type = 'u8';
+      } else if (data_type === 'decimal') {
+        _data_type = "Decimal";
+      }
+      if (is_nullable) {
+        _data_type = "Option<"+_data_type+">";
+      }
+      const isVirtual = column.isVirtual;
+      const isEncrypt = column.isEncrypt;
+      let precision = 0;
+      if (data_type === "decimal") {
+        const arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
+        precision = Number(arr[1]);
+      }
+      const column_default = column.COLUMN_DEFAULT || "";
+    #><#
+      if (data_type === "decimal" && isVirtual) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#> = Decimal::try_from(<#=column_default || 0#>).unwrap();<#
+        continue;
+      } else if ((data_type === "varchar" || data_type === "text") && isVirtual) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#> = "<#=column_default || ""#>".to_owned();<#
+        continue;
+      } else if ([ "int", "tinyint" ].includes(data_type) && isVirtual) {
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#> = <#=column_default || 0#>.to_owned();<#
+        continue;
+      }
+    #>
+    // <#=column_comment#>
+    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
+    }
+    #>
+    
+    Ok(Self {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      const showSummary = column.showSummary;
+      if (!showSummary) continue;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+      const column_comment = column.COLUMN_COMMENT || "";
+      const data_type = column.DATA_TYPE;
+    #>
+      // <#=column_comment#>
+      <#=column_name_rust#>,<#
+    }
+    #>
+    })
   }
 }<#
 }

@@ -63,6 +63,8 @@ if (hasAudit) {
   auditModelLabel = auditTableIdColumn.modelLabel;
 }
 
+const hasSummary = columns.some((column) => column.showSummary);
+
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -1535,6 +1537,24 @@ pub async fn force_delete_by_ids_<#=table#>(
   #>
   
   Ok(num)
+}<#
+}
+#><#
+if (hasSummary) {
+#>
+
+/// 根据搜索条件查找<#=table_comment#>合计
+pub async fn find_summary_<#=table#>(
+  search: Option<<#=Table_Up#>Search>,
+  options: Option<Options>,
+) -> Result<<#=tableUP#>Summary> {
+  
+  let summary = <#=table#>_dao::find_summary_<#=table#>(
+    search,
+    options,
+  ).await?;
+  
+  Ok(summary)
 }<#
 }
 #><#

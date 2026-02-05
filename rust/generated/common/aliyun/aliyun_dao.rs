@@ -30,10 +30,11 @@ pub async fn send_sms(
   template_param: serde_json::Value,
 ) -> Result<SendSmsResponse> {
   
-  let access_key_id = std::env::var("ALIBABA_CLOUD_ACCESS_KEY_ID")
-    .map_err(|_| eyre!("ALIBABA_CLOUD_ACCESS_KEY_ID not set"))?;
-  let access_key_secret = std::env::var("ALIBABA_CLOUD_ACCESS_KEY_SECRET")
-    .map_err(|_| eyre!("ALIBABA_CLOUD_ACCESS_KEY_SECRET not set"))?;
+  let access_key_id = std::env::var("aliyun_access_key_id")
+    .map_err(|_| eyre!("aliyun_access_key_id not set"))?;
+  
+  let access_key_secret = std::env::var("aliyun_access_key_secret")
+    .map_err(|_| eyre!("aliyun_access_key_secret not set"))?;
   
   let client = crate::common::util::http::client().clone();
   

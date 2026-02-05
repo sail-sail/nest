@@ -2903,10 +2903,6 @@ pub async fn find_last_order_by_org(
     }
   }
   
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
   let model = query_one::<OrderByModel>(
     sql,
     args,
