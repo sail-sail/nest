@@ -178,6 +178,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 // 根据关键字搜索
 const searchByKeyword = opts?.searchByKeyword;
 
+const hasSummary = columns.some((column) => column.showSummary);
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -9507,6 +9508,93 @@ pub async fn force_delete_by_ids_<#=table#>(
 }<#
 }
 #><#
+if (hasSummary) {
+#>
+
+// MARK: find_summary_<#=table#>
+pub async fn find_summary_<#=table#>(
+  search: Option<<#=Table_Up#>Search>,
+  options: Option<Options>,
+) -> Result<<#=tableUP#>Summary> {
+  
+  let table = get_table_name_<#=table#>();
+  let method = "find_last_order_by_<#=table#>";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let msg = format!("{table}.{method}:");
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let mut args = QueryArgs::new();<#
+  const findSummaryColumns = [ ];
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column.showSummary) {
+      findSummaryColumns.push(column);
+    }
+  }
+  #>
+  
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  
+  let sql = format!(r#"select <#=findSummaryColumns.map(function(column) { return "sum(t." + column.COLUMN_NAME + ") as " + mysqlKeyEscape(column.COLUMN_NAME); }).join(", ")#>
+  from {from_query} where {where_query}"#);
+  
+  let args: Vec<_> = args.into();<#
+  if (cache) {
+  #>
+  
+  let cache_key1 = format!("dao.sql.{table}");;
+  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  {
+    let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
+    if let Some(str) = str {
+      let res2:<#=tableUP#>Summary;
+      let res = serde_json::from_str::<<#=tableUP#>Summary>(&str);
+      if let Ok(res) = res {
+        res2 = res;
+      } else {
+        res2 = <#=tableUP#>Summary::default();
+        cache_dao::del_cache(&cache_key1).await?;
+      }
+      return Ok(res2);
+    }
+  }<#
+  }
+  #>
+  
+  let summary = query_one::<<#=tableUP#>Summary>(
+    sql,
+    args,
+    options,
+  ).await?.unwrap_or_default();<#
+  if (cache) {
+  #>
+  
+  {
+    let str = serde_json::to_string(&summary)?;
+    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+  }<#
+  }
+  #>
+  
+  Ok(summary)
+}<#
+}
+#><#
 if (hasOrderBy) {
 #>
 
@@ -9564,10 +9652,6 @@ pub async fn find_last_order_by_<#=table#>(
   }<#
   }
   #>
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
   
   let model = query_one::<OrderByModel>(
     sql,

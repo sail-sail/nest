@@ -81,6 +81,8 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
 
+const hasSummary = columns.some((column) => column.showSummary);
+
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -1885,6 +1887,31 @@ pub async fn force_delete_by_ids_<#=table#>(
   #>
   
   Ok(num)
+}<#
+}
+#><#
+if (hasSummary) {
+#>
+
+/// 根据搜索条件查找<#=table_comment#>合计
+#[function_name::named]
+pub async fn find_summary_<#=table#>(
+  search: Option<<#=Table_Up#>Search>,
+  options: Option<Options>,
+) -> Result<<#=tableUP#>Summary> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let <#=table#>_summary = <#=table#>_service::find_summary_<#=table#>(
+    search,
+    options,
+  ).await?;
+  
+  Ok(<#=table#>_summary)
 }<#
 }
 #><#
