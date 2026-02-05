@@ -1773,6 +1773,36 @@ export async function updateByIdOptions(
   return id;
 }
 
+// MARK: updateByIdOptions
+/** 根据 id 更新系统选项, 并返回更新后的数据 */
+export async function updateByIdReturnOptions(
+  id: OptionsId,
+  input: OptionsInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<OptionsModel> {
+  
+  await updateByIdOptions(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdOptions(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`系统选项 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsOptions
 /** 根据 ids 删除 系统选项 */
 export async function deleteByIdsOptions(

@@ -125,6 +125,8 @@ export async function create{Table}(
 }
 ```
 
+- 如需操作附件, 则使用 [oss.dao.ts](/lib/oss/oss.dao.ts) 提供的函数进行操作
+
 ### 4. 注册模块
 
 在 `src/{mod}/graphql.ts` 添加：

@@ -1629,6 +1629,36 @@ export async function updateByIdOperationRecord(
   return id;
 }
 
+// MARK: updateByIdOperationRecord
+/** 根据 id 更新操作记录, 并返回更新后的数据 */
+export async function updateByIdReturnOperationRecord(
+  id: OperationRecordId,
+  input: OperationRecordInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<OperationRecordModel> {
+  
+  await updateByIdOperationRecord(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdOperationRecord(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`操作记录 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsOperationRecord
 /** 根据 ids 删除 操作记录 */
 export async function deleteByIdsOperationRecord(

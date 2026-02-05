@@ -1362,6 +1362,36 @@ export async function updateByIdFieldPermit(
   return id;
 }
 
+// MARK: updateByIdFieldPermit
+/** 根据 id 更新字段权限, 并返回更新后的数据 */
+export async function updateByIdReturnFieldPermit(
+  id: FieldPermitId,
+  input: FieldPermitInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<FieldPermitModel> {
+  
+  await updateByIdFieldPermit(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdFieldPermit(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`字段权限 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsFieldPermit
 /** 根据 ids 删除 字段权限 */
 export async function deleteByIdsFieldPermit(

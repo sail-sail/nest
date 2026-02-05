@@ -290,11 +290,17 @@ export function useSelect(
           tableRef.value?.clearSelection();
           setSelectIds([ (list[0] as any)[rowKey] ]);
         } else {
+          const selectedIds2 = [ ...selectedIds ];
+          let isSelectChange = false;
           for (let i = 0; i < list.length; i++) {
             const item = list[i] as any;
-            if (!selectedIds.includes(item[rowKey])) {
-              selectedIds.push(item[rowKey]);
+            if (!selectedIds2.includes(item[rowKey])) {
+              isSelectChange = true;
+              selectedIds2.push(item[rowKey]);
             }
+          }
+          if (isSelectChange) {
+            selectedIds = selectedIds2;
           }
         }
       }
@@ -1552,44 +1558,82 @@ function mergeDynPageTableColumns(
 
 /** 初始化动态页面表单字段 */
 export function useDynPageFields(
-  pagePath: string,
+  pagePath: MaybeRefOrGetter<string>,
 ) {
-  const dyn_page_field_ref = ref<DynPageFieldModel[]>([ ]);
-  const store_key = "useDynPageFields.dyn_page_model:" + pagePath;
-  let dyn_page_model: DynPageModel | undefined;
-  try {
-    const str = localStorage.getItem(store_key);
-    if (str) {
-      dyn_page_model = JSON.parse(str) as DynPageModel;
-    }
-  } catch (err) {
-    console.error(err);
-    localStorage.removeItem(store_key);
-    dyn_page_model = undefined;
-  }
-  if (dyn_page_model) {
-    const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
-    dyn_page_field_ref.value = dyn_page_field;
-  }
+  
+  const dyn_page_field_models = ref<DynPageFieldModel[]>([ ]);
+  let abortController: AbortController | null = null;
   
   async function refreshDynPageFields() {
-    dyn_page_model = await findOneDynPage({
-      code: pagePath,
-      is_enabled: [ 1 ],
-    });
-    if (!dyn_page_model) {
-      localStorage.removeItem(store_key);
-      dyn_page_field_ref.value = [ ];
+    // 取消之前的请求
+    if (abortController) {
+      abortController.abort();
+    }
+    abortController = new AbortController();
+    
+    const pagePathValue = toValue(pagePath);
+    
+    if (!pagePathValue) {
+      dyn_page_field_models.value = [ ];
       return;
     }
+    
+    const dyn_page_model = await findOneDynPage({
+      code: pagePathValue,
+      is_enabled: [ 1 ],
+    });
+    
+    const store_key = "useDynPageFields.dyn_page_model:" + pagePathValue;
+    
+    if (!dyn_page_model) {
+      localStorage.removeItem(store_key);
+      dyn_page_field_models.value = [ ];
+      return;
+    }
+    
     localStorage.setItem(store_key, JSON.stringify(dyn_page_model));
-    const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
-    dyn_page_field_ref.value = dyn_page_field;
-  };
+    dyn_page_field_models.value = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
+  }
+  
+  const stopWatch = watch(
+    () => toValue(pagePath),
+    async (pagePath) => {
+      
+      if (!pagePath) {
+        dyn_page_field_models.value = [ ];
+        return;
+      }
+      
+      const store_key = "useDynPageFields.dyn_page_model:" + pagePath;
+      
+      let dyn_page_model: DynPageModel | undefined;
+      try {
+        const str = localStorage.getItem(store_key);
+        if (str) {
+          dyn_page_model = JSON.parse(str) as DynPageModel;
+        }
+      } catch (err) {
+        console.error(err);
+        localStorage.removeItem(store_key);
+        dyn_page_model = undefined;
+      }
+      if (dyn_page_model) {
+        const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
+        dyn_page_field_models.value = dyn_page_field;
+      }
+      
+      refreshDynPageFields();
+      
+    },
+    {
+      immediate: true,
+    },
+  );
   
   return {
-    dyn_page_field_models: dyn_page_field_ref,
+    dyn_page_field_models,
     refreshDynPageFields,
+    stop: stopWatch,
   };
+  
 }
-

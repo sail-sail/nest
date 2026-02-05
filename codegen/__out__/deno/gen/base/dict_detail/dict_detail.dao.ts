@@ -1736,6 +1736,36 @@ export async function updateByIdDictDetail(
   return id;
 }
 
+// MARK: updateByIdDictDetail
+/** 根据 id 更新系统字典明细, 并返回更新后的数据 */
+export async function updateByIdReturnDictDetail(
+  id: DictDetailId,
+  input: DictDetailInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<DictDetailModel> {
+  
+  await updateByIdDictDetail(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdDictDetail(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`系统字典明细 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsDictDetail
 /** 根据 ids 删除 系统字典明细 */
 export async function deleteByIdsDictDetail(

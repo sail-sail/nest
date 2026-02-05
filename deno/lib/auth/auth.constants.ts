@@ -4,7 +4,7 @@ import {
 
 import type {
   JWTPayload,
-} from "jose/index.ts";
+} from "jose";
 
 import {
   createHash,

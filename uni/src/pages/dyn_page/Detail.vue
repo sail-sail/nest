@@ -344,7 +344,7 @@
           un-break="all"
           @click="onRowDynPageField(index)"
         >
-          {{ dyn_page_field.type }}
+          {{ getTypeLabel(dyn_page_field.type) }}
         </view>
         
       </view>
@@ -420,6 +420,19 @@ import {
 
 import TmForm from "@/uni_modules/tm-ui/components/tm-form/tm-form.vue";
 
+import {
+  componentKeys,
+} from "@/components/CustomDynComp/ComponentMap.ts";
+
+/** 获取组件类型的中文标签 */
+function getTypeLabel(type?: string | null): string {
+  if (!type) {
+    return "";
+  }
+  const item = componentKeys.find((item) => item.value === type);
+  return item?.label || type;
+}
+
 // 动态页面字段
 import DynPageFieldDetailModal from "@/pages/dyn_page_field/DetailModal.vue";
 
@@ -468,6 +481,13 @@ async function onSave(
     return;
   }
   if (formSubmitResult?.isPass === false) {
+    const firstValid = formSubmitResult.firstValid;
+    if (firstValid) {
+      uni.showToast({
+        title: firstValid.message,
+        icon: "error",
+      });
+    }
     return;
   }
   
@@ -482,6 +502,10 @@ async function onSave(
     await createDynPage(
       dyn_page_input,
     );
+    await uni.showModal({
+      content: "新增成功",
+      showCancel: false,
+    });
     await uni.navigateBack();
     uni.$emit("/pages/dyn_page/List:refresh");
   } else if (dialogAction === "edit") {
@@ -496,6 +520,10 @@ async function onSave(
       dyn_page_id,
       dyn_page_input,
     );
+    await uni.showModal({
+      content: "修改成功",
+      showCancel: false,
+    });
     await uni.navigateBack();
     uni.$emit("/pages/dyn_page/List:refresh");
   }

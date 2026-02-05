@@ -1816,6 +1816,36 @@ export async function updateByIdDictbizDetail(
   return id;
 }
 
+// MARK: updateByIdDictbizDetail
+/** 根据 id 更新业务字典明细, 并返回更新后的数据 */
+export async function updateByIdReturnDictbizDetail(
+  id: DictbizDetailId,
+  input: DictbizDetailInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<DictbizDetailModel> {
+  
+  await updateByIdDictbizDetail(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdDictbizDetail(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`业务字典明细 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsDictbizDetail
 /** 根据 ids 删除 业务字典明细 */
 export async function deleteByIdsDictbizDetail(

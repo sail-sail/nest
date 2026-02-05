@@ -278,7 +278,29 @@ import {
   hash,<#
   }
   #>
-} from "/lib/util/string_util.ts";
+} from "/lib/util/string_util.ts";<#
+let hasAttOrImg = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.isVirtual) continue;
+  const column_name = column.COLUMN_NAME;
+  const column_comment = column.COLUMN_COMMENT;
+  const isAtt = column.isAtt;
+  const isImg = column.isImg;
+  if (!isAtt && !isImg) continue;
+  hasAttOrImg = true;
+  break;
+}
+#><#
+if (hasAttOrImg) {
+#>
+
+import {
+  deleteObject,
+} from "/lib/oss/oss.dao.ts";<#
+}
+#>
 
 import { ServiceException } from "/lib/exceptions/service.exception.ts";<#
 if (opts?.isUseDynPageFields) {
@@ -3422,12 +3444,27 @@ export async function findSummary<#=Table_Up#>(
   #><#
   }
   #> from ${ await getFromQuery(args, search, options) } where ${ await getWhereQuery(args, search, options) }
-  `;
+  `;<#
+  if (cache) {
+  #>
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = JSON.stringify({ sql, args });<#
+  }
+  #>
   
-  const model = (await queryOne<<#=Table_Up#>Summary>(sql, args, { cacheKey1, cacheKey2 }))!;
+  const model = (await queryOne<<#=Table_Up#>Summary>(
+    sql,
+    args,<#
+    if (cache) {
+    #>
+    {
+      cacheKey1,
+      cacheKey2,
+    },<#
+    }
+    #>
+  ))!;
   
   return model;
 }<#
@@ -6699,6 +6736,41 @@ export async function updateById<#=Table_Up#>(
   return id;
 }
 
+// MARK: updateById<#=Table_Up#>
+/** 根据 id 更新<#=table_comment#>, 并返回更新后的数据 */
+export async function updateByIdReturn<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  input: <#=Table_Up#>Input,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
+  },
+): Promise<<#=Table_Up#>Model> {
+  
+  await updateById<#=Table_Up#>(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findById<#=Table_Up#>(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`<#=table_comment#> 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIds<#=Table_Up#>
 /** 根据 ids 删除 <#=table_comment#> */
 export async function deleteByIds<#=Table_Up#>(
@@ -7039,6 +7111,27 @@ export async function deleteByIds<#=Table_Up#>(
       }
       #>
     }<#
+    }
+    #><#
+    }
+    #><#
+    if (!hasIsDeleted) {
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const isAtt = column.isAtt;
+      const isImg = column.isImg;
+      if (!isAtt && !isImg) continue;
+    #>
+    
+    // <#=column_comment#>
+    await deleteObject(
+      oldModel?.<#=column_name#>,
+    );<#
     }
     #><#
     }
@@ -7802,6 +7895,23 @@ export async function forceDeleteByIds<#=Table_Up#>(
     }<#
     }
     #><#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const isAtt = column.isAtt;
+      const isImg = column.isImg;
+      if (!isAtt && !isImg) continue;
+    #>
+    
+    // <#=column_comment#>
+    await deleteObject(
+      oldModel?.<#=column_name#>,
+    );<#
     }
     #>
   }<#

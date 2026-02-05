@@ -7,6 +7,7 @@ import {
 } from "./StringUtil";
 
 import type {
+  GetStatsOss,
   LoginModel,
 } from "@/typings/types";
 
@@ -165,19 +166,22 @@ export async function downloadFile(
   config?: {
     id?: string;
     url?: string;
+    filePath?: string;
     header?: { [key: string]: any };
     notLoading?: boolean;
     showErrMsg?: boolean;
   },
 ) {
   if (!type) {
-    type = "tmpfile";
+    type = "oss";
   }
   let res: {
     tempFilePath: string;
     statusCode: number;
   };
+  const indexStore = useIndexStore();
   try {
+    indexStore.addLoading();
     let paramStr = "";
     if (model.id) {
       paramStr = `${ paramStr }&id=${ encodeURIComponent(model.id) }`;
@@ -206,8 +210,11 @@ export async function downloadFile(
     config = config || { };
     config.url = url;
     res = await uni.downloadFile(config as any) as any;
+    if (res.statusCode !== 200) {
+      throw "下载失败";
+    }
   } catch (err2) {
-    if (config?.showErrMsg) {
+    if (config?.showErrMsg !== false) {
       const errMsg = (err2 as Error).toString() || "";
       if (errMsg) {
         if (errMsg.length <= 14) {
@@ -228,15 +235,10 @@ export async function downloadFile(
       }
     }
     throw err2;
+  } finally {
+    indexStore.minusLoading();
   }
   return res;
-}
-
-export function getAttUrl(id: string, action?: string) {
-  action = action || "minio/download";
-  let url = `${ action }?id=${ encodeURIComponent(id) }`;
-  url = `${ cfg.url }/${ url }`;
-  return url;
 }
 
 /**
@@ -259,7 +261,7 @@ export function getDownloadUrl(
   type?: "oss" | "tmpfile",
 ): string {
   if (!type) {
-    type = "tmpfile";
+    type = "oss";
   }
   const usrStore = useUsrStore();
   let paramStr = "";
@@ -287,6 +289,71 @@ export function getDownloadUrl(
     url += "?" + paramStr;
   }
   return url;
+}
+
+/** 
+ * 获得下载文件的url数组
+ */
+export function getDownloadUrlArr(
+  model: {
+    id: string;
+    filename?: string;
+    remove?: "0"|"1";
+    inline?: "0"|"1";
+  },
+  type?: "oss" | "tmpfile",
+): string[] {
+  if (!type) {
+    type = "oss";
+  }
+  const idArr = (model.id || "").split(",");
+  const downloadUrlArr: string[] = [ ];
+  for (const id of idArr) {
+    const downloadUrl = getDownloadUrl({
+      id,
+      filename: model.filename,
+      inline: model.inline,
+      remove: model.remove,
+    }, type);
+    downloadUrlArr.push(downloadUrl);
+  }
+  return downloadUrlArr;
+}
+
+/**
+ * 获取附件信息列表, 包括文件名
+ */
+export async function getStatsOss(
+  ids: string[],
+  opt?: GqlOpt,
+): Promise<{
+  id: string,
+  lbl: string,
+  contentType?: string,
+  size?: number,
+}[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const res: {
+    getStatsOss: GetStatsOss[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($ids: [String!]!) {
+        getStatsOss(ids: $ids) {
+          id
+          lbl
+          contentType
+          size
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const data = res.getStatsOss;
+  return data;
 }
 
 /**
@@ -566,24 +633,27 @@ async function code2Session(
   },
 ) {
   if (code2SessionPromise) {
-    return code2SessionPromise;
+    return await code2SessionPromise;
   }
   code2SessionPromise = (async function() {
-  const appid = getAppid();
-  const loginModel: LoginModel | undefined = await request({
-    url: "wx_usr/code2Session",
-    method: "POST",
-    data: {
-      appid,
-      ...model,
-    },
-    showErrMsg: false,
-    notLogin: true,
-    notLoading: true,
-  });
     
-  return loginModel;
+    const appid = getAppid();
+    const loginModel: LoginModel | undefined = await request({
+      url: "wx_usr/code2Session",
+      method: "POST",
+      data: {
+        appid,
+        ...model,
+      },
+      showErrMsg: false,
+      notLogin: true,
+      notLoading: true,
+    });
+      
+    return loginModel;
+    
   })();
+  
   return await code2SessionPromise;
 }
 

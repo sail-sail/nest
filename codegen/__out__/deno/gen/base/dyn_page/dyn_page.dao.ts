@@ -1907,6 +1907,36 @@ export async function updateByIdDynPage(
   return id;
 }
 
+// MARK: updateByIdDynPage
+/** 根据 id 更新动态页面, 并返回更新后的数据 */
+export async function updateByIdReturnDynPage(
+  id: DynPageId,
+  input: DynPageInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<DynPageModel> {
+  
+  await updateByIdDynPage(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdDynPage(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`动态页面 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsDynPage
 /** 根据 ids 删除 动态页面 */
 export async function deleteByIdsDynPage(

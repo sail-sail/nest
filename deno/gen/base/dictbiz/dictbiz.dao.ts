@@ -1912,6 +1912,36 @@ export async function updateByIdDictbiz(
   return id;
 }
 
+// MARK: updateByIdDictbiz
+/** 根据 id 更新业务字典, 并返回更新后的数据 */
+export async function updateByIdReturnDictbiz(
+  id: DictbizId,
+  input: DictbizInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<DictbizModel> {
+  
+  await updateByIdDictbiz(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdDictbiz(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`业务字典 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsDictbiz
 /** 根据 ids 删除 业务字典 */
 export async function deleteByIdsDictbiz(

@@ -1655,6 +1655,36 @@ export async function updateByIdLang(
   return id;
 }
 
+// MARK: updateByIdLang
+/** 根据 id 更新语言, 并返回更新后的数据 */
+export async function updateByIdReturnLang(
+  id: LangId,
+  input: LangInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<LangModel> {
+  
+  await updateByIdLang(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdLang(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`语言 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsLang
 /** 根据 ids 删除 语言 */
 export async function deleteByIdsLang(
