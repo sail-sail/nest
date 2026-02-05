@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 <#
+const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenDeno);
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
@@ -18,6 +19,7 @@ let inputName = "";
 let searchName = "";
 let commentName = "";
 let fieldsName = "";
+let summaryName = "";
 if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   && !/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 2))
 ) {
@@ -27,6 +29,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   searchName = Table_Up + "Search";
   commentName = Table_Up + "Comment";
   fieldsName = table_Up + "Fields";
+  summaryName = Table_Up + "Summary";
 } else {
   modelName = Table_Up + "Model";
   fieldCommentName = Table_Up + "FieldComment";
@@ -34,12 +37,18 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   searchName = Table_Up + "Search";
   commentName = Table_Up + "Comment";
   fieldsName = table_Up + "Fields";
+  summaryName = Table_Up + "Summary";
 }
 #>import type {
   <#=inputName#> as <#=inputName#>Type,
   <#=modelName#> as <#=modelName#>Type,
   <#=searchName#> as <#=searchName#>Type,
-  <#=fieldCommentName#> as <#=fieldCommentName#>Type,
+  <#=fieldCommentName#> as <#=fieldCommentName#>Type,<#
+  if (hasSummary) {
+  #>
+  <#=summaryName#> as <#=summaryName#>Type,<#
+  }
+  #>
 } from "#/types.ts";<#
 for (const inlineForeignTab of inlineForeignTabs) {
   const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
@@ -154,7 +163,15 @@ declare global {
   
   /** <#=table_comment#> */
   interface <#=fieldCommentName#> extends <#=fieldCommentName#>Type {
+  }<#
+  if (hasSummary) {
+  #>
+  
+  /** <#=table_comment#> 合计 */
+  interface <#=summaryName#> extends <#=summaryName#>Type {
+  }<#
   }
+  #>
   
 }
 
