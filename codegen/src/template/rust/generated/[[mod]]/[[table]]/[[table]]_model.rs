@@ -1289,14 +1289,15 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     // <#=column_comment#><#
       if (!column.modelLabel) {
     #>
-    let <#=modelLabel#>: &str = row.try_get("<#=column_name#>")?;
-    let <#=modelLabel#> = SmolStr::new(<#=modelLabel#>);
-    let <#=column_name_rust#>: <#=enumColumnName#> = <#=modelLabel#>.try_into()?;<#
+    let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#> = SmolStr::new(<#=column_name_rust#>);
+    let <#=modelLabel#> = <#=column_name_rust#>.clone();<#
       } else {
     #>
     let <#=modelLabel#>: &str = row.try_get("<#=modelLabel#>")?;
     let <#=modelLabel#> = SmolStr::new(<#=modelLabel#>);
-    let <#=column_name_rust#>: <#=enumColumnName#> = row.try_get("<#=column_name#>")?.try_into()?;<#
+    let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: SmolStr = <#=column_name_rust#>.try_into()?;<#
       }
     #><#
       }
@@ -2192,7 +2193,7 @@ impl std::fmt::Debug for <#=tableUP#>Search {
     if let Some(ref <#=modelLabel#>_like) = self.<#=modelLabel#>_like {
       item = item.field("<#=modelLabel#>_like", <#=modelLabel#>_like);
     }<#
-    } else {
+    } else if (foreignKey.lbl) {
     #>
     if let Some(ref <#=column_name#>_<#=foreignKey.lbl#>) = self.<#=column_name#>_<#=foreignKey.lbl#> {
       item = item.field("<#=column_name#>_<#=foreignKey.lbl#>", <#=column_name#>_<#=foreignKey.lbl#>);
