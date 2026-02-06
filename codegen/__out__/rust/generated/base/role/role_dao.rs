@@ -2596,10 +2596,6 @@ async fn _creates(
   
   del_cache_role().await?;
   
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
   let affected_rows = execute(
     sql,
     args,
@@ -2607,10 +2603,6 @@ async fn _creates(
   ).await?;
   
   del_cache_role().await?;
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
   
   if affected_rows != inputs2_len as u64 {
     return Err(eyre!("affectedRows: {affected_rows} != {inputs2_len}"));
@@ -3067,12 +3059,6 @@ pub async fn update_by_id_role(
   }
   
   if field_num > 0 {
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-  }
-  
-  if field_num > 0 {
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
@@ -3165,10 +3151,6 @@ pub async fn update_by_id_role(
     ).await?;
     
     del_cache_role().await?;
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
     
   }
   
@@ -3294,10 +3276,10 @@ pub async fn del_cache_role() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      format!("dao.sql.{x}")
+      SmolStr::new(format!("dao.sql.{x}"))
     )
-    .chain(vec!["dao.sql.base_menu._getMenus".to_owned()])
-    .collect::<Vec<String>>();
+    .chain(vec![SmolStr::new("dao.sql.base_menu._getMenus")])
+    .collect::<Vec<SmolStr>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -3352,10 +3334,6 @@ pub async fn delete_by_ids_role(
   let options = Some(options);
   
   del_cache_role().await?;
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
   
   let mut num = 0;
   for id in ids.clone() {
@@ -3562,17 +3540,11 @@ pub async fn delete_by_ids_role(
   
   del_cache_role().await?;
   
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
+  del_cache_role().await?;
   
   Ok(num)
 }
@@ -3637,10 +3609,6 @@ pub async fn enable_by_ids_role(
   
   del_cache_role().await?;
   
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
@@ -3664,10 +3632,6 @@ pub async fn enable_by_ids_role(
   }
   
   del_cache_role().await?;
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
   
   Ok(num)
 }
@@ -3733,10 +3697,6 @@ pub async fn lock_by_ids_role(
   
   del_cache_role().await?;
   
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
@@ -3760,10 +3720,6 @@ pub async fn lock_by_ids_role(
   }
   
   del_cache_role().await?;
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
   
   Ok(num)
 }
@@ -3797,10 +3753,6 @@ pub async fn revert_by_ids_role(
   }
   
   del_cache_role().await?;
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
@@ -3979,10 +3931,6 @@ pub async fn revert_by_ids_role(
   
   del_cache_role().await?;
   
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
-  
   Ok(num)
 }
 
@@ -4022,10 +3970,6 @@ pub async fn force_delete_by_ids_role(
   let options = Some(options);
   
   del_cache_role().await?;
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
   
   let mut num = 0;
   for id in ids.clone() {
@@ -4178,17 +4122,9 @@ pub async fn force_delete_by_ids_role(
         options,
       ).await?;
     }
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
   }
   
   del_cache_role().await?;
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;
   
   Ok(num)
 }

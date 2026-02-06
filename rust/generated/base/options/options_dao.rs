@@ -2391,9 +2391,9 @@ pub async fn del_cache_options() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      format!("dao.sql.{x}")
+      SmolStr::new(format!("dao.sql.{x}"))
     )
-    .collect::<Vec<String>>();
+    .collect::<Vec<SmolStr>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -2527,6 +2527,8 @@ pub async fn delete_by_ids_options(
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
+  
+  del_cache_options().await?;
   
   Ok(num)
 }

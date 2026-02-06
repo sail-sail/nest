@@ -1719,9 +1719,9 @@ pub async fn del_cache_field_permit() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      format!("dao.sql.{x}")
+      SmolStr::new(format!("dao.sql.{x}"))
     )
-    .collect::<Vec<String>>();
+    .collect::<Vec<SmolStr>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -1831,6 +1831,8 @@ pub async fn delete_by_ids_field_permit(
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
+  
+  del_cache_field_permit().await?;
   
   Ok(num)
 }

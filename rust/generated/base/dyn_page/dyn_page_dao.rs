@@ -2781,9 +2781,9 @@ pub async fn del_cache_dyn_page() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      format!("dao.sql.{x}")
+      SmolStr::new(format!("dao.sql.{x}"))
     )
-    .collect::<Vec<String>>();
+    .collect::<Vec<SmolStr>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -2956,6 +2956,8 @@ pub async fn delete_by_ids_dyn_page(
       .collect::<Vec<DynPageFieldId>>(),
     options,
   ).await?;
+  
+  del_cache_dyn_page().await?;
   
   // 级联删除菜单
   if !menu_ids_to_delete.is_empty() {
