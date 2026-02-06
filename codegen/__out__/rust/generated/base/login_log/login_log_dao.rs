@@ -2174,9 +2174,9 @@ pub async fn del_cache_login_log() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      format!("dao.sql.{x}")
+      SmolStr::new(format!("dao.sql.{x}"))
     )
-    .collect::<Vec<String>>();
+    .collect::<Vec<SmolStr>>();
   
   let cache_key1s_str = cache_key1s
     .iter()

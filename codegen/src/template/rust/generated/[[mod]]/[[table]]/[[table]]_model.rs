@@ -3183,7 +3183,8 @@ impl FromRow<'_, MySqlRow> for <#=Table_Up#>Summary {
       }
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
+    let <#=column_name_rust#>: Option<<#=_data_type#>> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#> = <#=column_name_rust#>.unwrap_or_default();<#
     }
     #>
     
