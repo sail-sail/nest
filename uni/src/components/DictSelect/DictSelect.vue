@@ -2,10 +2,13 @@
 <CustomSelect
   v-bind="$attrs"
   v-model="modelValue"
+  v-model:model-label="modelLabel"
   :method="dataMethod"
   :options-map="optionsMap"
   @change="onChange"
   @data="onData"
+  @confirm="onConfirm"
+  @clear="onClear"
 ></CustomSelect>
 </template>
 
@@ -18,7 +21,10 @@ import {
 const emit = defineEmits<{
   (e: "data", data: GetDict[]): void,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (e: "confirm", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value: any): void,
+  (e: "clear"): void,
 }>();
 
 const props = withDefaults(
@@ -32,9 +38,19 @@ const props = withDefaults(
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const modelValue = defineModel<any>();
+const modelLabel = defineModel<string | null>();
 
 function onChange(value: GetDict | GetDict[] | null) {
   emit("change", value);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function onConfirm(value?: any) {
+  emit("confirm", value);
+}
+
+function onClear() {
+  emit("clear");
 }
 
 function onData(data: GetDict[]) {
