@@ -2,7 +2,8 @@
 <view
   class="custom_select"
   :class="{
-    'custom_select_readonly': readonly
+    'custom_select_readonly': readonly,
+    'custom_select_isShowModelLabel': isShowModelLabel && pageInited,
   }"
   :style="{
     cursor: readonly ? 'default' : 'pointer',
@@ -22,82 +23,96 @@
     @click="onClick"
   >
     
+    <view
+      v-if="isShowModelLabel"
+      un-flex="~ [1_0_0] wrap"
+      un-overflow="hidden"
+      un-items="center"
+      un-h="full"
+    >
+      {{ modelLabel }}
+    </view>
+    
     <template
-      v-if="(props.multiple || modelLabels[0]) && (!props.multiple || modelLabels.length > 0)"
+      v-else
     >
       
-      <view
-        v-if="!props.multiple || modelLabels.length === 1"
-        un-flex="~ [1_0_0] wrap"
-        un-overflow="hidden"
-        un-items="center"
-        un-h="full"
-        un-cursor="pointer"
-      >
-        {{ modelLabels[0] || '' }}
-      </view>
-      
       <template
-        v-else
+        v-if="(props.multiple || modelLabels[0]) && (!props.multiple || modelLabels.length > 0)"
       >
+        
+        <view
+          v-if="!props.multiple || modelLabels.length === 1"
+          un-flex="~ [1_0_0] wrap"
+          un-overflow="hidden"
+          un-items="center"
+          un-h="full"
+        >
+          {{ modelLabels[0] || '' }}
+        </view>
         
         <template
-          v-if="isTagExpanded"
+          v-else
         >
           
-          <tm-tag
-            v-for="(label, index) of modelLabels"
-            :key="index"
-            skin="outlined"
-            color="info"
+          <template
+            v-if="isTagExpanded"
           >
-            {{ label }}
-          </tm-tag>
-        
-        </template>
-        
-        <template v-else>
-          
-          <tm-tag
-            skin="outlined"
-            color="info"
-          >
-            {{ modelLabels[0] }}
-          </tm-tag>
-          
-          <tm-tag
-            v-if="modelLabels.length > 1"
-            skin="thin"
-            color="info"
-            un-cursor="pointer"
-            @tap.stop=""
-            @click.stop="onExpandTag"
-          >
-            <view
-              v-if="modelLabels.length > 1"
-              un-text="gray-400"
+            
+            <tm-tag
+              v-for="(label, index) of modelLabels"
+              :key="index"
+              skin="outlined"
+              color="info"
             >
-              +{{ modelLabels.length - 1 }}
-            </view>
-          </tm-tag>
+              {{ label }}
+            </tm-tag>
+          
+          </template>
+          
+          <template v-else>
+            
+            <tm-tag
+              skin="outlined"
+              color="info"
+            >
+              {{ modelLabels[0] }}
+            </tm-tag>
+            
+            <tm-tag
+              v-if="modelLabels.length > 1"
+              skin="thin"
+              color="info"
+              un-cursor="pointer"
+              @tap.stop=""
+              @click.stop="onExpandTag"
+            >
+              <view
+                v-if="modelLabels.length > 1"
+                un-text="[var(--color-placeholder)]"
+              >
+                +{{ modelLabels.length - 1 }}
+              </view>
+            </tm-tag>
+            
+          </template>
           
         </template>
         
       </template>
       
+      <view
+        v-else
+        un-flex="~ [1_0_0] wrap"
+        un-overflow="hidden"
+        un-items="center"
+        un-h="full"
+        un-text="[var(--color-placeholder)]"
+      >
+        {{ props.pageInited ? (!readonly ? (props.placeholder || '') : (props.readonlyPlaceholder || '')) : '' }}
+      </view>
+      
     </template>
-    
-    <view
-      v-else
-      un-flex="~ [1_0_0] wrap"
-      un-overflow="hidden"
-      un-items="center"
-      un-h="full"
-      un-cursor="pointer"
-      un-text="gray"
-    >
-      {{ props.pageInited ? (props.placeholder || '') : '' }}
-    </view>
     
     <view
       v-if="props.clearable && !readonly && !modelValueIsEmpty"
@@ -207,7 +222,7 @@
             un-flex="~"
             un-items="center"
             un-justify="center"
-            un-text="gray-400"
+            un-text="[var(--color-placeholder)]"
             un-min="h-40"
             un-p="y-6"
             un-box-border
@@ -350,6 +365,7 @@ type OptionsMap = (item: any) => OptionType;
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
+  (e: "update:modelLabel", value?: string | null): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", data: any[]): void,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -366,6 +382,7 @@ const props = withDefaults(
     optionsMap?: OptionsMap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
+    modelLabel?: string | null;
     placeholder?: string;
     height?: string;
     initData?: boolean;
@@ -375,6 +392,7 @@ const props = withDefaults(
     multiple?: boolean;
     showSelectAll?: boolean;
     readonly?: boolean | null;
+    readonlyPlaceholder?: string | null;
     searchStr?: string | null;
   }>(),
   {
@@ -388,6 +406,7 @@ const props = withDefaults(
       };
     },
     modelValue: undefined,
+    modelLabel: undefined,
     placeholder: "",
     height: undefined,
     initData: true,
@@ -396,6 +415,7 @@ const props = withDefaults(
     multiple: false,
     showSelectAll: true,
     readonly: undefined,
+    readonlyPlaceholder: undefined,
     searchStr: "",
   },
 );
@@ -444,6 +464,31 @@ watch(
   },
 );
 
+let modelValue = $ref(props.modelValue);
+
+watch(
+  () => props.modelValue,
+  () => {
+    modelValue = props.modelValue;
+  },
+);
+
+let modelLabel = $ref(props.modelLabel);
+
+watch(
+  () => props.modelLabel,
+  () => {
+    modelLabel = props.modelLabel;
+  },
+);
+
+const isShowModelLabel = $computed(() => {
+  if (modelLabel == null) {
+    return false;
+  }
+  return modelLabel != modelLabels.value.join(",");
+});
+
 watch(
   () => readonly,
   () => {
@@ -488,11 +533,11 @@ function onSelectAll() {
 }
 
 const modelValueIsEmpty = computed(() => {
-  if (props.modelValue == null || props.modelValue === '') {
+  if (modelValue == null || modelValue === '') {
     return true;
   }
   if (props.multiple) {
-    return (props.modelValue as string[]).length === 0;
+    return (modelValue as string[]).length === 0;
   }
   return false;
 });
@@ -500,18 +545,18 @@ const modelValueIsEmpty = computed(() => {
 const showPicker = ref(false);
 
 const modelLabels = computed(() => {
-  if (props.modelValue == null) {
-    return "";
+  if (modelValue == null) {
+    return [ ];
   }
   if (!props.multiple) {
-    const model = data.value.find((item) => props.optionsMap(item).value === props.modelValue);
+    const model = data.value.find((item) => props.optionsMap(item).value === modelValue);
     if (!model) {
-      return "";
+      return [ ];
     }
     return [ props.optionsMap(model).label || "" ];
   }
   const labels: string[] = [ ];
-  const modelValues = (props.modelValue || [ ]) as string[];
+  const modelValues = (modelValue || [ ]) as string[];
   for (const value of modelValues) {
     const model = data.value.find((item) => props.optionsMap(item).value === value);
     if (!model) {
@@ -533,7 +578,7 @@ async function onClick() {
     await onRefresh();
   }
   searchStr.value = "";
-  selectedValue.value = props.modelValue;
+  selectedValue.value = modelValue;
   showPicker.value = true;
   scrollIntoViewId.value = "";
   setTimeout(() => {
@@ -563,7 +608,9 @@ function onClear() {
   } else {
     selectedValue.value = [ ];
   }
+  modelLabel = "";
   emit("update:modelValue", selectedValue.value);
+  emit("update:modelLabel", "");
   emit("confirm");
   emit("change");
   emit("clear");
@@ -571,7 +618,11 @@ function onClear() {
 
 function onConfirm() {
   showPicker.value = false;
+  const isChanged = selectedValue.value !== modelValue;
+  modelValue = selectedValue.value;
+  modelLabel = modelLabels.value.join(",");
   emit("update:modelValue", selectedValue.value);
+  emit("update:modelLabel", modelLabel);
   const models = selectedValueArr.value.map((selectedValue) => {
     const model = data.value.find((item) => props.optionsMap(item).value === selectedValue)!;
     return model;
@@ -581,7 +632,7 @@ function onConfirm() {
   } else {
     emit("confirm", models[0]);
   }
-  if (selectedValue.value !== props.modelValue) {
+  if (isChanged) {
     if (props.multiple) {
       emit("change", models);
     } else {
@@ -685,5 +736,8 @@ defineExpose({
   display: flex;
   align-items: center;
   // border-radius: 4px;
+}
+.custom_select_isShowModelLabel {
+  color: red;
 }
 </style>
