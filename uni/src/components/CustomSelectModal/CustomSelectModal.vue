@@ -618,6 +618,7 @@ function onClear() {
 
 function onConfirm() {
   showPicker.value = false;
+  const isChanged = selectedValue.value !== modelValue;
   modelValue = selectedValue.value;
   modelLabel = modelLabels.value.join(",");
   emit("update:modelValue", selectedValue.value);
@@ -631,7 +632,7 @@ function onConfirm() {
   } else {
     emit("confirm", models[0]);
   }
-  if (selectedValue.value !== modelValue) {
+  if (isChanged) {
     if (props.multiple) {
       emit("change", models);
     } else {

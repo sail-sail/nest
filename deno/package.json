@@ -34,11 +34,11 @@
     "@graphql-codegen/cli": "6.1.1",
     "@graphql-codegen/typescript": "5.0.7",
     "@graphql-codegen/typescript-operations": "5.0.7",
-    "@types/node": "25.2.0",
+    "@types/node": "25.2.2",
     "@types/sqlstring": "2.3.2",
     "chokidar": "5.0.0",
     "commander": "14.0.3",
-    "dotenv": "17.2.3",
+    "dotenv": "17.2.4",
     "graphql-ts-client-codegen": "3.1.17",
     "ssh2-promise": "1.0.3",
     "typescript": "5.9.3"
