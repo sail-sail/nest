@@ -10,6 +10,7 @@ declare module 'vue' {
     AppLoading: typeof import('./../components/AppLoading/AppLoading.vue')['default']
     CustomSelect: typeof import('./../components/CustomSelect/CustomSelect.vue')['default']
     CustomSelectModal: typeof import('./../components/CustomSelectModal/CustomSelectModal.vue')['default']
+    CustomSelectImg: typeof import('./../components/CustomSelectImg/CustomSelectImg.vue')['default']
     CustomDynComp: typeof import('./../components/CustomDynComp/CustomDynComp.vue')['default']
     DictSelect: typeof import('./../components/DictSelect/DictSelect.vue')['default']
     DictbizSelect: typeof import('./../components/DictbizSelect/DictbizSelect.vue')['default']
