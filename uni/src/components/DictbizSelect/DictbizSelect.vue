@@ -41,7 +41,7 @@ const props = withDefaults(
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const modelValue = defineModel<any>();
-const modelLabel = defineModel<string | null>();
+const modelLabel = defineModel<string | null>("modelLabel");
 
 function onChange(value: GetDictbiz | GetDictbiz[] | null) {
   emit("change", value);

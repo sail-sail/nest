@@ -145,6 +145,7 @@
     v-model:show="showPicker"
     :closeable="true"
     :height="_height"
+    :width="_width"
     :title="props.placeholder || '请选择'"
     disabled-scroll
     show-close
@@ -160,12 +161,12 @@
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
       :style="{
-        flex: options4SelectV2.length > 5 ? undefined : 'none',
+        flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
       }"
     >
       
       <view
-        v-if="options4SelectV2.length > 5 && !isLoading"
+        v-if="!props.hideSearch && (options4SelectV2.length > 5 || props.height) && !isLoading"
         un-p="t-2"
         un-box-border
         un-m="x-4"
@@ -206,7 +207,7 @@
         un-flex="~ [1_0_0] col"
         un-overflow-hidden
         :style="{
-          flex: options4SelectV2.length > 5 ? undefined : 'none',
+          flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
         }"
         scroll-y
         :rebound="false"
@@ -236,76 +237,86 @@
           v-else
         >
           
-          <view
-            un-flex="~ [1_0_0] col"
-            un-overflow-hidden
-            :style="{
-              flex: options4SelectV2.length > 5 ? undefined : 'none',
-            }"
+          <slot
+            name="option"
+            :size="options4SelectV2.length"
+            :options-computed="options4SelectV2Computed"
+            :selected-value="selectedValueArr"
+            :on-select="onSelect"
           >
-          
+            
             <view
-              v-for="item of options4SelectV2Computed"
-              :id="'a' + item.value"
-              :key="item.value"
-              :title="item.label"
-              un-m="x-2"
-              un-p="y-4"
-              un-box-border
-              un-flex="~"
-              un-items="center"
-              un-gap="2"
-              un-b="0 b-1 solid #e6e6e6"
+              un-flex="~ [1_0_0] col"
+              un-overflow-hidden
               :style="{
-                'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
-                'border-color': selectedValueArr.includes(item.value) ? '#0579ff' : '#e6e6e6',
+                flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
               }"
-              @click="onSelect(item.value)"
             >
-                    
+            
               <view
-                un-flex="~ [1_0_0]"
-                un-overflow-hidden
+                v-for="item of options4SelectV2Computed"
+                :id="'a' + item.value"
+                :key="item.value"
+                :title="item.label"
+                un-m="x-2"
+                un-p="y-4"
+                un-box-border
+                un-flex="~"
                 un-items="center"
-                un-m="l-4"
+                un-gap="2"
+                un-b="0 b-1 solid #e6e6e6"
+                :style="{
+                  'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
+                  'border-color': selectedValueArr.includes(item.value) ? '#0579ff' : '#e6e6e6',
+                }"
+                @click="onSelect(item.value)"
               >
-                {{ item.label }}
-              </view>
-                    
-              <view
-                style="width: 1.2rem;height: 1.2rem;"
-                un-m="r-4"
-              >
+                
                 <view
-                  v-if="selectedValueArr.includes(item.value)"
-                  un-i="iconfont-check"
-                ></view>
+                  un-flex="~ [1_0_0]"
+                  un-overflow-hidden
+                  un-items="center"
+                  un-m="l-4"
+                >
+                  {{ item.label }}
+                </view>
+                
+                <view
+                  style="width: 1.2rem;height: 1.2rem;"
+                  un-m="r-4"
+                >
+                  <view
+                    v-if="selectedValueArr.includes(item.value)"
+                    un-i="iconfont-check"
+                  ></view>
+                </view>
+                
               </view>
-                    
-            </view>
               
-            <view
-              v-if="inited && options4SelectV2Computed.length === 0"
-              un-flex="~"
-              un-items="center"
-              un-justify="center"
-              un-text="gray-400"
-              un-h="10"
-            >
-              (暂无数据)
+              <view
+                v-if="inited && options4SelectV2Computed.length === 0"
+                un-flex="~"
+                un-items="center"
+                un-justify="center"
+                un-text="gray-400"
+                un-h="10"
+              >
+                (暂无数据)
+              </view>
+              
+              <view
+                v-else-if="options4SelectV2Computed.length > 5 || props.height"
+                un-m="y-2"
+              >
+                <CustomDivider></CustomDivider>
+              </view>
+              
             </view>
             
-            <view
-              v-else-if="options4SelectV2Computed.length > 5"
-              un-m="y-2"
-            >
-              <CustomDivider></CustomDivider>
-            </view>
-            
-          </view>
+          </slot>
           
         </template>
-          
+        
       </scroll-view>
       
       <view
@@ -357,6 +368,7 @@ type OptionType = {
   label: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
+  image?: string;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -385,6 +397,7 @@ const props = withDefaults(
     modelLabel?: string | null;
     placeholder?: string;
     height?: string;
+    width?: string;
     initData?: boolean;
     refreshWhenShowPicker?: boolean;
     pageInited?: boolean;
@@ -394,21 +407,24 @@ const props = withDefaults(
     readonly?: boolean | null;
     readonlyPlaceholder?: string | null;
     searchStr?: string | null;
+    hideSearch?: boolean;
   }>(),
   {
     method: undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     optionsMap: function(item: any) {
-      const item2 = item as { lbl: string; id: string; };
+      const item2 = item as { lbl: string; id: string; img_lbl?: string };
       return {
         label: item2.lbl,
         value: item2.id,
+        image: item2.img_lbl,
       };
     },
     modelValue: undefined,
     modelLabel: undefined,
     placeholder: "",
     height: undefined,
+    width: undefined,
     initData: true,
     pageInited: true,
     clearable: true,
@@ -417,10 +433,12 @@ const props = withDefaults(
     readonly: undefined,
     readonlyPlaceholder: undefined,
     searchStr: "",
+    hideSearch: false,
   },
 );
 
 let _height = $ref(props.height || "90%");
+const _width = $ref(props.width || "90%");
 
 const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
 
