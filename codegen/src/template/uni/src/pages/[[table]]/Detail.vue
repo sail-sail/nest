@@ -220,6 +220,7 @@ if (right_field && !right_field_column) {
         const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
+        const modelLabel = column.modelLabel;
       #><#
         if (foreignKey) {
         #>
@@ -245,7 +246,12 @@ if (right_field && !right_field_column) {
           #>
         >
           <CustomSelectModal
-            v-model="<#=table#>_input.<#=column_name#>"
+            v-model="<#=table#>_input.<#=column_name#>"<#
+            if (modelLabel) {
+            #>
+            v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
+            }
+            #>
             placeholder="请选择 <#=column_comment#>"
             :method="getList<#=Foreign_Table_Up#>"<#
             if (foreignKey.multiple) {
@@ -317,7 +323,12 @@ if (right_field && !right_field_column) {
           #>
         >
           <DictSelect
-            v-model="<#=table#>_input.<#=column_name#>"
+            v-model="<#=table#>_input.<#=column_name#>"<#
+            if (modelLabel) {
+            #>
+            v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
+            }
+            #>
             placeholder="请选择 <#=column_comment#>"
             code="<#=column.dict#>"<#
             if (readonlyPlaceholder) {
@@ -351,7 +362,12 @@ if (right_field && !right_field_column) {
           #>
         >
           <DictbizSelect
-            v-model="<#=table#>_input.<#=column_name#>"
+            v-model="<#=table#>_input.<#=column_name#>"<#
+            if (modelLabel) {
+            #>
+            v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
+            }
+            #>
             placeholder="请选择 <#=column_comment#>"
             code="<#=column.dictbiz#>"<#
             if (readonlyPlaceholder) {

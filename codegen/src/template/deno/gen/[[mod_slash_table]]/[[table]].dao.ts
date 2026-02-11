@@ -3444,12 +3444,27 @@ export async function findSummary<#=Table_Up#>(
   #><#
   }
   #> from ${ await getFromQuery(args, search, options) } where ${ await getWhereQuery(args, search, options) }
-  `;
+  `;<#
+  if (cache) {
+  #>
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = JSON.stringify({ sql, args });<#
+  }
+  #>
   
-  const model = (await queryOne<<#=Table_Up#>Summary>(sql, args, { cacheKey1, cacheKey2 }))!;
+  const model = (await queryOne<<#=Table_Up#>Summary>(
+    sql,
+    args,<#
+    if (cache) {
+    #>
+    {
+      cacheKey1,
+      cacheKey2,
+    },<#
+    }
+    #>
+  ))!;
   
   return model;
 }<#

@@ -170,6 +170,7 @@ export async function downloadFile(
     header?: { [key: string]: any };
     notLoading?: boolean;
     showErrMsg?: boolean;
+    notAuthorization?: boolean;
   },
 ) {
   if (!type) {
@@ -195,10 +196,12 @@ export async function downloadFile(
     if (model.remove != null) {
       paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.remove) }`;
     }
-    const usrStore = useUsrStore();
-    const authorization = usrStore.getAuthorization();
-    if (authorization) {
-      paramStr = `${ paramStr }&authorization=${ encodeURIComponent(authorization) }`;
+    if (config?.notAuthorization !== true) {
+      const usrStore = useUsrStore();
+      const authorization = usrStore.getAuthorization();
+      if (authorization) {
+        paramStr = `${ paramStr }&authorization=${ encodeURIComponent(authorization) }`;
+      }
     }
     if (paramStr.startsWith("&")) {
       paramStr = paramStr.substring(1);
@@ -259,6 +262,9 @@ export function getDownloadUrl(
     inline?: "0"|"1";
   },
   type?: "oss" | "tmpfile",
+  config?: {
+    notAuthorization?: boolean;
+  },
 ): string {
   if (!type) {
     type = "oss";
@@ -277,9 +283,11 @@ export function getDownloadUrl(
   if (model.remove != null) {
     paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.remove) }`;
   }
-  const authorization = usrStore.getAuthorization();
-  if (authorization) {
-    paramStr = `${ paramStr }&authorization=${ encodeURIComponent(authorization) }`;
+  if (config?.notAuthorization !== true) {
+    const authorization = usrStore.getAuthorization();
+    if (authorization) {
+      paramStr = `${ paramStr }&authorization=${ encodeURIComponent(authorization) }`;
+    }
   }
   if (paramStr.startsWith("&")) {
     paramStr = paramStr.substring(1);
@@ -302,6 +310,9 @@ export function getDownloadUrlArr(
     inline?: "0"|"1";
   },
   type?: "oss" | "tmpfile",
+  config?: {
+    notAuthorization?: boolean;
+  },
 ): string[] {
   if (!type) {
     type = "oss";
@@ -314,7 +325,7 @@ export function getDownloadUrlArr(
       filename: model.filename,
       inline: model.inline,
       remove: model.remove,
-    }, type);
+    }, type, config);
     downloadUrlArr.push(downloadUrl);
   }
   return downloadUrlArr;
@@ -368,8 +379,10 @@ export function getImgUrl(
     quality?: number;
     filename?: string;
     inline?: "0"|"1";
-    notAuthorization?: boolean;
   } | string,
+  config?: {
+    notAuthorization?: boolean;
+  },
 ): string {
   if (typeof model === "string") {
     model = {
@@ -403,7 +416,7 @@ export function getImgUrl(
   if (model.quality) {
     params += `&q=${ encodeURIComponent(model.quality.toString()) }`;
   }
-  if (model.notAuthorization !== true) {
+  if (config?.notAuthorization !== true) {
     const authorization = usrStore.getAuthorization();
     if (authorization) {
       params += `&authorization=${ encodeURIComponent(authorization) }`;
@@ -424,8 +437,10 @@ export function getImgUrlArr(
     quality?: number;
     filename?: string;
     inline?: "0"|"1";
-    notAuthorization?: boolean;
   } | string,
+  config?: {
+    notAuthorization?: boolean;
+  },
 ): string[] {
   if (typeof model === "string") {
     model = {
@@ -447,8 +462,7 @@ export function getImgUrlArr(
       quality: model.quality,
       filename: model.filename,
       inline: model.inline,
-      notAuthorization: model.notAuthorization,
-    });
+    }, config);
     imgUrlArr.push(imgUrl);
   }
   return imgUrlArr;
