@@ -462,7 +462,7 @@ async fn get_from_query(
 
 // MARK: find_all_operation_record
 /// 根据搜索条件和分页查找操作记录列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_operation_record(
   search: Option<OperationRecordSearch>,
   page: Option<PageInput>,

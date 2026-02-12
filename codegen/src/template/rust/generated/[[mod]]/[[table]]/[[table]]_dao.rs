@@ -1850,7 +1850,7 @@ pub async fn set_dyn_page_data_<#=table#>(
 
 // MARK: find_all_<#=table#>
 /// 根据搜索条件和分页查找<#=table_comment#>列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   page: Option<PageInput>,

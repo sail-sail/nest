@@ -400,7 +400,7 @@ async fn get_from_query(
 
 // MARK: find_all_login_log
 /// 根据搜索条件和分页查找登录日志列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_login_log(
   search: Option<LoginLogSearch>,
   page: Option<PageInput>,
