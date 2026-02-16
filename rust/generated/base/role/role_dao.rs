@@ -725,7 +725,7 @@ async fn get_from_query(
 
 // MARK: find_all_role
 /// 根据搜索条件和分页查找角色列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_role(
   search: Option<RoleSearch>,
   page: Option<PageInput>,

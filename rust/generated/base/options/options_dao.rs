@@ -461,7 +461,7 @@ async fn get_from_query(
 
 // MARK: find_all_options
 /// 根据搜索条件和分页查找系统选项列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_options(
   search: Option<OptionsSearch>,
   page: Option<PageInput>,

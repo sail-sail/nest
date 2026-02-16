@@ -472,7 +472,7 @@ async fn get_from_query(
 
 // MARK: find_all_background_task
 /// 根据搜索条件和分页查找后台任务列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_background_task(
   search: Option<BackgroundTaskSearch>,
   page: Option<PageInput>,

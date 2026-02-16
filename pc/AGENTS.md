@@ -26,6 +26,9 @@ src/views/{module}/{table}/
 | API 函数 | `findAll{Table}`, `create{Table}` | `findAllUsr` |
 | 类型 | `{Table}Model`, `{Table}Input` | `UsrModel` |
 
+## 编码约定
+- 异常无需捕获，发起Graphql请求时会自动由全局错误处理器处理
+
 ## 可用 Skills (.github/skills/)
 
 - `pc-graphql-frontend` - 前端自定义 GraphQL API 接口. 当需要在 Vue 3 前端调用后端自定义接口（非标准 CRUD）时使用此技能
