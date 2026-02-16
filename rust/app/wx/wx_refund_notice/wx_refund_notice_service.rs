@@ -167,7 +167,9 @@ pub async fn wx_refund_notify(
       refund_status: Some(refund_status),
       success_time,
       user_received_account: Some(user_received_account),
+      amount_total: Some(wx_refund_resource.amount.total as u32),
       amount_refund: Some(amount_refund),
+      amount_payer_total: Some(wx_refund_resource.amount.payer_total as u32),
       amount_payer_refund: Some(amount_payer_refund),
       create_time: Some(chrono::Local::now().naive_local()),
       ..Default::default()
