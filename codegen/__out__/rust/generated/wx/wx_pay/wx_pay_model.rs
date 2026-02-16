@@ -84,6 +84,9 @@ pub struct WxPayModel {
   /// 通知地址
   #[graphql(name = "notify_url")]
   pub notify_url: SmolStr,
+  /// 退款通知地址
+  #[graphql(name = "refund_notify_url")]
+  pub refund_notify_url: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -155,6 +158,9 @@ impl FromRow<'_, MySqlRow> for WxPayModel {
     // 通知地址
     let notify_url: &str = row.try_get("notify_url")?;
     let notify_url = SmolStr::new(notify_url);
+    // 退款通知地址
+    let refund_notify_url: &str = row.try_get("refund_notify_url")?;
+    let refund_notify_url = SmolStr::new(refund_notify_url);
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl = SmolStr::new(is_locked.to_string());
@@ -202,6 +208,7 @@ impl FromRow<'_, MySqlRow> for WxPayModel {
       v3_key,
       payer_client_ip,
       notify_url,
+      refund_notify_url,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -256,6 +263,9 @@ pub struct WxPayFieldComment {
   /// 通知地址
   #[graphql(name = "notify_url")]
   pub notify_url: SmolStr,
+  /// 退款通知地址
+  #[graphql(name = "refund_notify_url")]
+  pub refund_notify_url: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: SmolStr,
@@ -365,6 +375,12 @@ pub struct WxPaySearch {
   /// 通知地址
   #[graphql(skip)]
   pub notify_url_like: Option<SmolStr>,
+  /// 退款通知地址
+  #[graphql(skip)]
+  pub refund_notify_url: Option<SmolStr>,
+  /// 退款通知地址
+  #[graphql(skip)]
+  pub refund_notify_url_like: Option<SmolStr>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -492,6 +508,13 @@ impl std::fmt::Debug for WxPaySearch {
     if let Some(ref notify_url_like) = self.notify_url_like {
       item = item.field("notify_url_like", notify_url_like);
     }
+    // 退款通知地址
+    if let Some(ref refund_notify_url) = self.refund_notify_url {
+      item = item.field("refund_notify_url", refund_notify_url);
+    }
+    if let Some(ref refund_notify_url_like) = self.refund_notify_url_like {
+      item = item.field("refund_notify_url_like", refund_notify_url_like);
+    }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
@@ -588,6 +611,9 @@ pub struct WxPayInput {
   /// 通知地址
   #[graphql(name = "notify_url")]
   pub notify_url: Option<SmolStr>,
+  /// 退款通知地址
+  #[graphql(name = "refund_notify_url")]
+  pub refund_notify_url: Option<SmolStr>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -662,6 +688,8 @@ impl From<WxPayModel> for WxPayInput {
       payer_client_ip: model.payer_client_ip.into(),
       // 通知地址
       notify_url: model.notify_url.into(),
+      // 退款通知地址
+      refund_notify_url: model.refund_notify_url.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -716,6 +744,8 @@ impl From<WxPayInput> for WxPaySearch {
       payer_client_ip: input.payer_client_ip,
       // 通知地址
       notify_url: input.notify_url,
+      // 退款通知地址
+      refund_notify_url: input.refund_notify_url,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用

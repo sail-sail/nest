@@ -491,6 +491,12 @@ async fn main() -> Result<(), std::io::Error> {
       post(app::wx::wx_pay_notice::wx_pay_notice_router::wx_pay_notify),
     );
     
+    // 微信退款回调
+    app = app.at(
+      "/api/wx_pay/wx_refund_notice",
+      post(app::wx::wx_refund_notice::wx_refund_notice_router::wx_refund_notify),
+    );
+    
     app
   };
   let app = app

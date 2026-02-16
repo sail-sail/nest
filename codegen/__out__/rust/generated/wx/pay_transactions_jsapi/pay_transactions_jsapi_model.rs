@@ -903,25 +903,32 @@ impl_id!(PayTransactionsJsapiId);
 pub enum PayTransactionsJsapiTradeState {
   /// 支付成功
   #[graphql(name="SUCCESS")]
+  #[serde(rename = "SUCCESS")]
   Success,
   /// 转入退款
   #[graphql(name="REFUND")]
+  #[serde(rename = "REFUND")]
   Refund,
   /// 未支付
   #[default]
   #[graphql(name="NOTPAY")]
+  #[serde(rename = "NOTPAY")]
   Notpay,
   /// 已关闭
   #[graphql(name="CLOSED")]
+  #[serde(rename = "CLOSED")]
   Closed,
   /// 已撤销
   #[graphql(name="REVOKED")]
+  #[serde(rename = "REVOKED")]
   Revoked,
   /// 用户支付中
   #[graphql(name="USERPAYING")]
+  #[serde(rename = "USERPAYING")]
   Userpaying,
   /// 支付失败
   #[graphql(name="PAYERROR")]
+  #[serde(rename = "PAYERROR")]
   Payerror,
 }
 
@@ -1082,6 +1089,7 @@ pub enum PayTransactionsJsapiCurrency {
   /// 人民币
   #[default]
   #[graphql(name="CNY")]
+  #[serde(rename = "CNY")]
   Cny,
 }
 

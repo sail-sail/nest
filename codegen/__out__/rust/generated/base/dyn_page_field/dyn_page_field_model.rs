@@ -821,13 +821,16 @@ impl_id!(DynPageFieldId);
 pub enum DynPageFieldAlign {
   /// 靠左
   #[graphql(name="left")]
+  #[serde(rename = "left")]
   Left,
   /// 居中
   #[default]
   #[graphql(name="center")]
+  #[serde(rename = "center")]
   Center,
   /// 靠右
   #[graphql(name="right")]
+  #[serde(rename = "right")]
   Right,
 }
 

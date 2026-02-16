@@ -3,6 +3,8 @@ pub mod wx_app;
 pub mod wx_app_token;
 pub mod wx_pay;
 pub mod wx_pay_notice;
+pub mod wx_refund;
+pub mod wx_refund_notice;
 pub mod wx_usr;
 pub mod wxo_app;
 pub mod wxo_app_token;

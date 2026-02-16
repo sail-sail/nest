@@ -48,6 +48,8 @@ export const wxPayFields = [
   "payer_client_ip",
   // 通知地址
   "notify_url",
+  // 退款通知地址
+  "refund_notify_url",
   // 锁定
   "is_locked",
   "is_locked_lbl",

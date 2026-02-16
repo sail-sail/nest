@@ -1,0 +1,41 @@
+use color_eyre::eyre::Result;
+use serde_json::json;
+
+use poem::{
+  Request, Response,
+  handler, web::Json,
+};
+use http::status::StatusCode;
+
+use generated::common::context::Ctx;
+
+use super::wx_refund_notice_resful;
+
+use generated::common::wx_pay::decode::WxRefundNotify;
+
+/// 微信退款回调通知
+#[handler]
+pub async fn wx_refund_notify(
+  req: &Request,
+  Json(wx_refund_notify): Json<WxRefundNotify>,
+) -> Response {
+  let res: Result<Response> = Ctx::resful_builder(Some(req))
+    .with_tran()
+    .build()
+    .resful_scope({
+      wx_refund_notice_resful::wx_refund_notify(wx_refund_notify)
+    }).await;
+  if let Err(err) = res {
+    return Response::builder()
+      .header("Content-Type", "application/json")
+      .status(StatusCode::INTERNAL_SERVER_ERROR)
+      .body(json!({
+        "code": "FAIL",
+        "message": err.to_string(),
+      }).to_string());
+  }
+
+  Response::builder()
+    .status(StatusCode::OK)
+    .finish()
+}

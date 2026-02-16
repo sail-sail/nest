@@ -46,6 +46,8 @@ export function intoInputWxPay(
     payer_client_ip: model?.payer_client_ip,
     // 通知地址
     notify_url: model?.notify_url,
+    // 退款通知地址
+    refund_notify_url: model?.refund_notify_url,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -739,6 +741,7 @@ export async function getFieldCommentsWxPay(
           v3_key,
           payer_client_ip,
           notify_url,
+          refund_notify_url,
           is_locked,
           is_locked_lbl,
           is_enabled,
@@ -773,6 +776,7 @@ export function getPagePathWxPay() {
 export async function getDefaultInputWxPay() {
   const defaultInput: WxPayInput = {
     notify_url: "/api/wx_pay/wx_pay_notify",
+    refund_notify_url: "/api/wx_pay/wx_refund_notice",
     is_locked: 1,
     is_enabled: 1,
     order_by: 1,

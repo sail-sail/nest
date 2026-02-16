@@ -829,12 +829,15 @@ pub enum WxoAppEncodingType {
   /// 明文模式
   #[default]
   #[graphql(name="plaintext")]
+  #[serde(rename = "plaintext")]
   Plaintext,
   /// 兼容模式
   #[graphql(name="compatible")]
+  #[serde(rename = "compatible")]
   Compatible,
   /// 安全模式
   #[graphql(name="safe")]
+  #[serde(rename = "safe")]
   Safe,
 }
 
@@ -963,9 +966,11 @@ pub enum WxoAppScope {
   /// 静默模式
   #[default]
   #[graphql(name="snsapi_base")]
+  #[serde(rename = "snsapi_base")]
   SnsapiBase,
   /// 授权模式
   #[graphql(name="snsapi_userinfo")]
+  #[serde(rename = "snsapi_userinfo")]
   SnsapiUserinfo,
 }
 

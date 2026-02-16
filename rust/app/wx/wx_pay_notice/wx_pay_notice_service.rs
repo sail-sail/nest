@@ -138,8 +138,7 @@ pub async fn wx_pay_notify(
   let bank_type = SmolStr::new(&wx_pay_resource.bank_type);
   let attach = SmolStr::new(&wx_pay_resource.attach.unwrap_or_default());
   //  "2018-06-08T10:34:56+08:00"
-  let success_time = SmolStr::new(wx_pay_resource.success_time);
-  let success_time = chrono::NaiveDateTime::parse_from_str(&success_time, "%Y-%m-%dT%H:%M:%S%z")?;
+  let success_time = chrono::NaiveDateTime::parse_from_str(&wx_pay_resource.success_time, "%Y-%m-%dT%H:%M:%S%z")?;
   let total = wx_pay_resource.amount.total;
   if total > u32::MAX as u64 {
     return Err(eyre!("total is too large"));

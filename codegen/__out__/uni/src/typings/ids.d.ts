@@ -123,6 +123,14 @@ declare const wx_pay_noticeId: unique symbol;
 /** 微信支付通知 */
 type WxPayNoticeId = Distinct<string, typeof wx_pay_noticeId>;
 
+declare const wx_refundId: unique symbol;
+/** 微信退款申请 */
+type WxRefundId = Distinct<string, typeof wx_refundId>;
+
+declare const wx_refund_noticeId: unique symbol;
+/** 微信退款通知 */
+type WxRefundNoticeId = Distinct<string, typeof wx_refund_noticeId>;
+
 declare const wx_usrId: unique symbol;
 /** 小程序用户 */
 type WxUsrId = Distinct<string, typeof wx_usrId>;

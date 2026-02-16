@@ -722,21 +722,27 @@ pub enum WxPayNoticeTradeType {
   /// 小程序支付
   #[default]
   #[graphql(name="JSAPI")]
+  #[serde(rename = "JSAPI")]
   Jsapi,
   /// Native支付
   #[graphql(name="NATIVE")]
+  #[serde(rename = "NATIVE")]
   Native,
   /// app支付
   #[graphql(name="APP")]
+  #[serde(rename = "APP")]
   App,
   /// 扫码支付
   #[graphql(name="MICROPAY")]
+  #[serde(rename = "MICROPAY")]
   Micropay,
   /// H5支付
   #[graphql(name="MWEB")]
+  #[serde(rename = "MWEB")]
   Mweb,
   /// 刷脸支付
   #[graphql(name="FACEPAY")]
+  #[serde(rename = "FACEPAY")]
   Facepay,
 }
 
@@ -888,25 +894,32 @@ impl TryFrom<String> for WxPayNoticeTradeType {
 pub enum WxPayNoticeTradeState {
   /// 支付成功
   #[graphql(name="SUCCESS")]
+  #[serde(rename = "SUCCESS")]
   Success,
   /// 转入退款
   #[graphql(name="REFUND")]
+  #[serde(rename = "REFUND")]
   Refund,
   /// 未支付
   #[default]
   #[graphql(name="NOTPAY")]
+  #[serde(rename = "NOTPAY")]
   Notpay,
   /// 已关闭
   #[graphql(name="CLOSED")]
+  #[serde(rename = "CLOSED")]
   Closed,
   /// 已撤销
   #[graphql(name="REVOKED")]
+  #[serde(rename = "REVOKED")]
   Revoked,
   /// 用户支付中
   #[graphql(name="USERPAYING")]
+  #[serde(rename = "USERPAYING")]
   Userpaying,
   /// 支付失败
   #[graphql(name="PAYERROR")]
+  #[serde(rename = "PAYERROR")]
   Payerror,
 }
 
@@ -1067,6 +1080,7 @@ pub enum WxPayNoticeCurrency {
   /// 人民币
   #[default]
   #[graphql(name="CNY")]
+  #[serde(rename = "CNY")]
   Cny,
 }
 
@@ -1179,6 +1193,7 @@ pub enum WxPayNoticePayerCurrency {
   /// 人民币
   #[default]
   #[graphql(name="CNY")]
+  #[serde(rename = "CNY")]
   Cny,
 }
 

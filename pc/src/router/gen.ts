@@ -438,6 +438,36 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/wx/wx_refund",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "微信退款申请",
+        component: () => import("@/views/wx/wx_refund/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "微信退款申请",
+        },
+      },
+    ],
+  },
+  {
+    path: "/wx/wx_refund_notice",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "微信退款通知",
+        component: () => import("@/views/wx/wx_refund_notice/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "微信退款通知",
+        },
+      },
+    ],
+  },
+  {
     path: "/wx/wx_usr",
     component: Layout1,
     children: [

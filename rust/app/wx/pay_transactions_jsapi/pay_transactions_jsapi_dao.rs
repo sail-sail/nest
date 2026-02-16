@@ -126,23 +126,22 @@ pub async fn transactions_jsapi(
       ..Default::default()
     }));
   }
-  if openid.is_none() || openid.as_ref().unwrap().is_empty() {
-    return Err(eyre!(ServiceException {
+  
+  let openid = openid
+    .filter(|s| !s.is_empty())
+    .ok_or_else(|| eyre!(ServiceException {
       message: "openid 不能为空".into(),
       trace: true,
       ..Default::default()
-    }));
-  }
-  let openid = openid.unwrap();
+    }))?;
   
-  if tenant_id.is_none() || tenant_id.as_ref().unwrap().is_empty() {
-    return Err(eyre!(ServiceException {
+  let tenant_id = tenant_id
+    .filter(|s| !s.is_empty())
+    .ok_or_else(|| eyre!(ServiceException {
       message: "tenant_id 不能为空".into(),
       trace: true,
       ..Default::default()
-    }));
-  }
-  let tenant_id = tenant_id.unwrap();
+    }))?;
   
   let tenant_model = validate_option_tenant(
     find_by_id_tenant(

@@ -6,3 +6,6 @@ A+3vwR6vS7eFqf8mewVXlA,wx_pay_notice_currency,微信支付通知-货币类型,st
 qdUtCjusRjiO22jxXk7ipA,wx_pay_notice_payer_currency,微信支付通知-用户支付币种,string,106,1,0
 XsJS1HyjRQuwgi2za8vmJw,wxo_app_encoding_type,公众号设置-消息加解密方式,string,107,1,0
 THoRcre6SEy9JConjQz6Hg,wxo_app_scope,公众号设置-授权作用域,string,108,1,0
+Qh7sK9vTRyPq4Zx1LbNf0A,wx_refund_channel,退款渠道,string,109,1,0
+Rj8tL0uUSzRq5Yy2McGg1B,wx_refund_status,退款状态,string,110,1,0
+Sk9uM1vUSyRt5Yz3BdHh2C,wx_refund_funds_account,资金账户,string,111,1,0

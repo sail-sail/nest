@@ -75,7 +75,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 20 * 2);
+  let mut where_query = String::with_capacity(80 * 21 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -300,6 +300,25 @@ async fn get_where_query(
     if let Some(notify_url_like) = notify_url_like && !notify_url_like.is_empty() {
       where_query.push_str(" and t.notify_url like ?");
       args.push(format!("%{}%", sql_like(&notify_url_like)).into());
+    }
+  }
+  // 退款通知地址
+  {
+    let refund_notify_url = match search {
+      Some(item) => item.refund_notify_url.clone(),
+      None => None,
+    };
+    if let Some(refund_notify_url) = refund_notify_url {
+      where_query.push_str(" and t.refund_notify_url=?");
+      args.push(refund_notify_url.into());
+    }
+    let refund_notify_url_like = match search {
+      Some(item) => item.refund_notify_url_like.clone(),
+      None => None,
+    };
+    if let Some(refund_notify_url_like) = refund_notify_url_like && !refund_notify_url_like.is_empty() {
+      where_query.push_str(" and t.refund_notify_url like ?");
+      args.push(format!("%{}%", sql_like(&refund_notify_url_like)).into());
     }
   }
   // 锁定
@@ -942,6 +961,7 @@ pub async fn get_field_comments_wx_pay(
     v3_key: "APIv3密钥".into(),
     payer_client_ip: "支付终端IP".into(),
     notify_url: "通知地址".into(),
+    refund_notify_url: "退款通知地址".into(),
     is_locked: "锁定".into(),
     is_locked_lbl: "锁定".into(),
     is_enabled: "启用".into(),
@@ -1575,6 +1595,27 @@ pub async fn find_by_unique_wx_pay(
   };
   models.append(&mut models_tmp);
   
+  let mut models_tmp = {
+    if
+      search.refund_notify_url.is_none()
+    {
+      return Ok(vec![]);
+    }
+    
+    let search = WxPaySearch {
+      refund_notify_url: search.refund_notify_url.clone(),
+      ..Default::default()
+    };
+    
+    find_all_wx_pay(
+      search.into(),
+      None,
+      sort.clone(),
+      options,
+    ).await?
+  };
+  models.append(&mut models_tmp);
+  
   Ok(models)
 }
 
@@ -1599,6 +1640,12 @@ pub fn equals_by_unique(
   
   if
     input.notify_url.as_ref().is_some() && input.notify_url.as_ref().unwrap() == &model.notify_url
+  {
+    return true;
+  }
+  
+  if
+    input.refund_notify_url.as_ref().is_some() && input.refund_notify_url.as_ref().unwrap() == &model.refund_notify_url
   {
     return true;
   }
@@ -1901,7 +1948,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1929,6 +1976,8 @@ async fn _creates(
   sql_fields += ",payer_client_ip";
   // 通知地址
   sql_fields += ",notify_url";
+  // 退款通知地址
+  sql_fields += ",refund_notify_url";
   // 锁定
   sql_fields += ",is_locked";
   // 启用
@@ -1939,7 +1988,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 20 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 21 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2125,6 +2174,13 @@ async fn _creates(
     if let Some(notify_url) = input.notify_url {
       sql_values += ",?";
       args.push(notify_url.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 退款通知地址
+    if let Some(refund_notify_url) = input.refund_notify_url {
+      sql_values += ",?";
+      args.push(refund_notify_url.into());
     } else {
       sql_values += ",default";
     }
@@ -2397,7 +2453,7 @@ pub async fn update_by_id_wx_pay(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2459,6 +2515,12 @@ pub async fn update_by_id_wx_pay(
     field_num += 1;
     sql_fields += "notify_url=?,";
     args.push(notify_url.into());
+  }
+  // 退款通知地址
+  if let Some(refund_notify_url) = input.refund_notify_url {
+    field_num += 1;
+    sql_fields += "refund_notify_url=?,";
+    args.push(refund_notify_url.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {
