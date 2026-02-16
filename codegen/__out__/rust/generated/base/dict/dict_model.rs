@@ -571,21 +571,27 @@ pub enum DictType {
   /// 字符串
   #[default]
   #[graphql(name="string")]
+  #[serde(rename = "string")]
   String,
   /// 数值
   #[graphql(name="number")]
+  #[serde(rename = "number")]
   Number,
   /// 日期
   #[graphql(name="date")]
+  #[serde(rename = "date")]
   Date,
   /// 日期时间
   #[graphql(name="datetime")]
+  #[serde(rename = "datetime")]
   Datetime,
   /// 时间
   #[graphql(name="time")]
+  #[serde(rename = "time")]
   Time,
   /// 布尔
   #[graphql(name="boolean")]
+  #[serde(rename = "boolean")]
   Boolean,
 }
 

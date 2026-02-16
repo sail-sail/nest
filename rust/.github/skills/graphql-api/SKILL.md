@@ -211,3 +211,22 @@ pub mod xxx_service;
 pub type Query = (XxxQuery,);
 pub type Mutation = (XxxMutation,);
 ```
+
+## 接口变更后的类型生成
+
+当后端 GraphQL 接口（尤其是 `*_graphql.rs` 的 Query/Mutation 入参或返回）发生变更后：
+
+1. 在 `rust/` 目录执行：
+
+```bash
+npm run gqlgen
+```
+
+2. 该命令会执行：
+
+- `cargo run --bin schema`（重新导出 schema）
+- `graphql-codegen --config ./generated/common/script/graphql_codegen_config.ts`（生成前端类型）
+
+3. 会同步更新前端类型文件（如 `pc/src/typings/types.ts`、`uni/src/typings/types.ts`）
+
+> 说明：后端改动接口需要刷新前端类型时，优先执行 `npm run gqlgen`, `cargo run` 也会自动执行 `npm run gqlgen` 效果相同

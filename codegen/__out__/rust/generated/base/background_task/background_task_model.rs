@@ -633,15 +633,19 @@ pub enum BackgroundTaskState {
   /// 运行中
   #[default]
   #[graphql(name="running")]
+  #[serde(rename = "running")]
   Running,
   /// 成功
   #[graphql(name="success")]
+  #[serde(rename = "success")]
   Success,
   /// 失败
   #[graphql(name="fail")]
+  #[serde(rename = "fail")]
   Fail,
   /// 取消
   #[graphql(name="cancel")]
+  #[serde(rename = "cancel")]
   Cancel,
 }
 
@@ -778,15 +782,19 @@ pub enum BackgroundTaskType {
   /// 文本
   #[default]
   #[graphql(name="text")]
+  #[serde(rename = "text")]
   Text,
   /// 下载
   #[graphql(name="download")]
+  #[serde(rename = "download")]
   Download,
   /// 查看
   #[graphql(name="inline")]
+  #[serde(rename = "inline")]
   Inline,
   /// 标签
   #[graphql(name="tag")]
+  #[serde(rename = "tag")]
   Tag,
 }
 

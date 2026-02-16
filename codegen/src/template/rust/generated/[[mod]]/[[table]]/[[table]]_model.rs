@@ -3271,6 +3271,7 @@ pub enum <#=enumColumnName#> {<#
   }
   #>
   #[graphql(name="<#=val#>")]
+  #[serde(rename = "<#=val#>")]
   <#=valUp#>,<#
   }
   #>

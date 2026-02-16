@@ -946,9 +946,11 @@ pub enum UsrType {
   /// 登录用户
   #[default]
   #[graphql(name="login")]
+  #[serde(rename = "login")]
   Login,
   /// 第三方接口
   #[graphql(name="api")]
+  #[serde(rename = "api")]
   Api,
 }
 

@@ -519,19 +519,24 @@ impl_id!(DataPermitId);
 pub enum DataPermitScope {
   /// 创建人
   #[graphql(name="create")]
+  #[serde(rename = "create")]
   Create,
   /// 本部门
   #[graphql(name="dept")]
+  #[serde(rename = "dept")]
   Dept,
   /// 本部门及其所有上级
   #[graphql(name="dept_parent")]
+  #[serde(rename = "dept_parent")]
   DeptParent,
   /// 本角色
   #[graphql(name="role")]
+  #[serde(rename = "role")]
   Role,
   /// 本租户
   #[default]
   #[graphql(name="tenant")]
+  #[serde(rename = "tenant")]
   Tenant,
 }
 
@@ -675,10 +680,12 @@ impl TryFrom<String> for DataPermitScope {
 pub enum DataPermitType {
   /// 可见不可改且不可删
   #[graphql(name="readonly")]
+  #[serde(rename = "readonly")]
   Readonly,
   /// 可见可改且可删
   #[default]
   #[graphql(name="editable")]
+  #[serde(rename = "editable")]
   Editable,
 }
 
