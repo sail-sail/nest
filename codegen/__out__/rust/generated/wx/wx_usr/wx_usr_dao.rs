@@ -635,7 +635,7 @@ async fn get_from_query(
 
 // MARK: find_all_wx_usr
 /// 根据搜索条件和分页查找小程序用户列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_wx_usr(
   search: Option<WxUsrSearch>,
   page: Option<PageInput>,

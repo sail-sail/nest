@@ -395,7 +395,7 @@ async fn get_from_query(
 
 // MARK: find_all_wx_refund_notice
 /// 根据搜索条件和分页查找微信退款通知列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_wx_refund_notice(
   search: Option<WxRefundNoticeSearch>,
   page: Option<PageInput>,

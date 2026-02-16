@@ -662,7 +662,7 @@ async fn get_from_query(
 
 // MARK: find_all_pay_transactions_jsapi
 /// 根据搜索条件和分页查找微信JSAPI下单列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_pay_transactions_jsapi(
   search: Option<PayTransactionsJsapiSearch>,
   page: Option<PageInput>,

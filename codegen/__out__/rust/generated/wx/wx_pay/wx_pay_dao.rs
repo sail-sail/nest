@@ -591,7 +591,7 @@ async fn get_from_query(
 
 // MARK: find_all_wx_pay
 /// 根据搜索条件和分页查找微信支付设置列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_wx_pay(
   search: Option<WxPaySearch>,
   page: Option<PageInput>,

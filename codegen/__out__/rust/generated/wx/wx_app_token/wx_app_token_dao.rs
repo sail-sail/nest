@@ -452,7 +452,7 @@ async fn get_from_query(
 
 // MARK: find_all_wx_app_token
 /// 根据搜索条件和分页查找小程序接口凭据列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_wx_app_token(
   search: Option<WxAppTokenSearch>,
   page: Option<PageInput>,
