@@ -192,6 +192,7 @@ pub async fn wx_refund_notify(
         WxRefundNoticeRefundStatus::Closed => WxRefundStatus::Closed,
         WxRefundNoticeRefundStatus::Processing => WxRefundStatus::Processing,
         WxRefundNoticeRefundStatus::Abnormal => WxRefundStatus::Abnormal,
+        _ => WxRefundStatus::NoRefund,
       }),
       success_time,
       ..Default::default()
@@ -234,33 +235,6 @@ pub async fn wx_refund_notify(
       req_id = get_req_id(),
     );
     return Ok(());
-  }
-  
-  if action == "refund_booking_order" {
-    let booking_order_id = payload.get("booking_order_id")
-      .and_then(|v| v.as_str())
-      .ok_or_else(|| {
-        color_eyre::eyre::eyre!("booking_order_id not found in refund notice payload")
-      })?;
-    let booking_order_id = generated::exh::booking_order::booking_order_model::BookingOrderId::from(booking_order_id);
-
-    let check_in_date = payload.get("check_in_date")
-      .and_then(|v| v.as_str())
-      .and_then(|v| NaiveDate::parse_from_str(v, "%Y-%m-%d").ok());
-    let check_out_date = payload.get("check_out_date")
-      .and_then(|v| v.as_str())
-      .and_then(|v| NaiveDate::parse_from_str(v, "%Y-%m-%d").ok());
-    
-    use crate::exh::booking_order::booking_order_service::refund_booking_order_callback;
-    refund_booking_order_callback(
-      booking_order_id,
-      amt,
-      check_in_date,
-      check_out_date,
-      SmolStr::new(&wx_refund_resource.refund_id),
-      success_time,
-      options,
-    ).await?;
   }
   
   Ok(())

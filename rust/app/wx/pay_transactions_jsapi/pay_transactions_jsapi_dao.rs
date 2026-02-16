@@ -8,7 +8,7 @@ use generated::common::context::{
   get_auth_model_ok,
 };
 
-use smol_str::SmolStr;
+use smol_str::{SmolStr, ToSmolStr};
 
 use generated::common::wx_pay::{Amount, Jsapi, Payer, WxPayData, WxPay, SceneInfo};
 
@@ -268,7 +268,10 @@ pub async fn transactions_jsapi(
     notify_url: notify_url.as_str(),
   };
   
-  let out_trade_no = get_out_trade_no();
+  let out_trade_no = match &transactions_jsapi_input.out_trade_no {
+    s if !s.is_empty() => s.clone(),
+    _ => SmolStr::new(get_out_trade_no()),
+  };
   
   let amount = (amount * Decimal::from(100))
     .round_dp(0)
@@ -289,16 +292,16 @@ pub async fn transactions_jsapi(
   
   let jsapi = Jsapi {
     description: description.clone().to_string(),
-    out_trade_no: out_trade_no.clone(),
+    out_trade_no: out_trade_no.to_string(),
     amount: Amount {
       total: amount,
       ..Default::default()
     },
     payer: Payer {
-      openid: openid.clone().to_string(),
+      openid: openid.to_string(),
     },
-    time_expire: transactions_jsapi_input.time_expire.clone(),
-    attach: transactions_jsapi_input.attach.clone(),
+    time_expire: transactions_jsapi_input.time_expire.clone().map(|s| s.to_string()),
+    attach: transactions_jsapi_input.attach.clone().map(|s| s.to_string()),
     scene_info,
     ..Default::default()
   };
@@ -319,11 +322,11 @@ pub async fn transactions_jsapi(
   
   let request_payment_options = RequestPaymentOptions {
     out_trade_no: out_trade_no.clone(),
-    time_stamp: wx_pay_data.time_stamp.to_string(),
-    nonce_str: wx_pay_data.nonce_str,
-    package: wx_pay_data.package.clone(),
-    sign_type: wx_pay_data.sign_type,
-    pay_sign: wx_pay_data.pay_sign,
+    time_stamp: wx_pay_data.time_stamp.to_smolstr(),
+    nonce_str: wx_pay_data.nonce_str.into(),
+    package: wx_pay_data.package.clone().into(),
+    sign_type: wx_pay_data.sign_type.into(),
+    pay_sign: wx_pay_data.pay_sign.into(),
   };
   
   let profit_sharing = if transactions_jsapi_input.profit_sharing.unwrap_or_default() {

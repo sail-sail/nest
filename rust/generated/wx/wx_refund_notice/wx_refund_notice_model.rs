@@ -567,6 +567,11 @@ impl_id!(WxRefundNoticeId);
 /// 微信退款通知退款状态
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
 pub enum WxRefundNoticeRefundStatus {
+  /// 未退款
+  #[default]
+  #[graphql(name="NO_REFUND")]
+  #[serde(rename = "NO_REFUND")]
+  NoRefund,
   /// 退款成功
   #[graphql(name="SUCCESS")]
   #[serde(rename = "SUCCESS")]
@@ -576,7 +581,6 @@ pub enum WxRefundNoticeRefundStatus {
   #[serde(rename = "CLOSED")]
   Closed,
   /// 退款处理中
-  #[default]
   #[graphql(name="PROCESSING")]
   #[serde(rename = "PROCESSING")]
   Processing,
@@ -589,6 +593,7 @@ pub enum WxRefundNoticeRefundStatus {
 impl fmt::Display for WxRefundNoticeRefundStatus {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
+      Self::NoRefund => write!(f, "NO_REFUND"),
       Self::Success => write!(f, "SUCCESS"),
       Self::Closed => write!(f, "CLOSED"),
       Self::Processing => write!(f, "PROCESSING"),
@@ -600,6 +605,7 @@ impl fmt::Display for WxRefundNoticeRefundStatus {
 impl From<WxRefundNoticeRefundStatus> for SmolStr {
   fn from(value: WxRefundNoticeRefundStatus) -> Self {
     match value {
+      WxRefundNoticeRefundStatus::NoRefund => "NO_REFUND".into(),
       WxRefundNoticeRefundStatus::Success => "SUCCESS".into(),
       WxRefundNoticeRefundStatus::Closed => "CLOSED".into(),
       WxRefundNoticeRefundStatus::Processing => "PROCESSING".into(),
@@ -611,6 +617,7 @@ impl From<WxRefundNoticeRefundStatus> for SmolStr {
 impl From<WxRefundNoticeRefundStatus> for String {
   fn from(value: WxRefundNoticeRefundStatus) -> Self {
     match value {
+      WxRefundNoticeRefundStatus::NoRefund => "NO_REFUND".into(),
       WxRefundNoticeRefundStatus::Success => "SUCCESS".into(),
       WxRefundNoticeRefundStatus::Closed => "CLOSED".into(),
       WxRefundNoticeRefundStatus::Processing => "PROCESSING".into(),
@@ -630,6 +637,7 @@ impl FromStr for WxRefundNoticeRefundStatus {
   
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
+      "NO_REFUND" => Ok(Self::NoRefund),
       "SUCCESS" => Ok(Self::Success),
       "CLOSED" => Ok(Self::Closed),
       "PROCESSING" => Ok(Self::Processing),
@@ -644,6 +652,7 @@ impl TryFrom<&str> for WxRefundNoticeRefundStatus {
   
   fn try_from(s: &str) -> Result<Self, sqlx::Error> {
     match s {
+      "NO_REFUND" => Ok(Self::NoRefund),
       "SUCCESS" => Ok(Self::Success),
       "CLOSED" => Ok(Self::Closed),
       "PROCESSING" => Ok(Self::Processing),
@@ -665,6 +674,7 @@ impl TryFrom<SmolStr> for WxRefundNoticeRefundStatus {
   
   fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
     match s.as_str() {
+      "NO_REFUND" => Ok(Self::NoRefund),
       "SUCCESS" => Ok(Self::Success),
       "CLOSED" => Ok(Self::Closed),
       "PROCESSING" => Ok(Self::Processing),
@@ -684,6 +694,7 @@ impl TryFrom<SmolStr> for WxRefundNoticeRefundStatus {
 impl WxRefundNoticeRefundStatus {
   pub fn as_str(&self) -> &str {
     match self {
+      Self::NoRefund => "NO_REFUND",
       Self::Success => "SUCCESS",
       Self::Closed => "CLOSED",
       Self::Processing => "PROCESSING",
@@ -697,6 +708,7 @@ impl TryFrom<String> for WxRefundNoticeRefundStatus {
   
   fn try_from(s: String) -> Result<Self, sqlx::Error> {
     match s.as_str() {
+      "NO_REFUND" => Ok(Self::NoRefund),
       "SUCCESS" => Ok(Self::Success),
       "CLOSED" => Ok(Self::Closed),
       "PROCESSING" => Ok(Self::Processing),
