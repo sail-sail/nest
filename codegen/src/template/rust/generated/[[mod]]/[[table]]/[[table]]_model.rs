@@ -1887,13 +1887,14 @@ pub struct <#=tableUP#>Search {
       _data_type = "Decimal";
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
+    const onlyCodegenDenoButApi = column.onlyCodegenDenoButApi;
     const search = column.search;
     const canSearch = column.canSearch;
   #><#
     if (foreignKey && foreignKey.type !== "many2many") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1903,7 +1904,7 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1915,7 +1916,7 @@ pub struct <#=tableUP#>Search {
     if (modelLabel) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1925,7 +1926,7 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=modelLabel_rust#>: Option<Vec<SmolStr>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1937,7 +1938,7 @@ pub struct <#=tableUP#>Search {
     } else if (foreignKey.lbl) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1947,7 +1948,7 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<SmolStr>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1961,7 +1962,7 @@ pub struct <#=tableUP#>Search {
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1971,7 +1972,7 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1983,7 +1984,7 @@ pub struct <#=tableUP#>Search {
   if (foreignKey.lbl) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2013,7 +2014,7 @@ pub struct <#=tableUP#>Search {
       }
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2025,7 +2026,7 @@ pub struct <#=tableUP#>Search {
     } else if (foreignKey) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2037,7 +2038,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2049,7 +2050,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === "tinyint") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2061,7 +2062,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === "varchar" || data_type === "text") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2073,7 +2074,7 @@ pub struct <#=tableUP#>Search {
   if (column.searchByArray) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2085,7 +2086,7 @@ pub struct <#=tableUP#>Search {
   }
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2097,7 +2098,7 @@ pub struct <#=tableUP#>Search {
     } else {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
