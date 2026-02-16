@@ -75,7 +75,7 @@ pub struct WxRefundNoticeModel {
   pub refund_id: SmolStr,
   /// 退款状态
   #[graphql(name = "refund_status")]
-  pub refund_status: SmolStr,
+  pub refund_status: WxRefundNoticeRefundStatus,
   /// 退款状态
   #[graphql(name = "refund_status_lbl")]
   pub refund_status_lbl: SmolStr,
@@ -131,9 +131,9 @@ impl FromRow<'_, MySqlRow> for WxRefundNoticeModel {
     let refund_id: &str = row.try_get("refund_id")?;
     let refund_id = SmolStr::new(refund_id);
     // 退款状态
-    let refund_status: &str = row.try_get("refund_status")?;
-    let refund_status = SmolStr::new(refund_status);
-    let refund_status_lbl = refund_status.clone();
+    let refund_status_lbl: &str = row.try_get("refund_status")?;
+    let refund_status: WxRefundNoticeRefundStatus = refund_status_lbl.try_into()?;
+    let refund_status_lbl = SmolStr::new(refund_status_lbl);
     // 退款成功时间
     let success_time: Option<chrono::NaiveDateTime> = row.try_get("success_time")?;
     let success_time_lbl: SmolStr = match success_time {
@@ -292,7 +292,7 @@ pub struct WxRefundNoticeSearch {
   pub refund_id_like: Option<SmolStr>,
   /// 退款状态
   #[graphql(name = "refund_status")]
-  pub refund_status: Option<Vec<SmolStr>>,
+  pub refund_status: Option<Vec<WxRefundNoticeRefundStatus>>,
   /// 退款成功时间
   #[graphql(name = "success_time")]
   pub success_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -441,7 +441,7 @@ pub struct WxRefundNoticeInput {
   pub refund_id: Option<SmolStr>,
   /// 退款状态
   #[graphql(name = "refund_status")]
-  pub refund_status: Option<SmolStr>,
+  pub refund_status: Option<WxRefundNoticeRefundStatus>,
   /// 退款状态
   #[graphql(name = "refund_status_lbl")]
   pub refund_status_lbl: Option<SmolStr>,
@@ -563,6 +563,155 @@ impl From<WxRefundNoticeInput> for WxRefundNoticeSearch {
 }
 
 impl_id!(WxRefundNoticeId);
+
+/// 微信退款通知退款状态
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum WxRefundNoticeRefundStatus {
+  /// 退款成功
+  #[graphql(name="SUCCESS")]
+  #[serde(rename = "SUCCESS")]
+  Success,
+  /// 退款关闭
+  #[graphql(name="CLOSED")]
+  #[serde(rename = "CLOSED")]
+  Closed,
+  /// 退款处理中
+  #[default]
+  #[graphql(name="PROCESSING")]
+  #[serde(rename = "PROCESSING")]
+  Processing,
+  /// 退款异常
+  #[graphql(name="ABNORMAL")]
+  #[serde(rename = "ABNORMAL")]
+  Abnormal,
+}
+
+impl fmt::Display for WxRefundNoticeRefundStatus {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Success => write!(f, "SUCCESS"),
+      Self::Closed => write!(f, "CLOSED"),
+      Self::Processing => write!(f, "PROCESSING"),
+      Self::Abnormal => write!(f, "ABNORMAL"),
+    }
+  }
+}
+
+impl From<WxRefundNoticeRefundStatus> for SmolStr {
+  fn from(value: WxRefundNoticeRefundStatus) -> Self {
+    match value {
+      WxRefundNoticeRefundStatus::Success => "SUCCESS".into(),
+      WxRefundNoticeRefundStatus::Closed => "CLOSED".into(),
+      WxRefundNoticeRefundStatus::Processing => "PROCESSING".into(),
+      WxRefundNoticeRefundStatus::Abnormal => "ABNORMAL".into(),
+    }
+  }
+}
+
+impl From<WxRefundNoticeRefundStatus> for String {
+  fn from(value: WxRefundNoticeRefundStatus) -> Self {
+    match value {
+      WxRefundNoticeRefundStatus::Success => "SUCCESS".into(),
+      WxRefundNoticeRefundStatus::Closed => "CLOSED".into(),
+      WxRefundNoticeRefundStatus::Processing => "PROCESSING".into(),
+      WxRefundNoticeRefundStatus::Abnormal => "ABNORMAL".into(),
+    }
+  }
+}
+
+impl From<WxRefundNoticeRefundStatus> for ArgType {
+  fn from(value: WxRefundNoticeRefundStatus) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl FromStr for WxRefundNoticeRefundStatus {
+  type Err = color_eyre::eyre::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "SUCCESS" => Ok(Self::Success),
+      "CLOSED" => Ok(Self::Closed),
+      "PROCESSING" => Ok(Self::Processing),
+      "ABNORMAL" => Ok(Self::Abnormal),
+      _ => Err(eyre!("{s} 无法转换到 退款状态")),
+    }
+  }
+}
+
+impl TryFrom<&str> for WxRefundNoticeRefundStatus {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "SUCCESS" => Ok(Self::Success),
+      "CLOSED" => Ok(Self::Closed),
+      "PROCESSING" => Ok(Self::Processing),
+      "ABNORMAL" => Ok(Self::Abnormal),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "refund_status".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 退款状态".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for WxRefundNoticeRefundStatus {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "SUCCESS" => Ok(Self::Success),
+      "CLOSED" => Ok(Self::Closed),
+      "PROCESSING" => Ok(Self::Processing),
+      "ABNORMAL" => Ok(Self::Abnormal),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "refund_status".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 退款状态".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl WxRefundNoticeRefundStatus {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Success => "SUCCESS",
+      Self::Closed => "CLOSED",
+      Self::Processing => "PROCESSING",
+      Self::Abnormal => "ABNORMAL",
+    }
+  }
+}
+
+impl TryFrom<String> for WxRefundNoticeRefundStatus {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "SUCCESS" => Ok(Self::Success),
+      "CLOSED" => Ok(Self::Closed),
+      "PROCESSING" => Ok(Self::Processing),
+      "ABNORMAL" => Ok(Self::Abnormal),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "refund_status".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 退款状态".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
 
 /// 微信退款通知 检测字段是否允许前端排序
 pub fn check_sort_wx_refund_notice(

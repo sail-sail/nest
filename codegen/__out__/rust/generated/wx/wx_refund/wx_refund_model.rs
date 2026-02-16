@@ -84,7 +84,7 @@ pub struct WxRefundModel {
   pub notify_url: SmolStr,
   /// 退款渠道
   #[graphql(name = "channel")]
-  pub channel: SmolStr,
+  pub channel: WxRefundChannel,
   /// 退款渠道
   #[graphql(name = "channel_lbl")]
   pub channel_lbl: SmolStr,
@@ -99,13 +99,13 @@ pub struct WxRefundModel {
   pub success_time_lbl: SmolStr,
   /// 退款状态
   #[graphql(name = "status")]
-  pub status: SmolStr,
+  pub status: WxRefundStatus,
   /// 退款状态
   #[graphql(name = "status_lbl")]
   pub status_lbl: SmolStr,
   /// 资金账户
   #[graphql(name = "funds_account")]
-  pub funds_account: SmolStr,
+  pub funds_account: WxRefundFundsAccount,
   /// 资金账户
   #[graphql(name = "funds_account_lbl")]
   pub funds_account_lbl: SmolStr,
@@ -179,9 +179,9 @@ impl FromRow<'_, MySqlRow> for WxRefundModel {
     let notify_url: &str = row.try_get("notify_url")?;
     let notify_url = SmolStr::new(notify_url);
     // 退款渠道
-    let channel: &str = row.try_get("channel")?;
-    let channel = SmolStr::new(channel);
-    let channel_lbl = channel.clone();
+    let channel_lbl: &str = row.try_get("channel")?;
+    let channel: WxRefundChannel = channel_lbl.try_into()?;
+    let channel_lbl = SmolStr::new(channel_lbl);
     // 退款入账账户
     let user_received_account: &str = row.try_get("user_received_account")?;
     let user_received_account = SmolStr::new(user_received_account);
@@ -192,13 +192,13 @@ impl FromRow<'_, MySqlRow> for WxRefundModel {
       None => SmolStr::new(""),
     };
     // 退款状态
-    let status: &str = row.try_get("status")?;
-    let status = SmolStr::new(status);
-    let status_lbl = status.clone();
+    let status_lbl: &str = row.try_get("status")?;
+    let status: WxRefundStatus = status_lbl.try_into()?;
+    let status_lbl = SmolStr::new(status_lbl);
     // 资金账户
-    let funds_account: &str = row.try_get("funds_account")?;
-    let funds_account = SmolStr::new(funds_account);
-    let funds_account_lbl = funds_account.clone();
+    let funds_account_lbl: &str = row.try_get("funds_account")?;
+    let funds_account: WxRefundFundsAccount = funds_account_lbl.try_into()?;
+    let funds_account_lbl = SmolStr::new(funds_account_lbl);
     // 订单金额(分)
     let amount_total: u32 = row.try_get("amount_total")?;
     // 退款金额(分)
@@ -425,7 +425,7 @@ pub struct WxRefundSearch {
   pub notify_url_like: Option<SmolStr>,
   /// 退款渠道
   #[graphql(skip)]
-  pub channel: Option<Vec<SmolStr>>,
+  pub channel: Option<Vec<WxRefundChannel>>,
   /// 退款入账账户
   #[graphql(skip)]
   pub user_received_account: Option<SmolStr>,
@@ -437,10 +437,10 @@ pub struct WxRefundSearch {
   pub success_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 退款状态
   #[graphql(name = "status")]
-  pub status: Option<Vec<SmolStr>>,
+  pub status: Option<Vec<WxRefundStatus>>,
   /// 资金账户
   #[graphql(skip)]
-  pub funds_account: Option<Vec<SmolStr>>,
+  pub funds_account: Option<Vec<WxRefundFundsAccount>>,
   /// 订单金额(分)
   #[graphql(skip)]
   pub amount_total: Option<[Option<u32>; 2]>,
@@ -659,7 +659,7 @@ pub struct WxRefundInput {
   pub notify_url: Option<SmolStr>,
   /// 退款渠道
   #[graphql(name = "channel")]
-  pub channel: Option<SmolStr>,
+  pub channel: Option<WxRefundChannel>,
   /// 退款渠道
   #[graphql(name = "channel_lbl")]
   pub channel_lbl: Option<SmolStr>,
@@ -677,13 +677,13 @@ pub struct WxRefundInput {
   pub success_time_save_null: Option<bool>,
   /// 退款状态
   #[graphql(name = "status")]
-  pub status: Option<SmolStr>,
+  pub status: Option<WxRefundStatus>,
   /// 退款状态
   #[graphql(name = "status_lbl")]
   pub status_lbl: Option<SmolStr>,
   /// 资金账户
   #[graphql(name = "funds_account")]
-  pub funds_account: Option<SmolStr>,
+  pub funds_account: Option<WxRefundFundsAccount>,
   /// 资金账户
   #[graphql(name = "funds_account_lbl")]
   pub funds_account_lbl: Option<SmolStr>,
@@ -854,6 +854,477 @@ impl From<WxRefundInput> for WxRefundSearch {
 }
 
 impl_id!(WxRefundId);
+
+/// 微信退款申请退款渠道
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum WxRefundChannel {
+  /// 原路退款
+  #[default]
+  #[graphql(name="ORIGINAL")]
+  #[serde(rename = "ORIGINAL")]
+  Original,
+  /// 退回到余额
+  #[graphql(name="BALANCE")]
+  #[serde(rename = "BALANCE")]
+  Balance,
+  /// 原账户异常退到其他余额账户
+  #[graphql(name="OTHER_BALANCE")]
+  #[serde(rename = "OTHER_BALANCE")]
+  OtherBalance,
+  /// 原银行卡异常退到其他银行卡(发起异常退款成功后返回)
+  #[graphql(name="OTHER_BANKCARD")]
+  #[serde(rename = "OTHER_BANKCARD")]
+  OtherBankcard,
+}
+
+impl fmt::Display for WxRefundChannel {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Original => write!(f, "ORIGINAL"),
+      Self::Balance => write!(f, "BALANCE"),
+      Self::OtherBalance => write!(f, "OTHER_BALANCE"),
+      Self::OtherBankcard => write!(f, "OTHER_BANKCARD"),
+    }
+  }
+}
+
+impl From<WxRefundChannel> for SmolStr {
+  fn from(value: WxRefundChannel) -> Self {
+    match value {
+      WxRefundChannel::Original => "ORIGINAL".into(),
+      WxRefundChannel::Balance => "BALANCE".into(),
+      WxRefundChannel::OtherBalance => "OTHER_BALANCE".into(),
+      WxRefundChannel::OtherBankcard => "OTHER_BANKCARD".into(),
+    }
+  }
+}
+
+impl From<WxRefundChannel> for String {
+  fn from(value: WxRefundChannel) -> Self {
+    match value {
+      WxRefundChannel::Original => "ORIGINAL".into(),
+      WxRefundChannel::Balance => "BALANCE".into(),
+      WxRefundChannel::OtherBalance => "OTHER_BALANCE".into(),
+      WxRefundChannel::OtherBankcard => "OTHER_BANKCARD".into(),
+    }
+  }
+}
+
+impl From<WxRefundChannel> for ArgType {
+  fn from(value: WxRefundChannel) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl FromStr for WxRefundChannel {
+  type Err = color_eyre::eyre::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "ORIGINAL" => Ok(Self::Original),
+      "BALANCE" => Ok(Self::Balance),
+      "OTHER_BALANCE" => Ok(Self::OtherBalance),
+      "OTHER_BANKCARD" => Ok(Self::OtherBankcard),
+      _ => Err(eyre!("{s} 无法转换到 退款渠道")),
+    }
+  }
+}
+
+impl TryFrom<&str> for WxRefundChannel {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "ORIGINAL" => Ok(Self::Original),
+      "BALANCE" => Ok(Self::Balance),
+      "OTHER_BALANCE" => Ok(Self::OtherBalance),
+      "OTHER_BANKCARD" => Ok(Self::OtherBankcard),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "channel".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 退款渠道".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for WxRefundChannel {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "ORIGINAL" => Ok(Self::Original),
+      "BALANCE" => Ok(Self::Balance),
+      "OTHER_BALANCE" => Ok(Self::OtherBalance),
+      "OTHER_BANKCARD" => Ok(Self::OtherBankcard),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "channel".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 退款渠道".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl WxRefundChannel {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Original => "ORIGINAL",
+      Self::Balance => "BALANCE",
+      Self::OtherBalance => "OTHER_BALANCE",
+      Self::OtherBankcard => "OTHER_BANKCARD",
+    }
+  }
+}
+
+impl TryFrom<String> for WxRefundChannel {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "ORIGINAL" => Ok(Self::Original),
+      "BALANCE" => Ok(Self::Balance),
+      "OTHER_BALANCE" => Ok(Self::OtherBalance),
+      "OTHER_BANKCARD" => Ok(Self::OtherBankcard),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "channel".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 退款渠道".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+/// 微信退款申请退款状态
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum WxRefundStatus {
+  /// 退款成功
+  #[graphql(name="SUCCESS")]
+  #[serde(rename = "SUCCESS")]
+  Success,
+  /// 退款关闭
+  #[graphql(name="CLOSED")]
+  #[serde(rename = "CLOSED")]
+  Closed,
+  /// 退款处理中
+  #[default]
+  #[graphql(name="PROCESSING")]
+  #[serde(rename = "PROCESSING")]
+  Processing,
+  /// 退款异常
+  #[graphql(name="ABNORMAL")]
+  #[serde(rename = "ABNORMAL")]
+  Abnormal,
+}
+
+impl fmt::Display for WxRefundStatus {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Success => write!(f, "SUCCESS"),
+      Self::Closed => write!(f, "CLOSED"),
+      Self::Processing => write!(f, "PROCESSING"),
+      Self::Abnormal => write!(f, "ABNORMAL"),
+    }
+  }
+}
+
+impl From<WxRefundStatus> for SmolStr {
+  fn from(value: WxRefundStatus) -> Self {
+    match value {
+      WxRefundStatus::Success => "SUCCESS".into(),
+      WxRefundStatus::Closed => "CLOSED".into(),
+      WxRefundStatus::Processing => "PROCESSING".into(),
+      WxRefundStatus::Abnormal => "ABNORMAL".into(),
+    }
+  }
+}
+
+impl From<WxRefundStatus> for String {
+  fn from(value: WxRefundStatus) -> Self {
+    match value {
+      WxRefundStatus::Success => "SUCCESS".into(),
+      WxRefundStatus::Closed => "CLOSED".into(),
+      WxRefundStatus::Processing => "PROCESSING".into(),
+      WxRefundStatus::Abnormal => "ABNORMAL".into(),
+    }
+  }
+}
+
+impl From<WxRefundStatus> for ArgType {
+  fn from(value: WxRefundStatus) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl FromStr for WxRefundStatus {
+  type Err = color_eyre::eyre::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "SUCCESS" => Ok(Self::Success),
+      "CLOSED" => Ok(Self::Closed),
+      "PROCESSING" => Ok(Self::Processing),
+      "ABNORMAL" => Ok(Self::Abnormal),
+      _ => Err(eyre!("{s} 无法转换到 退款状态")),
+    }
+  }
+}
+
+impl TryFrom<&str> for WxRefundStatus {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "SUCCESS" => Ok(Self::Success),
+      "CLOSED" => Ok(Self::Closed),
+      "PROCESSING" => Ok(Self::Processing),
+      "ABNORMAL" => Ok(Self::Abnormal),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "status".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 退款状态".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for WxRefundStatus {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "SUCCESS" => Ok(Self::Success),
+      "CLOSED" => Ok(Self::Closed),
+      "PROCESSING" => Ok(Self::Processing),
+      "ABNORMAL" => Ok(Self::Abnormal),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "status".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 退款状态".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl WxRefundStatus {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Success => "SUCCESS",
+      Self::Closed => "CLOSED",
+      Self::Processing => "PROCESSING",
+      Self::Abnormal => "ABNORMAL",
+    }
+  }
+}
+
+impl TryFrom<String> for WxRefundStatus {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "SUCCESS" => Ok(Self::Success),
+      "CLOSED" => Ok(Self::Closed),
+      "PROCESSING" => Ok(Self::Processing),
+      "ABNORMAL" => Ok(Self::Abnormal),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "status".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 退款状态".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+/// 微信退款申请资金账户
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum WxRefundFundsAccount {
+  /// 未结算资金
+  #[default]
+  #[graphql(name="UNSETTLED")]
+  #[serde(rename = "UNSETTLED")]
+  Unsettled,
+  /// 可用余额
+  #[graphql(name="AVAILABLE")]
+  #[serde(rename = "AVAILABLE")]
+  Available,
+  /// 不可用余额
+  #[graphql(name="UNAVAILABLE")]
+  #[serde(rename = "UNAVAILABLE")]
+  Unavailable,
+  /// 运营账户
+  #[graphql(name="OPERATION")]
+  #[serde(rename = "OPERATION")]
+  Operation,
+  /// 基本账户
+  #[graphql(name="BASIC")]
+  #[serde(rename = "BASIC")]
+  Basic,
+  /// 数字人民币基本账户
+  #[graphql(name="ECNY_BASIC")]
+  #[serde(rename = "ECNY_BASIC")]
+  EcnyBasic,
+}
+
+impl fmt::Display for WxRefundFundsAccount {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Unsettled => write!(f, "UNSETTLED"),
+      Self::Available => write!(f, "AVAILABLE"),
+      Self::Unavailable => write!(f, "UNAVAILABLE"),
+      Self::Operation => write!(f, "OPERATION"),
+      Self::Basic => write!(f, "BASIC"),
+      Self::EcnyBasic => write!(f, "ECNY_BASIC"),
+    }
+  }
+}
+
+impl From<WxRefundFundsAccount> for SmolStr {
+  fn from(value: WxRefundFundsAccount) -> Self {
+    match value {
+      WxRefundFundsAccount::Unsettled => "UNSETTLED".into(),
+      WxRefundFundsAccount::Available => "AVAILABLE".into(),
+      WxRefundFundsAccount::Unavailable => "UNAVAILABLE".into(),
+      WxRefundFundsAccount::Operation => "OPERATION".into(),
+      WxRefundFundsAccount::Basic => "BASIC".into(),
+      WxRefundFundsAccount::EcnyBasic => "ECNY_BASIC".into(),
+    }
+  }
+}
+
+impl From<WxRefundFundsAccount> for String {
+  fn from(value: WxRefundFundsAccount) -> Self {
+    match value {
+      WxRefundFundsAccount::Unsettled => "UNSETTLED".into(),
+      WxRefundFundsAccount::Available => "AVAILABLE".into(),
+      WxRefundFundsAccount::Unavailable => "UNAVAILABLE".into(),
+      WxRefundFundsAccount::Operation => "OPERATION".into(),
+      WxRefundFundsAccount::Basic => "BASIC".into(),
+      WxRefundFundsAccount::EcnyBasic => "ECNY_BASIC".into(),
+    }
+  }
+}
+
+impl From<WxRefundFundsAccount> for ArgType {
+  fn from(value: WxRefundFundsAccount) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl FromStr for WxRefundFundsAccount {
+  type Err = color_eyre::eyre::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "UNSETTLED" => Ok(Self::Unsettled),
+      "AVAILABLE" => Ok(Self::Available),
+      "UNAVAILABLE" => Ok(Self::Unavailable),
+      "OPERATION" => Ok(Self::Operation),
+      "BASIC" => Ok(Self::Basic),
+      "ECNY_BASIC" => Ok(Self::EcnyBasic),
+      _ => Err(eyre!("{s} 无法转换到 资金账户")),
+    }
+  }
+}
+
+impl TryFrom<&str> for WxRefundFundsAccount {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "UNSETTLED" => Ok(Self::Unsettled),
+      "AVAILABLE" => Ok(Self::Available),
+      "UNAVAILABLE" => Ok(Self::Unavailable),
+      "OPERATION" => Ok(Self::Operation),
+      "BASIC" => Ok(Self::Basic),
+      "ECNY_BASIC" => Ok(Self::EcnyBasic),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "funds_account".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 资金账户".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for WxRefundFundsAccount {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "UNSETTLED" => Ok(Self::Unsettled),
+      "AVAILABLE" => Ok(Self::Available),
+      "UNAVAILABLE" => Ok(Self::Unavailable),
+      "OPERATION" => Ok(Self::Operation),
+      "BASIC" => Ok(Self::Basic),
+      "ECNY_BASIC" => Ok(Self::EcnyBasic),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "funds_account".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 资金账户".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl WxRefundFundsAccount {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Unsettled => "UNSETTLED",
+      Self::Available => "AVAILABLE",
+      Self::Unavailable => "UNAVAILABLE",
+      Self::Operation => "OPERATION",
+      Self::Basic => "BASIC",
+      Self::EcnyBasic => "ECNY_BASIC",
+    }
+  }
+}
+
+impl TryFrom<String> for WxRefundFundsAccount {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "UNSETTLED" => Ok(Self::Unsettled),
+      "AVAILABLE" => Ok(Self::Available),
+      "UNAVAILABLE" => Ok(Self::Unavailable),
+      "OPERATION" => Ok(Self::Operation),
+      "BASIC" => Ok(Self::Basic),
+      "ECNY_BASIC" => Ok(Self::EcnyBasic),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "funds_account".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 资金账户".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
 
 /// 微信退款申请退款币种
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]

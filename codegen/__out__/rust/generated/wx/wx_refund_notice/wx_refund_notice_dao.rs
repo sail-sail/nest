@@ -236,7 +236,7 @@ async fn get_where_query(
   }
   // 退款状态
   {
-    let refund_status: Option<Vec<SmolStr>> = match search {
+    let refund_status: Option<Vec<WxRefundNoticeRefundStatus>> = match search {
       Some(item) => item.refund_status.clone(),
       None => None,
     };
@@ -525,7 +525,7 @@ pub async fn find_all_wx_refund_notice(
         .iter()
         .find(|item| item.val == model.refund_status.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.refund_status.clone())
+        .unwrap_or_else(|| model.refund_status.clone().into())
     };
     
   }
@@ -1291,7 +1291,7 @@ pub async fn set_id_by_lbl_wx_refund_notice(
     });
     let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
-      input.refund_status = val.into();
+      input.refund_status = val.parse::<WxRefundNoticeRefundStatus>()?.into();
     }
   } else if
     (input.refund_status_lbl.is_none() || input.refund_status_lbl.as_ref().unwrap().is_empty())
@@ -1299,7 +1299,7 @@ pub async fn set_id_by_lbl_wx_refund_notice(
   {
     let refund_status_dict = &dict_vec[0];
     let dict_model = refund_status_dict.iter().find(|item| {
-      item.val == input.refund_status.clone().unwrap_or_default()
+      item.val == input.refund_status.unwrap_or_default().to_string()
     });
     let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.refund_status_lbl = lbl;

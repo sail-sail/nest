@@ -1,6 +1,9 @@
 
 
 import {
+  WxRefundChannel,
+  WxRefundStatus,
+  WxRefundFundsAccount,
   WxRefundAmountCurrency,
 } from "#/types.ts";
 
@@ -478,9 +481,9 @@ export function getPagePathWxRefund() {
 /** 新增时的默认值 */
 export async function getDefaultInputWxRefund() {
   const defaultInput: WxRefundInput = {
-    channel: "ORIGINAL",
-    status: "PROCESSING",
-    funds_account: "UNSETTLED",
+    channel: WxRefundChannel.Original,
+    status: WxRefundStatus.Processing,
+    funds_account: WxRefundFundsAccount.Unsettled,
     amount_total: 0,
     amount_refund: 0,
     amount_payer_total: 0,

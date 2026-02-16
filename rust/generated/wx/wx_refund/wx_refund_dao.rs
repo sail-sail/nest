@@ -293,7 +293,7 @@ async fn get_where_query(
   }
   // 退款渠道
   {
-    let channel: Option<Vec<SmolStr>> = match search {
+    let channel: Option<Vec<WxRefundChannel>> = match search {
       Some(item) => item.channel.clone(),
       None => None,
     };
@@ -353,7 +353,7 @@ async fn get_where_query(
   }
   // 退款状态
   {
-    let status: Option<Vec<SmolStr>> = match search {
+    let status: Option<Vec<WxRefundStatus>> = match search {
       Some(item) => item.status.clone(),
       None => None,
     };
@@ -377,7 +377,7 @@ async fn get_where_query(
   }
   // 资金账户
   {
-    let funds_account: Option<Vec<SmolStr>> = match search {
+    let funds_account: Option<Vec<WxRefundFundsAccount>> = match search {
       Some(item) => item.funds_account.clone(),
       None => None,
     };
@@ -760,7 +760,7 @@ pub async fn find_all_wx_refund(
         .iter()
         .find(|item| item.val == model.channel.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.channel.clone())
+        .unwrap_or_else(|| model.channel.clone().into())
     };
     
     // 退款状态
@@ -769,7 +769,7 @@ pub async fn find_all_wx_refund(
         .iter()
         .find(|item| item.val == model.status.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.status.clone())
+        .unwrap_or_else(|| model.status.clone().into())
     };
     
     // 资金账户
@@ -778,7 +778,7 @@ pub async fn find_all_wx_refund(
         .iter()
         .find(|item| item.val == model.funds_account.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.funds_account.clone())
+        .unwrap_or_else(|| model.funds_account.clone().into())
     };
     
     // 退款币种
@@ -1696,7 +1696,7 @@ pub async fn set_id_by_lbl_wx_refund(
     });
     let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
-      input.channel = val.into();
+      input.channel = val.parse::<WxRefundChannel>()?.into();
     }
   } else if
     (input.channel_lbl.is_none() || input.channel_lbl.as_ref().unwrap().is_empty())
@@ -1704,7 +1704,7 @@ pub async fn set_id_by_lbl_wx_refund(
   {
     let channel_dict = &dict_vec[0];
     let dict_model = channel_dict.iter().find(|item| {
-      item.val == input.channel.clone().unwrap_or_default()
+      item.val == input.channel.unwrap_or_default().to_string()
     });
     let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.channel_lbl = lbl;
@@ -1721,7 +1721,7 @@ pub async fn set_id_by_lbl_wx_refund(
     });
     let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
-      input.status = val.into();
+      input.status = val.parse::<WxRefundStatus>()?.into();
     }
   } else if
     (input.status_lbl.is_none() || input.status_lbl.as_ref().unwrap().is_empty())
@@ -1729,7 +1729,7 @@ pub async fn set_id_by_lbl_wx_refund(
   {
     let status_dict = &dict_vec[1];
     let dict_model = status_dict.iter().find(|item| {
-      item.val == input.status.clone().unwrap_or_default()
+      item.val == input.status.unwrap_or_default().to_string()
     });
     let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.status_lbl = lbl;
@@ -1746,7 +1746,7 @@ pub async fn set_id_by_lbl_wx_refund(
     });
     let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
-      input.funds_account = val.into();
+      input.funds_account = val.parse::<WxRefundFundsAccount>()?.into();
     }
   } else if
     (input.funds_account_lbl.is_none() || input.funds_account_lbl.as_ref().unwrap().is_empty())
@@ -1754,7 +1754,7 @@ pub async fn set_id_by_lbl_wx_refund(
   {
     let funds_account_dict = &dict_vec[2];
     let dict_model = funds_account_dict.iter().find(|item| {
-      item.val == input.funds_account.clone().unwrap_or_default()
+      item.val == input.funds_account.unwrap_or_default().to_string()
     });
     let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.funds_account_lbl = lbl;
