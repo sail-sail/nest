@@ -516,7 +516,7 @@ pub async fn set_dyn_page_data_dyn_page_data(
 
 // MARK: find_all_dyn_page_data
 /// 根据搜索条件和分页查找动态页面数据列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_dyn_page_data(
   search: Option<DynPageDataSearch>,
   page: Option<PageInput>,

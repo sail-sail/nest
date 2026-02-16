@@ -462,7 +462,7 @@ async fn get_from_query(
 
 // MARK: find_all_dict_detail
 /// 根据搜索条件和分页查找系统字典明细列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_dict_detail(
   search: Option<DictDetailSearch>,
   page: Option<PageInput>,

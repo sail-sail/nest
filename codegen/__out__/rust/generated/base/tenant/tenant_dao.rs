@@ -674,7 +674,7 @@ async fn get_from_query(
 
 // MARK: find_all_tenant
 /// 根据搜索条件和分页查找租户列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_tenant(
   search: Option<TenantSearch>,
   page: Option<PageInput>,

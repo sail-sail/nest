@@ -451,7 +451,7 @@ async fn get_from_query(
 
 // MARK: find_all_data_permit
 /// 根据搜索条件和分页查找数据权限列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_data_permit(
   search: Option<DataPermitSearch>,
   page: Option<PageInput>,
