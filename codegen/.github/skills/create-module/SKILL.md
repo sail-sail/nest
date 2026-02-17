@@ -1,6 +1,6 @@
 ---
 name: create-module
-description: 创建新的业务模块。当需要添加新模块如 ec、crm 时使用
+description: 创建新业务模块(如 ec、crm)时使用。定义模块级目录结构和注册流程，非单表配置
 ---
 
 # 创建模块
@@ -20,8 +20,8 @@ src/tables/{mod}/
 3. 在 `src/tables/tables.ts` 注册：
 
 ```typescript
-import { defineConfig } from "../config";
-import base from "./base/base";
+import { defineConfig } from "../config.ts";
+import base from "./base/base.ts";
 import {mod} from "./{mod}/{mod}.ts";
 
 export default defineConfig({

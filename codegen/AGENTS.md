@@ -15,7 +15,7 @@
 | `codegen/src/tables/{mod}/{mod}.ts` | 表的相关配置,外键等 |  |
 | `codegen/src/tables/{mod}/{mod}_{table}.sql.csv` | 表的初始数据 |  |
 
-⚠️ `codegen/__out__` 目录为代码生成输出目录，禁止修改
+⚠️ `codegen/__out__` 目录为代码生成输出目录，禁止修改也无读取的必要
 
 ## 可用 Skills (.github/skills/)
 
