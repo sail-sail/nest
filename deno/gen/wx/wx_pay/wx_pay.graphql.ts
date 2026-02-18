@@ -27,6 +27,8 @@ type WxPayModel {
   payer_client_ip: String!
   "通知地址"
   notify_url: String!
+  "退款通知地址"
+  refund_notify_url: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -79,6 +81,8 @@ type WxPayFieldComment {
   payer_client_ip: String!
   "通知地址"
   notify_url: String!
+  "退款通知地址"
+  refund_notify_url: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -129,6 +133,8 @@ input WxPayInput {
   payer_client_ip: String
   "通知地址"
   notify_url: String
+  "退款通知地址"
+  refund_notify_url: String
   "锁定"
   is_locked: Int
   "锁定"

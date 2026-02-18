@@ -589,6 +589,15 @@
             </el-table-column>
           </template>
           
+          <!-- 退款通知地址 -->
+          <template v-else-if="'refund_notify_url' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
@@ -1097,6 +1106,14 @@ function getTableColumns(): ColumnType[] {
     {
       label: "通知地址",
       prop: "notify_url",
+      width: 200,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "退款通知地址",
+      prop: "refund_notify_url",
       width: 200,
       align: "left",
       headerAlign: "center",

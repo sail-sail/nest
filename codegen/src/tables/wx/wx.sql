@@ -189,6 +189,7 @@ CREATE TABLE `wx_wx_pay` (
   `v3_key` varchar(32) NOT NULL DEFAULT '' COMMENT 'APIv3密钥',
   `payer_client_ip` varchar(45) NOT NULL DEFAULT '' COMMENT '支付终端IP',
   `notify_url` varchar(256) NOT NULL DEFAULT '/api/wx_pay/wx_pay_notify' COMMENT '通知地址',
+  `refund_notify_url` varchar(256) NOT NULL DEFAULT '/api/wx_pay/wx_refund_notice' COMMENT '退款通知地址',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
@@ -206,6 +207,7 @@ CREATE TABLE `wx_wx_pay` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`appid`, `tenant_id`),
   INDEX (`notify_url`, `tenant_id`),
+  INDEX (`refund_notify_url`, `tenant_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信支付设置';
 
@@ -272,3 +274,62 @@ CREATE TABLE if not exists `wx_wx_pay_notice` (
   INDEX (`transaction_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信支付通知';
+
+------------------------------------------------------------------------ 微信退款申请
+drop table if exists `wx_wx_refund`;
+CREATE TABLE if not exists `wx_wx_refund` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `appid` varchar(32) NOT NULL DEFAULT '' COMMENT '开发者ID',
+  `mchid` varchar(32) NOT NULL DEFAULT '' COMMENT '商户号',
+  `out_trade_no` varchar(32) NOT NULL DEFAULT '' COMMENT '商户订单号',
+  `transaction_id` varchar(32) NOT NULL DEFAULT '' COMMENT '微信支付订单号',
+  `out_refund_no` varchar(64) NOT NULL DEFAULT '' COMMENT '商户退款单号',
+  `reason` varchar(80) NOT NULL DEFAULT '' COMMENT '退款原因',
+  `attach2` varchar(256) NOT NULL DEFAULT '' COMMENT '附加数据2',
+  `notify_url` varchar(256) NOT NULL DEFAULT '/api/wx_pay/wx_refund_notice' COMMENT '退款结果回调地址',
+  `refund_id` varchar(32) NOT NULL DEFAULT '' COMMENT '微信退款单号',
+  `channel` ENUM('ORIGINAL', 'BALANCE', 'OTHER_BALANCE', 'OTHER_BANKCARD') NOT NULL DEFAULT 'ORIGINAL' COMMENT '退款渠道,dict:wx_refund_channel',
+  `user_received_account` varchar(64) NOT NULL DEFAULT '' COMMENT '退款入账账户',
+  `success_time` datetime DEFAULT NULL COMMENT '退款成功时间',
+  `status` ENUM('SUCCESS', 'NO_REFUND', 'CLOSED', 'PROCESSING', 'ABNORMAL') NOT NULL DEFAULT 'NO_REFUND' COMMENT '退款状态,dict:wx_refund_status',
+  `funds_account` ENUM('UNSETTLED', 'AVAILABLE', 'UNAVAILABLE', 'OPERATION', 'BASIC', 'ECNY_BASIC') NOT NULL DEFAULT 'UNSETTLED' COMMENT '资金账户,dict:wx_refund_funds_account',
+  `amount_total` int unsigned NOT NULL DEFAULT 0 COMMENT '订单金额(分)',
+  `amount_refund` int unsigned NOT NULL DEFAULT 0 COMMENT '退款金额(分)',
+  `amount_payer_total` int unsigned NOT NULL DEFAULT 0 COMMENT '用户实际支付金额(分)',
+  `amount_payer_refund` int unsigned NOT NULL DEFAULT 0 COMMENT '用户退款金额(分)',
+  `amount_settlement_refund` int unsigned NOT NULL DEFAULT 0 COMMENT '应结退款金额(分)',
+  `amount_discount_refund` int unsigned NOT NULL DEFAULT 0 COMMENT '优惠退款金额(分)',
+  `amount_currency` ENUM('CNY') NOT NULL DEFAULT 'CNY' COMMENT '退款币种,dict:wx_pay_notice_currency',
+  `amount_refund_fee` int unsigned NOT NULL DEFAULT 0 COMMENT '手续费退款金额(分)',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  INDEX (`transaction_id`),
+  INDEX (`out_refund_no`),
+  INDEX (`refund_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信退款申请';
+
+------------------------------------------------------------------------ 微信退款通知
+drop table if exists `wx_wx_refund_notice`;
+CREATE TABLE if not exists `wx_wx_refund_notice` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `appid` varchar(32) NOT NULL DEFAULT '' COMMENT '开发者ID',
+  `mchid` varchar(32) NOT NULL DEFAULT '' COMMENT '商户号',
+  `out_trade_no` varchar(32) NOT NULL DEFAULT '' COMMENT '商户订单号',
+  `transaction_id` varchar(32) NOT NULL DEFAULT '' COMMENT '微信支付订单号',
+  `out_refund_no` varchar(64) NOT NULL DEFAULT '' COMMENT '商户退款单号',
+  `refund_id` varchar(32) NOT NULL DEFAULT '' COMMENT '微信退款单号',
+  `refund_status` ENUM('SUCCESS', 'NO_REFUND', 'CLOSED', 'PROCESSING', 'ABNORMAL') NOT NULL DEFAULT 'NO_REFUND' COMMENT '退款状态,dict:wx_refund_status',
+  `success_time` datetime DEFAULT NULL COMMENT '退款成功时间',
+  `user_received_account` varchar(64) NOT NULL DEFAULT '' COMMENT '退款入账账户',
+  `amount_total` int unsigned NOT NULL DEFAULT 0 COMMENT '订单金额(分)',
+  `amount_refund` int unsigned NOT NULL DEFAULT 0 COMMENT '退款金额(分)',
+  `amount_payer_total` int unsigned NOT NULL DEFAULT 0 COMMENT '用户实际支付金额(分)',
+  `amount_payer_refund` int unsigned NOT NULL DEFAULT 0 COMMENT '用户退款金额(分)',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  INDEX (`transaction_id`),
+  INDEX (`refund_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信退款通知';

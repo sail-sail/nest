@@ -196,6 +196,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.refund_notify_url == null)">
+          <el-form-item
+            label="退款通知地址"
+            prop="refund_notify_url"
+          >
+            <CustomInput
+              v-model="dialogModel.refund_notify_url"
+              placeholder="请输入 退款通知地址"
+              :readonly="true"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"
@@ -553,6 +566,7 @@ async function showDialog(
         ...data,
         id: undefined,
         notify_url: defaultInput.notify_url,
+        refund_notify_url: defaultInput.refund_notify_url,
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,

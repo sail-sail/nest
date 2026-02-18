@@ -188,6 +188,18 @@ export function getScalars() {
       "output": "WxPayNoticeId",
     },
     
+    // 微信退款申请
+    "WxRefundId": {
+      "input": "WxRefundId",
+      "output": "WxRefundId",
+    },
+    
+    // 微信退款通知
+    "WxRefundNoticeId": {
+      "input": "WxRefundNoticeId",
+      "output": "WxRefundNoticeId",
+    },
+    
     // 小程序用户
     "WxUsrId": {
       "input": "WxUsrId",

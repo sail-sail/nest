@@ -253,6 +253,13 @@ export async function pay_notice(
       out_trade_no,
     }),
   );
+  
+  // 防重复: 如果订单已不是未支付状态, 说明已处理过, 直接返回
+  if (pay_transactions_jsapi_model.trade_state !== PayTransactionsJsapiTradeState.Notpay) {
+    log(`pay_notice: 订单 ${ out_trade_no } 已处理, trade_state: ${ pay_transactions_jsapi_model.trade_state }`);
+    return;
+  }
+  
   const pay_transactions_jsapi_id: PayTransactionsJsapiId = pay_transactions_jsapi_model.id;
   const tenant_id: TenantId = pay_transactions_jsapi_model.tenant_id;
   const attach2 = pay_transactions_jsapi_model.attach2;

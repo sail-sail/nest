@@ -48,6 +48,9 @@ declare global {
     /** 通知地址 */
     notify_url?: string;
     notify_url_like?: string;
+    /** 退款通知地址 */
+    refund_notify_url?: string;
+    refund_notify_url_like?: string;
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */

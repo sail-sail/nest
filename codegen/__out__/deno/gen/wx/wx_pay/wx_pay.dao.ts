@@ -164,6 +164,12 @@ async function getWhereQuery(
   if (isNotEmpty(search?.notify_url_like)) {
     whereQuery += ` and t.notify_url like ${ args.push("%" + sqlLike(search?.notify_url_like) + "%") }`;
   }
+  if (search?.refund_notify_url != null) {
+    whereQuery += ` and t.refund_notify_url=${ args.push(search.refund_notify_url) }`;
+  }
+  if (isNotEmpty(search?.refund_notify_url_like)) {
+    whereQuery += ` and t.refund_notify_url like ${ args.push("%" + sqlLike(search?.refund_notify_url_like) + "%") }`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
@@ -605,6 +611,7 @@ export async function getFieldCommentsWxPay(): Promise<WxPayFieldComment> {
     v3_key: "APIv3密钥",
     payer_client_ip: "支付终端IP",
     notify_url: "通知地址",
+    refund_notify_url: "退款通知地址",
     is_locked: "锁定",
     is_locked_lbl: "锁定",
     is_enabled: "启用",
@@ -695,6 +702,21 @@ export async function findByUniqueWxPay(
     );
     models.push(...modelTmps);
   }
+  {
+    if (search0.refund_notify_url == null) {
+      return [ ];
+    }
+    const refund_notify_url = search0.refund_notify_url;
+    const modelTmps = await findAllWxPay(
+      {
+        refund_notify_url,
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    models.push(...modelTmps);
+  }
   
   return models;
 }
@@ -715,6 +737,11 @@ export function equalsByUniqueWxPay(
   }
   if (
     oldModel.notify_url === input.notify_url
+  ) {
+    return true;
+  }
+  if (
+    oldModel.refund_notify_url === input.refund_notify_url
   ) {
     return true;
   }
@@ -1223,6 +1250,13 @@ export async function validateWxPay(
     fieldComments.notify_url,
   );
   
+  // 退款通知地址
+  await validators.chars_max_length(
+    input.refund_notify_url,
+    256,
+    fieldComments.refund_notify_url,
+  );
+  
   // 备注
   await validators.chars_max_length(
     input.rem,
@@ -1474,7 +1508,7 @@ async function _creates(
   await delCacheWxPay();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wx_pay(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,appid,mchid,serial_no,public_key,private_key,v3_key,payer_client_ip,notify_url,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into wx_wx_pay(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,appid,mchid,serial_no,public_key,private_key,v3_key,payer_client_ip,notify_url,refund_notify_url,is_locked,is_enabled,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1614,6 +1648,11 @@ async function _creates(
       }
       if (input.notify_url != null) {
         sql += `,${ args.push(input.notify_url) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.refund_notify_url != null) {
+        sql += `,${ args.push(input.refund_notify_url) }`;
       } else {
         sql += ",default";
       }
@@ -1838,6 +1877,12 @@ export async function updateByIdWxPay(
   if (input.notify_url != null) {
     if (input.notify_url != oldModel.notify_url) {
       sql += `notify_url=${ args.push(input.notify_url) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.refund_notify_url != null) {
+    if (input.refund_notify_url != oldModel.refund_notify_url) {
+      sql += `refund_notify_url=${ args.push(input.refund_notify_url) },`;
       updateFldNum++;
     }
   }

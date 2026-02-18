@@ -386,6 +386,7 @@ export default defineConfig({
       uniques: [
         [ "appid" ],
         [ "notify_url" ],
+        [ "refund_notify_url" ],
       ],
     },
     columns: [
@@ -431,6 +432,13 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "notify_url",
+        align: "left",
+        width: 200,
+        require: true,
+        readonly: true,
+      },
+      {
+        COLUMN_NAME: "refund_notify_url",
         align: "left",
         width: 200,
         require: true,
@@ -675,6 +683,246 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
         width: 100,
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+    ],
+  },
+  // 微信退款申请
+  wx_wx_refund: {
+    opts: {
+      noAdd: true,
+      noEdit: true,
+      noDelete: true,
+      noRevert: true,
+      noForceDelete: true,
+      defaultSort: {
+        prop: "success_time",
+        order: "descending",
+      },
+    },
+    columns: [
+      {
+        COLUMN_NAME: "appid",
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "mchid",
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "out_trade_no",
+        width: 260,
+      },
+      {
+        COLUMN_NAME: "transaction_id",
+        search: true,
+        width: 250,
+        notForeignKeyById: true,
+        foreignPage: {
+          routeName: "微信支付通知",
+          tabNameField: "transaction_id",
+          query: {
+            transaction_id: "transaction_id",
+            showBuildIn: "1",
+          },
+        },
+      },
+      {
+        COLUMN_NAME: "out_refund_no",
+        search: true,
+        width: 260,
+      },
+      {
+        COLUMN_NAME: "refund_id",
+        search: true,
+        width: 250,
+        notForeignKeyById: true,
+        foreignPage: {
+          routeName: "微信退款申请",
+          tabNameField: "refund_id",
+          query: {
+            refund_id: "refund_id",
+            showBuildIn: "1",
+          },
+        },
+      },
+      {
+        COLUMN_NAME: "reason",
+        width: 160,
+      },
+      {
+        COLUMN_NAME: "attach2",
+        onlyCodegenDeno: true,
+      },
+      {
+        COLUMN_NAME: "notify_url",
+        onlyCodegenDeno: true,
+      },
+      {
+        COLUMN_NAME: "channel",
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "user_received_account",
+        width: 200,
+      },
+      {
+        COLUMN_NAME: "success_time",
+        width: 150,
+        search: true,
+        sortable: true,
+      },
+      {
+        COLUMN_NAME: "status",
+        width: 120,
+        search: true,
+      },
+      {
+        COLUMN_NAME: "funds_account",
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "amount_total",
+        align: "right",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "amount_refund",
+        align: "right",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "amount_payer_total",
+        align: "right",
+        width: 160,
+      },
+      {
+        COLUMN_NAME: "amount_payer_refund",
+        align: "right",
+        width: 130,
+      },
+      {
+        COLUMN_NAME: "amount_settlement_refund",
+        align: "right",
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "amount_discount_refund",
+        align: "right",
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "amount_currency",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "amount_refund_fee",
+        align: "right",
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+    ],
+  },
+  // 退款结果回调通知
+  wx_wx_refund_notice: {
+    opts: {
+      noAdd: true,
+      noEdit: true,
+      noDelete: true,
+      noRevert: true,
+      noForceDelete: true,
+      defaultSort: {
+        prop: "success_time",
+        order: "descending",
+      },
+    },
+    columns: [
+      {
+        COLUMN_NAME: "appid",
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "mchid",
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "out_trade_no",
+        width: 260,
+      },
+      {
+        COLUMN_NAME: "transaction_id",
+        search: true,
+        width: 250,
+        notForeignKeyById: true,
+        foreignPage: {
+          routeName: "微信JSAPI下单",
+          tabNameField: "transaction_id",
+          query: {
+            transaction_id: "transaction_id",
+            showBuildIn: "1",
+          },
+        },
+      },
+      {
+        COLUMN_NAME: "out_refund_no",
+        search: true,
+        width: 260,
+      },
+      {
+        COLUMN_NAME: "refund_id",
+        search: true,
+        width: 250,
+        notForeignKeyById: true,
+        foreignPage: {
+          routeName: "微信退款申请",
+          tabNameField: "refund_id",
+          query: {
+            refund_id: "refund_id",
+            showBuildIn: "1",
+          },
+        },
+      },
+      {
+        COLUMN_NAME: "refund_status",
+        width: 120,
+        search: true,
+      },
+      {
+        COLUMN_NAME: "success_time",
+        width: 150,
+        search: true,
+        sortable: true,
+      },
+      {
+        COLUMN_NAME: "user_received_account",
+        width: 200,
+      },
+      {
+        COLUMN_NAME: "amount_total",
+        align: "right",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "amount_refund",
+        align: "right",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "amount_payer_total",
+        align: "right",
+        width: 160,
+      },
+      {
+        COLUMN_NAME: "amount_payer_refund",
+        align: "right",
+        width: 130,
       },
       {
         COLUMN_NAME: "create_time",

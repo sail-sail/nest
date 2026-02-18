@@ -11,6 +11,7 @@ import healthRouter from "/lib/health/health.router.ts";
 
 import wx_usrRouter from "/src/wx/wx_usr/wx_usr.router.ts";
 import wx_pay_noticeRouter from "/src/wx/wx_pay_notice/wx_pay_notice.router.ts";
+import wx_refund_noticeRouter from "/src/wx/wx_refund_notice/wx_refund_notice.router.ts";
 
 export function initApp() {
   const app = new Application();
@@ -26,6 +27,7 @@ export function initApp() {
   
   app.use(wx_usrRouter.routes());
   app.use(wx_pay_noticeRouter.routes());
+  app.use(wx_refund_noticeRouter.routes());
   
   return app;
 }

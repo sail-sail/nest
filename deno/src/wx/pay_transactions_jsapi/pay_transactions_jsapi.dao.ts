@@ -149,7 +149,8 @@ export async function transactions_jsapi(
   });
   const res = await wxPay.transactions_jsapi(params);
   log(`transactions_jsapi.result: ${ JSON.stringify(res) }`);
-  const result = res.data as unknown as RequestPaymentOptions;
+  // deno-lint-ignore no-explicit-any
+  const result = res.data as any as RequestPaymentOptions & { out_trade_no: string };
   /*
   {
     "status": 200,
@@ -171,6 +172,7 @@ export async function transactions_jsapi(
     throw `${ data.code }: ${ data.message }`;
   }
   result.orderInfo = obj.appid;
+  result.out_trade_no = params.out_trade_no;
   const authModel = await getAuthModel();
   const wx_usr_id = authModel?.wx_usr_id;
   
