@@ -445,7 +445,7 @@ async fn get_from_query(
 
 // MARK: find_all_dyn_page
 /// 根据搜索条件和分页查找动态页面列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_dyn_page(
   search: Option<DynPageSearch>,
   page: Option<PageInput>,
@@ -2488,9 +2488,9 @@ pub async fn del_cache_dyn_page() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      format!("dao.sql.{x}")
+      SmolStr::new(format!("dao.sql.{x}"))
     )
-    .collect::<Vec<String>>();
+    .collect::<Vec<SmolStr>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -2643,6 +2643,8 @@ pub async fn delete_by_ids_dyn_page(
       .collect::<Vec<DynPageFieldId>>(),
     options,
   ).await?;
+  
+  del_cache_dyn_page().await?;
   
   Ok(num)
 }

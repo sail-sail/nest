@@ -152,7 +152,30 @@ impl WxPay<'_> {
   pub async fn refund(&self, body: &Refund) -> Result<RefundDetail> {
     let pay_api = PayApi::Refund;
     let pay_req = pay_api.get_pay_path(self);
-    let data: RefundDetail = post(self, &pay_req, body).await?;
+    tracing::info!(
+      "{req_id} wxpay.refund: refund request body: {body:?}",
+      req_id = get_req_id(),
+    );
+    // let data: RefundDetail = post(self, &pay_req, body).await?;
+    let data_val: serde_json::Value = post(self, &pay_req, body).await?;
+    tracing::info!(
+      "{req_id} wxpay.refund: refund response data: {data_val:?}",
+      req_id = get_req_id(),
+    );
+    // Object {"code": String("INVALID_REQUEST"), "message": String("商户订单号非法，与订单不符，请核实后再试")}
+    if let Some(code) = data_val.get("code") {
+      let code = code.as_str().unwrap_or("UNKNOWN_ERROR");
+      let message = data_val.get("message").and_then(|m| m.as_str()).unwrap_or("");
+      return Err(eyre!(
+        ServiceException {
+          code: code.into(),
+          message: message.into(),
+          trace: true,
+          ..Default::default()
+        }
+      ));
+    }
+    let data: RefundDetail = serde_json::from_value(data_val)?;
     Ok(data)
   }
 

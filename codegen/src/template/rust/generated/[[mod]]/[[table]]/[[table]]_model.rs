@@ -1289,14 +1289,15 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     // <#=column_comment#><#
       if (!column.modelLabel) {
     #>
-    let <#=modelLabel#>: &str = row.try_get("<#=column_name#>")?;
-    let <#=modelLabel#> = SmolStr::new(<#=modelLabel#>);
-    let <#=column_name_rust#>: <#=enumColumnName#> = <#=modelLabel#>.try_into()?;<#
+    let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#> = SmolStr::new(<#=column_name_rust#>);
+    let <#=modelLabel#> = <#=column_name_rust#>.clone();<#
       } else {
     #>
     let <#=modelLabel#>: &str = row.try_get("<#=modelLabel#>")?;
     let <#=modelLabel#> = SmolStr::new(<#=modelLabel#>);
-    let <#=column_name_rust#>: <#=enumColumnName#> = row.try_get("<#=column_name#>")?.try_into()?;<#
+    let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: SmolStr = <#=column_name_rust#>.try_into()?;<#
       }
     #><#
       }
@@ -1886,13 +1887,14 @@ pub struct <#=tableUP#>Search {
       _data_type = "Decimal";
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
+    const onlyCodegenDenoButApi = column.onlyCodegenDenoButApi;
     const search = column.search;
     const canSearch = column.canSearch;
   #><#
     if (foreignKey && foreignKey.type !== "many2many") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1902,7 +1904,7 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1914,7 +1916,7 @@ pub struct <#=tableUP#>Search {
     if (modelLabel) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1924,7 +1926,7 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=modelLabel_rust#>: Option<Vec<SmolStr>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1936,7 +1938,7 @@ pub struct <#=tableUP#>Search {
     } else if (foreignKey.lbl) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1946,7 +1948,7 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<SmolStr>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1960,7 +1962,7 @@ pub struct <#=tableUP#>Search {
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1970,7 +1972,7 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1982,7 +1984,7 @@ pub struct <#=tableUP#>Search {
   if (foreignKey.lbl) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2012,7 +2014,7 @@ pub struct <#=tableUP#>Search {
       }
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2024,7 +2026,7 @@ pub struct <#=tableUP#>Search {
     } else if (foreignKey) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2036,7 +2038,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2048,7 +2050,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === "tinyint") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2060,7 +2062,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === "varchar" || data_type === "text") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2072,7 +2074,7 @@ pub struct <#=tableUP#>Search {
   if (column.searchByArray) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2084,7 +2086,7 @@ pub struct <#=tableUP#>Search {
   }
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2096,7 +2098,7 @@ pub struct <#=tableUP#>Search {
     } else {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !canSearch) {
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2192,7 +2194,7 @@ impl std::fmt::Debug for <#=tableUP#>Search {
     if let Some(ref <#=modelLabel#>_like) = self.<#=modelLabel#>_like {
       item = item.field("<#=modelLabel#>_like", <#=modelLabel#>_like);
     }<#
-    } else {
+    } else if (foreignKey.lbl) {
     #>
     if let Some(ref <#=column_name#>_<#=foreignKey.lbl#>) = self.<#=column_name#>_<#=foreignKey.lbl#> {
       item = item.field("<#=column_name#>_<#=foreignKey.lbl#>", <#=column_name#>_<#=foreignKey.lbl#>);
@@ -3182,7 +3184,8 @@ impl FromRow<'_, MySqlRow> for <#=Table_Up#>Summary {
       }
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
+    let <#=column_name_rust#>: Option<<#=_data_type#>> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#> = <#=column_name_rust#>.unwrap_or_default();<#
     }
     #>
     
@@ -3269,6 +3272,7 @@ pub enum <#=enumColumnName#> {<#
   }
   #>
   #[graphql(name="<#=val#>")]
+  #[serde(rename = "<#=val#>")]
   <#=valUp#>,<#
   }
   #>
