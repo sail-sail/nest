@@ -312,7 +312,7 @@ pub struct DeptFieldComment {
   pub update_time_lbl: SmolStr,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DeptSearch")]
 #[allow(dead_code)]
 pub struct DeptSearch {

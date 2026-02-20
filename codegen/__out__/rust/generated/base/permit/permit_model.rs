@@ -136,7 +136,7 @@ pub struct PermitFieldComment {
   pub rem: SmolStr,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "PermitSearch")]
 #[allow(dead_code)]
 pub struct PermitSearch {

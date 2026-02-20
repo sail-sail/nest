@@ -51,8 +51,13 @@
           {{ modelLabels[0] || '' }}
         </view>
         
-        <template
+        <view
           v-else
+          un-flex="~ [1_0_0] wrap"
+          un-overflow="hidden"
+          un-items="center"
+          un-h="full"
+          un-gap="2"
         >
           
           <template
@@ -97,7 +102,7 @@
             
           </template>
           
-        </template>
+        </view>
         
       </template>
       

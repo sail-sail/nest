@@ -8,3 +8,4 @@ scalar Date
 scalar Decimal
 scalar BigDecimal
 scalar Uuid
+scalar SmolStr

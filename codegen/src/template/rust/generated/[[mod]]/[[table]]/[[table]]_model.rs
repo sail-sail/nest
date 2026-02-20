@@ -1799,7 +1799,7 @@ pub struct <#=tableUP#>FieldComment {<#
   #>
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "<#=tableUP#>Search")]
 #[allow(dead_code)]
 pub struct <#=tableUP#>Search {

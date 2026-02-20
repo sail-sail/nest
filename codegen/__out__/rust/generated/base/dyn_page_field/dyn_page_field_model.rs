@@ -337,7 +337,7 @@ pub struct DynPageFieldFieldComment {
   pub order_by: SmolStr,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageFieldSearch")]
 #[allow(dead_code)]
 pub struct DynPageFieldSearch {
