@@ -4125,7 +4125,8 @@ export async function validate<#=Table_Up#>(
   
 }<#
 const autoCodeColumn = columns.find((item) => item.autoCode);
-if (autoCodeColumn) {
+const dateSeq = autoCodeColumn?.autoCode?.dateSeq;
+if (autoCodeColumn && !dateSeq) {
 #>
 
 // MARK: findAutoCode<#=Table_Up#>
@@ -4149,10 +4150,7 @@ export async function findAutoCode<#=Table_Up#>(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
-  }<#
-  const dateSeq = autoCodeColumn.autoCode.dateSeq;
-  if (!dateSeq) {
-  #>
+  }
   
   const model = await findOne<#=Table_Up#>(
     undefined,
@@ -4163,6 +4161,10 @@ export async function findAutoCode<#=Table_Up#>(
       },
     ],
   );
+  
+  let <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;<#
+  if (hasIsDeleted) {
+  #>
   
   const model_deleted = await findOne<#=Table_Up#>(
     {
@@ -4176,11 +4178,12 @@ export async function findAutoCode<#=Table_Up#>(
     ],
   );
   
-  let <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
   const <#=autoCodeColumn.autoCode.seq#>_deleted = (model_deleted?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
   if (<#=autoCodeColumn.autoCode.seq#>_deleted > <#=autoCodeColumn.autoCode.seq#>) {
     <#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>_deleted;
   }<#
+  }
+  #><#
   if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
   const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString()<#
@@ -4215,10 +4218,34 @@ export async function findAutoCode<#=Table_Up#>(
   return {
     <#=autoCodeColumn.autoCode.seq#>,
     <#=autoCodeColumn.COLUMN_NAME#>,
-  };<#
-  } else {
-    const dateFormat = autoCodeColumn.autoCode.dateFormat || "YYYYMMDD";
-  #>
+  };
+}<#
+} else if (autoCodeColumn && dateSeq) {
+  const dateFormat = autoCodeColumn.autoCode.dateFormat || "YYYYMMDD";
+#>
+
+// MARK: findAutoCode<#=Table_Up#>
+/** 获得 <#=table_comment#> 自动编码 */
+export async function findAutoCode<#=Table_Up#>(
+  options?: {
+    is_debug?: boolean;
+  },
+) {
+  
+  const table = getTableName<#=Table_Up#>();
+  const method = "findAutoCode<#=Table_Up#>";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
   
   const model = await findOne<#=Table_Up#>(
     undefined,
@@ -4239,32 +4266,41 @@ export async function findAutoCode<#=Table_Up#>(
   
   const <#=dateSeq#>_old = dayjs(model?.<#=dateSeq#>).format("<#=dateFormat#>");
   
-  let <#=autoCodeColumn.autoCode.seq#> = 0;
-  if (<#=dateSeq#> !== <#=dateSeq#>_old) {
-    <#=autoCodeColumn.autoCode.seq#> = 1;
-  } else {
-    <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
-    const model_deleted = await findOne<#=Table_Up#>(
+  // 今天未删除记录中的最大序号
+  const seq_from_normal = (<#=dateSeq#>_old === <#=dateSeq#>)
+    ? (model?.<#=autoCodeColumn.autoCode.seq#> || 0)
+    : 0;<#
+  if (hasIsDeleted) {
+  #>
+  
+  // 今天已删除记录中的最大序号
+  const model_deleted = await findOne<#=Table_Up#>(
+    {
+      <#=dateSeq#>: [ nowDate, nowDate ],
+      is_deleted: 1,
+    },
+    [
       {
-        <#=dateSeq#>: [ model?.<#=dateSeq#> || <#=dateSeq#>, model?.<#=dateSeq#> || <#=dateSeq#> ],
-        is_deleted: 1,
+        prop: "<#=dateSeq#>",
+        order: SortOrderEnum.Desc,
       },
-      [
-        {
-          prop: "<#=dateSeq#>",
-          order: SortOrderEnum.Desc,
-        },
-        {
-          prop: "<#=autoCodeColumn.autoCode.seq#>",
-          order: SortOrderEnum.Desc,
-        },
-      ],
-    );
-    const <#=autoCodeColumn.autoCode.seq#>_deleted = (model_deleted?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
-    if (<#=autoCodeColumn.autoCode.seq#>_deleted > <#=autoCodeColumn.autoCode.seq#>) {
-      <#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>_deleted;
-    }
-  }<#
+      {
+        prop: "<#=autoCodeColumn.autoCode.seq#>",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );
+  
+  const seq_from_deleted = model_deleted?.<#=autoCodeColumn.autoCode.seq#> || 0;
+  
+  const <#=autoCodeColumn.autoCode.seq#> = Math.max(seq_from_normal, seq_from_deleted) + 1;<#
+  } else {
+  #>
+  
+  const <#=autoCodeColumn.autoCode.seq#> = seq_from_normal + 1;<#
+  }
+  #>
+<#
   if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
   const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
@@ -4300,9 +4336,7 @@ export async function findAutoCode<#=Table_Up#>(
     <#=dateSeq#>,
     <#=autoCodeColumn.autoCode.seq#>,
     <#=autoCodeColumn.COLUMN_NAME#>,
-  };<#
-  }
-  #>
+  };
 }<#
 }
 #>
