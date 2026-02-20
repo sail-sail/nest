@@ -47,6 +47,7 @@ export default typescriptEslint.config(
         },
       ],
       "vue/no-dupe-keys": 0,
+      "no-useless-assignment": 0,
     },
   },
 );

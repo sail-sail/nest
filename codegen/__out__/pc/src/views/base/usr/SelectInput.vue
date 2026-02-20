@@ -58,6 +58,7 @@
           <el-icon
             un-cursor="pointer"
             un-m="r-0.5"
+            un-text="[var(--el-text-color-placeholder)]"
             size="14"
             @click="onClear"
           >
@@ -66,8 +67,10 @@
         </template>
         
         <el-icon
+          v-else
           un-cursor="pointer"
           un-m="r-0.5"
+          un-text="[var(--el-text-color-placeholder)]"
           size="14"
           @click="onInput('icon')"
         >
@@ -123,9 +126,9 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: UsrId | UsrId[] | null): void,
+  (e: "update:modelValue", value?: UsrId | UsrId[]): void,
   (e: "update:modelLabel", value?: string): void,
-  (e: "change", value?: UsrModel | (UsrModel | undefined)[] | null): void,
+  (e: "change", value?: UsrModel | UsrModel[]): void,
   (e: "clear"): void,
 }>();
 
@@ -392,7 +395,7 @@ function blur() {
   wrapperRef.focus();
 }
 
-async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) {
+async function onSelectList(value?: UsrModel | UsrModel[]) {
   selectedValue = value;
   if (props.multiple) {
     if (oldInputValue !== inputValue) {

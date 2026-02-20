@@ -158,13 +158,13 @@ const submit = () => {
     nextTick(() => {
         vaildTypeStr.value = 'valid'
     })
-    emit("submit", validate())
+    emit("submit", validate(true))
 }
 /**
  * 获取校验结果,不会校验页面.
  * 如果想触发submit事件,并校验页面提示,请使用ref函数submit()而不是此函数方法.
  */
-const validate = (): TM.FORM_SUBMIT_RESULT => {
+const validate = (isForm?: boolean): TM.FORM_SUBMIT_RESULT => {
     let result: TM.FORM_SUBMIT_RESULT = {
         //整体是否校验通过
         isPass: true,
@@ -179,7 +179,7 @@ const validate = (): TM.FORM_SUBMIT_RESULT => {
         if (!rules) continue
         for (let rule of rules) {
 			const flattenedModelValue = flattenObject(props.modelValue)
-            if (!defaultValidator(flattenedModelValue[key], rule)) {
+            if (!defaultValidator(flattenedModelValue[key], rule, isForm)) {
                 result.isPass = false;
                 if (result.firstValid == null) {
                     result.firstValid = { key, isPass: false, message: rule.message, data: props.modelValue[key] }

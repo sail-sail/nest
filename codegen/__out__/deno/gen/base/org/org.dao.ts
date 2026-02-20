@@ -1742,6 +1742,36 @@ export async function updateByIdOrg(
   return id;
 }
 
+// MARK: updateByIdOrg
+/** 根据 id 更新组织, 并返回更新后的数据 */
+export async function updateByIdReturnOrg(
+  id: OrgId,
+  input: OrgInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<OrgModel> {
+  
+  await updateByIdOrg(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdOrg(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`组织 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsOrg
 /** 根据 ids 删除 组织 */
 export async function deleteByIdsOrg(

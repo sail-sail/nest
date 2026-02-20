@@ -128,7 +128,12 @@ export async function streamToString(
   return chunks.join('');
 }
 
-export async function deleteObject(id: string) {
+export async function deleteObject(
+  id?: string | null,
+) {
+  if (!id) {
+    return;
+  }
   const bucket = await getBucket();
   await bucket.deleteObject(id);
 }

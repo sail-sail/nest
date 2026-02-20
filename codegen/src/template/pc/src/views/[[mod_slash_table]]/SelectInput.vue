@@ -79,6 +79,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
           <el-icon
             un-cursor="pointer"
             un-m="r-0.5"
+            un-text="[var(--el-text-color-placeholder)]"
             size="14"
             @click="onClear"
           >
@@ -87,8 +88,10 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
         </template>
         
         <el-icon
+          v-else
           un-cursor="pointer"
           un-m="r-0.5"
+          un-text="[var(--el-text-color-placeholder)]"
           size="14"
           @click="onInput('icon')"
         >
@@ -144,9 +147,9 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null): void,
+  (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[]): void,
   (e: "update:modelLabel", value?: string): void,
-  (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,
+  (e: "change", value?: <#=modelName#> | <#=modelName#>[]): void,
   (e: "clear"): void,
 }>();
 
@@ -431,7 +434,7 @@ function blur() {
   wrapperRef.focus();
 }
 
-async function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null) {
+async function onSelectList(value?: <#=modelName#> | <#=modelName#>[]) {
   selectedValue = value;
   if (props.multiple) {
     if (oldInputValue !== inputValue) {

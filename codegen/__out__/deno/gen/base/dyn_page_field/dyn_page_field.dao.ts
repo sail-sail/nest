@@ -176,6 +176,12 @@ async function getWhereQuery(
   if (search?.align != null) {
     whereQuery += ` and t.align in (${ args.push(search.align) })`;
   }
+  if (search?.is_mobile_list != null) {
+    whereQuery += ` and t.is_mobile_list in (${ args.push(search.is_mobile_list) })`;
+  }
+  if (search?.is_mobile_search != null) {
+    whereQuery += ` and t.is_mobile_search in (${ args.push(search.is_mobile_search) })`;
+  }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
@@ -320,6 +326,28 @@ export async function findCountDynPageField(
       throw new Error(`search.align.length > ${ ids_limit }`);
     }
   }
+  // 手机列表显示
+  if (search && search.is_mobile_list != null) {
+    const len = search.is_mobile_list.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_mobile_list.length > ${ ids_limit }`);
+    }
+  }
+  // 手机列表查询
+  if (search && search.is_mobile_search != null) {
+    const len = search.is_mobile_search.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_mobile_search.length > ${ ids_limit }`);
+    }
+  }
   // 启用
   if (search && search.is_enabled != null) {
     const len = search.is_enabled.length;
@@ -457,6 +485,28 @@ export async function findAllDynPageField(
       throw new Error(`search.align.length > ${ ids_limit }`);
     }
   }
+  // 手机列表显示
+  if (search && search.is_mobile_list != null) {
+    const len = search.is_mobile_list.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_mobile_list.length > ${ ids_limit }`);
+    }
+  }
+  // 手机列表查询
+  if (search && search.is_mobile_search != null) {
+    const len = search.is_mobile_search.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_mobile_search.length > ${ ids_limit }`);
+    }
+  }
   // 启用
   if (search && search.is_enabled != null) {
     const len = search.is_enabled.length;
@@ -555,11 +605,15 @@ export async function findAllDynPageField(
     is_requiredDict, // 必填
     is_searchDict, // 查询条件
     alignDict, // 对齐方式
+    is_mobile_listDict, // 手机列表显示
+    is_mobile_searchDict, // 手机列表查询
     is_enabledDict, // 启用
   ] = await getDict([
     "yes_no",
     "yes_no",
     "dyn_page_field_align",
+    "yes_no",
+    "yes_no",
     "is_enabled",
   ]);
   
@@ -598,6 +652,26 @@ export async function findAllDynPageField(
       }
     }
     model.align_lbl = align_lbl || "";
+    
+    // 手机列表显示
+    let is_mobile_list_lbl = model.is_mobile_list?.toString() || "";
+    if (model.is_mobile_list != null) {
+      const dictItem = is_mobile_listDict.find((dictItem) => dictItem.val === String(model.is_mobile_list));
+      if (dictItem) {
+        is_mobile_list_lbl = dictItem.lbl;
+      }
+    }
+    model.is_mobile_list_lbl = is_mobile_list_lbl || "";
+    
+    // 手机列表查询
+    let is_mobile_search_lbl = model.is_mobile_search?.toString() || "";
+    if (model.is_mobile_search != null) {
+      const dictItem = is_mobile_searchDict.find((dictItem) => dictItem.val === String(model.is_mobile_search));
+      if (dictItem) {
+        is_mobile_search_lbl = dictItem.lbl;
+      }
+    }
+    model.is_mobile_search_lbl = is_mobile_search_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -653,11 +727,15 @@ export async function setIdByLblDynPageField(
     is_requiredDict, // 必填
     is_searchDict, // 查询条件
     alignDict, // 对齐方式
+    is_mobile_listDict, // 手机列表显示
+    is_mobile_searchDict, // 手机列表查询
     is_enabledDict, // 启用
   ] = await getDict([
     "yes_no",
     "yes_no",
     "dyn_page_field_align",
+    "yes_no",
+    "yes_no",
     "is_enabled",
   ]);
   
@@ -720,6 +798,28 @@ export async function setIdByLblDynPageField(
     input.align_lbl = lbl;
   }
   
+  // 手机列表显示
+  if (isNotEmpty(input.is_mobile_list_lbl) && input.is_mobile_list == null) {
+    const val = is_mobile_listDict.find((itemTmp) => itemTmp.lbl === input.is_mobile_list_lbl)?.val;
+    if (val != null) {
+      input.is_mobile_list = Number(val);
+    }
+  } else if (isEmpty(input.is_mobile_list_lbl) && input.is_mobile_list != null) {
+    const lbl = is_mobile_listDict.find((itemTmp) => itemTmp.val === String(input.is_mobile_list))?.lbl || "";
+    input.is_mobile_list_lbl = lbl;
+  }
+  
+  // 手机列表查询
+  if (isNotEmpty(input.is_mobile_search_lbl) && input.is_mobile_search == null) {
+    const val = is_mobile_searchDict.find((itemTmp) => itemTmp.lbl === input.is_mobile_search_lbl)?.val;
+    if (val != null) {
+      input.is_mobile_search = Number(val);
+    }
+  } else if (isEmpty(input.is_mobile_search_lbl) && input.is_mobile_search != null) {
+    const lbl = is_mobile_searchDict.find((itemTmp) => itemTmp.val === String(input.is_mobile_search))?.lbl || "";
+    input.is_mobile_search_lbl = lbl;
+  }
+  
   // 启用
   if (isNotEmpty(input.is_enabled_lbl) && input.is_enabled == null) {
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
@@ -751,6 +851,10 @@ export async function getFieldCommentsDynPageField(): Promise<DynPageFieldFieldC
     width: "宽度",
     align: "对齐方式",
     align_lbl: "对齐方式",
+    is_mobile_list: "手机列表显示",
+    is_mobile_list_lbl: "手机列表显示",
+    is_mobile_search: "手机列表查询",
+    is_mobile_search_lbl: "手机列表查询",
     is_enabled: "启用",
     is_enabled_lbl: "启用",
     order_by: "排序",
@@ -1367,6 +1471,8 @@ export async function findAutoCodeDynPageField(
     ],
   );
   
+  let code_seq = (model?.code_seq || 0) + 1;
+  
   const model_deleted = await findOneDynPageField(
     {
       is_deleted: 1,
@@ -1379,7 +1485,6 @@ export async function findAutoCodeDynPageField(
     ],
   );
   
-  let code_seq = (model?.code_seq || 0) + 1;
   const code_seq_deleted = (model_deleted?.code_seq || 0) + 1;
   if (code_seq_deleted > code_seq) {
     code_seq = code_seq_deleted;
@@ -1631,7 +1736,7 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into base_dyn_page_field(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,dyn_page_id,lbl,type,attrs,formula,is_required,is_search,width,align,is_enabled,order_by)values";
+  let sql = "insert into base_dyn_page_field(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,dyn_page_id,lbl,type,attrs,formula,is_required,is_search,width,align,is_mobile_list,is_mobile_search,is_enabled,order_by)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1781,6 +1886,16 @@ async function _creates(
       }
       if (input.align != null) {
         sql += `,${ args.push(input.align) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_mobile_list != null) {
+        sql += `,${ args.push(input.is_mobile_list) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_mobile_search != null) {
+        sql += `,${ args.push(input.is_mobile_search) }`;
       } else {
         sql += ",default";
       }
@@ -2000,6 +2115,18 @@ export async function updateByIdDynPageField(
       updateFldNum++;
     }
   }
+  if (input.is_mobile_list != null) {
+    if (input.is_mobile_list != oldModel.is_mobile_list) {
+      sql += `is_mobile_list=${ args.push(input.is_mobile_list) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_mobile_search != null) {
+    if (input.is_mobile_search != oldModel.is_mobile_search) {
+      sql += `is_mobile_search=${ args.push(input.is_mobile_search) },`;
+      updateFldNum++;
+    }
+  }
   if (input.is_enabled != null) {
     if (input.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled=${ args.push(input.is_enabled) },`;
@@ -2105,6 +2232,36 @@ export async function updateByIdDynPageField(
   }
   
   return id;
+}
+
+// MARK: updateByIdDynPageField
+/** 根据 id 更新动态页面字段, 并返回更新后的数据 */
+export async function updateByIdReturnDynPageField(
+  id: DynPageFieldId,
+  input: DynPageFieldInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<DynPageFieldModel> {
+  
+  await updateByIdDynPageField(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdDynPageField(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`动态页面字段 不存在`);
+  }
+  
+  return model;
 }
 
 // MARK: deleteByIdsDynPageField
