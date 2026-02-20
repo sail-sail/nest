@@ -1161,6 +1161,8 @@ export async function findAutoCodeDynPage(
     ],
   );
   
+  let code_seq = (model?.code_seq || 0) + 1;
+  
   const model_deleted = await findOneDynPage(
     {
       is_deleted: 1,
@@ -1173,7 +1175,6 @@ export async function findAutoCodeDynPage(
     ],
   );
   
-  let code_seq = (model?.code_seq || 0) + 1;
   const code_seq_deleted = (model_deleted?.code_seq || 0) + 1;
   if (code_seq_deleted > code_seq) {
     code_seq = code_seq_deleted;

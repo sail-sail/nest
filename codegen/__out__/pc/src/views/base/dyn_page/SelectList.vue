@@ -73,7 +73,7 @@ import {
 import List from "./List.vue";
 
 const emit = defineEmits<{
-  (e: "change", value?: DynPageModel | DynPageModel[] | null): void,
+  (e: "change", value?: DynPageModel | DynPageModel[]): void,
 }>();
 
 let inited = $ref(false);
