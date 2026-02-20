@@ -22,3 +22,13 @@ pub struct Mutation(
 );
 
 pub type QuerySchema = Schema<Query, Mutation, EmptySubscription>;
+
+use poem::{Route, get};
+
+/// 注册 业务路由
+#[allow(unused_mut)]
+pub fn register_routes(app: Route) -> Route {
+  let mut app = app;
+  
+  app
+}

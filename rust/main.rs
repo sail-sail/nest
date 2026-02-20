@@ -479,6 +479,9 @@ async fn main() -> Result<(), std::io::Error> {
       get(generated::common::health::health_router::health),
     );
     
+    // 注册 业务路由
+    app = app::register_routes(app);
+    
     app
   };
   let app = app
