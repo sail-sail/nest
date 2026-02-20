@@ -1,6 +1,6 @@
 ---
 name: table-config
-description: 表字段配置规范。建表后配置 src/tables/{mod}/{mod}.ts 文件时使用
+description: 表字段配置规范。配置 {mod}.ts、给表添加/修改字段配置、建表后配置时必须先读取此技能
 ---
 
 # 表配置规范

@@ -260,7 +260,9 @@ if (searchByKeyword) {
         } else if (foreignKey && foreignKey.lbl) {
           hasModelLabel = true;
         }
-        
+        if (!column_comment) {
+          throw new Error(`表 ${ mod }_${ table } 的字段 ${ column_name } 没有注释，请补充注释后再生成`);
+        }
       #><#
         if (search) {
       #>
@@ -3047,7 +3049,7 @@ const props = defineProps<{<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const canSearch = column.canSearch;
     if (!canSearch) continue;
     const column_name = column.COLUMN_NAME;

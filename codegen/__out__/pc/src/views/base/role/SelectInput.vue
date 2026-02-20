@@ -126,9 +126,9 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: RoleId | RoleId[] | null): void,
+  (e: "update:modelValue", value?: RoleId | RoleId[]): void,
   (e: "update:modelLabel", value?: string): void,
-  (e: "change", value?: RoleModel | (RoleModel | undefined)[] | null): void,
+  (e: "change", value?: RoleModel | RoleModel[]): void,
   (e: "clear"): void,
 }>();
 
@@ -395,7 +395,7 @@ function blur() {
   wrapperRef.focus();
 }
 
-async function onSelectList(value?: RoleModel | (RoleModel | undefined)[] | null) {
+async function onSelectList(value?: RoleModel | RoleModel[]) {
   selectedValue = value;
   if (props.multiple) {
     if (oldInputValue !== inputValue) {
