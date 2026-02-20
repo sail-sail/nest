@@ -23,6 +23,7 @@ pub struct Mutation(
 
 pub type QuerySchema = Schema<Query, Mutation, EmptySubscription>;
 
+#[allow(unused_imports)]
 use poem::{Route, get};
 
 /// 注册 业务路由
