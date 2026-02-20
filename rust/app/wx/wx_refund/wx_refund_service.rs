@@ -38,7 +38,11 @@ use generated::base::tenant::tenant_dao::{
 };
 
 // wx_refund (generated dao)
-use generated::wx::wx_refund::wx_refund_dao::create_wx_refund;
+use generated::wx::wx_refund::wx_refund_dao::{
+  create_wx_refund,
+  find_one_wx_refund,
+  validate_option_wx_refund,
+};
 use generated::wx::wx_refund::wx_refund_model::{
   WxRefundId,
   WxRefundInput,
@@ -46,6 +50,8 @@ use generated::wx::wx_refund::wx_refund_model::{
   WxRefundStatus,
   WxRefundFundsAccount,
   WxRefundAmountCurrency,
+  WxRefundSearch,
+  WxRefundModel,
 };
 
 // oss
@@ -337,4 +343,55 @@ pub async fn refund(
   ).await?;
 
   Ok(wx_refund_id)
+}
+
+/// 查询退款状态
+pub async fn trade_state_wx_refund(
+  search: Option<WxRefundSearch>,
+  options: Option<Options>,
+) -> Result<WxRefundModel> {
+  
+  let wx_refund_model = validate_option_wx_refund(
+    find_one_wx_refund(
+      search,
+      None,
+      options,
+    ).await?,
+  ).await?;
+  
+  let wx_refund_status = wx_refund_model.status;
+  
+  if wx_refund_status != WxRefundStatus::Processing {
+    return Ok(WxRefundModel {
+      status: wx_refund_status,
+      ..Default::default()
+    });
+  }
+  
+  let id = wx_refund_model.id;
+  
+  // 循环检查退款状态20次, 每次间隔500毫秒
+  for _ in 0..20 {
+    let wx_refund_model = validate_option_wx_refund(
+      find_one_wx_refund(
+        Some(WxRefundSearch {
+          id: Some(id),
+          ..Default::default()
+        }),
+        None,
+        options,
+      ).await?,
+    ).await?;
+    
+    if wx_refund_model.status != WxRefundStatus::Processing {
+      return Ok(wx_refund_model);
+    }
+    
+    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+  }
+  
+  Ok(WxRefundModel {
+    status: wx_refund_model.status,
+    ..Default::default()
+  })
 }

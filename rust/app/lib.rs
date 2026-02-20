@@ -16,6 +16,7 @@ pub struct Query(
   crate::base::menu::menu_graphql::MenuQuery,
   
   wx::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiQuery,
+  wx::wx_refund::wx_refund_graphql::WxRefundQuery,
 );
 
 #[derive(MergedObject, Default)]
