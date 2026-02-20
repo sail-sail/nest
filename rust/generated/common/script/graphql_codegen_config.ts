@@ -51,6 +51,10 @@ const config: CodegenConfig = {
             "input": "any[]",
             "output": "any[]"
           },
+          "SmolStr": {
+            "input": "string",
+            "output": "string"
+          },
           ...getScalarsPC(),
         }
       }
@@ -98,6 +102,10 @@ const config: CodegenConfig = {
           "JSONArray": {
             "input": "any[]",
             "output": "any[]"
+          },
+          "SmolStr": {
+            "input": "string",
+            "output": "string"
           },
           ...getScalarsPC(),
         }
