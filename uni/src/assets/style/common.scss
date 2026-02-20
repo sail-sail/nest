@@ -4,9 +4,12 @@ page,.tmDrawerWrap,.tmModalWrap {
   width: 100%;
   height: 100%;
   --color-primary: #0163ff;
-  --color-readonly: #888888;
+  --color-readonly: #606266;
+  --color-placeholder: #a8abb2;
+  --color-border: #e6e6e6;
   --font-color: #333333;
   --font-size: 32rpx;
+  --font-size-sm: 28rpx;
   --page-bg: #fafafa;
   font-size: var(--font-size);
   background-color: var(--page-bg);
@@ -24,5 +27,5 @@ page,.tmDrawerWrap,.tmModalWrap {
 }
 
 .custom_input_placeholder {
-  color: var(--color-readonly) !important;
+  color: var(--color-placeholder);
 }

@@ -74,7 +74,7 @@
     <template
       v-else
     >
-      {{ modelValue || "" }}
+      {{ modelValue ?? "" }}
     </template>
     
     <view
@@ -131,6 +131,7 @@ const props = withDefaults(
     isDecimal?: boolean;
     isNumber?: boolean;
     precision?: number;
+    isHideZero?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -145,6 +146,7 @@ const props = withDefaults(
     isDecimal: false,
     isNumber: false,
     precision: 2,
+    isHideZero: true,
   },
 );
 
@@ -166,13 +168,13 @@ watch(
   () => props.modelValue,
   () => {
     if (props.modelValue instanceof Decimal) {
-      if (props.modelValue.isNaN() || props.modelValue.isZero()) {
+      if (props.modelValue.isNaN() || (props.isHideZero && props.modelValue.isZero())) {
         modelValue.value = "";
       } else {
         modelValue.value = props.modelValue.toString();
       }
     } else if (props.modelValue instanceof Number) {
-      if (props.modelValue == 0) {
+      if (props.isHideZero && props.modelValue == 0) {
         modelValue.value = "";
       } else {
         modelValue.value = props.modelValue.toString();
@@ -217,13 +219,13 @@ function onUpdateModelValue(value: string) {
 
 const shouldShowPlaceholder = $computed<boolean>(() => {
   if (props.isDecimal) {
-    return modelValue.value == null || modelValue.value === "" || new Decimal(modelValue.value).isZero();
+    return modelValue.value == null || modelValue.value === "" || (props.isHideZero && new Decimal(modelValue.value).isZero());
   }
   if (props.isNumber) {
-    return modelValue.value == null || modelValue.value === "" || Number(modelValue.value) == 0 || isNaN(Number(modelValue.value));
+    return modelValue.value == null || modelValue.value === "" || (props.isHideZero && Number(modelValue.value) == 0) || isNaN(Number(modelValue.value));
   }
   if (props.type === "number" || props.type === "digit" || props.type === "decimal") {
-    return modelValue.value == null || modelValue.value === "" || Number(modelValue.value) == 0 || isNaN(modelValue.value);
+    return modelValue.value == null || modelValue.value === "" || (props.isHideZero && Number(modelValue.value) == 0) || isNaN(modelValue.value);
   }
   return modelValue.value == null || modelValue.value === "";
 });

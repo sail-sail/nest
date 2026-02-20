@@ -238,6 +238,31 @@ if (searchByKeyword) {
         }
         const fieldPermit = column.fieldPermit;
         const isVirtual = column.isVirtual;
+        
+        let modelLabel = column.modelLabel;
+        let cascade_fields = [ ];
+        if (foreignKey) {
+          cascade_fields = foreignKey.cascade_fields || [ ];
+          if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+          } else if (modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+          }
+        }
+        if (foreignKey && foreignKey.lbl && !modelLabel) {
+          modelLabel = column_name + "_" + foreignKey.lbl;
+        } else if (!foreignKey && !modelLabel) {
+          modelLabel = column_name + "_lbl";
+        }
+        let hasModelLabel = !!column.modelLabel;
+        if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+          hasModelLabel = true;
+        } else if (foreignKey && foreignKey.lbl) {
+          hasModelLabel = true;
+        }
+        if (!column_comment) {
+          throw new Error(`表 ${ mod }_${ table } 的字段 ${ column_name } 没有注释，请补充注释后再生成`);
+        }
       #><#
         if (search) {
       #>
@@ -474,7 +499,7 @@ if (searchByKeyword) {
         >
           <SelectInput<#=Foreign_Table_Up#>
             v-model="<#=column_name#>_search"
-            v-model:model-label="search.<#=column_name#>_like"<#
+            v-model:model-label="search.<#=modelLabel#>_like"<#
             if (isUseI18n) {
             #>
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
@@ -3024,7 +3049,7 @@ const props = defineProps<{<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const canSearch = column.canSearch;
     if (!canSearch) continue;
     const column_name = column.COLUMN_NAME;
@@ -3981,9 +4006,8 @@ async function useFindCount(
   search: <#=searchName#>,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCount<#=Table_Up#>(
-    search2,
+    search,
     opt,
   );
 }<#
@@ -4084,22 +4108,27 @@ if (hasSummary) {
 #>
 
 /** 合计 */
-let summarys = $ref({ });
+let <#=table#>_summary = $ref<<#=Table_Up#>Summary>();
 
 async function dataSummary(
   search: <#=searchName#>,
 ) {
-  summarys = await findSummary<#=Table_Up#>(search);
+  <#=table#>_summary = await findSummary<#=Table_Up#>(search);
 }
 
 function summaryMethod(
-  summary: any,
+  summary: {
+    columns: TableColumnCtx<<#=modelName#>>[];
+  },
 ) {
-  const columns: TableColumnCtx<<#=modelName#>>[] = summary.columns;
+  if (!<#=table#>_summary) {
+    return [ ];
+  }
+  const columns = summary.columns;
   const sums: string[] = [ ];
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
-    let val = summarys[column.property] || "";
+    let val = <#=table#>_summary[column.property] ?? "";
     if (i === 0) {
       val = `合计: ${ val }`;
     }
@@ -5465,17 +5494,16 @@ watch(
     } = builtInSearch as any;
     return rest;
   }),
-  async function(oldVal, newVal) {
+  async function(newVal, oldVal) {
     if (!inited) {
       return;
     }
     if (isSearchReset) {
       return;
     }
-    if (deepCompare(oldVal, newVal)) {
+    if (deepCompare(newVal, oldVal)) {
       return;
     }
-    selectedIds = [ ];
     await dataGrid(true);
   },
   {

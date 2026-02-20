@@ -1687,6 +1687,36 @@ export async function updateByIdDomain(
   return id;
 }
 
+// MARK: updateByIdDomain
+/** 根据 id 更新域名, 并返回更新后的数据 */
+export async function updateByIdReturnDomain(
+  id: DomainId,
+  input: DomainInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<DomainModel> {
+  
+  await updateByIdDomain(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdDomain(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`域名 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsDomain
 /** 根据 ids 删除 域名 */
 export async function deleteByIdsDomain(

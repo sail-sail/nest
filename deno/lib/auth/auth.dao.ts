@@ -9,7 +9,7 @@ export { getPassword } from "./auth.constants.ts";
 
 import type {
   JWTPayload,
-} from "jose/index.ts";
+} from "jose";
 
 import {
   getAuthorization,
@@ -62,7 +62,7 @@ export async function getAuthModel<T extends AuthModel>(
     const {
       JWSSignatureVerificationFailed,
       JWTExpired,
-    } = await import("jose/util/errors.ts");
+    } = await import("jose/errors");
     if (err instanceof JWTExpired || err instanceof JWSSignatureVerificationFailed) {
       authModel = undefined;
       context.cacheMap.set("authModel", authModel);
@@ -152,7 +152,7 @@ export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expir
   }
   const {
     SignJWT,
-  } = await import("jose/index.ts");
+  } = await import("jose");
   const token = await new SignJWT(obj)
     .setExpirationTime(token_timeout+'s')
     .setProtectedHeader({ alg: "HS256" })
@@ -171,7 +171,7 @@ export async function createToken<T extends JWTPayload>(obj :T): Promise<{ expir
 export async function verifyToken<T extends JWTPayload>(authorization :string): Promise<T> {
   const {
     jwtVerify,
-  } = await import("jose/index.ts");
+  } = await import("jose");
   const { payload } = await jwtVerify(authorization, new TextEncoder().encode(SECRET_KEY));
   return <T>payload;
 }
@@ -184,7 +184,7 @@ export async function verifyToken<T extends JWTPayload>(authorization :string): 
 export async function decodeToken<T extends JWTPayload>(authorization :string): Promise<T> {
   const {
     decodeJwt,
-  } = await import("jose/index.ts");
+  } = await import("jose");
   const obj = <T>decodeJwt(authorization);
   return obj;
 }
@@ -197,7 +197,7 @@ export async function decodeToken<T extends JWTPayload>(authorization :string): 
 export async function refreshToken(authorization: string): Promise<{ expires_in: number, authorization: string }> {
   const {
     decodeJwt,
-  } = await import("jose/index.ts");
+  } = await import("jose");
   const obj = decodeJwt(authorization);
   if (!obj || !obj.exp) {
     throw new ServiceException("", "refresh_token_expired");
