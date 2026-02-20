@@ -33,7 +33,7 @@ pub async fn get_test_pay_opt(
   
   let request_payment_options = transactions_jsapi(
     TransactionsJsapiInput {
-      appid: appid.into(),
+      appid,
       description: "测试支付".into(),
       amount: Decimal::new(1, 2),
       attach2: json!({

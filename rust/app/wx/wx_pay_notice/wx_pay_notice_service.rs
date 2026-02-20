@@ -136,7 +136,7 @@ pub async fn wx_pay_notify(
   };
   let trade_state_desc = SmolStr::new(&wx_pay_resource.trade_state_desc);
   let bank_type = SmolStr::new(&wx_pay_resource.bank_type);
-  let attach = SmolStr::new(&wx_pay_resource.attach.unwrap_or_default());
+  let attach = SmolStr::new(wx_pay_resource.attach.unwrap_or_default());
   //  "2018-06-08T10:34:56+08:00"
   let success_time = chrono::NaiveDateTime::parse_from_str(&wx_pay_resource.success_time, "%Y-%m-%dT%H:%M:%S%z")?;
   let total = wx_pay_resource.amount.total;

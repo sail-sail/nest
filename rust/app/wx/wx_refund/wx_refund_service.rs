@@ -310,7 +310,7 @@ pub async fn refund(
     out_trade_no: Some(SmolStr::new(&refund_detail.out_trade_no)),
     transaction_id: Some(SmolStr::new(&refund_detail.transaction_id)),
     out_refund_no: Some(SmolStr::new(&refund_detail.out_refund_no)),
-    refund_id: refund_detail.refund_id.map(|s| SmolStr::new(s)),
+    refund_id: refund_detail.refund_id.map(SmolStr::new),
     reason: input.reason,
     attach2: input.attach2,
     notify_url: Some(refund_notify_url),

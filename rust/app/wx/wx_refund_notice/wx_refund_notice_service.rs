@@ -1,6 +1,7 @@
 use color_eyre::eyre::Result;
 use tracing::{info, error};
 
+#[allow(unused_imports)]
 use chrono::NaiveDate;
 
 use generated::common::context::{
