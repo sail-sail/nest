@@ -254,7 +254,7 @@ pub struct DictbizFieldComment {
   pub update_time_lbl: SmolStr,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DictbizSearch")]
 #[allow(dead_code)]
 pub struct DictbizSearch {
