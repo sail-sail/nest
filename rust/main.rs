@@ -497,6 +497,9 @@ async fn main() -> Result<(), std::io::Error> {
       post(app::wx::wx_refund_notice::wx_refund_notice_router::wx_refund_notify),
     );
     
+    // 注册 业务路由
+    app = app::register_routes(app);
+    
     app
   };
   let app = app
