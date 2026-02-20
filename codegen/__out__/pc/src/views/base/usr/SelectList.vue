@@ -73,7 +73,7 @@ import {
 import List from "./List.vue";
 
 const emit = defineEmits<{
-  (e: "change", value?: UsrModel | UsrModel[] | null): void,
+  (e: "change", value?: UsrModel | UsrModel[]): void,
 }>();
 
 let inited = $ref(false);

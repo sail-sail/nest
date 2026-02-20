@@ -4,7 +4,7 @@ use std::time::{SystemTime, SystemTimeError};
 use chrono::DateTime;
 use hmac::{Hmac, Mac};
 use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
-use rand::Rng;
+use rand::RngExt;
 use serde_json::{json, Value}; 
 use std::borrow::Cow;  
 use reqwest::{

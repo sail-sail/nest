@@ -673,7 +673,7 @@ async fn get_from_query(
 
 // MARK: find_all_dyn_page_field
 /// 根据搜索条件和分页查找动态页面字段列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_dyn_page_field(
   search: Option<DynPageFieldSearch>,
   page: Option<PageInput>,
@@ -3207,9 +3207,9 @@ pub async fn del_cache_dyn_page_field() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      format!("dao.sql.{x}")
+      SmolStr::new(format!("dao.sql.{x}"))
     )
-    .collect::<Vec<String>>();
+    .collect::<Vec<SmolStr>>();
   
   let cache_key1s_str = cache_key1s
     .iter()

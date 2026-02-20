@@ -302,7 +302,7 @@ pub struct RefundGoodsDetail {
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct RefundDetail {
   /// 【微信支付退款号】 微信支付退款号
-  pub refund_id: String,
+  pub refund_id: Option<String>,
   /// 【商户退款单号】 商户系统内部的退款单号，商户系统内部唯一，只能是数字、大小写字母_-|*@ ，同一退款单号多次请求只退一笔。
   pub out_refund_no: String,
   /// 【微信支付订单号】 微信支付交易订单号

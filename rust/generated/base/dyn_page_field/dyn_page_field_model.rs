@@ -337,7 +337,7 @@ pub struct DynPageFieldFieldComment {
   pub order_by: SmolStr,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageFieldSearch")]
 #[allow(dead_code)]
 pub struct DynPageFieldSearch {
@@ -821,13 +821,16 @@ impl_id!(DynPageFieldId);
 pub enum DynPageFieldAlign {
   /// 靠左
   #[graphql(name="left")]
+  #[serde(rename = "left")]
   Left,
   /// 居中
   #[default]
   #[graphql(name="center")]
+  #[serde(rename = "center")]
   Center,
   /// 靠右
   #[graphql(name="right")]
+  #[serde(rename = "right")]
   Right,
 }
 

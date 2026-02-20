@@ -1850,7 +1850,7 @@ pub async fn set_dyn_page_data_<#=table#>(
 
 // MARK: find_all_<#=table#>
 /// 根据搜索条件和分页查找<#=table_comment#>列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   page: Option<PageInput>,
@@ -5311,20 +5311,6 @@ async fn _creates(
   
   del_cache_<#=table#>().await?;<#
   }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
-  }
   #>
   
   let affected_rows = execute(
@@ -5458,20 +5444,6 @@ async fn _creates(
   #>
   
   del_cache_<#=table#>().await?;<#
-  }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
   }
   #>
   
@@ -5718,7 +5690,9 @@ pub async fn find_auto_code_<#=table#>(
   
   let <#=autoCodeColumn.autoCode.seq#> = model
     .as_ref()
-    .map_or(0, |item| item.<#=autoCodeColumn.autoCode.seq#>) + 1;
+    .map_or(0, |item| item.<#=autoCodeColumn.autoCode.seq#>) + 1;<#
+  if (hasIsDeleted) {
+  #>
   
   let model_deleted = find_one_<#=table#>(
     Some(<#=Table_Up#>Search {
@@ -5742,7 +5716,9 @@ pub async fn find_auto_code_<#=table#>(
     <#=autoCodeColumn.autoCode.seq#>_deleted
   } else {
     <#=autoCodeColumn.autoCode.seq#>
-  };
+  };<#
+  }
+  #>
   
   let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=autoCodeColumn.autoCode.seq#>:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
   
@@ -5806,45 +5782,52 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
       item.<#=dateSeq#>.format("%Y%m%d").to_string()
     );
   
-  let <#=autoCodeColumn.autoCode.seq#>: u32 = {
-    if <#=dateSeq#>_old.is_none() || <#=dateSeq#> != <#=dateSeq#>_old.unwrap() {
-      1
-    } else {
-      
-      let model_deleted = find_one_<#=table#>(
-        Some(<#=Table_Up#>Search {
-          <#=dateSeq#>: Some([model.as_ref().map(|item| item.<#=dateSeq#>), model.as_ref().map(|item| item.<#=dateSeq#>)]),
-          is_deleted: Some(0),
-          ..Default::default()
-        }),
-        Some(vec![
-          SortInput {
-            prop: "<#=dateSeq#>".into(),
-            order: SortOrderEnum::Desc,
-          },
-          SortInput {
-            prop: "<#=autoCodeColumn.autoCode.seq#>".into(),
-            order: SortOrderEnum::Desc,
-          },
-        ]),
-        options,
-      ).await?;
-      
-      let seq = model
-        .as_ref()
-        .map_or(0, |item| item.<#=autoCodeColumn.autoCode.seq#>) + 1;
-      
-      let seq_deleted = model_deleted
-        .as_ref()
-        .map_or(0, |item| item.<#=autoCodeColumn.autoCode.seq#>) + 1;
-      
-      if seq_deleted > seq {
-        seq_deleted
-      } else {
-        seq
-      }
-    }
-  };
+  // 今天未删除记录中的最大序号
+  let seq_from_normal = if <#=dateSeq#>_old.as_deref() == Some(<#=dateSeq#>.as_str()) {
+    model.as_ref().map_or(0, |item| item.<#=autoCodeColumn.autoCode.seq#>)
+  } else {
+    0
+  };<#
+  if (hasIsDeleted) {
+  #>
+  
+  // 今天已删除记录中的最大序号
+  let model_deleted = find_one_<#=table#>(
+    Some(<#=Table_Up#>Search {
+      <#=dateSeq#>: Some([<#
+  if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
+  #>Some(now.date()), Some(now.date())<#
+  } else if (dateSeqColumn.DATA_TYPE.toLowerCase() === "datetime") {
+  #>Some(now), Some(now)<#
+  }
+  #>]),
+      is_deleted: Some(1),
+      ..Default::default()
+    }),
+    Some(vec![
+      SortInput {
+        prop: "<#=dateSeq#>".into(),
+        order: SortOrderEnum::Desc,
+      },
+      SortInput {
+        prop: "<#=autoCodeColumn.autoCode.seq#>".into(),
+        order: SortOrderEnum::Desc,
+      },
+    ]),
+    options,
+  ).await?;
+  
+  let seq_from_deleted = model_deleted
+    .as_ref()
+    .map_or(0, |item| item.<#=autoCodeColumn.autoCode.seq#>);
+  
+  let <#=autoCodeColumn.autoCode.seq#>: u32 = seq_from_normal.max(seq_from_deleted) + 1;<#
+  } else {
+  #>
+  
+  let <#=autoCodeColumn.autoCode.seq#>: u32 = seq_from_normal + 1;<#
+  }
+  #>
   
   let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=dateSeq#>}{<#=autoCodeColumn.autoCode.seq#>:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
   
@@ -7329,22 +7312,6 @@ pub async fn update_by_id_<#=table#>(
     del_cache_<#=table#>().await?;
   }<#
   }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  if field_num > 0 {
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-  }<#
-  }
   #>
   
   if field_num > 0 {<#
@@ -7569,20 +7536,6 @@ pub async fn update_by_id_<#=table#>(
     
     del_cache_<#=table#>().await?;<#
     }
-    #><#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
     #>
     
   }<#
@@ -7728,7 +7681,7 @@ pub async fn del_cache_<#=table#>() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      format!("dao.sql.{x}")
+      SmolStr::new(format!("dao.sql.{x}"))
     )<#
     if (
       cache &&
@@ -7738,10 +7691,10 @@ pub async fn del_cache_<#=table#>() -> Result<()> {
       (mod === "base" && table === "usr")
     ) {
     #>
-    .chain(vec!["dao.sql.base_menu._getMenus".to_owned()])<#
+    .chain(vec![SmolStr::new("dao.sql.base_menu._getMenus")])<#
     }
     #>
-    .collect::<Vec<String>>();
+    .collect::<Vec<SmolStr>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -7803,20 +7756,6 @@ pub async fn delete_by_ids_<#=table#>(
   #>
   
   del_cache_<#=table#>().await?;<#
-  }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
   }
   #><#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -8260,20 +8199,6 @@ pub async fn delete_by_ids_<#=table#>(
   
   del_cache_<#=table#>().await?;<#
   }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
-  }
   #>
   
   if num > MAX_SAFE_INTEGER {
@@ -8382,18 +8307,10 @@ pub async fn delete_by_ids_<#=table#>(
   ).await?;<#
   }
   #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
+  if (cache) {
   #>
   
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
+  del_cache_<#=table#>().await?;<#
   }
   #>
   
@@ -8429,20 +8346,6 @@ pub async fn default_by_id_<#=table#>(
   #>
   
   del_cache_<#=table#>().await?;<#
-  }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
   }
   #>
   
@@ -8485,20 +8388,6 @@ pub async fn default_by_id_<#=table#>(
   #>
   
   del_cache_<#=table#>().await?;<#
-  }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
   }
   #>
   
@@ -8571,20 +8460,6 @@ pub async fn enable_by_ids_<#=table#>(
   
   del_cache_<#=table#>().await?;<#
   }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
-  }
   #>
   
   let options = Options::from(options)
@@ -8612,20 +8487,6 @@ pub async fn enable_by_ids_<#=table#>(
   #>
   
   del_cache_<#=table#>().await?;<#
-  }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
   }
   #>
   
@@ -8699,20 +8560,6 @@ pub async fn lock_by_ids_<#=table#>(
   
   del_cache_<#=table#>().await?;<#
   }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
-  }
   #>
   
   let options = Options::from(options)
@@ -8740,20 +8587,6 @@ pub async fn lock_by_ids_<#=table#>(
   #>
   
   del_cache_<#=table#>().await?;<#
-  }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
   }
   #>
   
@@ -8800,20 +8633,6 @@ pub async fn revert_by_ids_<#=table#>(
   #>
   
   del_cache_<#=table#>().await?;<#
-  }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
   }
   #>
   
@@ -9135,20 +8954,6 @@ pub async fn revert_by_ids_<#=table#>(
   
   del_cache_<#=table#>().await?;<#
   }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
-  }
   #>
   
   Ok(num)
@@ -9201,20 +9006,6 @@ pub async fn force_delete_by_ids_<#=table#>(
   #>
   
   del_cache_<#=table#>().await?;<#
-  }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
   }
   #>
   
@@ -9369,20 +9160,6 @@ pub async fn force_delete_by_ids_<#=table#>(
     #><#
     }
     #><#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -9504,20 +9281,6 @@ pub async fn force_delete_by_ids_<#=table#>(
   #>
   
   del_cache_<#=table#>().await?;<#
-  }
-  #><#
-  if (
-    cache &&
-    (mod === "base" && table === "tenant") ||
-    (mod === "base" && table === "role") ||
-    (mod === "base" && table === "menu") ||
-    (mod === "base" && table === "usr")
-  ) {
-  #>
-  
-  del_caches(
-    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-  ).await?;<#
   }
   #>
   

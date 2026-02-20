@@ -126,9 +126,9 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: DynPageId | DynPageId[] | null): void,
+  (e: "update:modelValue", value?: DynPageId | DynPageId[]): void,
   (e: "update:modelLabel", value?: string): void,
-  (e: "change", value?: DynPageModel | (DynPageModel | undefined)[] | null): void,
+  (e: "change", value?: DynPageModel | DynPageModel[]): void,
   (e: "clear"): void,
 }>();
 
@@ -395,7 +395,7 @@ function blur() {
   wrapperRef.focus();
 }
 
-async function onSelectList(value?: DynPageModel | (DynPageModel | undefined)[] | null) {
+async function onSelectList(value?: DynPageModel | DynPageModel[]) {
   selectedValue = value;
   if (props.multiple) {
     if (oldInputValue !== inputValue) {
