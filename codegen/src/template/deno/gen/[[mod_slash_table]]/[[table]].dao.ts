@@ -278,7 +278,29 @@ import {
   hash,<#
   }
   #>
-} from "/lib/util/string_util.ts";
+} from "/lib/util/string_util.ts";<#
+let hasAttOrImg = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.isVirtual) continue;
+  const column_name = column.COLUMN_NAME;
+  const column_comment = column.COLUMN_COMMENT;
+  const isAtt = column.isAtt;
+  const isImg = column.isImg;
+  if (!isAtt && !isImg) continue;
+  hasAttOrImg = true;
+  break;
+}
+#><#
+if (hasAttOrImg) {
+#>
+
+import {
+  deleteObject,
+} from "/lib/oss/oss.dao.ts";<#
+}
+#>
 
 import { ServiceException } from "/lib/exceptions/service.exception.ts";<#
 if (opts?.isUseDynPageFields) {
@@ -3422,12 +3444,27 @@ export async function findSummary<#=Table_Up#>(
   #><#
   }
   #> from ${ await getFromQuery(args, search, options) } where ${ await getWhereQuery(args, search, options) }
-  `;
+  `;<#
+  if (cache) {
+  #>
   
   const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });
+  const cacheKey2 = JSON.stringify({ sql, args });<#
+  }
+  #>
   
-  const model = (await queryOne<<#=Table_Up#>Summary>(sql, args, { cacheKey1, cacheKey2 }))!;
+  const model = (await queryOne<<#=Table_Up#>Summary>(
+    sql,
+    args,<#
+    if (cache) {
+    #>
+    {
+      cacheKey1,
+      cacheKey2,
+    },<#
+    }
+    #>
+  ))!;
   
   return model;
 }<#
@@ -4088,7 +4125,8 @@ export async function validate<#=Table_Up#>(
   
 }<#
 const autoCodeColumn = columns.find((item) => item.autoCode);
-if (autoCodeColumn) {
+const dateSeq = autoCodeColumn?.autoCode?.dateSeq;
+if (autoCodeColumn && !dateSeq) {
 #>
 
 // MARK: findAutoCode<#=Table_Up#>
@@ -4112,10 +4150,7 @@ export async function findAutoCode<#=Table_Up#>(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
-  }<#
-  const dateSeq = autoCodeColumn.autoCode.dateSeq;
-  if (!dateSeq) {
-  #>
+  }
   
   const model = await findOne<#=Table_Up#>(
     undefined,
@@ -4126,6 +4161,10 @@ export async function findAutoCode<#=Table_Up#>(
       },
     ],
   );
+  
+  let <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;<#
+  if (hasIsDeleted) {
+  #>
   
   const model_deleted = await findOne<#=Table_Up#>(
     {
@@ -4139,11 +4178,12 @@ export async function findAutoCode<#=Table_Up#>(
     ],
   );
   
-  let <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
   const <#=autoCodeColumn.autoCode.seq#>_deleted = (model_deleted?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
   if (<#=autoCodeColumn.autoCode.seq#>_deleted > <#=autoCodeColumn.autoCode.seq#>) {
     <#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>_deleted;
   }<#
+  }
+  #><#
   if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
   const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString()<#
@@ -4178,10 +4218,34 @@ export async function findAutoCode<#=Table_Up#>(
   return {
     <#=autoCodeColumn.autoCode.seq#>,
     <#=autoCodeColumn.COLUMN_NAME#>,
-  };<#
-  } else {
-    const dateFormat = autoCodeColumn.autoCode.dateFormat || "YYYYMMDD";
-  #>
+  };
+}<#
+} else if (autoCodeColumn && dateSeq) {
+  const dateFormat = autoCodeColumn.autoCode.dateFormat || "YYYYMMDD";
+#>
+
+// MARK: findAutoCode<#=Table_Up#>
+/** 获得 <#=table_comment#> 自动编码 */
+export async function findAutoCode<#=Table_Up#>(
+  options?: {
+    is_debug?: boolean;
+  },
+) {
+  
+  const table = getTableName<#=Table_Up#>();
+  const method = "findAutoCode<#=Table_Up#>";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
   
   const model = await findOne<#=Table_Up#>(
     undefined,
@@ -4202,32 +4266,41 @@ export async function findAutoCode<#=Table_Up#>(
   
   const <#=dateSeq#>_old = dayjs(model?.<#=dateSeq#>).format("<#=dateFormat#>");
   
-  let <#=autoCodeColumn.autoCode.seq#> = 0;
-  if (<#=dateSeq#> !== <#=dateSeq#>_old) {
-    <#=autoCodeColumn.autoCode.seq#> = 1;
-  } else {
-    <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
-    const model_deleted = await findOne<#=Table_Up#>(
+  // 今天未删除记录中的最大序号
+  const seq_from_normal = (<#=dateSeq#>_old === <#=dateSeq#>)
+    ? (model?.<#=autoCodeColumn.autoCode.seq#> || 0)
+    : 0;<#
+  if (hasIsDeleted) {
+  #>
+  
+  // 今天已删除记录中的最大序号
+  const model_deleted = await findOne<#=Table_Up#>(
+    {
+      <#=dateSeq#>: [ nowDate, nowDate ],
+      is_deleted: 1,
+    },
+    [
       {
-        <#=dateSeq#>: [ model?.<#=dateSeq#> || <#=dateSeq#>, model?.<#=dateSeq#> || <#=dateSeq#> ],
-        is_deleted: 1,
+        prop: "<#=dateSeq#>",
+        order: SortOrderEnum.Desc,
       },
-      [
-        {
-          prop: "<#=dateSeq#>",
-          order: SortOrderEnum.Desc,
-        },
-        {
-          prop: "<#=autoCodeColumn.autoCode.seq#>",
-          order: SortOrderEnum.Desc,
-        },
-      ],
-    );
-    const <#=autoCodeColumn.autoCode.seq#>_deleted = (model_deleted?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
-    if (<#=autoCodeColumn.autoCode.seq#>_deleted > <#=autoCodeColumn.autoCode.seq#>) {
-      <#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>_deleted;
-    }
-  }<#
+      {
+        prop: "<#=autoCodeColumn.autoCode.seq#>",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );
+  
+  const seq_from_deleted = model_deleted?.<#=autoCodeColumn.autoCode.seq#> || 0;
+  
+  const <#=autoCodeColumn.autoCode.seq#> = Math.max(seq_from_normal, seq_from_deleted) + 1;<#
+  } else {
+  #>
+  
+  const <#=autoCodeColumn.autoCode.seq#> = seq_from_normal + 1;<#
+  }
+  #>
+<#
   if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
   const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
@@ -4263,9 +4336,7 @@ export async function findAutoCode<#=Table_Up#>(
     <#=dateSeq#>,
     <#=autoCodeColumn.autoCode.seq#>,
     <#=autoCodeColumn.COLUMN_NAME#>,
-  };<#
-  }
-  #>
+  };
 }<#
 }
 #>
@@ -6699,6 +6770,41 @@ export async function updateById<#=Table_Up#>(
   return id;
 }
 
+// MARK: updateById<#=Table_Up#>
+/** 根据 id 更新<#=table_comment#>, 并返回更新后的数据 */
+export async function updateByIdReturn<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  input: <#=Table_Up#>Input,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
+  },
+): Promise<<#=Table_Up#>Model> {
+  
+  await updateById<#=Table_Up#>(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findById<#=Table_Up#>(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`<#=table_comment#> 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIds<#=Table_Up#>
 /** 根据 ids 删除 <#=table_comment#> */
 export async function deleteByIds<#=Table_Up#>(
@@ -7039,6 +7145,27 @@ export async function deleteByIds<#=Table_Up#>(
       }
       #>
     }<#
+    }
+    #><#
+    }
+    #><#
+    if (!hasIsDeleted) {
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const isAtt = column.isAtt;
+      const isImg = column.isImg;
+      if (!isAtt && !isImg) continue;
+    #>
+    
+    // <#=column_comment#>
+    await deleteObject(
+      oldModel?.<#=column_name#>,
+    );<#
     }
     #><#
     }
@@ -7802,6 +7929,23 @@ export async function forceDeleteByIds<#=Table_Up#>(
     }<#
     }
     #><#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const isAtt = column.isAtt;
+      const isImg = column.isImg;
+      if (!isAtt && !isImg) continue;
+    #>
+    
+    // <#=column_comment#>
+    await deleteObject(
+      oldModel?.<#=column_name#>,
+    );<#
     }
     #>
   }<#

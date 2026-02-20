@@ -1832,6 +1832,36 @@ export async function updateByIdDict(
   return id;
 }
 
+// MARK: updateByIdDict
+/** 根据 id 更新系统字典, 并返回更新后的数据 */
+export async function updateByIdReturnDict(
+  id: DictId,
+  input: DictInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<DictModel> {
+  
+  await updateByIdDict(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdDict(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`系统字典 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsDict
 /** 根据 ids 删除 系统字典 */
 export async function deleteByIdsDict(

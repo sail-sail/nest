@@ -1853,6 +1853,36 @@ export async function updateByIdOptbiz(
   return id;
 }
 
+// MARK: updateByIdOptbiz
+/** 根据 id 更新业务选项, 并返回更新后的数据 */
+export async function updateByIdReturnOptbiz(
+  id: OptbizId,
+  input: OptbizInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<OptbizModel> {
+  
+  await updateByIdOptbiz(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdOptbiz(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`业务选项 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsOptbiz
 /** 根据 ids 删除 业务选项 */
 export async function deleteByIdsOptbiz(

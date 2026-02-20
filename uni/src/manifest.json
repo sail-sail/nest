@@ -52,7 +52,7 @@
     "mp-weixin" : {
         "appid" : "wxd4b24c53a1813485",
         "setting" : {
-            "es6": false,
+            "es6": true,
             "es7": false,
             "swc": true,
             "urlCheck": false,
@@ -62,7 +62,8 @@
             "ignoreDevUnusedFiles": true,
             "checkInvalidKey": false,
             "showES6CompileOption": false,
-            "compileHotReLoad": true
+            "compileHotReLoad": true,
+            "lazyCodeLoading": "requiredComponents"
         },
         "usingComponents" : true
     },

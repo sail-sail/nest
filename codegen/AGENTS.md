@@ -15,7 +15,7 @@
 | `codegen/src/tables/{mod}/{mod}.ts` | 表的相关配置,外键等 |  |
 | `codegen/src/tables/{mod}/{mod}_{table}.sql.csv` | 表的初始数据 |  |
 
-⚠️ `codegen/__out__` 目录为代码生成输出目录，禁止修改
+⚠️ `codegen/__out__` 目录为代码生成输出目录，禁止修改也无读取的必要
 
 ## 可用 Skills (.github/skills/)
 
@@ -23,6 +23,23 @@
 - `create-table` - 数据库建表规范。创建新表时必须遵循
 - `dict` - 系统字典和业务字典配置。建表需要枚举字段或给表添加枚举类字段时使用
 - `table-config` - 表字段配置规范。建表后配置 src/tables/{mod}/{mod}.ts 文件时使用
+
+## 代码格式规范
+- 无论是前端还是后端, 函数调用和定义的参数都尽量拆行, 例如:
+
+```typescript
+pay_order(booking_order_id, amt, success_time);
+```
+
+应改为:
+
+```typescript
+pay_order(
+  booking_order_id,
+  amt,
+  success_time
+);
+```
 
 ## 全局配置
 
@@ -43,3 +60,7 @@ await manual.chrome_devtools_mcp.tool()
 // ✅ 正确  
 await chrome_devtools_mcp.chrome_devtools_tool()
 ```
+
+# 记忆 memory MCP 使用
+- 若当下有 memory 相关 MCP 存在, 则你判断到知识点需要记忆时, 可用 memory 相关 MCP 进行记忆存储
+- 若判断到当下可能需要回忆之前记忆的知识点时, 可用 memory 相关 MCP 进行记忆回忆

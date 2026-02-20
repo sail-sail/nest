@@ -1822,6 +1822,36 @@ export async function updateByIdBackgroundTask(
   return id;
 }
 
+// MARK: updateByIdBackgroundTask
+/** 根据 id 更新后台任务, 并返回更新后的数据 */
+export async function updateByIdReturnBackgroundTask(
+  id: BackgroundTaskId,
+  input: BackgroundTaskInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<BackgroundTaskModel> {
+  
+  await updateByIdBackgroundTask(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdBackgroundTask(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`后台任务 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsBackgroundTask
 /** 根据 ids 删除 后台任务 */
 export async function deleteByIdsBackgroundTask(

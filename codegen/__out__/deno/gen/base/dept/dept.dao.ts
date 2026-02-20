@@ -2071,6 +2071,36 @@ export async function updateByIdDept(
   return id;
 }
 
+// MARK: updateByIdDept
+/** 根据 id 更新部门, 并返回更新后的数据 */
+export async function updateByIdReturnDept(
+  id: DeptId,
+  input: DeptInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<DeptModel> {
+  
+  await updateByIdDept(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdDept(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`部门 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsDept
 /** 根据 ids 删除 部门 */
 export async function deleteByIdsDept(

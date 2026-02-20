@@ -5,10 +5,12 @@
   un-cursor="pointer"
   class="custom_date"
   :class="{
-    'custom_between_date_readonly': readonly,
+    'custom_between_date_readonly': _readonly,
     'custom_between_date_page_inited': props.pageInited,
   }"
-  :disabled="readonly"
+  :disabled="_readonly"
+  :start="_start"
+  :end="_end"
   v-bind="$attrs"
   @confirm="onConfirm"
 >
@@ -26,7 +28,7 @@
       >
         
         <view
-          v-if="!props.readonly"
+          v-if="!_readonly"
           un-text="[var(--color-readonly)]"
         >
           {{ props.placeholder }}
@@ -79,6 +81,8 @@ const props = withDefaults(
     clearable?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
+    start?: string;
+    end?: string;
   }>(),
   {
     readonly: undefined,
@@ -86,16 +90,19 @@ const props = withDefaults(
     clearable: undefined,
     placeholder: "(全部)",
     readonlyPlaceholder: "(全部)",
+    start: undefined,
+    end: undefined,
   },
 );
 
 const emit = defineEmits<{
   (e: "change", value?: string[]): void;
+  (e: "confirm", value?: string[]): void;
 }>();
 
 const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
 
-const readonly = $computed(() => {
+const _readonly = $computed(() => {
   if (props.readonly != null) {
     return props.readonly;
   }
@@ -103,6 +110,27 @@ const readonly = $computed(() => {
     return tmFormItemReadonly.value;
   }
   return;
+});
+
+// start 跟 end 模拟设置为 3 年内的日期范围
+const _start = $computed(() => {
+  if (props.start) {
+    return props.start;
+  }
+  const date = dayjs(modelValue.value[0] || undefined).subtract(3, "year");
+  if (date.isValid()) {
+    return date.format("YYYY-MM-DD");
+  }
+});
+
+const _end = $computed(() => {
+  if (props.end) {
+    return props.end;
+  }
+  const date = dayjs(modelValue.value[1] || undefined);
+  if (date.isValid()) {
+    return date.format("YYYY-MM-DD");
+  }
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -113,6 +141,7 @@ const modelValue = defineModel<any[]>({
 
 function onConfirm(value: string[]) {
   emit("change", value);
+  emit("confirm", value);
 }
 </script>
 
