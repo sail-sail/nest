@@ -138,7 +138,7 @@ import TreeList from "./TreeList.vue";<#
 #>
 
 const emit = defineEmits<{
-  (e: "change", value?: <#=modelName#> | <#=modelName#>[] | null): void,
+  (e: "change", value?: <#=modelName#> | <#=modelName#>[]): void,
 }>();<#
 if (isUseI18n) {
 #>

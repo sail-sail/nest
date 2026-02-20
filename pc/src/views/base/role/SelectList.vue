@@ -73,7 +73,7 @@ import {
 import List from "./List.vue";
 
 const emit = defineEmits<{
-  (e: "change", value?: RoleModel | RoleModel[] | null): void,
+  (e: "change", value?: RoleModel | RoleModel[]): void,
 }>();
 
 let inited = $ref(false);
