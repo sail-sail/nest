@@ -19,13 +19,13 @@
     "graphql": "16.12.0",
     "graphql-combine-query": "1.2.4",
     "vue": "3.5.28",
-    "vue-router": "5.0.2"
+    "vue-router": "5.0.3"
   },
   "devDependencies": {
     "@nuxt/eslint": "1.15.1",
     "@nuxt/icon": "2.2.1",
     "@types/file-saver": "2.0.7",
-    "@types/node": "25.2.3",
+    "@types/node": "25.3.0",
     "@unocss/nuxt": "66.6.0",
     "@unocss/preset-rem-to-px": "66.6.0",
     "@unocss/transformer-directives": "66.6.0",
