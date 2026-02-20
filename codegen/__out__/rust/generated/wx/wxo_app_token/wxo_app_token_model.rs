@@ -210,7 +210,7 @@ pub struct WxoAppTokenFieldComment {
   pub expires_in: SmolStr,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxoAppTokenSearch")]
 #[allow(dead_code)]
 pub struct WxoAppTokenSearch {
