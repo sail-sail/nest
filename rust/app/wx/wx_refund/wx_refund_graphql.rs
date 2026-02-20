@@ -13,10 +13,11 @@ use super::wx_refund_resolver;
 #[derive(Default)]
 pub struct WxRefundQuery;
 
-#[Object(name = "snake_case")]
+#[Object(rename_args = "snake_case")]
 impl WxRefundQuery {
   
   /// 查询退款状态
+  #[graphql(name = "tradeStateWxRefund")]
   async fn trade_state_wx_refund(
     &self,
     ctx: &Context<'_>,

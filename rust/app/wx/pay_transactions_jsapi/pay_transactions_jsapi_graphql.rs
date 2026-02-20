@@ -39,10 +39,11 @@ impl PayTransactionsJsapiMutation {
   
 }
 
-#[Object(name = "snake_case")]
+#[Object(rename_args = "snake_case")]
 impl PayTransactionsJsapiQuery {
   
   /// 通过 out_trade_no 查询支付状态
+  #[graphql(name = "tradeStatePayTransactionsJsapi")]
   async fn trade_state_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
