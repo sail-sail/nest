@@ -298,7 +298,7 @@ export interface TableCloumn {
     },
     
     /**
-     * 列表页面上的显示方式 tag: 标签, dialog: 弹窗, link: 链接, 默认为: tag
+     * 多对多列表页面上的显示方式 tag: 标签, dialog: 弹窗, link: 链接, 默认为: tag
      */
     showType?: "tag" | "dialog" | "link";
     
@@ -1070,6 +1070,10 @@ export interface TablesConfigItem {
         right_field?: string;
         is_export_excel?: boolean;
       } | boolean;
+      /**
+       * Detail页面中是否有查看详情弹窗, 例如被外键关联引用时, 默认为false
+       */
+      hasDetailModal?: boolean;
     };
     
     /**

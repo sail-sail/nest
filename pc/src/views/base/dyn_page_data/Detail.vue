@@ -319,8 +319,6 @@ const {
   refreshDynPageFields,
 } = $(useDynPageFields(pagePath));
 
-refreshDynPageFields();
-
 /** 有公式的字段 */
 const dyn_page_field_formula_models = $computed(() => {
   return dyn_page_field_models.filter((fm) => fm.formula);
