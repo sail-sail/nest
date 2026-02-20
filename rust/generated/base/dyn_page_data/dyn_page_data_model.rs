@@ -178,7 +178,7 @@ pub struct DynPageDataFieldComment {
   pub dyn_page_data: JSONObject,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageDataSearch")]
 #[allow(dead_code)]
 pub struct DynPageDataSearch {
