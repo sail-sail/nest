@@ -463,17 +463,10 @@ pub async fn find_all_wx_refund_notice(
   
   let mut sort = sort.unwrap_or_default();
   
-  if !sort.iter().any(|item| item.prop == "success_time") {
-    sort.push(SortInput {
-      prop: "success_time".into(),
-      order: SortOrderEnum::Desc,
-    });
-  }
-  
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
-      order: SortOrderEnum::Asc,
+      order: SortOrderEnum::Desc,
     });
   }
   

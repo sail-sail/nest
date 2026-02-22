@@ -484,7 +484,7 @@
                 <el-link
                   type="primary"
                   @click="openForeignPage(
-                    '微信退款申请',
+                    '微信支付结果通知',
                     row.refund_id,
                     {
                       refund_id: row.refund_id,
@@ -1272,7 +1272,7 @@ async function useFindCount(
 }
 
 const _defaultSort: Sort = {
-  prop: "success_time",
+  prop: "create_time",
   order: "descending",
 };
 

@@ -698,7 +698,7 @@ export default defineConfig({
       noRevert: true,
       noForceDelete: true,
       defaultSort: {
-        prop: "success_time",
+        prop: "create_time",
         order: "descending",
       },
     },
@@ -740,7 +740,7 @@ export default defineConfig({
         width: 250,
         notForeignKeyById: true,
         foreignPage: {
-          routeName: "微信退款申请",
+          routeName: "微信支付结果通知",
           tabNameField: "refund_id",
           query: {
             refund_id: "refund_id",
@@ -839,7 +839,7 @@ export default defineConfig({
       noRevert: true,
       noForceDelete: true,
       defaultSort: {
-        prop: "success_time",
+        prop: "create_time",
         order: "descending",
       },
     },

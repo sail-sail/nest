@@ -129,10 +129,10 @@ pub async fn wx_refund_notify(
     _ => WxRefundNoticeRefundStatus::Abnormal,
   };
 
-  // 根据 transaction_id 查询 wx_refund，更新其状态
+  // 根据 refund_id 查询 wx_refund，更新其状态
   let wx_refund_model = find_one_wx_refund(
     Some(generated::wx::wx_refund::wx_refund_model::WxRefundSearch {
-      transaction_id: Some(transaction_id.clone()),
+      refund_id: Some(refund_id.clone()),
       ..Default::default()
     }),
     None,
@@ -143,9 +143,8 @@ pub async fn wx_refund_notify(
     Some(model) => model,
     None => {
       error!(
-        "{req_id} No matching wx_refund_model found for transaction_id: {transaction_id}",
+        "{req_id} No matching wx_refund_model found for refund_id: {refund_id}",
         req_id = get_req_id(),
-        transaction_id = transaction_id,
       );
       return Ok(());
     }
