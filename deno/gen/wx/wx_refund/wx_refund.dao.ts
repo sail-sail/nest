@@ -466,16 +466,9 @@ export async function findAllWxRefund(
   sort = sort.filter((item) => item.prop);
   
   sort.push({
-    prop: "success_time",
+    prop: "create_time",
     order: SortOrderEnum.Desc,
   });
-  
-  if (!sort.some((item) => item.prop === "create_time")) {
-    sort.push({
-      prop: "create_time",
-      order: SortOrderEnum.Desc,
-    });
-  }
   for (let i = 0; i < sort.length; i++) {
     const item = sort[i];
     if (i === 0) {
