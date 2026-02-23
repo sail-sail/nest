@@ -685,6 +685,17 @@ impl Ctx {
         }
       };
     }
+    let is_sql_debug = match &options {
+      Some(options) => options.is_sql_debug.unwrap_or_default(),
+      None => false,
+    };
+    if is_sql_debug {
+      let debug_sql = get_debug_sql(&sql, &args);
+      info!(
+        "{req_id} {debug_sql}",
+        req_id = self.req_id,
+      );
+    }
     let db_pool = db_pool();
     let res = query.execute(&db_pool).await;
     if res.is_err() {
@@ -889,6 +900,17 @@ impl Ctx {
     } else {
       db_pool()
     };
+    let is_sql_debug = match &options {
+      Some(options) => options.is_sql_debug.unwrap_or_default(),
+      None => false,
+    };
+    if is_sql_debug {
+      let debug_sql = get_debug_sql(&sql, &args);
+      info!(
+        "{req_id} {debug_sql}",
+        req_id = self.req_id,
+      );
+    }
     let res = query.fetch_all(&db_pool).await;
     if res.is_err() {
       let debug_sql = get_debug_sql(&sql, &args);
@@ -1088,6 +1110,17 @@ impl Ctx {
     } else {
       db_pool()
     };
+    let is_sql_debug = match &options {
+      Some(options) => options.is_sql_debug.unwrap_or_default(),
+      None => false,
+    };
+    if is_sql_debug {
+      let debug_sql = get_debug_sql(&sql, &args);
+      info!(
+        "{req_id} {debug_sql}",
+        req_id = self.req_id,
+      );
+    }
     let res = query.fetch_optional(&db_pool).await;
     if res.is_err() {
       let debug_sql = get_debug_sql(&sql, &args);
@@ -1584,8 +1617,11 @@ impl From<&[u8; 22]> for ArgType {
 #[derive(Default, Copy, Clone)]
 pub struct Options {
   
-  /// 是否打印sql调试语句
+  /// 是否打印函数调用参数
   is_debug: Option<bool>,
+  
+  /// 是否打印sql调试语句
+  is_sql_debug: Option<bool>,
   
   /// 指定当前函数的sql是否开启事务
   is_tran: Option<bool>,
@@ -1617,6 +1653,7 @@ impl Options {
   pub fn new() -> Options {
     Options {
       is_debug: None,
+      is_sql_debug: None,
       is_tran: None,
       unique_type: None,
       is_encrypt: None,
@@ -1635,6 +1672,9 @@ impl Debug for Options {
     let mut item = &mut f.debug_struct("Options");
     if let Some(is_debug) = self.is_debug {
       item = item.field("is_debug", &is_debug);
+    }
+    if let Some(is_sql_debug) = self.is_sql_debug {
+      item = item.field("is_sql_debug", &is_sql_debug);
     }
     if let Some(is_tran) = self.is_tran
       && is_tran {
@@ -1681,6 +1721,18 @@ impl Options {
   pub fn set_is_debug(self, is_debug: Option<bool>) -> Self {
     let mut self_ = self;
     self_.is_debug = is_debug;
+    self_
+  }
+  
+  #[inline]
+  pub fn get_is_sql_debug(&self) -> Option<bool> {
+    self.is_sql_debug
+  }
+  
+  #[inline]
+  pub fn set_is_sql_debug(self, is_sql_debug: Option<bool>) -> Self {
+    let mut self_ = self;
+    self_.is_sql_debug = is_sql_debug;
     self_
   }
   
