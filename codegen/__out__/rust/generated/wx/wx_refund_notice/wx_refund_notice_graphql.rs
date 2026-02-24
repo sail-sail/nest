@@ -37,10 +37,14 @@ impl WxRefundNoticeGenQuery {
   async fn find_all_wx_refund_notice(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxRefundNoticeSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<WxRefundNoticeModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl WxRefundNoticeGenQuery {
   async fn find_count_wx_refund_notice(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxRefundNoticeSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl WxRefundNoticeGenQuery {
   async fn find_one_wx_refund_notice(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxRefundNoticeSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<WxRefundNoticeModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl WxRefundNoticeGenQuery {
   async fn find_one_ok_wx_refund_notice(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxRefundNoticeSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<WxRefundNoticeModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl WxRefundNoticeGenQuery {
   async fn find_by_id_wx_refund_notice(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxRefundNoticeId,
   ) -> Result<Option<WxRefundNoticeModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl WxRefundNoticeGenQuery {
   async fn find_by_id_ok_wx_refund_notice(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxRefundNoticeId,
   ) -> Result<WxRefundNoticeModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl WxRefundNoticeGenQuery {
   async fn find_by_ids_wx_refund_notice(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxRefundNoticeId>,
   ) -> Result<Vec<WxRefundNoticeModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl WxRefundNoticeGenQuery {
   async fn find_by_ids_ok_wx_refund_notice(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxRefundNoticeId>,
   ) -> Result<Vec<WxRefundNoticeModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl WxRefundNoticeGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<WxRefundNoticeFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -213,8 +234,10 @@ impl WxRefundNoticeGenMutation {
   async fn no_add_no_edit_wx_refund_notice(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "input")]
     input: WxRefundNoticeInput,
   ) -> Result<WxRefundNoticeId> {
+    
     Err(eyre!(""))
   }
   
@@ -223,9 +246,12 @@ impl WxRefundNoticeGenMutation {
   async fn update_tenant_by_id_wx_refund_notice(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxRefundNoticeId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

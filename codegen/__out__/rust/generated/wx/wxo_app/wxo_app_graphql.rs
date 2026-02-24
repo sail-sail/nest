@@ -37,10 +37,14 @@ impl WxoAppGenQuery {
   async fn find_all_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxoAppSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<WxoAppModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl WxoAppGenQuery {
   async fn find_count_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxoAppSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl WxoAppGenQuery {
   async fn find_one_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxoAppSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<WxoAppModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl WxoAppGenQuery {
   async fn find_one_ok_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxoAppSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<WxoAppModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl WxoAppGenQuery {
   async fn find_by_id_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxoAppId,
   ) -> Result<Option<WxoAppModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl WxoAppGenQuery {
   async fn find_by_id_ok_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxoAppId,
   ) -> Result<WxoAppModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl WxoAppGenQuery {
   async fn find_by_ids_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxoAppId>,
   ) -> Result<Vec<WxoAppModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl WxoAppGenQuery {
   async fn find_by_ids_ok_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxoAppId>,
   ) -> Result<Vec<WxoAppModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,8 +210,10 @@ impl WxoAppGenQuery {
   async fn get_is_enabled_by_id_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxoAppId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -210,8 +232,10 @@ impl WxoAppGenQuery {
   async fn get_is_locked_by_id_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxoAppId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -229,6 +253,7 @@ impl WxoAppGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<WxoAppFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -243,8 +268,10 @@ impl WxoAppGenQuery {
   async fn find_last_order_by_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxoAppSearch>,
   ) -> Result<u32> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -269,13 +296,17 @@ impl WxoAppGenMutation {
   async fn creates_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<WxoAppInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<WxoAppId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -284,7 +315,7 @@ impl WxoAppGenMutation {
       .scope({
         wxo_app_resolver::creates_wxo_app(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -294,9 +325,12 @@ impl WxoAppGenMutation {
   async fn update_tenant_by_id_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxoAppId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -315,9 +349,12 @@ impl WxoAppGenMutation {
   async fn update_by_id_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxoAppId,
+    #[graphql(name = "input")]
     input: WxoAppInput,
   ) -> Result<WxoAppId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -336,8 +373,10 @@ impl WxoAppGenMutation {
   async fn delete_by_ids_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxoAppId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -355,9 +394,12 @@ impl WxoAppGenMutation {
   async fn enable_by_ids_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxoAppId>,
+    #[graphql(name = "is_enabled")]
     is_enabled: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -376,9 +418,12 @@ impl WxoAppGenMutation {
   async fn lock_by_ids_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxoAppId>,
+    #[graphql(name = "is_locked")]
     is_locked: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -397,8 +442,10 @@ impl WxoAppGenMutation {
   async fn revert_by_ids_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxoAppId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -416,8 +463,10 @@ impl WxoAppGenMutation {
   async fn force_delete_by_ids_wxo_app(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxoAppId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

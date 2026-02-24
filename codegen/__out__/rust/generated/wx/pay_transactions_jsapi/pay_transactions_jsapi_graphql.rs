@@ -37,10 +37,14 @@ impl PayTransactionsJsapiGenQuery {
   async fn find_all_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<PayTransactionsJsapiSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<PayTransactionsJsapiModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl PayTransactionsJsapiGenQuery {
   async fn find_count_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<PayTransactionsJsapiSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl PayTransactionsJsapiGenQuery {
   async fn find_one_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<PayTransactionsJsapiSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<PayTransactionsJsapiModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl PayTransactionsJsapiGenQuery {
   async fn find_one_ok_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<PayTransactionsJsapiSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<PayTransactionsJsapiModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl PayTransactionsJsapiGenQuery {
   async fn find_by_id_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: PayTransactionsJsapiId,
   ) -> Result<Option<PayTransactionsJsapiModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl PayTransactionsJsapiGenQuery {
   async fn find_by_id_ok_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: PayTransactionsJsapiId,
   ) -> Result<PayTransactionsJsapiModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl PayTransactionsJsapiGenQuery {
   async fn find_by_ids_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<PayTransactionsJsapiId>,
   ) -> Result<Vec<PayTransactionsJsapiModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl PayTransactionsJsapiGenQuery {
   async fn find_by_ids_ok_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<PayTransactionsJsapiId>,
   ) -> Result<Vec<PayTransactionsJsapiModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl PayTransactionsJsapiGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<PayTransactionsJsapiFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -213,8 +234,10 @@ impl PayTransactionsJsapiGenMutation {
   async fn no_add_no_edit_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "input")]
     input: PayTransactionsJsapiInput,
   ) -> Result<PayTransactionsJsapiId> {
+    
     Err(eyre!(""))
   }
   
@@ -223,9 +246,12 @@ impl PayTransactionsJsapiGenMutation {
   async fn update_tenant_by_id_pay_transactions_jsapi(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: PayTransactionsJsapiId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
