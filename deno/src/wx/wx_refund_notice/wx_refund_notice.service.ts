@@ -165,13 +165,13 @@ export async function refund_notice(
   
   const refund_status = result.refund_status as unknown as WxRefundNoticeRefundStatus;
   
-  // 根据 transaction_id 查询 wx_refund, 更新其状态
+  // 根据 refund_id 查询 wx_refund, 更新其状态
   const wx_refund_model = await findOneWxRefund({
-    transaction_id,
+    refund_id,
   });
   
   if (!wx_refund_model) {
-    error(`退款通知: 未找到 transaction_id=${ transaction_id } 的退款记录`);
+    error(`退款通知: 未找到 refund_id=${ refund_id } 的退款记录`);
     return;
   }
   
