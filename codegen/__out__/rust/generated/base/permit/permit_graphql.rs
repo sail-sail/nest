@@ -35,10 +35,14 @@ impl PermitGenQuery {
   async fn find_all_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<PermitSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<PermitModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -57,8 +61,10 @@ impl PermitGenQuery {
   async fn find_count_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<PermitSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -75,9 +81,12 @@ impl PermitGenQuery {
   async fn find_one_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<PermitSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<PermitModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -95,9 +104,12 @@ impl PermitGenQuery {
   async fn find_one_ok_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<PermitSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<PermitModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -115,8 +127,10 @@ impl PermitGenQuery {
   async fn find_by_id_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: PermitId,
   ) -> Result<Option<PermitModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -133,8 +147,10 @@ impl PermitGenQuery {
   async fn find_by_id_ok_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: PermitId,
   ) -> Result<PermitModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -151,8 +167,10 @@ impl PermitGenQuery {
   async fn find_by_ids_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<PermitId>,
   ) -> Result<Vec<PermitModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -169,8 +187,10 @@ impl PermitGenQuery {
   async fn find_by_ids_ok_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<PermitId>,
   ) -> Result<Vec<PermitModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -188,6 +208,7 @@ impl PermitGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<PermitFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -202,8 +223,10 @@ impl PermitGenQuery {
   async fn find_last_order_by_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<PermitSearch>,
   ) -> Result<u32> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -228,9 +251,12 @@ impl PermitGenMutation {
   async fn update_by_id_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: PermitId,
+    #[graphql(name = "input")]
     input: PermitInput,
   ) -> Result<PermitId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
