@@ -35,10 +35,14 @@ impl MenuGenQuery {
   async fn find_all_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<MenuSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<MenuModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -57,8 +61,10 @@ impl MenuGenQuery {
   async fn find_count_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<MenuSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -75,9 +81,12 @@ impl MenuGenQuery {
   async fn find_one_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<MenuSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<MenuModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -95,9 +104,12 @@ impl MenuGenQuery {
   async fn find_one_ok_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<MenuSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<MenuModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -115,8 +127,10 @@ impl MenuGenQuery {
   async fn find_by_id_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: MenuId,
   ) -> Result<Option<MenuModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -133,8 +147,10 @@ impl MenuGenQuery {
   async fn find_by_id_ok_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: MenuId,
   ) -> Result<MenuModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -151,8 +167,10 @@ impl MenuGenQuery {
   async fn find_by_ids_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<MenuId>,
   ) -> Result<Vec<MenuModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -169,8 +187,10 @@ impl MenuGenQuery {
   async fn find_by_ids_ok_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<MenuId>,
   ) -> Result<Vec<MenuModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -188,8 +208,10 @@ impl MenuGenQuery {
   async fn get_is_enabled_by_id_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: MenuId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -207,6 +229,7 @@ impl MenuGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<MenuFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -221,8 +244,10 @@ impl MenuGenQuery {
   async fn find_last_order_by_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<MenuSearch>,
   ) -> Result<u32> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -247,13 +272,17 @@ impl MenuGenMutation {
   async fn creates_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<MenuInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<MenuId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -262,7 +291,7 @@ impl MenuGenMutation {
       .scope({
         menu_resolver::creates_menu(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -272,9 +301,12 @@ impl MenuGenMutation {
   async fn update_by_id_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: MenuId,
+    #[graphql(name = "input")]
     input: MenuInput,
   ) -> Result<MenuId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -293,8 +325,10 @@ impl MenuGenMutation {
   async fn delete_by_ids_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<MenuId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -312,9 +346,12 @@ impl MenuGenMutation {
   async fn enable_by_ids_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<MenuId>,
+    #[graphql(name = "is_enabled")]
     is_enabled: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -333,8 +370,10 @@ impl MenuGenMutation {
   async fn revert_by_ids_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<MenuId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -352,8 +391,10 @@ impl MenuGenMutation {
   async fn force_delete_by_ids_menu(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<MenuId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

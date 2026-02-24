@@ -37,10 +37,14 @@ impl BackgroundTaskGenQuery {
   async fn find_all_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<BackgroundTaskSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<BackgroundTaskModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl BackgroundTaskGenQuery {
   async fn find_count_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<BackgroundTaskSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl BackgroundTaskGenQuery {
   async fn find_one_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<BackgroundTaskSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<BackgroundTaskModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl BackgroundTaskGenQuery {
   async fn find_one_ok_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<BackgroundTaskSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<BackgroundTaskModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl BackgroundTaskGenQuery {
   async fn find_by_id_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: BackgroundTaskId,
   ) -> Result<Option<BackgroundTaskModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl BackgroundTaskGenQuery {
   async fn find_by_id_ok_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: BackgroundTaskId,
   ) -> Result<BackgroundTaskModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl BackgroundTaskGenQuery {
   async fn find_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<BackgroundTaskId>,
   ) -> Result<Vec<BackgroundTaskModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl BackgroundTaskGenQuery {
   async fn find_by_ids_ok_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<BackgroundTaskId>,
   ) -> Result<Vec<BackgroundTaskModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl BackgroundTaskGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<BackgroundTaskFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -213,8 +234,10 @@ impl BackgroundTaskGenMutation {
   async fn no_add_no_edit_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "input")]
     input: BackgroundTaskInput,
   ) -> Result<BackgroundTaskId> {
+    
     Err(eyre!(""))
   }
   
@@ -223,9 +246,12 @@ impl BackgroundTaskGenMutation {
   async fn update_tenant_by_id_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: BackgroundTaskId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -244,8 +270,10 @@ impl BackgroundTaskGenMutation {
   async fn delete_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<BackgroundTaskId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -263,8 +291,10 @@ impl BackgroundTaskGenMutation {
   async fn revert_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<BackgroundTaskId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -282,8 +312,10 @@ impl BackgroundTaskGenMutation {
   async fn force_delete_by_ids_background_task(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<BackgroundTaskId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

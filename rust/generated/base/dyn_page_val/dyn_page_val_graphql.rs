@@ -37,10 +37,14 @@ impl DynPageValGenQuery {
   async fn find_all_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DynPageValSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<DynPageValModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl DynPageValGenQuery {
   async fn find_count_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DynPageValSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl DynPageValGenQuery {
   async fn find_one_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DynPageValSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<DynPageValModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl DynPageValGenQuery {
   async fn find_one_ok_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DynPageValSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<DynPageValModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl DynPageValGenQuery {
   async fn find_by_id_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DynPageValId,
   ) -> Result<Option<DynPageValModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl DynPageValGenQuery {
   async fn find_by_id_ok_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DynPageValId,
   ) -> Result<DynPageValModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl DynPageValGenQuery {
   async fn find_by_ids_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DynPageValId>,
   ) -> Result<Vec<DynPageValModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl DynPageValGenQuery {
   async fn find_by_ids_ok_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DynPageValId>,
   ) -> Result<Vec<DynPageValModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl DynPageValGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<DynPageValFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -212,13 +233,17 @@ impl DynPageValGenMutation {
   async fn creates_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<DynPageValInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<DynPageValId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -227,7 +252,7 @@ impl DynPageValGenMutation {
       .scope({
         dyn_page_val_resolver::creates_dyn_page_val(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -237,9 +262,12 @@ impl DynPageValGenMutation {
   async fn update_tenant_by_id_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DynPageValId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -258,9 +286,12 @@ impl DynPageValGenMutation {
   async fn update_by_id_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DynPageValId,
+    #[graphql(name = "input")]
     input: DynPageValInput,
   ) -> Result<DynPageValId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -279,8 +310,10 @@ impl DynPageValGenMutation {
   async fn delete_by_ids_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DynPageValId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -298,8 +331,10 @@ impl DynPageValGenMutation {
   async fn revert_by_ids_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DynPageValId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -317,8 +352,10 @@ impl DynPageValGenMutation {
   async fn force_delete_by_ids_dyn_page_val(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DynPageValId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
