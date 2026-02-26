@@ -441,7 +441,7 @@ const props = withDefaults(
   },
 );
 
-const hasModelLabel = $computed(() => Object.prototype.hasOwnProperty.call(props, "modelLabel"));
+const hasModelLabel = $computed(() => props.modelLabel != null);
 
 let _height = $ref(props.height || "90%");
 const _width = $ref(props.width || "90%");
@@ -637,7 +637,9 @@ function onClear() {
   }
   modelLabel = "";
   emit("update:modelValue", selectedValue.value);
-  emit("update:modelLabel", "");
+  if (hasModelLabel) {
+    emit("update:modelLabel", "");
+  }
   emit("confirm");
   emit("change");
   emit("clear");
@@ -649,7 +651,9 @@ function onConfirm() {
   modelValue = selectedValue.value;
   modelLabel = modelLabels.value.join(",");
   emit("update:modelValue", selectedValue.value);
-  emit("update:modelLabel", modelLabel);
+  if (hasModelLabel) {
+    emit("update:modelLabel", modelLabel);
+  }
   const models = selectedValueArr.value.map((selectedValue) => {
     const model = data.value.find((item) => props.optionsMap(item).value === selectedValue)!;
     return model;
