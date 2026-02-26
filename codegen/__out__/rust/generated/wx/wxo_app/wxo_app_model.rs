@@ -597,7 +597,7 @@ impl std::fmt::Debug for WxoAppSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxoAppInput")]
 #[allow(dead_code)]
 pub struct WxoAppInput {
@@ -696,6 +696,84 @@ pub struct WxoAppInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for WxoAppInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxoAppInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref code) = self.code {
+      item = item.field("code", code);
+    }
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref appid) = self.appid {
+      item = item.field("appid", appid);
+    }
+    if let Some(ref appsecret) = self.appsecret {
+      item = item.field("appsecret", appsecret);
+    }
+    if let Some(ref token) = self.token {
+      item = item.field("token", token);
+    }
+    if let Some(ref encoding_aes_key) = self.encoding_aes_key {
+      item = item.field("encoding_aes_key", encoding_aes_key);
+    }
+    if let Some(ref encoding_type) = self.encoding_type {
+      item = item.field("encoding_type", encoding_type);
+    }
+    if let Some(ref scope) = self.scope {
+      item = item.field("scope", scope);
+    }
+    if let Some(ref domain_id) = self.domain_id {
+      item = item.field("domain_id", domain_id);
+    }
+    if let Some(ref default_role_codes) = self.default_role_codes {
+      item = item.field("default_role_codes", default_role_codes);
+    }
+    if let Some(ref is_locked) = self.is_locked {
+      item = item.field("is_locked", is_locked);
+    }
+    if let Some(ref is_enabled) = self.is_enabled {
+      item = item.field("is_enabled", is_enabled);
+    }
+    if let Some(ref order_by) = self.order_by {
+      item = item.field("order_by", order_by);
+    }
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<WxoAppModel> for WxoAppInput {

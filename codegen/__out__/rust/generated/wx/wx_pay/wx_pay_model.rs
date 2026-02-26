@@ -572,7 +572,7 @@ impl std::fmt::Debug for WxPaySearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxPayInput")]
 #[allow(dead_code)]
 pub struct WxPayInput {
@@ -662,6 +662,84 @@ pub struct WxPayInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for WxPayInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxPayInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref appid) = self.appid {
+      item = item.field("appid", appid);
+    }
+    if let Some(ref mchid) = self.mchid {
+      item = item.field("mchid", mchid);
+    }
+    if let Some(ref serial_no) = self.serial_no {
+      item = item.field("serial_no", serial_no);
+    }
+    if let Some(ref public_key) = self.public_key {
+      item = item.field("public_key", public_key);
+    }
+    if let Some(ref private_key) = self.private_key {
+      item = item.field("private_key", private_key);
+    }
+    if let Some(ref v3_key) = self.v3_key {
+      item = item.field("v3_key", v3_key);
+    }
+    if let Some(ref payer_client_ip) = self.payer_client_ip {
+      item = item.field("payer_client_ip", payer_client_ip);
+    }
+    if let Some(ref notify_url) = self.notify_url {
+      item = item.field("notify_url", notify_url);
+    }
+    if let Some(ref refund_notify_url) = self.refund_notify_url {
+      item = item.field("refund_notify_url", refund_notify_url);
+    }
+    if let Some(ref is_locked) = self.is_locked {
+      item = item.field("is_locked", is_locked);
+    }
+    if let Some(ref is_enabled) = self.is_enabled {
+      item = item.field("is_enabled", is_enabled);
+    }
+    if let Some(ref order_by) = self.order_by {
+      item = item.field("order_by", order_by);
+    }
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<WxPayModel> for WxPayInput {

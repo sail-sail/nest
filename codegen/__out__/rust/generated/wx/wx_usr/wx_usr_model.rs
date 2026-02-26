@@ -597,7 +597,7 @@ impl std::fmt::Debug for WxUsrSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxUsrInput")]
 #[allow(dead_code)]
 pub struct WxUsrInput {
@@ -687,6 +687,84 @@ pub struct WxUsrInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for WxUsrInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxUsrInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref usr_id) = self.usr_id {
+      item = item.field("usr_id", usr_id);
+    }
+    if let Some(ref appid) = self.appid {
+      item = item.field("appid", appid);
+    }
+    if let Some(ref nick_name) = self.nick_name {
+      item = item.field("nick_name", nick_name);
+    }
+    if let Some(ref avatar_img) = self.avatar_img {
+      item = item.field("avatar_img", avatar_img);
+    }
+    if let Some(ref mobile) = self.mobile {
+      item = item.field("mobile", mobile);
+    }
+    if let Some(ref openid) = self.openid {
+      item = item.field("openid", openid);
+    }
+    if let Some(ref unionid) = self.unionid {
+      item = item.field("unionid", unionid);
+    }
+    if let Some(ref gender) = self.gender {
+      item = item.field("gender", gender);
+    }
+    if let Some(ref city) = self.city {
+      item = item.field("city", city);
+    }
+    if let Some(ref province) = self.province {
+      item = item.field("province", province);
+    }
+    if let Some(ref country) = self.country {
+      item = item.field("country", country);
+    }
+    if let Some(ref language) = self.language {
+      item = item.field("language", language);
+    }
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<WxUsrModel> for WxUsrInput {

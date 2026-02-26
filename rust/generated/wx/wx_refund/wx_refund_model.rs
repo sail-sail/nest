@@ -621,7 +621,7 @@ impl std::fmt::Debug for WxRefundSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxRefundInput")]
 #[allow(dead_code)]
 pub struct WxRefundInput {
@@ -726,6 +726,91 @@ pub struct WxRefundInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for WxRefundInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxRefundInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref appid) = self.appid {
+      item = item.field("appid", appid);
+    }
+    if let Some(ref mchid) = self.mchid {
+      item = item.field("mchid", mchid);
+    }
+    if let Some(ref out_trade_no) = self.out_trade_no {
+      item = item.field("out_trade_no", out_trade_no);
+    }
+    if let Some(ref transaction_id) = self.transaction_id {
+      item = item.field("transaction_id", transaction_id);
+    }
+    if let Some(ref out_refund_no) = self.out_refund_no {
+      item = item.field("out_refund_no", out_refund_no);
+    }
+    if let Some(ref refund_id) = self.refund_id {
+      item = item.field("refund_id", refund_id);
+    }
+    if let Some(ref reason) = self.reason {
+      item = item.field("reason", reason);
+    }
+    if let Some(ref attach2) = self.attach2 {
+      item = item.field("attach2", attach2);
+    }
+    if let Some(ref notify_url) = self.notify_url {
+      item = item.field("notify_url", notify_url);
+    }
+    if let Some(ref channel) = self.channel {
+      item = item.field("channel", channel);
+    }
+    if let Some(ref user_received_account) = self.user_received_account {
+      item = item.field("user_received_account", user_received_account);
+    }
+    if let Some(ref success_time) = self.success_time {
+      item = item.field("success_time", success_time);
+    }
+    if let Some(ref status) = self.status {
+      item = item.field("status", status);
+    }
+    if let Some(ref funds_account) = self.funds_account {
+      item = item.field("funds_account", funds_account);
+    }
+    if let Some(ref amount_total) = self.amount_total {
+      item = item.field("amount_total", amount_total);
+    }
+    if let Some(ref amount_refund) = self.amount_refund {
+      item = item.field("amount_refund", amount_refund);
+    }
+    if let Some(ref amount_payer_total) = self.amount_payer_total {
+      item = item.field("amount_payer_total", amount_payer_total);
+    }
+    if let Some(ref amount_payer_refund) = self.amount_payer_refund {
+      item = item.field("amount_payer_refund", amount_payer_refund);
+    }
+    if let Some(ref amount_settlement_refund) = self.amount_settlement_refund {
+      item = item.field("amount_settlement_refund", amount_settlement_refund);
+    }
+    if let Some(ref amount_discount_refund) = self.amount_discount_refund {
+      item = item.field("amount_discount_refund", amount_discount_refund);
+    }
+    if let Some(ref amount_currency) = self.amount_currency {
+      item = item.field("amount_currency", amount_currency);
+    }
+    if let Some(ref amount_refund_fee) = self.amount_refund_fee {
+      item = item.field("amount_refund_fee", amount_refund_fee);
+    }
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<WxRefundModel> for WxRefundInput {

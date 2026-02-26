@@ -381,7 +381,7 @@ impl std::fmt::Debug for WxAppTokenSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxAppTokenInput")]
 #[allow(dead_code)]
 pub struct WxAppTokenInput {
@@ -447,6 +447,57 @@ pub struct WxAppTokenInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for WxAppTokenInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxAppTokenInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref wx_app_id) = self.wx_app_id {
+      item = item.field("wx_app_id", wx_app_id);
+    }
+    if let Some(ref appid) = self.appid {
+      item = item.field("appid", appid);
+    }
+    if let Some(ref appsecret) = self.appsecret {
+      item = item.field("appsecret", appsecret);
+    }
+    if let Some(ref access_token) = self.access_token {
+      item = item.field("access_token", access_token);
+    }
+    if let Some(ref token_time) = self.token_time {
+      item = item.field("token_time", token_time);
+    }
+    if let Some(ref expires_in) = self.expires_in {
+      item = item.field("expires_in", expires_in);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<WxAppTokenModel> for WxAppTokenInput {

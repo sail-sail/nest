@@ -524,7 +524,7 @@ impl std::fmt::Debug for WxPayNoticeSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxPayNoticeInput")]
 #[allow(dead_code)]
 pub struct WxPayNoticeInput {
@@ -611,6 +611,73 @@ pub struct WxPayNoticeInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for WxPayNoticeInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxPayNoticeInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref appid) = self.appid {
+      item = item.field("appid", appid);
+    }
+    if let Some(ref mchid) = self.mchid {
+      item = item.field("mchid", mchid);
+    }
+    if let Some(ref openid) = self.openid {
+      item = item.field("openid", openid);
+    }
+    if let Some(ref out_trade_no) = self.out_trade_no {
+      item = item.field("out_trade_no", out_trade_no);
+    }
+    if let Some(ref transaction_id) = self.transaction_id {
+      item = item.field("transaction_id", transaction_id);
+    }
+    if let Some(ref trade_type) = self.trade_type {
+      item = item.field("trade_type", trade_type);
+    }
+    if let Some(ref trade_state) = self.trade_state {
+      item = item.field("trade_state", trade_state);
+    }
+    if let Some(ref trade_state_desc) = self.trade_state_desc {
+      item = item.field("trade_state_desc", trade_state_desc);
+    }
+    if let Some(ref bank_type) = self.bank_type {
+      item = item.field("bank_type", bank_type);
+    }
+    if let Some(ref attach) = self.attach {
+      item = item.field("attach", attach);
+    }
+    if let Some(ref success_time) = self.success_time {
+      item = item.field("success_time", success_time);
+    }
+    if let Some(ref total) = self.total {
+      item = item.field("total", total);
+    }
+    if let Some(ref payer_total) = self.payer_total {
+      item = item.field("payer_total", payer_total);
+    }
+    if let Some(ref currency) = self.currency {
+      item = item.field("currency", currency);
+    }
+    if let Some(ref payer_currency) = self.payer_currency {
+      item = item.field("payer_currency", payer_currency);
+    }
+    if let Some(ref device_id) = self.device_id {
+      item = item.field("device_id", device_id);
+    }
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<WxPayNoticeModel> for WxPayNoticeInput {

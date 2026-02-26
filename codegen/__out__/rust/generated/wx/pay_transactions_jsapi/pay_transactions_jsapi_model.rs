@@ -661,7 +661,7 @@ impl std::fmt::Debug for PayTransactionsJsapiSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "PayTransactionsJsapiInput")]
 #[allow(dead_code)]
 pub struct PayTransactionsJsapiInput {
@@ -769,6 +769,96 @@ pub struct PayTransactionsJsapiInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for PayTransactionsJsapiInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("PayTransactionsJsapiInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref appid) = self.appid {
+      item = item.field("appid", appid);
+    }
+    if let Some(ref mchid) = self.mchid {
+      item = item.field("mchid", mchid);
+    }
+    if let Some(ref description) = self.description {
+      item = item.field("description", description);
+    }
+    if let Some(ref out_trade_no) = self.out_trade_no {
+      item = item.field("out_trade_no", out_trade_no);
+    }
+    if let Some(ref transaction_id) = self.transaction_id {
+      item = item.field("transaction_id", transaction_id);
+    }
+    if let Some(ref trade_state) = self.trade_state {
+      item = item.field("trade_state", trade_state);
+    }
+    if let Some(ref trade_state_desc) = self.trade_state_desc {
+      item = item.field("trade_state_desc", trade_state_desc);
+    }
+    if let Some(ref success_time) = self.success_time {
+      item = item.field("success_time", success_time);
+    }
+    if let Some(ref time_expire) = self.time_expire {
+      item = item.field("time_expire", time_expire);
+    }
+    if let Some(ref attach) = self.attach {
+      item = item.field("attach", attach);
+    }
+    if let Some(ref attach2) = self.attach2 {
+      item = item.field("attach2", attach2);
+    }
+    if let Some(ref notify_url) = self.notify_url {
+      item = item.field("notify_url", notify_url);
+    }
+    if let Some(ref receipt) = self.receipt {
+      item = item.field("receipt", receipt);
+    }
+    if let Some(ref profit_sharing) = self.profit_sharing {
+      item = item.field("profit_sharing", profit_sharing);
+    }
+    if let Some(ref total_fee) = self.total_fee {
+      item = item.field("total_fee", total_fee);
+    }
+    if let Some(ref currency) = self.currency {
+      item = item.field("currency", currency);
+    }
+    if let Some(ref openid) = self.openid {
+      item = item.field("openid", openid);
+    }
+    if let Some(ref prepay_id) = self.prepay_id {
+      item = item.field("prepay_id", prepay_id);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<PayTransactionsJsapiModel> for PayTransactionsJsapiInput {

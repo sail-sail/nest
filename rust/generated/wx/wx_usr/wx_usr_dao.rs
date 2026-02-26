@@ -651,16 +651,16 @@ pub async fn find_all_wx_usr(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(page) = &page {
-      msg += &format!(" page: {:?}", &page);
+      msg += &format!(" page: {page:?}");
     }
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -838,10 +838,10 @@ pub async fn find_count_wx_usr(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1024,13 +1024,13 @@ pub async fn find_one_ok_wx_usr(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1073,13 +1073,13 @@ pub async fn find_one_wx_usr(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1128,9 +1128,9 @@ pub async fn find_by_id_ok_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" id: {id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1177,9 +1177,9 @@ pub async fn find_by_id_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" id: {id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1224,9 +1224,9 @@ pub async fn find_by_ids_ok_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1296,9 +1296,9 @@ pub async fn find_by_ids_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1367,10 +1367,10 @@ pub async fn exists_wx_usr(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1508,9 +1508,9 @@ pub async fn exists_by_id_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" id: {id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1551,12 +1551,12 @@ pub async fn find_by_unique_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" search: {:?}", &search);
+    msg += &format!(" search: {search:?}");
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1641,10 +1641,10 @@ pub async fn check_by_unique_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" input: {:?}", &input);
-    msg += &format!(" model: {:?}", &model);
+    msg += &format!(" input: {input:?}");
+    msg += &format!(" model: {model:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1796,9 +1796,9 @@ pub async fn creates_return_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" inputs: {:?}", &inputs);
+    msg += &format!(" inputs: {inputs:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1833,9 +1833,9 @@ pub async fn creates_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" inputs: {:?}", &inputs);
+    msg += &format!(" inputs: {inputs:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2261,9 +2261,9 @@ pub async fn create_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" input: {:?}", &input);
+    msg += &format!(" input: {input:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2298,10 +2298,10 @@ pub async fn update_tenant_by_id_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
-    msg += &format!(" tenant_id: {:?}", &tenant_id);
+    msg += &format!(" id: {id:?}");
+    msg += &format!(" tenant_id: {tenant_id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2351,10 +2351,10 @@ pub async fn update_by_id_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
-    msg += &format!(" input: {:?}", &input);
+    msg += &format!(" id: {id:?}");
+    msg += &format!(" input: {input:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2699,9 +2699,9 @@ pub async fn delete_by_ids_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2821,9 +2821,9 @@ pub async fn revert_by_ids_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2926,9 +2926,9 @@ pub async fn force_delete_by_ids_wx_usr(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
