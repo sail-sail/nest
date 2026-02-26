@@ -158,7 +158,6 @@
     :content-padding="0"
     max-height="90%"
     :overlay-click="true"
-    v-bind="$attrs"
   >
     
     <view
@@ -442,6 +441,8 @@ const props = withDefaults(
   },
 );
 
+const hasModelLabel = $computed(() => Object.prototype.hasOwnProperty.call(props, "modelLabel"));
+
 let _height = $ref(props.height || "90%");
 const _width = $ref(props.width || "90%");
 
@@ -506,6 +507,9 @@ watch(
 );
 
 const isShowModelLabel = $computed(() => {
+  if (!hasModelLabel) {
+    return false;
+  }
   if (modelLabel == null) {
     return false;
   }
