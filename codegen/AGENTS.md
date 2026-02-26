@@ -62,5 +62,5 @@ await chrome_devtools_mcp.chrome_devtools_tool()
 ```
 
 # 记忆 memory MCP 使用
-- 若当下有 memory 相关 MCP 存在, 则你判断到知识点需要记忆时, 可用 memory 相关 MCP 进行记忆存储
-- 若判断到当下可能需要回忆之前记忆的知识点时, 可用 memory 相关 MCP 进行记忆回忆
+- 若当下有 memory 相关 MCP 存在, 判断需要知识点记忆时, 可积极的记忆存储
+- 若判断到当下可能需要回忆之前记忆的知识点时, 可积极的记忆回忆

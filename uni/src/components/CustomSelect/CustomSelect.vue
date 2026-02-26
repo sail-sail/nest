@@ -147,7 +147,6 @@
     :title="props.placeholder || '请选择'"
     disabled-scroll
     show-close
-    v-bind="$attrs"
   >
     <view
       un-flex="~ [1_0_0] col"
@@ -306,6 +305,8 @@ const props = withDefaults(
   },
 );
 
+const hasModelLabel = $computed(() => Object.prototype.hasOwnProperty.call(props, "modelLabel"));
+
 const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
 
 const readonly = $computed(() => {
@@ -368,6 +369,9 @@ watch(
 );
 
 const isShowModelLabel = $computed(() => {
+  if (!hasModelLabel) {
+    return false;
+  }
   if (modelLabel == null) {
     return false;
   }
