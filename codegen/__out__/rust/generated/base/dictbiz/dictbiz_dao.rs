@@ -625,7 +625,8 @@ pub async fn find_all_dictbiz(
   
   let cache_key1 = format!("dao.sql.{table}");
   let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
-  {
+  
+  let res = {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: Vec<DictbizModel>;
@@ -636,20 +637,24 @@ pub async fn find_all_dictbiz(
         res2 = vec![];
         cache_dao::del_cache(&cache_key1).await?;
       }
-      return Ok(res2);
+      Some(res2)
+    } else {
+      None
     }
-  }
+  };
   
-  let mut res: Vec<DictbizModel> = query(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  {
+  let mut res: Vec<DictbizModel> = if let Some(res) = res {
+    res
+  } else {
+    let res = query(
+      sql,
+      args,
+      options,
+    ).await?;
     let str = serde_json::to_string(&res)?;
     cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
-  }
+    res
+  };
   
   let len = res.len();
   let result_limit_num = find_all_result_limit();
@@ -832,7 +837,8 @@ pub async fn find_count_dictbiz(
   
   let cache_key1 = format!("dao.sql.{table}");
   let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
-  {
+  
+  let total = {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: u64;
@@ -843,28 +849,31 @@ pub async fn find_count_dictbiz(
         res2 = 0;
         cache_dao::del_cache(&cache_key1).await?;
       }
-      return Ok(res2);
+      Some(res2)
+    } else {
+      None
     }
-  }
+  };
   
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let res: Option<CountModel> = query_one(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  {
-    let str = serde_json::to_string(&res)?;
+  let total: u64 = if let Some(total) = total {
+    total
+  } else {
+    let options = Options::from(options)
+      .set_is_debug(Some(false));
+    let options = Some(options);
+    
+    let res: Option<CountModel> = query_one(
+      sql,
+      args,
+      options,
+    ).await?;
+    let total = res
+      .map(|item| item.total)
+      .unwrap_or_default();
+    let str = serde_json::to_string(&total)?;
     cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
-  }
-  
-  let total = res
-    .map(|item| item.total)
-    .unwrap_or_default();
+    total
+  };
   
   if total > MAX_SAFE_INTEGER {
     return Err(eyre!("total > MAX_SAFE_INTEGER"));
@@ -1354,7 +1363,8 @@ pub async fn exists_dictbiz(
   
   let cache_key1 = format!("dao.sql.{table}");
   let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
-  {
+  
+  let exists_res = {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: bool;
@@ -1365,28 +1375,33 @@ pub async fn exists_dictbiz(
         res2 = false;
         cache_dao::del_cache(&cache_key1).await?;
       }
-      return Ok(res2);
+      Some(res2)
+    } else {
+      None
     }
-  }
+  };
   
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let res: Option<(bool,)> = query_one(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  {
-    let str = serde_json::to_string(&res)?;
+  let exists_res: bool = if let Some(exists_res) = exists_res {
+    exists_res
+  } else {
+    let options = Options::from(options)
+      .set_is_debug(Some(false));
+    let options = Some(options);
+    
+    let res: Option<(bool,)> = query_one(
+      sql,
+      args,
+      options,
+    ).await?;
+    let exists_res = res
+      .map(|item| item.0)
+      .unwrap_or_default();
+    let str = serde_json::to_string(&exists_res)?;
     cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
-  }
+    exists_res
+  };
   
-  Ok(res
-    .map(|item| item.0)
-    .unwrap_or_default())
+  Ok(exists_res)
 }
 
 // MARK: exists_by_id_dictbiz
@@ -3088,7 +3103,8 @@ pub async fn find_last_order_by_dictbiz(
   
   let cache_key1 = format!("dao.sql.{table}");
   let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
-  {
+  
+  let order_by = {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: u32;
@@ -3099,28 +3115,31 @@ pub async fn find_last_order_by_dictbiz(
         res2 = 0;
         cache_dao::del_cache(&cache_key1).await?;
       }
-      return Ok(res2);
-    }
-  }
-  
-  let model = query_one::<OrderByModel>(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  let order_by = {
-    if let Some(model) = model {
-      model.order_by
+      Some(res2)
     } else {
-      0
+      None
     }
   };
   
-  {
+  let order_by: u32 = if let Some(order_by) = order_by {
+    order_by
+  } else {
+    let model = query_one::<OrderByModel>(
+      sql,
+      args,
+      options,
+    ).await?;
+    let order_by = {
+      if let Some(model) = model {
+        model.order_by
+      } else {
+        0
+      }
+    };
     let str = serde_json::to_string(&order_by)?;
     cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
-  }
+    order_by
+  };
   
   Ok(order_by)
 }
