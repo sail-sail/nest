@@ -147,7 +147,6 @@
     :title="props.placeholder || '请选择'"
     disabled-scroll
     show-close
-    v-bind="$attrs"
   >
     <view
       un-flex="~ [1_0_0] col"
@@ -306,6 +305,8 @@ const props = withDefaults(
   },
 );
 
+const hasModelLabel = $computed(() => props.modelLabel != null);
+
 const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
 
 const readonly = $computed(() => {
@@ -368,6 +369,9 @@ watch(
 );
 
 const isShowModelLabel = $computed(() => {
+  if (!hasModelLabel) {
+    return false;
+  }
   if (modelLabel == null) {
     return false;
   }
@@ -458,7 +462,9 @@ function onClear() {
   }
   modelLabel = "";
   emit("update:modelValue", selectedValue.value);
-  emit("update:modelLabel", "");
+  if (hasModelLabel) {
+    emit("update:modelLabel", "");
+  }
   emit("confirm");
   emit("change");
   emit("clear");
@@ -470,7 +476,9 @@ function onConfirm() {
   modelValue = selectedValue.value;
   modelLabel = modelLabels.value.join(",");
   emit("update:modelValue", selectedValue.value);
-  emit("update:modelLabel", modelLabel);
+  if (hasModelLabel) {
+    emit("update:modelLabel", modelLabel);
+  }
   const models = selectedValueArr.value.map((selectedValue) => {
     const model = data.value.find((item) => props.optionsMap(item).value === selectedValue)!;
     return model;

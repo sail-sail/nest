@@ -26,3 +26,4 @@ src/pages/{table}/
 ## 可用 Skills (.github/skills/)
 
 - `ui-style` - 页面开发样式规范. 开发 UI 界面时使用
+- `sub-package` - 微信小程序分包配置. 需要将页面拆分到子包时使用
