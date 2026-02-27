@@ -796,9 +796,43 @@ async function onAdd<#=Table_Up#>() {
   });
 }
 
-uni.$on("/pages/<#=table#>/List:refresh", async function() {
+async function onReset() {<#
+  for (let i = 0; i < search_fields.length; i++) {
+    const search_field = search_fields[i];
+    const column = columns.find((col) => col.COLUMN_NAME === search_field);
+    if (!column && search_field !== searchByKeyword.prop) {
+      throw new Error(`表: ${ mod }_${ table } 中配置的搜索字段 ${ search_field } 在列中不存在`);
+    }
+    const column_name = column?.COLUMN_NAME;
+    const data_type = column?.DATA_TYPE;
+    const column_type = column?.COLUMN_TYPE;
+    const column_comment = column?.COLUMN_COMMENT || "";
+  #><#
+  if (data_type === "datetime" || data_type === "date") {
+  #>
+  search.<#=column_name#> = [ null, null ];<#
+  } else {
+  #>
+  search.<#=column_name#> = undefined;<#
+  }
+  #><#
+  }
+  #>
   pgOffset = 0;
-  await onRefresh();
+  await onSearch();
+}
+
+uni.$on("/pages/<#=table#>/List:refresh", async function(
+  data?: {
+    action?: string;
+  },
+) {
+  const action = data?.action;
+  if (action === "add" || action === "copy") {
+    await onReset();
+  } else {
+    await onRefresh();
+  }
 });
 
 /** 全选 */

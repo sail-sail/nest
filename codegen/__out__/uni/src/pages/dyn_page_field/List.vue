@@ -379,9 +379,24 @@ async function onAddDynPageField() {
   });
 }
 
-uni.$on("/pages/dyn_page_field/List:refresh", async function() {
+async function onReset() {
+  search.lbl = undefined;
+  search.code = undefined;
   pgOffset = 0;
-  await onRefresh();
+  await onSearch();
+}
+
+uni.$on("/pages/dyn_page_field/List:refresh", async function(
+  data?: {
+    action?: string;
+  },
+) {
+  const action = data?.action;
+  if (action === "add" || action === "copy") {
+    await onReset();
+  } else {
+    await onRefresh();
+  }
 });
 
 /** 全选 */
