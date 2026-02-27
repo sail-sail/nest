@@ -37,10 +37,14 @@ impl DynPageDataGenQuery {
   async fn find_all_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DynPageDataSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<DynPageDataModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl DynPageDataGenQuery {
   async fn find_count_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DynPageDataSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl DynPageDataGenQuery {
   async fn find_one_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DynPageDataSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<DynPageDataModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl DynPageDataGenQuery {
   async fn find_one_ok_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DynPageDataSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<DynPageDataModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl DynPageDataGenQuery {
   async fn find_by_id_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DynPageDataId,
   ) -> Result<Option<DynPageDataModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl DynPageDataGenQuery {
   async fn find_by_id_ok_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DynPageDataId,
   ) -> Result<DynPageDataModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl DynPageDataGenQuery {
   async fn find_by_ids_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DynPageDataId>,
   ) -> Result<Vec<DynPageDataModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl DynPageDataGenQuery {
   async fn find_by_ids_ok_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DynPageDataId>,
   ) -> Result<Vec<DynPageDataModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -191,6 +211,7 @@ impl DynPageDataGenQuery {
     ctx: &Context<'_>,
     ref_code: Option<SmolStr>,
   ) -> Result<DynPageDataFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -214,13 +235,17 @@ impl DynPageDataGenMutation {
   async fn creates_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<DynPageDataInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<DynPageDataId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -229,7 +254,7 @@ impl DynPageDataGenMutation {
       .scope({
         dyn_page_data_resolver::creates_dyn_page_data(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -239,9 +264,12 @@ impl DynPageDataGenMutation {
   async fn update_tenant_by_id_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DynPageDataId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -260,9 +288,12 @@ impl DynPageDataGenMutation {
   async fn update_by_id_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DynPageDataId,
+    #[graphql(name = "input")]
     input: DynPageDataInput,
   ) -> Result<DynPageDataId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -281,8 +312,10 @@ impl DynPageDataGenMutation {
   async fn delete_by_ids_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DynPageDataId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -300,8 +333,10 @@ impl DynPageDataGenMutation {
   async fn revert_by_ids_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DynPageDataId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -319,8 +354,10 @@ impl DynPageDataGenMutation {
   async fn force_delete_by_ids_dyn_page_data(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DynPageDataId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

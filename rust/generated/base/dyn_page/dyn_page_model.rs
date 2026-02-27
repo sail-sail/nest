@@ -443,7 +443,7 @@ impl std::fmt::Debug for DynPageSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "DynPageInput")]
 #[allow(dead_code)]
 pub struct DynPageInput {
@@ -519,7 +519,68 @@ pub struct DynPageInput {
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
   /// 动态页面字段
+  #[graphql(name = "dyn_page_field")]
   pub dyn_page_field: Option<Vec<DynPageFieldInput>>,
+}
+
+impl std::fmt::Debug for DynPageInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("DynPageInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref code_seq) = self.code_seq {
+      item = item.field("code_seq", code_seq);
+    }
+    if let Some(ref code) = self.code {
+      item = item.field("code", code);
+    }
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref parent_menu_id) = self.parent_menu_id {
+      item = item.field("parent_menu_id", parent_menu_id);
+    }
+    if let Some(ref role_ids_lbl) = self.role_ids_lbl {
+      item = item.field("role_ids_lbl", role_ids_lbl);
+    }
+    if let Some(ref order_by) = self.order_by {
+      item = item.field("order_by", order_by);
+    }
+    if let Some(ref is_enabled) = self.is_enabled {
+      item = item.field("is_enabled", is_enabled);
+    }
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<DynPageModel> for DynPageInput {

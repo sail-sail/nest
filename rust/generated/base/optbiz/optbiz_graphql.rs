@@ -37,10 +37,14 @@ impl OptbizGenQuery {
   async fn find_all_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OptbizSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<OptbizModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl OptbizGenQuery {
   async fn find_count_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OptbizSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl OptbizGenQuery {
   async fn find_one_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OptbizSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<OptbizModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl OptbizGenQuery {
   async fn find_one_ok_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OptbizSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<OptbizModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl OptbizGenQuery {
   async fn find_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OptbizId,
   ) -> Result<Option<OptbizModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl OptbizGenQuery {
   async fn find_by_id_ok_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OptbizId,
   ) -> Result<OptbizModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl OptbizGenQuery {
   async fn find_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OptbizId>,
   ) -> Result<Vec<OptbizModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl OptbizGenQuery {
   async fn find_by_ids_ok_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OptbizId>,
   ) -> Result<Vec<OptbizModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,8 +210,10 @@ impl OptbizGenQuery {
   async fn get_is_enabled_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OptbizId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -210,8 +232,10 @@ impl OptbizGenQuery {
   async fn get_is_locked_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OptbizId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -229,6 +253,7 @@ impl OptbizGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<OptbizFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -243,8 +268,10 @@ impl OptbizGenQuery {
   async fn find_last_order_by_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OptbizSearch>,
   ) -> Result<u32> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -269,13 +296,17 @@ impl OptbizGenMutation {
   async fn creates_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<OptbizInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<OptbizId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -284,7 +315,7 @@ impl OptbizGenMutation {
       .scope({
         optbiz_resolver::creates_optbiz(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -294,9 +325,12 @@ impl OptbizGenMutation {
   async fn update_tenant_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OptbizId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -315,9 +349,12 @@ impl OptbizGenMutation {
   async fn update_by_id_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OptbizId,
+    #[graphql(name = "input")]
     input: OptbizInput,
   ) -> Result<OptbizId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -336,8 +373,10 @@ impl OptbizGenMutation {
   async fn delete_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OptbizId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -355,9 +394,12 @@ impl OptbizGenMutation {
   async fn enable_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OptbizId>,
+    #[graphql(name = "is_enabled")]
     is_enabled: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -376,9 +418,12 @@ impl OptbizGenMutation {
   async fn lock_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OptbizId>,
+    #[graphql(name = "is_locked")]
     is_locked: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -397,8 +442,10 @@ impl OptbizGenMutation {
   async fn revert_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OptbizId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -416,8 +463,10 @@ impl OptbizGenMutation {
   async fn force_delete_by_ids_optbiz(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OptbizId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

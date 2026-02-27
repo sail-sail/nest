@@ -24,6 +24,7 @@
       un-text="gray-500 dark:gray-300"
       un-flex="~ col"
       un-pos-relative
+      un-bg="[var(--el-fill-color-extra-light)]"
     >
       <Top></Top>
     </div>

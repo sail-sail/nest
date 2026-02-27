@@ -35,10 +35,14 @@ impl DictDetailGenQuery {
   async fn find_all_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DictDetailSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<DictDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -57,8 +61,10 @@ impl DictDetailGenQuery {
   async fn find_count_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DictDetailSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -75,9 +81,12 @@ impl DictDetailGenQuery {
   async fn find_one_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DictDetailSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<DictDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -95,9 +104,12 @@ impl DictDetailGenQuery {
   async fn find_one_ok_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DictDetailSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<DictDetailModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -115,8 +127,10 @@ impl DictDetailGenQuery {
   async fn find_by_id_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DictDetailId,
   ) -> Result<Option<DictDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -133,8 +147,10 @@ impl DictDetailGenQuery {
   async fn find_by_id_ok_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DictDetailId,
   ) -> Result<DictDetailModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -151,8 +167,10 @@ impl DictDetailGenQuery {
   async fn find_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictDetailId>,
   ) -> Result<Vec<DictDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -169,8 +187,10 @@ impl DictDetailGenQuery {
   async fn find_by_ids_ok_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictDetailId>,
   ) -> Result<Vec<DictDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -188,8 +208,10 @@ impl DictDetailGenQuery {
   async fn get_is_enabled_by_id_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DictDetailId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -207,6 +229,7 @@ impl DictDetailGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<DictDetailFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -221,8 +244,10 @@ impl DictDetailGenQuery {
   async fn find_last_order_by_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DictDetailSearch>,
   ) -> Result<u32> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -247,13 +272,17 @@ impl DictDetailGenMutation {
   async fn creates_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<DictDetailInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<DictDetailId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -262,7 +291,7 @@ impl DictDetailGenMutation {
       .scope({
         dict_detail_resolver::creates_dict_detail(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -272,9 +301,12 @@ impl DictDetailGenMutation {
   async fn update_by_id_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DictDetailId,
+    #[graphql(name = "input")]
     input: DictDetailInput,
   ) -> Result<DictDetailId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -293,8 +325,10 @@ impl DictDetailGenMutation {
   async fn delete_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictDetailId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -312,9 +346,12 @@ impl DictDetailGenMutation {
   async fn enable_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictDetailId>,
+    #[graphql(name = "is_enabled")]
     is_enabled: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -333,8 +370,10 @@ impl DictDetailGenMutation {
   async fn revert_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictDetailId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -352,8 +391,10 @@ impl DictDetailGenMutation {
   async fn force_delete_by_ids_dict_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictDetailId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

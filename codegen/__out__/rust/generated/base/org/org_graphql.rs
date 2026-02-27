@@ -37,10 +37,14 @@ impl OrgGenQuery {
   async fn find_all_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OrgSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<OrgModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl OrgGenQuery {
   async fn find_count_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OrgSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl OrgGenQuery {
   async fn find_one_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OrgSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<OrgModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl OrgGenQuery {
   async fn find_one_ok_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OrgSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<OrgModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl OrgGenQuery {
   async fn find_by_id_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OrgId,
   ) -> Result<Option<OrgModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl OrgGenQuery {
   async fn find_by_id_ok_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OrgId,
   ) -> Result<OrgModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl OrgGenQuery {
   async fn find_by_ids_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OrgId>,
   ) -> Result<Vec<OrgModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl OrgGenQuery {
   async fn find_by_ids_ok_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OrgId>,
   ) -> Result<Vec<OrgModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,8 +210,10 @@ impl OrgGenQuery {
   async fn get_is_enabled_by_id_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OrgId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -210,8 +232,10 @@ impl OrgGenQuery {
   async fn get_is_locked_by_id_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OrgId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -229,6 +253,7 @@ impl OrgGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<OrgFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -243,8 +268,10 @@ impl OrgGenQuery {
   async fn find_last_order_by_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OrgSearch>,
   ) -> Result<u32> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -269,13 +296,17 @@ impl OrgGenMutation {
   async fn creates_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<OrgInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<OrgId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -284,7 +315,7 @@ impl OrgGenMutation {
       .scope({
         org_resolver::creates_org(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -294,9 +325,12 @@ impl OrgGenMutation {
   async fn update_tenant_by_id_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OrgId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -315,9 +349,12 @@ impl OrgGenMutation {
   async fn update_by_id_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OrgId,
+    #[graphql(name = "input")]
     input: OrgInput,
   ) -> Result<OrgId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -336,8 +373,10 @@ impl OrgGenMutation {
   async fn delete_by_ids_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OrgId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -355,9 +394,12 @@ impl OrgGenMutation {
   async fn enable_by_ids_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OrgId>,
+    #[graphql(name = "is_enabled")]
     is_enabled: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -376,9 +418,12 @@ impl OrgGenMutation {
   async fn lock_by_ids_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OrgId>,
+    #[graphql(name = "is_locked")]
     is_locked: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -397,8 +442,10 @@ impl OrgGenMutation {
   async fn revert_by_ids_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OrgId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -416,8 +463,10 @@ impl OrgGenMutation {
   async fn force_delete_by_ids_org(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OrgId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

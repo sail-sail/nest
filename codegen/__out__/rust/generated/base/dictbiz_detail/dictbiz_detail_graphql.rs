@@ -37,10 +37,14 @@ impl DictbizDetailGenQuery {
   async fn find_all_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DictbizDetailSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<DictbizDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl DictbizDetailGenQuery {
   async fn find_count_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DictbizDetailSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl DictbizDetailGenQuery {
   async fn find_one_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DictbizDetailSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<DictbizDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl DictbizDetailGenQuery {
   async fn find_one_ok_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DictbizDetailSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<DictbizDetailModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl DictbizDetailGenQuery {
   async fn find_by_id_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DictbizDetailId,
   ) -> Result<Option<DictbizDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl DictbizDetailGenQuery {
   async fn find_by_id_ok_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DictbizDetailId,
   ) -> Result<DictbizDetailModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl DictbizDetailGenQuery {
   async fn find_by_ids_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictbizDetailId>,
   ) -> Result<Vec<DictbizDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl DictbizDetailGenQuery {
   async fn find_by_ids_ok_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictbizDetailId>,
   ) -> Result<Vec<DictbizDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,8 +210,10 @@ impl DictbizDetailGenQuery {
   async fn get_is_enabled_by_id_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DictbizDetailId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -209,6 +231,7 @@ impl DictbizDetailGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<DictbizDetailFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -223,8 +246,10 @@ impl DictbizDetailGenQuery {
   async fn find_last_order_by_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DictbizDetailSearch>,
   ) -> Result<u32> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -249,13 +274,17 @@ impl DictbizDetailGenMutation {
   async fn creates_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<DictbizDetailInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<DictbizDetailId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -264,7 +293,7 @@ impl DictbizDetailGenMutation {
       .scope({
         dictbiz_detail_resolver::creates_dictbiz_detail(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -274,9 +303,12 @@ impl DictbizDetailGenMutation {
   async fn update_tenant_by_id_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DictbizDetailId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -295,9 +327,12 @@ impl DictbizDetailGenMutation {
   async fn update_by_id_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DictbizDetailId,
+    #[graphql(name = "input")]
     input: DictbizDetailInput,
   ) -> Result<DictbizDetailId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -316,8 +351,10 @@ impl DictbizDetailGenMutation {
   async fn delete_by_ids_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictbizDetailId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -335,9 +372,12 @@ impl DictbizDetailGenMutation {
   async fn enable_by_ids_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictbizDetailId>,
+    #[graphql(name = "is_enabled")]
     is_enabled: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -356,8 +396,10 @@ impl DictbizDetailGenMutation {
   async fn revert_by_ids_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictbizDetailId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -375,8 +417,10 @@ impl DictbizDetailGenMutation {
   async fn force_delete_by_ids_dictbiz_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DictbizDetailId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

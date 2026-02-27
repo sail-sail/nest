@@ -24,4 +24,5 @@ app/{mod}/{table}/
 
 - `excel-export` - Excel 导出功能开发. 移动端导出 Excel 时使用
 - `graphql-api` - Rust GraphQL 接口开发. 创建自定义 API 时使用
+- `rust-test` - Rust 测试用例编写规范. 编写单元测试或数据刷新脚本时使用
 - `wx-pay` - 微信支付流程开发. 需要实现支付功能时使用
