@@ -158,7 +158,6 @@
     :content-padding="0"
     max-height="90%"
     :overlay-click="true"
-    v-bind="$attrs"
   >
     
     <view
@@ -442,6 +441,8 @@ const props = withDefaults(
   },
 );
 
+const hasModelLabel = $computed(() => props.modelLabel != null);
+
 let _height = $ref(props.height || "90%");
 const _width = $ref(props.width || "90%");
 
@@ -506,6 +507,9 @@ watch(
 );
 
 const isShowModelLabel = $computed(() => {
+  if (!hasModelLabel) {
+    return false;
+  }
   if (modelLabel == null) {
     return false;
   }
@@ -633,7 +637,9 @@ function onClear() {
   }
   modelLabel = "";
   emit("update:modelValue", selectedValue.value);
-  emit("update:modelLabel", "");
+  if (hasModelLabel) {
+    emit("update:modelLabel", "");
+  }
   emit("confirm");
   emit("change");
   emit("clear");
@@ -645,7 +651,9 @@ function onConfirm() {
   modelValue = selectedValue.value;
   modelLabel = modelLabels.value.join(",");
   emit("update:modelValue", selectedValue.value);
-  emit("update:modelLabel", modelLabel);
+  if (hasModelLabel) {
+    emit("update:modelLabel", modelLabel);
+  }
   const models = selectedValueArr.value.map((selectedValue) => {
     const model = data.value.find((item) => props.optionsMap(item).value === selectedValue)!;
     return model;

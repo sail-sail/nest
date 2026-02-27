@@ -68,15 +68,15 @@
     "@vue/devtools-api": "8.0.6",
     "@vue/runtime-core": "3.5.28",
     "dotenv": "17.3.1",
-    "eslint": "10.0.0",
+    "eslint": "10.0.2",
     "eslint-plugin-vue": "10.8.0",
     "globals": "17.3.0",
-    "mysql2": "3.17.3",
+    "mysql2": "3.18.0",
     "sass": "1.97.3",
     "spark-md5": "3.0.2",
     "svgo": "4.0.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.56.0",
+    "typescript-eslint": "8.56.1",
     "unocss": "66.6.0",
     "unplugin-auto-import": "21.0.0",
     "unplugin-icons": "23.0.1",
@@ -91,7 +91,7 @@
     "vite-plugin-vue-inspector": "5.3.2",
     "vite-plugin-wasm": "3.5.0",
     "vitest": "4.0.18",
-    "vue-tsc": "3.2.4"
+    "vue-tsc": "3.2.5"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
