@@ -4,6 +4,7 @@
   v-model="modelValue"
   v-model:model-label="modelLabel"
   :hide-search="true"
+  :options-map="props.optionsMap"
   height="90%"
   class="custom_select_img"
   @change="onChange"
@@ -92,6 +93,8 @@
         <slot
           name="option-label"
           :item="item"
+          :data="data"
+          :model="data.find((x) => props.optionsMap(x).value === item.value)!"
           :is-selected="selectedValue.includes(item.value)"
         >
           
@@ -137,6 +140,33 @@
 
 <script lang="ts" setup>
 
+type OptionType = {
+  label: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any;
+  image?: string;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type OptionsMap = (item: any) => OptionType;
+
+const props = withDefaults(
+  defineProps<{
+    optionsMap?: OptionsMap;
+  }>(),
+  {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    optionsMap: function(item: any) {
+      const item2 = item as { lbl: string; id: string; img_lbl?: string };
+      return {
+        label: item2.lbl,
+        value: item2.id,
+        image: item2.img_lbl,
+      };
+    },
+  },
+);
+
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", data: any[]): void,
@@ -166,8 +196,12 @@ function onClear() {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function onData(data: any[]) {
-  emit("data", data);
+let data = $ref<any[]>([ ]);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function onData(data0: any[]) {
+  data = data0;
+  emit("data", data0);
 }
 
 </script>

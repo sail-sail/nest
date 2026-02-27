@@ -420,6 +420,7 @@ html:is(.dark) {
 .upload_image_empty {
   color: var(--readonly_font_color);
   background-color: var(--el-fill-color-blank);
+  white-space: pre-wrap;
 }
 .custom_input_readonly.select_input {
   background-color: var(--el-fill-color-blank);

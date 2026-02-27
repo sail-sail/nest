@@ -93,7 +93,7 @@ export async function request<T>(
     err = errTmp;
     const errStr = err && err.toString();
     if (errStr === "TypeError: Failed to fetch") {
-      err = "网络连接失败，请稍后再试";
+      err = "网络连接失败，请稍检查网络";
     }
   } finally {
     if (!config.notLoading) {

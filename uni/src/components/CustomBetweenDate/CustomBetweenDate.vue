@@ -117,7 +117,7 @@ const _start = $computed(() => {
   if (props.start) {
     return props.start;
   }
-  const date = dayjs(modelValue.value[0] || undefined).subtract(3, "year");
+  const date = dayjs().subtract(3, "year");
   if (date.isValid()) {
     return date.format("YYYY-MM-DD");
   }
@@ -127,7 +127,7 @@ const _end = $computed(() => {
   if (props.end) {
     return props.end;
   }
-  const date = dayjs(modelValue.value[1] || undefined);
+  const date = dayjs();
   if (date.isValid()) {
     return date.format("YYYY-MM-DD");
   }
