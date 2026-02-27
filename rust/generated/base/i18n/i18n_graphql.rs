@@ -35,10 +35,14 @@ impl I18nGenQuery {
   async fn find_all_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<I18nSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<I18nModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -57,8 +61,10 @@ impl I18nGenQuery {
   async fn find_count_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<I18nSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -75,9 +81,12 @@ impl I18nGenQuery {
   async fn find_one_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<I18nSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<I18nModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -95,9 +104,12 @@ impl I18nGenQuery {
   async fn find_one_ok_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<I18nSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<I18nModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -115,8 +127,10 @@ impl I18nGenQuery {
   async fn find_by_id_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: I18nId,
   ) -> Result<Option<I18nModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -133,8 +147,10 @@ impl I18nGenQuery {
   async fn find_by_id_ok_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: I18nId,
   ) -> Result<I18nModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -151,8 +167,10 @@ impl I18nGenQuery {
   async fn find_by_ids_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<I18nId>,
   ) -> Result<Vec<I18nModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -169,8 +187,10 @@ impl I18nGenQuery {
   async fn find_by_ids_ok_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<I18nId>,
   ) -> Result<Vec<I18nModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -188,6 +208,7 @@ impl I18nGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<I18nFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -210,13 +231,17 @@ impl I18nGenMutation {
   async fn creates_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<I18nInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<I18nId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -225,7 +250,7 @@ impl I18nGenMutation {
       .scope({
         i18n_resolver::creates_i18n(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -235,9 +260,12 @@ impl I18nGenMutation {
   async fn update_by_id_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: I18nId,
+    #[graphql(name = "input")]
     input: I18nInput,
   ) -> Result<I18nId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -256,8 +284,10 @@ impl I18nGenMutation {
   async fn delete_by_ids_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<I18nId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -275,8 +305,10 @@ impl I18nGenMutation {
   async fn revert_by_ids_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<I18nId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -294,8 +326,10 @@ impl I18nGenMutation {
   async fn force_delete_by_ids_i18n(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<I18nId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

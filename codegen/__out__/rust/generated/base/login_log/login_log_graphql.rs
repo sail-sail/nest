@@ -37,10 +37,14 @@ impl LoginLogGenQuery {
   async fn find_all_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<LoginLogSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<LoginLogModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl LoginLogGenQuery {
   async fn find_count_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<LoginLogSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl LoginLogGenQuery {
   async fn find_one_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<LoginLogSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<LoginLogModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl LoginLogGenQuery {
   async fn find_one_ok_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<LoginLogSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<LoginLogModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl LoginLogGenQuery {
   async fn find_by_id_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: LoginLogId,
   ) -> Result<Option<LoginLogModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl LoginLogGenQuery {
   async fn find_by_id_ok_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: LoginLogId,
   ) -> Result<LoginLogModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl LoginLogGenQuery {
   async fn find_by_ids_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<LoginLogId>,
   ) -> Result<Vec<LoginLogModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl LoginLogGenQuery {
   async fn find_by_ids_ok_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<LoginLogId>,
   ) -> Result<Vec<LoginLogModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl LoginLogGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<LoginLogFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -213,8 +234,10 @@ impl LoginLogGenMutation {
   async fn no_add_no_edit_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "input")]
     input: LoginLogInput,
   ) -> Result<LoginLogId> {
+    
     Err(eyre!(""))
   }
   
@@ -223,9 +246,12 @@ impl LoginLogGenMutation {
   async fn update_tenant_by_id_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: LoginLogId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -244,8 +270,10 @@ impl LoginLogGenMutation {
   async fn delete_by_ids_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<LoginLogId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -263,8 +291,10 @@ impl LoginLogGenMutation {
   async fn revert_by_ids_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<LoginLogId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -282,8 +312,10 @@ impl LoginLogGenMutation {
   async fn force_delete_by_ids_login_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<LoginLogId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

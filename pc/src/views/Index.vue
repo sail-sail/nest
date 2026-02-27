@@ -122,7 +122,7 @@ async function initFrame() {
     inited = true;
   } catch(err) {
     console.log(err);
-    errMsg = "网络连接失败";
+    errMsg = "网络连接失败，请稍检查网络";
   }
 }
 

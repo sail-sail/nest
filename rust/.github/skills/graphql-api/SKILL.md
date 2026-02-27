@@ -22,44 +22,51 @@ use async_graphql::{Context, Object};
 use generated::common::context::Ctx;
 
 #[derive(Default)]
-pub struct XxxQuery;
+pub struct {Table}Query;
 
-#[Object(name = "XxxQuery")]
-impl XxxQuery {
+#[Object(name = "{Table}Query")]
+impl {Table}Query {
   /// 接口描述
+  #[graphql(name = "MethodName")]
   async fn method_name(
     &self,
     ctx: &Context<'_>,
     #[graphql(name = "param_name")]
     param_name: ParamType,
   ) -> Result<ReturnType> {
+    
     Ctx::builder(ctx)
       .with_auth()?           // 需要认证
       .build()
       .scope({
-        xxx_resolver::method_name(param_name, None)
+        {table}_resolver::method_name(
+          param_name,
+          None,
+        )
       }).await
   }
 }
 
 #[derive(Default)]
-pub struct XxxMutation;
+pub struct {Table}Mutation;
 
-#[Object(name = "XxxMutation")]
-impl XxxMutation {
+#[Object(name = "{Table}Mutation")]
+impl {Table}Mutation {
   /// 修改操作
+  #[graphql(name = "MutateMethod")]
   async fn mutate_method(
     &self,
     ctx: &Context<'_>,
     #[graphql(name = "input")]
     input: {Table}Input,
   ) -> Result<Vec<{Table}Model>> {
+    
     Ctx::builder(ctx)
       .with_auth()? // 是否登录之后才能调用
       .with_tran() // 修改需事务
       .build()
       .scope({
-        xxx_resolver::mutate_method(
+        {table}_resolver::mutate_method(
           input,
           None,
         )
@@ -84,13 +91,12 @@ pub async fn method_name(
 ) -> Result<ReturnType> {
   
   info!(
-    "{} {}: {:?}",
-    get_req_id(),
-    function_name!(),
-    param,
+    "{req_id} {function_name}: {param:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
   );
   
-  xxx_service::method_name(
+  {table}_service::method_name(
     param,
     options,
   ).await
@@ -125,8 +131,8 @@ pub async fn method_name(
   let usr_id: UsrId = get_auth_id_ok()?;
   
   // 3. 查询数据
-  let {table}_model = find_one_ok_xxx(
-    Some(XxxSearch {
+  let {table}_model = find_one_ok_{table}(
+    Some({Table}Search {
       field: Some(param),
       ..Default::default()
     }),
@@ -135,8 +141,8 @@ pub async fn method_name(
   ).await?;
   
   // 查询列表, 变量名命名通常是 {table}_models 或者 {table}_model
-  let {table}_models = find_all_xxx(
-    Some(XxxSearch {
+  let {table}_models = find_all_{table}(
+    Some({Table}Search {
       field: Some(param),
       ..Default::default()
     }),
@@ -171,21 +177,21 @@ pub async fn method_name(
 
 | 函数 | 用途 |
 |------|------|
-| `find_by_id_xxx` | ID查询 → `Option<Model>` |
-| `find_by_id_ok_xxx` | ID查询（必存在否则抛异常）|
-| `find_by_ids_xxx` | 多ID查询 → `Vec<Model>` |
-| `find_by_ids_ok_xxx` | 多ID查询（必存在且顺序跟ids一致）|
-| `find_one_xxx` | 条件查单条 包括搜索条件,排序参数 |
-| `find_one_ok_xxx` | 条件查单条（必存在）|
-| `find_all_xxx` | 条件查列表 包括搜索条件,分页,排序参数 |
-| `create_xxx` | 创建 → ID |
-| `create_return_xxx` | 创建 → 立即查询返回 |
-| `update_by_id_xxx` | 更新 |
-| `update_by_id_return_xxx` | 更新 → 立即查询返回 |
-| `delete_by_ids_xxx` | 逻辑删除 |
-| `force_delete_by_ids_xxx` | 彻底删除 |
-| `validate_option_xxx` | 校验 None 时抛异常 |
-| `validate_is_enabled_xxx` | 校验禁用时抛异常 |
+| `find_by_id_{table}` | ID查询 → `Option<{Table}Model>` |
+| `find_by_id_ok_{table}` | ID查询（必存在否则抛异常）|
+| `find_by_ids_{table}` | 多ID查询 → `Vec<{Table}Model>` |
+| `find_by_ids_ok_{table}` | 多ID查询（必存在且顺序跟ids一致）|
+| `find_one_{table}` | 条件查单条 包括搜索条件,排序参数 |
+| `find_one_ok_{table}` | 条件查单条（必存在）|
+| `find_all_{table}` | 条件查列表 包括搜索条件,分页,排序参数 |
+| `create_{table}` | 创建 → ID |
+| `create_return_{table}` | 创建 → 立即查询返回 |
+| `update_by_id_{table}` | 更新 |
+| `update_by_id_return_{table}` | 更新 → 立即查询返回 |
+| `delete_by_ids_{table}` | 逻辑删除 |
+| `force_delete_by_ids_{table}` | 彻底删除 |
+| `validate_option_{table}` | 校验 None 时抛异常 |
+| `validate_is_enabled_{table}` | 校验禁用时抛异常 |
 
 ## 辅助函数
 

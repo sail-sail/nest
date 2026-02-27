@@ -37,10 +37,14 @@ impl OperationRecordGenQuery {
   async fn find_all_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OperationRecordSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<OperationRecordModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl OperationRecordGenQuery {
   async fn find_count_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OperationRecordSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl OperationRecordGenQuery {
   async fn find_one_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OperationRecordSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<OperationRecordModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl OperationRecordGenQuery {
   async fn find_one_ok_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<OperationRecordSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<OperationRecordModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl OperationRecordGenQuery {
   async fn find_by_id_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OperationRecordId,
   ) -> Result<Option<OperationRecordModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl OperationRecordGenQuery {
   async fn find_by_id_ok_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OperationRecordId,
   ) -> Result<OperationRecordModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl OperationRecordGenQuery {
   async fn find_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OperationRecordId>,
   ) -> Result<Vec<OperationRecordModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl OperationRecordGenQuery {
   async fn find_by_ids_ok_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OperationRecordId>,
   ) -> Result<Vec<OperationRecordModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl OperationRecordGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<OperationRecordFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -213,8 +234,10 @@ impl OperationRecordGenMutation {
   async fn no_add_no_edit_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "input")]
     input: OperationRecordInput,
   ) -> Result<OperationRecordId> {
+    
     Err(eyre!(""))
   }
   
@@ -223,9 +246,12 @@ impl OperationRecordGenMutation {
   async fn update_tenant_by_id_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: OperationRecordId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -244,8 +270,10 @@ impl OperationRecordGenMutation {
   async fn delete_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OperationRecordId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -263,8 +291,10 @@ impl OperationRecordGenMutation {
   async fn revert_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OperationRecordId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -282,8 +312,10 @@ impl OperationRecordGenMutation {
   async fn force_delete_by_ids_operation_record(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<OperationRecordId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

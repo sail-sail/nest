@@ -111,6 +111,7 @@ const emit = defineEmits<{
   (e: "update:modelValue", value?: any): void,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
+  (e: "focus"): void,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "blur", value?: any): void,
   (e: "clear"): void,
@@ -237,6 +238,7 @@ function onFocus() {
   selectionStart.value = undefined;
   selectionEnd.value = undefined;
   focusValue.value = modelValue.value;
+  emit("focus");
 }
 
 function onBlur(value: string) {

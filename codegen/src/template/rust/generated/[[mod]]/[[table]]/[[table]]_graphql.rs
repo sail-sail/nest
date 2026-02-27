@@ -111,10 +111,14 @@ impl <#=tableUP#>GenQuery {
   async fn find_all_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<<#=tableUP#>Search>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<<#=tableUP#>Model>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -133,8 +137,10 @@ impl <#=tableUP#>GenQuery {
   async fn find_count_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<<#=tableUP#>Search>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -151,9 +157,12 @@ impl <#=tableUP#>GenQuery {
   async fn find_one_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<<#=tableUP#>Search>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<<#=tableUP#>Model>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,9 +180,12 @@ impl <#=tableUP#>GenQuery {
   async fn find_one_ok_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<<#=tableUP#>Search>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<<#=tableUP#>Model> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -191,8 +203,10 @@ impl <#=tableUP#>GenQuery {
   async fn find_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: <#=Table_Up#>Id,
   ) -> Result<Option<<#=tableUP#>Model>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -209,8 +223,10 @@ impl <#=tableUP#>GenQuery {
   async fn find_by_id_ok_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: <#=Table_Up#>Id,
   ) -> Result<<#=tableUP#>Model> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -227,8 +243,10 @@ impl <#=tableUP#>GenQuery {
   async fn find_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<Vec<<#=tableUP#>Model>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -245,8 +263,10 @@ impl <#=tableUP#>GenQuery {
   async fn find_by_ids_ok_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<Vec<<#=tableUP#>Model>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -265,8 +285,10 @@ impl <#=tableUP#>GenQuery {
   async fn get_editable_data_permits_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<Vec<u8>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -288,8 +310,10 @@ impl <#=tableUP#>GenQuery {
   async fn get_is_enabled_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: <#=Table_Up#>Id,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -312,8 +336,10 @@ impl <#=tableUP#>GenQuery {
   async fn get_is_locked_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: <#=Table_Up#>Id,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -333,6 +359,7 @@ impl <#=tableUP#>GenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<<#=tableUP#>FieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -349,8 +376,10 @@ impl <#=tableUP#>GenQuery {
   async fn find_summary_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<<#=tableUP#>Search>,
   ) -> Result<<#=Table_Up#>Summary> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -371,8 +400,10 @@ impl <#=tableUP#>GenQuery {
   async fn find_last_order_by_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<<#=tableUP#>Search>,
   ) -> Result<u32> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -402,8 +433,10 @@ impl <#=tableUP#>GenMutation {<#
   async fn no_add_no_edit_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "input")]
     input: <#=tableUP#>Input,
   ) -> Result<<#=Table_Up#>Id> {
+    
     Err(eyre!(""))
   }<#
     }
@@ -416,13 +449,17 @@ impl <#=tableUP#>GenMutation {<#
   async fn creates_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<<#=tableUP#>Input>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<<#=Table_Up#>Id>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -431,7 +468,7 @@ impl <#=tableUP#>GenMutation {<#
       .scope({
         <#=table#>_resolver::creates_<#=table#>(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }<#
@@ -445,9 +482,12 @@ impl <#=tableUP#>GenMutation {<#
   async fn update_tenant_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: <#=Table_Up#>Id,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -470,9 +510,12 @@ impl <#=tableUP#>GenMutation {<#
   async fn update_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: <#=Table_Up#>Id,
+    #[graphql(name = "input")]
     input: <#=tableUP#>Input,
   ) -> Result<<#=Table_Up#>Id> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -495,8 +538,10 @@ impl <#=tableUP#>GenMutation {<#
   async fn audit_submit_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: <#=Table_Up#>Id,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -514,8 +559,10 @@ impl <#=tableUP#>GenMutation {<#
   async fn audit_pass_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: <#=Table_Up#>Id,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -533,9 +580,12 @@ impl <#=tableUP#>GenMutation {<#
   async fn audit_reject_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: <#=Table_Up#>Id,
+    #[graphql(name = "input")]
     input: <#=auditTable_Up#>Input,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -556,8 +606,10 @@ impl <#=tableUP#>GenMutation {<#
   async fn audit_review_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: <#=Table_Up#>Id,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -581,8 +633,10 @@ impl <#=tableUP#>GenMutation {<#
   async fn delete_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -604,8 +658,10 @@ impl <#=tableUP#>GenMutation {<#
   async fn default_by_id_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: <#=Table_Up#>Id,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -627,9 +683,12 @@ impl <#=tableUP#>GenMutation {<#
   async fn enable_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<<#=Table_Up#>Id>,
+    #[graphql(name = "is_enabled")]
     is_enabled: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -652,9 +711,12 @@ impl <#=tableUP#>GenMutation {<#
   async fn lock_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<<#=Table_Up#>Id>,
+    #[graphql(name = "is_locked")]
     is_locked: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -679,8 +741,10 @@ impl <#=tableUP#>GenMutation {<#
   async fn revert_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -702,8 +766,10 @@ impl <#=tableUP#>GenMutation {<#
   async fn force_delete_by_ids_<#=table#>(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

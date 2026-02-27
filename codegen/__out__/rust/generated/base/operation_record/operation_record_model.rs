@@ -423,7 +423,7 @@ impl std::fmt::Debug for OperationRecordSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "OperationRecordInput")]
 #[allow(dead_code)]
 pub struct OperationRecordInput {
@@ -489,6 +489,66 @@ pub struct OperationRecordInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for OperationRecordInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("OperationRecordInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref module) = self.module {
+      item = item.field("module", module);
+    }
+    if let Some(ref module_lbl) = self.module_lbl {
+      item = item.field("module_lbl", module_lbl);
+    }
+    if let Some(ref method) = self.method {
+      item = item.field("method", method);
+    }
+    if let Some(ref method_lbl) = self.method_lbl {
+      item = item.field("method_lbl", method_lbl);
+    }
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref time) = self.time {
+      item = item.field("time", time);
+    }
+    if let Some(ref old_data) = self.old_data {
+      item = item.field("old_data", old_data);
+    }
+    if let Some(ref new_data) = self.new_data {
+      item = item.field("new_data", new_data);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<OperationRecordModel> for OperationRecordInput {

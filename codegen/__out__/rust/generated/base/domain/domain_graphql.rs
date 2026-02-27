@@ -35,10 +35,14 @@ impl DomainGenQuery {
   async fn find_all_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DomainSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<DomainModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -57,8 +61,10 @@ impl DomainGenQuery {
   async fn find_count_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DomainSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -75,9 +81,12 @@ impl DomainGenQuery {
   async fn find_one_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DomainSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<DomainModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -95,9 +104,12 @@ impl DomainGenQuery {
   async fn find_one_ok_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DomainSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<DomainModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -115,8 +127,10 @@ impl DomainGenQuery {
   async fn find_by_id_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DomainId,
   ) -> Result<Option<DomainModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -133,8 +147,10 @@ impl DomainGenQuery {
   async fn find_by_id_ok_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DomainId,
   ) -> Result<DomainModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -151,8 +167,10 @@ impl DomainGenQuery {
   async fn find_by_ids_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DomainId>,
   ) -> Result<Vec<DomainModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -169,8 +187,10 @@ impl DomainGenQuery {
   async fn find_by_ids_ok_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DomainId>,
   ) -> Result<Vec<DomainModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -188,8 +208,10 @@ impl DomainGenQuery {
   async fn get_is_enabled_by_id_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DomainId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -208,8 +230,10 @@ impl DomainGenQuery {
   async fn get_is_locked_by_id_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DomainId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -227,6 +251,7 @@ impl DomainGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<DomainFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -241,8 +266,10 @@ impl DomainGenQuery {
   async fn find_last_order_by_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DomainSearch>,
   ) -> Result<u32> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -267,13 +294,17 @@ impl DomainGenMutation {
   async fn creates_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<DomainInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<DomainId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -282,7 +313,7 @@ impl DomainGenMutation {
       .scope({
         domain_resolver::creates_domain(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -292,9 +323,12 @@ impl DomainGenMutation {
   async fn update_by_id_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DomainId,
+    #[graphql(name = "input")]
     input: DomainInput,
   ) -> Result<DomainId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -313,8 +347,10 @@ impl DomainGenMutation {
   async fn delete_by_ids_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DomainId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -332,9 +368,12 @@ impl DomainGenMutation {
   async fn enable_by_ids_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DomainId>,
+    #[graphql(name = "is_enabled")]
     is_enabled: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -353,9 +392,12 @@ impl DomainGenMutation {
   async fn lock_by_ids_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DomainId>,
+    #[graphql(name = "is_locked")]
     is_locked: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -374,8 +416,10 @@ impl DomainGenMutation {
   async fn revert_by_ids_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DomainId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -393,8 +437,10 @@ impl DomainGenMutation {
   async fn force_delete_by_ids_domain(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DomainId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

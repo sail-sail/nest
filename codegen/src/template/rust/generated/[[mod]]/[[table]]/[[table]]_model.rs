@@ -2236,7 +2236,7 @@ impl std::fmt::Debug for <#=tableUP#>Search {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "<#=tableUP#>Input")]
 #[allow(dead_code)]
 pub struct <#=tableUP#>Input {
@@ -2579,10 +2579,12 @@ pub struct <#=tableUP#>Input {
     if (inline_foreign_type === "one2many") {
   #>
   /// <#=inlineForeignTab.label#>
+  #[graphql(name = "<#=inline_column_name#>")]
   pub <#=inline_column_name#>: Option<Vec<<#=Table_Up#>Input>>,<#
     } else if (inline_foreign_type === "one2one") {
   #>
   /// <#=inlineForeignTab.label#>
+  #[graphql(name = "<#=inline_column_name#>")]
   pub <#=inline_column_name#>: Option<<#=Table_Up#>Input>,<#
     }
   #><#
@@ -2618,6 +2620,7 @@ pub struct <#=tableUP#>Input {
     }).join("");
   #>
   // <#=table_comment#>
+  #[graphql(name = "<#=column_name#>_<#=table#>")]
   pub <#=column_name#>_<#=table#>_models: Option<Vec<<#=Table_Up#>Input>>,<#
   }
   #><#
@@ -2628,6 +2631,116 @@ pub struct <#=tableUP#>Input {
   pub dyn_page_data: Option<JSONObject>,<#
   }
   #>
+}
+
+impl std::fmt::Debug for <#=tableUP#>Input {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("<#=tableUP#>Input");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }<#
+    if (hasIsDeleted) {
+    #>
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }<#
+    }
+    #><#
+    if (hasTenantId) {
+    #>
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }<#
+    }
+    #><#
+    if (hasIsSys) {
+    #>
+    if let Some(ref is_sys) = self.is_sys {
+      item = item.field("is_sys", is_sys);
+    }<#
+    }
+    #><#
+    if (hasIsHidden) {
+    #>
+    if let Some(ref is_hidden) = self.is_hidden {
+      item = item.field("is_hidden", is_hidden);
+    }<#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+      if (column_name === 'id') continue;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
+      ) continue;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+      const column_comment = column.COLUMN_COMMENT || "";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const modelLabel = column.modelLabel;
+      const modelLabel_rust = rustKeyEscape(modelLabel);
+      const isPassword = column.isPassword;
+      const isEncrypt = column.isEncrypt;
+      if (isEncrypt) continue;
+      let is_nullable = column.IS_NULLABLE === "YES";
+      const isIcon = column.isIcon;
+    #><#
+    if (isIcon) {
+    #>
+    if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
+      item = item.field("<#=column_name_rust#>", <#=column_name_rust#>);
+    }<#
+    } else if (foreignKey && foreignKey.type !== "many2many") {
+    #>
+    if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
+      item = item.field("<#=column_name_rust#>", <#=column_name_rust#>);
+    }<#
+    if (modelLabel) {
+    #>
+    if let Some(ref <#=modelLabel_rust#>) = self.<#=modelLabel_rust#> {
+      item = item.field("<#=modelLabel_rust#>", <#=modelLabel_rust#>);
+    }<#
+    }
+    #><#
+    } else if (foreignKey && foreignKey.lbl) {
+    #>
+    if let Some(ref <#=column_name#>_<#=foreignKey.lbl#>) = self.<#=column_name#>_<#=foreignKey.lbl#> {
+      item = item.field("<#=column_name#>_<#=foreignKey.lbl#>", <#=column_name#>_<#=foreignKey.lbl#>);
+    }<#
+    } else if (foreignKey && foreignKey.type === "many2many") {
+    #>
+    if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
+      item = item.field("<#=column_name_rust#>", <#=column_name_rust#>);
+    }<#
+    } else if (!column.dict && !column.dictbiz && (data_type === "varchar" || data_type === "text")) {
+    #>
+    if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
+      item = item.field("<#=column_name_rust#>", <#=column_name_rust#>);
+    }<#
+    } else {
+    #>
+    if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
+      item = item.field("<#=column_name_rust#>", <#=column_name_rust#>);
+    }<#
+    }
+    #><#
+    }
+    #>
+    item.finish()
+  }
 }
 
 impl From<<#=tableUP#>Model> for <#=tableUP#>Input {

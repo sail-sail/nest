@@ -37,10 +37,14 @@ impl DataPermitGenQuery {
   async fn find_all_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DataPermitSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<DataPermitModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl DataPermitGenQuery {
   async fn find_count_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DataPermitSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl DataPermitGenQuery {
   async fn find_one_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DataPermitSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<DataPermitModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl DataPermitGenQuery {
   async fn find_one_ok_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<DataPermitSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<DataPermitModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl DataPermitGenQuery {
   async fn find_by_id_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DataPermitId,
   ) -> Result<Option<DataPermitModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl DataPermitGenQuery {
   async fn find_by_id_ok_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DataPermitId,
   ) -> Result<DataPermitModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl DataPermitGenQuery {
   async fn find_by_ids_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DataPermitId>,
   ) -> Result<Vec<DataPermitModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl DataPermitGenQuery {
   async fn find_by_ids_ok_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DataPermitId>,
   ) -> Result<Vec<DataPermitModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl DataPermitGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<DataPermitFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -212,13 +233,17 @@ impl DataPermitGenMutation {
   async fn creates_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<DataPermitInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<DataPermitId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -227,7 +252,7 @@ impl DataPermitGenMutation {
       .scope({
         data_permit_resolver::creates_data_permit(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -237,9 +262,12 @@ impl DataPermitGenMutation {
   async fn update_tenant_by_id_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DataPermitId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -258,9 +286,12 @@ impl DataPermitGenMutation {
   async fn update_by_id_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: DataPermitId,
+    #[graphql(name = "input")]
     input: DataPermitInput,
   ) -> Result<DataPermitId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -279,8 +310,10 @@ impl DataPermitGenMutation {
   async fn delete_by_ids_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DataPermitId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -298,8 +331,10 @@ impl DataPermitGenMutation {
   async fn revert_by_ids_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DataPermitId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -317,8 +352,10 @@ impl DataPermitGenMutation {
   async fn force_delete_by_ids_data_permit(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<DataPermitId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

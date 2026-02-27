@@ -230,7 +230,7 @@ impl std::fmt::Debug for PermitSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "PermitInput")]
 #[allow(dead_code)]
 pub struct PermitInput {
@@ -256,6 +256,34 @@ pub struct PermitInput {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<SmolStr>,
+}
+
+impl std::fmt::Debug for PermitInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("PermitInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_sys) = self.is_sys {
+      item = item.field("is_sys", is_sys);
+    }
+    if let Some(ref menu_id) = self.menu_id {
+      item = item.field("menu_id", menu_id);
+    }
+    if let Some(ref code) = self.code {
+      item = item.field("code", code);
+    }
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref order_by) = self.order_by {
+      item = item.field("order_by", order_by);
+    }
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    item.finish()
+  }
 }
 
 impl From<PermitModel> for PermitInput {

@@ -680,7 +680,7 @@ impl std::fmt::Debug for RoleSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "RoleInput")]
 #[allow(dead_code)]
 pub struct RoleInput {
@@ -775,6 +775,81 @@ pub struct RoleInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for RoleInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("RoleInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref is_sys) = self.is_sys {
+      item = item.field("is_sys", is_sys);
+    }
+    if let Some(ref code_seq) = self.code_seq {
+      item = item.field("code_seq", code_seq);
+    }
+    if let Some(ref code) = self.code {
+      item = item.field("code", code);
+    }
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref home_url) = self.home_url {
+      item = item.field("home_url", home_url);
+    }
+    if let Some(ref menu_ids_lbl) = self.menu_ids_lbl {
+      item = item.field("menu_ids_lbl", menu_ids_lbl);
+    }
+    if let Some(ref permit_ids_lbl) = self.permit_ids_lbl {
+      item = item.field("permit_ids_lbl", permit_ids_lbl);
+    }
+    if let Some(ref data_permit_ids) = self.data_permit_ids {
+      item = item.field("data_permit_ids", data_permit_ids);
+    }
+    if let Some(ref field_permit_ids_lbl) = self.field_permit_ids_lbl {
+      item = item.field("field_permit_ids_lbl", field_permit_ids_lbl);
+    }
+    if let Some(ref is_locked) = self.is_locked {
+      item = item.field("is_locked", is_locked);
+    }
+    if let Some(ref is_enabled) = self.is_enabled {
+      item = item.field("is_enabled", is_enabled);
+    }
+    if let Some(ref order_by) = self.order_by {
+      item = item.field("order_by", order_by);
+    }
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<RoleModel> for RoleInput {
