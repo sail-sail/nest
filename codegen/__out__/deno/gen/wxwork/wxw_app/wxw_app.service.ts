@@ -291,7 +291,10 @@ export async function getFieldCommentsWxwApp(): Promise<WxwAppFieldComment> {
  * 查找 企微应用 order_by 字段的最大值
  */
 export async function findLastOrderByWxwApp(
+  search?: WxwAppSearch,
 ): Promise<number> {
-  const wxw_app_sort = await wxw_appDao.findLastOrderByWxwApp();
-  return wxw_app_sort;
+  
+  const order_by = await wxw_appDao.findLastOrderByWxwApp(search);
+  
+  return order_by;
 }

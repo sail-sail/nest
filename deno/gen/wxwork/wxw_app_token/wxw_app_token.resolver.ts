@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./wxw_app_token.model.ts";
-
 /**
  * 根据条件查找企微应用接口凭据总数
  */
@@ -188,11 +184,15 @@ export async function createsWxwAppToken(
     createsWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxwAppToken(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdWxwAppToken(
     updateByIdWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblWxwAppToken(input);
   
   await usePermit(
-    route_path,
+    getPagePathWxwAppToken(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsWxwAppToken(
     deleteByIdsWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxwAppToken(),
     "delete",
   );
   
@@ -273,10 +281,14 @@ export async function revertByIdsWxwAppToken(
     revertByIdsWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxwAppToken(),
     "delete",
   );
   
@@ -296,10 +308,14 @@ export async function forceDeleteByIdsWxwAppToken(
     forceDeleteByIdsWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
+  const {
+    getPagePathWxwAppToken,
+  } = await import("./wxw_app_token.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxwAppToken(),
     "force_delete",
   );
   

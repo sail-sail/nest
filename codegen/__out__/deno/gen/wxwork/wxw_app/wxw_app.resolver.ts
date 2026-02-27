@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./wxw_app.model.ts";
-
 /**
  * 根据条件查找企微应用总数
  */
@@ -188,11 +184,15 @@ export async function createsWxwApp(
     createsWxwApp,
   } = await import("./wxw_app.service.ts");
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxwApp(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdWxwApp(
     updateByIdWxwApp,
   } = await import("./wxw_app.service.ts");
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblWxwApp(input);
   
   await usePermit(
-    route_path,
+    getPagePathWxwApp(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsWxwApp(
     deleteByIdsWxwApp,
   } = await import("./wxw_app.service.ts");
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxwApp(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsWxwApp(
     throw new Error(`enableByIdsWxwApp.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxwApp(),
     "edit",
   );
   const res = await enableByIdsWxwApp(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsWxwApp(
     throw new Error(`lockByIdsWxwApp.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxwApp(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsWxwApp(
     revertByIdsWxwApp,
   } = await import("./wxw_app.service.ts");
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxwApp(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsWxwApp(
     forceDeleteByIdsWxwApp,
   } = await import("./wxw_app.service.ts");
   
+  const {
+    getPagePathWxwApp,
+  } = await import("./wxw_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathWxwApp(),
     "force_delete",
   );
   
@@ -366,13 +390,15 @@ export async function forceDeleteByIdsWxwApp(
 /**
  * 查找 企微应用 order_by 字段的最大值
  */
-export async function findLastOrderByWxwApp(): Promise<number> {
+export async function findLastOrderByWxwApp(
+  search?: WxwAppSearch,
+): Promise<number> {
   
   const {
     findLastOrderByWxwApp,
   } = await import("./wxw_app.service.ts");
   
-  const res = findLastOrderByWxwApp();
+  const order_by = findLastOrderByWxwApp(search);
   
-  return res;
+  return order_by;
 }

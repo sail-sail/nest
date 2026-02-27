@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/wxwork/wxw_app";
+export function getPagePathWxwApp() {
+  return "/wxwork/wxw_app";
+}
+
+export function getTableNameWxwApp() {
+  return "wxwork_wxw_app";
+}
 
 declare const wxwAppId: unique symbol;
 

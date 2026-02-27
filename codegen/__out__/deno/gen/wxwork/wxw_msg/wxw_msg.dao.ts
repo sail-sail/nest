@@ -37,6 +37,8 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -75,6 +77,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathWxwMsg,
+  getTableNameWxwMsg,
+} from "./wxw_msg.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -223,7 +230,7 @@ export async function findCountWxwMsg(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "findCountWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -321,7 +328,7 @@ export async function findAllWxwMsg(
   },
 ): Promise<WxwMsgModel[]> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "findAllWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -441,6 +448,14 @@ export async function findAllWxwMsg(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     errcodeDict, // 发送状态
   ] = await getDict([
@@ -550,7 +565,7 @@ export async function setIdByLblWxwMsg(
 // MARK: getFieldCommentsWxwMsg
 /** 获取企微消息字段注释 */
 export async function getFieldCommentsWxwMsg(): Promise<WxwMsgFieldComment> {
-  const fieldComments: WxwMsgFieldComment = {
+  const field_comments: WxwMsgFieldComment = {
     id: "ID",
     wxw_app_id: "企微应用",
     wxw_app_id_lbl: "企微应用",
@@ -564,7 +579,8 @@ export async function getFieldCommentsWxwMsg(): Promise<WxwMsgFieldComment> {
     create_time_lbl: "发送时间",
     errmsg: "错误信息",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueWxwMsg
@@ -576,7 +592,7 @@ export async function findByUniqueWxwMsg(
   },
 ): Promise<WxwMsgModel[]> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "findByUniqueWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -642,7 +658,7 @@ export async function checkByUniqueWxwMsg(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 企微消息 已经存在");
+      throw new UniqueException("企微消息 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxwMsgId = await updateByIdWxwMsg(
@@ -672,7 +688,7 @@ export async function findOneWxwMsg(
   },
 ): Promise<WxwMsgModel | undefined> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "findOneWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -720,7 +736,7 @@ export async function findOneOkWxwMsg(
   },
 ): Promise<WxwMsgModel> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "findOneOkWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -772,7 +788,7 @@ export async function findByIdWxwMsg(
   },
 ): Promise<WxwMsgModel | undefined> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "findByIdWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -814,7 +830,7 @@ export async function findByIdOkWxwMsg(
   },
 ): Promise<WxwMsgModel> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "findByIdOkWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -855,7 +871,7 @@ export async function findByIdsWxwMsg(
   },
 ): Promise<WxwMsgModel[]> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "findByIdsWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -902,7 +918,7 @@ export async function findByIdsOkWxwMsg(
   },
 ): Promise<WxwMsgModel[]> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "findByIdsOkWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -951,7 +967,7 @@ export async function existWxwMsg(
   },
 ): Promise<boolean> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "existWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -983,7 +999,7 @@ export async function existByIdWxwMsg(
   },
 ) {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "existByIdWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1107,7 +1123,7 @@ export async function createReturnWxwMsg(
   },
 ): Promise<WxwMsgModel> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "createReturnWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1158,7 +1174,7 @@ export async function createWxwMsg(
   },
 ): Promise<WxwMsgId> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "createWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1199,7 +1215,7 @@ export async function createsReturnWxwMsg(
   },
 ): Promise<WxwMsgModel[]> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "createsReturnWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1236,7 +1252,7 @@ export async function createsWxwMsg(
   },
 ): Promise<WxwMsgId[]> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "createsWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1273,7 +1289,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1493,7 +1509,7 @@ export async function updateTenantByIdWxwMsg(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "updateTenantByIdWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1539,7 +1555,7 @@ export async function updateByIdWxwMsg(
   },
 ): Promise<WxwMsgId> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "updateByIdWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1583,7 +1599,7 @@ export async function updateByIdWxwMsg(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 企微消息 已经存在";
+        throw "企微消息 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1593,7 +1609,12 @@ export async function updateByIdWxwMsg(
   const oldModel = await findByIdWxwMsg(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 企微消息 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 企微消息 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1730,7 +1751,14 @@ export async function updateByIdWxwMsg(
     sql += ` where id=${ args.push(id) } limit 1`;
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1739,6 +1767,36 @@ export async function updateByIdWxwMsg(
   }
   
   return id;
+}
+
+// MARK: updateByIdWxwMsg
+/** 根据 id 更新企微消息, 并返回更新后的数据 */
+export async function updateByIdReturnWxwMsg(
+  id: WxwMsgId,
+  input: WxwMsgInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<WxwMsgModel> {
+  
+  await updateByIdWxwMsg(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdWxwMsg(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`企微消息 不存在`);
+  }
+  
+  return model;
 }
 
 // MARK: deleteByIdsWxwMsg
@@ -1752,7 +1810,7 @@ export async function deleteByIdsWxwMsg(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "deleteByIdsWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1775,6 +1833,8 @@ export async function deleteByIdsWxwMsg(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1808,7 +1868,13 @@ export async function deleteByIdsWxwMsg(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1824,7 +1890,7 @@ export async function revertByIdsWxwMsg(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "revertByIdsWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1876,7 +1942,7 @@ export async function revertByIdsWxwMsg(
         if (model.id === id) {
           continue;
         }
-        throw "此 企微消息 已经存在";
+        throw "企微消息 重复";
       }
     }
     const args = new QueryArgs();
@@ -1898,7 +1964,7 @@ export async function forceDeleteByIdsWxwMsg(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_msg";
+  const table = getTableNameWxwMsg();
   const method = "forceDeleteByIdsWxwMsg";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1920,6 +1986,8 @@ export async function forceDeleteByIdsWxwMsg(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {

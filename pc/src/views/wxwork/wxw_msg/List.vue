@@ -516,7 +516,7 @@
             </el-table-column>
           </template>
           
-          <template v-else-if="showBuildIn">
+          <template v-else>
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -530,9 +530,9 @@
     </div>
     <div
       un-flex="~"
-      un-justify-end
-      un-p="y-1"
-      un-box-border
+      un-justify="end"
+      un-items="center"
+      un-h="10"
     >
       <el-pagination
         v-if="isPagination"
@@ -674,7 +674,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
+const tableRef = $(useTemplateRef("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -746,6 +746,7 @@ async function onSearch(isFocus: boolean) {
   if (isFocus) {
     tableFocus();
   }
+  page.current = 1;
   await dataGrid(true);
 }
 
@@ -800,7 +801,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<WxwMsgModel>(
+} = $(usePage(
   dataGrid,
   {
     isPagination,
@@ -808,7 +809,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<WxwMsgModel, WxwMsgId>(
+const tableSelected = useSelect(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -827,9 +828,9 @@ const {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = tableSelected;
+} = $(tableSelected);
 
-let selectedIds = $(tableSelected.selectedIds);
+let selectedIds = $(tableSelected.selectedIds as unknown as WxwMsgId[]);
 
 watch(
   () => selectedIds,
@@ -972,10 +973,7 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
-
-/** 当前表格数据对应的搜索条件 */
-let currentSearch = $ref<WxwMsgSearch>({ });
+const detailRef = $(useTemplateRef("detailRef"));
 
 /** 刷新表格 */
 async function dataGrid(
@@ -984,16 +982,13 @@ async function dataGrid(
 ) {
   clearDirty();
   const search = getDataSearch();
-  currentSearch = search;
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
       useFindCount(search, opt),
     ]);
   } else {
-    await Promise.all([
-      useFindAll(search, opt),
-    ]);
+    await useFindAll(search, opt);
   }
 }
 
@@ -1003,9 +998,7 @@ function getDataSearch() {
     ...search,
     idsChecked: undefined,
   };
-  if (!showBuildIn) {
-    Object.assign(search2, builtInSearch);
-  }
+  Object.assign(search2, builtInSearch);
   search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
@@ -1047,9 +1040,8 @@ async function useFindCount(
   search: WxwMsgSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCountWxwMsg(
-    search2,
+    search,
     opt,
   );
 }
@@ -1130,13 +1122,10 @@ async function onRowDblclick(
   row: WxwMsgModel,
   column: TableColumnCtx<WxwMsgModel>,
 ) {
-  if (isListSelectDialog) {
-    return;
-  }
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null) {
+  if (isListSelectDialog) {
     emit("rowDblclick", row);
     return;
   }
@@ -1304,19 +1293,29 @@ async function initFrame() {
 }
 
 watch(
-  () => [ builtInSearch, showBuildIn ],
-  async function() {
+  computed(() => {
+    const {
+      selectedIds,
+      isMultiple,
+      showBuildIn,
+      isPagination,
+      isLocked,
+      isFocus,
+      propsNotReset,
+      isListSelectDialog,
+      ...rest
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } = builtInSearch as any;
+    return rest;
+  }),
+  async function(newVal, oldVal) {
+    if (!inited) {
+      return;
+    }
     if (isSearchReset) {
       return;
     }
-    if (builtInSearch.is_deleted != null) {
-      search.is_deleted = builtInSearch.is_deleted;
-    }
-    if (showBuildIn) {
-      Object.assign(search, builtInSearch);
-    }
-    const search2 = getDataSearch();
-    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
+    if (deepCompare(newVal, oldVal)) {
       return;
     }
     await dataGrid(true);

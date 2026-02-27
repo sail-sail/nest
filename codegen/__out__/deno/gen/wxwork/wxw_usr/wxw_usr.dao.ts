@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -73,6 +75,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathWxwUsr,
+  getTableNameWxwUsr,
+} from "./wxw_usr.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -260,7 +267,7 @@ export async function findCountWxwUsr(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "findCountWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -350,7 +357,7 @@ export async function findAllWxwUsr(
   },
 ): Promise<WxwUsrModel[]> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "findAllWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -465,6 +472,14 @@ export async function findAllWxwUsr(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -541,7 +556,7 @@ export async function setIdByLblWxwUsr(
 // MARK: getFieldCommentsWxwUsr
 /** 获取企微用户字段注释 */
 export async function getFieldCommentsWxwUsr(): Promise<WxwUsrFieldComment> {
-  const fieldComments: WxwUsrFieldComment = {
+  const field_comments: WxwUsrFieldComment = {
     id: "ID",
     wxw_app_id: "企微应用",
     wxw_app_id_lbl: "企微应用",
@@ -549,7 +564,8 @@ export async function getFieldCommentsWxwUsr(): Promise<WxwUsrFieldComment> {
     userid: "用户ID",
     rem: "备注",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueWxwUsr
@@ -561,7 +577,7 @@ export async function findByUniqueWxwUsr(
   },
 ): Promise<WxwUsrModel[]> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "findByUniqueWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -679,7 +695,7 @@ export async function checkByUniqueWxwUsr(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 企微用户 已经存在");
+      throw new UniqueException("企微用户 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxwUsrId = await updateByIdWxwUsr(
@@ -709,7 +725,7 @@ export async function findOneWxwUsr(
   },
 ): Promise<WxwUsrModel | undefined> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "findOneWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -757,7 +773,7 @@ export async function findOneOkWxwUsr(
   },
 ): Promise<WxwUsrModel> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "findOneOkWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -809,7 +825,7 @@ export async function findByIdWxwUsr(
   },
 ): Promise<WxwUsrModel | undefined> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "findByIdWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -851,7 +867,7 @@ export async function findByIdOkWxwUsr(
   },
 ): Promise<WxwUsrModel> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "findByIdOkWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -892,7 +908,7 @@ export async function findByIdsWxwUsr(
   },
 ): Promise<WxwUsrModel[]> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "findByIdsWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -939,7 +955,7 @@ export async function findByIdsOkWxwUsr(
   },
 ): Promise<WxwUsrModel[]> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "findByIdsOkWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -988,7 +1004,7 @@ export async function existWxwUsr(
   },
 ): Promise<boolean> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "existWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1020,7 +1036,7 @@ export async function existByIdWxwUsr(
   },
 ) {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "existByIdWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1132,7 +1148,7 @@ export async function createReturnWxwUsr(
   },
 ): Promise<WxwUsrModel> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "createReturnWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1183,7 +1199,7 @@ export async function createWxwUsr(
   },
 ): Promise<WxwUsrId> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "createWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1224,7 +1240,7 @@ export async function createsReturnWxwUsr(
   },
 ): Promise<WxwUsrModel[]> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "createsReturnWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1261,7 +1277,7 @@ export async function createsWxwUsr(
   },
 ): Promise<WxwUsrId[]> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "createsWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1298,7 +1314,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1546,6 +1562,7 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheWxwUsr() {
   await delCacheCtx(`dao.sql.wxwork_wxw_usr`);
+  await delCacheCtx(`dao.sql.wxwork_wxw_app`);
 }
 
 // MARK: updateTenantByIdWxwUsr
@@ -1558,7 +1575,7 @@ export async function updateTenantByIdWxwUsr(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "updateTenantByIdWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1606,7 +1623,7 @@ export async function updateByIdWxwUsr(
   },
 ): Promise<WxwUsrId> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "updateByIdWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1650,7 +1667,7 @@ export async function updateByIdWxwUsr(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 企微用户 已经存在";
+        throw "企微用户 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1660,7 +1677,12 @@ export async function updateByIdWxwUsr(
   const oldModel = await findByIdWxwUsr(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 企微用户 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 企微用户 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1835,7 +1857,14 @@ export async function updateByIdWxwUsr(
     await delCacheWxwUsr();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1850,6 +1879,36 @@ export async function updateByIdWxwUsr(
   return id;
 }
 
+// MARK: updateByIdWxwUsr
+/** 根据 id 更新企微用户, 并返回更新后的数据 */
+export async function updateByIdReturnWxwUsr(
+  id: WxwUsrId,
+  input: WxwUsrInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<WxwUsrModel> {
+  
+  await updateByIdWxwUsr(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdWxwUsr(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`企微用户 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsWxwUsr
 /** 根据 ids 删除 企微用户 */
 export async function deleteByIdsWxwUsr(
@@ -1861,7 +1920,7 @@ export async function deleteByIdsWxwUsr(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "deleteByIdsWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1884,6 +1943,8 @@ export async function deleteByIdsWxwUsr(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxwUsr();
   
@@ -1919,7 +1980,13 @@ export async function deleteByIdsWxwUsr(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1937,7 +2004,7 @@ export async function revertByIdsWxwUsr(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "revertByIdsWxwUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1991,7 +2058,7 @@ export async function revertByIdsWxwUsr(
         if (model.id === id) {
           continue;
         }
-        throw "此 企微用户 已经存在";
+        throw "企微用户 重复";
       }
     }
     const args = new QueryArgs();
@@ -2015,7 +2082,7 @@ export async function forceDeleteByIdsWxwUsr(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_usr";
+  const table = getTableNameWxwUsr();
   const method = "forceDeleteByIdsWxwUsr";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2037,6 +2104,8 @@ export async function forceDeleteByIdsWxwUsr(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxwUsr();
   

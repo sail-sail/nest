@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -73,6 +75,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathWxwAppToken,
+  getTableNameWxwAppToken,
+} from "./wxw_app_token.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -266,7 +273,7 @@ export async function findCountWxwAppToken(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "findCountWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -356,7 +363,7 @@ export async function findAllWxwAppToken(
   },
 ): Promise<WxwAppTokenModel[]> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "findAllWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -470,6 +477,14 @@ export async function findAllWxwAppToken(
       debug: is_debug_sql,
     },
   );
+  
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
@@ -658,7 +673,7 @@ export async function setIdByLblWxwAppToken(
 // MARK: getFieldCommentsWxwAppToken
 /** 获取企微应用接口凭据字段注释 */
 export async function getFieldCommentsWxwAppToken(): Promise<WxwAppTokenFieldComment> {
-  const fieldComments: WxwAppTokenFieldComment = {
+  const field_comments: WxwAppTokenFieldComment = {
     id: "ID",
     wxw_app_id: "企微应用",
     wxw_app_id_lbl: "企微应用",
@@ -679,7 +694,8 @@ export async function getFieldCommentsWxwAppToken(): Promise<WxwAppTokenFieldCom
     jsapi_ticket_agent_config_time_lbl: "应用jsapi_ticket创建时间",
     jsapi_ticket_agent_config_expires_in: "应用jsapi_ticket超时时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueWxwAppToken
@@ -691,7 +707,7 @@ export async function findByUniqueWxwAppToken(
   },
 ): Promise<WxwAppTokenModel[]> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "findByUniqueWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -808,7 +824,7 @@ export async function checkByUniqueWxwAppToken(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 企微应用接口凭据 已经存在");
+      throw new UniqueException("企微应用接口凭据 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxwAppTokenId = await updateByIdWxwAppToken(
@@ -838,7 +854,7 @@ export async function findOneWxwAppToken(
   },
 ): Promise<WxwAppTokenModel | undefined> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "findOneWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -886,7 +902,7 @@ export async function findOneOkWxwAppToken(
   },
 ): Promise<WxwAppTokenModel> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "findOneOkWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -938,7 +954,7 @@ export async function findByIdWxwAppToken(
   },
 ): Promise<WxwAppTokenModel | undefined> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "findByIdWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -980,7 +996,7 @@ export async function findByIdOkWxwAppToken(
   },
 ): Promise<WxwAppTokenModel> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "findByIdOkWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1021,7 +1037,7 @@ export async function findByIdsWxwAppToken(
   },
 ): Promise<WxwAppTokenModel[]> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "findByIdsWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1068,7 +1084,7 @@ export async function findByIdsOkWxwAppToken(
   },
 ): Promise<WxwAppTokenModel[]> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "findByIdsOkWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1117,7 +1133,7 @@ export async function existWxwAppToken(
   },
 ): Promise<boolean> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "existWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1149,7 +1165,7 @@ export async function existByIdWxwAppToken(
   },
 ) {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "existByIdWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1289,7 +1305,7 @@ export async function createReturnWxwAppToken(
   },
 ): Promise<WxwAppTokenModel> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "createReturnWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1340,7 +1356,7 @@ export async function createWxwAppToken(
   },
 ): Promise<WxwAppTokenId> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "createWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1381,7 +1397,7 @@ export async function createsReturnWxwAppToken(
   },
 ): Promise<WxwAppTokenModel[]> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "createsReturnWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1418,7 +1434,7 @@ export async function createsWxwAppToken(
   },
 ): Promise<WxwAppTokenId[]> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "createsWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1455,7 +1471,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1698,6 +1714,7 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheWxwAppToken() {
   await delCacheCtx(`dao.sql.wxwork_wxw_app_token`);
+  await delCacheCtx(`dao.sql.wxwork_wxw_app`);
 }
 
 // MARK: updateTenantByIdWxwAppToken
@@ -1710,7 +1727,7 @@ export async function updateTenantByIdWxwAppToken(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "updateTenantByIdWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1758,7 +1775,7 @@ export async function updateByIdWxwAppToken(
   },
 ): Promise<WxwAppTokenId> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "updateByIdWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1802,7 +1819,7 @@ export async function updateByIdWxwAppToken(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 企微应用接口凭据 已经存在";
+        throw "企微应用接口凭据 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1812,7 +1829,12 @@ export async function updateByIdWxwAppToken(
   const oldModel = await findByIdWxwAppToken(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 企微应用接口凭据 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 企微应用接口凭据 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1981,7 +2003,14 @@ export async function updateByIdWxwAppToken(
     await delCacheWxwAppToken();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1996,6 +2025,36 @@ export async function updateByIdWxwAppToken(
   return id;
 }
 
+// MARK: updateByIdWxwAppToken
+/** 根据 id 更新企微应用接口凭据, 并返回更新后的数据 */
+export async function updateByIdReturnWxwAppToken(
+  id: WxwAppTokenId,
+  input: WxwAppTokenInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<WxwAppTokenModel> {
+  
+  await updateByIdWxwAppToken(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdWxwAppToken(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`企微应用接口凭据 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsWxwAppToken
 /** 根据 ids 删除 企微应用接口凭据 */
 export async function deleteByIdsWxwAppToken(
@@ -2007,7 +2066,7 @@ export async function deleteByIdsWxwAppToken(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "deleteByIdsWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2030,6 +2089,8 @@ export async function deleteByIdsWxwAppToken(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxwAppToken();
   
@@ -2065,7 +2126,13 @@ export async function deleteByIdsWxwAppToken(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -2083,7 +2150,7 @@ export async function revertByIdsWxwAppToken(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "revertByIdsWxwAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2137,7 +2204,7 @@ export async function revertByIdsWxwAppToken(
         if (model.id === id) {
           continue;
         }
-        throw "此 企微应用接口凭据 已经存在";
+        throw "企微应用接口凭据 重复";
       }
     }
     const args = new QueryArgs();
@@ -2161,7 +2228,7 @@ export async function forceDeleteByIdsWxwAppToken(
   },
 ): Promise<number> {
   
-  const table = "wxwork_wxw_app_token";
+  const table = getTableNameWxwAppToken();
   const method = "forceDeleteByIdsWxwAppToken";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2183,6 +2250,8 @@ export async function forceDeleteByIdsWxwAppToken(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheWxwAppToken();
   
