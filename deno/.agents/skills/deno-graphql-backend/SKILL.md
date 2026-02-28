@@ -176,7 +176,7 @@ export async function methodName(
 }
 ```
 
-- 如需操作附件, 则使用 [oss.dao.ts](/lib/oss/oss.dao.ts) 提供的函数进行操作
+- 如需操作附件, 则使用 [oss.dao.ts](../../../lib/oss/oss.dao.ts) 提供的函数进行操作
 
 - 函数定义和调用时, 多个参数时要换行
 

@@ -6,10 +6,10 @@
 
 | 模块 | 说明 | 指令文件 |
 |------|------|---------|
-| `deno/` | GraphQL API 后端 | [指令](../../deno/.github/copilot-instructions.md) |
-| `pc/` | Vue 3 管理界面 | [指令](../../pc/.github/copilot-instructions.md) |
-| `uni/` | Uni-app 移动端 | [指令](../../uni/.github/copilot-instructions.md) |
-| `codegen/` | 代码生成引擎 | [指令](../../codegen/.github/copilot-instructions.md) |
+| `deno/` | GraphQL API 后端 | [指令](../../deno/.agents/copilot-instructions.md) |
+| `pc/` | Vue 3 管理界面 | [指令](../../pc/.agents/copilot-instructions.md) |
+| `uni/` | Uni-app 移动端 | [指令](../../uni/.agents/copilot-instructions.md) |
+| `codegen/` | 代码生成引擎 | [指令](../../codegen/.agents/copilot-instructions.md) |
 | `codegen/src/tables/` | 数据库表定义和配置 |  |
 | `codegen/src/tables/{mod}/{mod}.sql` | 此模块的建表语句, `base`为系统基础模块, `wx`为微信模块(若有) |  |
 | `codegen/src/tables/{mod}/{mod}.ts` | 表的相关配置,外键等 |  |
@@ -17,7 +17,7 @@
 
 ⚠️ `codegen/__out__` 目录为代码生成输出目录，禁止修改也无读取的必要
 
-## 可用 Skills (.github/skills/)
+## 可用 Skills (.agents/skills/)
 
 - `create-module` - 创建新的业务模块。当需要添加新模块如 ec、crm 时使用
 - `create-table` - 数据库建表规范。创建新表时必须遵循
