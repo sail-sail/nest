@@ -20,7 +20,7 @@ app/{mod}/{table}/
 └── {table}_service.rs   # 业务逻辑/数据库
 ```
 
-## 可用 Skills
+## 可用 Skills (.agents/skills/)
 
 - `excel-export` - Excel 导出功能开发. 移动端导出 Excel 时使用
 - `graphql-api` - Rust GraphQL 接口开发. 创建自定义 API 时使用
