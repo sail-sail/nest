@@ -23,6 +23,7 @@ description: 表字段配置规范。配置 {mod}.ts、给表添加/修改字段
 |-----------|----------|
 | `lbl` | width/align/require/search 已有默认 |
 | `*_id`/`*_ids` | foreignKey 自动推断 |
+| `*_id` 非外键字段 | 需设置 `notForeignKeyById: true` 阻止自动外键推断，如 `req_id`、`transaction_id` 等业务ID |
 | 数字类型 | align:right, width:100 |
 | date/datetime | width:160 |
 | decimal | width:100 |
