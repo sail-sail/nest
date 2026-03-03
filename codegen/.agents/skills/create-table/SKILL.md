@@ -12,7 +12,7 @@ description: 数据库建表规范。创建新表时必须遵循
 
 `{mod}_{table}` 小写下划线，如 `base_usr`
 
-## 必须字段
+## 部分约定字段
 
 ```sql
 -- 主键
@@ -36,6 +36,8 @@ description: 数据库建表规范。创建新表时必须遵循
 `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
 ```
 
+- 注意: 这些审计字段都不是必须的, 可根据业务需要选择性添加, 例如: 不需要租户隔离就不需要 `tenant_id` 字段, 不需要软删除就不需要 `is_deleted` 相关字段
+
 ## 业务字典 dictbiz
 ```sql
 `type` ENUM('unpaid', 'paid') NOT NULL DEFAULT 'unpaid' COMMENT '类型,dictbiz:{mod}_{table}_type',
@@ -46,6 +48,8 @@ description: 数据库建表规范。创建新表时必须遵循
 ```sql
 `type` ENUM('unpaid', 'paid') NOT NULL DEFAULT 'unpaid' COMMENT '类型,dict:{mod}_{table}_type',
 ```
+
+- 注意: 有系统字典或者是业务字典的字段, 若此字典判断到 `is_sys` 为 `1` 则必定是 `ENUM` 类型 (codegen会自动给前后端生成枚举类型), 反之则不限制字段类型
 
 ## 业务字典 跟 系统字典 dict + dictbiz 的 Skills
 - [dict/SKILL.md](../dict/SKILL.md)
