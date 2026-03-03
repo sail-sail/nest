@@ -839,3 +839,16 @@ CREATE TABLE if not exists `base_dyn_page_data` (
   INDEX (`ref_code`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='动态页面数据';
+
+------------------------------------------------------------------------ 系统日志
+drop table if exists `base_server_log`;
+CREATE TABLE if not exists `base_server_log` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `log_date` date NOT NULL COMMENT '日志日期',
+  `log_time` datetime NOT NULL COMMENT '日志时间',
+  `level` ENUM('TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR') NOT NULL DEFAULT 'TRACE' COMMENT '日志级别,dict:server_log_level',
+  `module` varchar(255) NOT NULL DEFAULT '' COMMENT '模块',
+  `req_id` varchar(45) NOT NULL DEFAULT '' COMMENT '请求ID',
+  `content` text COMMENT '日志内容',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统日志';
