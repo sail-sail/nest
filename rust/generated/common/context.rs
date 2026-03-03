@@ -379,7 +379,7 @@ impl Ctx {
     let mut tran = self.tran.lock().await;
     if let Some(tran) = tran.as_mut() {
       let row = tran.fetch_one("select connection_id()").await?;
-      let connection_id: u64 = row.try_get(0)?;
+      let connection_id: u64 = row.try_get(0).unwrap_or(0);
       Ok(connection_id)
     } else {
       Ok(0)
@@ -398,7 +398,8 @@ impl Ctx {
     tran.execute("begin").await?;
     let connection_id: u64 = tran
       .fetch_one("select connection_id()").await?
-      .try_get(0)?;
+      .try_get(0)
+      .unwrap_or(0);
     info!(
       "{req_id} begin; -- {connection_id}",
       req_id = self.req_id,
@@ -415,9 +416,10 @@ impl Ctx {
     let mut tran = self.tran.lock().await;
     let tran = tran.take();
     if let Some(mut tran) = tran {
-      // let connection_id: u64 = tran
-      //   .fetch_one("select connection_id()").await?
-      //   .try_get(0)?;
+      let connection_id: u64 = tran
+        .fetch_one("select connection_id()").await?
+        .try_get(0)
+        .unwrap_or(0);
       if let Err(err) = res {
         let exception = err.downcast_ref::<ServiceException>();
         if let Some(exception) = exception {
@@ -434,7 +436,10 @@ impl Ctx {
               err,
             );
           }
-        } else if err.is::<&str>() || err.is::<String>() {
+        } else if
+          err.is::<SmolStr>() || err.is::<&SmolStr>() ||
+          err.is::<&str>() || err.is::<String>()
+        {
           info!(
             "{} {}",
             self.req_id,
@@ -453,13 +458,13 @@ impl Ctx {
         };
         if rollback {
           info!(
-            "{req_id} rollback;",
+            "{req_id} rollback; -- {connection_id}",
             req_id = self.req_id,
           );
           tran.execute("rollback").await?;
         } else {
           info!(
-            "{req_id} commit;",
+            "{req_id} commit; -- {connection_id}",
             req_id = self.req_id,
           );
           tran.execute("commit").await?;
@@ -467,7 +472,7 @@ impl Ctx {
         return Err(err);
       }
       info!(
-        "{req_id} commit;",
+        "{req_id} commit; -- {connection_id}",
         req_id = self.req_id,
       );
       tran.execute("commit").await?;
@@ -489,7 +494,10 @@ impl Ctx {
             err,
           );
         }
-      } else if err.is::<&str>() || err.is::<String>() {
+      } else if 
+        err.is::<SmolStr>() || err.is::<&SmolStr>() ||
+        err.is::<&str>() || err.is::<String>()
+      {
         info!(
           "{} {}",
           self.req_id,
@@ -1262,7 +1270,8 @@ impl Ctx {
         if let Some(mut tran) = tran {
           let connection_id: u64 = tran
             .fetch_one("select connection_id()").await?
-            .try_get(0)?;
+            .try_get(0)
+            .unwrap_or(0);
           if is_rollback {
             if is_success {
               info!(
