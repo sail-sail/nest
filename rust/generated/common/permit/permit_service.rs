@@ -27,6 +27,7 @@ use crate::base::role::role_model::RoleSearch;
 use crate::base::permit::permit_dao::{
   find_all_permit,
   find_one_permit,
+  exists_permit,
 };
 use crate::base::permit::permit_model::PermitSearch;
 use crate::base::permit::permit_model::PermitModel;
@@ -173,48 +174,45 @@ pub async fn use_permit(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let menu_model = find_one_menu(
+  let menu_model = match find_one_menu(
     MenuSearch {
-      route_path: route_path.clone().into(),
-      is_enabled: vec![1].into(),
+      route_path: Some(route_path.clone()),
+      is_enabled: Some(vec![1]),
       ..Default::default()
     }.into(),
     None,
     options,
-  ).await?;
-  if menu_model.is_none() {
-    return Ok(());
-  }
-  let menu_model = menu_model.unwrap();
+  ).await? {
+    Some(menu_model) => menu_model,
+    None => return Ok(()),
+  };
   
-  let auth_model = get_auth_model();
-  
-  if auth_model.is_none() {
-    let err_msg = ns(
-      SmolStr::new("无权限"),
-      None,
-    ).await?;
-    return Err(eyre!(err_msg));
-  }
-  
-  let auth_model = auth_model.unwrap();
+  let auth_model = match get_auth_model() {
+    Some(auth_model) => auth_model,
+    None => {
+      let err_msg = ns(
+        SmolStr::new("无权限"),
+        None,
+      ).await?;
+      return Err(eyre!(err_msg));
+    }
+  };
   
   let usr_id = auth_model.id;
   
-  let usr_model = find_by_id_usr(
+  let usr_model = match find_by_id_usr(
     usr_id,
     options,
-  ).await?;
-  
-  if usr_model.is_none() {
-    let err_msg = ns(
-      SmolStr::new("无权限"),
-      None,
-    ).await?;
-    return Err(eyre!(err_msg));
-  }
-  
-  let usr_model = usr_model.unwrap();
+  ).await? {
+    Some(usr_model) => usr_model,
+    None => {
+      let err_msg = ns(
+        SmolStr::new("无权限"),
+        None,
+      ).await?;
+      return Err(eyre!(err_msg));
+    }
+  };
   
   if usr_model.username == "admin" {
     return Ok(());
@@ -231,11 +229,11 @@ pub async fn use_permit(
   }
   
   let role_models = find_all_role(
-    RoleSearch {
-      ids: role_ids.into(),
-      is_enabled: vec![1].into(),
+    Some(RoleSearch {
+      ids: Some(role_ids),
+      is_enabled: Some(vec![1]),
       ..Default::default()
-    }.into(),
+    }),
     None,
     None,
     options,
@@ -270,25 +268,38 @@ pub async fn use_permit(
   let menu_id = menu_model.id;
   for permit_ids in permit_ids_arr.into_iter() {
   
-    let permit_model = find_one_permit(
+    let permit_exists = exists_permit(
       PermitSearch {
         ids: permit_ids.into(),
         menu_id: vec![menu_id].into(),
         code: code.clone().into(),
         ..Default::default()
       }.into(),
-      None,
       options,
     ).await?;
     
-    if permit_model.is_some() {
+    if permit_exists {
       return Ok(());
     }
   }
   
+  let permit_model = find_one_permit(
+    PermitSearch {
+      menu_id: vec![menu_id].into(),
+      code: code.clone().into(),
+      ..Default::default()
+    }.into(),
+    None,
+    options,
+  ).await?;
+  
+  let permit_lbl = permit_model
+    .map(|item| item.lbl)
+    .unwrap_or(code);
+  
   let mut map: HashMap<SmolStr, SmolStr> = HashMap::with_capacity(2);
   map.insert(SmolStr::new("0"), menu_model.lbl);
-  map.insert(SmolStr::new("1"), code);
+  map.insert(SmolStr::new("1"), permit_lbl);
   
   let err_msg = ns(
     SmolStr::new("{0} {1} 无权限"),
