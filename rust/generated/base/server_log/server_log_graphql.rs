@@ -218,6 +218,25 @@ impl ServerLogGenQuery {
       }).await
   }
   
+  /// 下载指定日期的原始日志文件内容
+  #[graphql(name = "downloadServerLog")]
+  async fn download_server_log(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "log_date")]
+    log_date: String,
+  ) -> Result<String> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        server_log_resolver::download_server_log(
+          log_date,
+        )
+      }).await
+  }
+  
   /// 获取可用的日志日期列表
   #[graphql(name = "getServerLogDates")]
   async fn get_server_log_dates(

@@ -290,6 +290,21 @@ pub async fn get_field_comments_server_log(
   Ok(comments)
 }
 
+/// 下载指定日期的原始日志文件内容
+pub async fn download_server_log(
+  log_date: String,
+) -> Result<String> {
+  
+  let date = chrono::NaiveDate::parse_from_str(&log_date, "%Y-%m-%d")
+    .map_err(|_| eyre!("日期格式错误, 应为 YYYY-MM-DD"))?;
+  
+  let content = server_log_dao2::download_server_log(
+    date,
+  ).await?;
+  
+  Ok(content)
+}
+
 /// 获取可用的日志日期列表
 pub async fn get_server_log_dates() -> Result<Vec<chrono::NaiveDate>> {
   let dates = server_log_dao2::get_server_log_dates().await?;

@@ -185,10 +185,10 @@ pub struct ServerLogSearch {
   #[graphql(name = "req_id_like")]
   pub req_id_like: Option<SmolStr>,
   /// 日志内容
-  #[graphql(skip)]
+  #[graphql(name = "content")]
   pub content: Option<SmolStr>,
   /// 日志内容
-  #[graphql(skip)]
+  #[graphql(name = "content_like")]
   pub content_like: Option<SmolStr>,
 }
 

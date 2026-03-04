@@ -1748,6 +1748,7 @@ export default defineConfig({
   base_server_log: {
     opts: {
       noAdd: true,
+      noCopy: true,
       noEdit: true,
       noDelete: true,
       noRevert: true,
@@ -1763,7 +1764,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "log_date",
         search: true,
-        width: 120,
+        width: 110,
         align: "center",
       },
       {
@@ -1775,24 +1776,25 @@ export default defineConfig({
       {
         COLUMN_NAME: "level",
         search: true,
-        width: 100,
+        width: 80,
         align: "center",
       },
       {
         COLUMN_NAME: "module",
-        canSearch: true,
-        width: 280,
+        search: true,
+        width: 420,
         align: "left",
       },
       {
         COLUMN_NAME: "req_id",
         notForeignKeyById: true,
-        canSearch: true,
-        width: 160,
+        search: true,
+        width: 140,
         align: "center",
       },
       {
         COLUMN_NAME: "content",
+        search: true,
         isTextarea: true,
         width: 500,
         align: "left",

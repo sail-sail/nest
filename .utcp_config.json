@@ -27,6 +27,24 @@
           }
         }
       }
+    },
+    {
+      "name": "pencil",
+      "description": "Pencil MCP server",
+      "call_template_type": "mcp",
+      "config": {
+        "mcpServers": {
+          "pencil": {
+            "command": "c:\\Users\\15126\\.vscode\\extensions\\highagency.pencildev-0.6.29\\out\\mcp-server-windows-x64.exe",
+            "args": [
+              "--app",
+              "visual_studio_code"
+            ],
+            "env": {},
+            "transport": "stdio"
+          }
+        }
+      }
     }
   ]
 }
