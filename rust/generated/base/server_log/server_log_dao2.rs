@@ -25,7 +25,7 @@ static LOG_LINE_RE: OnceLock<Regex> = OnceLock::new();
 fn get_log_line_re() -> &'static Regex {
   LOG_LINE_RE.get_or_init(|| {
     Regex::new(
-      r"^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)\s+(\w+)\s+([\w:]+):\s*(.*)"
+      r"^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+(?:Z|[+-]\d{2}:\d{2}))\s+(\w+)\s+([\w:]+):\s*(.*)"
     ).expect("Failed to compile log line regex")
   })
 }
@@ -69,23 +69,38 @@ fn parse_log_line(line: &str) -> Option<RawLogEntry> {
   let caps = re.captures(line)?;
   
   let timestamp_str = caps.get(1)?.as_str();
-  // 解析 "2026-03-03T03:47:50.436048Z" 格式
-  let timestamp = timestamp_str
-    .strip_suffix('Z')
-    .and_then(|s| {
-      // 截断微秒到6位以内
-      if let Some(dot_pos) = s.rfind('.') {
-        let frac = &s[dot_pos + 1..];
-        if frac.len() > 6 {
-          let truncated = format!("{}.{}", &s[..dot_pos], &frac[..6]);
-          NaiveDateTime::parse_from_str(&truncated, "%Y-%m-%dT%H:%M:%S%.f").ok()
-        } else {
-          NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S%.f").ok()
-        }
+  // 解析 "2026-03-03T03:47:50.436048Z" 或 "2026-03-04T08:48:49.712910+08:00" 格式
+  let s = if timestamp_str.ends_with('Z') {
+    timestamp_str.strip_suffix('Z').unwrap()
+  } else {
+    // 移除时区后缀 (+08:00 或 -08:00)
+    if let Some(pos) = timestamp_str.rfind('+') {
+      &timestamp_str[..pos]
+    } else if let Some(pos) = timestamp_str.rfind('-') {
+      if pos > 10 { // 确保不是日期部分的 -
+        &timestamp_str[..pos]
       } else {
-        NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S").ok()
+        timestamp_str
       }
-    })?;
+    } else {
+      timestamp_str
+    }
+  };
+  
+  let timestamp = {
+    // 截断微秒到6位以内
+    if let Some(dot_pos) = s.rfind('.') {
+      let frac = &s[dot_pos + 1..];
+      if frac.len() > 6 {
+        let truncated = format!("{}.{}", &s[..dot_pos], &frac[..6]);
+        NaiveDateTime::parse_from_str(&truncated, "%Y-%m-%dT%H:%M:%S%.f").ok()
+      } else {
+        NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S%.f").ok()
+      }
+    } else {
+      NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S").ok()
+    }
+  }?;
   
   let level = caps.get(2)?.as_str().to_string();
   let module = caps.get(3)?.as_str().to_string();
