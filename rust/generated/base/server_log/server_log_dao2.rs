@@ -3,8 +3,6 @@
 
 //! 系统日志 DAO2 — 从日志文件读取解析，不走数据库
 
-use std::io::{BufRead, BufReader, Read, Seek, SeekFrom};
-use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::sync::OnceLock;
@@ -13,9 +11,10 @@ use chrono::{NaiveDate, NaiveDateTime};
 use color_eyre::eyre::{Result, eyre};
 use regex::Regex;
 use smol_str::SmolStr;
-use tracing::info;
+use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncSeekExt, BufReader};
+// use tracing::info;
 
-use crate::common::context::get_req_id;
+// use crate::common::context::get_req_id;
 use crate::common::gql::model::{PageInput, SortInput, SortOrderEnum};
 
 use super::server_log_model::*;
@@ -26,7 +25,7 @@ static LOG_LINE_RE: OnceLock<Regex> = OnceLock::new();
 fn get_log_line_re() -> &'static Regex {
   LOG_LINE_RE.get_or_init(|| {
     Regex::new(
-      r"^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)\s+(\w+)\s+([\w:]+):\s*(.*)"
+      r"^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+(?:Z|[+-]\d{2}:\d{2}))\s+(\w+)\s+([\w:]+):\s*(.*)"
     ).expect("Failed to compile log line regex")
   })
 }
@@ -70,23 +69,38 @@ fn parse_log_line(line: &str) -> Option<RawLogEntry> {
   let caps = re.captures(line)?;
   
   let timestamp_str = caps.get(1)?.as_str();
-  // 解析 "2026-03-03T03:47:50.436048Z" 格式
-  let timestamp = timestamp_str
-    .strip_suffix('Z')
-    .and_then(|s| {
-      // 截断微秒到6位以内
-      if let Some(dot_pos) = s.rfind('.') {
-        let frac = &s[dot_pos + 1..];
-        if frac.len() > 6 {
-          let truncated = format!("{}.{}", &s[..dot_pos], &frac[..6]);
-          NaiveDateTime::parse_from_str(&truncated, "%Y-%m-%dT%H:%M:%S%.f").ok()
-        } else {
-          NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S%.f").ok()
-        }
+  // 解析 "2026-03-03T03:47:50.436048Z" 或 "2026-03-04T08:48:49.712910+08:00" 格式
+  let s = if timestamp_str.ends_with('Z') {
+    timestamp_str.strip_suffix('Z').unwrap()
+  } else {
+    // 移除时区后缀 (+08:00 或 -08:00)
+    if let Some(pos) = timestamp_str.rfind('+') {
+      &timestamp_str[..pos]
+    } else if let Some(pos) = timestamp_str.rfind('-') {
+      if pos > 10 { // 确保不是日期部分的 -
+        &timestamp_str[..pos]
       } else {
-        NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S").ok()
+        timestamp_str
       }
-    })?;
+    } else {
+      timestamp_str
+    }
+  };
+  
+  let timestamp = {
+    // 截断微秒到6位以内
+    if let Some(dot_pos) = s.rfind('.') {
+      let frac = &s[dot_pos + 1..];
+      if frac.len() > 6 {
+        let truncated = format!("{}.{}", &s[..dot_pos], &frac[..6]);
+        NaiveDateTime::parse_from_str(&truncated, "%Y-%m-%dT%H:%M:%S%.f").ok()
+      } else {
+        NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S%.f").ok()
+      }
+    } else {
+      NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S").ok()
+    }
+  }?;
   
   let level = caps.get(2)?.as_str().to_string();
   let module = caps.get(3)?.as_str().to_string();
@@ -125,16 +139,20 @@ fn is_log_line_start(line: &str) -> bool {
   get_log_line_re().is_match(line)
 }
 
-/// 读取并解析整个日志文件，返回所有条目（按文件顺序）
-fn parse_log_file(path: &Path) -> Result<Vec<RawLogEntry>> {
-  let file = File::open(path)
+/// 读取并解析整个日志文件，返回所有条目（倒序，最新在前）
+async fn parse_log_file(path: &Path) -> Result<Vec<RawLogEntry>> {
+  let file = tokio::fs::File::open(path)
+    .await
     .map_err(|e| eyre!("无法打开日志文件 {}: {}", path.display(), e))?;
   let reader = BufReader::new(file);
+  let mut lines = reader.lines();
   
   let mut entries: Vec<RawLogEntry> = Vec::new();
   
-  for line in reader.lines() {
-    let line = line.map_err(|e| eyre!("读取日志文件失败: {}", e))?;
+  while let Some(line) = lines.next_line()
+    .await
+    .map_err(|e| eyre!("读取日志文件失败: {}", e))?
+  {
     if line.is_empty() {
       // 空行追加到上一条
       if let Some(last) = entries.last_mut() {
@@ -163,14 +181,16 @@ fn parse_log_file(path: &Path) -> Result<Vec<RawLogEntry>> {
 
 /// 从日志文件反向读取（用于大文件的性能优化）
 /// 返回的条目已经是倒序（最新在前）
-fn parse_log_file_reverse(
+async fn parse_log_file_reverse(
   path: &Path,
   max_entries: Option<usize>,
 ) -> Result<Vec<RawLogEntry>> {
-  let mut file = File::open(path)
+  let mut file = tokio::fs::File::open(path)
+    .await
     .map_err(|e| eyre!("无法打开日志文件 {}: {}", path.display(), e))?;
   
   let file_size = file.metadata()
+    .await
     .map_err(|e| eyre!("无法获取文件大小: {}", e))?
     .len();
   
@@ -180,7 +200,7 @@ fn parse_log_file_reverse(
   
   // 对于小文件（< 5MB），直接全量读取
   if file_size < 5 * 1024 * 1024 {
-    return parse_log_file(path);
+    return parse_log_file(path).await;
   }
   
   // 大文件: 从尾部向前读取块
@@ -194,11 +214,13 @@ fn parse_log_file_reverse(
     let read_size = std::cmp::min(chunk_size, pos);
     pos -= read_size;
     
-    file.seek(SeekFrom::Start(pos))
+    file.seek(std::io::SeekFrom::Start(pos))
+      .await
       .map_err(|e| eyre!("seek 失败: {}", e))?;
     
     let mut buf = vec![0u8; read_size as usize];
     file.read_exact(&mut buf)
+      .await
       .map_err(|e| eyre!("读取失败: {}", e))?;
     
     let chunk_str = String::from_utf8_lossy(&buf);
@@ -242,11 +264,10 @@ fn parse_log_file_reverse(
   }
   
   // 处理剩余的 remainder
-  if !remainder.is_empty() && is_log_line_start(&remainder) {
-    if let Some(entry) = parse_log_line(&remainder) {
+  if !remainder.is_empty() && is_log_line_start(&remainder)
+    && let Some(entry) = parse_log_line(&remainder) {
       entries.push(entry);
     }
-  }
   
   Ok(entries)
 }
@@ -288,8 +309,8 @@ fn matches_search(
 ) -> bool {
   
   // 日志级别
-  if let Some(ref levels) = search.level {
-    if !levels.is_empty() {
+  if let Some(ref levels) = search.level
+    && !levels.is_empty() {
       let entry_level = ServerLogLevel::from_str(&entry.level).ok();
       match entry_level {
         Some(lv) => {
@@ -300,86 +321,93 @@ fn matches_search(
         None => return false,
       }
     }
-  }
   
   // 模块 精确匹配
-  if let Some(ref module) = search.module {
-    if !module.is_empty() && entry.module.as_str() != module.as_str() {
+  if let Some(ref module) = search.module
+    && !module.is_empty() && entry.module.as_str() != module.as_str() {
       return false;
     }
-  }
   
   // 模块 模糊匹配
-  if let Some(ref module_like) = search.module_like {
-    if !module_like.is_empty() {
+  if let Some(ref module_like) = search.module_like
+    && !module_like.is_empty() {
       let lower_module = entry.module.to_lowercase();
       let lower_like = module_like.to_lowercase();
       if !lower_module.contains(&lower_like) {
         return false;
       }
     }
-  }
   
   // 请求ID 精确匹配
-  if let Some(ref req_id) = search.req_id {
-    if !req_id.is_empty() && entry.req_id.as_str() != req_id.as_str() {
+  if let Some(ref req_id) = search.req_id
+    && !req_id.is_empty() && entry.req_id.as_str() != req_id.as_str() {
       return false;
     }
-  }
   
   // 请求ID 模糊匹配
-  if let Some(ref req_id_like) = search.req_id_like {
-    if !req_id_like.is_empty() && !entry.req_id.contains(req_id_like.as_str()) {
+  if let Some(ref req_id_like) = search.req_id_like
+    && !req_id_like.is_empty() && !entry.req_id.contains(req_id_like.as_str()) {
       return false;
     }
-  }
   
   // 日志内容 精确匹配
-  if let Some(ref content) = search.content {
-    if !content.is_empty() && entry.content.as_str() != content.as_str() {
+  if let Some(ref content) = search.content
+    && !content.is_empty() && entry.content.as_str() != content.as_str() {
       return false;
     }
-  }
   
   // 日志内容 模糊匹配
-  if let Some(ref content_like) = search.content_like {
-    if !content_like.is_empty() {
+  if let Some(ref content_like) = search.content_like
+    && !content_like.is_empty() {
       let lower_content = entry.content.to_lowercase();
       let lower_like = content_like.to_lowercase();
       if !lower_content.contains(&lower_like) {
         return false;
       }
     }
-  }
   
   // 日志时间范围
   if let Some(ref log_time) = search.log_time {
-    if let Some(ref start) = log_time[0] {
-      if entry.timestamp < *start {
+    if let Some(ref start) = log_time[0]
+      && entry.timestamp < *start {
         return false;
       }
-    }
-    if let Some(ref end) = log_time[1] {
-      if entry.timestamp > *end {
+    if let Some(ref end) = log_time[1]
+      && entry.timestamp > *end {
         return false;
       }
-    }
   }
+  
+  // 内容 精确匹配
+  if let Some(ref content) = search.content
+    && !content.is_empty() && entry.content.as_str() != content.as_str() {
+      return false;
+    }
+  
+  // 内容 模糊匹配
+  if let Some(ref content_like) = search.content_like
+    && !content_like.is_empty() {
+      let lower_content = entry.content.to_lowercase();
+      let lower_like = content_like.to_lowercase();
+      if !lower_content.contains(&lower_like) {
+        return false;
+      }
+    }
   
   true
 }
 
 /// 获取指定日期的日志文件路径
-fn get_log_file_for_date(date: NaiveDate) -> Option<PathBuf> {
+async fn get_log_file_for_date(date: NaiveDate) -> Option<PathBuf> {
   let log_dir = get_log_dir();
   let date_str = date.format("%Y-%m-%d").to_string();
   
-  if !log_dir.exists() {
+  if !tokio::fs::try_exists(&log_dir).await.unwrap_or(false) {
     return None;
   }
   
-  let entries = std::fs::read_dir(&log_dir).ok()?;
-  for entry in entries.flatten() {
+  let mut entries = tokio::fs::read_dir(&log_dir).await.ok()?;
+  while let Ok(Some(entry)) = entries.next_entry().await {
     let filename = entry.file_name().to_string_lossy().to_string();
     if filename.ends_with(&format!(".log.{}", date_str)) {
       return Some(entry.path());
@@ -454,10 +482,10 @@ pub async fn find_all_server_log(
   
   let dates = get_search_dates(&search)?;
   
-  info!(
-    "{req_id} server_log_dao2.find_all_server_log: search: {search:?}",
-    req_id = get_req_id(),
-  );
+  // info!(
+  //   "{req_id} server_log_dao2.find_all_server_log: search: {search:?}",
+  //   req_id = get_req_id(),
+  // );
   
   // 确定排序方向
   let is_desc = sort
@@ -486,15 +514,15 @@ pub async fn find_all_server_log(
   }
   
   for date in &sorted_dates {
-    let log_file = match get_log_file_for_date(*date) {
+    let log_file = match get_log_file_for_date(*date).await {
       Some(f) => f,
       None => continue,
     };
     
     let entries = if is_desc {
-      parse_log_file_reverse(&log_file, None)?
+      parse_log_file_reverse(&log_file, None).await?
     } else {
-      let mut entries = parse_log_file(&log_file)?;
+      let mut entries = parse_log_file(&log_file).await?;
       entries.reverse(); // parse_log_file 返回倒序, 我们要正序
       entries
     };
@@ -536,10 +564,10 @@ pub async fn find_count_server_log(
   let search = search.unwrap_or_default();
   let dates = get_search_dates(&search)?;
   
-  info!(
-    "{req_id} server_log_dao2.find_count_server_log: dates: {dates:?}",
-    req_id = get_req_id(),
-  );
+  // info!(
+  //   "{req_id} server_log_dao2.find_count_server_log: dates: {dates:?}",
+  //   req_id = get_req_id(),
+  // );
   
   let has_filter = search.level.is_some()
     || search.module.is_some()
@@ -553,14 +581,14 @@ pub async fn find_count_server_log(
   let mut total: u64 = 0;
   
   for date in &dates {
-    let log_file = match get_log_file_for_date(*date) {
+    let log_file = match get_log_file_for_date(*date).await {
       Some(f) => f,
       None => continue,
     };
     
     if has_filter {
       // 有过滤条件时, 需要遍历文件
-      let entries = parse_log_file(&log_file)?;
+      let entries = parse_log_file(&log_file).await?;
       for entry in &entries {
         if matches_search(entry, &search) {
           total += 1;
@@ -568,15 +596,18 @@ pub async fn find_count_server_log(
       }
     } else {
       // 无过滤条件, 快速估算: 统计日志行头的数量
-      let file = File::open(&log_file)
+      let file = tokio::fs::File::open(&log_file)
+        .await
         .map_err(|e| eyre!("无法打开日志文件: {}", e))?;
       let reader = BufReader::new(file);
+      let mut lines = reader.lines();
       let re = get_log_line_re();
-      for line in reader.lines() {
-        if let Ok(line) = line {
-          if re.is_match(&line) {
-            total += 1;
-          }
+      while let Some(line) = lines.next_line()
+        .await
+        .map_err(|e| eyre!("读取日志文件失败: {}", e))?
+      {
+        if re.is_match(&line) {
+          total += 1;
         }
       }
     }
@@ -592,10 +623,10 @@ pub async fn find_by_id_server_log(
   _options: Option<()>,
 ) -> Result<Option<ServerLogModel>> {
   
-  info!(
-    "{req_id} server_log_dao2.find_by_id_server_log: id: {id:?}",
-    req_id = get_req_id(),
-  );
+  // info!(
+  //   "{req_id} server_log_dao2.find_by_id_server_log: id: {id:?}",
+  //   req_id = get_req_id(),
+  // );
   
   // id 格式: YYYYMMDD_0000000000000 (22字节)
   let id_str = id.as_str();
@@ -617,12 +648,12 @@ pub async fn find_by_id_server_log(
   let date = date.unwrap();
   let line_idx = line_idx.unwrap();
   
-  let log_file = match get_log_file_for_date(date) {
+  let log_file = match get_log_file_for_date(date).await {
     Some(f) => f,
     None => return Ok(None),
   };
   
-  let entries = parse_log_file(&log_file)?;
+  let entries = parse_log_file(&log_file).await?;
   // parse_log_file 返回倒序, 需要还原正序后按 line_idx 取
   let total = entries.len();
   // line_idx 是正序的 index, 倒序后 index 为 total - 1 - line_idx
@@ -637,26 +668,44 @@ pub async fn find_by_id_server_log(
   Ok(Some(model))
 }
 
+// MARK: download_server_log
+/// 下载指定日期的原始日志文件内容
+pub async fn download_server_log(
+  log_date: NaiveDate,
+) -> Result<String> {
+  
+  let log_file = get_log_file_for_date(log_date)
+    .await
+    .ok_or_else(|| eyre!("未找到 {} 的日志文件", log_date.format("%Y-%m-%d")))?;
+  
+  let content = tokio::fs::read_to_string(&log_file)
+    .await
+    .map_err(|e| eyre!("读取日志文件失败: {}", e))?;
+  
+  Ok(content)
+}
+
 // MARK: get_server_log_dates
 /// 获取可用的日志日期列表
 pub async fn get_server_log_dates() -> Result<Vec<NaiveDate>> {
   let log_dir = get_log_dir();
   
-  info!(
-    "{req_id} server_log_dao2.get_server_log_dates: log_dir: {log_dir:?}",
-    req_id = get_req_id(),
-  );
+  // info!(
+  //   "{req_id} server_log_dao2.get_server_log_dates: log_dir: {log_dir:?}",
+  //   req_id = get_req_id(),
+  // );
   
-  if !log_dir.exists() {
+  if !tokio::fs::try_exists(&log_dir).await.unwrap_or(false) {
     return Ok(Vec::new());
   }
   
   let mut dates: Vec<NaiveDate> = Vec::new();
   
-  let entries = std::fs::read_dir(&log_dir)
+  let mut entries = tokio::fs::read_dir(&log_dir)
+    .await
     .map_err(|e| eyre!("无法读取日志目录: {}", e))?;
   
-  for entry in entries.flatten() {
+  while let Ok(Some(entry)) = entries.next_entry().await {
     let filename = entry.file_name().to_string_lossy().to_string();
     if let Some(date) = extract_date_from_filename(&filename) {
       dates.push(date);

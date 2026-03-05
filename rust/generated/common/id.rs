@@ -78,9 +78,13 @@ where
 
 /// 为实现Id trait的类型提供默认的Debug实现
 pub fn debug_id<T: Id>(id: &T, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-  match std::str::from_utf8(id.as_bytes()) {
-    Ok(s) => write!(f, "{}({})", T::TYPE_NAME, s),
-    Err(_) => write!(f, "{}()", T::TYPE_NAME)
+  if id.is_empty() {
+    write!(f, "{}()", T::TYPE_NAME)
+  } else {
+    match std::str::from_utf8(id.as_bytes()) {
+      Ok(s) => write!(f, "{}({})", T::TYPE_NAME, s),
+      Err(_) => write!(f, "{}()", T::TYPE_NAME)
+    }
   }
 }
 
