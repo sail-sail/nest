@@ -230,7 +230,7 @@ pub async fn wx_pay_notify(
   let attach2_obj: serde_json::Value = serde_json::from_str(&attach2)?;
   let action = attach2_obj["action"].as_str().unwrap_or_default();
   
-  let amt = Decimal::from(payer_total) / Decimal::from(100);
+  let amt = Decimal::from(total) / Decimal::from(100);
   
   info!(
     "{req_id} pay_notice_attach2: action: {action} amt: {amt} {attach2:?}",
