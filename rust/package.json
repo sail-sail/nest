@@ -11,6 +11,7 @@
     "build-test": "node ./generated/common/script/build.js --env test",
     "publish": "node ./generated/common/script/publish.js",
     "codegen": "cd .. && npm run codegen",
+    "sql": "cd ../codegen && node --experimental-strip-types src/util/npmSql.ts",
     "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {

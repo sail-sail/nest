@@ -23,6 +23,7 @@
 - `create-table` - 数据库建表规范。创建新表时必须遵循
 - `dict` - 系统字典和业务字典配置。建表需要枚举字段或给表添加枚举类字段时使用
 - `table-config` - 表字段配置规范。建表后配置 src/tables/{mod}/{mod}.ts 文件时使用
+- `sql-exec` - 需要执行sql、验证写入结果、核对联表数据时使用
 
 ## 代码格式规范
 - 无论是前端还是后端, 函数调用和定义的参数都尽量拆行, 例如:
@@ -43,7 +44,7 @@ pay_order(
 
 ## 全局配置
 
-- **MCP 配置**：`/.utcp_config.json`
+- **MCP 配置**：`../.utcp_config.json`
 - **代码生成**：所有 CRUD 通过 `codegen/` 生成，禁止手写
 
 ## mcp 相关规范
