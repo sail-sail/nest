@@ -6,6 +6,7 @@
     "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && vue-tsc --noEmit --skipLibCheck --project tsconfig_tc.json && eslint .",
     "lint": "eslint .",
     "lint-staged": "lint-staged",
+    "sql": "cd ../codegen && node --experimental-strip-types src/util/npmSql.ts",
     "build:h5-test": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && uni build",
     "build:h5-prod": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && uni build",
     "dev:app": "uni -p app",
