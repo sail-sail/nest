@@ -15,6 +15,7 @@
     "coderemove": "cd codegen && node --experimental-strip-types src/bin/coderemove_rs.ts",
     "initdb": "cd codegen && node --experimental-strip-types src/util/npmInitDB.ts",
     "importCsv": "cd codegen && node --experimental-strip-types src/util/npmImportCsv.ts",
+    "sql": "cd codegen && node --experimental-strip-types src/util/npmSql.ts",
     "uuid": "cd codegen && node --experimental-strip-types src/util/npmShortUuidV4.ts",
     "pwd": "cd codegen && node --experimental-strip-types src/util/npmPassword.ts",
     "permit": "cd pc && node src/utils/permit_scan.js",

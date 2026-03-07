@@ -11,6 +11,7 @@
     "coderemove": "node --experimental-strip-types src/bin/coderemove_rs.ts",
     "initdb": "node --experimental-strip-types src/util/npmInitDB.ts",
     "importCsv": "node --experimental-strip-types src/util/npmImportCsv.ts",
+    "sql": "node --experimental-strip-types src/util/npmSql.ts",
     "uuid": "node --experimental-strip-types src/util/npmShortUuidV4.ts",
     "pwd": "node --experimental-strip-types src/util/npmPassword.ts",
     "permit": "cd ../pc && node src/utils/permit_scan.js",
