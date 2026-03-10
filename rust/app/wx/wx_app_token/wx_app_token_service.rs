@@ -147,7 +147,7 @@ pub async fn get_access_token(
   if force ||
     expires_in == 0 ||
     token_time2.is_none() ||
-    token_time2.unwrap() < now ||
+    token_time2.unwrap_or_default() < now ||
     appid != wx_app_token_model.appid ||
     appsecret != wx_app_token_model.appsecret
   {
