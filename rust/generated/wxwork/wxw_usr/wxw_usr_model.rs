@@ -8,7 +8,6 @@ use std::fmt;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
-use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
@@ -38,14 +37,14 @@ use crate::base::tenant::tenant_model::TenantId;
 use crate::wxwork::wxw_app::wxw_app_model::WxwAppId;
 use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_WXW_USR: OnceLock<[&'static str; 2]> = OnceLock::new();
+static CAN_SORT_IN_API_WXW_USR: [&str; 2] = [
+  "create_time",
+  "update_time",
+];
 
 /// 企微用户 前端允许排序的字段
 fn get_can_sort_in_api_wxw_usr() -> &'static [&'static str; 2] {
-  CAN_SORT_IN_API_WXW_USR.get_or_init(|| [
-    "create_time",
-    "update_time",
-  ])
+  &CAN_SORT_IN_API_WXW_USR
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -266,7 +265,7 @@ pub struct WxwUsrFieldComment {
   pub rem: SmolStr,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxwUsrSearch")]
 #[allow(dead_code)]
 pub struct WxwUsrSearch {
@@ -571,7 +570,7 @@ impl std::fmt::Debug for WxwUsrSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxwUsrInput")]
 #[allow(dead_code)]
 pub struct WxwUsrInput {
@@ -661,6 +660,87 @@ pub struct WxwUsrInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for WxwUsrInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxwUsrInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref wxw_app_id) = self.wxw_app_id {
+      item = item.field("wxw_app_id", wxw_app_id);
+    }
+    if let Some(ref corpid) = self.corpid {
+      item = item.field("corpid", corpid);
+    }
+    if let Some(ref agentid) = self.agentid {
+      item = item.field("agentid", agentid);
+    }
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref userid) = self.userid {
+      item = item.field("userid", userid);
+    }
+    if let Some(ref mobile) = self.mobile {
+      item = item.field("mobile", mobile);
+    }
+    if let Some(ref gender) = self.gender {
+      item = item.field("gender", gender);
+    }
+    if let Some(ref email) = self.email {
+      item = item.field("email", email);
+    }
+    if let Some(ref biz_email) = self.biz_email {
+      item = item.field("biz_email", biz_email);
+    }
+    if let Some(ref direct_leader) = self.direct_leader {
+      item = item.field("direct_leader", direct_leader);
+    }
+    if let Some(ref position) = self.position {
+      item = item.field("position", position);
+    }
+    if let Some(ref avatar) = self.avatar {
+      item = item.field("avatar", avatar);
+    }
+    if let Some(ref thumb_avatar) = self.thumb_avatar {
+      item = item.field("thumb_avatar", thumb_avatar);
+    }
+    if let Some(ref qr_code) = self.qr_code {
+      item = item.field("qr_code", qr_code);
+    }
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<WxwUsrModel> for WxwUsrInput {

@@ -8,7 +8,6 @@ use std::fmt;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
-use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
@@ -38,14 +37,14 @@ use crate::base::tenant::tenant_model::TenantId;
 use crate::wxwork::wxw_app::wxw_app_model::WxwAppId;
 use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_WXW_MSG: OnceLock<[&'static str; 2]> = OnceLock::new();
+static CAN_SORT_IN_API_WXW_MSG: [&str; 2] = [
+  "create_time",
+  "update_time",
+];
 
 /// 企微消息 前端允许排序的字段
 fn get_can_sort_in_api_wxw_msg() -> &'static [&'static str; 2] {
-  CAN_SORT_IN_API_WXW_MSG.get_or_init(|| [
-    "create_time",
-    "update_time",
-  ])
+  &CAN_SORT_IN_API_WXW_MSG
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -245,7 +244,7 @@ pub struct WxwMsgFieldComment {
   pub errmsg: SmolStr,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxwMsgSearch")]
 #[allow(dead_code)]
 pub struct WxwMsgSearch {
@@ -466,7 +465,7 @@ impl std::fmt::Debug for WxwMsgSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxwMsgInput")]
 #[allow(dead_code)]
 pub struct WxwMsgInput {
@@ -541,6 +540,69 @@ pub struct WxwMsgInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for WxwMsgInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxwMsgInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref wxw_app_id) = self.wxw_app_id {
+      item = item.field("wxw_app_id", wxw_app_id);
+    }
+    if let Some(ref errcode) = self.errcode {
+      item = item.field("errcode", errcode);
+    }
+    if let Some(ref touser) = self.touser {
+      item = item.field("touser", touser);
+    }
+    if let Some(ref title) = self.title {
+      item = item.field("title", title);
+    }
+    if let Some(ref description) = self.description {
+      item = item.field("description", description);
+    }
+    if let Some(ref url) = self.url {
+      item = item.field("url", url);
+    }
+    if let Some(ref btntxt) = self.btntxt {
+      item = item.field("btntxt", btntxt);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref errmsg) = self.errmsg {
+      item = item.field("errmsg", errmsg);
+    }
+    if let Some(ref msgid) = self.msgid {
+      item = item.field("msgid", msgid);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<WxwMsgModel> for WxwMsgInput {

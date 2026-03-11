@@ -633,16 +633,16 @@ pub async fn find_all_wxw_app_token(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(page) = &page {
-      msg += &format!(" page: {:?}", &page);
+      msg += &format!(" page: {page:?}");
     }
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -730,7 +730,8 @@ pub async fn find_all_wxw_app_token(
   
   let cache_key1 = format!("dao.sql.{table}");
   let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
-  {
+  
+  let res = {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: Vec<WxwAppTokenModel>;
@@ -741,20 +742,24 @@ pub async fn find_all_wxw_app_token(
         res2 = vec![];
         cache_dao::del_cache(&cache_key1).await?;
       }
-      return Ok(res2);
+      Some(res2)
+    } else {
+      None
     }
-  }
+  };
   
-  let mut res: Vec<WxwAppTokenModel> = query(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  {
+  let mut res: Vec<WxwAppTokenModel> = if let Some(res) = res {
+    res
+  } else {
+    let res = query(
+      sql,
+      args,
+      options,
+    ).await?;
     let str = serde_json::to_string(&res)?;
     cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
-  }
+    res
+  };
   
   let len = res.len();
   let result_limit_num = find_all_result_limit();
@@ -792,10 +797,10 @@ pub async fn find_count_wxw_app_token(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -869,7 +874,8 @@ pub async fn find_count_wxw_app_token(
   
   let cache_key1 = format!("dao.sql.{table}");
   let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
-  {
+  
+  let total = {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: u64;
@@ -880,28 +886,31 @@ pub async fn find_count_wxw_app_token(
         res2 = 0;
         cache_dao::del_cache(&cache_key1).await?;
       }
-      return Ok(res2);
+      Some(res2)
+    } else {
+      None
     }
-  }
+  };
   
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let res: Option<CountModel> = query_one(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  {
-    let str = serde_json::to_string(&res)?;
+  let total: u64 = if let Some(total) = total {
+    total
+  } else {
+    let options = Options::from(options)
+      .set_is_debug(Some(false));
+    let options = Some(options);
+    
+    let res: Option<CountModel> = query_one(
+      sql,
+      args,
+      options,
+    ).await?;
+    let total = res
+      .map(|item| item.total)
+      .unwrap_or_default();
+    let str = serde_json::to_string(&total)?;
     cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
-  }
-  
-  let total = res
-    .map(|item| item.total)
-    .unwrap_or_default();
+    total
+  };
   
   if total > MAX_SAFE_INTEGER {
     return Err(eyre!("total > MAX_SAFE_INTEGER"));
@@ -958,13 +967,13 @@ pub async fn find_one_ok_wxw_app_token(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1007,13 +1016,13 @@ pub async fn find_one_wxw_app_token(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1062,9 +1071,9 @@ pub async fn find_by_id_ok_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" id: {id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1111,9 +1120,9 @@ pub async fn find_by_id_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" id: {id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1158,9 +1167,9 @@ pub async fn find_by_ids_ok_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1230,9 +1239,9 @@ pub async fn find_by_ids_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1301,10 +1310,10 @@ pub async fn exists_wxw_app_token(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1378,7 +1387,8 @@ pub async fn exists_wxw_app_token(
   
   let cache_key1 = format!("dao.sql.{table}");
   let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
-  {
+  
+  let exists_res = {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: bool;
@@ -1389,28 +1399,33 @@ pub async fn exists_wxw_app_token(
         res2 = false;
         cache_dao::del_cache(&cache_key1).await?;
       }
-      return Ok(res2);
+      Some(res2)
+    } else {
+      None
     }
-  }
+  };
   
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let res: Option<(bool,)> = query_one(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  {
-    let str = serde_json::to_string(&res)?;
+  let exists_res: bool = if let Some(exists_res) = exists_res {
+    exists_res
+  } else {
+    let options = Options::from(options)
+      .set_is_debug(Some(false));
+    let options = Some(options);
+    
+    let res: Option<(bool,)> = query_one(
+      sql,
+      args,
+      options,
+    ).await?;
+    let exists_res = res
+      .map(|item| item.0)
+      .unwrap_or_default();
+    let str = serde_json::to_string(&exists_res)?;
     cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
-  }
+    exists_res
+  };
   
-  Ok(res
-    .map(|item| item.0)
-    .unwrap_or_default())
+  Ok(exists_res)
 }
 
 // MARK: exists_by_id_wxw_app_token
@@ -1428,9 +1443,9 @@ pub async fn exists_by_id_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" id: {id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1471,12 +1486,12 @@ pub async fn find_by_unique_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" search: {:?}", &search);
+    msg += &format!(" search: {search:?}");
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1591,10 +1606,10 @@ pub async fn check_by_unique_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" input: {:?}", &input);
-    msg += &format!(" model: {:?}", &model);
+    msg += &format!(" input: {input:?}");
+    msg += &format!(" model: {model:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1753,9 +1768,9 @@ pub async fn creates_return_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" inputs: {:?}", &inputs);
+    msg += &format!(" inputs: {inputs:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1790,9 +1805,9 @@ pub async fn creates_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" inputs: {:?}", &inputs);
+    msg += &format!(" inputs: {inputs:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2224,9 +2239,9 @@ pub async fn create_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" input: {:?}", &input);
+    msg += &format!(" input: {input:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2261,10 +2276,10 @@ pub async fn update_tenant_by_id_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
-    msg += &format!(" tenant_id: {:?}", &tenant_id);
+    msg += &format!(" id: {id:?}");
+    msg += &format!(" tenant_id: {tenant_id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2314,10 +2329,10 @@ pub async fn update_by_id_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
-    msg += &format!(" input: {:?}", &input);
+    msg += &format!(" id: {id:?}");
+    msg += &format!(" input: {input:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2672,9 +2687,9 @@ pub async fn delete_by_ids_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2794,9 +2809,9 @@ pub async fn revert_by_ids_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2899,9 +2914,9 @@ pub async fn force_delete_by_ids_wxw_app_token(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",

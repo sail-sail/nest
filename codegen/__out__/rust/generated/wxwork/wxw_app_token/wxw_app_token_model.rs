@@ -8,7 +8,6 @@ use std::fmt;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
-use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
@@ -38,14 +37,14 @@ use crate::base::tenant::tenant_model::TenantId;
 use crate::wxwork::wxw_app::wxw_app_model::WxwAppId;
 use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_WXW_APP_TOKEN: OnceLock<[&'static str; 2]> = OnceLock::new();
+static CAN_SORT_IN_API_WXW_APP_TOKEN: [&str; 2] = [
+  "create_time",
+  "update_time",
+];
 
 /// 企微应用接口凭据 前端允许排序的字段
 fn get_can_sort_in_api_wxw_app_token() -> &'static [&'static str; 2] {
-  CAN_SORT_IN_API_WXW_APP_TOKEN.get_or_init(|| [
-    "create_time",
-    "update_time",
-  ])
+  &CAN_SORT_IN_API_WXW_APP_TOKEN
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -316,7 +315,7 @@ pub struct WxwAppTokenFieldComment {
   pub jsapi_ticket_agent_config_expires_in: SmolStr,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxwAppTokenSearch")]
 #[allow(dead_code)]
 pub struct WxwAppTokenSearch {
@@ -572,7 +571,7 @@ impl std::fmt::Debug for WxwAppTokenSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "WxwAppTokenInput")]
 #[allow(dead_code)]
 pub struct WxwAppTokenInput {
@@ -677,6 +676,84 @@ pub struct WxwAppTokenInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for WxwAppTokenInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("WxwAppTokenInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref wxw_app_id) = self.wxw_app_id {
+      item = item.field("wxw_app_id", wxw_app_id);
+    }
+    if let Some(ref r#type) = self.r#type {
+      item = item.field("r#type", r#type);
+    }
+    if let Some(ref corpid) = self.corpid {
+      item = item.field("corpid", corpid);
+    }
+    if let Some(ref corpsecret) = self.corpsecret {
+      item = item.field("corpsecret", corpsecret);
+    }
+    if let Some(ref contactsecret) = self.contactsecret {
+      item = item.field("contactsecret", contactsecret);
+    }
+    if let Some(ref access_token) = self.access_token {
+      item = item.field("access_token", access_token);
+    }
+    if let Some(ref token_time) = self.token_time {
+      item = item.field("token_time", token_time);
+    }
+    if let Some(ref expires_in) = self.expires_in {
+      item = item.field("expires_in", expires_in);
+    }
+    if let Some(ref jsapi_ticket) = self.jsapi_ticket {
+      item = item.field("jsapi_ticket", jsapi_ticket);
+    }
+    if let Some(ref jsapi_ticket_time) = self.jsapi_ticket_time {
+      item = item.field("jsapi_ticket_time", jsapi_ticket_time);
+    }
+    if let Some(ref jsapi_ticket_expires_in) = self.jsapi_ticket_expires_in {
+      item = item.field("jsapi_ticket_expires_in", jsapi_ticket_expires_in);
+    }
+    if let Some(ref jsapi_ticket_agent_config) = self.jsapi_ticket_agent_config {
+      item = item.field("jsapi_ticket_agent_config", jsapi_ticket_agent_config);
+    }
+    if let Some(ref jsapi_ticket_agent_config_time) = self.jsapi_ticket_agent_config_time {
+      item = item.field("jsapi_ticket_agent_config_time", jsapi_ticket_agent_config_time);
+    }
+    if let Some(ref jsapi_ticket_agent_config_expires_in) = self.jsapi_ticket_agent_config_expires_in {
+      item = item.field("jsapi_ticket_agent_config_expires_in", jsapi_ticket_agent_config_expires_in);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<WxwAppTokenModel> for WxwAppTokenInput {

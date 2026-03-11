@@ -37,10 +37,14 @@ impl WxwUsrGenQuery {
   async fn find_all_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwUsrSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<WxwUsrModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl WxwUsrGenQuery {
   async fn find_count_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwUsrSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl WxwUsrGenQuery {
   async fn find_one_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwUsrSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<WxwUsrModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl WxwUsrGenQuery {
   async fn find_one_ok_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwUsrSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<WxwUsrModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl WxwUsrGenQuery {
   async fn find_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxwUsrId,
   ) -> Result<Option<WxwUsrModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl WxwUsrGenQuery {
   async fn find_by_id_ok_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxwUsrId,
   ) -> Result<WxwUsrModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl WxwUsrGenQuery {
   async fn find_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwUsrId>,
   ) -> Result<Vec<WxwUsrModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl WxwUsrGenQuery {
   async fn find_by_ids_ok_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwUsrId>,
   ) -> Result<Vec<WxwUsrModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl WxwUsrGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<WxwUsrFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -212,13 +233,17 @@ impl WxwUsrGenMutation {
   async fn creates_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<WxwUsrInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<WxwUsrId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -227,7 +252,7 @@ impl WxwUsrGenMutation {
       .scope({
         wxw_usr_resolver::creates_wxw_usr(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -237,9 +262,12 @@ impl WxwUsrGenMutation {
   async fn update_tenant_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxwUsrId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -258,9 +286,12 @@ impl WxwUsrGenMutation {
   async fn update_by_id_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxwUsrId,
+    #[graphql(name = "input")]
     input: WxwUsrInput,
   ) -> Result<WxwUsrId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -279,8 +310,10 @@ impl WxwUsrGenMutation {
   async fn delete_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwUsrId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -298,8 +331,10 @@ impl WxwUsrGenMutation {
   async fn revert_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwUsrId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -317,8 +352,10 @@ impl WxwUsrGenMutation {
   async fn force_delete_by_ids_wxw_usr(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwUsrId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

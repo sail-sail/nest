@@ -37,10 +37,14 @@ impl WxwAppTokenGenQuery {
   async fn find_all_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwAppTokenSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<WxwAppTokenModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl WxwAppTokenGenQuery {
   async fn find_count_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwAppTokenSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl WxwAppTokenGenQuery {
   async fn find_one_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwAppTokenSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<WxwAppTokenModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl WxwAppTokenGenQuery {
   async fn find_one_ok_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwAppTokenSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<WxwAppTokenModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl WxwAppTokenGenQuery {
   async fn find_by_id_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxwAppTokenId,
   ) -> Result<Option<WxwAppTokenModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl WxwAppTokenGenQuery {
   async fn find_by_id_ok_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxwAppTokenId,
   ) -> Result<WxwAppTokenModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl WxwAppTokenGenQuery {
   async fn find_by_ids_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwAppTokenId>,
   ) -> Result<Vec<WxwAppTokenModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl WxwAppTokenGenQuery {
   async fn find_by_ids_ok_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwAppTokenId>,
   ) -> Result<Vec<WxwAppTokenModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl WxwAppTokenGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<WxwAppTokenFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -212,13 +233,17 @@ impl WxwAppTokenGenMutation {
   async fn creates_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<WxwAppTokenInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<WxwAppTokenId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -227,7 +252,7 @@ impl WxwAppTokenGenMutation {
       .scope({
         wxw_app_token_resolver::creates_wxw_app_token(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -237,9 +262,12 @@ impl WxwAppTokenGenMutation {
   async fn update_tenant_by_id_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxwAppTokenId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -258,9 +286,12 @@ impl WxwAppTokenGenMutation {
   async fn update_by_id_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxwAppTokenId,
+    #[graphql(name = "input")]
     input: WxwAppTokenInput,
   ) -> Result<WxwAppTokenId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -279,8 +310,10 @@ impl WxwAppTokenGenMutation {
   async fn delete_by_ids_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwAppTokenId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -298,8 +331,10 @@ impl WxwAppTokenGenMutation {
   async fn revert_by_ids_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwAppTokenId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -317,8 +352,10 @@ impl WxwAppTokenGenMutation {
   async fn force_delete_by_ids_wxw_app_token(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwAppTokenId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

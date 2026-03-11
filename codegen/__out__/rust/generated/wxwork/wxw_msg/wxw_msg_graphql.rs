@@ -37,10 +37,14 @@ impl WxwMsgGenQuery {
   async fn find_all_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwMsgSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<WxwMsgModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl WxwMsgGenQuery {
   async fn find_count_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwMsgSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl WxwMsgGenQuery {
   async fn find_one_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwMsgSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<WxwMsgModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl WxwMsgGenQuery {
   async fn find_one_ok_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<WxwMsgSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<WxwMsgModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl WxwMsgGenQuery {
   async fn find_by_id_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxwMsgId,
   ) -> Result<Option<WxwMsgModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl WxwMsgGenQuery {
   async fn find_by_id_ok_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxwMsgId,
   ) -> Result<WxwMsgModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl WxwMsgGenQuery {
   async fn find_by_ids_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwMsgId>,
   ) -> Result<Vec<WxwMsgModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl WxwMsgGenQuery {
   async fn find_by_ids_ok_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwMsgId>,
   ) -> Result<Vec<WxwMsgModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl WxwMsgGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<WxwMsgFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -213,8 +234,10 @@ impl WxwMsgGenMutation {
   async fn no_add_no_edit_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "input")]
     input: WxwMsgInput,
   ) -> Result<WxwMsgId> {
+    
     Err(eyre!(""))
   }
   
@@ -223,9 +246,12 @@ impl WxwMsgGenMutation {
   async fn update_tenant_by_id_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: WxwMsgId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -244,8 +270,10 @@ impl WxwMsgGenMutation {
   async fn delete_by_ids_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwMsgId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -263,8 +291,10 @@ impl WxwMsgGenMutation {
   async fn revert_by_ids_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwMsgId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -282,8 +312,10 @@ impl WxwMsgGenMutation {
   async fn force_delete_by_ids_wxw_msg(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<WxwMsgId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
