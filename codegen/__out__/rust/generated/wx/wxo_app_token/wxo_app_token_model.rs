@@ -8,7 +8,6 @@ use std::fmt;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
-use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
@@ -36,14 +35,14 @@ use crate::common::id::{Id, impl_id};
 use crate::wx::wxo_app::wxo_app_model::WxoAppId;
 use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_WXO_APP_TOKEN: OnceLock<[&'static str; 2]> = OnceLock::new();
+static CAN_SORT_IN_API_WXO_APP_TOKEN: [&str; 2] = [
+  "create_time",
+  "update_time",
+];
 
 /// 小程序接口凭据 前端允许排序的字段
 fn get_can_sort_in_api_wxo_app_token() -> &'static [&'static str; 2] {
-  CAN_SORT_IN_API_WXO_APP_TOKEN.get_or_init(|| [
-    "create_time",
-    "update_time",
-  ])
+  &CAN_SORT_IN_API_WXO_APP_TOKEN
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]

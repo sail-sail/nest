@@ -8,7 +8,6 @@ use std::fmt;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
-use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
@@ -39,14 +38,14 @@ use crate::base::usr::usr_model::UsrId;
 
 use crate::common::gql::model::JSONObject;
 
-static CAN_SORT_IN_API_DYN_PAGE_DATA: OnceLock<[&'static str; 2]> = OnceLock::new();
+static CAN_SORT_IN_API_DYN_PAGE_DATA: [&str; 2] = [
+  "create_time",
+  "update_time",
+];
 
 /// 动态页面数据 前端允许排序的字段
 fn get_can_sort_in_api_dyn_page_data() -> &'static [&'static str; 2] {
-  CAN_SORT_IN_API_DYN_PAGE_DATA.get_or_init(|| [
-    "create_time",
-    "update_time",
-  ])
+  &CAN_SORT_IN_API_DYN_PAGE_DATA
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]

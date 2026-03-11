@@ -8,7 +8,6 @@ use std::fmt;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
-use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
@@ -35,13 +34,13 @@ use crate::common::gql::model::SortInput;
 use crate::common::id::{Id, impl_id};
 use crate::base::menu::menu_model::MenuId;
 
-static CAN_SORT_IN_API_PERMIT: OnceLock<[&'static str; 1]> = OnceLock::new();
+static CAN_SORT_IN_API_PERMIT: [&str; 1] = [
+  "order_by",
+];
 
 /// 按钮权限 前端允许排序的字段
 fn get_can_sort_in_api_permit() -> &'static [&'static str; 1] {
-  CAN_SORT_IN_API_PERMIT.get_or_init(|| [
-    "order_by",
-  ])
+  &CAN_SORT_IN_API_PERMIT
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]

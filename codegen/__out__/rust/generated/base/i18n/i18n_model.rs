@@ -8,7 +8,6 @@ use std::fmt;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
-use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
@@ -37,14 +36,14 @@ use crate::base::lang::lang_model::LangId;
 use crate::base::menu::menu_model::MenuId;
 use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_I18N: OnceLock<[&'static str; 2]> = OnceLock::new();
+static CAN_SORT_IN_API_I18N: [&str; 2] = [
+  "create_time",
+  "update_time",
+];
 
 /// 国际化 前端允许排序的字段
 fn get_can_sort_in_api_i18n() -> &'static [&'static str; 2] {
-  CAN_SORT_IN_API_I18N.get_or_init(|| [
-    "create_time",
-    "update_time",
-  ])
+  &CAN_SORT_IN_API_I18N
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]

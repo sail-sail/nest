@@ -8,7 +8,6 @@ use std::fmt;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
-use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
@@ -36,14 +35,14 @@ use crate::common::id::{Id, impl_id};
 
 use crate::base::tenant::tenant_model::TenantId;
 
-static CAN_SORT_IN_API_WX_REFUND: OnceLock<[&'static str; 2]> = OnceLock::new();
+static CAN_SORT_IN_API_WX_REFUND: [&str; 2] = [
+  "success_time",
+  "create_time",
+];
 
 /// 微信退款申请 前端允许排序的字段
 fn get_can_sort_in_api_wx_refund() -> &'static [&'static str; 2] {
-  CAN_SORT_IN_API_WX_REFUND.get_or_init(|| [
-    "success_time",
-    "create_time",
-  ])
+  &CAN_SORT_IN_API_WX_REFUND
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]

@@ -8,7 +8,6 @@ use std::fmt;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
-use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
@@ -37,15 +36,15 @@ use crate::common::id::{Id, impl_id};
 use crate::base::tenant::tenant_model::TenantId;
 use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_WX_PAY: OnceLock<[&'static str; 3]> = OnceLock::new();
+static CAN_SORT_IN_API_WX_PAY: [&str; 3] = [
+  "order_by",
+  "create_time",
+  "update_time",
+];
 
 /// 微信支付设置 前端允许排序的字段
 fn get_can_sort_in_api_wx_pay() -> &'static [&'static str; 3] {
-  CAN_SORT_IN_API_WX_PAY.get_or_init(|| [
-    "order_by",
-    "create_time",
-    "update_time",
-  ])
+  &CAN_SORT_IN_API_WX_PAY
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
