@@ -345,28 +345,6 @@ export function getPagePathServerLog() {
   return "/base/server_log";
 }
 
-/**
- * 获取可用的日志日期列表
- */
-export async function getServerLogDates(
-  opt?: GqlOpt,
-): Promise<string[]> {
-  
-  const data: {
-    getServerLogDates: string[];
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getServerLogDates
-      }
-    `,
-    variables: {
-    },
-  }, opt);
-  
-  return data.getServerLogDates;
-}
-
 /** 新增时的默认值 */
 export async function getDefaultInputServerLog() {
   const defaultInput: ServerLogInput = {

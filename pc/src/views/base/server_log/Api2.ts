@@ -3,6 +3,28 @@ import {
 } from "file-saver";
 
 /**
+ * 获取可用的日志日期列表
+ */
+export async function getServerLogDates(
+  opt?: GqlOpt,
+): Promise<string[]> {
+  
+  const data: {
+    getServerLogDates: string[];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getServerLogDates
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  return data.getServerLogDates;
+}
+
+/**
  * 下载指定日期的原始日志文件
  */
 export async function downloadServerLog(
