@@ -212,6 +212,8 @@ use generated::common::context::{
 - 调用create或者update传入Input时，Input参数中的_lbl字段大多不用传递，dao层会自动生成_lbl的值
 - 用不执行 `cargo fmt`, 因为格式由架构编码约定决定
 - ⚠️ `generated` 不允许依赖 `app`, 只能由 `app` 单向依赖 `generated`, 避免循环依赖, 如果业务逻辑无法避免, 则不得不把代码写到 `generated` 中
+- `options` 无需 `.clone()`, `options` 是 `Copy` 类型
+- 所有 `id` 也无需 `.clone()`, 比如: `UsrId` 是 `Copy` 类型
 
 ## 模块注册
 

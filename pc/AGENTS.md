@@ -1,4 +1,4 @@
-# PC - Vue 3 管理界面
+# PC - 电脑端界面
 
 ## 目录约定
 
@@ -6,7 +6,6 @@
 |------|------|
 | `src/views/{mod}/{table}/` | 生成的 CRUD 视图 |
 | `src/components/` | 通用组件(不需要import即可全局引用) |
-| `src/compositions/` | 组合式函数 |
 
 ## 生成文件结构
 
