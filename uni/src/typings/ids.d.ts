@@ -95,6 +95,10 @@ declare const roleId: unique symbol;
 /** 角色 */
 type RoleId = Distinct<string, typeof roleId>;
 
+declare const server_logId: unique symbol;
+/** 系统日志 */
+type ServerLogId = Distinct<string, typeof server_logId>;
+
 declare const tenantId: unique symbol;
 /** 租户 */
 type TenantId = Distinct<string, typeof tenantId>;
