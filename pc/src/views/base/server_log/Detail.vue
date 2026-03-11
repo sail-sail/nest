@@ -300,6 +300,8 @@ const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let findOneModel = findOneServerLog;
 
+let log_date: string[] | null = null;
+
 /** 打开对话框 */
 async function showDialog(
   arg?: {
@@ -311,6 +313,7 @@ async function showDialog(
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
       ids?: ServerLogId[];
+      log_date?: InputMaybe<string[]>;
       is_deleted?: 0 | 1 | null;
     };
     findOne?: typeof findOneServerLog;
@@ -337,6 +340,7 @@ async function showDialog(
   isReadonly = false;
   isLocked = false;
   is_deleted = model?.is_deleted ?? 0;
+  log_date = model?.log_date ?? null;
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
@@ -375,7 +379,6 @@ async function showDialog(
     dialogModel = {
       ...defaultModel,
       ...builtInModel,
-      ...model,
     };
   } else if (dialogAction === "copy") {
     const id = model?.ids?.[0];
@@ -467,6 +470,7 @@ async function onRefresh() {
   ] = await Promise.all([
     await findOneModel({
       id,
+      log_date,
     }),
   ]);
   if (data) {
