@@ -146,6 +146,12 @@ export function getScalars() {
       "output": "RoleId",
     },
     
+    // 系统日志
+    "ServerLogId": {
+      "input": "ServerLogId",
+      "output": "ServerLogId",
+    },
+    
     // 租户
     "TenantId": {
       "input": "TenantId",

@@ -4,7 +4,7 @@ export function hex(data: Uint8Array): string {
     .join("");
 }
 
-export async function sha256Hex(data: string | Uint8Array): Promise<string> {
+export async function sha256Hex(data: NodeJS.BufferSource): Promise<string> {
   if (typeof data === "string") {
     data = new TextEncoder().encode(data);
   }
@@ -13,7 +13,7 @@ export async function sha256Hex(data: string | Uint8Array): Promise<string> {
 }
 
 export async function hmacSha256(
-  keyData: string | Uint8Array,
+  keyData: NodeJS.BufferSource,
   data: string,
 ): Promise<Uint8Array> {
   if (typeof keyData === "string") {
