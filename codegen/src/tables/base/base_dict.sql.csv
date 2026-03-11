@@ -14,3 +14,4 @@ T0lgQA4dQuCqw2DhMBjo/Q,field_permit_type,字段权限-类型,string,13,1,0
 yXJTfqU3T4KQmz4DtVxagg,login_log_type,登录日志-登录类型,string,14,1,0
 W9e373o3RfyNR0kdlOYSiw,usr_type,用户-类型,string,15,1,0
 A/v8mhT1SESIUUqj2mT7ZA,dyn_page_field_align,动态页面字段-对齐方式,string,16,1,0
+a9FSi16IQ+2csaMAV4aTRA,server_log_level,系统日志-日志级别,string,17,1,0
