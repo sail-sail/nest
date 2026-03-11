@@ -1744,4 +1744,63 @@ export default defineConfig({
       },
     ],
   },
+  // 系统日志
+  base_server_log: {
+    opts: {
+      noAdd: true,
+      noCopy: true,
+      noEdit: true,
+      noDelete: true,
+      noRevert: true,
+      noForceDelete: true,
+      noImport: true,
+      noExport: true,
+      defaultSort: {
+        prop: "log_time",
+        order: "descending",
+      },
+    },
+    columns: [
+      {
+        COLUMN_NAME: "log_date",
+        search: true,
+        width: 110,
+        align: "center",
+      },
+      {
+        COLUMN_NAME: "log_time",
+        width: 200,
+        align: "center",
+        sortable: true,
+      },
+      {
+        COLUMN_NAME: "level",
+        search: true,
+        width: 80,
+        align: "center",
+      },
+      {
+        COLUMN_NAME: "module",
+        search: true,
+        width: 420,
+        align: "left",
+      },
+      {
+        COLUMN_NAME: "req_id",
+        notForeignKeyById: true,
+        search: true,
+        width: 140,
+        align: "center",
+      },
+      {
+        COLUMN_NAME: "content",
+        search: true,
+        isTextarea: true,
+        width: 500,
+        align: "left",
+        whitespacePre: true,
+        showOverflowTooltip: true,
+      },
+    ],
+  },
 });

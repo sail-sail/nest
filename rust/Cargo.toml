@@ -10,15 +10,15 @@ serde = { version = "1.0.228", features = ["derive"] }
 mime = "0.3.17"
 futures-util = "0.3.32"
 tracing = "0.1.44"
-tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.22", features = ["env-filter", "local-time", "parking_lot"] }
 tracing-appender = "0.2.4"
 tracing-attributes = "0.1.31"
-tokio = { version = "1.49.0", features = ["rt-multi-thread", "macros", "net", "fs"] }
+tokio = { version = "1.50.0", features = ["rt-multi-thread", "macros", "net", "fs"] }
 poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
 async-graphql = { version = "7.2.1", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing", "raw_value"] }
-smol_str = { version = "0.3.5", features = ["serde"] }
+smol_str = { version = "0.3.6", features = ["serde"] }
 slab = "0.4.12"
-chrono = { version = "0.4.43", features = ["serde"] }
+chrono = { version = "0.4.44", features = ["serde"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15.0"
 rust-s3 = { version = "0.37.1", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
@@ -63,14 +63,14 @@ function_name = "0.3.0"
 enum-iterator = "2.3.0"
 derive_more = { version = "2.1.1", features = ["full"] }
 derive_builder = "0.20.2"
-strum = { version = "0.27.2", features = ["derive"] }
+strum = { version = "0.28.0", features = ["derive"] }
 itertools = "0.14.0"
 color-eyre = "0.6.5"
 rand = "0.10.0"
 rsa = { version = "0.9.10", features = ["sha2"] }
 aes-gcm = "0.10.3"
 pkcs8 = "0.10.2"
-serde_with = "3.16.1"
+serde_with = "3.17.0"
 csv = "1.4.0"
 docx-handlebars = "0.3.3"
 xlsx-handlebars = "0.2.2"

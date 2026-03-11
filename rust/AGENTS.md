@@ -20,7 +20,10 @@ app/{mod}/{table}/
 └── {table}_service.rs   # 业务逻辑/数据库
 ```
 
-## 可用 Skills
+- `generated` 也是三层架构, 代码由 `codegen` 生成, 尽量不修改除非业务需求无法通过`app`新接口实现
+- 若违背`generated`->`app`的单向依赖关系, 那就不得不修改`generated`的代码了, 但尽量是独立的文件以减少git冲突, 比如 `{table}_service2.rs`
+
+## 可用 Skills (.agents/skills/)
 
 - `excel-export` - Excel 导出功能开发. 移动端导出 Excel 时使用
 - `graphql-api` - Rust GraphQL 接口开发. 创建自定义 API 时使用
