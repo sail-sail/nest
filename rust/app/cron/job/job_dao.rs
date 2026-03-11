@@ -63,13 +63,13 @@ pub async fn run_job(
   
   let code = job_model.code;
   
-  let exec_result: Option<Result<SmolStr>> = if code == "test" {
-    test(
+  let exec_result: Option<Result<SmolStr>> = match code.as_str() {
+    "test" => test(
       id,
       tenant_id,
-    ).await.into()
-  } else {
-    None
+      options,
+    ).await.into(),
+    _ => None,
   };
   
   info!("cron_job end: {cron_job_id}: {cron}");
@@ -94,31 +94,31 @@ pub async fn run_job(
     return Err(eyre!(exec_result));
   }
   
-  let exec_result: SmolStr = {
-    if let Some(exec_result) = exec_result {
-      exec_result.unwrap()
-    } else {
-      SmolStr::new("")
-    }
-  };
+  if let Some(exec_result) = &exec_result &&
+    let Ok(exec_result) = &exec_result
+  {
+    
+    update_by_id_cron_job_log(
+      id,
+      CronJobLogInput {
+        exec_state: Some(CronJobLogExecState::Success),
+        exec_result: Some(exec_result.clone()),
+        end_time: Some(end_time),
+        ..Default::default()
+      },
+      options,
+    ).await?;
+    
+    return Ok(exec_result.clone());
+  }
   
-  update_by_id_cron_job_log(
-    id,
-    CronJobLogInput {
-      exec_state: Some(CronJobLogExecState::Success),
-      exec_result: Some(exec_result.clone()),
-      end_time: Some(end_time),
-      ..Default::default()
-    },
-    options,
-  ).await?;
-  
-  Ok(exec_result)
+  Ok(SmolStr::new(""))
 }
 
 async fn test(
   cron_job_log_id: CronJobLogId,
   tenant_id: TenantId,
+  options: Option<Options>,
 ) ->Result<SmolStr> {
   
   create_cron_job_log_detail(
@@ -128,7 +128,7 @@ async fn test(
       tenant_id: Some(tenant_id),
       ..Default::default()
     },
-    None,
+    options,
   ).await?;
   
   tokio::time::sleep(std::time::Duration::from_secs(3)).await;
