@@ -43,6 +43,67 @@ use tracing::info;
 use generated::common::oss::oss_dao;
 use generated::common::tmpfile::tmpfile_dao;
 
+/// 使用本地时间的每日日志滚动写入器
+/// (tracing_appender::rolling::daily 内部使用 UTC, 导致文件名日期在东八区不正确)
+struct LocalDailyAppender {
+  directory: std::path::PathBuf,
+  prefix: String,
+  current_date: time::Date,
+  file: std::fs::File,
+}
+
+impl LocalDailyAppender {
+  fn new(
+    directory: impl AsRef<std::path::Path>,
+    prefix: impl Into<String>,
+  ) -> Self {
+    let directory = directory.as_ref().to_path_buf();
+    let prefix = prefix.into();
+    let now = time::OffsetDateTime::now_local()
+      .unwrap_or_else(|_| time::OffsetDateTime::now_utc());
+    let date = now.date();
+    let file = Self::open_file(&directory, &prefix, date);
+    Self { directory, prefix, current_date: date, file }
+  }
+
+  fn open_file(
+    directory: &std::path::Path,
+    prefix: &str,
+    date: time::Date,
+  ) -> std::fs::File {
+    std::fs::create_dir_all(directory).ok();
+    let filename = format!("{prefix}.{date}");
+    std::fs::OpenOptions::new()
+      .create(true)
+      .append(true)
+      .open(directory.join(filename))
+      .expect("Failed to open log file")
+  }
+}
+
+impl std::io::Write for LocalDailyAppender {
+  fn write(
+    &mut self,
+    buf: &[u8],
+  ) -> std::io::Result<usize> {
+    let now = time::OffsetDateTime::now_local()
+      .unwrap_or_else(|_| time::OffsetDateTime::now_utc());
+    if now.date() != self.current_date {
+      self.current_date = now.date();
+      self.file = Self::open_file(
+        &self.directory,
+        &self.prefix,
+        self.current_date,
+      );
+    }
+    self.file.write(buf)
+  }
+
+  fn flush(&mut self) -> std::io::Result<()> {
+    self.file.flush()
+  }
+}
+
 #[derive(serde::Deserialize)]
 #[allow(non_snake_case)]
 pub struct AuthTokenParam {
@@ -258,19 +319,23 @@ async fn main() -> Result<(), std::io::Error> {
       .expect("Failed to install color_eyre hook");
     let log_path = std::env::var("log_path").ok();
     if let Some(log_path) = log_path {
-      let file_appender = tracing_appender::rolling::daily(
+      let file_appender = LocalDailyAppender::new(
         log_path,
-        format!("{server_title}.log").as_str(),
+        format!("{server_title}.log"),
       );
       let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
       tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .with_writer(non_blocking)
         .with_ansi(false)
+        .with_timer(tracing_subscriber::fmt::time::LocalTime::rfc_3339())
         .init();
       Some(guard)
     } else {
-      tracing_subscriber::fmt::init();
+      tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .with_timer(tracing_subscriber::fmt::time::LocalTime::rfc_3339())
+        .init();
       None
     }
   };
@@ -305,20 +370,23 @@ async fn main() -> Result<(), std::io::Error> {
     let log_path = std::env::var("log_path").ok();
     if log_path.is_none() {
       tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .with_ansi(false)
+        .with_timer(tracing_subscriber::fmt::time::LocalTime::rfc_3339())
         .init();
       None
     } else {
       let log_path = log_path.expect("log_path is none");
-      let file_appender = tracing_appender::rolling::daily(
+      let file_appender = LocalDailyAppender::new(
         log_path,
-        format!("{}.log", server_title).as_str(),
+        format!("{}.log", server_title),
       );
       let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
       tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .with_writer(non_blocking)
         .with_ansi(false)
+        .with_timer(tracing_subscriber::fmt::time::LocalTime::rfc_3339())
         .init();
       Some(guard)
     }

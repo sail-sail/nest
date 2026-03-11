@@ -22,5 +22,6 @@ pub mod options;
 pub mod org;
 pub mod permit;
 pub mod role;
+pub mod server_log;
 pub mod tenant;
 pub mod usr;

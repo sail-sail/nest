@@ -348,6 +348,21 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/base/server_log",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "系统日志",
+        component: () => import("@/views/base/server_log/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "系统日志",
+        },
+      },
+    ],
+  },
+  {
     path: "/base/tenant",
     component: Layout1,
     children: [
