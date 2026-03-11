@@ -8,7 +8,6 @@ use std::fmt;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
-use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
@@ -38,14 +37,14 @@ use crate::base::tenant::tenant_model::TenantId;
 use crate::cron::cron_job::cron_job_model::CronJobId;
 use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_CRON_JOB_LOG: OnceLock<[&'static str; 2]> = OnceLock::new();
+static CAN_SORT_IN_API_CRON_JOB_LOG: [&str; 2] = [
+  "create_time",
+  "update_time",
+];
 
 /// 定时任务日志 前端允许排序的字段
 fn get_can_sort_in_api_cron_job_log() -> &'static [&'static str; 2] {
-  CAN_SORT_IN_API_CRON_JOB_LOG.get_or_init(|| [
-    "create_time",
-    "update_time",
-  ])
+  &CAN_SORT_IN_API_CRON_JOB_LOG
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -241,7 +240,7 @@ pub struct CronJobLogFieldComment {
   pub create_time_lbl: SmolStr,
 }
 
-#[derive(InputObject, Default)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "CronJobLogSearch")]
 #[allow(dead_code)]
 pub struct CronJobLogSearch {
@@ -411,7 +410,7 @@ impl std::fmt::Debug for CronJobLogSearch {
   }
 }
 
-#[derive(InputObject, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "CronJobLogInput")]
 #[allow(dead_code)]
 pub struct CronJobLogInput {
@@ -489,6 +488,60 @@ pub struct CronJobLogInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
+}
+
+impl std::fmt::Debug for CronJobLogInput {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let mut item = &mut f.debug_struct("CronJobLogInput");
+    if let Some(ref id) = self.id {
+      item = item.field("id", id);
+    }
+    if let Some(ref is_deleted) = self.is_deleted {
+      if *is_deleted == 1 {
+        item = item.field("is_deleted", is_deleted);
+      }
+    }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
+    if let Some(ref cron_job_id) = self.cron_job_id {
+      item = item.field("cron_job_id", cron_job_id);
+    }
+    if let Some(ref exec_state) = self.exec_state {
+      item = item.field("exec_state", exec_state);
+    }
+    if let Some(ref exec_result) = self.exec_result {
+      item = item.field("exec_result", exec_result);
+    }
+    if let Some(ref begin_time) = self.begin_time {
+      item = item.field("begin_time", begin_time);
+    }
+    if let Some(ref end_time) = self.end_time {
+      item = item.field("end_time", end_time);
+    }
+    if let Some(ref rem) = self.rem {
+      item = item.field("rem", rem);
+    }
+    if let Some(ref create_time) = self.create_time {
+      item = item.field("create_time", create_time);
+    }
+    if let Some(ref create_usr_id) = self.create_usr_id {
+      item = item.field("create_usr_id", create_usr_id);
+    }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref update_usr_id) = self.update_usr_id {
+      item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_time) = self.update_time {
+      item = item.field("update_time", update_time);
+    }
+    item.finish()
+  }
 }
 
 impl From<CronJobLogModel> for CronJobLogInput {
@@ -578,12 +631,15 @@ pub enum CronJobLogExecState {
   /// 执行中
   #[default]
   #[graphql(name="running")]
+  #[serde(rename = "running")]
   Running,
   /// 成功
   #[graphql(name="success")]
+  #[serde(rename = "success")]
   Success,
   /// 失败
   #[graphql(name="fail")]
+  #[serde(rename = "fail")]
   Fail,
 }
 

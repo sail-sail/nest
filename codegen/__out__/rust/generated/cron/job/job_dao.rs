@@ -439,7 +439,7 @@ async fn get_from_query(
 
 // MARK: find_all_job
 /// 根据搜索条件和分页查找任务列表
-#[allow(unused_mut)]
+#[allow(unused_mut, unused_variables)]
 pub async fn find_all_job(
   search: Option<JobSearch>,
   page: Option<PageInput>,
@@ -455,16 +455,16 @@ pub async fn find_all_job(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(page) = &page {
-      msg += &format!(" page: {:?}", &page);
+      msg += &format!(" page: {page:?}");
     }
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -568,7 +568,8 @@ pub async fn find_all_job(
   
   let cache_key1 = format!("dao.sql.{table}");
   let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
-  {
+  
+  let res = {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: Vec<JobModel>;
@@ -579,20 +580,24 @@ pub async fn find_all_job(
         res2 = vec![];
         cache_dao::del_cache(&cache_key1).await?;
       }
-      return Ok(res2);
+      Some(res2)
+    } else {
+      None
     }
-  }
+  };
   
-  let mut res: Vec<JobModel> = query(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  {
+  let mut res: Vec<JobModel> = if let Some(res) = res {
+    res
+  } else {
+    let res = query(
+      sql,
+      args,
+      options,
+    ).await?;
     let str = serde_json::to_string(&res)?;
     cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
-  }
+    res
+  };
   
   let len = res.len();
   let result_limit_num = find_all_result_limit();
@@ -659,10 +664,10 @@ pub async fn find_count_job(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -750,7 +755,8 @@ pub async fn find_count_job(
   
   let cache_key1 = format!("dao.sql.{table}");
   let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
-  {
+  
+  let total = {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: u64;
@@ -761,28 +767,31 @@ pub async fn find_count_job(
         res2 = 0;
         cache_dao::del_cache(&cache_key1).await?;
       }
-      return Ok(res2);
+      Some(res2)
+    } else {
+      None
     }
-  }
+  };
   
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let res: Option<CountModel> = query_one(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  {
-    let str = serde_json::to_string(&res)?;
+  let total: u64 = if let Some(total) = total {
+    total
+  } else {
+    let options = Options::from(options)
+      .set_is_debug(Some(false));
+    let options = Some(options);
+    
+    let res: Option<CountModel> = query_one(
+      sql,
+      args,
+      options,
+    ).await?;
+    let total = res
+      .map(|item| item.total)
+      .unwrap_or_default();
+    let str = serde_json::to_string(&total)?;
     cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
-  }
-  
-  let total = res
-    .map(|item| item.total)
-    .unwrap_or_default();
+    total
+  };
   
   if total > MAX_SAFE_INTEGER {
     return Err(eyre!("total > MAX_SAFE_INTEGER"));
@@ -837,13 +846,13 @@ pub async fn find_one_ok_job(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -886,13 +895,13 @@ pub async fn find_one_job(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -941,9 +950,9 @@ pub async fn find_by_id_ok_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" id: {id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -990,9 +999,9 @@ pub async fn find_by_id_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" id: {id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1037,9 +1046,9 @@ pub async fn find_by_ids_ok_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1109,9 +1118,9 @@ pub async fn find_by_ids_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1180,10 +1189,10 @@ pub async fn exists_job(
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     if let Some(search) = &search {
-      msg += &format!(" search: {:?}", &search);
+      msg += &format!(" search: {search:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1271,7 +1280,8 @@ pub async fn exists_job(
   
   let cache_key1 = format!("dao.sql.{table}");
   let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
-  {
+  
+  let exists_res = {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: bool;
@@ -1282,28 +1292,33 @@ pub async fn exists_job(
         res2 = false;
         cache_dao::del_cache(&cache_key1).await?;
       }
-      return Ok(res2);
+      Some(res2)
+    } else {
+      None
     }
-  }
+  };
   
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let res: Option<(bool,)> = query_one(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  {
-    let str = serde_json::to_string(&res)?;
+  let exists_res: bool = if let Some(exists_res) = exists_res {
+    exists_res
+  } else {
+    let options = Options::from(options)
+      .set_is_debug(Some(false));
+    let options = Some(options);
+    
+    let res: Option<(bool,)> = query_one(
+      sql,
+      args,
+      options,
+    ).await?;
+    let exists_res = res
+      .map(|item| item.0)
+      .unwrap_or_default();
+    let str = serde_json::to_string(&exists_res)?;
     cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
-  }
+    exists_res
+  };
   
-  Ok(res
-    .map(|item| item.0)
-    .unwrap_or_default())
+  Ok(exists_res)
 }
 
 // MARK: exists_by_id_job
@@ -1321,9 +1336,9 @@ pub async fn exists_by_id_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" id: {id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1364,12 +1379,12 @@ pub async fn find_by_unique_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" search: {:?}", &search);
+    msg += &format!(" search: {search:?}");
     if let Some(sort) = &sort {
-      msg += &format!(" sort: {:?}", &sort);
+      msg += &format!(" sort: {sort:?}");
     }
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1481,10 +1496,10 @@ pub async fn check_by_unique_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" input: {:?}", &input);
-    msg += &format!(" model: {:?}", &model);
+    msg += &format!(" input: {input:?}");
+    msg += &format!(" model: {model:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1641,9 +1656,9 @@ pub async fn creates_return_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" inputs: {:?}", &inputs);
+    msg += &format!(" inputs: {inputs:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -1678,9 +1693,9 @@ pub async fn creates_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" inputs: {:?}", &inputs);
+    msg += &format!(" inputs: {inputs:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2043,9 +2058,9 @@ pub async fn create_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" input: {:?}", &input);
+    msg += &format!(" input: {input:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2080,10 +2095,10 @@ pub async fn update_tenant_by_id_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
-    msg += &format!(" tenant_id: {:?}", &tenant_id);
+    msg += &format!(" id: {id:?}");
+    msg += &format!(" tenant_id: {tenant_id:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2133,10 +2148,10 @@ pub async fn update_by_id_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
-    msg += &format!(" input: {:?}", &input);
+    msg += &format!(" id: {id:?}");
+    msg += &format!(" input: {input:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2405,9 +2420,9 @@ pub async fn del_cache_job() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      format!("dao.sql.{x}")
+      SmolStr::new(format!("dao.sql.{x}"))
     )
-    .collect::<Vec<String>>();
+    .collect::<Vec<SmolStr>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -2439,9 +2454,9 @@ pub async fn delete_by_ids_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2542,6 +2557,8 @@ pub async fn delete_by_ids_job(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
+  del_cache_job().await?;
+  
   Ok(num)
 }
 
@@ -2588,10 +2605,10 @@ pub async fn enable_by_ids_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
-    msg += &format!(" is_enabled: {:?}", &is_enabled);
+    msg += &format!(" ids: {ids:?}");
+    msg += &format!(" is_enabled: {is_enabled:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2676,10 +2693,10 @@ pub async fn lock_by_ids_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
-    msg += &format!(" is_locked: {:?}", &is_locked);
+    msg += &format!(" ids: {ids:?}");
+    msg += &format!(" is_locked: {is_locked:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2734,9 +2751,9 @@ pub async fn revert_by_ids_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2839,9 +2856,9 @@ pub async fn force_delete_by_ids_job(
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" ids: {ids:?}");
     if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
+      msg += &format!(" options: {options:?}");
     }
     info!(
       "{req_id} {msg}",
@@ -2943,7 +2960,8 @@ pub async fn find_last_order_by_job(
   
   let cache_key1 = format!("dao.sql.{table}");
   let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
-  {
+  
+  let order_by = {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: u32;
@@ -2954,28 +2972,31 @@ pub async fn find_last_order_by_job(
         res2 = 0;
         cache_dao::del_cache(&cache_key1).await?;
       }
-      return Ok(res2);
-    }
-  }
-  
-  let model = query_one::<OrderByModel>(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  let order_by = {
-    if let Some(model) = model {
-      model.order_by
+      Some(res2)
     } else {
-      0
+      None
     }
   };
   
-  {
+  let order_by: u32 = if let Some(order_by) = order_by {
+    order_by
+  } else {
+    let model = query_one::<OrderByModel>(
+      sql,
+      args,
+      options,
+    ).await?;
+    let order_by = {
+      if let Some(model) = model {
+        model.order_by
+      } else {
+        0
+      }
+    };
     let str = serde_json::to_string(&order_by)?;
     cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
-  }
+    order_by
+  };
   
   Ok(order_by)
 }

@@ -37,10 +37,14 @@ impl JobGenQuery {
   async fn find_all_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<JobSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<JobModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl JobGenQuery {
   async fn find_count_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<JobSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl JobGenQuery {
   async fn find_one_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<JobSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<JobModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl JobGenQuery {
   async fn find_one_ok_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<JobSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<JobModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl JobGenQuery {
   async fn find_by_id_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: JobId,
   ) -> Result<Option<JobModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl JobGenQuery {
   async fn find_by_id_ok_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: JobId,
   ) -> Result<JobModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl JobGenQuery {
   async fn find_by_ids_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<JobId>,
   ) -> Result<Vec<JobModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl JobGenQuery {
   async fn find_by_ids_ok_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<JobId>,
   ) -> Result<Vec<JobModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,8 +210,10 @@ impl JobGenQuery {
   async fn get_is_enabled_by_id_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: JobId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -210,8 +232,10 @@ impl JobGenQuery {
   async fn get_is_locked_by_id_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: JobId,
   ) -> Result<bool> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -229,6 +253,7 @@ impl JobGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<JobFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -243,8 +268,10 @@ impl JobGenQuery {
   async fn find_last_order_by_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<JobSearch>,
   ) -> Result<u32> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -269,13 +296,17 @@ impl JobGenMutation {
   async fn creates_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "inputs")]
     inputs: Vec<JobInput>,
+    #[graphql(name = "unique_type")]
     unique_type: Option<UniqueType>,
   ) -> Result<Vec<JobId>> {
+    
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
     }
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -284,7 +315,7 @@ impl JobGenMutation {
       .scope({
         job_resolver::creates_job(
           inputs,
-          options.into(),
+          Some(options),
         )
       }).await
   }
@@ -294,9 +325,12 @@ impl JobGenMutation {
   async fn update_tenant_by_id_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: JobId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -315,9 +349,12 @@ impl JobGenMutation {
   async fn update_by_id_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: JobId,
+    #[graphql(name = "input")]
     input: JobInput,
   ) -> Result<JobId> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -336,8 +373,10 @@ impl JobGenMutation {
   async fn delete_by_ids_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<JobId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -355,9 +394,12 @@ impl JobGenMutation {
   async fn enable_by_ids_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<JobId>,
+    #[graphql(name = "is_enabled")]
     is_enabled: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -376,9 +418,12 @@ impl JobGenMutation {
   async fn lock_by_ids_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<JobId>,
+    #[graphql(name = "is_locked")]
     is_locked: u8,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -397,8 +442,10 @@ impl JobGenMutation {
   async fn revert_by_ids_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<JobId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -416,8 +463,10 @@ impl JobGenMutation {
   async fn force_delete_by_ids_job(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<JobId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

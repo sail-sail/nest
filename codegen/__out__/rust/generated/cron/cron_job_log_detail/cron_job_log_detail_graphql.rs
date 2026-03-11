@@ -37,10 +37,14 @@ impl CronJobLogDetailGenQuery {
   async fn find_all_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<CronJobLogDetailSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<CronJobLogDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl CronJobLogDetailGenQuery {
   async fn find_count_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<CronJobLogDetailSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl CronJobLogDetailGenQuery {
   async fn find_one_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<CronJobLogDetailSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<CronJobLogDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl CronJobLogDetailGenQuery {
   async fn find_one_ok_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<CronJobLogDetailSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<CronJobLogDetailModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl CronJobLogDetailGenQuery {
   async fn find_by_id_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: CronJobLogDetailId,
   ) -> Result<Option<CronJobLogDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl CronJobLogDetailGenQuery {
   async fn find_by_id_ok_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: CronJobLogDetailId,
   ) -> Result<CronJobLogDetailModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl CronJobLogDetailGenQuery {
   async fn find_by_ids_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<CronJobLogDetailId>,
   ) -> Result<Vec<CronJobLogDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl CronJobLogDetailGenQuery {
   async fn find_by_ids_ok_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<CronJobLogDetailId>,
   ) -> Result<Vec<CronJobLogDetailModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl CronJobLogDetailGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<CronJobLogDetailFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -213,8 +234,10 @@ impl CronJobLogDetailGenMutation {
   async fn no_add_no_edit_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "input")]
     input: CronJobLogDetailInput,
   ) -> Result<CronJobLogDetailId> {
+    
     Err(eyre!(""))
   }
   
@@ -223,9 +246,12 @@ impl CronJobLogDetailGenMutation {
   async fn update_tenant_by_id_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: CronJobLogDetailId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -244,8 +270,10 @@ impl CronJobLogDetailGenMutation {
   async fn delete_by_ids_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<CronJobLogDetailId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -263,8 +291,10 @@ impl CronJobLogDetailGenMutation {
   async fn revert_by_ids_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<CronJobLogDetailId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -282,8 +312,10 @@ impl CronJobLogDetailGenMutation {
   async fn force_delete_by_ids_cron_job_log_detail(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<CronJobLogDetailId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()

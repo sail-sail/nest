@@ -37,10 +37,14 @@ impl CronJobLogGenQuery {
   async fn find_all_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<CronJobLogSearch>,
+    #[graphql(name = "page")]
     page: Option<PageInput>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<CronJobLogModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -59,8 +63,10 @@ impl CronJobLogGenQuery {
   async fn find_count_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<CronJobLogSearch>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -77,9 +83,12 @@ impl CronJobLogGenQuery {
   async fn find_one_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<CronJobLogSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<CronJobLogModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -97,9 +106,12 @@ impl CronJobLogGenQuery {
   async fn find_one_ok_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "search")]
     search: Option<CronJobLogSearch>,
+    #[graphql(name = "sort")]
     sort: Option<Vec<SortInput>>,
   ) -> Result<CronJobLogModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -117,8 +129,10 @@ impl CronJobLogGenQuery {
   async fn find_by_id_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: CronJobLogId,
   ) -> Result<Option<CronJobLogModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -135,8 +149,10 @@ impl CronJobLogGenQuery {
   async fn find_by_id_ok_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: CronJobLogId,
   ) -> Result<CronJobLogModel> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -153,8 +169,10 @@ impl CronJobLogGenQuery {
   async fn find_by_ids_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<CronJobLogId>,
   ) -> Result<Vec<CronJobLogModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -171,8 +189,10 @@ impl CronJobLogGenQuery {
   async fn find_by_ids_ok_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<CronJobLogId>,
   ) -> Result<Vec<CronJobLogModel>> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .build()
@@ -190,6 +210,7 @@ impl CronJobLogGenQuery {
     &self,
     ctx: &Context<'_>,
   ) -> Result<CronJobLogFieldComment> {
+    
     Ctx::builder(ctx)
       .build()
       .scope({
@@ -213,8 +234,10 @@ impl CronJobLogGenMutation {
   async fn no_add_no_edit_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "input")]
     input: CronJobLogInput,
   ) -> Result<CronJobLogId> {
+    
     Err(eyre!(""))
   }
   
@@ -223,9 +246,12 @@ impl CronJobLogGenMutation {
   async fn update_tenant_by_id_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "id")]
     id: CronJobLogId,
+    #[graphql(name = "tenant_id")]
     tenant_id: TenantId,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -244,8 +270,10 @@ impl CronJobLogGenMutation {
   async fn delete_by_ids_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<CronJobLogId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -263,8 +291,10 @@ impl CronJobLogGenMutation {
   async fn revert_by_ids_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<CronJobLogId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
@@ -282,8 +312,10 @@ impl CronJobLogGenMutation {
   async fn force_delete_by_ids_cron_job_log(
     &self,
     ctx: &Context<'_>,
+    #[graphql(name = "ids")]
     ids: Vec<CronJobLogId>,
   ) -> Result<u64> {
+    
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()
