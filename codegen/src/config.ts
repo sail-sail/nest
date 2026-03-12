@@ -791,7 +791,8 @@ export interface TablesConfigItem {
      * 列表页中的表格是否为树, 默认为false
      * 如果为true, 则list_page自动设置为false
      * 如果是字符串, 则为树的外键字段名
-     * 例如: base_permit 中的 menu_id 字段
+     * 例如: base_menu 自身是一棵树, 则 list_tree: true
+     * base_permit 通过 menu_id 字段关联到 base_menu 表, 则 base_permit 的 list_tree 设置为 menu_id
      */
     list_tree?: boolean | string;
     
