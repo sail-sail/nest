@@ -2304,11 +2304,11 @@ pub async fn update_by_id_dict(
   // 系统字典明细
   if let Some(dict_detail_input) = input.dict_detail {
     let dict_detail_models = find_all_dict_detail(
-      DictDetailSearch {
-        dict_id: vec![id].into(),
-        is_deleted: 0.into(),
+      Some(DictDetailSearch {
+        dict_id: Some(vec![id]),
+        is_deleted: Some(0),
         ..Default::default()
-      }.into(),
+      }),
       None,
       None,
       options,
@@ -2338,20 +2338,20 @@ pub async fn update_by_id_dict(
         ).await?;
         continue;
       }
-      let id2 = input2.id.unwrap();
+      let id2 = input2.id.unwrap_or_default();
       if !dict_detail_models
         .iter()
         .any(|item| item.id == id2)
       {
         revert_by_ids_dict_detail(
-          vec![id2.clone()],
+          vec![id2],
           options,
         ).await?;
       }
       input2.id = None;
       input2.dict_id = Some(id);
       update_by_id_dict_detail(
-        id2.clone(),
+        id2,
         input2,
         options,
       ).await?;
