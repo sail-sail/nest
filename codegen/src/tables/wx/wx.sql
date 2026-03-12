@@ -26,7 +26,7 @@ CREATE TABLE `wx_wx_app` (
   INDEX (`lbl`, `tenant_id`, `is_deleted`),
   INDEX (`appid`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='小程序设置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序设置';
 
 ------------------------------------------------------------------------ 小程序接口凭据
 drop table if exists `wx_wx_app_token`;
@@ -50,7 +50,7 @@ CREATE TABLE `wx_wx_app_token` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`wx_app_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='小程序接口凭据';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序接口凭据';
 
 ------------------------------------------------------------------ 小程序用户
 drop table if exists `wx_wx_usr`;
@@ -83,7 +83,7 @@ CREATE TABLE if not exists `wx_wx_usr` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`openid`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='小程序用户';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序用户';
 
 ------------------------------------------------------------------------ 公众号设置
 drop table if exists `wx_wxo_app`;
@@ -118,7 +118,7 @@ CREATE TABLE `wx_wxo_app` (
   INDEX (`lbl`, `tenant_id`, `is_deleted`),
   INDEX (`appid`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='公众号设置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='公众号设置';
 
 ------------------------------------------------------------------ 公众号用户
 drop table if exists `wx_wxo_usr`;
@@ -150,7 +150,7 @@ CREATE TABLE if not exists `wx_wxo_usr` (
   INDEX (`usr_id`, `tenant_id`, `is_deleted`),
   INDEX (`openid`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='公众号用户';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='公众号用户';
 
 ------------------------------------------------------------------------ 公众号接口凭据
 drop table if exists `wx_wxo_app_token`;
@@ -174,7 +174,7 @@ CREATE TABLE `wx_wxo_app_token` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`wxo_app_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='小程序接口凭据';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序接口凭据';
 
 ------------------------------------------------------------------------ 微信支付设置
 drop table if exists `wx_wx_pay`;
@@ -209,7 +209,7 @@ CREATE TABLE `wx_wx_pay` (
   INDEX (`notify_url`, `tenant_id`),
   INDEX (`refund_notify_url`, `tenant_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信支付设置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信支付设置';
 
 ------------------------------------------------------------------------ 微信JSAPI下单
 drop table if exists `wx_pay_transactions_jsapi`;
@@ -246,7 +246,7 @@ CREATE TABLE if not exists `wx_pay_transactions_jsapi` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`prepay_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信JSAPI下单';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信JSAPI下单';
 
 ------------------------------------------------------------------------ 微信支付通知
 drop table if exists `wx_wx_pay_notice`;
@@ -273,7 +273,7 @@ CREATE TABLE if not exists `wx_wx_pay_notice` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   INDEX (`transaction_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信支付通知';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信支付通知';
 
 ------------------------------------------------------------------------ 微信退款申请
 drop table if exists `wx_wx_refund`;
@@ -308,7 +308,7 @@ CREATE TABLE if not exists `wx_wx_refund` (
   INDEX (`out_refund_no`),
   INDEX (`refund_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信退款申请';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信退款申请';
 
 ------------------------------------------------------------------------ 微信退款通知
 drop table if exists `wx_wx_refund_notice`;
@@ -332,4 +332,4 @@ CREATE TABLE if not exists `wx_wx_refund_notice` (
   INDEX (`transaction_id`),
   INDEX (`refund_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信退款通知';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信退款通知';
