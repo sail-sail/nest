@@ -367,7 +367,7 @@ async function showDialog(
   oldDialogNotice = notice;
   dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
-    type: "auto",
+    type: "medium",
     title: $$(dialogTitle),
     pointerPierce: true,
     notice: $$(dialogNotice),
