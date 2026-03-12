@@ -10,7 +10,7 @@ CREATE TABLE if not exists `base_menu_lang` (
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   INDEX (`lang_id`, `menu_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='菜单语言';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='菜单语言';
 
 ------------------------------------------------------------------------ 系统字典语言
 drop table if exists `base_dict_lang`;
@@ -23,7 +23,7 @@ CREATE TABLE if not exists `base_dict_lang` (
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   INDEX (`lang_id`, `dict_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统字典语言';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='系统字典语言';
 
 ------------------------------------------------------------------------ 系统字典明细语言
 drop table if exists `base_dict_detail_lang`;
@@ -36,7 +36,7 @@ CREATE TABLE if not exists `base_dict_detail_lang` (
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   INDEX (`lang_id`, `dict_detail_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统字典明细语言';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='系统字典明细语言';
 
 ------------------------------------------------------------------------ 按钮权限语言
 drop table if exists `base_permit_lang`;
@@ -48,7 +48,7 @@ CREATE TABLE if not exists `base_permit_lang` (
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   INDEX (`lang_id`, `permit_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='按钮权限语言';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='按钮权限语言';
 
 ------------------------------------------------------------------------ 字段权限语言
 drop table if exists `base_field_permit_lang`;
@@ -60,4 +60,4 @@ CREATE TABLE if not exists `base_field_permit_lang` (
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   INDEX (`lang_id`, `field_permit_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='字段权限语言';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='字段权限语言';
