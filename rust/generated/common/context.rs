@@ -523,6 +523,18 @@ impl Ctx {
     options: Option<Options>,
   ) -> Result<u64> {
     
+    let is_sql_debug = match &options {
+      Some(options) => options.is_sql_debug.unwrap_or_default(),
+      None => false,
+    };
+    if is_sql_debug {
+      let debug_sql = get_debug_sql(&sql, &args);
+      info!(
+        "{req_id} {debug_sql}",
+        req_id = self.req_id,
+      );
+    }
+    
     let mut is_tran = self.is_tran;
     if let Some(options) = &options &&
       let Some(is_tran0) = options.get_is_tran()
@@ -693,17 +705,6 @@ impl Ctx {
         }
       };
     }
-    let is_sql_debug = match &options {
-      Some(options) => options.is_sql_debug.unwrap_or_default(),
-      None => false,
-    };
-    if is_sql_debug {
-      let debug_sql = get_debug_sql(&sql, &args);
-      info!(
-        "{req_id} {debug_sql}",
-        req_id = self.req_id,
-      );
-    }
     let db_pool = db_pool();
     let res = query.execute(&db_pool).await;
     if res.is_err() {
@@ -728,6 +729,18 @@ impl Ctx {
   where
     R: for<'r> sqlx::FromRow<'r, <MySql as sqlx::Database>::Row> + Send + Sized + Unpin + Serialize + for<'r> Deserialize<'r>,
   {
+    
+    let is_sql_debug = match &options {
+      Some(options) => options.is_sql_debug.unwrap_or_default(),
+      None => false,
+    };
+    if is_sql_debug {
+      let debug_sql = get_debug_sql(&sql, &args);
+      info!(
+        "{req_id} {debug_sql}",
+        req_id = self.req_id,
+      );
+    }
     
     let mut is_tran = self.is_tran;
     if let Some(options) = options.as_ref() &&
@@ -908,17 +921,6 @@ impl Ctx {
     } else {
       db_pool()
     };
-    let is_sql_debug = match &options {
-      Some(options) => options.is_sql_debug.unwrap_or_default(),
-      None => false,
-    };
-    if is_sql_debug {
-      let debug_sql = get_debug_sql(&sql, &args);
-      info!(
-        "{req_id} {debug_sql}",
-        req_id = self.req_id,
-      );
-    }
     let res = query.fetch_all(&db_pool).await;
     if res.is_err() {
       let debug_sql = get_debug_sql(&sql, &args);
