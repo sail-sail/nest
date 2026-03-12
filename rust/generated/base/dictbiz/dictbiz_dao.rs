@@ -2389,11 +2389,11 @@ pub async fn update_by_id_dictbiz(
   // 业务字典明细
   if let Some(dictbiz_detail_input) = input.dictbiz_detail {
     let dictbiz_detail_models = find_all_dictbiz_detail(
-      DictbizDetailSearch {
-        dictbiz_id: vec![id].into(),
-        is_deleted: 0.into(),
+      Some(DictbizDetailSearch {
+        dictbiz_id: Some(vec![id]),
+        is_deleted: Some(0),
         ..Default::default()
-      }.into(),
+      }),
       None,
       None,
       options,
@@ -2423,20 +2423,20 @@ pub async fn update_by_id_dictbiz(
         ).await?;
         continue;
       }
-      let id2 = input2.id.unwrap();
+      let id2 = input2.id.unwrap_or_default();
       if !dictbiz_detail_models
         .iter()
         .any(|item| item.id == id2)
       {
         revert_by_ids_dictbiz_detail(
-          vec![id2.clone()],
+          vec![id2],
           options,
         ).await?;
       }
       input2.id = None;
       input2.dictbiz_id = Some(id);
       update_by_id_dictbiz_detail(
-        id2.clone(),
+        id2,
         input2,
         options,
       ).await?;

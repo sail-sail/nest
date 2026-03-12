@@ -376,12 +376,16 @@ const updateByIdTableUps = [ ];
 const forceDeleteByIdsUps = [ ];
 const equalsByUniqueTableUps = [ ];
 for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
   const table = inlineForeignTab.table;
   const mod = inlineForeignTab.mod;
   const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
   const Table_Up = tableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  const hasIsDeleted = inlineForeignSchema.columns.some(function(item) {
+    return item.COLUMN_NAME === "is_deleted";
+  });
   if (
     findAllTableUps.includes(Table_Up) &&
     createTableUps.includes(Table_Up) &&
@@ -435,7 +439,7 @@ use crate::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
   delete_by_ids_<#=table#>,<#
   }
   #><#
-  if (!hasRevertByIdsTableUps) {
+  if (hasIsDeleted && !hasRevertByIdsTableUps) {
   #>
   revert_by_ids_<#=table#>,<#
   }
@@ -445,7 +449,7 @@ use crate::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
   update_by_id_<#=table#>,<#
   }
   #><#
-  if (!hasForceDeleteByIdsUps) {
+  if (hasIsDeleted && !hasForceDeleteByIdsUps) {
   #>
   force_delete_by_ids_<#=table#>,<#
   }
@@ -4295,6 +4299,11 @@ pub async fn set_id_by_lbl_<#=table#>(
         daoStr = `crate::${ foreignKey.mod }::${ foreignTable }::${ foreignTable }_dao::`;
       }
     }
+    let modelLabel = column.modelLabel;
+    const hasModelLabel = !!modelLabel;
+    if (!modelLabel && foreignKey?.lbl) {
+      modelLabel = column_name + "_" + foreignKey.lbl;
+    }
   #><#
     if (column.dict) {
       let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
@@ -4416,22 +4425,22 @@ pub async fn set_id_by_lbl_<#=table#>(
     let lbl = dictbiz_model.map(|item| item.lbl.clone());
     input.<#=column_name#>_lbl = lbl;
   }<#
-    } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
+    } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && modelLabel) {
   #>
   
   // <#=column_comment#>
-  if input.<#=column_name#>_<#=foreignKey.lbl#>.is_some()
-    && !input.<#=column_name#>_<#=foreignKey.lbl#>.as_ref().unwrap().is_empty()
+  if input.<#=rustKeyEscape(modelLabel)#>.is_some()
+    && !input.<#=rustKeyEscape(modelLabel)#>.as_ref().unwrap().is_empty()
     && input.<#=column_name_rust#>.is_none()
   {
-    input.<#=column_name#>_<#=foreignKey.lbl#> = input.<#=column_name#>_<#=foreignKey.lbl#>.map(|item| 
+    input.<#=rustKeyEscape(modelLabel)#> = input.<#=rustKeyEscape(modelLabel)#>.map(|item| 
       SmolStr::new(item.trim())
     );<#
     if (foreignTableUp !== tableUP) {
     #>
     let model = <#=daoStr#>find_one_<#=foreignTable#>(
       crate::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
-        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
+        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=rustKeyEscape(modelLabel)#>.clone(),
         ..Default::default()
       }.into(),
       None,
@@ -4441,7 +4450,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     #>
     let model = <#=daoStr#>find_one_<#=foreignTable#>(
       <#=tableUP#>Search {
-        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
+        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=rustKeyEscape(modelLabel)#>.clone(),
         ..Default::default()
       }.into(),
       None,
@@ -4453,7 +4462,7 @@ pub async fn set_id_by_lbl_<#=table#>(
       input.<#=column_name_rust#> = model.id.into();
     }
   } else if
-    (input.<#=column_name#>_<#=foreignKey.lbl#>.is_none() || input.<#=column_name#>_<#=foreignKey.lbl#>.as_ref().unwrap().is_empty())
+    (input.<#=rustKeyEscape(modelLabel)#>.is_none() || input.<#=rustKeyEscape(modelLabel)#>.as_ref().unwrap().is_empty())
     && input.<#=column_name_rust#>.is_some()
   {<#
     if (foreignTableUp !== tableUP) {
@@ -4479,31 +4488,31 @@ pub async fn set_id_by_lbl_<#=table#>(
     }
     #>
     if let Some(<#=foreignTable#>_model) = <#=foreignTable#>_model {
-      input.<#=column_name#>_<#=foreignKey.lbl#> = <#=foreignTable#>_model.<#=rustKeyEscape(foreignKey.lbl)#>.into();
+      input.<#=rustKeyEscape(modelLabel)#> = <#=foreignTable#>_model.<#=rustKeyEscape(foreignKey.lbl)#>.into();
     }
   }<#
-    } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl && !foreignKey.notSetIdByLbl) {
+    } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && modelLabel && !foreignKey.notSetIdByLbl) {
   #>
   
   // <#=column_comment#>
-  if input.<#=column_name#>_<#=foreignKey.lbl#>.is_some() && input.<#=column_name_rust#>.is_none() {
-    input.<#=column_name_rust#>_<#=foreignKey.lbl#> = input.<#=column_name_rust#>_<#=foreignKey.lbl#>.map(|item| 
+  if input.<#=rustKeyEscape(modelLabel)#>.is_some() && input.<#=column_name_rust#>.is_none() {
+    input.<#=rustKeyEscape(modelLabel)#> = input.<#=rustKeyEscape(modelLabel)#>.map(|item| 
       item.into_iter()
         .map(|item| SmolStr::new(item.trim()))
         .filter(|item| !item.is_empty())
         .collect::<Vec<SmolStr>>()
     );
-    input.<#=column_name_rust#>_<#=foreignKey.lbl#> = input.<#=column_name_rust#>_<#=foreignKey.lbl#>.map(|item| {
+    input.<#=rustKeyEscape(modelLabel)#> = input.<#=rustKeyEscape(modelLabel)#>.map(|item| {
       let mut set = HashSet::new();
       item.into_iter()
         .filter(|item| set.insert(item.clone()))
         .collect::<Vec<SmolStr>>()
     });
     let mut models = vec![];
-    for lbl in input.<#=column_name_rust#>_<#=foreignKey.lbl#>.clone().unwrap_or_default() {
+    for lbl in input.<#=rustKeyEscape(modelLabel)#>.clone().unwrap_or_default() {
       let model = <#=daoStr#>find_one_<#=foreignTable#>(
         crate::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
-          <#=foreignKey.lbl#>: lbl.into(),
+          <#=rustKeyEscape(foreignKey.lbl)#>: lbl.into(),
           ..Default::default()
         }.into(),
         None,
@@ -4781,7 +4790,7 @@ async fn _creates(
       let stat = head_object(&<#=column_name#>).await?;
       if stat.is_none() {
         let content_type = <#=column_name#>_lbl
-          .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
+          .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(<#=column_name#>_lbl.len()))
           .unwrap_or_default();
         if !content_type.starts_with("image/") {
           error!(
@@ -7033,6 +7042,9 @@ pub async fn update_by_id_<#=table#>(
       return item.COLUMN_NAME === inlineForeignTab.column;
     });
     const inline_column_modelLabel = inline_column.modelLabel;
+    const hasIsDeleted = inlineForeignSchema.columns.some(function(item) {
+      return item.COLUMN_NAME === "is_deleted";
+    });
   #><#
     if (inline_foreign_type === "one2many") {
   #><#
@@ -7046,15 +7058,15 @@ pub async fn update_by_id_<#=table#>(
   // <#=inlineForeignTab.label#>
   if let Some(<#=inline_column_name#>_input) = input.<#=inline_column_name#> {
     let <#=inline_column_name#>_models = find_all_<#=table#>(
-      <#=Table_Up#>Search {
-        <#=inlineForeignTab.column#>: vec![id].into(),<#
+      Some(<#=Table_Up#>Search {
+        <#=inlineForeignTab.column#>: Some(vec![id]),<#
         if (hasIsDeleted) {
         #>
-        is_deleted: 0.into(),<#
+        is_deleted: Some(0),<#
         }
         #>
         ..Default::default()
-      }.into(),
+      }),
       None,
       None,
       options,
@@ -7089,13 +7101,15 @@ pub async fn update_by_id_<#=table#>(
         ).await?;
         continue;
       }
-      let id2 = input2.id.unwrap();
+      let id2 = input2.id.unwrap_or_default();<#
+      if (hasIsDeleted) {
+      #>
       if !<#=inline_column_name#>_models
         .iter()
         .any(|item| item.id == id2)
       {
         revert_by_ids_<#=table#>(
-          vec![id2.clone()],
+          vec![id2],
           options,
         ).await?;
       }
@@ -7107,10 +7121,43 @@ pub async fn update_by_id_<#=table#>(
       }
       #>
       update_by_id_<#=table#>(
-        id2.clone(),
+        id2,
         input2,
         options,
-      ).await?;
+      ).await?;<#
+      } else {
+      #>
+      if !<#=inline_column_name#>_models
+        .iter()
+        .any(|item| item.id == id2)
+      {
+        input2.id = None;
+        input2.<#=inlineForeignTab.column#> = Some(id);<#
+        if (inline_column_modelLabel && opts?.lbl_field) {
+        #>
+        input2.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
+        }
+        #>
+        create_<#=table#>(
+          input2,
+          options,
+        ).await?;
+      } else {
+        input2.id = None;
+        input2.<#=inlineForeignTab.column#> = Some(id);<#
+        if (inline_column_modelLabel && opts?.lbl_field) {
+        #>
+        input2.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
+        }
+        #>
+        update_by_id_<#=table#>(
+          id2,
+          input2,
+          options,
+        ).await?;
+      }<#
+      }
+      #>
     }
   }<#
     } else if (inline_foreign_type === "one2one") {
@@ -7126,15 +7173,15 @@ pub async fn update_by_id_<#=table#>(
   if let Some(<#=inline_column_name#>_input) = input.<#=inline_column_name#> {
     field_num += 1;
     let <#=inline_column_name#>_models = find_all_<#=table#>(
-      <#=Table_Up#>Search {
-        <#=inlineForeignTab.column#>: vec![id].into(),<#
+      Some(<#=Table_Up#>Search {
+        <#=inlineForeignTab.column#>: Some(vec![id]),<#
         if (hasIsDeleted) {
         #>
-        is_deleted: 0.into(),<#
+        is_deleted: Some(0),<#
         }
         #>
         ..Default::default()
-      }.into(),
+      }),
       None,
       None,
       options,
@@ -7148,31 +7195,66 @@ pub async fn update_by_id_<#=table#>(
         options,
       ).await?;
     }
-    if let Some(id2) = <#=inline_column_name#>_input.id {
+    if let Some(id2) = <#=inline_column_name#>_input.id {<#
+      if (hasIsDeleted) {
+      #>
       if !<#=inline_column_name#>_models
         .iter()
         .any(|item| item.id == id2)
       {
         revert_by_ids_<#=table#>(
-          vec![id2.clone()],
+          vec![id2],
           options,
         ).await?;
       }
       let mut <#=inline_column_name#>_input = <#=inline_column_name#>_input;
-      <#=inline_column_name#>_input.id = None;<#
+      <#=inline_column_name#>_input.<#=inlineForeignTab.column#> = Some(id);<#
       if (inline_column_modelLabel && opts?.lbl_field) {
       #>
       <#=inline_column_name#>_input.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
       }
       #>
-      update_by_id_<#=table#>(
-        id2.clone(),
+      create_<#=table#>(
         <#=inline_column_name#>_input,
         options,
-      ).await?;
+      ).await?;<#
+      } else {
+      #>
+      if !<#=inline_column_name#>_models
+        .iter()
+        .any(|item| item.id == id2)
+      {
+        let mut <#=inline_column_name#>_input = <#=inline_column_name#>_input;
+        <#=inline_column_name#>_input.id = None;
+        <#=inline_column_name#>_input.<#=inlineForeignTab.column#> = Some(id);<#
+        if (inline_column_modelLabel && opts?.lbl_field) {
+        #>
+        <#=inline_column_name#>_input.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
+        }
+        #>
+        create_<#=table#>(
+          <#=inline_column_name#>_input,
+          options,
+        ).await?;
+      } else {
+        let mut <#=inline_column_name#>_input = <#=inline_column_name#>_input;
+        <#=inline_column_name#>_input.id = None;<#
+        if (inline_column_modelLabel && opts?.lbl_field) {
+        #>
+        <#=inline_column_name#>_input.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
+        }
+        #>
+        update_by_id_<#=table#>(
+          id2,
+          <#=inline_column_name#>_input,
+          options,
+        ).await?;
+      }<#
+      }
+      #>
     } else {
       let mut <#=inline_column_name#>_input = <#=inline_column_name#>_input;
-      <#=inline_column_name#>_input.<#=inlineForeignTab.column#> = Some(id2.clone());<#
+      <#=inline_column_name#>_input.<#=inlineForeignTab.column#> = Some(id);<#
       if (inline_column_modelLabel && opts?.lbl_field) {
       #>
       <#=inline_column_name#>_input.<#=inline_column_modelLabel#> = <#=inline_column_modelLabel#>.clone();<#
