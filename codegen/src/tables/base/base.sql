@@ -27,7 +27,7 @@ CREATE TABLE if not exists `base_tenant` (
   INDEX (`lbl`, `is_deleted`),
   INDEX (`order_by`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='租户';
 
 ------------------------------------------------------------------------ 域名
 drop table if exists `base_domain`;
@@ -51,7 +51,7 @@ CREATE TABLE if not exists `base_domain` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='域名';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='域名';
 
 ------------------------------------------------------------------------ 租户域名
 drop table if exists `base_tenant_domain`;
@@ -68,7 +68,7 @@ CREATE TABLE if not exists `base_tenant_domain` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`tenant_id`, `domain_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户域名';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='租户域名';
 
 ------------------------------------------------------------------------ 租户菜单
 drop table if exists `base_tenant_menu`;
@@ -85,7 +85,7 @@ CREATE TABLE if not exists `base_tenant_menu` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`tenant_id`, `menu_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户菜单';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='租户菜单';
 
 ------------------------------------------------------------------------ 用户
 drop table if exists `base_usr`;
@@ -117,7 +117,7 @@ CREATE TABLE if not exists `base_usr` (
   INDEX (`username`, `tenant_id`, `is_deleted`),
   INDEX (`username`, `password`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='用户';
 
 ------------------------------------------------------------------------ 登录日志
 drop table if exists `base_login_log`;
@@ -140,7 +140,7 @@ CREATE TABLE if not exists `base_login_log` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`username`, `ip`, `create_time`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='登录日志';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='登录日志';
 
 ------------------------------------------------------------------------ 角色
 drop table if exists `base_role`;
@@ -169,7 +169,7 @@ CREATE TABLE if not exists `base_role` (
   INDEX (`code`, `tenant_id`, `is_deleted`),
   INDEX (`lbl`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='角色';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='角色';
 
 ------------------------------------------------------------------------ 用户角色
 drop table if exists `base_usr_role`;
@@ -187,7 +187,7 @@ CREATE TABLE if not exists `base_usr_role` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`usr_id`, `role_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户角色';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='用户角色';
 
 ------------------------------------------------------------------------ 用户部门
 drop table if exists `base_usr_dept`;
@@ -205,7 +205,7 @@ CREATE TABLE if not exists `base_usr_dept` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`usr_id`, `dept_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户部门';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='用户部门';
 
 ------------------------------------------------------------------------ 用户组织
 drop table if exists `base_usr_org`;
@@ -223,7 +223,7 @@ CREATE TABLE if not exists `base_usr_org` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`usr_id`, `org_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户组织';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='用户组织';
 
 ------------------------------------------------------------------------ 菜单
 drop table if exists `base_menu`;
@@ -251,7 +251,7 @@ CREATE TABLE if not exists `base_menu` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`parent_id`, `lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='菜单';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='菜单';
 
 ------------------------------------------------------------------------ 语言
 drop table if exists `base_lang`;
@@ -277,7 +277,7 @@ CREATE TABLE if not exists `base_lang` (
   INDEX (`code`, `is_deleted`),
   INDEX (`lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='语言';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='语言';
 
 ------------------------------------------------------------------------ 国际化
 drop table if exists `base_i18n`;
@@ -300,7 +300,7 @@ CREATE TABLE if not exists `base_i18n` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lang_id`, `menu_id`, `code`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='国际化';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='国际化';
 
 ------------------------------------------------------------------------ 按钮权限
 drop table if exists `base_permit`;
@@ -314,7 +314,7 @@ CREATE TABLE if not exists `base_permit` (
   `is_sys` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '系统记录,dict:is_sys',
   INDEX (`menu_id`, `code`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='按钮权限';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='按钮权限';
 
 ------------------------------------------------------------------------ 数据权限
 drop table if exists `base_data_permit`;
@@ -338,7 +338,7 @@ CREATE TABLE if not exists `base_data_permit` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`menu_id`, `scope`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='数据权限';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='数据权限';
 
 ------------------------------------------------------------------------ 字段权限
 drop table if exists `base_field_permit`;
@@ -352,7 +352,7 @@ CREATE TABLE if not exists `base_field_permit` (
   `is_sys` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '系统记录,dict:is_sys',
   INDEX (`menu_id`, `code`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='字段权限';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='字段权限';
 
 ------------------------------------------------------------------------ 角色菜单
 drop table if exists `base_role_menu`;
@@ -370,7 +370,7 @@ CREATE TABLE if not exists `base_role_menu` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`role_id`, `menu_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='角色菜单';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='角色菜单';
 
 ------------------------------------------------------------------------ 角色按钮权限
 drop table if exists `base_role_permit`;
@@ -388,7 +388,7 @@ CREATE TABLE if not exists `base_role_permit` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`role_id`, `permit_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='角色按钮权限';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='角色按钮权限';
 
 ------------------------------------------------------------------------ 角色数据权限
 drop table if exists `base_role_data_permit`;
@@ -406,7 +406,7 @@ CREATE TABLE if not exists `base_role_data_permit` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`role_id`, `data_permit_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='角色数据权限';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='角色数据权限';
 
 ------------------------------------------------------------------------ 角色字段权限
 drop table if exists `base_role_field_permit`;
@@ -424,7 +424,7 @@ CREATE TABLE if not exists `base_role_field_permit` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`role_id`, `field_permit_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='角色字段权限';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='角色字段权限';
 
 ------------------------------------------------------------------------ 后台任务
 drop table if exists `base_background_task`;
@@ -452,7 +452,7 @@ CREATE TABLE if not exists `base_background_task` (
   INDEX (`begin_time`, `tenant_id`, `is_deleted`),
   INDEX (`end_time`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='后台任务';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='后台任务';
 
 ------------------------------------------------------------------------ 系统选项
 drop table if exists `base_options`;
@@ -479,7 +479,7 @@ CREATE TABLE if not exists `base_options` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `ky`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统选项';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='系统选项';
 
 ------------------------------------------------------------------------ 业务选项
 drop table if exists `base_optbiz`;
@@ -507,7 +507,7 @@ CREATE TABLE if not exists `base_optbiz` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `ky`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='业务选项';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='业务选项';
 
 ------------------------------------------------------------------------ 操作记录
 drop table if exists `base_operation_record`;
@@ -535,7 +535,7 @@ CREATE TABLE if not exists `base_operation_record` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`create_time`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='操作记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='操作记录';
 
 ------------------------------------------------------------------------ 组织
 drop table if exists `base_org`;
@@ -559,7 +559,7 @@ CREATE TABLE if not exists `base_org` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='组织';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='组织';
 
 ------------------------------------------------------------------------ 部门
 drop table if exists `base_dept`;
@@ -586,7 +586,7 @@ CREATE TABLE if not exists `base_dept` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`parent_id`, `lbl`, `org_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='部门';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='部门';
 
 ------------------------------------------------------------------------ 部门负责人
 drop table if exists `base_dept_usr`;
@@ -604,7 +604,7 @@ CREATE TABLE if not exists `base_dept_usr` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`dept_id`, `usr_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='部门负责人';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='部门负责人';
 
 ------------------------------------------------------------------------ 系统字典
 drop table if exists `base_dict`;
@@ -631,7 +631,7 @@ CREATE TABLE if not exists `base_dict` (
   INDEX (`code`, `is_deleted`),
   INDEX (`lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统字典';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='系统字典';
 
 ------------------------------------------------------------------------ 系统字典明细
 drop table if exists `base_dict_detail`;
@@ -656,7 +656,7 @@ CREATE TABLE if not exists `base_dict_detail` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`dict_id`, `lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统字典明细';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='系统字典明细';
 
 ------------------------------------------------------------------------ 业务字典
 drop table if exists `base_dictbiz`;
@@ -684,7 +684,7 @@ CREATE TABLE if not exists `base_dictbiz` (
   INDEX (`code`, `is_deleted`),
   INDEX (`lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='业务字典';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='业务字典';
 
 ------------------------------------------------------------------------ 业务字典明细
 drop table if exists `base_dictbiz_detail`;
@@ -710,7 +710,7 @@ CREATE TABLE if not exists `base_dictbiz_detail` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`dictbiz_id`, `lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='业务字典明细';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='业务字典明细';
 
 ------------------------------------------------------------------------ 图标库
 drop table if exists `base_icon`;
@@ -735,7 +735,7 @@ CREATE TABLE if not exists `base_icon` (
   INDEX (`code`, `is_deleted`),
   INDEX (`lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='图标库';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='图标库';
 
 ------------------------------------------------------------------------ 动态页面
 drop table if exists `base_dyn_page`;
@@ -761,7 +761,7 @@ CREATE TABLE if not exists `base_dyn_page` (
   INDEX (`code`, `tenant_id`, `is_deleted`),
   INDEX (`lbl`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='动态页面';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='动态页面';
 
 ------------------------------------------------------------------------ 动态页面字段
 drop table if exists `base_dyn_page_field`;
@@ -795,7 +795,7 @@ CREATE TABLE if not exists `base_dyn_page_field` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`dyn_page_id`, `lbl`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='动态页面字段';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='动态页面字段';
 
 ------------------------------------------------------------------------ 动态页面值
 drop table if exists `base_dyn_page_val`;
@@ -818,7 +818,7 @@ CREATE TABLE if not exists `base_dyn_page_val` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`ref_code`, `ref_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='动态页面值';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='动态页面值';
 
 ------------------------------------------------------------------------ 动态页面数据
 drop table if exists `base_dyn_page_data`;
@@ -838,7 +838,7 @@ CREATE TABLE if not exists `base_dyn_page_data` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`ref_code`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='动态页面数据';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='动态页面数据';
 
 ------------------------------------------------------------------------ 系统日志
 drop table if exists `base_server_log`;
@@ -851,4 +851,4 @@ CREATE TABLE if not exists `base_server_log` (
   `req_id` varchar(45) NOT NULL DEFAULT '' COMMENT '请求ID',
   `content` text COMMENT '日志内容',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统日志';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='系统日志';
