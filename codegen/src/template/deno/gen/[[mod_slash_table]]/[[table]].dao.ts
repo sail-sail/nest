@@ -647,12 +647,16 @@ import {<#
 }
 #><#
 for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
   const table = inlineForeignTab.table;
   const mod = inlineForeignTab.mod;
   const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
   const Table_Up = tableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  const hasIsDeleted = inlineForeignSchema.columns.some(function(item) {
+    return item.COLUMN_NAME === "is_deleted";
+  });
   if (
     findAllTableUps.includes(Table_Up) &&
     createTableUps.includes(Table_Up) &&
@@ -705,7 +709,7 @@ import {<#
   deleteByIds<#=Table_Up#>,<#
   }
   #><#
-  if (!hasRevertByIdsTableUps) {
+  if (hasIsDeleted && !hasRevertByIdsTableUps) {
   #>
   revertByIds<#=Table_Up#>,<#
   }
@@ -715,7 +719,7 @@ import {<#
   updateById<#=Table_Up#>,<#
   }
   #><#
-  if (!hasForceDeleteByIdsUps) {
+  if (hasIsDeleted && !hasForceDeleteByIdsUps) {
   #>
   forceDeleteByIds<#=Table_Up#>,<#
   }
@@ -6282,6 +6286,9 @@ export async function updateById<#=Table_Up#>(
     }).join("");
     const inline_column_name = inlineForeignTab.column_name;
     const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+    const hasIsDeleted = inlineForeignSchema.columns.some(function(item) {
+      return item.COLUMN_NAME === "is_deleted";
+    });
   #>
   
   // <#=inlineForeignTab.label#><#
@@ -6319,8 +6326,10 @@ export async function updateById<#=Table_Up#>(
           options,
         );
         continue;
-      }
-      if (<#=inline_column_name#>_models.some((item) => item.id === model.id)) {
+      }<#
+      if (hasIsDeleted) {
+      #>
+      if (!<#=inline_column_name#>_models.some((item) => item.id === model.id)) {
         await revertByIds<#=Table_Up#>(
           [ model.id ],
           options,
@@ -6330,10 +6339,35 @@ export async function updateById<#=Table_Up#>(
         model.id,
         {
           ...model,
+          "<#=inlineForeignTab.column#>": id,
           id: undefined,
         },
         options,
-      );
+      );<#
+      } else {
+      #>
+      if (!<#=inline_column_name#>_models.some((item) => item.id === model.id)) {
+        await create<#=Table_Up#>(
+          {
+            ...model,
+            "<#=inlineForeignTab.column#>": id,
+            id: undefined,
+          },
+          options,
+        );
+      } else {
+        await updateById<#=Table_Up#>(
+          model.id,
+          {
+            ...model,
+            "<#=inlineForeignTab.column#>": id,
+            id: undefined,
+          },
+          options,
+        );
+      }<#
+      }
+      #>
     }
   }<#
     } else if (inline_foreign_type === "one2one") {
@@ -6366,8 +6400,10 @@ export async function updateById<#=Table_Up#>(
         input.<#=inline_column_name#>,
         options,
       );
-    } else {
-      if (<#=inline_column_name#>_models.some((item) => item.id === input.<#=inline_column_name#>!.id)) {
+    } else {<#
+      if (hasIsDeleted) {
+      #>
+      if (!<#=inline_column_name#>_models.some((item) => item.id === input.<#=inline_column_name#>!.id)) {
         await revertByIds<#=Table_Up#>(
           [ input.<#=inline_column_name#>.id ],
           options,
@@ -6377,10 +6413,35 @@ export async function updateById<#=Table_Up#>(
         input.<#=inline_column_name#>.id,
         {
           ...input.<#=inline_column_name#>,
+          "<#=inlineForeignTab.column#>": id,
           id: undefined,
         },
         options,
-      );
+      );<#
+      } else {
+      #>
+      if (!<#=inline_column_name#>_models.some((item) => item.id === input.<#=inline_column_name#>.id)) {
+        await create<#=Table_Up#>(
+          {
+            ...input.<#=inline_column_name#>,
+            "<#=inlineForeignTab.column#>": id,
+            id: undefined,
+          },
+          options,
+        );
+      } else {
+        await updateById<#=Table_Up#>(
+          input.<#=inline_column_name#>.id,
+          {
+            ...input.<#=inline_column_name#>,
+            "<#=inlineForeignTab.column#>": id,
+            id: undefined,
+          },
+          options,
+        );
+      }<#
+      }
+      #>
     }
   }<#
     }
