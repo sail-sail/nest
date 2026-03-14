@@ -56,7 +56,7 @@
       "added": true
     },
     "scm.diffDecorationsIgnoreTrimWhitespace": "true",
-    "diffEditor.ignoreTrimWhitespace": false,
+    "diffEditor.ignoreTrimWhitespace": true,
     "explorer.copyRelativePathSeparator": "/",
     "vue.autoInsert.dotValue": true,
     "vue.inlayHints.destructuredProps": true,
