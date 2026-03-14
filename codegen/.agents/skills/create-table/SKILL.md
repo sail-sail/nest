@@ -164,5 +164,5 @@ CREATE TABLE `base_example` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='示例';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='示例';
 ```
