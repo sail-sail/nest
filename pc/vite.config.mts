@@ -25,7 +25,7 @@ import Unocss from "unocss/vite";
 import { webUpdateNotice } from "@plugin-web-update-notification/vite";
 import DefineOptions from "unplugin-vue-define-options/vite";
 import ReactivityTransform from "@vue-macros/reactivity-transform/vite";
-import Wasm from "vite-plugin-wasm";
+// import Wasm from "vite-plugin-wasm";
 import TurboConsole from "unplugin-turbo-console/vite";
 
 // import VueDevTools from "vite-plugin-vue-devtools";
@@ -60,7 +60,7 @@ export default defineConfig({
     ReactivityTransform(),
     DefineOptions(),
     VueJsx(),
-    Wasm(),
+    // Wasm(),
     Icons({
       compiler: "vue3",
       customCollections: {
