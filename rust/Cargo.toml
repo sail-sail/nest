@@ -10,7 +10,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 mime = "0.3.17"
 futures-util = "0.3.32"
 tracing = "0.1.44"
-tracing-subscriber = { version = "0.3.22", features = ["env-filter", "local-time", "parking_lot"] }
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "local-time", "parking_lot"] }
 tracing-appender = "0.2.4"
 tracing-attributes = "0.1.31"
 tokio = { version = "1.50.0", features = ["rt-multi-thread", "macros", "net", "fs"] }
@@ -41,7 +41,7 @@ smallvec = { version = "1.15.1", features = ["union", "serde"] }
 uuid = { version = "1.21.0", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.13.0"
 deadpool-redis = "0.23.0"
-redis = { version = "1.0.4", features = ["tokio-comp"], default-features = false }
+redis = { version = "1.0.5", features = ["tokio-comp"], default-features = false }
 bigdecimal = "0.4.10"
 time = "0.3.47"
 rust_decimal = { version = "1.40.0", features = ["maths"]}
@@ -51,7 +51,7 @@ rust_decimal_macros = "1.40.0"
 # rayon = "1.11.0"
 regex = "1.12.3"
 # yarte = "0.15.7"
-image = { version = "0.25.9", features = ["webp"] }
+image = { version = "0.25.10", features = ["webp"] }
 delay_timer = "0.11.6"
 num-traits = "0.2.19"
 fast_chemail = "0.9.6"
@@ -70,13 +70,14 @@ rand = "0.10.0"
 rsa = { version = "0.9.10", features = ["sha2"] }
 aes-gcm = "0.10.3"
 pkcs8 = "0.10.2"
-serde_with = "3.17.0"
+serde_with = "3.18.0"
 csv = "1.4.0"
 docx-handlebars = "0.3.3"
 xlsx-handlebars = "0.2.2"
 tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"] }
 rust-embed = { version = "8.11.0", features = ["include-exclude"] }
 percent-encoding = "2.3.2"
+qrcode = { version = "0.14.1", default-features = false }
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.2.0"
@@ -157,6 +158,8 @@ xlsx-handlebars.workspace = true
 tokio-tungstenite.workspace = true
 rust-embed.workspace = true
 percent-encoding.workspace = true
+qrcode.workspace = true
+
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"
 

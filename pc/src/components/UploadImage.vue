@@ -178,6 +178,7 @@
   <div
     v-else-if="props.pageInited && props.readonly && thumbList.length < props.maxSize"
     un-relative
+    un-w="full"
     class="upload_image_item"
     tabindex="0"
     :style="{
@@ -185,6 +186,22 @@
     }"
   >
     <div
+      v-if="shouldShowReadonlyPlaceholder"
+      un-m="l-.75 t-.3"
+      un-h="[calc(100%-2px)]"
+      un-aspect="square"
+      un-flex="~ [1_0_0] col"
+      un-overflow-hidden
+      un-justify-center
+      un-items-center
+      un-b="1 dotted gray-300 dark:gray-600"
+      un-rounded
+      class="upload_image_empty upload_image_readonly_placeholder"
+    >
+      <span>{{ props.readonlyPlaceholder ?? "" }}</span>
+    </div>
+    <div
+      v-else
       un-m="l-.75 t-.3"
       un-h="[calc(100%-2px)]"
       un-aspect="square"
@@ -251,6 +268,7 @@ const props = withDefaults(
     maxImageHeight?: number;
     itemHeight?: number;
     pageInited?: boolean;
+    readonlyPlaceholder?: string;
     db?: string;
     isPublic?: boolean;
   }>(),
@@ -265,6 +283,7 @@ const props = withDefaults(
     maxImageHeight: 1080,
     itemHeight: 100,
     pageInited: false,
+    readonlyPlaceholder: undefined,
     db: "",
     isPublic: false,
   },
@@ -310,6 +329,10 @@ const thumbList = $computed(() => {
     });
     return url;
   });
+});
+
+const shouldShowReadonlyPlaceholder = $computed(() => {
+  return props.readonly === true && thumbList.length === 0 && !!props.readonlyPlaceholder;
 });
 
 const fileRef = $ref<HTMLInputElement>();
@@ -525,3 +548,9 @@ defineExpose({
   focus,
 });
 </script>
+
+<style lang="scss" scoped>
+.upload_image_readonly_placeholder {
+  color: var(--el-text-color-placeholder);
+}
+</style>

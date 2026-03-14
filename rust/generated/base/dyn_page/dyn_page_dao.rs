@@ -2478,11 +2478,11 @@ pub async fn update_by_id_dyn_page(
   // 动态页面字段
   if let Some(dyn_page_field_input) = input.dyn_page_field {
     let dyn_page_field_models = find_all_dyn_page_field(
-      DynPageFieldSearch {
-        dyn_page_id: vec![id].into(),
-        is_deleted: 0.into(),
+      Some(DynPageFieldSearch {
+        dyn_page_id: Some(vec![id]),
+        is_deleted: Some(0),
         ..Default::default()
-      }.into(),
+      }),
       None,
       None,
       options,
@@ -2512,20 +2512,20 @@ pub async fn update_by_id_dyn_page(
         ).await?;
         continue;
       }
-      let id2 = input2.id.unwrap();
+      let id2 = input2.id.unwrap_or_default();
       if !dyn_page_field_models
         .iter()
         .any(|item| item.id == id2)
       {
         revert_by_ids_dyn_page_field(
-          vec![id2.clone()],
+          vec![id2],
           options,
         ).await?;
       }
       input2.id = None;
       input2.dyn_page_id = Some(id);
       update_by_id_dyn_page_field(
-        id2.clone(),
+        id2,
         input2,
         options,
       ).await?;
