@@ -1965,7 +1965,7 @@ export async function updateByIdDynPage(
         );
         continue;
       }
-      if (dyn_page_field_models.some((item) => item.id === model.id)) {
+      if (!dyn_page_field_models.some((item) => item.id === model.id)) {
         await revertByIdsDynPageField(
           [ model.id ],
           options,
@@ -1975,6 +1975,7 @@ export async function updateByIdDynPage(
         model.id,
         {
           ...model,
+          "dyn_page_id": id,
           id: undefined,
         },
         options,

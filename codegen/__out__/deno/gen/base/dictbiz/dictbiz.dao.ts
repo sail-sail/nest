@@ -1813,7 +1813,7 @@ export async function updateByIdDictbiz(
         );
         continue;
       }
-      if (dictbiz_detail_models.some((item) => item.id === model.id)) {
+      if (!dictbiz_detail_models.some((item) => item.id === model.id)) {
         await revertByIdsDictbizDetail(
           [ model.id ],
           options,
@@ -1823,6 +1823,7 @@ export async function updateByIdDictbiz(
         model.id,
         {
           ...model,
+          "dictbiz_id": id,
           id: undefined,
         },
         options,
