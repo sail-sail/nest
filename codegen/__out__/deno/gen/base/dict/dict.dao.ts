@@ -1733,7 +1733,7 @@ export async function updateByIdDict(
         );
         continue;
       }
-      if (dict_detail_models.some((item) => item.id === model.id)) {
+      if (!dict_detail_models.some((item) => item.id === model.id)) {
         await revertByIdsDictDetail(
           [ model.id ],
           options,
@@ -1743,6 +1743,7 @@ export async function updateByIdDict(
         model.id,
         {
           ...model,
+          "dict_id": id,
           id: undefined,
         },
         options,
