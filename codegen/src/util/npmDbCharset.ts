@@ -17,7 +17,7 @@ async function exec() {
   
   for (let i = 0; i < table_names.length; i++) {
     const table_name = table_names[i];
-    const sql = `ALTER TABLE ${ table_name } CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci`;
+    const sql = `ALTER TABLE ${ table_name } CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_cs`;
     await context.pool.execute(sql);
   }
   
