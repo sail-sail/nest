@@ -134,14 +134,16 @@ fn init_db_pool(
   let default_pool_size: u32 = 10;
   let database_pool_size: Result<u32, ParseIntError> = database_pool_size.parse();
   let database_pool_size = database_pool_size.unwrap_or(default_pool_size);
-  let mysql_url = format!("mysql://{database_username}:xxx@{database_hostname}:{database_port}/{database_database}");
   
-  info!("mysql_url: {}", &mysql_url);
+  if event_enabled!(Level::INFO) {
+    let mysql_url = format!("mysql://{database_username}:xxx@{database_hostname}:{database_port}/{database_database}");
+    info!("mysql_url: {}", &mysql_url);
+  }
   
   let pool = MySqlPoolOptions::new()
     .max_connections(database_pool_size)
     // .after_connect(|conn, _meta| Box::pin(async move {
-    //   sqlx::query("SET NAMES utf8mb4;").execute(conn).await?;
+    //   sqlx::query("SET NAMES utf8mb4_0900_as_cs;").execute(conn).await?;
     //   Ok(())
     // }))
     .connect_lazy_with(
