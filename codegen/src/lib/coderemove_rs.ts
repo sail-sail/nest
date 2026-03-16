@@ -32,7 +32,7 @@ export async function coderemove(context: Context, table_name: string) {
   
   let str = "";
   
-  str = `${ out }/rust/generated/gen/${ mod_slash_table }/`;
+  str = `${ out }/rust/generated/${ mod_slash_table }/`;
   console.log(`删除: ${ str }`);
   await rm(str, { force: true, recursive: true });
   
@@ -42,7 +42,7 @@ export async function coderemove(context: Context, table_name: string) {
   console.log(`删除: ${ out }/pc/public/excel_template/${ mod_slash_table }.xlsx`);
   await rm(`${ out }/pc/public/excel_template/${ mod_slash_table }.xlsx`, { force: true, recursive: true });
   
-  str = `${ projectPh }/rust/generated/gen/${ mod_slash_table }/`;
+  str = `${ projectPh }/rust/generated/${ mod_slash_table }/`;
   console.log(`删除: ${ str }`);
   await rm(str, { force: true, recursive: true });
   
