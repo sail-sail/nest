@@ -12,9 +12,15 @@ metadata:
 
 ```
 src/views/{mod}/{table}/
-├── Api.ts      # 自动生成(尽量不修改)
+├── Api.ts      # 自动生成, 不放手写自定义接口
 └── Api2.ts     # 手写自定义接口
 ```
+
+## 强制规则
+
+- 自定义 Query / Mutation 一律新建或追加到 `Api2.ts`
+- `Api.ts` 视为生成文件, 除非在修复生成器本身, 否则不要手改
+- `List.vue`、`Dialog.vue` 等业务页面需要手写接口时, 从 `./Api2.ts` 导入
 
 ## Query 模板
 
@@ -96,5 +102,5 @@ export async function updateXxx(
 
 1. 后端接口开发完成并重启服务
 2. 类型自动生成到 `#/types.ts`
-3. 在 `Api2.ts` 创建接口函数
+3. 在 `Api2.ts` 创建接口函数, 不要直接改 `Api.ts`
 4. 使用 `Query` 或 `Mutation` 声明返回类型

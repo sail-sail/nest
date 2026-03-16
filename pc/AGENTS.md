@@ -17,6 +17,12 @@ src/views/{mod}/{table}/
 └── Api.ts      # GraphQL 操作
 ```
 
+## 手写接口约定
+
+- `Api.ts` 为生成文件, 尽量不手改
+- 自定义 GraphQL 接口统一写到 `src/views/{mod}/{table}/Api2.ts`
+- 页面中如果需要调用手写接口, 从 `./Api2.ts` 导入, 以减少与生成代码的 git 冲突
+
 ## 命名规范
 
 | 类型 | 格式 | 示例 |
