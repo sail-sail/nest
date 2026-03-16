@@ -81,6 +81,11 @@
     },
     "chat.useAgentSkills": true,
     "chat.useAgentsMdFile": true,
-    "chat.useNestedAgentsMdFiles": true
+    "chat.useNestedAgentsMdFiles": true,
+    "chat.tools.terminal.autoApprove": {
+      "cargo check": true,
+      "Tee-Object": true,
+      "ForEach-Object": true
+    }
   }
 }
