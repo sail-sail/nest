@@ -301,7 +301,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
-    if (Foreign_Table_Up === Table_Up) {
+    if (Foreign_Table_Up === old_Table_Up) {
       continue;
     }
     if (importForeignTablesTree.includes(Foreign_Table_Up)) {
