@@ -57,7 +57,6 @@
     "vue.inlayHints.destructuredProps": true,
     "vue.inlayHints.inlineHandlerLeading": false,
     "vue.inlayHints.missingProps": true,
-    "typescript.tsdk": "pc\\node_modules\\typescript\\lib",
     "vue.codeActions.askNewComponentName": false,
     "vue.editor.reactivityVisualization": false,
     "vue.editor.templateInterpolationDecorators": false,
@@ -81,6 +80,11 @@
     },
     "chat.useAgentSkills": true,
     "chat.useAgentsMdFile": true,
-    "chat.useNestedAgentsMdFiles": true
+    "chat.useNestedAgentsMdFiles": true,
+    "chat.tools.terminal.autoApprove": {
+      "cargo check": true,
+      "Tee-Object": true,
+      "ForEach-Object": true
+    }
   }
 }
