@@ -23,7 +23,10 @@ export async function findCountServerLog(
   
   await setSearchQuery(search);
   
-  const server_log_num = await server_logDao.findCountServerLog(search);
+  const {
+    findCountServerLog,
+  } = await import("/src/base/server_log/server_log.service.ts");
+  const server_log_num = await findCountServerLog(search);
   
   return server_log_num;
 }
@@ -41,7 +44,10 @@ export async function findAllServerLog(
   
   await setSearchQuery(search);
   
-  const server_log_models = await server_logDao.findAllServerLog(search, page, sort);
+  const {
+    findAllServerLog,
+  } = await import("/src/base/server_log/server_log.service.ts");
+  const server_log_models = await findAllServerLog(search, page, sort);
   
   return server_log_models;
 }
@@ -67,7 +73,10 @@ export async function findOneServerLog(
   
   await setSearchQuery(search);
   
-  const server_log_model = await server_logDao.findOneServerLog(search, sort);
+  const {
+    findOneServerLog,
+  } = await import("/src/base/server_log/server_log.service.ts");
+  const server_log_model = await findOneServerLog(search, sort);
   
   return server_log_model;
 }
@@ -84,7 +93,10 @@ export async function findOneOkServerLog(
   
   await setSearchQuery(search);
   
-  const server_log_model = await server_logDao.findOneOkServerLog(search, sort);
+  const {
+    findOneOkServerLog,
+  } = await import("/src/base/server_log/server_log.service.ts");
+  const server_log_model = await findOneOkServerLog(search, sort);
   
   return server_log_model;
 }
@@ -96,7 +108,10 @@ export async function findByIdServerLog(
   server_log_id: ServerLogId,
 ): Promise<ServerLogModel | undefined> {
   
-  const server_log_model = await server_logDao.findByIdServerLog(server_log_id);
+  const {
+    findByIdServerLog,
+  } = await import("/src/base/server_log/server_log.service.ts");
+  const server_log_model = await findByIdServerLog(server_log_id);
   
   return server_log_model;
 }
@@ -108,7 +123,10 @@ export async function findByIdOkServerLog(
   server_log_id: ServerLogId,
 ): Promise<ServerLogModel> {
   
-  const server_log_model = await server_logDao.findByIdOkServerLog(server_log_id);
+  const {
+    findByIdOkServerLog,
+  } = await import("/src/base/server_log/server_log.service.ts");
+  const server_log_model = await findByIdOkServerLog(server_log_id);
   
   return server_log_model;
 }
@@ -120,7 +138,10 @@ export async function findByIdsServerLog(
   server_log_ids: ServerLogId[],
 ): Promise<ServerLogModel[]> {
   
-  const server_log_models = await server_logDao.findByIdsServerLog(server_log_ids);
+  const {
+    findByIdsServerLog,
+  } = await import("/src/base/server_log/server_log.service.ts");
+  const server_log_models = await findByIdsServerLog(server_log_ids);
   
   return server_log_models;
 }
@@ -132,7 +153,10 @@ export async function findByIdsOkServerLog(
   server_log_ids: ServerLogId[],
 ): Promise<ServerLogModel[]> {
   
-  const server_log_models = await server_logDao.findByIdsOkServerLog(server_log_ids);
+  const {
+    findByIdsOkServerLog,
+  } = await import("/src/base/server_log/server_log.service.ts");
+  const server_log_models = await findByIdsOkServerLog(server_log_ids);
   
   return server_log_models;
 }
@@ -148,7 +172,10 @@ export async function existServerLog(
   
   await setSearchQuery(search);
   
-  const server_log_exist = await server_logDao.existServerLog(search);
+  const {
+    existServerLog,
+  } = await import("/src/base/server_log/server_log.service.ts");
+  const server_log_exist = await existServerLog(search);
   
   return server_log_exist;
 }
@@ -160,7 +187,10 @@ export async function existByIdServerLog(
   server_log_id?: ServerLogId | null,
 ): Promise<boolean> {
   
-  const server_log_exist = await server_logDao.existByIdServerLog(server_log_id);
+  const {
+    existByIdServerLog,
+  } = await import("/src/base/server_log/server_log.service.ts");
+  const server_log_exist = await existByIdServerLog(server_log_id);
   
   return server_log_exist;
 }
