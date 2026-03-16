@@ -426,34 +426,6 @@ CREATE TABLE if not exists `base_role_field_permit` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='角色字段权限';
 
------------------------------------------------------------------------- 后台任务
-drop table if exists `base_background_task`;
-CREATE TABLE if not exists `base_background_task` (
-  `id` varchar(22) NOT NULL COMMENT 'ID',
-  `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
-  `state` ENUM('running', 'success', 'fail', 'cancel') NOT NULL DEFAULT 'running' COMMENT '状态,dict:background_task_state',
-  `type` ENUM('text', 'download', 'inline', 'tag') NOT NULL DEFAULT 'text' COMMENT '类型,dict:background_task_type',
-  `result` varchar(500) NOT NULL DEFAULT '' COMMENT '执行结果',
-  `err_msg` varchar(100) NOT NULL DEFAULT '' COMMENT '错误信息',
-  `begin_time` datetime DEFAULT NULL COMMENT '开始时间',
-  `end_time` datetime DEFAULT NULL COMMENT '结束时间',
-  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
-  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
-  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
-  `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
-  `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
-  `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
-  `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
-  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`begin_time`, `tenant_id`, `is_deleted`),
-  INDEX (`end_time`, `tenant_id`, `is_deleted`),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='后台任务';
-
 ------------------------------------------------------------------------ 系统选项
 drop table if exists `base_options`;
 CREATE TABLE if not exists `base_options` (
