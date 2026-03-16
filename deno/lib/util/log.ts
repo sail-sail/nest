@@ -67,7 +67,7 @@ export function logInit(conf: LogConfig) {
               try {
                 await Deno.remove(conf.path + "/" + file);
               } catch (_err) {
-                console.error(_err);
+                // console.error(_err);
               }
             }
           }
