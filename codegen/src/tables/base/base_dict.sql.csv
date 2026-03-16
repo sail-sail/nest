@@ -5,8 +5,6 @@ o9GwL7PXSaG6gLDZ8oprwg,is_enabled,启用,boolean,3,1,0
 gz4l/BOHTUSFycFLIz+IsQ,is_default,默认,boolean,4,1,0
 SalPh8+ISqWwyyur3U+DcA,is_sys,系统记录,boolean,5,1,0
 oMfKFOvtQz+X+2BFT7RBqw,dict_type,系统字典-数据类型,string,6,1,0
-5fHSeoTSQCGjsjacOcsbPQ,background_task_state,后台任务-状态,string,7,1,0
-gZEUbwGnRtC6gWoMMrGS0g,background_task_type,后台任务-类型,string,8,1,0
 HkN1YAmIQtiQg7gzH9ijuA,yes_no,是否,boolean,10,1,0
 w5P7uguASN2gSTY5HQKIKg,data_permit_scope,数据权限-范围,string,11,1,0
 MQOcbGreQUqQG1EFWMbkVQ,data_permit_type,数据权限-类型,string,12,1,0
