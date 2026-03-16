@@ -8,13 +8,8 @@ rust 静态链接:
 # wsl中安装 aws-lc-sys 工具链
   sudo apt-get install -y build-essential cmake libclang-dev golang perl
 
-# windows中安装 aws-lc-sys 工具链
-  # 打开 Visual Studio Installer
-  # MSVC v143 - VS 2022 C++ x64/x86 生成工具
-  # C++ Clang Compiler for Windows （如果使用 ClangCL）
-  # Windows 11 SDK
-  # CMake tools for Windows
-  # https://cmake.org/download/ 下载安装 CMake
+# windows中安装 rg
+  winget install BurntSushi.ripgrep.MSVC
 ```
 
 ab 压力测试:
