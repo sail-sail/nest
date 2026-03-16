@@ -8,7 +8,6 @@ use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
 pub struct GenQuery(
-  base::background_task::background_task_graphql::BackgroundTaskGenQuery,
   base::data_permit::data_permit_graphql::DataPermitGenQuery,
   base::dept::dept_graphql::DeptGenQuery,
   base::dict::dict_graphql::DictGenQuery,
@@ -39,7 +38,6 @@ pub struct GenQuery(
 
 #[derive(MergedObject, Default)]
 pub struct GenMutation(
-  base::background_task::background_task_graphql::BackgroundTaskGenMutation,
   base::data_permit::data_permit_graphql::DataPermitGenMutation,
   base::dept::dept_graphql::DeptGenMutation,
   base::dict::dict_graphql::DictGenMutation,
