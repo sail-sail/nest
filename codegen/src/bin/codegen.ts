@@ -31,6 +31,7 @@ import {
 } from "path";
 
 import { fileURLToPath } from "url";
+import { getEnumMsgs } from "../lib/StringUitl.ts";
 
 // 获取当前文件的目录路径 (ES 模块中 __dirname 的等效方法)
 // @ts-ignore
@@ -126,6 +127,16 @@ function validateGitStaging() {
         cwd: projectPh,
       });
       throw err;
+    }
+  
+    const enum_msgs = getEnumMsgs();
+    if (enum_msgs.length > 0) {
+      console.log(chalk.red(enum_msgs.join("\n\n")));
+      execSync("git restore . && git clean -fd", {
+        cwd: projectPh,
+      });
+      console.log("");
+      throw "-- 以上枚举类型的字段, 其注释中缺少枚举项说明, 请补充完整后再执行 codegen 命令!";
     }
     await gitDiffOut();
     await denoGenTypes();
