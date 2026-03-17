@@ -15,6 +15,18 @@ export function isEmpty(str: any): boolean {
   return false;
 }
 
+const enum_msgs: string[] = [ ];
+
+export function pushEnumMsg(msg: string) {
+  if (!enum_msgs.includes(msg)) {
+    enum_msgs.push(msg);
+  }
+}
+
+export function getEnumMsgs() {
+  return enum_msgs;
+}
+
 /**
  * 格式化消息
  * @param  {string} msg
