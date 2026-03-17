@@ -32,6 +32,7 @@ use async_graphql::{
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 use crate::common::id::{Id, impl_id};
+use crate::common::exceptions::service_exception::ServiceException;
 use crate::base::dict::dict_model::DictId;
 use crate::base::usr::usr_model::UsrId;
 
@@ -603,7 +604,12 @@ pub fn check_sort_dict_detail(
   if sort.is_none() {
     return Ok(());
   }
-  let sort = sort.unwrap();
+  
+  let sort = sort.unwrap_or_default();
+  
+  if sort.is_empty() {
+    return Ok(());
+  }
   
   let get_can_sort_in_api_dict_detail = get_can_sort_in_api_dict_detail();
   
@@ -613,7 +619,11 @@ pub fn check_sort_dict_detail(
       continue;
     }
     if !get_can_sort_in_api_dict_detail.contains(&prop) {
-      return Err(eyre!("check_sort_dict_detail: {}", serde_json::to_string(item)?));
+      return Err(eyre!(ServiceException {
+        message: format!("check_sort_dict_detail: {}", serde_json::to_string(item)?).into(),
+        trace: true,
+        ..Default::default()
+      }));
     }
   }
   
