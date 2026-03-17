@@ -15,7 +15,6 @@ import {
 import combinedQuery from "graphql-combine-query";
 
 import useUsrStore from "../store/usr";
-import useBackground_taskStore from "../store/background_task.ts";
 
 import { request } from "./request.ts";
 
@@ -374,12 +373,6 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     if (is_token_expired) {
       const usrStore = useUsrStore();
       usrStore.logout();
-      return data;
-    }
-    if (errors[0].code === "background_task" || errors[0].message === "background_task") {
-      ElMessage.success(errors[0].message);
-      const background_taskStore = useBackground_taskStore();
-      background_taskStore.listDialogVisible = true;
       return data;
     }
   }

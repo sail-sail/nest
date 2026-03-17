@@ -9,3 +9,4 @@ import "./options/options.graphql.ts";
 import "./permit/permit.graphql.ts";
 import "./role/role.graphql.ts";
 import "./field_permit/field_permit.graphql.ts";
+import "./server_log/server_log.graphql.ts";

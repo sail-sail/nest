@@ -1,8 +1,4 @@
 
-declare const background_taskId: unique symbol;
-/** 后台任务 */
-type BackgroundTaskId = Distinct<string, typeof background_taskId>;
-
 declare const data_permitId: unique symbol;
 /** 数据权限 */
 type DataPermitId = Distinct<string, typeof data_permitId>;
