@@ -496,77 +496,6 @@ export default defineConfig({
       },
     ]
   },
-  base_background_task: {
-    opts: {
-      noAdd: true,
-      noEdit: true,
-      noImport: true,
-      noExport: true,
-      filterDataByCreateUsr: true,
-      defaultSort: {
-        prop: "begin_time",
-        order: "descending",
-      },
-    },
-    columns: [
-      {
-        COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        width: 140,
-        align: "left",
-        fixed: "left",
-      },
-      {
-        COLUMN_NAME: "state",
-        require: true,
-        search: true,
-        width: 120,
-      },
-      {
-        COLUMN_NAME: "type",
-        require: true,
-        search: true,
-        width: 120,
-      },
-      {
-        COLUMN_NAME: "result",
-        align: "left",
-        width: 140,
-      },
-      {
-        COLUMN_NAME: "err_msg",
-        align: "left",
-        width: 160,
-      },
-      {
-        COLUMN_NAME: "begin_time",
-        search: true,
-        sortable: true,
-        width: 180,
-      },
-      {
-        COLUMN_NAME: "end_time",
-        sortable: true,
-        width: 180,
-      },
-      {
-        COLUMN_NAME: "rem",
-      },
-      {
-        COLUMN_NAME: "create_usr_id",
-      },
-      {
-        COLUMN_NAME: "create_time",
-      },
-      {
-        COLUMN_NAME: "update_usr_id",
-      },
-      {
-        COLUMN_NAME: "update_time",
-      },
-    ]
-  },
   // 语言
   base_lang: {
     opts: {
@@ -1748,6 +1677,7 @@ export default defineConfig({
   base_server_log: {
     opts: {
       noAdd: true,
+      noCopy: true,
       noEdit: true,
       noDelete: true,
       noRevert: true,
@@ -1763,7 +1693,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "log_date",
         search: true,
-        width: 120,
+        width: 110,
         align: "center",
       },
       {
@@ -1775,24 +1705,25 @@ export default defineConfig({
       {
         COLUMN_NAME: "level",
         search: true,
-        width: 100,
+        width: 80,
         align: "center",
       },
       {
         COLUMN_NAME: "module",
-        canSearch: true,
-        width: 280,
+        search: true,
+        width: 420,
         align: "left",
       },
       {
         COLUMN_NAME: "req_id",
         notForeignKeyById: true,
-        canSearch: true,
-        width: 160,
+        search: true,
+        width: 140,
         align: "center",
       },
       {
         COLUMN_NAME: "content",
+        search: true,
         isTextarea: true,
         width: 500,
         align: "left",
