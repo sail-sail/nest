@@ -2091,7 +2091,7 @@ export async function exportExcel<#=Table_Up#>(
 export async function getDefaultInput<#=Table_Up#>() {<#
   if (hasUsrStore) {
   #>
-  const usrStore = useUsrStore(cfg.pinia);<#
+  const usrStore = useUsrStore();<#
   }
   #>
   const defaultInput: <#=inputName#> = {<#
