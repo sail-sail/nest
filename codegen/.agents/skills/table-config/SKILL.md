@@ -98,6 +98,14 @@ ec_order: {
 
 - date/datetime类型的字段: 默认已经是 width: 160, align: "center", 无需配置 width 和 align
 - decimal类型的字段: 默认已经是 width: 100, align: "right", require: true,
+- 配置了 `modelLabel` 冗余字段的, 就不需要再配置 `modelLabel` 这个字段了, 比如:
+```ts
+{
+  COLUMN_NAME: "product_sku_id",
+  modelLabel: "product_sku_id_lbl",
+},
+```
+中: `product_sku_id_lbl` 就不需要再出现在字段配置里了
 
 ## 审计字段
 
