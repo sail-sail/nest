@@ -120,6 +120,20 @@ for (let i = 0; i < columns.length; i++) {
   }
   can_sort_in_api_props.push(sortBy);
 }
+if (opts?.defaultSort) {
+  const prop = opts?.defaultSort.prop;
+  if (!can_sort_in_api_props.includes(prop)) {
+    can_sort_in_api_props.push(prop);
+  }
+}
+const secondSorts = opts?.secondSorts || [ ];
+for (let i = 0; i < secondSorts.length; i++) {
+  const secondSort = secondSorts[i];
+  const prop = secondSort.prop;
+  if (!can_sort_in_api_props.includes(prop)) {
+    can_sort_in_api_props.push(prop);
+  }
+}
 #>#![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
 #![allow(clippy::collapsible_if)]
@@ -158,7 +172,8 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};<#
+use crate::common::id::{Id, impl_id};
+use crate::common::exceptions::service_exception::ServiceException;<#
 if (hasAudit && auditTable_Up) {
 #>
 
@@ -3583,7 +3598,12 @@ pub fn check_sort_<#=table#>(
   if sort.is_none() {
     return Ok(());
   }
-  let sort = sort.unwrap();
+  
+  let sort = sort.unwrap_or_default();
+  
+  if sort.is_empty() {
+    return Ok(());
+  }
   
   let get_can_sort_in_api_<#=table#> = get_can_sort_in_api_<#=table#>();
   
@@ -3593,7 +3613,11 @@ pub fn check_sort_<#=table#>(
       continue;
     }
     if !get_can_sort_in_api_<#=table#>.contains(&prop) {
-      return Err(eyre!("check_sort_<#=table#>: {}", serde_json::to_string(item)?));
+      return Err(eyre!(ServiceException {
+        message: format!("check_sort_<#=table#>: {}", serde_json::to_string(item)?).into(),
+        trace: true,
+        ..Default::default()
+      }));
     }
   }
   
