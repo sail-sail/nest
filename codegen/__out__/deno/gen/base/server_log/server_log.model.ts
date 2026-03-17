@@ -29,9 +29,6 @@ declare global {
   interface ServerLogSearch extends ServerLogSearchType {
     /** 日志时间 */
     log_time?: [(string|undefined|null), (string|undefined|null)];
-    /** 日志内容 */
-    content?: string;
-    content_like?: string;
   }
 
   interface ServerLogModel extends ServerLogModelType {

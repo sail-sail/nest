@@ -11,6 +11,11 @@ type Options = {
   limit: number;
 };
 
+type SqlSource = {
+  sql: string;
+  fromFile: boolean;
+};
+
 function getArgValue(argv: string[], index: number) {
   const value = argv[index + 1];
   if (!value) {
@@ -53,17 +58,23 @@ function parseArgs(argv: string[]) {
   return options;
 }
 
-async function getSql(options: Options) {
+async function getSql(options: Options): Promise<SqlSource> {
   if (options.sql && options.file) {
     throw new Error("--file 与直接传 SQL 只能二选一");
   }
   if (options.sql) {
-    return options.sql.trim();
+    return {
+      sql: options.sql.trim(),
+      fromFile: false,
+    };
   }
   if (options.file) {
     const fs = await import("node:fs/promises");
     const sql = await fs.readFile(options.file, "utf8");
-    return sql.trim();
+    return {
+      sql: sql.trim(),
+      fromFile: true,
+    };
   }
   throw new Error("请传入 SQL 字符串，或使用 --file 指定 .sql 文件");
 }
@@ -99,6 +110,20 @@ function isMultiStatement(sql: string) {
   return normalized.includes(";");
 }
 
+function splitSqlStatements(sql: string) {
+  const cleaned = sql
+    .replace(/^\uFEFF/, "")
+    .replace(/\/\*[\s\S]*?\*\//gm, " ")
+    .replace(/^\s*--.*$/gm, " ")
+    .replace(/^\s*#+.*$/gm, " ")
+    .replace(/^\s*-{10,}.*$/gm, " ")
+    .trim();
+  return cleaned
+    .split(/;\s*(?:\r?\n|$)/g)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function formatRows(rows: any[], limit: number) {
   const previewRows = rows.slice(0, limit);
   return {
@@ -115,14 +140,22 @@ async function exec() {
     console.error("执行被拒绝: 运行前必须先人工确认 SQL，再显式添加 --confirm");
     process.exit(1);
   }
-  const sql = await getSql(options);
+  const { sql, fromFile } = await getSql(options);
   if (!sql) {
     throw new Error("SQL 不能为空");
   }
-  if (isMultiStatement(sql)) {
+  if (!fromFile && isMultiStatement(sql)) {
     throw new Error("仅允许执行单条 SQL，禁止多语句");
   }
-  const readOnly = isReadOnlySql(sql);
+  const sqlList = fromFile ? splitSqlStatements(sql) : [ sql ];
+  if (sqlList.length === 0) {
+    throw new Error("SQL 不能为空");
+  }
+  const hasReadOnly = sqlList.some(isReadOnlySql);
+  const hasWrite = sqlList.some((item) => !isReadOnlySql(item));
+  if (hasReadOnly && hasWrite) {
+    throw new Error("文件模式下不允许混合查询语句和写入语句");
+  }
   const rawConsoleLog = console.log;
   let context = undefined as Awaited<ReturnType<typeof initContext>>;
   try {
@@ -133,32 +166,39 @@ async function exec() {
   }
   try {
     const startedAt = Date.now();
-    const result = await context.pool.query(sql);
+    const results: any[] = [ ];
+    for (const item of sqlList) {
+      const result = await context.pool.query(item);
+      results.push(result);
+    }
     const elapsedMs = Date.now() - startedAt;
-    if (readOnly) {
-      const rows = Array.isArray(result[0]) ? result[0] as any[] : [ ];
+    if (hasReadOnly) {
+      const lastResult = results[results.length - 1];
+      const rows = Array.isArray(lastResult[0]) ? lastResult[0] as any[] : [ ];
       console.log(JSON.stringify({
         ok: true,
         type: "query",
         elapsedMs,
+        statementCount: sqlList.length,
         ...formatRows(rows, options.limit),
       }));
       return;
     }
-    const meta = result[0] as {
+    const metaList = results.map((item) => item[0] as {
       affectedRows?: number;
       changedRows?: number;
       insertId?: number;
       warningStatus?: number;
-    };
+    });
     console.log(JSON.stringify({
       ok: true,
       type: "exec",
       elapsedMs,
-      affectedRows: meta?.affectedRows ?? 0,
-      changedRows: meta?.changedRows ?? 0,
-      insertId: meta?.insertId ?? 0,
-      warningStatus: meta?.warningStatus ?? 0,
+      statementCount: sqlList.length,
+      affectedRows: metaList.reduce((sum, meta) => sum + (meta?.affectedRows ?? 0), 0),
+      changedRows: metaList.reduce((sum, meta) => sum + (meta?.changedRows ?? 0), 0),
+      insertId: metaList[metaList.length - 1]?.insertId ?? 0,
+      warningStatus: metaList.reduce((sum, meta) => sum + (meta?.warningStatus ?? 0), 0),
     }));
   } finally {
     context.conn.release();

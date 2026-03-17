@@ -33,6 +33,48 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 }
 
 const tableFieldPermit = columns.some((item) => item.fieldPermit);
+#><#
+const can_sort_in_api_props = [ ];
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  const column_name = column.COLUMN_NAME;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) continue;
+  const data_type = column.DATA_TYPE;
+  const column_comment = column.COLUMN_COMMENT;
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const canSortInApi = column.canSortInApi;
+  if (!canSortInApi) continue;
+  if (foreignKey && foreignKey.type === "multiple") continue;
+  let sortBy = column_name;
+  if (foreignKey) {
+    sortBy = sortBy + "_lbl";
+  }
+  can_sort_in_api_props.push({
+    prop: sortBy,
+    column_comment,
+  });
+}
+if (opts?.defaultSort) {
+  const prop = opts?.defaultSort.prop;
+  if (!can_sort_in_api_props.some((item) => item.prop === prop)) {
+    can_sort_in_api_props.push({ prop });
+  }
+}
+const secondSorts = opts?.secondSorts || [ ];
+for (let i = 0; i < secondSorts.length; i++) {
+  const secondSort = secondSorts[i];
+  const prop = secondSort.prop;
+  if (!can_sort_in_api_props.some((item) => item.prop === prop)) {
+    can_sort_in_api_props.push({ prop });
+  }
+}
 #>import type {
   <#=inputName#> as <#=inputName#>Type,
   <#=modelName#> as <#=modelName#>Type,
@@ -722,30 +764,17 @@ declare global {
 
 /** <#=table_comment#> 前端允许排序的字段 */
 export const canSortInApi<#=Table_Up#> = {<#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (
-      column_name === "tenant_id" ||
-      column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
-    ) continue;
-    const data_type = column.DATA_TYPE;
-    const column_comment = column.COLUMN_COMMENT;
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const canSortInApi = column.canSortInApi;
-    if (!canSortInApi) continue;
-    if (foreignKey && foreignKey.type === "multiple") continue;
-    let sortBy = column_name;
-    if (foreignKey) {
-      sortBy = sortBy + "_lbl";
-    }
+  for (let i = 0; i < can_sort_in_api_props.length; i++) {
+    const item = can_sort_in_api_props[i];
+    const prop = item.prop;
+    const column_comment = item.column_comment;
+  #><#
+  if (column_comment) {
   #>
-  // <#=column_comment#>
-  "<#=sortBy#>": true,<#
+  // <#=column_comment#><#
+  }
+  #>
+  "<#=prop#>": true,<#
   }
   #>
 };

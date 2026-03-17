@@ -59,6 +59,45 @@
         </el-form-item>
       </template>
       
+      <template v-if="(builtInSearch?.module == null && (showBuildIn || builtInSearch?.module_like == null))">
+        <el-form-item
+          label="模块"
+          prop="module_like"
+        >
+          <CustomInput
+            v-model="search.module_like"
+            placeholder="请输入 模块"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(builtInSearch?.req_id == null && (showBuildIn || builtInSearch?.req_id_like == null))">
+        <el-form-item
+          label="请求ID"
+          prop="req_id_like"
+        >
+          <CustomInput
+            v-model="search.req_id_like"
+            placeholder="请输入 请求ID"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(builtInSearch?.content == null && (showBuildIn || builtInSearch?.content_like == null))">
+        <el-form-item
+          label="日志内容"
+          prop="content_like"
+        >
+          <CustomInput
+            v-model="search.content_like"
+            placeholder="请输入 日志内容"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <div
         class="search-ids-checked"
       >
@@ -312,7 +351,7 @@
           </template>
           
           <!-- 日志内容 -->
-          <template v-else-if="'content' === col.prop">
+          <template v-else-if="'content' === col.prop && (showBuildIn || builtInSearch?.content == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -424,6 +463,8 @@ const props = defineProps<{
   module_like?: string; // 模块
   req_id?: string; // 请求ID
   req_id_like?: string; // 请求ID
+  content?: string; // 日志内容
+  content_like?: string; // 日志内容
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -677,7 +718,7 @@ function getTableColumns(): ColumnType[] {
       label: "日志日期",
       prop: "log_date_lbl",
       sortBy: "log_date",
-      width: 120,
+      width: 110,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -696,7 +737,7 @@ function getTableColumns(): ColumnType[] {
       label: "日志级别",
       prop: "level_lbl",
       sortBy: "level",
-      width: 100,
+      width: 80,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -704,7 +745,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "模块",
       prop: "module",
-      width: 280,
+      width: 420,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -712,7 +753,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "请求ID",
       prop: "req_id",
-      width: 160,
+      width: 140,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
