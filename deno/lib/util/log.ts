@@ -33,7 +33,13 @@ export function logInit(conf: LogConfig) {
     }
     arr.forEach(function(key) {
       // const consoleKey = console[key];
-      const keyUp = key.toUpperCase();
+      if (key === "info") {
+        key = "log";
+      }
+      let keyUp = key.toUpperCase();
+      if (keyUp === "LOG") {
+        keyUp = "INFO";
+      }
       console[key] = async function(str) {
         const dateMom = dayjs();
         //consoleKey.apply(console,arguments);
