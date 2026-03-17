@@ -41,7 +41,6 @@
 
 <script setup lang="ts">
 import locale from "@/locales";
-// import Background_taskListDialog from "./views/base/background_task/ListDialog.vue";
 
 const {
   ns,
