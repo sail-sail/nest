@@ -13,7 +13,7 @@ import {
   baiduAppQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdBaiduApp(
   model?: BaiduAppModel | null,
   isExcelExport = false,
 ) {
@@ -45,7 +45,7 @@ export function intoInputBaiduApp(
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -80,7 +80,7 @@ export async function findAllBaiduApp(
   const models = data.findAllBaiduApp;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdBaiduApp(model);
   }
   return models;
 }
@@ -112,7 +112,7 @@ export async function findOneBaiduApp(
   
   const model = data.findOneBaiduApp;
   
-  await setLblById(model);
+  await setLblByIdBaiduApp(model);
   
   return model;
 }
@@ -144,7 +144,7 @@ export async function findOneOkBaiduApp(
   
   const model = data.findOneOkBaiduApp;
   
-  await setLblById(model);
+  await setLblByIdBaiduApp(model);
   
   return model;
 }
@@ -270,7 +270,7 @@ export async function findByIdBaiduApp(
   
   const model = data.findByIdBaiduApp;
   
-  await setLblById(model);
+  await setLblByIdBaiduApp(model);
   
   return model;
 }
@@ -300,7 +300,7 @@ export async function findByIdOkBaiduApp(
   
   const model = data.findByIdOkBaiduApp;
   
-  await setLblById(model);
+  await setLblByIdBaiduApp(model);
   
   return model;
 }
@@ -336,7 +336,7 @@ export async function findByIdsBaiduApp(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdBaiduApp(model);
   }
   
   return models;
@@ -373,7 +373,7 @@ export async function findByIdsOkBaiduApp(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdBaiduApp(model);
   }
   
   return models;
@@ -587,8 +587,8 @@ export function useExportExcelBaiduApp() {
     try {
       const data = await query({
         query: `
-          query($search: BaiduAppSearch, $sort: [SortInput!]) {
-            findAllBaiduApp(search: $search, page: null, sort: $sort) {
+          query($search: BaiduAppSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllBaiduApp(search: $search, page: $page, sort: $sort) {
               ${ baiduAppQueryField }
             }
             getDict(codes: [
@@ -602,11 +602,14 @@ export function useExportExcelBaiduApp() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllBaiduApp) {
-        await setLblById(model, true);
+        await setLblByIdBaiduApp(model, true);
       }
       try {
         const sheetName = "百度应用";
@@ -686,19 +689,67 @@ export async function importModelsBaiduApp(
  * 查找 百度应用 order_by 字段的最大值
  */
 export async function findLastOrderByBaiduApp(
+  search?: BaiduAppSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderByBaiduApp: Query["findLastOrderByBaiduApp"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderByBaiduApp
+      query($search: BaiduAppSearch) {
+        findLastOrderByBaiduApp(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderByBaiduApp;
-  return res;
+  
+  const order_by = data.findLastOrderByBaiduApp;
+  
+  return order_by;
+}
+
+/**
+ * 获取 百度应用 字段注释
+ */
+export async function getFieldCommentsBaiduApp(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsBaiduApp: Query["getFieldCommentsBaiduApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsBaiduApp {
+          id,
+          lbl,
+          appid,
+          api_key,
+          secret_key,
+          aes_key,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsBaiduApp as BaiduAppFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathBaiduApp() {

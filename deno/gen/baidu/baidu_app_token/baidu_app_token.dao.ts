@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -73,6 +75,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathBaiduAppToken,
+  getTableNameBaiduAppToken,
+} from "./baidu_app_token.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -198,7 +205,7 @@ export async function findCountBaiduAppToken(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "findCountBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -288,7 +295,7 @@ export async function findAllBaiduAppToken(
   },
 ): Promise<BaiduAppTokenModel[]> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "findAllBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -403,6 +410,14 @@ export async function findAllBaiduAppToken(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
@@ -516,7 +531,7 @@ export async function setIdByLblBaiduAppToken(
 // MARK: getFieldCommentsBaiduAppToken
 /** 获取百度接口凭据字段注释 */
 export async function getFieldCommentsBaiduAppToken(): Promise<BaiduAppTokenFieldComment> {
-  const fieldComments: BaiduAppTokenFieldComment = {
+  const field_comments: BaiduAppTokenFieldComment = {
     id: "ID",
     baidu_app_id: "百度应用",
     baidu_app_id_lbl: "百度应用",
@@ -525,7 +540,8 @@ export async function getFieldCommentsBaiduAppToken(): Promise<BaiduAppTokenFiel
     token_time_lbl: "令牌创建时间",
     expires_in: "令牌超时时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueBaiduAppToken
@@ -537,7 +553,7 @@ export async function findByUniqueBaiduAppToken(
   },
 ): Promise<BaiduAppTokenModel[]> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "findByUniqueBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -628,7 +644,7 @@ export async function checkByUniqueBaiduAppToken(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 百度接口凭据 已经存在");
+      throw new UniqueException("百度接口凭据 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: BaiduAppTokenId = await updateByIdBaiduAppToken(
@@ -658,7 +674,7 @@ export async function findOneBaiduAppToken(
   },
 ): Promise<BaiduAppTokenModel | undefined> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "findOneBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -706,7 +722,7 @@ export async function findOneOkBaiduAppToken(
   },
 ): Promise<BaiduAppTokenModel> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "findOneOkBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -758,7 +774,7 @@ export async function findByIdBaiduAppToken(
   },
 ): Promise<BaiduAppTokenModel | undefined> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "findByIdBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -800,7 +816,7 @@ export async function findByIdOkBaiduAppToken(
   },
 ): Promise<BaiduAppTokenModel> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "findByIdOkBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -841,7 +857,7 @@ export async function findByIdsBaiduAppToken(
   },
 ): Promise<BaiduAppTokenModel[]> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "findByIdsBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -888,7 +904,7 @@ export async function findByIdsOkBaiduAppToken(
   },
 ): Promise<BaiduAppTokenModel[]> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "findByIdsOkBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -937,7 +953,7 @@ export async function existBaiduAppToken(
   },
 ): Promise<boolean> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "existBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -969,7 +985,7 @@ export async function existByIdBaiduAppToken(
   },
 ) {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "existByIdBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1067,7 +1083,7 @@ export async function createReturnBaiduAppToken(
   },
 ): Promise<BaiduAppTokenModel> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "createReturnBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1118,7 +1134,7 @@ export async function createBaiduAppToken(
   },
 ): Promise<BaiduAppTokenId> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "createBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1159,7 +1175,7 @@ export async function createsReturnBaiduAppToken(
   },
 ): Promise<BaiduAppTokenModel[]> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "createsReturnBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1196,7 +1212,7 @@ export async function createsBaiduAppToken(
   },
 ): Promise<BaiduAppTokenId[]> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "createsBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1233,7 +1249,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1426,6 +1442,7 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheBaiduAppToken() {
   await delCacheCtx(`dao.sql.baidu_baidu_app_token`);
+  await delCacheCtx(`dao.sql.baidu_baidu_app`);
 }
 
 // MARK: updateTenantByIdBaiduAppToken
@@ -1438,7 +1455,7 @@ export async function updateTenantByIdBaiduAppToken(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "updateTenantByIdBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1486,7 +1503,7 @@ export async function updateByIdBaiduAppToken(
   },
 ): Promise<BaiduAppTokenId> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "updateByIdBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1530,7 +1547,7 @@ export async function updateByIdBaiduAppToken(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 百度接口凭据 已经存在";
+        throw "百度接口凭据 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1540,7 +1557,12 @@ export async function updateByIdBaiduAppToken(
   const oldModel = await findByIdBaiduAppToken(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 百度接口凭据 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 百度接口凭据 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1649,7 +1671,14 @@ export async function updateByIdBaiduAppToken(
     await delCacheBaiduAppToken();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1664,6 +1693,36 @@ export async function updateByIdBaiduAppToken(
   return id;
 }
 
+// MARK: updateByIdBaiduAppToken
+/** 根据 id 更新百度接口凭据, 并返回更新后的数据 */
+export async function updateByIdReturnBaiduAppToken(
+  id: BaiduAppTokenId,
+  input: BaiduAppTokenInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<BaiduAppTokenModel> {
+  
+  await updateByIdBaiduAppToken(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdBaiduAppToken(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`百度接口凭据 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsBaiduAppToken
 /** 根据 ids 删除 百度接口凭据 */
 export async function deleteByIdsBaiduAppToken(
@@ -1675,7 +1734,7 @@ export async function deleteByIdsBaiduAppToken(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "deleteByIdsBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1698,6 +1757,8 @@ export async function deleteByIdsBaiduAppToken(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheBaiduAppToken();
   
@@ -1733,7 +1794,13 @@ export async function deleteByIdsBaiduAppToken(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1751,7 +1818,7 @@ export async function revertByIdsBaiduAppToken(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "revertByIdsBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1805,7 +1872,7 @@ export async function revertByIdsBaiduAppToken(
         if (model.id === id) {
           continue;
         }
-        throw "此 百度接口凭据 已经存在";
+        throw "百度接口凭据 重复";
       }
     }
     const args = new QueryArgs();
@@ -1829,7 +1896,7 @@ export async function forceDeleteByIdsBaiduAppToken(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app_token";
+  const table = getTableNameBaiduAppToken();
   const method = "forceDeleteByIdsBaiduAppToken";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1851,6 +1918,8 @@ export async function forceDeleteByIdsBaiduAppToken(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheBaiduAppToken();
   

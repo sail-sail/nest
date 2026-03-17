@@ -3,7 +3,7 @@ import type { Pool, PoolConnection } from "mysql2/promise";
 import nestConfig from "./nest_config.ts";
 import tables from "../tables/tables.ts";
 import config, { type TableCloumn, type TablesConfigItem } from "../config.ts";
-import { isEmpty } from "./StringUitl.ts";
+import { isEmpty, pushEnumMsg } from "./StringUitl.ts";
 import { Chalk } from "chalk";
 
 const chalk = new Chalk();
@@ -94,7 +94,7 @@ async function getSchema0(
   if (!tables[table_name]) {
     throw `数据库中, 表: ${ table_name } 不存在!`;
   }
-  const hasOrderBy = tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "order_by" && !item.onlyCodegenDeno);
+  const hasOrderBy = records.some((item: TableCloumn) => item.COLUMN_NAME === "order_by" && !item.onlyCodegenDeno);
   // 是否有系统字段 is_sys
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
   // 是否有隐藏字段
@@ -935,14 +935,12 @@ export async function getSchema(
         if (!enumItemsDict.includes(defaultValue)) {
           defaultValue = enumItemsDict[0];
         }
-        let errMsg = `
-错误: 表: ${ table_name }, 列: ${ record.COLUMN_NAME }, 数据类型应该为:`;
-        errMsg += `
-
-ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
-\`${ record.COLUMN_NAME }\` ENUM('${ enumItemsDict.join("', '") }') NOT NULL DEFAULT '${ defaultValue }' COMMENT '${ oldComment }';
-`;
-        throw chalk.red(errMsg);
+//         let errMsg = `
+// 错误: 表: ${ table_name }, 列: ${ record.COLUMN_NAME }, 数据类型应该为:`;
+        let errMsg = `ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
+\`${ record.COLUMN_NAME }\` ENUM('${ enumItemsDict.join("', '") }') NOT NULL DEFAULT '${ defaultValue }' COMMENT '${ oldComment }';`;
+        // throw chalk.red(errMsg);
+        pushEnumMsg(errMsg);
       }
     }
     if (data_type === "enum") {

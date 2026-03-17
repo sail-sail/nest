@@ -101,6 +101,9 @@ input ServerLogSearch {
   "请求ID"
   req_id: String
   req_id_like: String
+  "日志内容"
+  content: String
+  content_like: String
 }
 type Query {
   "根据条件查找系统日志总数"

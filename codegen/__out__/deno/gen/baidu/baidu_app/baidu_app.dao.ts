@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -73,6 +75,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathBaiduApp,
+  getTableNameBaiduApp,
+} from "./baidu_app.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -213,7 +220,7 @@ export async function findCountBaiduApp(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "findCountBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -314,7 +321,7 @@ export async function findAllBaiduApp(
   },
 ): Promise<BaiduAppModel[]> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "findAllBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -446,6 +453,14 @@ export async function findAllBaiduApp(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
@@ -551,7 +566,7 @@ export async function setIdByLblBaiduApp(
 // MARK: getFieldCommentsBaiduApp
 /** 获取百度应用字段注释 */
 export async function getFieldCommentsBaiduApp(): Promise<BaiduAppFieldComment> {
-  const fieldComments: BaiduAppFieldComment = {
+  const field_comments: BaiduAppFieldComment = {
     id: "ID",
     lbl: "应用名称",
     appid: "AppID",
@@ -573,7 +588,8 @@ export async function getFieldCommentsBaiduApp(): Promise<BaiduAppFieldComment> 
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueBaiduApp
@@ -585,7 +601,7 @@ export async function findByUniqueBaiduApp(
   },
 ): Promise<BaiduAppModel[]> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "findByUniqueBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -691,7 +707,7 @@ export async function checkByUniqueBaiduApp(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 百度应用 已经存在");
+      throw new UniqueException("百度应用 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: BaiduAppId = await updateByIdBaiduApp(
@@ -721,7 +737,7 @@ export async function findOneBaiduApp(
   },
 ): Promise<BaiduAppModel | undefined> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "findOneBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -769,7 +785,7 @@ export async function findOneOkBaiduApp(
   },
 ): Promise<BaiduAppModel> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "findOneOkBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -821,7 +837,7 @@ export async function findByIdBaiduApp(
   },
 ): Promise<BaiduAppModel | undefined> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "findByIdBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -863,7 +879,7 @@ export async function findByIdOkBaiduApp(
   },
 ): Promise<BaiduAppModel> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "findByIdOkBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -904,7 +920,7 @@ export async function findByIdsBaiduApp(
   },
 ): Promise<BaiduAppModel[]> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "findByIdsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -951,7 +967,7 @@ export async function findByIdsOkBaiduApp(
   },
 ): Promise<BaiduAppModel[]> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "findByIdsOkBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1000,7 +1016,7 @@ export async function existBaiduApp(
   },
 ): Promise<boolean> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "existBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1032,7 +1048,7 @@ export async function existByIdBaiduApp(
   },
 ) {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "existByIdBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1182,7 +1198,7 @@ export async function createReturnBaiduApp(
   },
 ): Promise<BaiduAppModel> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "createReturnBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1233,7 +1249,7 @@ export async function createBaiduApp(
   },
 ): Promise<BaiduAppId> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "createBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1274,7 +1290,7 @@ export async function createsReturnBaiduApp(
   },
 ): Promise<BaiduAppModel[]> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "createsReturnBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1311,7 +1327,7 @@ export async function createsBaiduApp(
   },
 ): Promise<BaiduAppId[]> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "createsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1348,7 +1364,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1578,7 +1594,7 @@ export async function updateTenantByIdBaiduApp(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "updateTenantByIdBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1626,7 +1642,7 @@ export async function updateByIdBaiduApp(
   },
 ): Promise<BaiduAppId> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "updateByIdBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1670,7 +1686,7 @@ export async function updateByIdBaiduApp(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 百度应用 已经存在";
+        throw "百度应用 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1680,7 +1696,12 @@ export async function updateByIdBaiduApp(
   const oldModel = await findByIdBaiduApp(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 百度应用 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 百度应用 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1819,7 +1840,14 @@ export async function updateByIdBaiduApp(
     await delCacheBaiduApp();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1834,6 +1862,36 @@ export async function updateByIdBaiduApp(
   return id;
 }
 
+// MARK: updateByIdBaiduApp
+/** 根据 id 更新百度应用, 并返回更新后的数据 */
+export async function updateByIdReturnBaiduApp(
+  id: BaiduAppId,
+  input: BaiduAppInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<BaiduAppModel> {
+  
+  await updateByIdBaiduApp(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdBaiduApp(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`百度应用 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsBaiduApp
 /** 根据 ids 删除 百度应用 */
 export async function deleteByIdsBaiduApp(
@@ -1845,7 +1903,7 @@ export async function deleteByIdsBaiduApp(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "deleteByIdsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1868,6 +1926,8 @@ export async function deleteByIdsBaiduApp(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheBaiduApp();
   
@@ -1903,7 +1963,13 @@ export async function deleteByIdsBaiduApp(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1943,7 +2009,7 @@ export async function enableByIdsBaiduApp(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "enableByIdsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2013,7 +2079,7 @@ export async function lockByIdsBaiduApp(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "lockByIdsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2038,11 +2104,19 @@ export async function lockByIdsBaiduApp(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheBaiduApp();
   
   const args = new QueryArgs();
   let sql = `update baidu_baidu_app set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheBaiduApp();
@@ -2059,7 +2133,7 @@ export async function revertByIdsBaiduApp(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "revertByIdsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2113,7 +2187,7 @@ export async function revertByIdsBaiduApp(
         if (model.id === id) {
           continue;
         }
-        throw "此 百度应用 已经存在";
+        throw "百度应用 重复";
       }
     }
     const args = new QueryArgs();
@@ -2137,7 +2211,7 @@ export async function forceDeleteByIdsBaiduApp(
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "forceDeleteByIdsBaiduApp";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2159,6 +2233,8 @@ export async function forceDeleteByIdsBaiduApp(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheBaiduApp();
   
@@ -2190,18 +2266,22 @@ export async function forceDeleteByIdsBaiduApp(
 // MARK: findLastOrderByBaiduApp
 /** 查找 百度应用 order_by 字段的最大值 */
 export async function findLastOrderByBaiduApp(
+  search?: Readonly<BaiduAppSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "baidu_baidu_app";
+  const table = getTableNameBaiduApp();
   const method = "findLastOrderByBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2210,24 +2290,29 @@ export async function findLastOrderByBaiduApp(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from baidu_baidu_app t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from baidu_baidu_app t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

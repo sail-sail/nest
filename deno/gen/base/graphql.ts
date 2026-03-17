@@ -1,4 +1,3 @@
-import "/gen/base/background_task/background_task.graphql.ts";
 import "/gen/base/data_permit/data_permit.graphql.ts";
 import "/gen/base/dept/dept.graphql.ts";
 import "/gen/base/dict/dict.graphql.ts";

@@ -175,7 +175,7 @@ export async function getMysqlPool(
     const username = await getEnv(database_username_key);
     const password = await getEnv(database_password_key);
     const db = await getEnv(database_database_key);
-    const charset = (await getEnv(database_charset_key)) || "utf8mb4_0900_as_cs";
+    const charset = await getEnv(database_charset_key);
     const poolSize = Number(await getEnv(database_pool_size_key)) || 0;
     const socketPath = await getEnv(database_socketpath_key);
     const timezone = await getEnv(database_timezone_key);

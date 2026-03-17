@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/baidu/baidu_app";
+export function getPagePathBaiduApp() {
+  return "/baidu/baidu_app";
+}
+
+export function getTableNameBaiduApp() {
+  return "baidu_baidu_app";
+}
 
 declare const baiduAppId: unique symbol;
 

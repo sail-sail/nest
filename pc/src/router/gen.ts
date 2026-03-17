@@ -18,21 +18,6 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: "/base/background_task",
-    component: Layout1,
-    children: [
-      {
-        path: "",
-        name: "后台任务",
-        component: () => import("@/views/base/background_task/List.vue"),
-        props: (route) => route.query,
-        meta: {
-          name: "后台任务",
-        },
-      },
-    ],
-  },
-  {
     path: "/base/data_permit",
     component: Layout1,
     children: [

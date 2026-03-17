@@ -93,7 +93,7 @@
     "svgo": "4.0.1",
     "tmui-cli": "1.3.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.57.0",
+    "typescript-eslint": "8.57.1",
     "unocss": "66.6.6",
     "unocss-applet": "0.12.2",
     "unplugin-auto-import": "21.0.0",
@@ -104,7 +104,7 @@
     "vite-plugin-vue-inspector": "5.4.0",
     "vitest": "4.1.0",
     "vue-router": "5.0.3",
-    "vue-tsc": "3.2.5"
+    "vue-tsc": "3.2.6"
   },
   "pnpm": {
     "overrides": {

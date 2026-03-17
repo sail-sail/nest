@@ -161,7 +161,7 @@ type Query {
   "根据 ids 查找百度应用"
   findByIdsBaiduApp(ids: [BaiduAppId!]!): [BaiduAppModel]!
   "查找百度应用 order_by 字段的最大值"
-  findLastOrderByBaiduApp: Int!
+  findLastOrderByBaiduApp(search: BaiduAppSearch): Int!
 }
 type Mutation {
   "批量创建百度应用"

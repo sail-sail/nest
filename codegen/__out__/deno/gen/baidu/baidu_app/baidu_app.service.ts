@@ -291,7 +291,10 @@ export async function getFieldCommentsBaiduApp(): Promise<BaiduAppFieldComment> 
  * 查找 百度应用 order_by 字段的最大值
  */
 export async function findLastOrderByBaiduApp(
+  search?: BaiduAppSearch,
 ): Promise<number> {
-  const baidu_app_sort = await baidu_appDao.findLastOrderByBaiduApp();
-  return baidu_app_sort;
+  
+  const order_by = await baidu_appDao.findLastOrderByBaiduApp(search);
+  
+  return order_by;
 }

@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./baidu_app.model.ts";
-
 /**
  * 根据条件查找百度应用总数
  */
@@ -188,11 +184,15 @@ export async function createsBaiduApp(
     createsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduApp(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdBaiduApp(
     updateByIdBaiduApp,
   } = await import("./baidu_app.service.ts");
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblBaiduApp(input);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduApp(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsBaiduApp(
     deleteByIdsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduApp(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsBaiduApp(
     throw new Error(`enableByIdsBaiduApp.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduApp(),
     "edit",
   );
   const res = await enableByIdsBaiduApp(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsBaiduApp(
     throw new Error(`lockByIdsBaiduApp.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduApp(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsBaiduApp(
     revertByIdsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduApp(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsBaiduApp(
     forceDeleteByIdsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
+  const {
+    getPagePathBaiduApp,
+  } = await import("./baidu_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduApp(),
     "force_delete",
   );
   
@@ -366,13 +390,15 @@ export async function forceDeleteByIdsBaiduApp(
 /**
  * 查找 百度应用 order_by 字段的最大值
  */
-export async function findLastOrderByBaiduApp(): Promise<number> {
+export async function findLastOrderByBaiduApp(
+  search?: BaiduAppSearch,
+): Promise<number> {
   
   const {
     findLastOrderByBaiduApp,
   } = await import("./baidu_app.service.ts");
   
-  const res = findLastOrderByBaiduApp();
+  const order_by = findLastOrderByBaiduApp(search);
   
-  return res;
+  return order_by;
 }

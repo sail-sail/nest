@@ -14,12 +14,6 @@ export function getScalars() {
       "output": "BaiduAppTokenId",
     },
     
-    // 后台任务
-    "BackgroundTaskId": {
-      "input": "BackgroundTaskId",
-      "output": "BackgroundTaskId",
-    },
-    
     // 数据权限
     "DataPermitId": {
       "input": "DataPermitId",

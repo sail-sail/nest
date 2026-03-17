@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./baidu_app_token.model.ts";
-
 /**
  * 根据条件查找百度接口凭据总数
  */
@@ -188,11 +184,15 @@ export async function createsBaiduAppToken(
     createsBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduAppToken(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdBaiduAppToken(
     updateByIdBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblBaiduAppToken(input);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduAppToken(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsBaiduAppToken(
     deleteByIdsBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduAppToken(),
     "delete",
   );
   
@@ -273,10 +281,14 @@ export async function revertByIdsBaiduAppToken(
     revertByIdsBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduAppToken(),
     "delete",
   );
   
@@ -296,10 +308,14 @@ export async function forceDeleteByIdsBaiduAppToken(
     forceDeleteByIdsBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
+  const {
+    getPagePathBaiduAppToken,
+  } = await import("./baidu_app_token.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathBaiduAppToken(),
     "force_delete",
   );
   
