@@ -62,6 +62,7 @@ if (hasAudit) {
 }
 
 const hasSummary = columns.some((column) => column.showSummary);
+const is_with_auth_optional = opts.is_with_auth_optional;
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -119,8 +120,15 @@ impl <#=tableUP#>GenQuery {
     sort: Option<Vec<SortInput>>,
   ) -> Result<Vec<<#=tableUP#>Model>> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::find_all_<#=table#>(
@@ -141,8 +149,15 @@ impl <#=tableUP#>GenQuery {
     search: Option<<#=tableUP#>Search>,
   ) -> Result<u64> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::find_count_<#=table#>(
@@ -163,8 +178,15 @@ impl <#=tableUP#>GenQuery {
     sort: Option<Vec<SortInput>>,
   ) -> Result<Option<<#=tableUP#>Model>> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::find_one_<#=table#>(
@@ -186,8 +208,15 @@ impl <#=tableUP#>GenQuery {
     sort: Option<Vec<SortInput>>,
   ) -> Result<<#=tableUP#>Model> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::find_one_ok_<#=table#>(
@@ -207,8 +236,15 @@ impl <#=tableUP#>GenQuery {
     id: <#=Table_Up#>Id,
   ) -> Result<Option<<#=tableUP#>Model>> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::find_by_id_<#=table#>(
@@ -227,8 +263,15 @@ impl <#=tableUP#>GenQuery {
     id: <#=Table_Up#>Id,
   ) -> Result<<#=tableUP#>Model> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::find_by_id_ok_<#=table#>(
@@ -247,8 +290,15 @@ impl <#=tableUP#>GenQuery {
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<Vec<<#=tableUP#>Model>> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::find_by_ids_<#=table#>(
@@ -267,8 +317,15 @@ impl <#=tableUP#>GenQuery {
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<Vec<<#=tableUP#>Model>> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::find_by_ids_ok_<#=table#>(
@@ -289,8 +346,15 @@ impl <#=tableUP#>GenQuery {
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<Vec<u8>> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::get_editable_data_permits_by_ids_<#=table#>(
@@ -314,8 +378,15 @@ impl <#=tableUP#>GenQuery {
     id: <#=Table_Up#>Id,
   ) -> Result<bool> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::get_is_enabled_by_id_<#=table#>(
@@ -340,8 +411,15 @@ impl <#=tableUP#>GenQuery {
     id: <#=Table_Up#>Id,
   ) -> Result<bool> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::get_is_locked_by_id_<#=table#>(
@@ -380,8 +458,15 @@ impl <#=tableUP#>GenQuery {
     search: Option<<#=tableUP#>Search>,
   ) -> Result<<#=Table_Up#>Summary> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::find_summary_<#=table#>(
@@ -404,8 +489,15 @@ impl <#=tableUP#>GenQuery {
     search: Option<<#=tableUP#>Search>,
   ) -> Result<u32> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .build()
       .scope({
         <#=table#>_resolver::find_last_order_by_<#=table#>(
@@ -460,8 +552,15 @@ impl <#=tableUP#>GenMutation {<#
       options = options.set_unique_type(unique_type);
     }
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .with_creating(Some(true))
       .build()
@@ -488,8 +587,15 @@ impl <#=tableUP#>GenMutation {<#
     tenant_id: TenantId,
   ) -> Result<u64> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
@@ -516,8 +622,15 @@ impl <#=tableUP#>GenMutation {<#
     input: <#=tableUP#>Input,
   ) -> Result<<#=Table_Up#>Id> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
@@ -542,8 +655,15 @@ impl <#=tableUP#>GenMutation {<#
     id: <#=Table_Up#>Id,
   ) -> Result<bool> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
@@ -563,8 +683,15 @@ impl <#=tableUP#>GenMutation {<#
     id: <#=Table_Up#>Id,
   ) -> Result<bool> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
@@ -586,8 +713,15 @@ impl <#=tableUP#>GenMutation {<#
     input: <#=auditTable_Up#>Input,
   ) -> Result<bool> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
@@ -610,8 +744,15 @@ impl <#=tableUP#>GenMutation {<#
     id: <#=Table_Up#>Id,
   ) -> Result<bool> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
@@ -637,8 +778,15 @@ impl <#=tableUP#>GenMutation {<#
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<u64> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
@@ -662,8 +810,15 @@ impl <#=tableUP#>GenMutation {<#
     id: <#=Table_Up#>Id,
   ) -> Result<u64> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
@@ -689,8 +844,15 @@ impl <#=tableUP#>GenMutation {<#
     is_enabled: u8,
   ) -> Result<u64> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
@@ -717,8 +879,15 @@ impl <#=tableUP#>GenMutation {<#
     is_locked: u8,
   ) -> Result<u64> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
@@ -745,8 +914,15 @@ impl <#=tableUP#>GenMutation {<#
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<u64> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
@@ -770,8 +946,15 @@ impl <#=tableUP#>GenMutation {<#
     ids: Vec<<#=Table_Up#>Id>,
   ) -> Result<u64> {
     
-    Ctx::builder(ctx)
-      .with_auth()?
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
       .with_tran()
       .build()
       .scope({
