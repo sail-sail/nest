@@ -23,7 +23,7 @@ export async function setLblByIdLang(
 }
 
 export function intoInputLang(
-  model?: LangInput,
+  model?: LangInput | null,
 ) {
   const input: LangInput = {
     // ID

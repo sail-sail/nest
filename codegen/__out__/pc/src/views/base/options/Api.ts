@@ -23,7 +23,7 @@ export async function setLblByIdOptions(
 }
 
 export function intoInputOptions(
-  model?: OptionsInput,
+  model?: OptionsInput | null,
 ) {
   const input: OptionsInput = {
     // ID

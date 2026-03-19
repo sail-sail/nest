@@ -31,7 +31,7 @@ export async function setLblByIdIcon(
 }
 
 export function intoInputIcon(
-  model?: IconInput,
+  model?: IconInput | null,
 ) {
   const input: IconInput = {
     // ID

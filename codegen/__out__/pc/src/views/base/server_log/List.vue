@@ -529,7 +529,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<ServerLogSearch>(initSearch());
 
 // 日志日期
 const log_date_search = $computed({

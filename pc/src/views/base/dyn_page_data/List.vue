@@ -694,7 +694,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<DynPageDataSearch>(initSearch());
 
 /** 回收站 */
 async function onRecycle() {

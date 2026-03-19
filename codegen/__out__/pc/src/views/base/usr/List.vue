@@ -981,7 +981,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<UsrSearch>(initSearch());
 
 // 所属角色
 const role_ids_search = $computed({

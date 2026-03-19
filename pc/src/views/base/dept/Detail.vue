@@ -327,7 +327,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: DeptInput = $ref({
+let dialogModel = $ref<DeptInput>({
   usr_ids: [ ],
 } as DeptInput);
 

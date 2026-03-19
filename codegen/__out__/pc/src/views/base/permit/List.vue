@@ -504,7 +504,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<PermitSearch>(initSearch());
 
 // 菜单
 const menu_id_search = $computed({

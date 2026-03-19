@@ -2838,8 +2838,7 @@ for (let i = 0; i < columns.length; i++) {
                     if (column.isTextarea) {
                     #>
                     type="textarea"
-                    :autosize="{ minRows: 2, maxRows: 5 }"
-                    @keyup.enter.stop<#
+                    :autosize="{ minRows: 2, maxRows: 5 }"<#
                     }
                     #><#
                     if (isUseI18n) {
@@ -2879,6 +2878,7 @@ for (let i = 0; i < columns.length; i++) {
                     :title="cron_lbl"<#
                     }
                     #>
+                    @keyup.enter.stop
                   ></CustomInput><#
                   }
                   #>
@@ -4133,11 +4133,8 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "id") continue;
   if (column_name === "tenant_id") continue;
   let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
+  let column_type = column.COLUMN_TYPE || "";
+  const column_comment = column.COLUMN_COMMENT || "";
   const foreignKey = column.foreignKey;
   if (!foreignKey) continue;
   if (foreignKey.showType === "dialog") {
@@ -4170,6 +4167,71 @@ import {
 } from "@/views/<#=foreignKey.mod#>/<#=foreignKey.table#>/Api.ts";<#
 }
 #><#
+for (const inlineForeignTab of inlineForeignTabs) {
+  const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+  const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+  const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
+  const table = inlineForeignTab.table;
+  const mod = inlineForeignTab.mod;
+  if (!inlineForeignSchema) {
+    throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
+    process.exit(1);
+  }
+  const opts = inlineForeignSchema.opts;
+  const inline_column_name = inlineForeignTab.column_name;
+  const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noDetail) continue;
+  if (column.isAtt) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "is_locked") continue;
+  if (column_name === "version") continue;
+  if (column_name === "order_by") continue;
+  if (column_name === "tenant_id") continue;
+  const data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE || "";
+  const column_comment = column.COLUMN_COMMENT || "";
+  let require = column.require;
+  const foreignKey = column.foreignKey;
+  if (!foreignKey) continue;
+  if (foreignKey.showType === "dialog") {
+    continue;
+  }
+  if (column.noAdd && column.noEdit) {
+    continue;
+  }
+  if (column.inlineMany2manyTab) {
+    continue;
+  }
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  if (foreignSchema && foreignSchema.opts?.list_tree) {
+    continue;
+  }
+  if (foreignKey.selectType !== "select" && foreignKey.selectType != null) {
+    continue;
+  }
+  if (foreignTableFindByIdsArr.includes(foreignTable)) continue;
+  foreignTableFindByIdsArr.push(foreignTable);
+#>
+
+import {
+  findByIds<#=Foreign_Table_Up#>,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignKey.table#>/Api.ts";<#
+}
+#><#
+}
+#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -4177,11 +4239,8 @@ for (let i = 0; i < columns.length; i++) {
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
+  let column_type = column.COLUMN_TYPE || "";
+  const column_comment = column.COLUMN_COMMENT || "";
   if (column.noAdd && column.noEdit) {
     continue;
   }
@@ -4274,7 +4333,7 @@ import {<#
   findAll<#=foreign_Table_Up#>,<#
   }
   #>
-} from "@/views/<#=foreign_mod#>/<#=foreign_table#>/Api";<#
+} from "@/views/<#=foreign_mod#>/<#=foreign_table#>/Api.ts";<#
  }
 #><#
   if (!listVueTableUps.includes(Table_Up)) {
@@ -4300,7 +4359,7 @@ import {<#
   getDefaultInput<#=Table_Up#>,<#
   }
   #>
-} from "@/views/<#=mod#>/<#=table#>/Api";<#
+} from "@/views/<#=mod#>/<#=table#>/Api.ts";<#
   }
 #><#
 }
@@ -4433,7 +4492,7 @@ import {<#
     }
   }
   #>
-} from "./Api";<#
+} from "./Api.ts";<#
 }
 #><#
 for (const inlineForeignTab of inlineForeignTabs) {
@@ -4533,7 +4592,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 
 import {
   getDefaultInput<#=Table_Up#>,
-} from "@/views/<#=mod#>/<#=table#>/Api";<#
+} from "@/views/<#=mod#>/<#=table#>/Api.ts";<#
 }
 #><#
 if (opts?.isRealData) {
@@ -4702,7 +4761,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: <#=inputName#> = $ref({<#
+let dialogModel = $ref<<#=inputName#>>({<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -7669,7 +7728,9 @@ async function <#=inline_column_name#>Add() {
   }
   const defaultModel = await getDefaultInput<#=Table_Up#>();
   dialogModel.<#=inline_column_name#>.push(defaultModel);
-  <#=inline_column_name#>Ref?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  nextTick(() => {
+    <#=inline_column_name#>Ref?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  });
 }
 
 function <#=inline_column_name#>Remove(row: <#=Table_Up#>Model) {
