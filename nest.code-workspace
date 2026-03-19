@@ -85,6 +85,9 @@
       "cargo check": true,
       "Tee-Object": true,
       "ForEach-Object": true
-    }
+    },
+    "git.closeDiffOnOperation": true,
+    "git.alwaysShowStagedChangesResourceGroup": false,
+    "git.enableSmartCommit": true
   }
 }

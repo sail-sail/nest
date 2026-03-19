@@ -211,6 +211,7 @@ if (right_field && !right_field_column) {
         const require = column.require;
         const readonly = column.readonly;
         const readonlyPlaceholder = column.readonlyPlaceholder || "";
+        const placeholderInForm = column.placeholderInForm;
         const foreignKey = column.foreignKey;
         if (foreignKey && foreignKey.showType === "dialog") {
           continue;
@@ -251,8 +252,15 @@ if (right_field && !right_field_column) {
             #>
             v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
             }
+            #><#
+            if (placeholderInForm) {
             #>
-            placeholder="请选择 <#=column_comment#>"
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             :method="getList<#=Foreign_Table_Up#>"<#
             if (foreignKey.multiple) {
             #>
@@ -290,8 +298,15 @@ if (right_field && !right_field_column) {
           #>
         >
           <CustomDate
-            v-model="<#=table#>_input.<#=column_name#>"
+            v-model="<#=table#>_input.<#=column_name#>"<#
+            if (placeholderInForm) {
+            #>
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
             placeholder="请选择 <#=column_comment#>"<#
+            }
+            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -328,8 +343,15 @@ if (right_field && !right_field_column) {
             #>
             v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
             }
+            #><#
+            if (placeholderInForm) {
             #>
-            placeholder="请选择 <#=column_comment#>"
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             code="<#=column.dict#>"<#
             if (readonlyPlaceholder) {
             #>
@@ -367,8 +389,15 @@ if (right_field && !right_field_column) {
             #>
             v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
             }
+            #><#
+            if (placeholderInForm) {
             #>
-            placeholder="请选择 <#=column_comment#>"
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             code="<#=column.dictbiz#>"<#
             if (readonlyPlaceholder) {
             #>
@@ -405,8 +434,15 @@ if (right_field && !right_field_column) {
         >
           <CustomInput
             v-model="<#=table#>_input.<#=column_name#>"
-            type="number"
+            type="number"<#
+            if (placeholderInForm) {
+            #>
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
             placeholder="请输入 <#=column_comment#>"<#
+            }
+            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -439,8 +475,15 @@ if (right_field && !right_field_column) {
         >
           <CustomInput
             v-model="<#=table#>_input.<#=column_name#>"
-            type="decimal"
+            type="decimal"<#
+            if (placeholderInForm) {
+            #>
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
             placeholder="请输入 <#=column_comment#>"<#
+            }
+            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -478,8 +521,15 @@ if (right_field && !right_field_column) {
             type="textarea"
             height="120"<#
             }
+            #><#
+            if (placeholderInForm) {
+            #>
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
             #>
             placeholder="请输入 <#=column_comment#>"<#
+            }
+            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#

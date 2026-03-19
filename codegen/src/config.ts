@@ -636,6 +636,11 @@ export interface TableCloumn {
   isMonth?: boolean,
   
   /**
+   * 占位符, 默认为: 请输入 + 字段注释
+   */
+  placeholderInForm?: string;
+  
+  /**
    * 不允许修改, 不允许增加, 不在导入模板中显示, 默认为false
    */
   readonly?: boolean,
