@@ -27,7 +27,7 @@ export async function setLblByIdTenant(
 }
 
 export function intoInputTenant(
-  model?: TenantInput,
+  model?: TenantInput | null,
 ) {
   const input: TenantInput = {
     // ID

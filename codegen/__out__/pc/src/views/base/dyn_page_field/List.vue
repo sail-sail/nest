@@ -871,7 +871,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<DynPageFieldSearch>(initSearch());
 
 // 动态页面
 const dyn_page_id_search = $computed({
