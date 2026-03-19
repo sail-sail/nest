@@ -313,7 +313,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: CronJobInput = $ref({
+let dialogModel = $ref<CronJobInput>({
 } as CronJobInput);
 
 let cron_job_model = $ref<CronJobModel>();

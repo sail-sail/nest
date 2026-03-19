@@ -693,7 +693,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<CronJobLogSearch>(initSearch());
 
 // 定时任务
 const cron_job_id_search = $computed({

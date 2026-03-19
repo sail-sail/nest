@@ -614,7 +614,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<CronJobLogDetailSearch>(initSearch());
 
 // 创建时间
 const create_time_search = $computed({

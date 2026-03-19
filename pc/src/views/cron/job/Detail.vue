@@ -263,7 +263,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: JobInput = $ref({
+let dialogModel = $ref<JobInput>({
 } as JobInput);
 
 let job_model = $ref<JobModel>();

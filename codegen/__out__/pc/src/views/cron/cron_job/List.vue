@@ -864,7 +864,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<CronJobSearch>(initSearch());
 
 // 任务
 const job_id_search = $computed({
