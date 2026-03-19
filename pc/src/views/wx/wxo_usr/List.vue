@@ -802,7 +802,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<WxoUsrSearch>(initSearch());
 
 // 绑定用户
 const usr_id_search = $computed({

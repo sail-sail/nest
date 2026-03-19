@@ -23,7 +23,7 @@ export async function setLblByIdWxPay(
 }
 
 export function intoInputWxPay(
-  model?: WxPayInput,
+  model?: WxPayInput | null,
 ) {
   const input: WxPayInput = {
     // ID

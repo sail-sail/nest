@@ -24,7 +24,7 @@ export async function setLblByIdWxRefundNotice(
 }
 
 export function intoInputWxRefundNotice(
-  model?: WxRefundNoticeInput,
+  model?: WxRefundNoticeInput | null,
 ) {
   const input: WxRefundNoticeInput = {
     // ID

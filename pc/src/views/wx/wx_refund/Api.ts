@@ -27,7 +27,7 @@ export async function setLblByIdWxRefund(
 }
 
 export function intoInputWxRefund(
-  model?: WxRefundInput,
+  model?: WxRefundInput | null,
 ) {
   const input: WxRefundInput = {
     // ID

@@ -303,7 +303,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: WxAppInput = $ref({
+let dialogModel = $ref<WxAppInput>({
 } as WxAppInput);
 
 let wx_app_model = $ref<WxAppModel>();

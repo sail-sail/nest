@@ -758,7 +758,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<PayTransactionsJsapiSearch>(initSearch());
 
 // 交易状态
 const trade_state_search = $computed({

@@ -361,7 +361,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: WxoUsrInput = $ref({
+let dialogModel = $ref<WxoUsrInput>({
 } as WxoUsrInput);
 
 let wxo_usr_model = $ref<WxoUsrModel>();

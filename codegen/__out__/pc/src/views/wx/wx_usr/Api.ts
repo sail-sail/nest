@@ -31,7 +31,7 @@ export async function setLblByIdWxUsr(
 }
 
 export function intoInputWxUsr(
-  model?: WxUsrInput,
+  model?: WxUsrInput | null,
 ) {
   const input: WxUsrInput = {
     // ID

@@ -728,7 +728,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<WxPayNoticeSearch>(initSearch());
 
 // 支付完成时间
 const success_time_search = $computed({

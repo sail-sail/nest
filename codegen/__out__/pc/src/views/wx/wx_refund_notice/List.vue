@@ -740,7 +740,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<WxRefundNoticeSearch>(initSearch());
 
 // 退款状态
 const refund_status_search = $computed({

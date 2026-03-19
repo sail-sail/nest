@@ -28,7 +28,7 @@ export async function setLblByIdWxoApp(
 }
 
 export function intoInputWxoApp(
-  model?: WxoAppInput,
+  model?: WxoAppInput | null,
 ) {
   const input: WxoAppInput = {
     // ID

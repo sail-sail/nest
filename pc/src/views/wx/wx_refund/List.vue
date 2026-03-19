@@ -812,7 +812,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<WxRefundSearch>(initSearch());
 
 // 退款成功时间
 const success_time_search = $computed({

@@ -379,7 +379,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: PayTransactionsJsapiInput = $ref({
+let dialogModel = $ref<PayTransactionsJsapiInput>({
 } as PayTransactionsJsapiInput);
 
 let pay_transactions_jsapi_model = $ref<PayTransactionsJsapiModel>();

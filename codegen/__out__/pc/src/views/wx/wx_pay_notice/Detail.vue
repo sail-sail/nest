@@ -390,7 +390,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: WxPayNoticeInput = $ref({
+let dialogModel = $ref<WxPayNoticeInput>({
 } as WxPayNoticeInput);
 
 let wx_pay_notice_model = $ref<WxPayNoticeModel>();
