@@ -22,7 +22,7 @@ export async function setLblByIdMenu(
 }
 
 export function intoInputMenu(
-  model?: MenuInput,
+  model?: MenuInput | null,
 ) {
   const input: MenuInput = {
     // ID

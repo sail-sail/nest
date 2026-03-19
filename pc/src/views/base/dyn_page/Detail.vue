@@ -633,7 +633,7 @@ import {
 
 import {
   getDefaultInputDynPageField,
-} from "@/views/base/dyn_page_field/Api";
+} from "@/views/base/dyn_page_field/Api.ts";
 
 import AttrsDialog from "@/views/base/dyn_page_field/AttrsDialog.vue";
 
@@ -681,7 +681,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: DynPageInput = $ref({
+let dialogModel = $ref<DynPageInput>({
   role_ids: [ ],
 } as DynPageInput);
 
@@ -1206,7 +1206,9 @@ async function dyn_page_fieldAdd() {
   }
   const defaultModel = await getDefaultInputDynPageField();
   dialogModel.dyn_page_field.push(defaultModel);
-  dyn_page_fieldRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  nextTick(() => {
+    dyn_page_fieldRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  });
 }
 
 function dyn_page_fieldRemove(row: DynPageFieldModel) {
