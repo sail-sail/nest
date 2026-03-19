@@ -17,11 +17,6 @@ export default {
 };
 
 export interface TableCloumn {
-  /**
-   * Rust 字符串类型是否使用 SmolStr 代替 String
-   * 默认为 true
-   */
-  isSmolStrRust?: boolean;
   
   /**
    * 是否忽略生成代码
