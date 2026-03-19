@@ -255,7 +255,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: OperationRecordInput = $ref({
+let dialogModel = $ref<OperationRecordInput>({
 } as OperationRecordInput);
 
 let operation_record_model = $ref<OperationRecordModel>();

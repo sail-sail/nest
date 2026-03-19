@@ -88,7 +88,7 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "version") continue;
   const foreignKey = column.foreignKey;
   let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
+  let column_type = column.COLUMN_TYPE || "";
   if (!column_type) {
     continue;
   }
@@ -530,7 +530,7 @@ export async function setLblById<#=Table_Up#>(
     } else if (inline_foreign_type === "one2one") {
   #>
   // <#=inlineForeignTab.label#>
-  await setLblById<#=Table_Up#>(model.<#=inline_column_name#>);<#
+  await setLblById<#=Table_Up#>(model.<#=inline_column_name#> as <#=Table_Up#>Model);<#
     }
   #><#
   }
@@ -585,7 +585,7 @@ export async function setLblById<#=Table_Up#>(
 }
 
 export function intoInput<#=Table_Up#>(
-  model?: <#=inputName#>,
+  model?: <#=inputName#> | null,
 ) {
   const input: <#=inputName#> = {<#
     for (let i = 0; i < columns.length; i++) {
@@ -2107,8 +2107,8 @@ export async function getDefaultInput<#=Table_Up#>() {<#
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
-      const data_type = column.DATA_TYPE;
-      const column_type = column.COLUMN_TYPE;
+      const data_type = column.DATA_TYPE || "";
+      const column_type = column.COLUMN_TYPE || "";
       const column_comment = column.COLUMN_COMMENT || "";
       if (
         [
@@ -2168,9 +2168,9 @@ export async function getDefaultInput<#=Table_Up#>() {<#
           }
         } else if (defaultValue === "CURRENT_DATETIME") {
           defaultValue = `dayjs().format('${ valueFormat }')`;
-        } else if (defaultValue.startsWith("start_of_")) {
+        } else if (defaultValue?.startsWith("start_of_")) {
           defaultValue = `dayjs().startOf("${ defaultValue.substring("start_of_".length) }").format("${ valueFormat }")`;
-        } else if (defaultValue.startsWith("end_of_")) {
+        } else if (defaultValue?.startsWith("end_of_")) {
           defaultValue = `dayjs().endOf('${ defaultValue.substring("end_of_".length) }').format("${ valueFormat }")`;
         } else {
           defaultValue = `"${ defaultValue }"`;

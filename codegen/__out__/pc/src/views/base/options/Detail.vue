@@ -277,7 +277,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: OptionsInput = $ref({
+let dialogModel = $ref<OptionsInput>({
 } as OptionsInput);
 
 let options_model = $ref<OptionsModel>();

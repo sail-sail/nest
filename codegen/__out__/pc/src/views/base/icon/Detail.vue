@@ -280,7 +280,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: IconInput = $ref({
+let dialogModel = $ref<IconInput>({
 } as IconInput);
 
 let icon_model = $ref<IconModel>();

@@ -269,7 +269,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: DynPageDataInput = $ref({
+let dialogModel = $ref<DynPageDataInput>({
   dyn_page_data: { },
 } as DynPageDataInput);
 
