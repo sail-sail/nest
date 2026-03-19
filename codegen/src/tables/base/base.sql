@@ -24,8 +24,8 @@ CREATE TABLE if not exists `base_tenant` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lbl`, `is_deleted`),
-  INDEX (`order_by`, `is_deleted`),
+  INDEX (`is_deleted`, `lbl`),
+  INDEX (`is_deleted`, `order_by`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='租户';
 
@@ -49,7 +49,7 @@ CREATE TABLE if not exists `base_domain` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lbl`, `is_deleted`),
+  INDEX (`is_deleted`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='域名';
 
@@ -66,7 +66,7 @@ CREATE TABLE if not exists `base_tenant_domain` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`tenant_id`, `domain_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `domain_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='租户域名';
 
@@ -83,7 +83,7 @@ CREATE TABLE if not exists `base_tenant_menu` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`tenant_id`, `menu_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `menu_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='租户菜单';
 
@@ -113,9 +113,9 @@ CREATE TABLE if not exists `base_usr` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lbl`, `tenant_id`, `is_deleted`),
-  INDEX (`username`, `tenant_id`, `is_deleted`),
-  INDEX (`username`, `password`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `lbl`),
+  INDEX (`tenant_id`, `is_deleted`, `username`),
+  INDEX (`tenant_id`, `is_deleted`, `username`, `password`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='用户';
 
@@ -138,7 +138,7 @@ CREATE TABLE if not exists `base_login_log` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`username`, `ip`, `create_time`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `username`, `ip`, `create_time`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='登录日志';
 
@@ -166,8 +166,8 @@ CREATE TABLE if not exists `base_role` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`code`, `tenant_id`, `is_deleted`),
-  INDEX (`lbl`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `code`),
+  INDEX (`tenant_id`, `is_deleted`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='角色';
 
@@ -185,7 +185,7 @@ CREATE TABLE if not exists `base_usr_role` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`usr_id`, `role_id`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `usr_id`, `role_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='用户角色';
 
@@ -203,7 +203,7 @@ CREATE TABLE if not exists `base_usr_dept` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`usr_id`, `dept_id`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `usr_id`, `dept_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='用户部门';
 
@@ -221,7 +221,7 @@ CREATE TABLE if not exists `base_usr_org` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`usr_id`, `org_id`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `usr_id`, `org_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='用户组织';
 
@@ -249,7 +249,7 @@ CREATE TABLE if not exists `base_menu` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`parent_id`, `lbl`, `is_deleted`),
+  INDEX (`is_deleted`, `parent_id`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='菜单';
 
@@ -274,8 +274,8 @@ CREATE TABLE if not exists `base_lang` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`code`, `is_deleted`),
-  INDEX (`lbl`, `is_deleted`),
+  INDEX (`is_deleted`, `code`),
+  INDEX (`is_deleted`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='语言';
 
@@ -298,7 +298,7 @@ CREATE TABLE if not exists `base_i18n` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lang_id`, `menu_id`, `code`, `is_deleted`),
+  INDEX (`is_deleted`, `lang_id`, `menu_id`, `code`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='国际化';
 
@@ -312,7 +312,7 @@ CREATE TABLE if not exists `base_permit` (
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `is_sys` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '系统记录,dict:is_sys',
-  INDEX (`menu_id`, `code`),
+  INDEX (`is_deleted`, `menu_id`, `code`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='按钮权限';
 
@@ -336,7 +336,7 @@ CREATE TABLE if not exists `base_data_permit` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`menu_id`, `scope`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `menu_id`, `scope`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='数据权限';
 
@@ -368,7 +368,7 @@ CREATE TABLE if not exists `base_role_menu` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`role_id`, `menu_id`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `role_id`, `menu_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='角色菜单';
 
@@ -386,7 +386,7 @@ CREATE TABLE if not exists `base_role_permit` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`role_id`, `permit_id`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `role_id`, `permit_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='角色按钮权限';
 
@@ -404,7 +404,7 @@ CREATE TABLE if not exists `base_role_data_permit` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`role_id`, `data_permit_id`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `role_id`, `data_permit_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='角色数据权限';
 
@@ -422,7 +422,7 @@ CREATE TABLE if not exists `base_role_field_permit` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`role_id`, `field_permit_id`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `role_id`, `field_permit_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='角色字段权限';
 
@@ -449,7 +449,7 @@ CREATE TABLE if not exists `base_options` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lbl`, `ky`, `is_deleted`),
+  INDEX (`is_deleted`, `lbl`, `ky`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='系统选项';
 
@@ -477,7 +477,7 @@ CREATE TABLE if not exists `base_optbiz` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lbl`, `ky`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `lbl`, `ky`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='业务选项';
 
@@ -556,7 +556,7 @@ CREATE TABLE if not exists `base_dept` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`parent_id`, `lbl`, `org_id`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `parent_id`, `lbl`, `org_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='部门';
 
@@ -574,7 +574,7 @@ CREATE TABLE if not exists `base_dept_usr` (
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`dept_id`, `usr_id`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `dept_id`, `usr_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='部门负责人';
 
@@ -600,8 +600,8 @@ CREATE TABLE if not exists `base_dict` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`code`, `is_deleted`),
-  INDEX (`lbl`, `is_deleted`),
+  INDEX (`is_deleted`, `code`),
+  INDEX (`is_deleted`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='系统字典';
 
@@ -653,8 +653,8 @@ CREATE TABLE if not exists `base_dictbiz` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`code`, `is_deleted`),
-  INDEX (`lbl`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `code`),
+  INDEX (`tenant_id`, `is_deleted`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='业务字典';
 
@@ -680,7 +680,7 @@ CREATE TABLE if not exists `base_dictbiz_detail` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`dictbiz_id`, `lbl`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `dictbiz_id`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='业务字典明细';
 
@@ -704,8 +704,8 @@ CREATE TABLE if not exists `base_icon` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`code`, `is_deleted`),
-  INDEX (`lbl`, `is_deleted`),
+  INDEX (`is_deleted`, `code`),
+  INDEX (`is_deleted`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='图标库';
 
@@ -730,8 +730,8 @@ CREATE TABLE if not exists `base_dyn_page` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`code`, `tenant_id`, `is_deleted`),
-  INDEX (`lbl`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `code`),
+  INDEX (`tenant_id`, `is_deleted`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='动态页面';
 
@@ -765,7 +765,7 @@ CREATE TABLE if not exists `base_dyn_page_field` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`dyn_page_id`, `lbl`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `dyn_page_id`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='动态页面字段';
 
@@ -788,7 +788,7 @@ CREATE TABLE if not exists `base_dyn_page_val` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`ref_code`, `ref_id`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `ref_code`, `ref_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='动态页面值';
 
@@ -808,7 +808,7 @@ CREATE TABLE if not exists `base_dyn_page_data` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`ref_code`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `ref_code`, `ref_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='动态页面数据';
 

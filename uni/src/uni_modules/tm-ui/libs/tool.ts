@@ -1,11 +1,11 @@
 import { getDefaultColor } from "./colors";
-
+import { type ComponentPublicInstance } from "vue"
 export const covetUniNumber = (n: number | string, defaultUnit = 'rpx'): string => {
     if (typeof n === 'number') {
         return `${n}${defaultUnit}`
     }
     let unit = getUnit(n, defaultUnit);
-    let zhi = n.match(/\d+(\.\d+)?/g);
+    let zhi = n.match(/[-+]?(?:\d+\.?\d*|\.\d+)/);
     let real = '0'
     if (zhi) {
         real = zhi[0]
@@ -167,4 +167,14 @@ export function deepClone<T>(data: T): T {
         }
     }
     return clone;
+}
+
+
+export function findParent<T = ComponentPublicInstance>(parent: ComponentPublicInstance|null,name:string): T|null {
+    if (parent == null) return null;
+    if (parent.$parent?.$options?.name == name) return parent.$parent as T;
+    if (parent.$parent == null) return null;
+    let parents = findParent(parent.$parent,name);
+    if (parents?.$options?.name == name) return parents as T;
+    return null;
 }
