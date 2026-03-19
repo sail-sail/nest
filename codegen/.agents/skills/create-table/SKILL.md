@@ -94,6 +94,8 @@ description: 数据库建表规范。创建新表时必须遵循
 `code` varchar(45) NOT NULL DEFAULT '' COMMENT '编码',
 ```
 
+- 当没有 `lbl` 字段时, 自动编码字段命名为 `lbl_seq` `lbl` 代替 `code_seq` `code`
+
 ## 外键
 
 ```sql

@@ -664,7 +664,7 @@ export async function gitDiffOut() {
   // 覆盖xlsx文件
   // await copyXlsx(out);
   const diffFile = "__test__.diff";
-  const diffStr = `git diff --full-index ./* > ${projectPh}/${ diffFile }`;
+  const diffStr = `git diff --patience --full-index ./* > ${projectPh}/${ diffFile }`;
   // shelljs.cd(projectPh);
   // shelljs.exec(diffStr);
   
