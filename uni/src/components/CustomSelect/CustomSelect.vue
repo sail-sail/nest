@@ -147,6 +147,7 @@
     :title="props.placeholder || '请选择'"
     disabled-scroll
     show-close
+    custom-class="custom_select_drawer"
   >
     <view
       un-flex="~ [1_0_0] col"
@@ -173,6 +174,8 @@
             :style="{
               'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
             }"
+            un-cursor="pointer"
+            un-bg="hover:[rgba(0,0,0,0.04)]"
             @click="onSelect(item.value)"
           >
             
