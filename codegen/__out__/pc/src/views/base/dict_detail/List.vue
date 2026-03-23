@@ -816,7 +816,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<DictDetailSearch>(initSearch());
 
 // 系统字典
 const dict_id_search = $computed({

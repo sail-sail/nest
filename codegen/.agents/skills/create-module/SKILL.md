@@ -1,6 +1,6 @@
 ---
 name: create-module
-description: 创建新业务模块(如 ec、crm)时使用。定义模块级目录结构和注册流程，非单表配置
+description: 创建新业务模块时使用
 ---
 
 # 创建模块

@@ -383,7 +383,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: TenantInput = $ref({
+let dialogModel = $ref<TenantInput>({
   domain_ids: [ ],
   menu_ids: [ ],
 } as TenantInput);

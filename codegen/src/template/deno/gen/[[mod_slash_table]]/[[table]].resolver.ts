@@ -59,11 +59,17 @@ if (hasAudit) {
   auditModelLabel = auditTableIdColumn.modelLabel;
 }
 
+const is_with_auth_optional = opts.is_with_auth_optional;
 #>import {
   set_is_tran,<#
   if (opts.noAdd !== true) {
   #>
   set_is_creating,<#
+  }
+  #><#
+  if (is_with_auth_optional) {
+  #>
+  setNotVerifyToken,<#
   }
   #>
 } from "/lib/context.ts";
@@ -121,6 +127,12 @@ export async function findCount<#=Table_Up2#>(
   const {
     findCount<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #><#
   if (hasIsHidden) {
   #>
   
@@ -146,6 +158,12 @@ export async function findAll<#=Table_Up2#>(
   const {
     findAll<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #><#
   if (hasIsHidden) {
   #>
   
@@ -197,7 +215,13 @@ export async function getFieldComments<#=Table_Up2#>(): Promise<<#=fieldCommentN
   
   const {
     getFieldComments<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   const field_comment = await getFieldComments<#=Table_Up2#>();
   
@@ -215,7 +239,13 @@ export async function findSummary<#=Table_Up2#>(
   
   const {
     findSummary<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   const res = await findSummary<#=Table_Up2#>(search);
   
@@ -235,6 +265,12 @@ export async function findOne<#=Table_Up2#>(
   const {
     findOne<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #><#
   if (hasIsHidden) {
   #>
   
@@ -286,6 +322,12 @@ export async function findOneOk<#=Table_Up2#>(
   const {
     findOneOk<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #><#
   if (hasIsHidden) {
   #>
   
@@ -333,7 +375,13 @@ export async function findById<#=Table_Up2#>(
   
   const {
     findById<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   const model = await findById<#=Table_Up2#>(id);<#
   for (let i = 0; i < columns.length; i++) {
@@ -374,7 +422,13 @@ export async function findByIdOk<#=Table_Up2#>(
   
   const {
     findByIdOk<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   const model = await findByIdOk<#=Table_Up2#>(id);<#
   for (let i = 0; i < columns.length; i++) {
@@ -413,7 +467,13 @@ export async function findByIds<#=Table_Up2#>(
   
   const {
     findByIds<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   const models = await findByIds<#=Table_Up2#>(ids);<#
   if (hasPassword) {
@@ -458,7 +518,13 @@ export async function findByIdsOk<#=Table_Up2#>(
   
   const {
     findByIdsOk<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   const models = await findByIdsOk<#=Table_Up2#>(ids);<#
   if (hasPassword) {
@@ -512,7 +578,13 @@ export async function creates<#=Table_Up2#>(
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   set_is_tran(true);
   set_is_creating(true);
@@ -592,7 +664,13 @@ export async function updateById<#=Table_Up2#>(
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   set_is_tran(true);
   
@@ -658,7 +736,13 @@ export async function auditSubmit<#=Table_Up2#>(
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   set_is_tran(true);
   
@@ -709,7 +793,13 @@ export async function auditPass<#=Table_Up2#>(
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   set_is_tran(true);
   
@@ -761,7 +851,13 @@ export async function auditReject<#=Table_Up2#>(
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   set_is_tran(true);
   
@@ -814,7 +910,13 @@ export async function auditReview<#=Table_Up2#>(
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   set_is_tran(true);
   
@@ -873,7 +975,13 @@ export async function deleteByIds<#=Table_Up2#>(
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   set_is_tran(true);
   
@@ -934,7 +1042,13 @@ export async function defaultById<#=Table_Up2#>(
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   set_is_tran(true);
   
@@ -987,7 +1101,13 @@ export async function enableByIds<#=Table_Up2#>(
   
   const {
     enableByIds<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIds<#=Table_Up#>.is_enabled expect 0 or 1 but got ${ is_enabled }`);
@@ -1055,7 +1175,13 @@ export async function lockByIds<#=Table_Up2#>(
   
   const {
     lockByIds<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIds<#=Table_Up2#>.is_locked expect 0 or 1 but got ${ is_locked }`);
@@ -1120,7 +1246,13 @@ export async function revertByIds<#=Table_Up2#>(
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   set_is_tran(true);
   
@@ -1177,7 +1309,13 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   
   const {
     getPagePath<#=Table_Up#>,
-  } = await import("./<#=table#>.model.ts");
+  } = await import("./<#=table#>.model.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   set_is_tran(true);
   
@@ -1235,7 +1373,13 @@ export async function getEditableDataPermitsByIds<#=Table_Up2#>(
   
   const {
     getEditableDataPermitsByIds<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   const data = await getEditableDataPermitsByIds<#=Table_Up2#>(ids);
   
@@ -1255,7 +1399,13 @@ export async function findLastOrderBy<#=Table_Up2#>(
   
   const {
     findLastOrderBy<#=Table_Up2#>,
-  } = await import("./<#=table#>.service.ts");
+  } = await import("./<#=table#>.service.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
   
   const order_by = findLastOrderBy<#=Table_Up2#>(search);
   

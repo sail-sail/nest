@@ -610,7 +610,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<OperationRecordSearch>(initSearch());
 
 // 操作时间
 const create_time_search = $computed({

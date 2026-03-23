@@ -32,7 +32,7 @@ export async function setLblByIdDataPermit(
 }
 
 export function intoInputDataPermit(
-  model?: DataPermitInput,
+  model?: DataPermitInput | null,
 ) {
   const input: DataPermitInput = {
     // ID

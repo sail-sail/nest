@@ -24,7 +24,7 @@ export async function setLblByIdDept(
 }
 
 export function intoInputDept(
-  model?: DeptInput,
+  model?: DeptInput | null,
 ) {
   const input: DeptInput = {
     // ID

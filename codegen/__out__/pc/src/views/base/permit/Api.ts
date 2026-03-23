@@ -27,7 +27,7 @@ export async function setLblByIdPermit(
 }
 
 export function intoInputPermit(
-  model?: PermitInput,
+  model?: PermitInput | null,
 ) {
   const input: PermitInput = {
     // ID

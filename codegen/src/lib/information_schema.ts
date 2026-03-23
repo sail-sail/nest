@@ -1015,11 +1015,8 @@ export async function getSchema(
     }
     if (record.isAtt || record.isImg) {
       if (!record.width) {
-        let column_comment = record.COLUMN_COMMENT || "";
-        if (column_comment.indexOf("[") !== -1) {
-          column_comment = column_comment.substring(0, column_comment.indexOf("["));
-        }
-        record.width = 16 + column_comment.length * 14;
+        const column_comment = record.COLUMN_COMMENT || "";
+        record.width = 16 + column_comment.length * 16;
       }
       if (!record.attMaxSize) {
         const COLUMN_TYPE = record.COLUMN_TYPE;

@@ -24,7 +24,7 @@ export async function setLblByIdLoginLog(
 }
 
 export function intoInputLoginLog(
-  model?: LoginLogInput,
+  model?: LoginLogInput | null,
 ) {
   const input: LoginLogInput = {
     // ID

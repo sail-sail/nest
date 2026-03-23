@@ -27,7 +27,7 @@ export async function setLblByIdDynPageField(
 }
 
 export function intoInputDynPageField(
-  model?: DynPageFieldInput,
+  model?: DynPageFieldInput | null,
 ) {
   const input: DynPageFieldInput = {
     // ID
