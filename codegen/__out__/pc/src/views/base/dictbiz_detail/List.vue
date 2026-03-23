@@ -816,7 +816,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<DictbizDetailSearch>(initSearch());
 
 // 业务字典
 const dictbiz_id_search = $computed({

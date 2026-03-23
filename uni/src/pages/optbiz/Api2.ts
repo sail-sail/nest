@@ -7,7 +7,7 @@ export async function getUniReleasing(
   opt?: GqlOpt,
 ) {
   const res: {
-    getUniReleasing: boolean;
+    getUniReleasing: Query["getUniReleasing"];
   } = await mutation({
     query: /* GraphQL */ `
       query {

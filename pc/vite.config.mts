@@ -199,6 +199,7 @@ export default defineConfig({
             "request",
             "getRequestUrl",
             "uploadFile",
+            "deleteFile",
             "getDownloadUrl",
             "downloadById",
             "getImgUrl",

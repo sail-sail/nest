@@ -557,6 +557,7 @@ onMounted(() => {
 });
 </script>
 <template>
+	<view>
 	<view @click="openShow">
 		<!--
 		 @slot 插槽,默认触发打开选择器。你的默认布局可以放置在这里。
@@ -572,6 +573,7 @@ onMounted(() => {
 		</view>
 		<tm-icon v-if="!yanchiDuration" size="42" color="error" spin name="loader-line"></tm-icon>
 	</tm-drawer>
+	</view>
 </template>
 <style scoped>
 .tmPickerDateWrap {

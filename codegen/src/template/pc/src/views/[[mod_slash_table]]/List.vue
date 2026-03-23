@@ -3314,7 +3314,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());<#
+let search = $ref<<#=searchName#>>(initSearch());<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;

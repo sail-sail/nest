@@ -211,6 +211,7 @@ if (right_field && !right_field_column) {
         const require = column.require;
         const readonly = column.readonly;
         const readonlyPlaceholder = column.readonlyPlaceholder || "";
+        const placeholderInForm = column.placeholderInForm;
         const foreignKey = column.foreignKey;
         if (foreignKey && foreignKey.showType === "dialog") {
           continue;
@@ -237,6 +238,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -251,8 +255,15 @@ if (right_field && !right_field_column) {
             #>
             v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
             }
+            #><#
+            if (placeholderInForm) {
             #>
-            placeholder="请选择 <#=column_comment#>"
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             :method="getList<#=Foreign_Table_Up#>"<#
             if (foreignKey.multiple) {
             #>
@@ -281,6 +292,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -290,8 +304,15 @@ if (right_field && !right_field_column) {
           #>
         >
           <CustomDate
-            v-model="<#=table#>_input.<#=column_name#>"
+            v-model="<#=table#>_input.<#=column_name#>"<#
+            if (placeholderInForm) {
+            #>
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
             placeholder="请选择 <#=column_comment#>"<#
+            }
+            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -314,6 +335,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -328,8 +352,15 @@ if (right_field && !right_field_column) {
             #>
             v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
             }
+            #><#
+            if (placeholderInForm) {
             #>
-            placeholder="请选择 <#=column_comment#>"
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             code="<#=column.dict#>"<#
             if (readonlyPlaceholder) {
             #>
@@ -353,6 +384,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -367,8 +401,15 @@ if (right_field && !right_field_column) {
             #>
             v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
             }
+            #><#
+            if (placeholderInForm) {
             #>
-            placeholder="请选择 <#=column_comment#>"
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             code="<#=column.dictbiz#>"<#
             if (readonlyPlaceholder) {
             #>
@@ -395,6 +436,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -405,8 +449,15 @@ if (right_field && !right_field_column) {
         >
           <CustomInput
             v-model="<#=table#>_input.<#=column_name#>"
-            type="number"
+            type="number"<#
+            if (placeholderInForm) {
+            #>
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
             placeholder="请输入 <#=column_comment#>"<#
+            }
+            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -429,6 +480,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -439,8 +493,15 @@ if (right_field && !right_field_column) {
         >
           <CustomInput
             v-model="<#=table#>_input.<#=column_name#>"
-            type="decimal"
+            type="decimal"<#
+            if (placeholderInForm) {
+            #>
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
             placeholder="请输入 <#=column_comment#>"<#
+            }
+            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -463,6 +524,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -478,8 +542,15 @@ if (right_field && !right_field_column) {
             type="textarea"
             height="120"<#
             }
+            #><#
+            if (placeholderInForm) {
+            #>
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
             #>
             placeholder="请输入 <#=column_comment#>"<#
+            }
+            #><#
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
@@ -1018,19 +1089,18 @@ if (right_field && !right_field_column) {
   if (opts.noCopy !== true || opts.noEdit !== true) {
   #>
   
-  <view<#
+  <view
+    v-if="dialogAction !== 'view'<#
     if (opts.noEdit === true || opts.noAdd === true) {
-    #>
-    v-if="<#
+    #> &&<#
+    }
+    #><#
     if (opts.noEdit === true) {
     #>dialogAction === 'add'<#
     } else if (opts.noAdd === true) {
     #>dialogAction === 'edit'<#
     }
     #>"
-    <#
-    }
-    #>
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -1272,6 +1342,9 @@ async function onCopy() {
 async function onSave(
   formSubmitResult?: TM.FORM_SUBMIT_RESULT,
 ) {
+  if (dialogAction === "view") {
+    return;
+  }
   if (!inited) {
     return;
   }<#
@@ -1389,7 +1462,7 @@ async function onRefresh() {
     <#=table#>_input.order_by = props.order_by;<#
     }
     #>
-  } else if (dialogAction === "edit") {
+  } else if (dialogAction === "edit" || dialogAction === "view") {
     <#=table#>_model = await findOneModel(
       {
         id: <#=table#>_id,

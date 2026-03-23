@@ -87,12 +87,16 @@ description: 数据库建表规范。创建新表时必须遵循
 | `att`/`_att` | 附件 | 22*N |
 | `icon`/`_icon` | 图标 | - |
 
-## 自动编码字段, 如订单编号, 如果表中已经有 `lbl` 字段, 则自动编码字段命名为 `code_seq` `code`，否则为 `lbl_seq` `lbl`
+## 自动编码字段
 
 ```sql
-`code_seq` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '编码-序列号',
+`code_seq` int unsigned NOT NULL DEFAULT 0 COMMENT '编码-序列号',
 `code` varchar(45) NOT NULL DEFAULT '' COMMENT '编码',
+-- 日期序列（可选）
+`date_seq` date NOT NULL DEFAULT (CURRENT_DATE) COMMENT '日期-序列号',
 ```
+
+- 如果表中已有 `lbl` 字段，则命名为 `code_seq` `code`，否则为 `lbl_seq` `lbl`
 
 ## 外键
 
@@ -115,24 +119,6 @@ CREATE TABLE `base_usr_role` (
 );
 ```
 
-## 自动编码
-
-```sql
-`code_seq` int unsigned NOT NULL DEFAULT 0 COMMENT '编码-序列号',
-`code` varchar(20) NOT NULL DEFAULT '' COMMENT '编码',
--- 日期序列（可选）
-`date_seq` date NOT NULL DEFAULT (CURRENT_DATE) COMMENT '日期-序列号',
-```
-
-## 字典引用
-
-```sql
--- 系统字典
-`is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
--- 业务字典
-`type` varchar(20) NOT NULL DEFAULT '' COMMENT '类型,dictbiz:example_type',
-```
-- `COMMENT` 格式 `'中文名,dict:xxx'` 会触发系统字典绑定, `'中文名,dictbiz:xxx'` 则业务字典绑定
 
 ## 表索引
 ```sql

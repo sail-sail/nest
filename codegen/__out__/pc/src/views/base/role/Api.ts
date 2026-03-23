@@ -27,7 +27,7 @@ export async function setLblByIdRole(
 }
 
 export function intoInputRole(
-  model?: RoleInput,
+  model?: RoleInput | null,
 ) {
   const input: RoleInput = {
     // ID
