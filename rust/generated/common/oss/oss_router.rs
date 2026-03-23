@@ -1,7 +1,7 @@
 use color_eyre::eyre::Result;
 
 use poem::{
-  handler, web::{Multipart, Path, Query}, Response,
+  handler, web::{Multipart, Path, Query, Json}, Response,
 };
 use poem::http::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -177,16 +177,40 @@ pub async fn _upload_public(
   }).to_string())
 }
 
+async fn _delete(
+  id: String,
+) -> String {
+  let res = oss_service::delete_object(&id).await;
+  if let Err(err) = res {
+    json!({
+      "code": 1,
+      "msg": err.to_string(),
+      "data": null,
+    }).to_string()
+  } else if let Ok(res) = res {
+    json!({
+      "code": 0,
+      "data": res,
+    }).to_string()
+  } else {
+    json!({
+      "code": 1,
+      "msg": "unknown error",
+      "data": null,
+    }).to_string()
+  }
+}
+
 #[handler]
 pub async fn delete(
-  Query(DownloadQuery { id, inline: _inline }): Query<DownloadQuery>,
-) -> Result<String> {
-  let res = oss_service::delete_object(&id).await?;
-  let res = json!({
-    "code": 0,
-    "data": res,
-  }).to_string();
-  Ok(res)
+  Json(DownloadQuery { id, inline: _inline }): Json<DownloadQuery>,
+  req: &poem::Request,
+) -> Result<Response> {
+  Ctx::resful_builder(Some(req))
+    .build()
+    .resful_scope({
+      _delete(id)
+    }).await
 }
 
 #[derive(Deserialize)]

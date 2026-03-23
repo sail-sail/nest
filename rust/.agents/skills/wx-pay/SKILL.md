@@ -172,16 +172,12 @@ async function onPay() {
   // 1. 获取支付方式
   const providerRes = await uni.getProvider({ service: "payment" });
   const provider = providerRes.provider[0] as 'wxpay';
-  
   if (!provider) {
-    uni.showToast({
-      title: "没有可用的支付方式",
-      icon: "error",
-    });
+    uni.showToast({ title: "没有可用的支付方式", icon: "error" });
     return;
   }
   
-  // 2. 调用统一下单
+  // 2. 统一下单
   const requestPaymentOptions = await payXxx();
   
   // 3. 调起微信支付
@@ -199,23 +195,16 @@ async function onPay() {
   
   // 4. 处理支付结果
   if (errMsg === "requestPayment:fail cancel") {
-    uni.showToast({
-      title: "支付取消",
-      icon: "error",
-    });
+    uni.showToast({ title: "支付取消", icon: "error" });
     return;
   }
-  
   if (errMsg !== "requestPayment:ok") {
-    uni.showToast({
-      title: "支付失败",
-      icon: "error",
-    });
+    uni.showToast({ title: "支付失败", icon: "error" });
     return;
   }
   
-  // 5. 查询支付状态（等待回调处理完成，最多轮询30次）
-  const maxRetries = 30; // 最多轮询30次
+  // 5. 轮询支付状态（最多30次，间隔200ms）
+  const maxRetries = 30;
   let trade_state: PayTransactionsJsapiTradeState | undefined;
   let trade_state_desc = "";
   
@@ -227,11 +216,8 @@ async function onPay() {
     trade_state_desc = result.trade_state_desc;
     
     if (trade_state === PayTransactionsJsapiTradeState.Success) {
-      // 支付成功，跳出循环
       break;
     }
-    
-    // 如果还没到最后一次，等待200ms后继续
     if (i < maxRetries - 1) {
       await new Promise(
         resolve => setTimeout(resolve, 200)
@@ -239,7 +225,7 @@ async function onPay() {
     }
   }
   
-  // 检查最终支付状态
+  // 检查最终状态
   if (trade_state !== PayTransactionsJsapiTradeState.Success) {
     uni.showToast({
       title: "未查询到支付结果，请稍后再刷新",
@@ -254,8 +240,7 @@ async function onPay() {
     showCancel: false,
   });
   
-  // 6. 支付成功的后续处理, 比如:刷新页面数据
-  // ...
+  // 6. 后续处理: 刷新页面数据等
 }
 ```
 

@@ -37,6 +37,7 @@
   </scroll-view>
   
   <view
+    v-if="dialogAction !== 'view'"
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -120,6 +121,9 @@ async function onCopy() {
 async function onSave(
   formSubmitResult?: TM.FORM_SUBMIT_RESULT,
 ) {
+  if (dialogAction === "view") {
+    return;
+  }
   if (!inited) {
     return;
   }
@@ -205,7 +209,7 @@ async function onRefresh() {
     dyn_page_data_input = intoInputDynPageData(
       dyn_page_data_model,
     );
-  } else if (dialogAction === "edit") {
+  } else if (dialogAction === "edit" || dialogAction === "view") {
     dyn_page_data_model = await findOneModel(
       {
         id: dyn_page_data_id,
