@@ -636,6 +636,11 @@ export interface TableCloumn {
   isMonth?: boolean,
   
   /**
+   * 占位符, 默认为: 请输入 + 字段注释
+   */
+  placeholderInForm?: string;
+  
+  /**
    * 不允许修改, 不允许增加, 不在导入模板中显示, 默认为false
    */
   readonly?: boolean,
@@ -893,7 +898,7 @@ export interface TablesConfigItem {
     searchByKeyword?: {
       prop: string;
       fields: string[];
-      lbl?: string;
+      lbl?: string; // 默认: 关键字
       placeholder?: string;
       showInPcList?: boolean;
     };
@@ -1106,6 +1111,11 @@ export interface TablesConfigItem {
       column: string;
       
     }[];
+    
+    /**
+     * 是否启用可选的认证功能, 如果启用, 则在访问这个表的数据时, 前端可以不登录就访问CRUD接口, 默认false, 默认必须登录
+     */
+    is_with_auth_optional?: boolean;
     
   },
   columns: TableCloumn[];

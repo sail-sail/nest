@@ -293,7 +293,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: DictbizDetailInput = $ref({
+let dialogModel = $ref<DictbizDetailInput>({
 } as DictbizDetailInput);
 
 let dictbiz_detail_model = $ref<DictbizDetailModel>();

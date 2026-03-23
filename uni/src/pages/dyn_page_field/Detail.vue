@@ -29,6 +29,7 @@
         <tm-form-item
           label="编码"
           name="code"
+          :readonly="dialogAction === 'view'"
           :required="false"
         >
           <CustomInput
@@ -41,6 +42,7 @@
         <tm-form-item
           label="动态页面"
           name="dyn_page_id"
+          :readonly="dialogAction === 'view'"
         >
           <CustomSelectModal
             v-model="dyn_page_field_input.dyn_page_id"
@@ -53,6 +55,7 @@
         <tm-form-item
           label="名称"
           name="lbl"
+          :readonly="dialogAction === 'view'"
         >
           <CustomInput
             v-model="dyn_page_field_input.lbl"
@@ -64,6 +67,7 @@
         <tm-form-item
           label="类型"
           name="type"
+          :readonly="dialogAction === 'view'"
           :required="false"
         >
           <CustomSelectModal
@@ -78,6 +82,7 @@
         <tm-form-item
           label="属性"
           name="attrs"
+          :readonly="dialogAction === 'view'"
           :required="false"
         >
           <view
@@ -108,6 +113,7 @@
         <tm-form-item
           label="计算公式"
           name="formula"
+          :readonly="dialogAction === 'view'"
           :required="false"
         >
           <CustomInput
@@ -120,6 +126,7 @@
         <tm-form-item
           label="必填"
           name="is_required"
+          :readonly="dialogAction === 'view'"
         >
           <DictSelect
             v-model="dyn_page_field_input.is_required"
@@ -132,6 +139,7 @@
         <tm-form-item
           label="查询条件"
           name="is_search"
+          :readonly="dialogAction === 'view'"
         >
           <DictSelect
             v-model="dyn_page_field_input.is_search"
@@ -144,6 +152,7 @@
         <tm-form-item
           label="宽度"
           name="width"
+          :readonly="dialogAction === 'view'"
           :required="false"
         >
           <CustomInput
@@ -157,6 +166,7 @@
         <tm-form-item
           label="对齐方式"
           name="align"
+          :readonly="dialogAction === 'view'"
         >
           <DictSelect
             v-model="dyn_page_field_input.align"
@@ -169,6 +179,7 @@
         <tm-form-item
           label="手机列表显示"
           name="is_mobile_list"
+          :readonly="dialogAction === 'view'"
         >
           <DictSelect
             v-model="dyn_page_field_input.is_mobile_list"
@@ -181,6 +192,7 @@
         <tm-form-item
           label="手机列表查询"
           name="is_mobile_search"
+          :readonly="dialogAction === 'view'"
         >
           <DictSelect
             v-model="dyn_page_field_input.is_mobile_search"
@@ -193,6 +205,7 @@
         <tm-form-item
           label="排序"
           name="order_by"
+          :readonly="dialogAction === 'view'"
         >
           <CustomInput
             v-model="dyn_page_field_input.order_by"
@@ -213,6 +226,7 @@
   </scroll-view>
   
   <view
+    v-if="dialogAction !== 'view'"
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -398,6 +412,9 @@ async function onCopy() {
 async function onSave(
   formSubmitResult?: TM.FORM_SUBMIT_RESULT,
 ) {
+  if (dialogAction === "view") {
+    return;
+  }
   if (!inited) {
     return;
   }
@@ -485,7 +502,7 @@ async function onRefresh() {
       dyn_page_field_model,
     );
     dyn_page_field_input.order_by = props.order_by;
-  } else if (dialogAction === "edit") {
+  } else if (dialogAction === "edit" || dialogAction === "view") {
     dyn_page_field_model = await findOneModel(
       {
         id: dyn_page_field_id,

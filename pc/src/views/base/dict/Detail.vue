@@ -383,7 +383,7 @@ import {
 
 import {
   getDefaultInputDictDetail,
-} from "@/views/base/dict_detail/Api";
+} from "@/views/base/dict_detail/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -410,7 +410,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: DictInput = $ref({
+let dialogModel = $ref<DictInput>({
 } as DictInput);
 
 let dict_model = $ref<DictModel>();
@@ -943,7 +943,9 @@ async function dict_detailAdd() {
   }
   const defaultModel = await getDefaultInputDictDetail();
   dialogModel.dict_detail.push(defaultModel);
-  dict_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  nextTick(() => {
+    dict_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  });
 }
 
 function dict_detailRemove(row: DictDetailModel) {

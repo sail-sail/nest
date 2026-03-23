@@ -39,7 +39,7 @@ export async function setLblByIdUsr(
 }
 
 export function intoInputUsr(
-  model?: UsrInput,
+  model?: UsrInput | null,
 ) {
   const input: UsrInput = {
     // ID
