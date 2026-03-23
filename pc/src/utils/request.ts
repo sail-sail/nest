@@ -267,6 +267,19 @@ export async function uploadFile(
   return id;
 }
 
+export async function deleteFile(
+  id: string,
+  type: "oss" | "tmpfile" = "oss",
+) {
+  await request({
+    url: `api/${ type }/delete`,
+    method: "post",
+    data: {
+      id,
+    },
+  });
+}
+
 /**
  * 获得下载文件的url
  * @export

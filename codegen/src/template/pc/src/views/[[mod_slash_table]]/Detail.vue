@@ -6660,7 +6660,15 @@ async function onRefresh() {
     }
     #>
     if (<#=column_name#>FluentEditor) {
-      <#=column_name#>FluentEditor.root.innerHTML = dialogModel.<#=column_name#> || "";
+      let <#=column_name#> = "";
+      if (dialogModel.<#=column_name#>) {
+        const url = getDownloadUrl({
+          id: dialogModel.<#=column_name#>,
+          inline: "1",
+        });
+        <#=column_name#> = await fetch(url).then((res) => res.text());
+      }
+      <#=column_name#>FluentEditor.root.innerHTML = <#=column_name#>;
     }<#
     }
     #><#
@@ -7241,39 +7249,6 @@ async function save() {
   if (dialogAction === "add" || dialogAction === "copy") {
     const dialogModel2 = {
       ...dialogModel,<#
-      if (hasIsFluentEditor) {
-      #><#
-      for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      if (column_name === "is_locked") continue;
-      if (column_name === "is_deleted") continue;
-      if (column_name === "version") continue;
-      if (column_name === "tenant_id") continue;
-      if (column.noDetail) continue;
-      const foreignKey = column.foreignKey;
-      if (foreignKey && foreignKey.showType === "dialog") {
-        continue;
-      }
-      if (
-        [
-          "is_default",
-        ].includes(column_name)
-      ) {
-        continue;
-      }
-      if (!column.isFluentEditor) {
-        continue;
-      }
-      #>
-      <#=column_name#>: <#=column_name#>FluentEditor?.root.innerHTML,<#
-      }
-      #><#
-      }
-      #><#
       for (const inlineForeignTab of inlineForeignTabs) {
         const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
         const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
@@ -7315,7 +7290,51 @@ async function save() {
       #><#
       }
       #>
-    };
+    };<#
+    if (hasIsFluentEditor) {
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "is_locked") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "version") continue;
+    if (column_name === "tenant_id") continue;
+    if (column.noDetail) continue;
+    const foreignKey = column.foreignKey;
+    if (foreignKey && foreignKey.showType === "dialog") {
+      continue;
+    }
+    if (
+      [
+        "is_default",
+      ].includes(column_name)
+    ) {
+      continue;
+    }
+    if (!column.isFluentEditor) {
+      continue;
+    }
+    #>
+    
+    if (<#=column_name#>FluentEditor?.root.innerHTML) {
+      const blob = new Blob([ <#=column_name#>FluentEditor?.root.innerHTML ], { type: "text/html" });
+      const file = new File([ blob ], "<#=column_name#>.html", { type: "text/html" });
+      dialogModel2.<#=column_name#> = await uploadFile(
+        file,
+        undefined,
+        {
+          isPublic: true,
+        },
+      );
+    }<#
+    }
+    #><#
+    }
+    #>
     if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }
@@ -7355,39 +7374,6 @@ async function save() {
     }
     const dialogModel2 = {
       ...dialogModel,<#
-      if (hasIsFluentEditor) {
-      #><#
-      for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      if (column_name === "is_locked") continue;
-      if (column_name === "is_deleted") continue;
-      if (column_name === "version") continue;
-      if (column_name === "tenant_id") continue;
-      if (column.noDetail) continue;
-      const foreignKey = column.foreignKey;
-      if (foreignKey && foreignKey.showType === "dialog") {
-        continue;
-      }
-      if (
-        [
-          "is_default",
-        ].includes(column_name)
-      ) {
-        continue;
-      }
-      if (!column.isFluentEditor) {
-        continue;
-      }
-      #>
-      <#=column_name#>: <#=column_name#>FluentEditor?.root.innerHTML,<#
-      }
-      #><#
-      }
-      #><#
       for (const inlineForeignTab of inlineForeignTabs) {
         const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
         const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
@@ -7424,7 +7410,54 @@ async function save() {
       }
       #>
       id: undefined,
-    };
+    };<#
+    if (hasIsFluentEditor) {
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "is_locked") continue;
+    if (column_name === "is_deleted") continue;
+    if (column_name === "version") continue;
+    if (column_name === "tenant_id") continue;
+    if (column.noDetail) continue;
+    const foreignKey = column.foreignKey;
+    if (foreignKey && foreignKey.showType === "dialog") {
+      continue;
+    }
+    if (
+      [
+        "is_default",
+      ].includes(column_name)
+    ) {
+      continue;
+    }
+    if (!column.isFluentEditor) {
+      continue;
+    }
+    #>
+    
+    if (dialogModel2.<#=column_name#>) {
+      await deleteFile(dialogModel2.<#=column_name#>);
+    }
+    if (<#=column_name#>FluentEditor?.root.innerHTML) {
+      const blob = new Blob([ <#=column_name#>FluentEditor?.root.innerHTML ], { type: "text/html" });
+      const file = new File([ blob ], "<#=column_name#>.html", { type: "text/html" });
+      dialogModel2.<#=column_name#> = await uploadFile(
+        file,
+        undefined,
+        {
+          isPublic: true,
+        },
+      );
+    }<#
+    }
+    #><#
+    }
+    #>
     if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
     }<#
@@ -8139,7 +8172,7 @@ const fluentEditorConfig = {
     toolbar: [
       ["undo", "redo"],
       [{ header: [ ] }],
-      ["bold", "italic", "underline", "link"],
+      ["bold", "italic", "underline"],
       [{ list: "ordered" }, { list: "bullet" }],
       ["clean"],
       ["image", "video"],
@@ -8178,17 +8211,38 @@ let <#=column_name#>FluentEditor: InstanceType<typeof FluentEditor> | undefined 
 
 watch(
   () => [
-    inited,
     <#=column_name#>Ref,
   ],
   async () => {
-    if (!inited || !<#=column_name#>Ref) {
+    if (!<#=column_name#>Ref) {
       return;
     }
     if (<#=column_name#>FluentEditor) {
       return;
     }
     <#=column_name#>FluentEditor = new FluentEditor(<#=column_name#>Ref, fluentEditorConfig);
+  },
+);
+
+watch(
+  () => [
+    inited,
+    isReadonly,
+    isLocked,
+    <#=column_name#>FluentEditor,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (isReadonly || isLocked) {
+      <#=column_name#>FluentEditor?.disable();
+    } else {
+      <#=column_name#>FluentEditor?.enable();
+    }
+  },
+  {
+    deep: true,
   },
 );<#
 }

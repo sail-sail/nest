@@ -88,6 +88,8 @@
     },
     "git.closeDiffOnOperation": true,
     "git.alwaysShowStagedChangesResourceGroup": false,
-    "git.enableSmartCommit": true
+    "git.enableSmartCommit": true,
+    "diffEditor.experimental.showMoves": true,
+    "diffEditor.experimental.useTrueInlineView": true
   }
 }
