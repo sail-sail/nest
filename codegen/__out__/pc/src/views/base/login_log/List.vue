@@ -569,7 +569,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<LoginLogSearch>(initSearch());
 
 // 类型
 const type_search = $computed({

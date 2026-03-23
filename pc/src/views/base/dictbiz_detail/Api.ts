@@ -23,7 +23,7 @@ export async function setLblByIdDictbizDetail(
 }
 
 export function intoInputDictbizDetail(
-  model?: DictbizDetailInput,
+  model?: DictbizDetailInput | null,
 ) {
   const input: DictbizDetailInput = {
     // ID

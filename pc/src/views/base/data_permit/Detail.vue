@@ -280,7 +280,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: DataPermitInput = $ref({
+let dialogModel = $ref<DataPermitInput>({
 } as DataPermitInput);
 
 let data_permit_model = $ref<DataPermitModel>();

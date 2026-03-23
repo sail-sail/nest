@@ -861,7 +861,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<MenuSearch>(initSearch());
 
 // 父菜单
 const parent_id_search = $computed({

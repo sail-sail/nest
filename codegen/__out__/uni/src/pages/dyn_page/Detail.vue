@@ -29,6 +29,7 @@
         <tm-form-item
           label="路由"
           name="code"
+          :readonly="dialogAction === 'view'"
           :required="false"
         >
           <CustomInput
@@ -41,6 +42,7 @@
         <tm-form-item
           label="名称"
           name="lbl"
+          :readonly="dialogAction === 'view'"
         >
           <CustomInput
             v-model="dyn_page_input.lbl"
@@ -52,6 +54,7 @@
         <tm-form-item
           label="父菜单"
           name="parent_menu_id"
+          :readonly="dialogAction === 'view'"
           :required="false"
         >
           <CustomSelectModal
@@ -65,6 +68,7 @@
         <tm-form-item
           label="所属角色"
           name="role_ids"
+          :readonly="dialogAction === 'view'"
           :required="false"
         >
           <CustomSelectModal
@@ -79,6 +83,7 @@
         <tm-form-item
           label="排序"
           name="order_by"
+          :readonly="dialogAction === 'view'"
         >
           <CustomInput
             v-model="dyn_page_input.order_by"
@@ -91,6 +96,7 @@
         <tm-form-item
           label="备注"
           name="rem"
+          :readonly="dialogAction === 'view'"
           :required="false"
         >
           <CustomInput
@@ -359,6 +365,7 @@
   </scroll-view>
   
   <view
+    v-if="dialogAction !== 'view'"
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -464,6 +471,9 @@ async function onCopy() {
 async function onSave(
   formSubmitResult?: TM.FORM_SUBMIT_RESULT,
 ) {
+  if (dialogAction === "view") {
+    return;
+  }
   if (!inited) {
     return;
   }
@@ -551,7 +561,7 @@ async function onRefresh() {
       dyn_page_model,
     );
     dyn_page_input.order_by = props.order_by;
-  } else if (dialogAction === "edit") {
+  } else if (dialogAction === "edit" || dialogAction === "view") {
     dyn_page_model = await findOneModel(
       {
         id: dyn_page_id,

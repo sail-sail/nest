@@ -23,7 +23,7 @@ export async function setLblByIdDomain(
 }
 
 export function intoInputDomain(
-  model?: DomainInput,
+  model?: DomainInput | null,
 ) {
   const input: DomainInput = {
     // ID
