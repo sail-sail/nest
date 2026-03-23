@@ -800,7 +800,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<IconSearch>(initSearch());
 
 // 启用
 const is_enabled_search = $computed({

@@ -838,7 +838,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<DeptSearch>(initSearch());
 
 // 启用
 const is_enabled_search = $computed({

@@ -325,7 +325,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: MenuInput = $ref({
+let dialogModel = $ref<MenuInput>({
 } as MenuInput);
 
 let menu_model = $ref<MenuModel>();

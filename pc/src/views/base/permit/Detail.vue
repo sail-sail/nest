@@ -246,7 +246,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: PermitInput = $ref({
+let dialogModel = $ref<PermitInput>({
 } as PermitInput);
 
 let permit_model = $ref<PermitModel>();
