@@ -238,6 +238,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -289,6 +292,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -329,6 +335,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -375,6 +384,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -424,6 +436,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -465,6 +480,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -506,6 +524,9 @@ if (right_field && !right_field_column) {
           if (column.readonly) {
           #>
           :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
           }
           #><#
           if (!require) {
@@ -1068,19 +1089,18 @@ if (right_field && !right_field_column) {
   if (opts.noCopy !== true || opts.noEdit !== true) {
   #>
   
-  <view<#
+  <view
+    v-if="dialogAction !== 'view'<#
     if (opts.noEdit === true || opts.noAdd === true) {
-    #>
-    v-if="<#
+    #> &&<#
+    }
+    #><#
     if (opts.noEdit === true) {
     #>dialogAction === 'add'<#
     } else if (opts.noAdd === true) {
     #>dialogAction === 'edit'<#
     }
     #>"
-    <#
-    }
-    #>
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -1322,6 +1342,9 @@ async function onCopy() {
 async function onSave(
   formSubmitResult?: TM.FORM_SUBMIT_RESULT,
 ) {
+  if (dialogAction === "view") {
+    return;
+  }
   if (!inited) {
     return;
   }<#
@@ -1439,7 +1462,7 @@ async function onRefresh() {
     <#=table#>_input.order_by = props.order_by;<#
     }
     #>
-  } else if (dialogAction === "edit") {
+  } else if (dialogAction === "edit" || dialogAction === "view") {
     <#=table#>_model = await findOneModel(
       {
         id: <#=table#>_id,

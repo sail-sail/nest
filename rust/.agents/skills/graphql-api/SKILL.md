@@ -122,15 +122,13 @@ pub async fn method_name(
   options: Option<Options>,
 ) -> Result<ReturnType> {
   
-  // 1. 参数校验
   if param.is_empty() {
     return Err(eyre!("参数不能为空"));
   }
   
-  // 2. 获取当前用户
   let usr_id: UsrId = get_auth_id_ok()?;
   
-  // 3. 查询数据
+  // 查单条
   let {table}_model = find_one_ok_{table}(
     Some({Table}Search {
       field: Some(param),
@@ -140,7 +138,7 @@ pub async fn method_name(
     options,
   ).await?;
   
-  // 查询列表, 变量名命名通常是 {table}_models 或者 {table}_model
+  // 查列表(分页可传 None, 排序可传 None 走默认)
   let {table}_models = find_all_{table}(
     Some({Table}Search {
       field: Some(param),
@@ -149,22 +147,16 @@ pub async fn method_name(
     Some(PageInput {
       pg_offset: Some(0),
       pg_size: Some(10),
-      is_result_limit: Some(false), // 不限制总数, 默认 find_all_xxx 会限制总数, 超过1000报错, 可配置, 默认true, 一般无需此参数
-    }), // 不分页则传入 None 即可
-    Some(SortInput {
-      prop: SmolStr::new("created_time"),
-      order: SortOrderEnum::Desc,
-    }), // 一般无需排序参数传入 None 即可, 建表时已加默认排序
+      is_result_limit: Some(false),
+    }),
+    None,
     options,
   ).await?;
   
-  // 获取当前时间
   let now = get_now();
   
-  // 4. 业务操作, 业务操作过程中如果不清楚表结构则可以到这里查看表结构 `src/tables/{mod}/{mod}.sql`, `src/tables/{mod}/{mod}.ts`
-  // 注意: 业务逻辑开发过程中, 不需要写太多注释, 关键位置写一点业务注释即可
+  // 业务操作...
   
-  // 5. 返回结果
   Ok({table}_models)
 }
 ```
@@ -177,21 +169,16 @@ pub async fn method_name(
 
 | 函数 | 用途 |
 |------|------|
-| `find_by_id_{table}` | ID查询 → `Option<{Table}Model>` |
-| `find_by_id_ok_{table}` | ID查询（必存在否则抛异常）|
-| `find_by_ids_{table}` | 多ID查询 → `Vec<{Table}Model>` |
-| `find_by_ids_ok_{table}` | 多ID查询（必存在且顺序跟ids一致）|
-| `find_one_{table}` | 条件查单条 包括搜索条件,排序参数 |
-| `find_one_ok_{table}` | 条件查单条（必存在）|
-| `find_all_{table}` | 条件查列表 包括搜索条件,分页,排序参数 |
-| `create_{table}` | 创建 → ID |
-| `create_return_{table}` | 创建 → 立即查询返回 |
-| `update_by_id_{table}` | 更新 |
-| `update_by_id_return_{table}` | 更新 → 立即查询返回 |
+| `find_by_id[_ok]_{table}` | ID查询，`_ok` 变体必存在否则抛异常 |
+| `find_by_ids[_ok]_{table}` | 多ID查询，`_ok` 变体保证顺序一致 |
+| `find_one[_ok]_{table}` | 条件查单条(搜索条件,排序) |
+| `find_all_{table}` | 条件查列表(搜索条件,分页,排序) |
+| `create[_return]_{table}` | 创建，`_return` 变体立即返回 |
+| `update_by_id[_return]_{table}` | 更新，`_return` 变体立即返回 |
 | `delete_by_ids_{table}` | 逻辑删除 |
 | `force_delete_by_ids_{table}` | 彻底删除 |
-| `validate_option_{table}` | 校验 None 时抛异常 |
-| `validate_is_enabled_{table}` | 校验禁用时抛异常 |
+| `validate_option_{table}` | 校验 None 抛异常 |
+| `validate_is_enabled_{table}` | 校验禁用抛异常 |
 
 ## 辅助函数
 
@@ -205,15 +192,12 @@ use generated::common::context::{
 };
 ```
 
-## 编码约定
-- GraphQL 接口定义放在 `{table}_graphql.rs`，参数解构/日志放在 `{table}_resolver.rs`，类型定义放在 `{table}_model.rs`，数据库操作放在 `{table}_dao.rs`，业务逻辑/数据库放在 `{table}_service.rs`
-- 业务逻辑的字符串类型使用 `SmolStr`，第三方类库如果需要求 `String` 则转换类型给三方库
-- 函数调用和定义时，参数每行一个参数，尽可能换行
-- 调用create或者update传入Input时，Input参数中的_lbl字段大多不用传递，dao层会自动生成_lbl的值
-- 用不执行 `cargo fmt`, 因为格式由架构编码约定决定
-- ⚠️ `generated` 不允许依赖 `app`, 只能由 `app` 单向依赖 `generated`, 避免循环依赖, 如果业务逻辑无法避免, 则不得不把代码写到 `generated` 中
-- `options` 无需 `.clone()`, `options` 是 `Copy` 类型
-- 所有 `id` 也无需 `.clone()`, 比如: `UsrId` 是 `Copy` 类型
+## 编码要点
+- 字符串用 `SmolStr`，三方库需要 `String` 时再转
+- Input 中 `_lbl` 字段无需传递，dao 层自动生成
+- 不执行 `cargo fmt`
+- `options` 和所有 `id` 类型均为 `Copy`，无需 `.clone()`
+- ⚠️ `generated` 不允许依赖 `app`，只能单向 `app` → `generated`
 
 ## 模块注册
 
@@ -230,19 +214,4 @@ pub type Mutation = (XxxMutation,);
 
 ## 接口变更后的类型生成
 
-当后端 GraphQL 接口（尤其是 `*_graphql.rs` 的 Query/Mutation 入参或返回）发生变更后：
-
-1. 在 `rust/` 目录执行：
-
-```bash
-npm run gqlgen
-```
-
-2. 该命令会执行：
-
-- `cargo run --bin schema`（重新导出 schema）
-- `graphql-codegen --config ./generated/common/script/graphql_codegen_config.ts`（生成前端类型）
-
-3. 会同步更新前端类型文件（如 `pc/src/typings/types.ts`、`uni/src/typings/types.ts`）
-
-> 说明：后端改动接口需要刷新前端类型时，优先执行 `npm run gqlgen`, `cargo run` 也会自动执行 `npm run gqlgen` 效果相同
+在 `rust/` 目录执行 `npm run gqlgen`，自动导出 schema 并更新前端类型（`pc/src/typings/types.ts`、`uni/src/typings/types.ts`）。
