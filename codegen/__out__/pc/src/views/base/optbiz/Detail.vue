@@ -277,7 +277,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: OptbizInput = $ref({
+let dialogModel = $ref<OptbizInput>({
 } as OptbizInput);
 
 let optbiz_model = $ref<OptbizModel>();

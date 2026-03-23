@@ -383,7 +383,7 @@ import {
 
 import {
   getDefaultInputDictbizDetail,
-} from "@/views/base/dictbiz_detail/Api";
+} from "@/views/base/dictbiz_detail/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -410,7 +410,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: DictbizInput = $ref({
+let dialogModel = $ref<DictbizInput>({
 } as DictbizInput);
 
 let dictbiz_model = $ref<DictbizModel>();
@@ -943,7 +943,9 @@ async function dictbiz_detailAdd() {
   }
   const defaultModel = await getDefaultInputDictbizDetail();
   dialogModel.dictbiz_detail.push(defaultModel);
-  dictbiz_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  nextTick(() => {
+    dictbiz_detailRef?.setScrollTop(Number.MAX_SAFE_INTEGER);
+  });
 }
 
 function dictbiz_detailRemove(row: DictbizDetailModel) {

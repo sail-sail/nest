@@ -27,7 +27,7 @@ export async function setLblByIdI18n(
 }
 
 export function intoInputI18n(
-  model?: I18nInput,
+  model?: I18nInput | null,
 ) {
   const input: I18nInput = {
     // ID
