@@ -29,3 +29,10 @@ page,.tmDrawerWrap,.tmModalWrap {
 .custom_input_placeholder {
   color: var(--color-placeholder);
 }
+
+.custom_select_drawer {
+  .tmDrawerWrapContent_bottom,.tmDrawerWrapContent_bottom_on {
+    max-width: 750px;
+    align-self: center;
+  }
+}
