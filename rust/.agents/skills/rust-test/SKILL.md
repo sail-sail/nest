@@ -106,8 +106,6 @@ let models = find_all_{table}(
 
 ## 数据刷新脚本示例
 
-批量扫描表并更新数据的典型模式：
-
 ```rust
 #[cfg(test)]
 mod tests {
@@ -116,13 +114,12 @@ mod tests {
   use crate::common::context::Ctx;
   
   use crate::exh::some_table::some_table_dao::find_by_id_ok_some_table;
-  
   use crate::exh::booking_order::booking_order_dao::{
     find_all_booking_order,
     update_by_id_booking_order,
   };
   
-  /// 扫描 booking_order 表, 从关联的 some_table 补充缺失字段
+  /// 扫描 booking_order 表, 从关联表补充缺失字段
   #[tokio::test]
   async fn test_fill_missing_fields() -> Result<()> {
     
@@ -135,7 +132,6 @@ mod tests {
           .set_is_silent_mode(Some(true));
         let options = Some(options);
         
-        // 1. 查询全部目标记录
         let models = find_all_booking_order(
           None,
           None,
@@ -143,24 +139,15 @@ mod tests {
           options,
         ).await?;
         
-        // 2. 遍历处理
         for (i, model) in models.into_iter().enumerate() {
-          
-          // 进度打印
           if i % 10 == 0 {
             println!("正在处理第 {i} 条");
           }
-          
-          // 3. 条件判断（只处理需要更新的记录）
           if model.some_field.is_empty() {
-            
-            // 4. 查询关联数据
             let related = find_by_id_ok_some_table(
               model.some_table_id,
               options,
             ).await?;
-            
-            // 5. 更新目标记录
             update_by_id_booking_order(
               model.id,
               BookingOrderInput {
@@ -169,7 +156,6 @@ mod tests {
               },
               options,
             ).await?;
-            
           }
         }
         
@@ -184,10 +170,8 @@ mod tests {
 ## 编码约定
 
 - 测试函数返回 `Result<()>`，使用 `?` 传播错误
-- 大批量数据处理时加进度打印（`println!`），便于观察执行进度
-- 函数调用参数换行，保持与项目代码格式一致
-- `imports` 按需引入 DAO 函数，使用完整路径引入
-- 数据刷新脚本用完后，可酌情保留或注释掉，不影响编译（`#[cfg(test)]` 只在测试时编译）
+- 大批量处理加 `println!` 打印进度
+- `imports` 按需引入，使用完整路径
 
 ## 运行测试
 

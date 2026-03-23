@@ -2149,6 +2149,14 @@ pub fn get_short_uuid() -> SmolStr {
 }
 
 #[must_use]
+pub fn to_short_uuid(str: impl AsRef<str>) -> SmolStr {
+  let uuid = hash(str.as_ref().as_bytes());
+  // 切割字符串22位
+  let uuid = utf8_slice::from(&uuid, 22);
+  uuid.into()
+}
+
+#[must_use]
 pub fn get_is_debug(
   options: Option<&Options>,
 ) -> bool {

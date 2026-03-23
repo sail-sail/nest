@@ -83,6 +83,7 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
 
 const hasSummary = columns.some((column) => column.showSummary);
 
+const is_with_auth_optional = opts?.is_with_auth_optional;
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -101,9 +102,13 @@ use crate::common::context::{
 #[allow(unused_imports)]
 use smol_str::SmolStr;
 
-use crate::common::gql::model::{PageInput, SortInput};
+use crate::common::gql::model::{PageInput, SortInput};<#
+if (!is_with_auth_optional) {
+#>
 #[allow(unused_imports)]
-use crate::common::permit::permit_service::use_permit;
+use crate::common::permit::permit_service::use_permit;<#
+}
+#>
 
 use super::<#=table#>_model::*;
 use super::<#=table#>_service;<#
@@ -726,12 +731,16 @@ pub async fn creates_<#=table#>(
     ).await?;
     inputs2.push(input);
   }
-  let inputs = inputs2;
+  let inputs = inputs2;<#
+  if (!is_with_auth_optional) {
+  #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("add"),
   ).await?;<#
+  }
+  #><#
   if (tableFieldPermit) {
   #>
   
@@ -868,12 +877,16 @@ pub async fn update_by_id_<#=table#>(
   
   let input = <#=table#>_service::set_id_by_lbl_<#=table#>(
     input,
-  ).await?;
+  ).await?;<#
+  if (!is_with_auth_optional) {
+  #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("edit"),
   ).await?;<#
+  }
+  #><#
   if (tableFieldPermit) {
   #>
   
@@ -976,12 +989,16 @@ pub async fn audit_submit_<#=table#>(
   
   let begin_time = Instant::now();<#
   }
+  #><#
+  if (!is_with_auth_optional) {
   #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("audit_submit"),
   ).await?;<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1054,12 +1071,16 @@ pub async fn audit_pass_<#=table#>(
   
   let begin_time = Instant::now();<#
   }
+  #><#
+  if (!is_with_auth_optional) {
   #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("audit_pass"),
   ).await?;<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1133,12 +1154,16 @@ pub async fn audit_reject_<#=table#>(
   
   let begin_time = Instant::now();<#
   }
+  #><#
+  if (!is_with_auth_optional) {
   #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("audit_reject"),
   ).await?;<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1214,12 +1239,16 @@ pub async fn audit_review_<#=table#>(
   
   let begin_time = Instant::now();<#
   }
+  #><#
+  if (!is_with_auth_optional) {
   #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("audit_review"),
   ).await?;<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1299,12 +1328,16 @@ pub async fn delete_by_ids_<#=table#>(
   
   let begin_time = Instant::now();<#
   }
+  #><#
+  if (!is_with_auth_optional) {
   #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("delete"),
   ).await?;<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1390,12 +1423,16 @@ pub async fn default_by_id_<#=table#>(
   
   let begin_time = Instant::now();<#
   }
+  #><#
+  if (!is_with_auth_optional) {
   #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("edit"),
   ).await?;<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1497,12 +1534,16 @@ pub async fn enable_by_ids_<#=table#>(
   
   let begin_time = Instant::now();<#
   }
+  #><#
+  if (!is_with_auth_optional) {
   #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("edit"),
   ).await?;<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1631,12 +1672,16 @@ pub async fn lock_by_ids_<#=table#>(
   
   let begin_time = Instant::now();<#
   }
+  #><#
+  if (!is_with_auth_optional) {
   #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("edit"),
   ).await?;<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1745,12 +1790,16 @@ pub async fn revert_by_ids_<#=table#>(
   
   let begin_time = Instant::now();<#
   }
+  #><#
+  if (!is_with_auth_optional) {
   #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("delete"),
   ).await?;<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -1828,12 +1877,16 @@ pub async fn force_delete_by_ids_<#=table#>(
   
   let begin_time = Instant::now();<#
   }
+  #><#
+  if (!is_with_auth_optional) {
   #>
   
   use_permit(
     SmolStr::new(get_page_path_<#=table#>()),
     SmolStr::new("force_delete"),
   ).await?;<#
+  }
+  #><#
   if (log) {
   #>
   

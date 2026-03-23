@@ -65,6 +65,7 @@ if (hasAudit) {
 
 const hasSummary = columns.some((column) => column.showSummary);
 
+const is_with_auth_optional = opts?.is_with_auth_optional;
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
