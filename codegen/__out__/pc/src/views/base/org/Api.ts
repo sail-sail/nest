@@ -23,7 +23,7 @@ export async function setLblByIdOrg(
 }
 
 export function intoInputOrg(
-  model?: OrgInput,
+  model?: OrgInput | null,
 ) {
   const input: OrgInput = {
     // ID

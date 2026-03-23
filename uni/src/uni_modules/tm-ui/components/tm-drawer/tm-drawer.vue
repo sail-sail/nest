@@ -26,6 +26,10 @@ const props = defineProps({
 		type: String,
 		default: ""
 	},
+	customClass: {
+		type: String,
+		default: ""
+	},
 	/**
 	 * 标题
 	 */
@@ -567,6 +571,7 @@ export default {
 						status == 'open' ? 'tmModalWrap_on' : 'tmModalWrap_off',
 						(_position == 'top' || _position == 'bottom') && _widthCoverCenter ? 'tmDrawerWrapContentMinwidthWrapDir' : '',
 						'tmDrawerWrap_' + _position
+						, props.customClass
 					]" :style="[{
 						width: '100%',
 						top: (windtop + 'px'),
@@ -582,6 +587,7 @@ export default {
 						status == 'open' ? 'tmModalWrap_on' : 'tmModalWrap_off',
 						(_position == 'top' || _position == 'bottom') && _widthCoverCenter ? 'tmDrawerWrapContentMinwidthWrapDir' : '',
 						'tmDrawerWrap_' + _position
+						, props.customClass
 					]" :style="[{
 						width: '100%',
 						top: (windtop + 'px'),

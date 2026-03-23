@@ -989,7 +989,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<RoleSearch>(initSearch());
 
 // 菜单权限
 const menu_ids_search = $computed({

@@ -237,7 +237,7 @@ function filterNode(value: string, data: ModelTree) {<#
   if (!value) {
     return true;
   }
-  return data.lbl.includes(value);
+  return data.<#=opts?.lbl_field || "lbl"#>.includes(value);
 }
 
 function nodeClass(data: TreeNodeData): string {

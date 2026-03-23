@@ -783,7 +783,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<I18nSearch>(initSearch());
 
 // 语言
 const lang_id_search = $computed({

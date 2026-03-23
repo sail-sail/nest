@@ -1,10 +1,15 @@
 ---
-name: ui-style
-description: 页面开发样式规范。开发 UI 界面时使用
+name: uni-spec
+description: 移动端页面开发规范。开发 UI 界面时使用
 compatibility: Uni-app + UnoCSS
 metadata:
   version: "1.0"
 ---
+
+## 编码规范
+- 使用 Vue Macros 的 reactivity transform（`$ref`、`$computed` 等）
+- 当 `[ ]` 代表的是值时中间有空格, 例如: `const arr = [ 1, 2, 3 ];`, `const arr = [ ];`, `{ }` 也同理
+- 函数定义和调用的时候, 参数都换行, vue 组件属性也换行
 
 # form表单
 
@@ -30,6 +35,22 @@ metadata:
 - `numeral` - 数字格式化, 可直接使用, 无需引入
 
 # 常用开发技巧
+
+## 页面参数接收
+- 使用 `onLoad` 生命周期钩子接收页面跳转传递的参数，**禁止**使用 `getCurrentPages()` 方式获取参数
+- `onLoad` 的回调参数 `query` 包含页面 URL 中的查询参数
+- 页面初始化逻辑（如 `initFrame()`）应放在 `onLoad` 内部调用，而非直接在 `setup` 中调用
+
+```typescript
+onLoad(async (query?: AnyObject) => {
+  const some_param = query?.some_param;
+  if (some_param) {
+    search.some_field = decodeURIComponent(some_param);
+  }
+  await initFrame();
+});
+```
+
 - 表单通常会有 `let inited = $ref(false);` 标记是否初始化完成, 避免在初始化前触发表单变更事件
 
 ```vue

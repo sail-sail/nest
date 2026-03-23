@@ -263,7 +263,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: DomainInput = $ref({
+let dialogModel = $ref<DomainInput>({
 } as DomainInput);
 
 let domain_model = $ref<DomainModel>();

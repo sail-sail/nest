@@ -263,7 +263,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: LangInput = $ref({
+let dialogModel = $ref<LangInput>({
 } as LangInput);
 
 let lang_model = $ref<LangModel>();

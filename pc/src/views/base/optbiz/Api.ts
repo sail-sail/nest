@@ -23,7 +23,7 @@ export async function setLblByIdOptbiz(
 }
 
 export function intoInputOptbiz(
-  model?: OptbizInput,
+  model?: OptbizInput | null,
 ) {
   const input: OptbizInput = {
     // ID
