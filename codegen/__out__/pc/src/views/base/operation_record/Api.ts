@@ -20,7 +20,7 @@ export async function setLblByIdOperationRecord(
 }
 
 export function intoInputOperationRecord(
-  model?: OperationRecordInput,
+  model?: OperationRecordInput | null,
 ) {
   const input: OperationRecordInput = {
     // ID

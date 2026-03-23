@@ -691,7 +691,7 @@ watch(
   },
 );
 
-const dictbizDetailDialogRef = $(useTemplateRef<InstanceType<typeof DictbizDetailDialog>>("dictDetailDialogRef"));
+const dictbizDetailDialogRef = $(useTemplateRef<InstanceType<typeof DictbizDetailDialog>>("dictbizDetailDialogRef"));
 
 /**
  * 打开新增选项对话框

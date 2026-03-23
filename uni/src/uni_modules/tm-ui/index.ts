@@ -28,7 +28,6 @@ export default {
     // @ts-ignore
     install: (app: App, options: TM.THEME_CONFIG | null = null) => {
 		$i18n = i18n(options?.i18n)
-		console.log('[tm-ui] 欢迎使用极具精致的UniApp组件包');
         app.mixin({
             onReady() {
 
