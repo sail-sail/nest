@@ -312,7 +312,7 @@ CREATE TABLE if not exists `base_permit` (
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `is_sys` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '系统记录,dict:is_sys',
-  INDEX (`is_deleted`, `menu_id`, `code`),
+  INDEX (`menu_id`, `code`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='按钮权限';
 
@@ -808,7 +808,7 @@ CREATE TABLE if not exists `base_dyn_page_data` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`tenant_id`, `is_deleted`, `ref_code`, `ref_id`),
+  INDEX (`tenant_id`, `is_deleted`, `ref_code`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='动态页面数据';
 
