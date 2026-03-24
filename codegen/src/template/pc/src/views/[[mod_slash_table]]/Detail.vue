@@ -7324,11 +7324,15 @@ async function save() {
       const blob = new Blob([ <#=column_name#>FluentEditor?.root.innerHTML ], { type: "text/html" });
       const file = new File([ blob ], "<#=column_name#>.html", { type: "text/html" });
       dialogModel2.<#=column_name#> = await uploadFile(
-        file,
+        file,<#
+        if (column.isPublicAtt) {
+        #>
         undefined,
         {
           isPublic: true,
-        },
+        },<#
+        }
+        #>
       );
     }<#
     }
@@ -7447,11 +7451,15 @@ async function save() {
       const blob = new Blob([ <#=column_name#>FluentEditor?.root.innerHTML ], { type: "text/html" });
       const file = new File([ blob ], "<#=column_name#>.html", { type: "text/html" });
       dialogModel2.<#=column_name#> = await uploadFile(
-        file,
+        file,<#
+        if (column.isPublicAtt) {
+        #>
         undefined,
         {
           isPublic: true,
-        },
+        },<#
+        }
+        #>
       );
     }<#
     }
