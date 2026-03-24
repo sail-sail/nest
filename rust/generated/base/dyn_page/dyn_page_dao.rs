@@ -2469,7 +2469,7 @@ pub async fn update_by_id_dyn_page(
     args.push(is_enabled.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

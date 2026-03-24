@@ -2649,13 +2649,13 @@ pub async fn update_by_id_dept(
     args.push(tenant_id.into());
   }
   // 父部门
-  if let Some(parent_id) = input.parent_id {
+  if let Some(parent_id) = input.parent_id.clone() {
     field_num += 1;
     sql_fields += "parent_id=?,";
     args.push(parent_id.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
@@ -2687,13 +2687,13 @@ pub async fn update_by_id_dept(
     }
   }
   // 组织
-  if let Some(org_id) = input.org_id {
+  if let Some(org_id) = input.org_id.clone() {
     field_num += 1;
     sql_fields += "org_id=?,";
     args.push(org_id.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

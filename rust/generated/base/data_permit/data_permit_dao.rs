@@ -2265,25 +2265,25 @@ pub async fn update_by_id_data_permit(
     args.push(tenant_id.into());
   }
   // 菜单
-  if let Some(menu_id) = input.menu_id {
+  if let Some(menu_id) = input.menu_id.clone() {
     field_num += 1;
     sql_fields += "menu_id=?,";
     args.push(menu_id.into());
   }
   // 范围
-  if let Some(scope) = input.scope {
+  if let Some(scope) = input.scope.clone() {
     field_num += 1;
     sql_fields += "scope=?,";
     args.push(scope.into());
   }
   // 类型
-  if let Some(r#type) = input.r#type {
+  if let Some(r#type) = input.r#type.clone() {
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

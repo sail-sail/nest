@@ -2148,19 +2148,19 @@ pub async fn update_by_id_dict_detail(
   
   let mut field_num: usize = 0;
   // 系统字典
-  if let Some(dict_id) = input.dict_id {
+  if let Some(dict_id) = input.dict_id.clone() {
     field_num += 1;
     sql_fields += "dict_id=?,";
     args.push(dict_id.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 值
-  if let Some(val) = input.val {
+  if let Some(val) = input.val.clone() {
     field_num += 1;
     sql_fields += "val=?,";
     args.push(val.into());
@@ -2178,7 +2178,7 @@ pub async fn update_by_id_dict_detail(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

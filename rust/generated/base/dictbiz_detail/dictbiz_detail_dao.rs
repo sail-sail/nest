@@ -2233,19 +2233,19 @@ pub async fn update_by_id_dictbiz_detail(
     args.push(tenant_id.into());
   }
   // 业务字典
-  if let Some(dictbiz_id) = input.dictbiz_id {
+  if let Some(dictbiz_id) = input.dictbiz_id.clone() {
     field_num += 1;
     sql_fields += "dictbiz_id=?,";
     args.push(dictbiz_id.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 值
-  if let Some(val) = input.val {
+  if let Some(val) = input.val.clone() {
     field_num += 1;
     sql_fields += "val=?,";
     args.push(val.into());
@@ -2263,7 +2263,7 @@ pub async fn update_by_id_dictbiz_detail(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());
