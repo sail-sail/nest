@@ -1038,17 +1038,22 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       if (data_type === "decimal" && isVirtual) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#> = Decimal::try_from(<#=column_default || 0#>).unwrap();<#
+    let <#=column_name_rust#> = Decimal::from(<#=column_default || "0"#>);<#
         continue;
       } else if ((data_type === "varchar" || data_type === "text") && isVirtual) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#> = "<#=column_default || ""#>".to_owned();<#
+    let <#=column_name_rust#> = SmolStr::new("<#=column_default || ""#>");<#
+      if (column.dictbiz || column.dict) {
+    #>
+    let <#=column_name#>_lbl = SmolStr::new("");<#
+      }
+    #><#
         continue;
       } else if ([ "int", "tinyint" ].includes(data_type) && isVirtual) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#> = <#=column_default || 0#>.to_owned();<#
+    let <#=column_name_rust#> = <#=column_default || "0"#>.to_owned();<#
         continue;
       }
     #><#
@@ -3296,17 +3301,17 @@ impl FromRow<'_, MySqlRow> for <#=Table_Up#>Summary {
       if (data_type === "decimal" && isVirtual) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#> = Decimal::try_from(<#=column_default || 0#>).unwrap();<#
+    let <#=column_name_rust#> = Decimal::from(<#=column_default || 0#>);<#
         continue;
       } else if ((data_type === "varchar" || data_type === "text") && isVirtual) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#> = "<#=column_default || ""#>".to_owned();<#
+    let <#=column_name_rust#> = SmolStr::new("<#=column_default || ""#>");<#
         continue;
       } else if ([ "int", "tinyint" ].includes(data_type) && isVirtual) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#> = <#=column_default || 0#>.to_owned();<#
+    let <#=column_name_rust#> = <#=column_default || 0#>;<#
         continue;
       }
     #>
