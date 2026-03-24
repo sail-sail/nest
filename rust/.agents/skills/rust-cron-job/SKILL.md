@@ -1,6 +1,6 @@
 ---
 name: rust-cron-job
-description: Rust 定时任务开发规范. 新增/修改 cron_job 与业务定时任务时使用
+description: Rust 定时任务规范.新增/修改定时任务使用
 ---
 
 # Rust 定时任务开发
