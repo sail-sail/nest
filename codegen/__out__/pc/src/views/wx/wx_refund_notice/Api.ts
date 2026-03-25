@@ -24,7 +24,7 @@ export async function setLblByIdWxRefundNotice(
 }
 
 export function intoInputWxRefundNotice(
-  model?: WxRefundNoticeInput,
+  model?: WxRefundNoticeInput | null,
 ) {
   const input: WxRefundNoticeInput = {
     // ID
@@ -445,7 +445,7 @@ export function getPagePathWxRefundNotice() {
 /** 新增时的默认值 */
 export async function getDefaultInputWxRefundNotice() {
   const defaultInput: WxRefundNoticeInput = {
-    refund_status: WxRefundNoticeRefundStatus.NoRefund,
+    refund_status: WxRefundNoticeRefundStatus.Processing,
     amount_total: 0,
     amount_refund: 0,
     amount_payer_total: 0,

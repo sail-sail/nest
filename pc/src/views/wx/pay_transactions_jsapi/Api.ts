@@ -25,7 +25,7 @@ export async function setLblByIdPayTransactionsJsapi(
 }
 
 export function intoInputPayTransactionsJsapi(
-  model?: PayTransactionsJsapiInput,
+  model?: PayTransactionsJsapiInput | null,
 ) {
   const input: PayTransactionsJsapiInput = {
     // ID

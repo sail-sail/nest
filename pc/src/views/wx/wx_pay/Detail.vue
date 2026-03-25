@@ -370,7 +370,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: WxPayInput = $ref({
+let dialogModel = $ref<WxPayInput>({
 } as WxPayInput);
 
 let wx_pay_model = $ref<WxPayModel>();
@@ -678,7 +678,7 @@ async function onRefresh() {
   const [
     data,
   ] = await Promise.all([
-    await findOneModel({
+    findOneModel({
       id,
       is_deleted,
     }),

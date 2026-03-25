@@ -27,7 +27,7 @@ export async function setLblByIdWxRefund(
 }
 
 export function intoInputWxRefund(
-  model?: WxRefundInput,
+  model?: WxRefundInput | null,
 ) {
   const input: WxRefundInput = {
     // ID
@@ -482,7 +482,7 @@ export function getPagePathWxRefund() {
 export async function getDefaultInputWxRefund() {
   const defaultInput: WxRefundInput = {
     channel: WxRefundChannel.Original,
-    status: WxRefundStatus.NoRefund,
+    status: WxRefundStatus.Processing,
     funds_account: WxRefundFundsAccount.Unsettled,
     amount_total: 0,
     amount_refund: 0,
