@@ -7,7 +7,7 @@ import zhHant from "./localLanuage/zh-Hant.json";
 import en from "./localLanuage/en.json";
 import ja from "./localLanuage/ja.json";
 import ko from "./localLanuage/ko.json";
-import { I18nOptions } from "./interface";
+import { type I18nOptions } from "./interface";
 
 export const i18n = (options?: I18nOptions) => {
     // 创建多语言实例

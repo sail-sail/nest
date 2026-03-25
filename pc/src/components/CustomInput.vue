@@ -105,16 +105,16 @@
 <script lang="ts" setup>
 
 const emit = defineEmits<{
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
 
 const props = withDefaults(
   defineProps<{
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     type?: string;
     clearable?: boolean;
@@ -161,7 +161,7 @@ const shouldShowPlaceholder = computed<boolean>(() => {
 const inputRef = useTemplateRef("inputRef");
 const textareaHeight = ref<number>();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 useResizeObserver(inputRef as any, (entries) => {
   if (props.type !== "textarea") {
     return;

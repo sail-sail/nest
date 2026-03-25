@@ -213,7 +213,7 @@ async function showDialog(
   } else {
     nextTick(() => {
       if (fileRef) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line @typescript-eslint/no-explicit-any
         (fileRef as any).value = "";
       }
     });

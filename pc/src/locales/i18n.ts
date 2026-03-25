@@ -2,14 +2,14 @@ import {
   n0,
 } from "./Api";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 let i18nLblsLang: Record<string, any> | undefined = undefined;
 
 const reg = /\{([\s\S]*?)\}/gm;
 
 function setLblArgs(
   i18nLbl: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   args: any[],
 ) {
   if (args.length === 1 && typeof args[0] === "object") {
@@ -73,7 +73,7 @@ export function useI18n(routePath?: string | null) {
   const usrStore = useUsrStore();
   const lang = usrStore.lang;
   return {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     n(code: string, ...args: any[]) {
       if (routePath === undefined) {
         const route = useRoute();
@@ -81,7 +81,7 @@ export function useI18n(routePath?: string | null) {
       }
       return getLbl(lang, code, routePath, ...args);
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     nAsync(code: string, ...args: any[]) {
       if (routePath === undefined) {
         const route = useRoute();
@@ -98,11 +98,11 @@ export function useI18n(routePath?: string | null) {
       }
       return initI18ns(lang, codes, routePath);
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     ns(code: string, ...args: any[]) {
       return getLbl(lang, code, "", ...args);
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     nsAsync(code: string, ...args: any[]) {
       return getLblAsync(lang, code, "", ...args);
     },
@@ -125,7 +125,7 @@ function initI18nLblsLang() {
     if (i18nsLangStr) {
       try {
         i18nLblsLang = JSON.parse(i18nsLangStr);
-      // eslint-disable-next-line no-empty
+      // oxlint-disable-next-line no-empty
       } catch (e) { }
     }
     const __version = localStorage.getItem("__i18n_version");
@@ -154,7 +154,7 @@ function getLbl(
   lang: string,
   code: string,
   routePath: string | null,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: any[]
 ) {
   if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {
@@ -188,7 +188,7 @@ async function getLblAsync(
   lang: string,
   code: string,
   routePath: string | null,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: any[]
 ) {
   if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {

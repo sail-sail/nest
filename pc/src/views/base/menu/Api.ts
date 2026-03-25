@@ -554,7 +554,7 @@ export function useMenuTreeFilter(_value: string, model: MenuModel): boolean {
   if (!route_path) {
     return false;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const isPermit = (menuDataPermit as any)[route_path];
   return isPermit;
 }

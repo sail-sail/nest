@@ -146,9 +146,9 @@ export async function getDictbiz(
 
 export function list2tree<
   R extends {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     id: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     parent_id: any;
   },
 >(

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
+/* oxlint-disable @typescript-eslint/no-empty-object-type */
 import type {
   I18nInput as I18nInputType,
   I18nModel as I18nModelType,

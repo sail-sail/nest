@@ -22,7 +22,7 @@
 </template>
 <script setup lang="ts">
 //@ts-nocheck
-import { computed, getCurrentInstance, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue'
+import { computed, getCurrentInstance, onBeforeUnmount, onMounted, type PropType, ref, watch } from 'vue'
 import { covetUniNumber, getUid, getUnit } from '../../libs/tool'
 import { getDefaultColor } from '../../libs/colors'
 import { useTmConfig } from '../../libs/config'

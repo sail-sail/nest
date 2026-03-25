@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ComputedRef, getCurrentInstance, inject, onBeforeMount, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue';
+import { computed, ComputedRef, getCurrentInstance, inject, onBeforeMount, onBeforeUnmount, onMounted, type PropType, ref, watch } from 'vue';
 import { useTmConfig } from "../../libs/config";
 import TmDropdownMenu from '../tm-dropdown-menu/tm-dropdown-menu.vue';
 import { covetUniNumber, findParent } from '../../libs/tool';
