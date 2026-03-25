@@ -87,7 +87,7 @@ export interface ComponentPropConfig {
   type: "string" | "number" | "boolean" | "select";  // 类型
   options?: Array<{ label: string; value: string }>;  // 当 type="select" 时的预定义选项 { label: 中文, value: 英文编码 }
   isOptionsConfig?: boolean;  // 标记此字段用于配置下拉选项(使用 el-input-tag)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   default?: any;       // 默认值
 }
 

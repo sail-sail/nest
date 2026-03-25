@@ -505,9 +505,9 @@ function refreshTab_active_line() {
     return;
   }
   tab_active_lineRef.style.display = "block";
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   if ((tab_activeEl as any).scrollIntoViewIfNeeded) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     (tab_activeEl as any).scrollIntoViewIfNeeded(true);
   } else {
     tab_activeEl.scrollIntoView({ block: "center", inline: "center" });

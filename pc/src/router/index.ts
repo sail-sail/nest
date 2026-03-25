@@ -1,7 +1,7 @@
 import {
   createRouter,
   createWebHashHistory,
-  RouteRecordRaw,
+  type RouteRecordRaw,
 } from "vue-router";
 
 import { routesGen } from "./gen.ts";

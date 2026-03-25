@@ -1,6 +1,6 @@
 <!--suppress JSDeprecatedSymbols -->
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, PropType, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, type PropType, ref, watch } from 'vue'
 import {$i18n} from "@/uni_modules/tm-ui"
 
 /**

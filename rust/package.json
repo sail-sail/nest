@@ -25,11 +25,11 @@
     "commander": "14.0.3",
     "dotenv": "17.3.1",
     "fs-extra": "11.3.4",
-    "graphql": "16.13.1",
+    "graphql": "16.13.2",
     "graphql-ts-client-codegen": "3.1.17",
     "minimist": "1.2.8",
     "ssh2-promise": "1.0.3",
-    "typescript": "5.9.3"
+    "typescript": "6.0.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

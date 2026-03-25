@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch, PropType, getCurrentInstance, nextTick } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch, type PropType, getCurrentInstance, nextTick } from 'vue';
 import { covetUniNumber, getUnit, getUid } from "../../libs/tool";
 import { useTmConfig } from "../../libs/config";
 

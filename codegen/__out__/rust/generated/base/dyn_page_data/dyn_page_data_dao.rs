@@ -2058,7 +2058,7 @@ pub async fn update_by_id_dyn_page_data(
     args.push(tenant_id.into());
   }
   // 关联页面路由
-  if let Some(ref_code) = input.ref_code {
+  if let Some(ref_code) = input.ref_code.clone() {
     field_num += 1;
     sql_fields += "ref_code=?,";
     args.push(ref_code.into());

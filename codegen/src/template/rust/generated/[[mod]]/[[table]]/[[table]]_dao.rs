@@ -6780,7 +6780,7 @@ pub async fn update_by_id_<#=table#>(
     } else if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
   #>
   // <#=column_comment#>
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#>.clone() {
     field_num += 1;
     sql_fields += "<#=column_name_mysql#>=?,";
     args.push(encrypt(&<#=column_name_rust#>).into());
@@ -6828,7 +6828,9 @@ pub async fn update_by_id_<#=table#>(
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#><#
-    if (inline_column_modelLabels.length > 0 && column_name === opts?.lbl_field) {
+    if (inline_column_modelLabels.length > 0 && column_name === opts?.lbl_field
+      || [ "varchar", "text" ].includes(data_type)
+    ) {
   #>.clone()<#
     }
   #> {
@@ -7728,6 +7730,32 @@ pub async fn update_by_id_<#=table#>(
     ).await?;
   }<#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    if (column_name === "update_usr_id") continue;
+    if (column_name === "update_time") continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    const column_comment = column.COLUMN_COMMENT;
+    const isAtt = column.isAtt;
+    const isImg = column.isImg;
+    const isFluentEditor = column.isFluentEditor;
+    if (!isAtt && !isImg && !isFluentEditor) continue;
+  #>
+  
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#>.as_ref() && <#=column_name_rust#> != &old_model.<#=column_name_rust#> {
+    crate::common::oss::oss_dao::delete_object(
+      old_model.<#=column_name_rust#>.as_str(),
+    ).await?;
+  }<#
+  }
   #>
   
   Ok(id)
@@ -8307,7 +8335,8 @@ pub async fn delete_by_ids_<#=table#>(
       const column_comment = column.COLUMN_COMMENT;
       const isAtt = column.isAtt;
       const isImg = column.isImg;
-      if (!isAtt && !isImg) continue;
+      const isFluentEditor = column.isFluentEditor;
+      if (!isAtt && !isImg && !isFluentEditor) continue;
     #>
     
     // <#=column_comment#>
@@ -9293,7 +9322,8 @@ pub async fn force_delete_by_ids_<#=table#>(
       const column_comment = column.COLUMN_COMMENT;
       const isAtt = column.isAtt;
       const isImg = column.isImg;
-      if (!isAtt && !isImg) continue;
+      const isFluentEditor = column.isFluentEditor;
+      if (!isAtt && !isImg && !isFluentEditor) continue;
     #>
     
     // <#=column_comment#>

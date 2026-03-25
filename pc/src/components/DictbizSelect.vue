@@ -269,10 +269,10 @@ const t = getCurrentInstance();
 
 const emit = defineEmits<{
   (e: "data", value: DictbizModel[]): void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void;
   (e: "update:modelLabel", value?: string | null): void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void;
   (e: "clear"): void;
 }>();
@@ -284,7 +284,7 @@ const props = withDefaults(
     code: string;
     optionsMap?: OptionsMap;
     height?: number;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     modelLabel?: string | null;
     autoWidth?: boolean;
@@ -507,7 +507,7 @@ function getModelsByValue() {
     return findModelById(modelValue as string);
   }
   const modelValues = (modelValue || [ ]) as string[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const models: any[] = [ ];
   for (const id of modelValues) {
     const model = findModelById(id);
@@ -538,7 +538,7 @@ async function refreshDropdownWidth() {
     return;
   }
   await nextTick();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const selectRef = t.refs.selectRef as any;
   if (!selectRef) {
     return;

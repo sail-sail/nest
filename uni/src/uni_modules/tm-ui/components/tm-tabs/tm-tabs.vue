@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, PropType, provide, ref, watch } from 'vue'
+import { computed, nextTick, type PropType, provide, ref, watch } from 'vue'
 import { useTmConfig } from '../../libs/config'
 import { covetUniNumber, getUnit } from '../../libs/tool'
 import { getDefaultColor } from '../../libs/colors'

@@ -2978,37 +2978,37 @@ pub async fn update_by_id_dyn_page_field(
     args.push(code_seq.into());
   }
   // 编码
-  if let Some(code) = input.code {
+  if let Some(code) = input.code.clone() {
     field_num += 1;
     sql_fields += "code=?,";
     args.push(code.into());
   }
   // 动态页面
-  if let Some(dyn_page_id) = input.dyn_page_id {
+  if let Some(dyn_page_id) = input.dyn_page_id.clone() {
     field_num += 1;
     sql_fields += "dyn_page_id=?,";
     args.push(dyn_page_id.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 类型
-  if let Some(r#type) = input.r#type {
+  if let Some(r#type) = input.r#type.clone() {
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());
   }
   // 属性
-  if let Some(attrs) = input.attrs {
+  if let Some(attrs) = input.attrs.clone() {
     field_num += 1;
     sql_fields += "attrs=?,";
     args.push(attrs.into());
   }
   // 计算公式
-  if let Some(formula) = input.formula {
+  if let Some(formula) = input.formula.clone() {
     field_num += 1;
     sql_fields += "formula=?,";
     args.push(formula.into());
@@ -3032,7 +3032,7 @@ pub async fn update_by_id_dyn_page_field(
     args.push(width.into());
   }
   // 对齐方式
-  if let Some(align) = input.align {
+  if let Some(align) = input.align.clone() {
     field_num += 1;
     sql_fields += "align=?,";
     args.push(align.into());
