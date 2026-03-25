@@ -132,7 +132,7 @@
 </template>
 <script setup lang="ts">
     //@ts-nocheck
-	import { computed, PropType, ref, watchEffect } from 'vue'
+	import { computed, type PropType, ref, watchEffect } from 'vue'
 	import { arrayNumberValid, covetUniNumber } from '../../libs/tool'
 	import { useTmConfig } from '../../libs/config'
 	import { getDefaultColor, setTextColorLightByDark } from '../../libs/colors'

@@ -2,7 +2,7 @@ import {
   describe,
   it,
   expect,
-} from "vitest";
+} from "vite-plus/test";
 
 describe('suite', () => {
   it('serial test', async () => {

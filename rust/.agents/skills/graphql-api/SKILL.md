@@ -1,6 +1,6 @@
 ---
 name: graphql-api
-description: Rust GraphQL 接口开发. 创建自定义 API 时使用
+description: 创建自定义API使用.任意后端代码开发使用
 ---
 
 # GraphQL 接口开发
@@ -102,6 +102,8 @@ pub async fn method_name(
   ).await
 }
 ```
+
+- `options` 是 `Copy` 类型, 所有 Id 类型也是 `Copy` 类型
 
 ## Service 层
 

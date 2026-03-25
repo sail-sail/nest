@@ -1,6 +1,6 @@
 ---
 name: rust-test
-description: Rust 测试用例编写规范。编写单元测试或数据刷新脚本时使用
+description: Rust 测试用例编写规范.编写单元测试或数据刷新脚本时使用
 ---
 
 # Rust 测试用例编写

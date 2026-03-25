@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -636,7 +636,7 @@ pub async fn find_all_dict(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -661,7 +661,7 @@ pub async fn find_all_dict(
   
   // 系统字典明细
   let dict_detail_models = find_all_dict_detail(
-    DictDetailSearch {
+    Some(DictDetailSearch {
       dict_id: res
         .iter()
         .map(|item| item.id)
@@ -669,10 +669,10 @@ pub async fn find_all_dict(
         .into(),
       is_deleted,
       ..Default::default()
-    }.into(),
+    }),
     None,
     None,
-    None,
+    options,
   ).await?;
   
   #[allow(unused_variables)]
@@ -2253,19 +2253,19 @@ pub async fn update_by_id_dict(
   
   let mut field_num: usize = 0;
   // 编码
-  if let Some(code) = input.code {
+  if let Some(code) = input.code.clone() {
     field_num += 1;
     sql_fields += "code=?,";
     args.push(code.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 数据类型
-  if let Some(r#type) = input.r#type {
+  if let Some(r#type) = input.r#type.clone() {
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());
@@ -2289,7 +2289,7 @@ pub async fn update_by_id_dict(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

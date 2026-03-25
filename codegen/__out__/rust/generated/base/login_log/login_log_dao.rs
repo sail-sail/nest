@@ -34,7 +34,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -527,7 +527,7 @@ pub async fn find_all_login_log(
   ).await?;
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2006,13 +2006,13 @@ pub async fn update_by_id_login_log(
     args.push(tenant_id.into());
   }
   // 类型
-  if let Some(r#type) = input.r#type {
+  if let Some(r#type) = input.r#type.clone() {
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());
   }
   // 用户名
-  if let Some(username) = input.username {
+  if let Some(username) = input.username.clone() {
     field_num += 1;
     sql_fields += "username=?,";
     args.push(username.into());
@@ -2024,7 +2024,7 @@ pub async fn update_by_id_login_log(
     args.push(is_succ.into());
   }
   // IP
-  if let Some(ip) = input.ip {
+  if let Some(ip) = input.ip.clone() {
     field_num += 1;
     sql_fields += "ip=?,";
     args.push(ip.into());

@@ -1,6 +1,6 @@
 ---
 name: wx-pay
-description: 微信支付流程开发. 需要实现支付功能时使用
+description: 微信支付流程开发. 实现支付功能时使用
 ---
 
 # 微信支付流程

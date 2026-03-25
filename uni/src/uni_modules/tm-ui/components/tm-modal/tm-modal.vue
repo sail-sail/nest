@@ -6,7 +6,7 @@
 		onMounted,
 		onBeforeUnmount,
 		watch,
-		PropType,
+		type PropType,
 		getCurrentInstance,
 		onUpdated,
 		nextTick,

@@ -34,7 +34,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -569,7 +569,7 @@ pub async fn find_all_operation_record(
   ).await?;
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -1918,31 +1918,31 @@ pub async fn update_by_id_operation_record(
     args.push(tenant_id.into());
   }
   // 模块
-  if let Some(module) = input.module {
+  if let Some(module) = input.module.clone() {
     field_num += 1;
     sql_fields += "module=?,";
     args.push(module.into());
   }
   // 模块名称
-  if let Some(module_lbl) = input.module_lbl {
+  if let Some(module_lbl) = input.module_lbl.clone() {
     field_num += 1;
     sql_fields += "module_lbl=?,";
     args.push(module_lbl.into());
   }
   // 方法
-  if let Some(method) = input.method {
+  if let Some(method) = input.method.clone() {
     field_num += 1;
     sql_fields += "method=?,";
     args.push(method.into());
   }
   // 方法名称
-  if let Some(method_lbl) = input.method_lbl {
+  if let Some(method_lbl) = input.method_lbl.clone() {
     field_num += 1;
     sql_fields += "method_lbl=?,";
     args.push(method_lbl.into());
   }
   // 操作
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
@@ -1954,13 +1954,13 @@ pub async fn update_by_id_operation_record(
     args.push(time.into());
   }
   // 操作前数据
-  if let Some(old_data) = input.old_data {
+  if let Some(old_data) = input.old_data.clone() {
     field_num += 1;
     sql_fields += "old_data=?,";
     args.push(old_data.into());
   }
   // 操作后数据
-  if let Some(new_data) = input.new_data {
+  if let Some(new_data) = input.new_data.clone() {
     field_num += 1;
     sql_fields += "new_data=?,";
     args.push(new_data.into());

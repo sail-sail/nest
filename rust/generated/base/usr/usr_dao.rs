@@ -42,7 +42,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -991,7 +991,7 @@ pub async fn find_all_usr(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -3086,19 +3086,19 @@ pub async fn update_by_id_usr(
     args.push(tenant_id.into());
   }
   // 头像
-  if let Some(img) = input.img {
+  if let Some(img) = input.img.clone() {
     field_num += 1;
     sql_fields += "img=?,";
     args.push(img.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 用户名
-  if let Some(username) = input.username {
+  if let Some(username) = input.username.clone() {
     field_num += 1;
     sql_fields += "username=?,";
     args.push(username.into());
@@ -3112,13 +3112,13 @@ pub async fn update_by_id_usr(
     }
   }
   // 默认组织
-  if let Some(default_org_id) = input.default_org_id {
+  if let Some(default_org_id) = input.default_org_id.clone() {
     field_num += 1;
     sql_fields += "default_org_id=?,";
     args.push(default_org_id.into());
   }
   // 类型
-  if let Some(r#type) = input.r#type {
+  if let Some(r#type) = input.r#type.clone() {
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());
@@ -3142,7 +3142,7 @@ pub async fn update_by_id_usr(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());
@@ -3317,6 +3317,13 @@ pub async fn update_by_id_usr(
         column1: "usr_id",
         column2: "org_id",
       },
+    ).await?;
+  }
+  
+  // 头像
+  if let Some(img) = input.img.as_ref() && img != &old_model.img {
+    crate::common::oss::oss_dao::delete_object(
+      old_model.img.as_str(),
     ).await?;
   }
   

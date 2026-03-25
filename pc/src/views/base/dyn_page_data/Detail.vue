@@ -353,7 +353,7 @@ watch(
         comment_to_code[comment] = code;
       }
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     const model2: Record<string, any> = { };
     for (const [key, val] of Object.entries(value)) {
       if (key === "dyn_page_data" && val && typeof val === "object") {
@@ -597,7 +597,7 @@ async function onRefresh() {
   const [
     data,
   ] = await Promise.all([
-    await findOneModel({
+    findOneModel({
       id,
       is_deleted,
     }),
