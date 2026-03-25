@@ -38,7 +38,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -700,7 +700,7 @@ pub async fn find_all_wxw_app(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2446,37 +2446,37 @@ pub async fn update_by_id_wxw_app(
     args.push(tenant_id.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 企业ID
-  if let Some(corpid) = input.corpid {
+  if let Some(corpid) = input.corpid.clone() {
     field_num += 1;
     sql_fields += "corpid=?,";
     args.push(corpid.into());
   }
   // 应用ID
-  if let Some(agentid) = input.agentid {
+  if let Some(agentid) = input.agentid.clone() {
     field_num += 1;
     sql_fields += "agentid=?,";
     args.push(agentid.into());
   }
   // 可信域名
-  if let Some(domain_id) = input.domain_id {
+  if let Some(domain_id) = input.domain_id.clone() {
     field_num += 1;
     sql_fields += "domain_id=?,";
     args.push(domain_id.into());
   }
   // 应用密钥
-  if let Some(corpsecret) = input.corpsecret {
+  if let Some(corpsecret) = input.corpsecret.clone() {
     field_num += 1;
     sql_fields += "corpsecret=?,";
     args.push(encrypt(&corpsecret).into());
   }
   // 通讯录密钥
-  if let Some(contactsecret) = input.contactsecret {
+  if let Some(contactsecret) = input.contactsecret.clone() {
     field_num += 1;
     sql_fields += "contactsecret=?,";
     args.push(encrypt(&contactsecret).into());
@@ -2500,7 +2500,7 @@ pub async fn update_by_id_wxw_app(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

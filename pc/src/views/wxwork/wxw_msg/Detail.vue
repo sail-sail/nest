@@ -286,7 +286,7 @@ let oldDialogNotice: string | undefined = undefined;
 let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
-let dialogModel: WxwMsgInput = $ref({
+let dialogModel = $ref<WxwMsgInput>({
 } as WxwMsgInput);
 
 let wxw_msg_model = $ref<WxwMsgModel>();
@@ -515,7 +515,7 @@ async function onRefresh() {
   const [
     data,
   ] = await Promise.all([
-    await findOneModel({
+    findOneModel({
       id,
       is_deleted,
     }),

@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -793,7 +793,7 @@ pub async fn find_all_wxw_usr(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2382,91 +2382,91 @@ pub async fn update_by_id_wxw_usr(
     args.push(tenant_id.into());
   }
   // 企微应用
-  if let Some(wxw_app_id) = input.wxw_app_id {
+  if let Some(wxw_app_id) = input.wxw_app_id.clone() {
     field_num += 1;
     sql_fields += "wxw_app_id=?,";
     args.push(wxw_app_id.into());
   }
   // 企业ID
-  if let Some(corpid) = input.corpid {
+  if let Some(corpid) = input.corpid.clone() {
     field_num += 1;
     sql_fields += "corpid=?,";
     args.push(corpid.into());
   }
   // 应用ID
-  if let Some(agentid) = input.agentid {
+  if let Some(agentid) = input.agentid.clone() {
     field_num += 1;
     sql_fields += "agentid=?,";
     args.push(agentid.into());
   }
   // 姓名
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 用户ID
-  if let Some(userid) = input.userid {
+  if let Some(userid) = input.userid.clone() {
     field_num += 1;
     sql_fields += "userid=?,";
     args.push(userid.into());
   }
   // 手机号
-  if let Some(mobile) = input.mobile {
+  if let Some(mobile) = input.mobile.clone() {
     field_num += 1;
     sql_fields += "mobile=?,";
     args.push(mobile.into());
   }
   // 性别
-  if let Some(gender) = input.gender {
+  if let Some(gender) = input.gender.clone() {
     field_num += 1;
     sql_fields += "gender=?,";
     args.push(gender.into());
   }
   // 邮箱
-  if let Some(email) = input.email {
+  if let Some(email) = input.email.clone() {
     field_num += 1;
     sql_fields += "email=?,";
     args.push(email.into());
   }
   // 企业邮箱
-  if let Some(biz_email) = input.biz_email {
+  if let Some(biz_email) = input.biz_email.clone() {
     field_num += 1;
     sql_fields += "biz_email=?,";
     args.push(biz_email.into());
   }
   // 直属上级
-  if let Some(direct_leader) = input.direct_leader {
+  if let Some(direct_leader) = input.direct_leader.clone() {
     field_num += 1;
     sql_fields += "direct_leader=?,";
     args.push(direct_leader.into());
   }
   // 职位
-  if let Some(position) = input.position {
+  if let Some(position) = input.position.clone() {
     field_num += 1;
     sql_fields += "position=?,";
     args.push(position.into());
   }
   // 头像
-  if let Some(avatar) = input.avatar {
+  if let Some(avatar) = input.avatar.clone() {
     field_num += 1;
     sql_fields += "avatar=?,";
     args.push(avatar.into());
   }
   // 头像缩略图
-  if let Some(thumb_avatar) = input.thumb_avatar {
+  if let Some(thumb_avatar) = input.thumb_avatar.clone() {
     field_num += 1;
     sql_fields += "thumb_avatar=?,";
     args.push(thumb_avatar.into());
   }
   // 个人二维码
-  if let Some(qr_code) = input.qr_code {
+  if let Some(qr_code) = input.qr_code.clone() {
     field_num += 1;
     sql_fields += "qr_code=?,";
     args.push(qr_code.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

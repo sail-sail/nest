@@ -34,7 +34,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -667,7 +667,7 @@ pub async fn find_all_wxw_msg(
   ).await?;
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2178,55 +2178,55 @@ pub async fn update_by_id_wxw_msg(
     args.push(tenant_id.into());
   }
   // 企微应用
-  if let Some(wxw_app_id) = input.wxw_app_id {
+  if let Some(wxw_app_id) = input.wxw_app_id.clone() {
     field_num += 1;
     sql_fields += "wxw_app_id=?,";
     args.push(wxw_app_id.into());
   }
   // 发送状态
-  if let Some(errcode) = input.errcode {
+  if let Some(errcode) = input.errcode.clone() {
     field_num += 1;
     sql_fields += "errcode=?,";
     args.push(errcode.into());
   }
   // 成员ID
-  if let Some(touser) = input.touser {
+  if let Some(touser) = input.touser.clone() {
     field_num += 1;
     sql_fields += "touser=?,";
     args.push(touser.into());
   }
   // 标题
-  if let Some(title) = input.title {
+  if let Some(title) = input.title.clone() {
     field_num += 1;
     sql_fields += "title=?,";
     args.push(title.into());
   }
   // 描述
-  if let Some(description) = input.description {
+  if let Some(description) = input.description.clone() {
     field_num += 1;
     sql_fields += "description=?,";
     args.push(description.into());
   }
   // 链接
-  if let Some(url) = input.url {
+  if let Some(url) = input.url.clone() {
     field_num += 1;
     sql_fields += "url=?,";
     args.push(url.into());
   }
   // 按钮文字
-  if let Some(btntxt) = input.btntxt {
+  if let Some(btntxt) = input.btntxt.clone() {
     field_num += 1;
     sql_fields += "btntxt=?,";
     args.push(btntxt.into());
   }
   // 错误信息
-  if let Some(errmsg) = input.errmsg {
+  if let Some(errmsg) = input.errmsg.clone() {
     field_num += 1;
     sql_fields += "errmsg=?,";
     args.push(errmsg.into());
   }
   // 消息ID
-  if let Some(msgid) = input.msgid {
+  if let Some(msgid) = input.msgid.clone() {
     field_num += 1;
     sql_fields += "msgid=?,";
     args.push(msgid.into());

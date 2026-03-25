@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -762,7 +762,7 @@ pub async fn find_all_wxw_app_token(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2409,37 +2409,37 @@ pub async fn update_by_id_wxw_app_token(
     args.push(tenant_id.into());
   }
   // 企微应用
-  if let Some(wxw_app_id) = input.wxw_app_id {
+  if let Some(wxw_app_id) = input.wxw_app_id.clone() {
     field_num += 1;
     sql_fields += "wxw_app_id=?,";
     args.push(wxw_app_id.into());
   }
   // 类型corp和contact
-  if let Some(r#type) = input.r#type {
+  if let Some(r#type) = input.r#type.clone() {
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());
   }
   // 企业ID
-  if let Some(corpid) = input.corpid {
+  if let Some(corpid) = input.corpid.clone() {
     field_num += 1;
     sql_fields += "corpid=?,";
     args.push(corpid.into());
   }
   // 密钥
-  if let Some(corpsecret) = input.corpsecret {
+  if let Some(corpsecret) = input.corpsecret.clone() {
     field_num += 1;
     sql_fields += "corpsecret=?,";
     args.push(corpsecret.into());
   }
   // 通讯录密钥
-  if let Some(contactsecret) = input.contactsecret {
+  if let Some(contactsecret) = input.contactsecret.clone() {
     field_num += 1;
     sql_fields += "contactsecret=?,";
     args.push(contactsecret.into());
   }
   // 令牌
-  if let Some(access_token) = input.access_token {
+  if let Some(access_token) = input.access_token.clone() {
     field_num += 1;
     sql_fields += "access_token=?,";
     args.push(access_token.into());
@@ -2460,7 +2460,7 @@ pub async fn update_by_id_wxw_app_token(
     args.push(expires_in.into());
   }
   // 企业jsapi_ticket
-  if let Some(jsapi_ticket) = input.jsapi_ticket {
+  if let Some(jsapi_ticket) = input.jsapi_ticket.clone() {
     field_num += 1;
     sql_fields += "jsapi_ticket=?,";
     args.push(jsapi_ticket.into());
@@ -2481,7 +2481,7 @@ pub async fn update_by_id_wxw_app_token(
     args.push(jsapi_ticket_expires_in.into());
   }
   // 应用jsapi_ticket
-  if let Some(jsapi_ticket_agent_config) = input.jsapi_ticket_agent_config {
+  if let Some(jsapi_ticket_agent_config) = input.jsapi_ticket_agent_config.clone() {
     field_num += 1;
     sql_fields += "jsapi_ticket_agent_config=?,";
     args.push(jsapi_ticket_agent_config.into());
