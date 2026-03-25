@@ -3112,13 +3112,13 @@ pub async fn update_by_id_usr(
     }
   }
   // 默认组织
-  if let Some(default_org_id) = input.default_org_id.clone() {
+  if let Some(default_org_id) = input.default_org_id {
     field_num += 1;
     sql_fields += "default_org_id=?,";
     args.push(default_org_id.into());
   }
   // 类型
-  if let Some(r#type) = input.r#type.clone() {
+  if let Some(r#type) = input.r#type {
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());

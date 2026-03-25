@@ -1549,7 +1549,7 @@ pub async fn update_by_id_server_log(
     args.push(log_time.into());
   }
   // 日志级别
-  if let Some(level) = input.level.clone() {
+  if let Some(level) = input.level {
     field_num += 1;
     sql_fields += "level=?,";
     args.push(level.into());

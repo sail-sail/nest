@@ -2233,7 +2233,7 @@ pub async fn update_by_id_dictbiz_detail(
     args.push(tenant_id.into());
   }
   // 业务字典
-  if let Some(dictbiz_id) = input.dictbiz_id.clone() {
+  if let Some(dictbiz_id) = input.dictbiz_id {
     field_num += 1;
     sql_fields += "dictbiz_id=?,";
     args.push(dictbiz_id.into());

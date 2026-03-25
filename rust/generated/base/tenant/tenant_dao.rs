@@ -2837,7 +2837,7 @@ pub async fn update_by_id_tenant(
     }
   }
   // 语言
-  if let Some(lang_id) = input.lang_id.clone() {
+  if let Some(lang_id) = input.lang_id {
     field_num += 1;
     sql_fields += "lang_id=?,";
     args.push(lang_id.into());
