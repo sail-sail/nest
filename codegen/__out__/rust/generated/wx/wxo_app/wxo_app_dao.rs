@@ -2831,19 +2831,19 @@ pub async fn update_by_id_wxo_app(
     args.push(encoding_aes_key.into());
   }
   // 消息加解密方式
-  if let Some(encoding_type) = input.encoding_type.clone() {
+  if let Some(encoding_type) = input.encoding_type {
     field_num += 1;
     sql_fields += "encoding_type=?,";
     args.push(encoding_type.into());
   }
   // 授权作用域
-  if let Some(scope) = input.scope.clone() {
+  if let Some(scope) = input.scope {
     field_num += 1;
     sql_fields += "scope=?,";
     args.push(scope.into());
   }
   // 网页授权域名
-  if let Some(domain_id) = input.domain_id.clone() {
+  if let Some(domain_id) = input.domain_id {
     field_num += 1;
     sql_fields += "domain_id=?,";
     args.push(domain_id.into());

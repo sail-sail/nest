@@ -2399,7 +2399,7 @@ pub async fn update_by_id_wxo_usr(
     args.push(head_img.into());
   }
   // 绑定用户
-  if let Some(usr_id) = input.usr_id.clone() {
+  if let Some(usr_id) = input.usr_id {
     field_num += 1;
     sql_fields += "usr_id=?,";
     args.push(usr_id.into());

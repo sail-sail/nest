@@ -2464,7 +2464,7 @@ pub async fn update_by_id_wx_refund(
     args.push(notify_url.into());
   }
   // 退款渠道
-  if let Some(channel) = input.channel.clone() {
+  if let Some(channel) = input.channel {
     field_num += 1;
     sql_fields += "channel=?,";
     args.push(channel.into());
@@ -2485,13 +2485,13 @@ pub async fn update_by_id_wx_refund(
     sql_fields += "success_time=null,";
   }
   // 退款状态
-  if let Some(status) = input.status.clone() {
+  if let Some(status) = input.status {
     field_num += 1;
     sql_fields += "status=?,";
     args.push(status.into());
   }
   // 资金账户
-  if let Some(funds_account) = input.funds_account.clone() {
+  if let Some(funds_account) = input.funds_account {
     field_num += 1;
     sql_fields += "funds_account=?,";
     args.push(funds_account.into());
@@ -2533,7 +2533,7 @@ pub async fn update_by_id_wx_refund(
     args.push(amount_discount_refund.into());
   }
   // 退款币种
-  if let Some(amount_currency) = input.amount_currency.clone() {
+  if let Some(amount_currency) = input.amount_currency {
     field_num += 1;
     sql_fields += "amount_currency=?,";
     args.push(amount_currency.into());

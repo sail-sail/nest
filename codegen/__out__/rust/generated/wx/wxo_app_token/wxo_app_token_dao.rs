@@ -2030,7 +2030,7 @@ pub async fn update_by_id_wxo_app_token(
   
   let mut field_num: usize = 0;
   // 小程序设置
-  if let Some(wxo_app_id) = input.wxo_app_id.clone() {
+  if let Some(wxo_app_id) = input.wxo_app_id {
     field_num += 1;
     sql_fields += "wxo_app_id=?,";
     args.push(wxo_app_id.into());

@@ -1876,7 +1876,7 @@ pub async fn update_by_id_wx_refund_notice(
     args.push(refund_id.into());
   }
   // 退款状态
-  if let Some(refund_status) = input.refund_status.clone() {
+  if let Some(refund_status) = input.refund_status {
     field_num += 1;
     sql_fields += "refund_status=?,";
     args.push(refund_status.into());

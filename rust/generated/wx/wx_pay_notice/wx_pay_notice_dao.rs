@@ -2285,13 +2285,13 @@ pub async fn update_by_id_wx_pay_notice(
     args.push(transaction_id.into());
   }
   // 交易类型
-  if let Some(trade_type) = input.trade_type.clone() {
+  if let Some(trade_type) = input.trade_type {
     field_num += 1;
     sql_fields += "trade_type=?,";
     args.push(trade_type.into());
   }
   // 交易状态
-  if let Some(trade_state) = input.trade_state.clone() {
+  if let Some(trade_state) = input.trade_state {
     field_num += 1;
     sql_fields += "trade_state=?,";
     args.push(trade_state.into());
@@ -2336,13 +2336,13 @@ pub async fn update_by_id_wx_pay_notice(
     args.push(payer_total.into());
   }
   // 货币类型
-  if let Some(currency) = input.currency.clone() {
+  if let Some(currency) = input.currency {
     field_num += 1;
     sql_fields += "currency=?,";
     args.push(currency.into());
   }
   // 用户支付币种
-  if let Some(payer_currency) = input.payer_currency.clone() {
+  if let Some(payer_currency) = input.payer_currency {
     field_num += 1;
     sql_fields += "payer_currency=?,";
     args.push(payer_currency.into());
