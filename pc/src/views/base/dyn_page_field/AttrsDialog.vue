@@ -153,7 +153,7 @@ import {
 
 let dialogTitle = $ref("配置属性");
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 let dialogModel = $ref<Record<string, any>>({});
 
 let componentType = $ref<string>("");
@@ -196,7 +196,7 @@ function cloneDefaultValue<T>(value: T): T {
 }
 
 function buildDefaultsFromConfig(configs: ComponentPropConfig[]) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const defaults: Record<string, any> = {};
   for (const config of configs) {
     if (config.default !== undefined) {
@@ -250,7 +250,7 @@ async function onSave() {
   }
   
   // 过滤掉空值,布尔类型的 0 不保存
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const finalAttrs: Record<string, any> = {};
   for (const key in dialogModel) {
     const value = dialogModel[key];

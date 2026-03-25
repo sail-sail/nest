@@ -13,6 +13,11 @@ import Layout1 from "@/layout/layout1/index.vue";
 
 import router from "@/router/index.ts";
 
+import {
+  query,
+  mutation,
+} from "@/utils/graphql.ts";
+
 export type MenuModel = MenuModel0 & {
   children?: MenuModel[];
   oldRoute_path: string;

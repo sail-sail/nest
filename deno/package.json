@@ -20,7 +20,7 @@
   "dependencies": {
     "dayjs": "1.11.20",
     "decimal.js": "10.6.0",
-    "graphql": "16.13.1",
+    "graphql": "16.13.2",
     "js-md5": "0.8.3",
     "lru-cache": "11.2.7",
     "mime": "4.1.0",
@@ -41,7 +41,7 @@
     "dotenv": "17.3.1",
     "graphql-ts-client-codegen": "3.1.17",
     "ssh2-promise": "1.0.3",
-    "typescript": "5.9.3"
+    "typescript": "6.0.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
+import { type PropType, ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
 import {
     arrayNumberValid,
     arrayNumberValidByStyleMP,
