@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -752,7 +752,7 @@ pub async fn find_all_wx_pay(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2478,61 +2478,61 @@ pub async fn update_by_id_wx_pay(
     args.push(tenant_id.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 开发者ID
-  if let Some(appid) = input.appid {
+  if let Some(appid) = input.appid.clone() {
     field_num += 1;
     sql_fields += "appid=?,";
     args.push(appid.into());
   }
   // 商户号
-  if let Some(mchid) = input.mchid {
+  if let Some(mchid) = input.mchid.clone() {
     field_num += 1;
     sql_fields += "mchid=?,";
     args.push(mchid.into());
   }
   // 证书序列号
-  if let Some(serial_no) = input.serial_no {
+  if let Some(serial_no) = input.serial_no.clone() {
     field_num += 1;
     sql_fields += "serial_no=?,";
     args.push(serial_no.into());
   }
   // 公钥
-  if let Some(public_key) = input.public_key {
+  if let Some(public_key) = input.public_key.clone() {
     field_num += 1;
     sql_fields += "public_key=?,";
     args.push(public_key.into());
   }
   // 私钥
-  if let Some(private_key) = input.private_key {
+  if let Some(private_key) = input.private_key.clone() {
     field_num += 1;
     sql_fields += "private_key=?,";
     args.push(private_key.into());
   }
   // APIv3密钥
-  if let Some(v3_key) = input.v3_key {
+  if let Some(v3_key) = input.v3_key.clone() {
     field_num += 1;
     sql_fields += "v3_key=?,";
     args.push(v3_key.into());
   }
   // 支付终端IP
-  if let Some(payer_client_ip) = input.payer_client_ip {
+  if let Some(payer_client_ip) = input.payer_client_ip.clone() {
     field_num += 1;
     sql_fields += "payer_client_ip=?,";
     args.push(payer_client_ip.into());
   }
   // 通知地址
-  if let Some(notify_url) = input.notify_url {
+  if let Some(notify_url) = input.notify_url.clone() {
     field_num += 1;
     sql_fields += "notify_url=?,";
     args.push(notify_url.into());
   }
   // 退款通知地址
-  if let Some(refund_notify_url) = input.refund_notify_url {
+  if let Some(refund_notify_url) = input.refund_notify_url.clone() {
     field_num += 1;
     sql_fields += "refund_notify_url=?,";
     args.push(refund_notify_url.into());
@@ -2556,7 +2556,7 @@ pub async fn update_by_id_wx_pay(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());
@@ -2660,6 +2660,20 @@ pub async fn update_by_id_wx_pay(
     
     del_cache_wx_pay().await?;
     
+  }
+  
+  // 公钥
+  if let Some(public_key) = input.public_key.as_ref() && public_key != &old_model.public_key {
+    crate::common::oss::oss_dao::delete_object(
+      old_model.public_key.as_str(),
+    ).await?;
+  }
+  
+  // 私钥
+  if let Some(private_key) = input.private_key.as_ref() && private_key != &old_model.private_key {
+    crate::common::oss::oss_dao::delete_object(
+      old_model.private_key.as_str(),
+    ).await?;
   }
   
   Ok(id)

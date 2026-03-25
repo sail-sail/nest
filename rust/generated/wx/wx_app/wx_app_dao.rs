@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -663,7 +663,7 @@ pub async fn find_all_wx_app(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2417,31 +2417,31 @@ pub async fn update_by_id_wx_app(
     args.push(tenant_id.into());
   }
   // 原始ID
-  if let Some(code) = input.code {
+  if let Some(code) = input.code.clone() {
     field_num += 1;
     sql_fields += "code=?,";
     args.push(code.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 开发者ID
-  if let Some(appid) = input.appid {
+  if let Some(appid) = input.appid.clone() {
     field_num += 1;
     sql_fields += "appid=?,";
     args.push(appid.into());
   }
   // 开发者密码
-  if let Some(appsecret) = input.appsecret {
+  if let Some(appsecret) = input.appsecret.clone() {
     field_num += 1;
     sql_fields += "appsecret=?,";
     args.push(appsecret.into());
   }
   // 默认角色
-  if let Some(default_role_codes) = input.default_role_codes {
+  if let Some(default_role_codes) = input.default_role_codes.clone() {
     field_num += 1;
     sql_fields += "default_role_codes=?,";
     args.push(default_role_codes.into());
@@ -2465,7 +2465,7 @@ pub async fn update_by_id_wx_app(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

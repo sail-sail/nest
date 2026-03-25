@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -790,7 +790,7 @@ pub async fn find_all_wx_usr(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2446,49 +2446,49 @@ pub async fn update_by_id_wx_usr(
     args.push(tenant_id.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 用户
-  if let Some(usr_id) = input.usr_id {
+  if let Some(usr_id) = input.usr_id.clone() {
     field_num += 1;
     sql_fields += "usr_id=?,";
     args.push(usr_id.into());
   }
   // 开发者ID
-  if let Some(appid) = input.appid {
+  if let Some(appid) = input.appid.clone() {
     field_num += 1;
     sql_fields += "appid=?,";
     args.push(appid.into());
   }
   // 昵称
-  if let Some(nick_name) = input.nick_name {
+  if let Some(nick_name) = input.nick_name.clone() {
     field_num += 1;
     sql_fields += "nick_name=?,";
     args.push(nick_name.into());
   }
   // 头像
-  if let Some(avatar_img) = input.avatar_img {
+  if let Some(avatar_img) = input.avatar_img.clone() {
     field_num += 1;
     sql_fields += "avatar_img=?,";
     args.push(avatar_img.into());
   }
   // 手机
-  if let Some(mobile) = input.mobile {
+  if let Some(mobile) = input.mobile.clone() {
     field_num += 1;
     sql_fields += "mobile=?,";
     args.push(mobile.into());
   }
   // 小程序用户唯一标识
-  if let Some(openid) = input.openid {
+  if let Some(openid) = input.openid.clone() {
     field_num += 1;
     sql_fields += "openid=?,";
     args.push(openid.into());
   }
   // 用户统一标识
-  if let Some(unionid) = input.unionid {
+  if let Some(unionid) = input.unionid.clone() {
     field_num += 1;
     sql_fields += "unionid=?,";
     args.push(unionid.into());
@@ -2500,31 +2500,31 @@ pub async fn update_by_id_wx_usr(
     args.push(gender.into());
   }
   // 城市
-  if let Some(city) = input.city {
+  if let Some(city) = input.city.clone() {
     field_num += 1;
     sql_fields += "city=?,";
     args.push(city.into());
   }
   // 省份
-  if let Some(province) = input.province {
+  if let Some(province) = input.province.clone() {
     field_num += 1;
     sql_fields += "province=?,";
     args.push(province.into());
   }
   // 国家
-  if let Some(country) = input.country {
+  if let Some(country) = input.country.clone() {
     field_num += 1;
     sql_fields += "country=?,";
     args.push(country.into());
   }
   // 语言
-  if let Some(language) = input.language {
+  if let Some(language) = input.language.clone() {
     field_num += 1;
     sql_fields += "language=?,";
     args.push(language.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());
@@ -2628,6 +2628,13 @@ pub async fn update_by_id_wx_usr(
     
     del_cache_wx_usr().await?;
     
+  }
+  
+  // 头像
+  if let Some(avatar_img) = input.avatar_img.as_ref() && avatar_img != &old_model.avatar_img {
+    crate::common::oss::oss_dao::delete_object(
+      old_model.avatar_img.as_str(),
+    ).await?;
   }
   
   Ok(id)

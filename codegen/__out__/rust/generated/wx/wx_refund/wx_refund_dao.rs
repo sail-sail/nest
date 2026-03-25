@@ -34,7 +34,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -717,7 +717,7 @@ pub async fn find_all_wx_refund(
   ).await?;
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2410,67 +2410,67 @@ pub async fn update_by_id_wx_refund(
     args.push(tenant_id.into());
   }
   // 开发者ID
-  if let Some(appid) = input.appid {
+  if let Some(appid) = input.appid.clone() {
     field_num += 1;
     sql_fields += "appid=?,";
     args.push(appid.into());
   }
   // 商户号
-  if let Some(mchid) = input.mchid {
+  if let Some(mchid) = input.mchid.clone() {
     field_num += 1;
     sql_fields += "mchid=?,";
     args.push(mchid.into());
   }
   // 商户订单号
-  if let Some(out_trade_no) = input.out_trade_no {
+  if let Some(out_trade_no) = input.out_trade_no.clone() {
     field_num += 1;
     sql_fields += "out_trade_no=?,";
     args.push(out_trade_no.into());
   }
   // 微信支付订单号
-  if let Some(transaction_id) = input.transaction_id {
+  if let Some(transaction_id) = input.transaction_id.clone() {
     field_num += 1;
     sql_fields += "transaction_id=?,";
     args.push(transaction_id.into());
   }
   // 商户退款单号
-  if let Some(out_refund_no) = input.out_refund_no {
+  if let Some(out_refund_no) = input.out_refund_no.clone() {
     field_num += 1;
     sql_fields += "out_refund_no=?,";
     args.push(out_refund_no.into());
   }
   // 微信退款单号
-  if let Some(refund_id) = input.refund_id {
+  if let Some(refund_id) = input.refund_id.clone() {
     field_num += 1;
     sql_fields += "refund_id=?,";
     args.push(refund_id.into());
   }
   // 退款原因
-  if let Some(reason) = input.reason {
+  if let Some(reason) = input.reason.clone() {
     field_num += 1;
     sql_fields += "reason=?,";
     args.push(reason.into());
   }
   // 附加数据2
-  if let Some(attach2) = input.attach2 {
+  if let Some(attach2) = input.attach2.clone() {
     field_num += 1;
     sql_fields += "attach2=?,";
     args.push(attach2.into());
   }
   // 退款结果回调地址
-  if let Some(notify_url) = input.notify_url {
+  if let Some(notify_url) = input.notify_url.clone() {
     field_num += 1;
     sql_fields += "notify_url=?,";
     args.push(notify_url.into());
   }
   // 退款渠道
-  if let Some(channel) = input.channel {
+  if let Some(channel) = input.channel.clone() {
     field_num += 1;
     sql_fields += "channel=?,";
     args.push(channel.into());
   }
   // 退款入账账户
-  if let Some(user_received_account) = input.user_received_account {
+  if let Some(user_received_account) = input.user_received_account.clone() {
     field_num += 1;
     sql_fields += "user_received_account=?,";
     args.push(user_received_account.into());
@@ -2485,13 +2485,13 @@ pub async fn update_by_id_wx_refund(
     sql_fields += "success_time=null,";
   }
   // 退款状态
-  if let Some(status) = input.status {
+  if let Some(status) = input.status.clone() {
     field_num += 1;
     sql_fields += "status=?,";
     args.push(status.into());
   }
   // 资金账户
-  if let Some(funds_account) = input.funds_account {
+  if let Some(funds_account) = input.funds_account.clone() {
     field_num += 1;
     sql_fields += "funds_account=?,";
     args.push(funds_account.into());
@@ -2533,7 +2533,7 @@ pub async fn update_by_id_wx_refund(
     args.push(amount_discount_refund.into());
   }
   // 退款币种
-  if let Some(amount_currency) = input.amount_currency {
+  if let Some(amount_currency) = input.amount_currency.clone() {
     field_num += 1;
     sql_fields += "amount_currency=?,";
     args.push(amount_currency.into());
@@ -2545,7 +2545,7 @@ pub async fn update_by_id_wx_refund(
     args.push(amount_refund_fee.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

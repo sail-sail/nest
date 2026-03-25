@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -597,7 +597,7 @@ pub async fn find_all_wxo_app_token(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2030,25 +2030,25 @@ pub async fn update_by_id_wxo_app_token(
   
   let mut field_num: usize = 0;
   // 小程序设置
-  if let Some(wxo_app_id) = input.wxo_app_id {
+  if let Some(wxo_app_id) = input.wxo_app_id.clone() {
     field_num += 1;
     sql_fields += "wxo_app_id=?,";
     args.push(wxo_app_id.into());
   }
   // 开发者ID
-  if let Some(appid) = input.appid {
+  if let Some(appid) = input.appid.clone() {
     field_num += 1;
     sql_fields += "appid=?,";
     args.push(appid.into());
   }
   // 开发者密码
-  if let Some(appsecret) = input.appsecret {
+  if let Some(appsecret) = input.appsecret.clone() {
     field_num += 1;
     sql_fields += "appsecret=?,";
     args.push(appsecret.into());
   }
   // 令牌
-  if let Some(access_token) = input.access_token {
+  if let Some(access_token) = input.access_token.clone() {
     field_num += 1;
     sql_fields += "access_token=?,";
     args.push(access_token.into());

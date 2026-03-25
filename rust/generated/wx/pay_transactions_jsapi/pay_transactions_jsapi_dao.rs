@@ -34,7 +34,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -789,7 +789,7 @@ pub async fn find_all_pay_transactions_jsapi(
   ).await?;
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2431,43 +2431,43 @@ pub async fn update_by_id_pay_transactions_jsapi(
     args.push(tenant_id.into());
   }
   // 开发者ID
-  if let Some(appid) = input.appid {
+  if let Some(appid) = input.appid.clone() {
     field_num += 1;
     sql_fields += "appid=?,";
     args.push(appid.into());
   }
   // 商户号
-  if let Some(mchid) = input.mchid {
+  if let Some(mchid) = input.mchid.clone() {
     field_num += 1;
     sql_fields += "mchid=?,";
     args.push(mchid.into());
   }
   // 商品描述
-  if let Some(description) = input.description {
+  if let Some(description) = input.description.clone() {
     field_num += 1;
     sql_fields += "description=?,";
     args.push(description.into());
   }
   // 商户订单号
-  if let Some(out_trade_no) = input.out_trade_no {
+  if let Some(out_trade_no) = input.out_trade_no.clone() {
     field_num += 1;
     sql_fields += "out_trade_no=?,";
     args.push(out_trade_no.into());
   }
   // 微信支付订单号
-  if let Some(transaction_id) = input.transaction_id {
+  if let Some(transaction_id) = input.transaction_id.clone() {
     field_num += 1;
     sql_fields += "transaction_id=?,";
     args.push(transaction_id.into());
   }
   // 交易状态
-  if let Some(trade_state) = input.trade_state {
+  if let Some(trade_state) = input.trade_state.clone() {
     field_num += 1;
     sql_fields += "trade_state=?,";
     args.push(trade_state.into());
   }
   // 交易状态描述
-  if let Some(trade_state_desc) = input.trade_state_desc {
+  if let Some(trade_state_desc) = input.trade_state_desc.clone() {
     field_num += 1;
     sql_fields += "trade_state_desc=?,";
     args.push(trade_state_desc.into());
@@ -2482,37 +2482,37 @@ pub async fn update_by_id_pay_transactions_jsapi(
     sql_fields += "success_time=null,";
   }
   // 交易限制时间
-  if let Some(time_expire) = input.time_expire {
+  if let Some(time_expire) = input.time_expire.clone() {
     field_num += 1;
     sql_fields += "time_expire=?,";
     args.push(time_expire.into());
   }
   // 附加数据
-  if let Some(attach) = input.attach {
+  if let Some(attach) = input.attach.clone() {
     field_num += 1;
     sql_fields += "attach=?,";
     args.push(attach.into());
   }
   // 附加数据2
-  if let Some(attach2) = input.attach2 {
+  if let Some(attach2) = input.attach2.clone() {
     field_num += 1;
     sql_fields += "attach2=?,";
     args.push(attach2.into());
   }
   // 通知地址
-  if let Some(notify_url) = input.notify_url {
+  if let Some(notify_url) = input.notify_url.clone() {
     field_num += 1;
     sql_fields += "notify_url=?,";
     args.push(notify_url.into());
   }
   // 开发票
-  if let Some(receipt) = input.receipt {
+  if let Some(receipt) = input.receipt.clone() {
     field_num += 1;
     sql_fields += "receipt=?,";
     args.push(receipt.into());
   }
   // 分账
-  if let Some(profit_sharing) = input.profit_sharing {
+  if let Some(profit_sharing) = input.profit_sharing.clone() {
     field_num += 1;
     sql_fields += "profit_sharing=?,";
     args.push(profit_sharing.into());
@@ -2524,19 +2524,19 @@ pub async fn update_by_id_pay_transactions_jsapi(
     args.push(total_fee.into());
   }
   // 货币类型
-  if let Some(currency) = input.currency {
+  if let Some(currency) = input.currency.clone() {
     field_num += 1;
     sql_fields += "currency=?,";
     args.push(currency.into());
   }
   // 用户标识
-  if let Some(openid) = input.openid {
+  if let Some(openid) = input.openid.clone() {
     field_num += 1;
     sql_fields += "openid=?,";
     args.push(openid.into());
   }
   // 预支付交易会话标识
-  if let Some(prepay_id) = input.prepay_id {
+  if let Some(prepay_id) = input.prepay_id.clone() {
     field_num += 1;
     sql_fields += "prepay_id=?,";
     args.push(prepay_id.into());

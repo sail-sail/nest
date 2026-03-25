@@ -634,6 +634,7 @@ defineOptions({
 const openForeignPage = useOpenForeignPage();
 
 const pagePath = getPagePathWxRefundNotice();
+// @ts-ignore
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -1291,7 +1292,7 @@ watch(
       propsNotReset,
       isListSelectDialog,
       ...rest
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     } = builtInSearch as any;
     return rest;
   }),

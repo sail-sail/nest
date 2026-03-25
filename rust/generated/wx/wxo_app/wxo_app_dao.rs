@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -848,7 +848,7 @@ pub async fn find_all_wxo_app(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2879,61 +2879,61 @@ pub async fn update_by_id_wxo_app(
     args.push(tenant_id.into());
   }
   // 原始ID
-  if let Some(code) = input.code {
+  if let Some(code) = input.code.clone() {
     field_num += 1;
     sql_fields += "code=?,";
     args.push(code.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 开发者ID
-  if let Some(appid) = input.appid {
+  if let Some(appid) = input.appid.clone() {
     field_num += 1;
     sql_fields += "appid=?,";
     args.push(appid.into());
   }
   // 开发者密码
-  if let Some(appsecret) = input.appsecret {
+  if let Some(appsecret) = input.appsecret.clone() {
     field_num += 1;
     sql_fields += "appsecret=?,";
     args.push(appsecret.into());
   }
   // 令牌
-  if let Some(token) = input.token {
+  if let Some(token) = input.token.clone() {
     field_num += 1;
     sql_fields += "token=?,";
     args.push(token.into());
   }
   // 消息加解密密钥
-  if let Some(encoding_aes_key) = input.encoding_aes_key {
+  if let Some(encoding_aes_key) = input.encoding_aes_key.clone() {
     field_num += 1;
     sql_fields += "encoding_aes_key=?,";
     args.push(encoding_aes_key.into());
   }
   // 消息加解密方式
-  if let Some(encoding_type) = input.encoding_type {
+  if let Some(encoding_type) = input.encoding_type.clone() {
     field_num += 1;
     sql_fields += "encoding_type=?,";
     args.push(encoding_type.into());
   }
   // 授权作用域
-  if let Some(scope) = input.scope {
+  if let Some(scope) = input.scope.clone() {
     field_num += 1;
     sql_fields += "scope=?,";
     args.push(scope.into());
   }
   // 网页授权域名
-  if let Some(domain_id) = input.domain_id {
+  if let Some(domain_id) = input.domain_id.clone() {
     field_num += 1;
     sql_fields += "domain_id=?,";
     args.push(domain_id.into());
   }
   // 默认角色
-  if let Some(default_role_codes) = input.default_role_codes {
+  if let Some(default_role_codes) = input.default_role_codes.clone() {
     field_num += 1;
     sql_fields += "default_role_codes=?,";
     args.push(default_role_codes.into());
@@ -2957,7 +2957,7 @@ pub async fn update_by_id_wxo_app(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());
