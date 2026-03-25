@@ -39,6 +39,8 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -73,6 +75,11 @@ import type {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathSmsApp,
+  getTableNameSmsApp,
+} from "./sms_app.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -204,7 +211,7 @@ export async function findCountSmsApp(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "findCountSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -316,7 +323,7 @@ export async function findAllSmsApp(
   },
 ): Promise<SmsAppModel[]> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "findAllSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -459,6 +466,14 @@ export async function findAllSmsApp(
     },
   );
   
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
+  
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
@@ -589,7 +604,7 @@ export async function setIdByLblSmsApp(
 // MARK: getFieldCommentsSmsApp
 /** 获取短信应用字段注释 */
 export async function getFieldCommentsSmsApp(): Promise<SmsAppFieldComment> {
-  const fieldComments: SmsAppFieldComment = {
+  const field_comments: SmsAppFieldComment = {
     id: "ID",
     lbl: "名称",
     appid: "appid",
@@ -611,7 +626,8 @@ export async function getFieldCommentsSmsApp(): Promise<SmsAppFieldComment> {
     update_time: "更新时间",
     update_time_lbl: "更新时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueSmsApp
@@ -623,7 +639,7 @@ export async function findByUniqueSmsApp(
   },
 ): Promise<SmsAppModel[]> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "findByUniqueSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -729,7 +745,7 @@ export async function checkByUniqueSmsApp(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 短信应用 已经存在");
+      throw new UniqueException("短信应用 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: SmsAppId = await updateByIdSmsApp(
@@ -759,7 +775,7 @@ export async function findOneSmsApp(
   },
 ): Promise<SmsAppModel | undefined> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "findOneSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -807,7 +823,7 @@ export async function findOneOkSmsApp(
   },
 ): Promise<SmsAppModel> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "findOneOkSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -859,7 +875,7 @@ export async function findByIdSmsApp(
   },
 ): Promise<SmsAppModel | undefined> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "findByIdSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -901,7 +917,7 @@ export async function findByIdOkSmsApp(
   },
 ): Promise<SmsAppModel> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "findByIdOkSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -942,7 +958,7 @@ export async function findByIdsSmsApp(
   },
 ): Promise<SmsAppModel[]> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "findByIdsSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -989,7 +1005,7 @@ export async function findByIdsOkSmsApp(
   },
 ): Promise<SmsAppModel[]> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "findByIdsOkSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1038,7 +1054,7 @@ export async function existSmsApp(
   },
 ): Promise<boolean> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "existSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1070,7 +1086,7 @@ export async function existByIdSmsApp(
   },
 ) {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "existByIdSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1206,7 +1222,7 @@ export async function createReturnSmsApp(
   },
 ): Promise<SmsAppModel> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "createReturnSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1257,7 +1273,7 @@ export async function createSmsApp(
   },
 ): Promise<SmsAppId> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "createSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1298,7 +1314,7 @@ export async function createsReturnSmsApp(
   },
 ): Promise<SmsAppModel[]> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "createsReturnSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1335,7 +1351,7 @@ export async function createsSmsApp(
   },
 ): Promise<SmsAppId[]> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "createsSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1372,7 +1388,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1597,7 +1613,7 @@ export async function updateTenantByIdSmsApp(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "updateTenantByIdSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1645,7 +1661,7 @@ export async function updateByIdSmsApp(
   },
 ): Promise<SmsAppId> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "updateByIdSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1689,7 +1705,7 @@ export async function updateByIdSmsApp(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 短信应用 已经存在";
+        throw "短信应用 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1699,7 +1715,12 @@ export async function updateByIdSmsApp(
   const oldModel = await findByIdSmsApp(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 短信应用 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 短信应用 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1832,7 +1853,14 @@ export async function updateByIdSmsApp(
     await delCacheSmsApp();
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1847,6 +1875,36 @@ export async function updateByIdSmsApp(
   return id;
 }
 
+// MARK: updateByIdSmsApp
+/** 根据 id 更新短信应用, 并返回更新后的数据 */
+export async function updateByIdReturnSmsApp(
+  id: SmsAppId,
+  input: SmsAppInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<SmsAppModel> {
+  
+  await updateByIdSmsApp(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdSmsApp(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`短信应用 不存在`);
+  }
+  
+  return model;
+}
+
 // MARK: deleteByIdsSmsApp
 /** 根据 ids 删除 短信应用 */
 export async function deleteByIdsSmsApp(
@@ -1858,7 +1916,7 @@ export async function deleteByIdsSmsApp(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "deleteByIdsSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1881,6 +1939,8 @@ export async function deleteByIdsSmsApp(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheSmsApp();
   
@@ -1916,7 +1976,13 @@ export async function deleteByIdsSmsApp(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1956,7 +2022,7 @@ export async function enableByIdsSmsApp(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "enableByIdsSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2026,7 +2092,7 @@ export async function lockByIdsSmsApp(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "lockByIdsSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2051,11 +2117,19 @@ export async function lockByIdsSmsApp(
     return 0;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   await delCacheSmsApp();
   
   const args = new QueryArgs();
   let sql = `update submail_sms_app set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
+  const result = await execute(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   const num = result.affectedRows;
   
   await delCacheSmsApp();
@@ -2072,7 +2146,7 @@ export async function revertByIdsSmsApp(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "revertByIdsSmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -2126,7 +2200,7 @@ export async function revertByIdsSmsApp(
         if (model.id === id) {
           continue;
         }
-        throw "此 短信应用 已经存在";
+        throw "短信应用 重复";
       }
     }
     const args = new QueryArgs();
@@ -2150,7 +2224,7 @@ export async function forceDeleteByIdsSmsApp(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "forceDeleteByIdsSmsApp";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2172,6 +2246,8 @@ export async function forceDeleteByIdsSmsApp(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await delCacheSmsApp();
   
@@ -2203,18 +2279,22 @@ export async function forceDeleteByIdsSmsApp(
 // MARK: findLastOrderBySmsApp
 /** 查找 短信应用 order_by 字段的最大值 */
 export async function findLastOrderBySmsApp(
+  search?: Readonly<SmsAppSearch>,
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
-  const table = "submail_sms_app";
+  const table = getTableNameSmsApp();
   const method = "findLastOrderBySmsApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -2223,24 +2303,29 @@ export async function findLastOrderBySmsApp(
     options.is_debug = false;
   }
   
-  let sql = `select t.order_by order_by from submail_sms_app t`;
-  const whereQuery: string[] = [ ];
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  let sql = `select t.order_by from submail_sms_app t`;
   const args = new QueryArgs();
-  whereQuery.push(` t.is_deleted=0`);
-  {
-    const usr_id = await get_usr_id();
-    const tenant_id = await getTenant_id(usr_id);
-    whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  if (whereQuery.length > 0) {
-    sql += " where " + whereQuery.join(" and ");
+  const whereQuery = await getWhereQuery(
+    args,
+    search,
+  );
+  if (whereQuery) {
+    sql += ` where ${ whereQuery }`;
   }
   sql += ` order by t.order_by desc limit 1`;
   
   interface Result {
     order_by: number;
   }
-  let model = await queryOne<Result>(sql, args);
+  let model = await queryOne<Result>(
+    sql,
+    args,
+    {
+      debug: is_debug_sql,
+    },
+  );
   let result = model?.order_by ?? 0;
   
   return result;

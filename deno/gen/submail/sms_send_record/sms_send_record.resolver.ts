@@ -16,10 +16,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./sms_send_record.model.ts";
-
 /**
  * 根据条件查找短信发送记录总数
  */
@@ -183,10 +179,14 @@ export async function deleteByIdsSmsSendRecord(
     deleteByIdsSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSmsSendRecord(),
     "delete",
   );
   
@@ -206,10 +206,14 @@ export async function revertByIdsSmsSendRecord(
     revertByIdsSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSmsSendRecord(),
     "delete",
   );
   
@@ -229,10 +233,14 @@ export async function forceDeleteByIdsSmsSendRecord(
     forceDeleteByIdsSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
+  const {
+    getPagePathSmsSendRecord,
+  } = await import("./sms_send_record.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSmsSendRecord(),
     "force_delete",
   );
   

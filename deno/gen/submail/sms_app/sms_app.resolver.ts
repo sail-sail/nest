@@ -18,10 +18,6 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
-import {
-  route_path,
-} from "./sms_app.model.ts";
-
 /**
  * 根据条件查找短信应用总数
  */
@@ -188,11 +184,15 @@ export async function createsSmsApp(
     createsSmsApp,
   } = await import("./sms_app.service.ts");
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
   set_is_tran(true);
   set_is_creating(true);
   
   await usePermit(
-    route_path,
+    getPagePathSmsApp(),
     "add",
   );
   
@@ -225,12 +225,16 @@ export async function updateByIdSmsApp(
     updateByIdSmsApp,
   } = await import("./sms_app.service.ts");
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
   set_is_tran(true);
   
   await setIdByLblSmsApp(input);
   
   await usePermit(
-    route_path,
+    getPagePathSmsApp(),
     "edit",
   );
   
@@ -250,10 +254,14 @@ export async function deleteByIdsSmsApp(
     deleteByIdsSmsApp,
   } = await import("./sms_app.service.ts");
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSmsApp(),
     "delete",
   );
   
@@ -278,10 +286,14 @@ export async function enableByIdsSmsApp(
     throw new Error(`enableByIdsSmsApp.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSmsApp(),
     "edit",
   );
   const res = await enableByIdsSmsApp(ids, is_enabled);
@@ -305,10 +317,14 @@ export async function lockByIdsSmsApp(
     throw new Error(`lockByIdsSmsApp.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSmsApp(),
     "edit",
   );
   
@@ -328,10 +344,14 @@ export async function revertByIdsSmsApp(
     revertByIdsSmsApp,
   } = await import("./sms_app.service.ts");
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSmsApp(),
     "delete",
   );
   
@@ -351,10 +371,14 @@ export async function forceDeleteByIdsSmsApp(
     forceDeleteByIdsSmsApp,
   } = await import("./sms_app.service.ts");
   
+  const {
+    getPagePathSmsApp,
+  } = await import("./sms_app.model.ts");
+  
   set_is_tran(true);
   
   await usePermit(
-    route_path,
+    getPagePathSmsApp(),
     "force_delete",
   );
   
@@ -366,13 +390,15 @@ export async function forceDeleteByIdsSmsApp(
 /**
  * 查找 短信应用 order_by 字段的最大值
  */
-export async function findLastOrderBySmsApp(): Promise<number> {
+export async function findLastOrderBySmsApp(
+  search?: SmsAppSearch,
+): Promise<number> {
   
   const {
     findLastOrderBySmsApp,
   } = await import("./sms_app.service.ts");
   
-  const res = findLastOrderBySmsApp();
+  const order_by = findLastOrderBySmsApp(search);
   
-  return res;
+  return order_by;
 }

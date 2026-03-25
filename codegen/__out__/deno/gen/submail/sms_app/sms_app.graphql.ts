@@ -161,7 +161,7 @@ type Query {
   "根据 ids 查找短信应用"
   findByIdsSmsApp(ids: [SmsAppId!]!): [SmsAppModel]!
   "查找短信应用 order_by 字段的最大值"
-  findLastOrderBySmsApp: Int!
+  findLastOrderBySmsApp(search: SmsAppSearch): Int!
 }
 type Mutation {
   "批量创建短信应用"

@@ -291,7 +291,10 @@ export async function getFieldCommentsSmsApp(): Promise<SmsAppFieldComment> {
  * 查找 短信应用 order_by 字段的最大值
  */
 export async function findLastOrderBySmsApp(
+  search?: SmsAppSearch,
 ): Promise<number> {
-  const sms_app_sort = await sms_appDao.findLastOrderBySmsApp();
-  return sms_app_sort;
+  
+  const order_by = await sms_appDao.findLastOrderBySmsApp(search);
+  
+  return order_by;
 }

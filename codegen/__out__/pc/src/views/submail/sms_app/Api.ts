@@ -13,7 +13,7 @@ import {
   smsAppQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdSmsApp(
   model?: SmsAppModel | null,
   isExcelExport = false,
 ) {
@@ -23,7 +23,7 @@ async function setLblById(
 }
 
 export function intoInputSmsApp(
-  model?: SmsAppInput,
+  model?: SmsAppInput | null,
 ) {
   const input: SmsAppInput = {
     // ID
@@ -44,7 +44,7 @@ export function intoInputSmsApp(
     is_paused: model?.is_paused,
     is_paused_lbl: model?.is_paused_lbl,
     // 排序
-    order_by: model?.order_by,
+    order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
   };
@@ -79,7 +79,7 @@ export async function findAllSmsApp(
   const models = data.findAllSmsApp;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdSmsApp(model);
   }
   return models;
 }
@@ -111,7 +111,7 @@ export async function findOneSmsApp(
   
   const model = data.findOneSmsApp;
   
-  await setLblById(model);
+  await setLblByIdSmsApp(model);
   
   return model;
 }
@@ -143,7 +143,7 @@ export async function findOneOkSmsApp(
   
   const model = data.findOneOkSmsApp;
   
-  await setLblById(model);
+  await setLblByIdSmsApp(model);
   
   return model;
 }
@@ -269,7 +269,7 @@ export async function findByIdSmsApp(
   
   const model = data.findByIdSmsApp;
   
-  await setLblById(model);
+  await setLblByIdSmsApp(model);
   
   return model;
 }
@@ -299,7 +299,7 @@ export async function findByIdOkSmsApp(
   
   const model = data.findByIdOkSmsApp;
   
-  await setLblById(model);
+  await setLblByIdSmsApp(model);
   
   return model;
 }
@@ -335,7 +335,7 @@ export async function findByIdsSmsApp(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdSmsApp(model);
   }
   
   return models;
@@ -372,7 +372,7 @@ export async function findByIdsOkSmsApp(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdSmsApp(model);
   }
   
   return models;
@@ -591,8 +591,8 @@ export function useExportExcelSmsApp() {
     try {
       const data = await query({
         query: `
-          query($search: SmsAppSearch, $sort: [SortInput!]) {
-            findAllSmsApp(search: $search, page: null, sort: $sort) {
+          query($search: SmsAppSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllSmsApp(search: $search, page: $page, sort: $sort) {
               ${ smsAppQueryField }
             }
             getDict(codes: [
@@ -607,11 +607,14 @@ export function useExportExcelSmsApp() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllSmsApp) {
-        await setLblById(model, true);
+        await setLblByIdSmsApp(model, true);
       }
       try {
         const sheetName = "短信应用";
@@ -691,19 +694,67 @@ export async function importModelsSmsApp(
  * 查找 短信应用 order_by 字段的最大值
  */
 export async function findLastOrderBySmsApp(
+  search?: SmsAppSearch,
   opt?: GqlOpt,
 ) {
   const data: {
     findLastOrderBySmsApp: Query["findLastOrderBySmsApp"];
   } = await query({
     query: /* GraphQL */ `
-      query {
-        findLastOrderBySmsApp
+      query($search: SmsAppSearch) {
+        findLastOrderBySmsApp(search: $search)
       }
     `,
   }, opt);
-  const res = data.findLastOrderBySmsApp;
-  return res;
+  
+  const order_by = data.findLastOrderBySmsApp;
+  
+  return order_by;
+}
+
+/**
+ * 获取 短信应用 字段注释
+ */
+export async function getFieldCommentsSmsApp(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsSmsApp: Query["getFieldCommentsSmsApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsSmsApp {
+          id,
+          lbl,
+          appid,
+          appkey,
+          is_locked,
+          is_locked_lbl,
+          is_enabled,
+          is_enabled_lbl,
+          is_paused,
+          is_paused_lbl,
+          order_by,
+          rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsSmsApp as SmsAppFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathSmsApp() {

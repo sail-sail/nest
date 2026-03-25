@@ -37,6 +37,8 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
+import { ServiceException } from "/lib/exceptions/service.exception.ts";
+
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -76,6 +78,11 @@ import {
 import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
+
+import {
+  getPagePathSmsSendRecord,
+  getTableNameSmsSendRecord,
+} from "./sms_send_record.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -193,7 +200,7 @@ export async function findCountSmsSendRecord(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "findCountSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -280,7 +287,7 @@ export async function findAllSmsSendRecord(
   },
 ): Promise<SmsSendRecordModel[]> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "findAllSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -387,6 +394,14 @@ export async function findAllSmsSendRecord(
       debug: is_debug_sql,
     },
   );
+  
+  if (page?.isResultLimit !== false) {
+    let find_all_result_limit = Number(getParsedEnv("server_find_all_result_limit")) || 1000;
+    const len = result.length;
+    if (len > find_all_result_limit) {
+      throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
+    }
+  }
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
@@ -502,7 +517,7 @@ export async function setIdByLblSmsSendRecord(
 // MARK: getFieldCommentsSmsSendRecord
 /** 获取短信发送记录字段注释 */
 export async function getFieldCommentsSmsSendRecord(): Promise<SmsSendRecordFieldComment> {
-  const fieldComments: SmsSendRecordFieldComment = {
+  const field_comments: SmsSendRecordFieldComment = {
     id: "ID",
     sms_app_id: "短信应用",
     sms_app_id_lbl: "短信应用",
@@ -519,7 +534,8 @@ export async function getFieldCommentsSmsSendRecord(): Promise<SmsSendRecordFiel
     create_time: "创建时间",
     create_time_lbl: "创建时间",
   };
-  return fieldComments;
+  
+  return field_comments;
 }
 
 // MARK: findByUniqueSmsSendRecord
@@ -531,7 +547,7 @@ export async function findByUniqueSmsSendRecord(
   },
 ): Promise<SmsSendRecordModel[]> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "findByUniqueSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -597,7 +613,7 @@ export async function checkByUniqueSmsSendRecord(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException("此 短信发送记录 已经存在");
+      throw new UniqueException("短信发送记录 重复");
     }
     if (uniqueType === UniqueType.Update) {
       const id: SmsSendRecordId = await updateByIdSmsSendRecord(
@@ -627,7 +643,7 @@ export async function findOneSmsSendRecord(
   },
 ): Promise<SmsSendRecordModel | undefined> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "findOneSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -675,7 +691,7 @@ export async function findOneOkSmsSendRecord(
   },
 ): Promise<SmsSendRecordModel> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "findOneOkSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -727,7 +743,7 @@ export async function findByIdSmsSendRecord(
   },
 ): Promise<SmsSendRecordModel | undefined> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "findByIdSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -769,7 +785,7 @@ export async function findByIdOkSmsSendRecord(
   },
 ): Promise<SmsSendRecordModel> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "findByIdOkSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -810,7 +826,7 @@ export async function findByIdsSmsSendRecord(
   },
 ): Promise<SmsSendRecordModel[]> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "findByIdsSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -857,7 +873,7 @@ export async function findByIdsOkSmsSendRecord(
   },
 ): Promise<SmsSendRecordModel[]> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "findByIdsOkSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -906,7 +922,7 @@ export async function existSmsSendRecord(
   },
 ): Promise<boolean> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "existSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -938,7 +954,7 @@ export async function existByIdSmsSendRecord(
   },
 ) {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "existByIdSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1055,7 +1071,7 @@ export async function createReturnSmsSendRecord(
   },
 ): Promise<SmsSendRecordModel> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "createReturnSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1106,7 +1122,7 @@ export async function createSmsSendRecord(
   },
 ): Promise<SmsSendRecordId> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "createSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1147,7 +1163,7 @@ export async function createsReturnSmsSendRecord(
   },
 ): Promise<SmsSendRecordModel[]> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "createsReturnSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1184,7 +1200,7 @@ export async function createsSmsSendRecord(
   },
 ): Promise<SmsSendRecordId[]> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "createsSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1221,7 +1237,7 @@ async function _creates(
     return [ ];
   }
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
@@ -1426,7 +1442,7 @@ export async function updateTenantByIdSmsSendRecord(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "updateTenantByIdSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1472,7 +1488,7 @@ export async function updateByIdSmsSendRecord(
   },
 ): Promise<SmsSendRecordId> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "updateByIdSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1516,7 +1532,7 @@ export async function updateByIdSmsSendRecord(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw "此 短信发送记录 已经存在";
+        throw "短信发送记录 重复";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1526,7 +1542,12 @@ export async function updateByIdSmsSendRecord(
   const oldModel = await findByIdSmsSendRecord(id, options);
   
   if (!oldModel) {
-    throw "编辑失败, 此 短信发送记录 已被删除";
+    throw new ServiceException(
+      "编辑失败, 此 短信发送记录 已被删除",
+      "500",
+      true,
+      true,
+    );
   }
   
   const args = new QueryArgs();
@@ -1610,7 +1631,14 @@ export async function updateByIdSmsSendRecord(
     sql += ` where id=${ args.push(id) } limit 1`;
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      const is_debug = getParsedEnv("database_debug_sql") === "true";
+      await execute(
+        sql,
+        args,
+        {
+          debug: is_debug,
+        },
+      );
     }
   }
   
@@ -1619,6 +1647,36 @@ export async function updateByIdSmsSendRecord(
   }
   
   return id;
+}
+
+// MARK: updateByIdSmsSendRecord
+/** 根据 id 更新短信发送记录, 并返回更新后的数据 */
+export async function updateByIdReturnSmsSendRecord(
+  id: SmsSendRecordId,
+  input: SmsSendRecordInput,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
+): Promise<SmsSendRecordModel> {
+  
+  await updateByIdSmsSendRecord(
+    id,
+    input,
+    options,
+  );
+  
+  const model = await findByIdSmsSendRecord(
+    id,
+    options,
+  );
+  
+  if (!model) {
+    throw new Error(`短信发送记录 不存在`);
+  }
+  
+  return model;
 }
 
 // MARK: deleteByIdsSmsSendRecord
@@ -1632,7 +1690,7 @@ export async function deleteByIdsSmsSendRecord(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "deleteByIdsSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1655,6 +1713,8 @@ export async function deleteByIdsSmsSendRecord(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
@@ -1688,7 +1748,13 @@ export async function deleteByIdsSmsSendRecord(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const res = await execute(sql, args);
+    const res = await execute(
+      sql,
+      args,
+      {
+        debug: is_debug_sql,
+      },
+    );
     affectedRows += res.affectedRows;
   }
   
@@ -1704,7 +1770,7 @@ export async function revertByIdsSmsSendRecord(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "revertByIdsSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
@@ -1756,7 +1822,7 @@ export async function revertByIdsSmsSendRecord(
         if (model.id === id) {
           continue;
         }
-        throw "此 短信发送记录 已经存在";
+        throw "短信发送记录 重复";
       }
     }
     const args = new QueryArgs();
@@ -1778,7 +1844,7 @@ export async function forceDeleteByIdsSmsSendRecord(
   },
 ): Promise<number> {
   
-  const table = "submail_sms_send_record";
+  const table = getTableNameSmsSendRecord();
   const method = "forceDeleteByIdsSmsSendRecord";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1800,6 +1866,8 @@ export async function forceDeleteByIdsSmsSendRecord(
   if (!ids || !ids.length) {
     return 0;
   }
+  
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {

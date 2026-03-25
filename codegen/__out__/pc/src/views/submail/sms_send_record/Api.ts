@@ -14,7 +14,7 @@ import {
   smsSendRecordQueryField,
 } from "./Model.ts";
 
-async function setLblById(
+export async function setLblByIdSmsSendRecord(
   model?: SmsSendRecordModel | null,
   isExcelExport = false,
 ) {
@@ -24,7 +24,7 @@ async function setLblById(
 }
 
 export function intoInputSmsSendRecord(
-  model?: SmsSendRecordInput,
+  model?: SmsSendRecordInput | null,
 ) {
   const input: SmsSendRecordInput = {
     // ID
@@ -79,7 +79,7 @@ export async function findAllSmsSendRecord(
   const models = data.findAllSmsSendRecord;
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdSmsSendRecord(model);
   }
   return models;
 }
@@ -111,7 +111,7 @@ export async function findOneSmsSendRecord(
   
   const model = data.findOneSmsSendRecord;
   
-  await setLblById(model);
+  await setLblByIdSmsSendRecord(model);
   
   return model;
 }
@@ -143,7 +143,7 @@ export async function findOneOkSmsSendRecord(
   
   const model = data.findOneOkSmsSendRecord;
   
-  await setLblById(model);
+  await setLblByIdSmsSendRecord(model);
   
   return model;
 }
@@ -200,7 +200,7 @@ export async function findByIdSmsSendRecord(
   
   const model = data.findByIdSmsSendRecord;
   
-  await setLblById(model);
+  await setLblByIdSmsSendRecord(model);
   
   return model;
 }
@@ -230,7 +230,7 @@ export async function findByIdOkSmsSendRecord(
   
   const model = data.findByIdOkSmsSendRecord;
   
-  await setLblById(model);
+  await setLblByIdSmsSendRecord(model);
   
   return model;
 }
@@ -266,7 +266,7 @@ export async function findByIdsSmsSendRecord(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdSmsSendRecord(model);
   }
   
   return models;
@@ -303,7 +303,7 @@ export async function findByIdsOkSmsSendRecord(
   
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
-    await setLblById(model);
+    await setLblByIdSmsSendRecord(model);
   }
   
   return models;
@@ -458,8 +458,8 @@ export function useExportExcelSmsSendRecord() {
     try {
       const data = await query({
         query: `
-          query($search: SmsSendRecordSearch, $sort: [SortInput!]) {
-            findAllSmsSendRecord(search: $search, page: null, sort: $sort) {
+          query($search: SmsSendRecordSearch, $page: PageInput, , $sort: [SortInput!]) {
+            findAllSmsSendRecord(search: $search, page: $page, sort: $sort) {
               ${ smsSendRecordQueryField }
             }
             findAllSmsApp {
@@ -475,11 +475,14 @@ export function useExportExcelSmsSendRecord() {
         `,
         variables: {
           search,
+          page: {
+            isResultLimit: false,
+          },
           sort,
         },
       }, opt);
       for (const model of data.findAllSmsSendRecord) {
-        await setLblById(model, true);
+        await setLblByIdSmsSendRecord(model, true);
       }
       try {
         const sheetName = "短信发送记录";
@@ -506,6 +509,46 @@ export function useExportExcelSmsSendRecord() {
     workerStatus,
     workerTerminate,
   };
+}
+
+/**
+ * 获取 短信发送记录 字段注释
+ */
+export async function getFieldCommentsSmsSendRecord(
+  opt?: GqlOpt,
+) {
+  
+  const data: {
+    getFieldCommentsSmsSendRecord: Query["getFieldCommentsSmsSendRecord"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getFieldCommentsSmsSendRecord {
+          id,
+          sms_app_id,
+          sms_app_id_lbl,
+          send_to,
+          content,
+          status,
+          status_lbl,
+          send_time,
+          send_time_lbl,
+          tag,
+          msg,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+        }
+      }
+    `,
+    variables: {
+    },
+  }, opt);
+  
+  const field_comments = data.getFieldCommentsSmsSendRecord as SmsSendRecordFieldComment;
+  
+  return field_comments;
 }
 
 export function getPagePathSmsSendRecord() {

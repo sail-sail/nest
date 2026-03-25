@@ -10,7 +10,13 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
-export const route_path = "/submail/sms_app";
+export function getPagePathSmsApp() {
+  return "/submail/sms_app";
+}
+
+export function getTableNameSmsApp() {
+  return "submail_sms_app";
+}
 
 declare const smsAppId: unique symbol;
 
