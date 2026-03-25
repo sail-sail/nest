@@ -31,7 +31,7 @@ export async function setLblByIdSeo(
 }
 
 export function intoInputSeo(
-  model?: SeoInput,
+  model?: SeoInput | null,
 ) {
   const input: SeoInput = {
     // ID

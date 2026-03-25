@@ -694,6 +694,7 @@ defineOptions({
 });
 
 const pagePath = getPagePathSeo();
+// @ts-ignore
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -800,7 +801,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<SeoSearch>(initSearch());
 
 /** 回收站 */
 async function onRecycle() {
@@ -981,7 +982,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "分享图片",
       prop: "og_image",
-      width: 72,
+      width: 80,
       align: "center",
       headerAlign: "center",
     },
@@ -1719,7 +1720,7 @@ watch(
       propsNotReset,
       isListSelectDialog,
       ...rest
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     } = builtInSearch as any;
     return rest;
   }),
