@@ -40,9 +40,9 @@ import type {
 import dayjs from "dayjs";
 
 const emit = defineEmits<{
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
@@ -50,7 +50,7 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     type?: DatePickerProps["type"];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     format?: string;
     disabled?: boolean;

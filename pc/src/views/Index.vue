@@ -62,8 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import "swiper/css";
-import "swiper/css/pagination";
+import 'swiper/css/bundle';
 
 import type {
   Component,

@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, getCurrentInstance, PropType, ref } from 'vue'
+import { computed, getCurrentInstance, type PropType, ref } from 'vue'
 import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber,arrayNumberValidByStyleBorderColor, arrayNumberValidByStyleBorderStyle, linearValid } from '../../libs/tool'
 import { useTmConfig } from '../../libs/config'
 import {

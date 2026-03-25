@@ -302,12 +302,12 @@ import {
 const t = getCurrentInstance();
 
 const emit = defineEmits<{
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", value: any[]): void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void;
   (e: "update:modelLabel", value?: string | null): void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any | any[] | null): void;
   (e: "clear"): void;
 }>();
@@ -320,24 +320,24 @@ const {
 
 let inited = $ref(false);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 type OptionsMap = (item: any) => OptionType;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 let data = $ref<any[]>([ ]);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 let modelValueData = $ref<any[]>([ ]);
 
 const props = withDefaults(
   defineProps<{
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     method: () => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]; // 用于获取数据的方法
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     findByValues?: (value: any[]) => Promise<any[]>; // 通过value获取数据的方法
     optionsMap?: OptionsMap;
     height?: number;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     modelLabel?: string | null;
     autoWidth?: boolean;
@@ -356,9 +356,9 @@ const props = withDefaults(
   }>(),
   {
     findByValues: undefined,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     optionsMap: function(item: any) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       const item2 = item as { lbl: string; id: any; };
       return {
         label: item2.lbl,
@@ -418,7 +418,7 @@ watch(
       modelValueArr = [ modelValue as string ];
     }
     // 如果已经存在了, 则不用查询了
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     const modelValueData2: any[] = [ ];
     const modelValueArr2: string[] = [ ];
     if (options4SelectV2.length > 0) {
@@ -757,7 +757,7 @@ async function refreshDropdownWidth() {
     return;
   }
   await nextTick();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const selectRef = t.refs.selectRef as any;
   if (!selectRef) {
     return;
@@ -822,7 +822,7 @@ async function onRefresh() {
     methodWatchHandle  = watch(
       methodData,
       () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line @typescript-eslint/no-explicit-any
         data = unref<any[]>(methodData);
         emit("data", data);
         options4SelectV2 = data.map(props.optionsMap);
@@ -853,7 +853,7 @@ function getModelsByValue() {
     return findModelById(modelValue as string);
   }
   const modelValues = (modelValue || [ ]) as string[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const models: any[] = [ ];
   for (const id of modelValues) {
     const model = findModelById(id);

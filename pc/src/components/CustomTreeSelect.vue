@@ -106,20 +106,20 @@ import {
 } from "@/utils/common";
 
 const emit = defineEmits<{
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", value: any[]): void;
   (e: "update:modelValue", value?: string | string[] | null): void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any | any[] | null): void;
   (e: "clear"): void;
 }>();
 
 const props = withDefaults(
   defineProps<{
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     method: () => Promise<any[]>; // 用于获取数据的方法
     height?: number;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any | any[] | null;
     autoWidth?: boolean;
     maxWidth?: number;
@@ -162,7 +162,7 @@ async function copyModelLabel() {
 
 let inited = $ref(false);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 let data = $ref<any[]>([ ]);
 
 let modelValue = $ref(props.modelValue);
@@ -185,7 +185,7 @@ const modelLabels: string[] = $computed(() => {
   if (!modelValue) {
     return [ "" ];
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const label = props.props.label || "label" as any;
   if (!props.multiple) {
     const model = findModelById(data, modelValue as string)!;
@@ -258,7 +258,7 @@ function getModelsByValue() {
     return findModelById(data, modelValue as string);
   }
   const modelValues = (modelValue || [ ]) as string[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const models: any[] = [ ];
   for (const id of modelValues) {
     const model = findModelById(data, id);
@@ -269,9 +269,9 @@ function getModelsByValue() {
   return models;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 function onNodeClick(data: any, node: TreeNode) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   let disabled = props.props.disabled as any;
   if (disabled instanceof Function) {
     disabled = disabled(data);
@@ -280,7 +280,7 @@ function onNodeClick(data: any, node: TreeNode) {
     return;
   }
   if (props.multiple) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     const modelValueArr: any = Array.isArray(modelValue) ? modelValue : [ modelValue ];
     if (modelValueArr.includes(data.id)) {
       modelValue = modelValueArr.filter((id: string) => id !== data.id);
