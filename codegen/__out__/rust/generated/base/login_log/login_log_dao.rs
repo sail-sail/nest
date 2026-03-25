@@ -2006,7 +2006,7 @@ pub async fn update_by_id_login_log(
     args.push(tenant_id.into());
   }
   // 类型
-  if let Some(r#type) = input.r#type.clone() {
+  if let Some(r#type) = input.r#type {
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());

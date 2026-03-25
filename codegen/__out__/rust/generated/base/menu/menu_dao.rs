@@ -2488,7 +2488,7 @@ pub async fn update_by_id_menu(
   
   let mut field_num: usize = 0;
   // 父菜单
-  if let Some(parent_id) = input.parent_id.clone() {
+  if let Some(parent_id) = input.parent_id {
     field_num += 1;
     sql_fields += "parent_id=?,";
     args.push(parent_id.into());

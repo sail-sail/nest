@@ -2649,7 +2649,7 @@ pub async fn update_by_id_dept(
     args.push(tenant_id.into());
   }
   // 父部门
-  if let Some(parent_id) = input.parent_id.clone() {
+  if let Some(parent_id) = input.parent_id {
     field_num += 1;
     sql_fields += "parent_id=?,";
     args.push(parent_id.into());
@@ -2687,7 +2687,7 @@ pub async fn update_by_id_dept(
     }
   }
   // 组织
-  if let Some(org_id) = input.org_id.clone() {
+  if let Some(org_id) = input.org_id {
     field_num += 1;
     sql_fields += "org_id=?,";
     args.push(org_id.into());

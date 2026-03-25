@@ -2124,13 +2124,13 @@ pub async fn update_by_id_i18n(
   
   let mut field_num: usize = 0;
   // 语言
-  if let Some(lang_id) = input.lang_id.clone() {
+  if let Some(lang_id) = input.lang_id {
     field_num += 1;
     sql_fields += "lang_id=?,";
     args.push(lang_id.into());
   }
   // 菜单
-  if let Some(menu_id) = input.menu_id.clone() {
+  if let Some(menu_id) = input.menu_id {
     field_num += 1;
     sql_fields += "menu_id=?,";
     args.push(menu_id.into());

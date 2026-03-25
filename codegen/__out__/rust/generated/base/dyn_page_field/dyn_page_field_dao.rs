@@ -2984,7 +2984,7 @@ pub async fn update_by_id_dyn_page_field(
     args.push(code.into());
   }
   // 动态页面
-  if let Some(dyn_page_id) = input.dyn_page_id.clone() {
+  if let Some(dyn_page_id) = input.dyn_page_id {
     field_num += 1;
     sql_fields += "dyn_page_id=?,";
     args.push(dyn_page_id.into());
@@ -3032,7 +3032,7 @@ pub async fn update_by_id_dyn_page_field(
     args.push(width.into());
   }
   // 对齐方式
-  if let Some(align) = input.align.clone() {
+  if let Some(align) = input.align {
     field_num += 1;
     sql_fields += "align=?,";
     args.push(align.into());
