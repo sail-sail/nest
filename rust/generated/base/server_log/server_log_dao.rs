@@ -34,7 +34,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -323,7 +323,7 @@ pub async fn find_all_server_log(
   ).await?;
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -1549,25 +1549,25 @@ pub async fn update_by_id_server_log(
     args.push(log_time.into());
   }
   // 日志级别
-  if let Some(level) = input.level {
+  if let Some(level) = input.level.clone() {
     field_num += 1;
     sql_fields += "level=?,";
     args.push(level.into());
   }
   // 模块
-  if let Some(module) = input.module {
+  if let Some(module) = input.module.clone() {
     field_num += 1;
     sql_fields += "module=?,";
     args.push(module.into());
   }
   // 请求ID
-  if let Some(req_id) = input.req_id {
+  if let Some(req_id) = input.req_id.clone() {
     field_num += 1;
     sql_fields += "req_id=?,";
     args.push(req_id.into());
   }
   // 日志内容
-  if let Some(content) = input.content {
+  if let Some(content) = input.content.clone() {
     field_num += 1;
     sql_fields += "content=?,";
     args.push(content.into());

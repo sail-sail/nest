@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -622,7 +622,7 @@ pub async fn find_all_dyn_page(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -645,7 +645,7 @@ pub async fn find_all_dyn_page(
   
   // 动态页面字段
   let dyn_page_field_models = find_all_dyn_page_field(
-    DynPageFieldSearch {
+    Some(DynPageFieldSearch {
       dyn_page_id: res
         .iter()
         .map(|item| item.id)
@@ -653,10 +653,10 @@ pub async fn find_all_dyn_page(
         .into(),
       is_deleted,
       ..Default::default()
-    }.into(),
+    }),
     None,
     None,
-    None,
+    options,
   ).await?;
   
   #[allow(unused_variables)]
@@ -2469,7 +2469,7 @@ pub async fn update_by_id_dyn_page(
     args.push(is_enabled.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

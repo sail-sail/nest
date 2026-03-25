@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -657,7 +657,7 @@ pub async fn find_all_dictbiz(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -682,7 +682,7 @@ pub async fn find_all_dictbiz(
   
   // 业务字典明细
   let dictbiz_detail_models = find_all_dictbiz_detail(
-    DictbizDetailSearch {
+    Some(DictbizDetailSearch {
       dictbiz_id: res
         .iter()
         .map(|item| item.id)
@@ -690,10 +690,10 @@ pub async fn find_all_dictbiz(
         .into(),
       is_deleted,
       ..Default::default()
-    }.into(),
+    }),
     None,
     None,
-    None,
+    options,
   ).await?;
   
   #[allow(unused_variables)]
@@ -2338,13 +2338,13 @@ pub async fn update_by_id_dictbiz(
     args.push(tenant_id.into());
   }
   // 编码
-  if let Some(code) = input.code {
+  if let Some(code) = input.code.clone() {
     field_num += 1;
     sql_fields += "code=?,";
     args.push(code.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
@@ -2356,7 +2356,7 @@ pub async fn update_by_id_dictbiz(
     args.push(is_add.into());
   }
   // 数据类型
-  if let Some(r#type) = input.r#type {
+  if let Some(r#type) = input.r#type.clone() {
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());
@@ -2374,7 +2374,7 @@ pub async fn update_by_id_dictbiz(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

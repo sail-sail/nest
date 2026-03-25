@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
+/* oxlint-disable @typescript-eslint/no-empty-object-type */
 import type {
   DynPageFieldInput as DynPageFieldInputType,
   DynPageFieldModel as DynPageFieldModelType,
@@ -10,7 +10,7 @@ declare global {
   
   /** 动态页面字段 */
   interface DynPageFieldModel extends DynPageFieldModelType {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     _attrs: Record<string, any>;
   }
   

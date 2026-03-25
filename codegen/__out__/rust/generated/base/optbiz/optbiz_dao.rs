@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -643,7 +643,7 @@ pub async fn find_all_optbiz(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2275,19 +2275,19 @@ pub async fn update_by_id_optbiz(
     args.push(tenant_id.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 键
-  if let Some(ky) = input.ky {
+  if let Some(ky) = input.ky.clone() {
     field_num += 1;
     sql_fields += "ky=?,";
     args.push(ky.into());
   }
   // 值
-  if let Some(val) = input.val {
+  if let Some(val) = input.val.clone() {
     field_num += 1;
     sql_fields += "val=?,";
     args.push(val.into());
@@ -2311,7 +2311,7 @@ pub async fn update_by_id_optbiz(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

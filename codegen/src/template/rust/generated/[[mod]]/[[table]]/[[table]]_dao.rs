@@ -291,7 +291,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,<#
   if (hasOrderBy) {
@@ -2193,7 +2193,7 @@ pub async fn find_all_<#=table#>(
   #>
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2334,7 +2334,7 @@ pub async fn find_all_<#=table#>(
   
   // <#=inlineForeignTab.label#>
   let <#=inline_column_name#>_models = find_all_<#=inlineForeignTable#>(
-    <#=inlineForeignTable_Up#>Search {
+    Some(<#=inlineForeignTable_Up#>Search {
       <#=inlineForeignTab.column#>: res
         .iter()
         .map(|item| item.id)
@@ -2346,10 +2346,10 @@ pub async fn find_all_<#=table#>(
       }
       #>
       ..Default::default()
-    }.into(),
+    }),
     None,
     None,
-    None,
+    options,
   ).await?;<#
   }
   #><#
@@ -2388,7 +2388,7 @@ pub async fn find_all_<#=table#>(
   
   // <#=table_comment#>
   let <#=column_name#>_<#=table#>_models = find_all_<#=table#>(
-    <#=Table_Up#>Search {
+    Some(<#=Table_Up#>Search {
       <#=many2many.column1#>: res
         .iter()
         .map(|item| item.id)
@@ -2400,10 +2400,10 @@ pub async fn find_all_<#=table#>(
       }
       #>
       ..Default::default()
-    }.into(),
+    }),
     None,
     None,
-    None,
+    options,
   ).await?;<#
   }
   #><#
@@ -2411,7 +2411,7 @@ pub async fn find_all_<#=table#>(
   #>
   
   let <#=auditColumn#>_recent_models = find_all_<#=auditTable#>(
-    <#=auditTable_Up#>Search {
+    Some(<#=auditTable_Up#>Search {
       <#=table#>_id: res
         .iter()
         .map(|item| item.id)
@@ -2423,13 +2423,13 @@ pub async fn find_all_<#=table#>(
       }
       #>
       ..Default::default()
-    }.into(),
+    }),
     None,
-    vec![SortInput {
+    Some(vec![SortInput {
       prop: "audit_time".into(),
       order: SortOrderEnum::Desc,
-    }].into(),
-    None,
+    }]),
+    options,
   ).await?;<#
   }
   #>
@@ -6780,7 +6780,7 @@ pub async fn update_by_id_<#=table#>(
     } else if (isEncrypt && [ "varchar", "text" ].includes(data_type)) {
   #>
   // <#=column_comment#>
-  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#>.clone() {
     field_num += 1;
     sql_fields += "<#=column_name_mysql#>=?,";
     args.push(encrypt(&<#=column_name_rust#>).into());
@@ -6828,7 +6828,9 @@ pub async fn update_by_id_<#=table#>(
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#><#
-    if (inline_column_modelLabels.length > 0 && column_name === opts?.lbl_field) {
+    if (inline_column_modelLabels.length > 0 && column_name === opts?.lbl_field
+      || [ "varchar", "text" ].includes(data_type)
+    ) {
   #>.clone()<#
     }
   #> {
@@ -7728,6 +7730,32 @@ pub async fn update_by_id_<#=table#>(
     ).await?;
   }<#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    if (column_name === "update_usr_id") continue;
+    if (column_name === "update_time") continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    const column_comment = column.COLUMN_COMMENT;
+    const isAtt = column.isAtt;
+    const isImg = column.isImg;
+    const isFluentEditor = column.isFluentEditor;
+    if (!isAtt && !isImg && !isFluentEditor) continue;
+  #>
+  
+  // <#=column_comment#>
+  if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#>.as_ref() && <#=column_name_rust#> != &old_model.<#=column_name_rust#> {
+    crate::common::oss::oss_dao::delete_object(
+      old_model.<#=column_name_rust#>.as_str(),
+    ).await?;
+  }<#
+  }
   #>
   
   Ok(id)
@@ -8307,7 +8335,8 @@ pub async fn delete_by_ids_<#=table#>(
       const column_comment = column.COLUMN_COMMENT;
       const isAtt = column.isAtt;
       const isImg = column.isImg;
-      if (!isAtt && !isImg) continue;
+      const isFluentEditor = column.isFluentEditor;
+      if (!isAtt && !isImg && !isFluentEditor) continue;
     #>
     
     // <#=column_comment#>
@@ -9293,7 +9322,8 @@ pub async fn force_delete_by_ids_<#=table#>(
       const column_comment = column.COLUMN_COMMENT;
       const isAtt = column.isAtt;
       const isImg = column.isImg;
-      if (!isAtt && !isImg) continue;
+      const isFluentEditor = column.isFluentEditor;
+      if (!isAtt && !isImg && !isFluentEditor) continue;
     #>
     
     // <#=column_comment#>
@@ -9423,7 +9453,7 @@ pub async fn find_summary_<#=table#>(
 ) -> Result<<#=tableUP#>Summary> {
   
   let table = get_table_name_<#=table#>();
-  let method = "find_last_order_by_<#=table#>";
+  let method = "find_summary_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -9455,8 +9485,8 @@ pub async fn find_summary_<#=table#>(
   let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
   let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
   
-  let sql = format!(r#"select <#=findSummaryColumns.map(function(column) { return "sum(t." + column.COLUMN_NAME + ") as " + mysqlKeyEscape(column.COLUMN_NAME); }).join(", ")#>
-  from {from_query} where {where_query}"#);
+  let sql = format!(r#"select <#=findSummaryColumns.map(function(column) { return "sum(s." + column.COLUMN_NAME + ") as " + mysqlKeyEscape(column.COLUMN_NAME); }).join(", ")#>
+  from (select distinct t.id<#=findSummaryColumns.map(function(column) { return ",t." + column.COLUMN_NAME; }).join("")#> from {from_query} where {where_query}) as s"#);
   
   let args: Vec<_> = args.into();<#
   if (cache) {

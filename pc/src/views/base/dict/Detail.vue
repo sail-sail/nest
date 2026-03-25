@@ -698,7 +698,7 @@ async function onRefresh() {
   const [
     data,
   ] = await Promise.all([
-    await findOneModel({
+    findOneModel({
       id,
       is_deleted,
     }),
@@ -849,7 +849,7 @@ async function save() {
       dict_detail: [
         ...(dialogModel.dict_detail || [ ]).map((item) => ({
           ...item,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line @typescript-eslint/no-explicit-any
           order_by: (item as any)._seq,
           _seq: undefined,
           _type: undefined,
@@ -872,7 +872,7 @@ async function save() {
       dict_detail: [
         ...(dialogModel.dict_detail || [ ]).map((item) => ({
           ...item,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line @typescript-eslint/no-explicit-any
           order_by: (item as any)._seq,
           _seq: undefined,
           _type: undefined,
@@ -969,7 +969,7 @@ watch(
     }
     for (let i = 0; i < dialogModel.dict_detail.length; i++) {
       const item = dialogModel.dict_detail[i];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       (item as any)._seq = i + 1;
     }
   },

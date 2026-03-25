@@ -41,7 +41,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -869,7 +869,7 @@ pub async fn find_all_tenant(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2805,25 +2805,25 @@ pub async fn update_by_id_tenant(
     args.push(code_seq.into());
   }
   // 编码
-  if let Some(code) = input.code {
+  if let Some(code) = input.code.clone() {
     field_num += 1;
     sql_fields += "code=?,";
     args.push(code.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 标题
-  if let Some(title) = input.title {
+  if let Some(title) = input.title.clone() {
     field_num += 1;
     sql_fields += "title=?,";
     args.push(title.into());
   }
   // 简介
-  if let Some(info) = input.info {
+  if let Some(info) = input.info.clone() {
     field_num += 1;
     sql_fields += "info=?,";
     args.push(info.into());
@@ -2837,7 +2837,7 @@ pub async fn update_by_id_tenant(
     }
   }
   // 语言
-  if let Some(lang_id) = input.lang_id {
+  if let Some(lang_id) = input.lang_id.clone() {
     field_num += 1;
     sql_fields += "lang_id=?,";
     args.push(lang_id.into());
@@ -2861,7 +2861,7 @@ pub async fn update_by_id_tenant(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -760,7 +760,7 @@ pub async fn find_all_menu(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2504,25 +2504,25 @@ pub async fn update_by_id_menu(
   
   let mut field_num: usize = 0;
   // 父菜单
-  if let Some(parent_id) = input.parent_id {
+  if let Some(parent_id) = input.parent_id.clone() {
     field_num += 1;
     sql_fields += "parent_id=?,";
     args.push(parent_id.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
   // 路由
-  if let Some(route_path) = input.route_path {
+  if let Some(route_path) = input.route_path.clone() {
     field_num += 1;
     sql_fields += "route_path=?,";
     args.push(route_path.into());
   }
   // 参数
-  if let Some(route_query) = input.route_query {
+  if let Some(route_query) = input.route_query.clone() {
     field_num += 1;
     sql_fields += "route_query=?,";
     args.push(route_query.into());
@@ -2552,7 +2552,7 @@ pub async fn update_by_id_menu(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

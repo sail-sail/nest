@@ -34,7 +34,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   get_short_uuid,
@@ -526,7 +526,7 @@ pub async fn find_all_dyn_page_val(
   ).await?;
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -1888,25 +1888,25 @@ pub async fn update_by_id_dyn_page_val(
     args.push(tenant_id.into());
   }
   // 关联页面路由
-  if let Some(ref_code) = input.ref_code {
+  if let Some(ref_code) = input.ref_code.clone() {
     field_num += 1;
     sql_fields += "ref_code=?,";
     args.push(ref_code.into());
   }
   // 关联数据ID
-  if let Some(ref_id) = input.ref_id {
+  if let Some(ref_id) = input.ref_id.clone() {
     field_num += 1;
     sql_fields += "ref_id=?,";
     args.push(ref_id.into());
   }
   // 字段编码
-  if let Some(code) = input.code {
+  if let Some(code) = input.code.clone() {
     field_num += 1;
     sql_fields += "code=?,";
     args.push(code.into());
   }
   // 值
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());

@@ -33,6 +33,16 @@ import {
   isUseI18n,
 } from "../tables/tables.ts";
 
+import {
+  dirname,
+} from "path";
+
+import { fileURLToPath } from "url";
+
+// @ts-ignore
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const {
   readFile,
 } = fsExtraPkg;
@@ -56,6 +66,7 @@ async function getBucket() {
   try {
     await s3.createBucket(oss_bucket)
   // deno-lint-ignore no-empty
+  // oxlint-disable-next-line no-unused-vars
   } catch (_err) { }
   _bucket = s3.getBucket(oss_bucket);
   return _bucket;
@@ -143,7 +154,7 @@ export async function execCsvFile(context: Context, item: string) {
       if (val == null) {
         val = "NULL";
       } else if (val == "default" || val == "NULL") {
-        val = val;
+        // val = val;
       } else {
         if (tableName === "base_icon" && key === "img") {
           if (!val) {

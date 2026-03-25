@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -564,7 +564,7 @@ pub async fn find_all_icon(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2047,19 +2047,19 @@ pub async fn update_by_id_icon(
   
   let mut field_num: usize = 0;
   // 图标
-  if let Some(img) = input.img {
+  if let Some(img) = input.img.clone() {
     field_num += 1;
     sql_fields += "img=?,";
     args.push(img.into());
   }
   // 编码
-  if let Some(code) = input.code {
+  if let Some(code) = input.code.clone() {
     field_num += 1;
     sql_fields += "code=?,";
     args.push(code.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
@@ -2077,7 +2077,7 @@ pub async fn update_by_id_icon(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());
@@ -2181,6 +2181,13 @@ pub async fn update_by_id_icon(
     
     del_cache_icon().await?;
     
+  }
+  
+  // 图标
+  if let Some(img) = input.img.as_ref() && img != &old_model.img {
+    crate::common::oss::oss_dao::delete_object(
+      old_model.img.as_str(),
+    ).await?;
   }
   
   Ok(id)

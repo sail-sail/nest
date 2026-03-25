@@ -36,7 +36,7 @@ use crate::common::context::{
   Options,
   FIND_ALL_IDS_LIMIT,
   MAX_SAFE_INTEGER,
-  find_all_result_limit,
+  get_find_all_result_limit,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -579,7 +579,7 @@ pub async fn find_all_domain(
   };
   
   let len = res.len();
-  let result_limit_num = find_all_result_limit();
+  let result_limit_num = get_find_all_result_limit();
   
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
@@ -2107,13 +2107,13 @@ pub async fn update_by_id_domain(
   
   let mut field_num: usize = 0;
   // 协议
-  if let Some(protocol) = input.protocol {
+  if let Some(protocol) = input.protocol.clone() {
     field_num += 1;
     sql_fields += "protocol=?,";
     args.push(protocol.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
@@ -2137,7 +2137,7 @@ pub async fn update_by_id_domain(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

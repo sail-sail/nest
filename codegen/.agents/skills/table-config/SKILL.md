@@ -17,6 +17,32 @@ description: 表字段配置规范。配置 {mod}.ts、给表添加/修改字段
 - `opts.cache`: 是否缓存, 需要缓存时配置
 - `opts.inlineForeignTabs`: 内联关联表配置, 需要内联展示关联表时配置, 主表从表聚合关系使用
 
+### defaultSort 是全局配置
+`opts.defaultSort` 会同时影响 PC 和 uni 所有端的默认排序。当某个端需要特殊排序（如 uni 列表按 type 分组展示, `type` 配置 `canSortInApi: true`），不要修改 `opts.defaultSort`，而应在该端的页面代码中通过 `findAll*` 的 sort 参数传入自定义排序：
+
+```typescript
+// uni 页面中自定义排序，不影响 PC 端的默认排序
+function getSortXxx(): Sort[] {
+  return [
+    {
+      prop: "type",
+      order: "ascending",
+    },
+    {
+      prop: "create_time",
+      order: "descending",
+    },
+  ] as Sort[];
+}
+
+// 调用时传入第三个参数
+await findAllXxx(
+  search,
+  page,
+  getSortXxx(),
+);
+```
+
 ## 默认值（无需配置）
 
 | 字段/类型 | 默认行为 |

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, watch, PropType, nextTick } from 'vue';
+import { ref, computed, onMounted, watch, type PropType, nextTick } from 'vue';
 import tmPickerView from '../tm-picker-view/tm-picker-view.vue';
 import {$i18n} from "@/uni_modules/tm-ui"
 /**

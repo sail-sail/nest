@@ -125,7 +125,7 @@ const cascaderProps = computed<CascaderProps>(() => {
   };
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 const options = ref<any>();
 let optionsPrm: Promise<PcaItem[]>;
 
@@ -158,9 +158,9 @@ const modelLabelComp = computed<string>(() => {
   return str;
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 function treeFindLabel(data: any[], value: string): any {
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const option = data.find((item: any) => item[cascaderProps.value?.value ?? "value"] === value);
   if (option) {
     return option[cascaderProps.value?.label ?? "label"];
