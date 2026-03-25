@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, PropType, ref, watch } from 'vue'
+	import { computed, type PropType, ref, watch } from 'vue'
 	import { covetUniNumber } from '../../libs/tool'
 	import { TMUPLOAD_PHOTO_STATUS } from '../../interface'
 	import { useTmConfig } from '../../libs/config'

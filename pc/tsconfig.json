@@ -7,7 +7,7 @@
     "importHelpers": false,
     "removeComments": false,
     "target": "ESNext",
-    "module": "none",
+    "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
