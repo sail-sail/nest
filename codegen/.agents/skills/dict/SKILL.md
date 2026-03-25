@@ -26,6 +26,8 @@ src/tables/{mod}/
 ├── base_dictbiz_detail.{mod}.sql.csv # 业务字典明细
 ```
 
+- 注意 `mod` 代表当前模块, 可从表名中提取, 如 `ec_order` 表对应的模块为 `ec` 
+
 #### `base_dictbiz.{mod}.sql.csv`:
 ```csv
 id,code,lbl,type,order_by,tenant_id,is_sys,is_add

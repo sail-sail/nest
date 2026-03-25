@@ -93,7 +93,7 @@
         @click="isSvg && (showViewer = false)"
       >
         
-        <!-- eslint-disable vue/no-v-html -->
+        <!-- oxlint-disable vue/no-v-html -->
         <div
           class="el-icon custom_icon_viewer"
           un-w="full"

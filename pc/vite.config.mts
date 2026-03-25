@@ -1,5 +1,5 @@
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vite";
+import { defineConfig } from "vite-plus";
 import Vue from "@vitejs/plugin-vue";
 import VueJsx from "@vitejs/plugin-vue-jsx";
 // import { VitePWA } from "vite-plugin-pwa";
@@ -307,12 +307,12 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:4001",
+        target: "http://localhost:4001",
         changeOrigin: true,
         secure: false,
       },
       "/graphql": {
-        target: "http://127.0.0.1:4001",
+        target: "http://localhost:4001",
         changeOrigin: true,
         secure: false,
       },
