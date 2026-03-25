@@ -169,7 +169,7 @@ async function showDialog(
     title?: string;
     model: {
       persistKey: string;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       search: any;
     },
   },
@@ -222,7 +222,7 @@ function onOpened() {
 
 export type SearchStagingType = {
   name: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
 };
 
@@ -243,7 +243,7 @@ function onRefresh() {
 
 function save(model: SearchStagingType) {
   if (model.name) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     const searchList2: any[] = [ ];
     for (const item of searchList) {
       if (item.name === model.name) {
@@ -269,7 +269,7 @@ async function onDelete(name: string, k: number) {
   // }
   const searchList2: {
       name: string;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       value: any;
   }[] = [ ];
   for (let i = 0; i < searchList.length; i++) {

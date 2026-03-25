@@ -207,7 +207,7 @@ watch(
 );
 
 const oldLoginModelStr = localStorage.getItem(oldLoginModelKey);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 let oldLoginModel: any = undefined;
 if (oldLoginModelStr) {
   try {

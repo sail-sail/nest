@@ -20,7 +20,7 @@
 	</view>
 </template>
 <script setup lang="ts">
-import { computed, PropType, ref, useSlots } from "vue";
+import { computed, type PropType, ref, useSlots } from "vue";
 import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, linearValid, getUnit } from "../../libs/tool";
 import { useTmConfig } from "../../libs/config";
 import { getDefaultColor, setTextColorLightByDark, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";

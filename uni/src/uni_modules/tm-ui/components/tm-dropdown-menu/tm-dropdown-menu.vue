@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { computed, getCurrentInstance, provide, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue';
+	import { computed, getCurrentInstance, provide, onBeforeUnmount, onMounted, type PropType, ref, watch } from 'vue';
 	import { useTmConfig } from "../../libs/config";
 	import { covetUniNumber } from '../../libs/tool';
 	import { getDefaultColor } from '../../libs/colors';

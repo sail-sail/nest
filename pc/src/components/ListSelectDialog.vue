@@ -131,7 +131,7 @@ let argIsLocked = $ref<boolean>();
 
 type OnCloseResolveType = {
   action: typeof dialogAction;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   selectedIds?: any[];
 };
 
@@ -143,7 +143,7 @@ async function showDialog(
     type?: typeof dialogType;
     title?: string;
     action?: "select";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     selectedIds: any[];
     isLocked?: boolean;
   },
@@ -217,7 +217,7 @@ async function onRowEnter(e?: KeyboardEvent) {
   await onSave();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 async function onRowDblclick(row: { id: any }) {
   selectedIds = [ row.id ];
   await onSave();

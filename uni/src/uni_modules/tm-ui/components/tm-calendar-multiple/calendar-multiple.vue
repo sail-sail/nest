@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-	import { ref, computed, onMounted, watch, type PropType, nextTick,getCurrentInstance } from 'vue';
+	import { ref, computed, onMounted, watch, type type PropType, nextTick,getCurrentInstance } from 'vue';
 	import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, linearValid } from '../../libs/tool'
 	import { useTmConfig } from '../../libs/config'
 	import {

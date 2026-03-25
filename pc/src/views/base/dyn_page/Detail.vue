@@ -957,7 +957,7 @@ async function onRefresh() {
   const [
     data,
   ] = await Promise.all([
-    await findOneModel({
+    findOneModel({
       id,
       is_deleted,
     }),
@@ -1112,7 +1112,7 @@ async function save() {
       dyn_page_field: [
         ...(dialogModel.dyn_page_field || [ ]).map((item) => ({
           ...item,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line @typescript-eslint/no-explicit-any
           order_by: (item as any)._seq,
           _seq: undefined,
           _type: undefined,
@@ -1135,7 +1135,7 @@ async function save() {
       dyn_page_field: [
         ...(dialogModel.dyn_page_field || [ ]).map((item) => ({
           ...item,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line @typescript-eslint/no-explicit-any
           order_by: (item as any)._seq,
           _seq: undefined,
           _type: undefined,
@@ -1232,7 +1232,7 @@ watch(
     }
     for (let i = 0; i < dialogModel.dyn_page_field.length; i++) {
       const item = dialogModel.dyn_page_field[i];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       (item as any)._seq = i + 1;
     }
   },

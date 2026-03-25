@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 
-	import { ref, computed, onMounted, watch, PropType,onUnmounted,getCurrentInstance  } from 'vue'
+	import { ref, computed, onMounted, watch, type PropType,onUnmounted,getCurrentInstance  } from 'vue'
 	import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumberValidByStyleBorderColor, linearValid, getUnit } from "../../libs/tool";
 	import { getDefaultColor,hslaToCss, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
 	import { useTmConfig } from "../../libs/config";

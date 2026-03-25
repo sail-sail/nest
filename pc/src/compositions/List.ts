@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* oxlint-disable @typescript-eslint/no-explicit-any */
 import {
   useI18n,
 } from "@/locales/i18n.ts";
@@ -86,7 +86,7 @@ export function initBuiltInModel(
 }
 
 export function usePage(
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  // oxlint-disable-next-line @typescript-eslint/no-unsafe-function-type
   dataGrid: Function,
   opt?: {
     pageSize?: number,

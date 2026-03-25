@@ -17,7 +17,7 @@ function getTextWidth(textContent: string) {
 }
 
 function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  // oxlint-disable-next-line @typescript-eslint/no-unsafe-function-type
   const bindVal: Function = binding.value;
   if (!bindVal) {
     console.error("请设置正确的 v-header-order-drag 参数值!", el, binding.value);
@@ -28,11 +28,11 @@ function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
     return;
   }
   
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const existingInstance = (headTr as any).__instance;
   if (existingInstance) {
     existingInstance.destroy?.();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     (headTr as any).__instance = null;
   }
   
@@ -190,7 +190,7 @@ function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
       preventOnFilter: false,
     }
   );
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (headTr as any).__instance = instance;
 }
 
@@ -206,7 +206,7 @@ export const headerOrderDragDirective = {
     if (!headTr) {
       return;
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     const instance = (headTr as any).__instance;
     if (!instance) {
       return;

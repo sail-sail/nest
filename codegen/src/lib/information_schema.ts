@@ -4,9 +4,9 @@ import nestConfig from "./nest_config.ts";
 import tables from "../tables/tables.ts";
 import config, { type TableCloumn, type TablesConfigItem } from "../config.ts";
 import { isEmpty, pushEnumMsg } from "./StringUitl.ts";
-import { Chalk } from "chalk";
+// import { Chalk } from "chalk";
 
-const chalk = new Chalk();
+// const chalk = new Chalk();
 
 export class Context {
   pool: Pool;
@@ -1388,6 +1388,7 @@ export async function getDictbizModels(context: Context) {
       const result = await context.conn.query(sql);
       const records = result[0] as any[];
       if (records.length === 0) {
+        console.error(records);
         throw new Error(`租户不存在`);
       }
       tenant_id = records[0].id;

@@ -1,4 +1,4 @@
-import { BasePluralRule, Tmui4xI18nTml, DateTimeFormatReal, I18nOptions, I18nOptionsReally, NumberFormat, NumberFormatOpts, StringOrNull, NumberOrNull, StringOrNumber, StringOrNumberOrNull, DateOrNumberOrString, UTSJSONObjectOrNull, UTSJSONObjectOrArray, AnyOrNull, GetAnyType, I18nOptionsOrNull, NumberFormatOrNull, DateTimeFormatOrNull, GetAnyTypeOrNull } from "./interface";
+import { type BasePluralRule, type Tmui4xI18nTml, type DateTimeFormatReal, type I18nOptions, type I18nOptionsReally, type NumberFormat, type NumberFormatOpts, type StringOrNull, type NumberOrNull, type StringOrNumber, type StringOrNumberOrNull, type DateOrNumberOrString, type UTSJSONObjectOrNull, type UTSJSONObjectOrArray, type AnyOrNull, type GetAnyType, type I18nOptionsOrNull, type NumberFormatOrNull, type DateTimeFormatOrNull, type GetAnyTypeOrNull } from "./interface";
 
 /**
  * uniapp-x多语言插件
