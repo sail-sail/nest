@@ -50,7 +50,7 @@
     "dayjs": "npm:dayjs@1.11.20",
     "js-md5": "npm:js-md5@0.8.3",
     "decimal.js": "https://esm.sh/decimal.js@10.6.0",
-    "graphql": "npm:graphql@16.13.1",
+    "graphql": "npm:graphql@16.13.2",
     "mime": "npm:mime@4.1.0",
     "jose": "jsr:@panva/jose@6.1.3",
     "mnemonist": "npm:mnemonist@0.40.3",

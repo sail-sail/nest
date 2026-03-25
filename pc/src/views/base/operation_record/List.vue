@@ -494,6 +494,7 @@ defineOptions({
 });
 
 const pagePath = getPagePathOperationRecord();
+// @ts-ignore
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
@@ -1140,7 +1141,7 @@ async function onRevertByIds() {
 }
 
 const moduleComponent = shallowRef<Component>();
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 const moduleComponentRef = shallowRef<any>();
 
 /** 打开操作前数据对话框 */
@@ -1170,7 +1171,7 @@ async function openDataDialog(
     ElMessage.warning(await nsAsync("模块 {0} 未找到", module_lbl));
     return;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   let dataObj: any = undefined;
   if (model[type]) {
     try {
@@ -1184,20 +1185,20 @@ async function openDataDialog(
   }
   await nextTick();
   const method = model.method;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   if ((moduleComponentRef.value as any).showDialog) {
     if ([ "creates" ].includes(method)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       await (moduleComponentRef.value as any).showDialog({
         title,
         notice: "",
         action: "view",
         isLocked: true,
         model: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line @typescript-eslint/no-explicit-any
           ids: dataObj.map((item: any) => item.id),
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line @typescript-eslint/no-explicit-any
         findOne: ({ id }: any) => dataObj.find((item: any) => item.id === id),
       });
       tableFocus();
@@ -1205,7 +1206,7 @@ async function openDataDialog(
       if (!dataObj.id) {
         return;
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       await (moduleComponentRef.value as any).showDialog({
         title,
         notice: "",
@@ -1222,17 +1223,17 @@ async function openDataDialog(
         ElMessage.warning(await nsAsync("未找到数据"));
         return;
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       await (moduleComponentRef.value as any).showDialog({
         title,
         notice: "",
         action: "view",
         isLocked: true,
         model: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line @typescript-eslint/no-explicit-any
           ids: dataObj.map((item: any) => item.id),
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line @typescript-eslint/no-explicit-any
         findOne: ({ id }: { id: string }) => dataObj.find((item: any) => item.id === id),
       });
       tableFocus();
@@ -1241,7 +1242,7 @@ async function openDataDialog(
         ElMessage.warning(await nsAsync("未找到数据"));
         return;
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       await (moduleComponentRef.value as any).showDialog({
         title,
         notice: "",
@@ -1304,7 +1305,7 @@ watch(
       propsNotReset,
       isListSelectDialog,
       ...rest
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     } = builtInSearch as any;
     return rest;
   }),

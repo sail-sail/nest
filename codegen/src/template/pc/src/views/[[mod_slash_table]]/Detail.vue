@@ -6506,7 +6506,7 @@ async function onRefresh() {
     }
     #>
   ] = await Promise.all([
-    await findOneModel({
+    findOneModel({
       id,<#
       if (hasIsDeleted) {
       #>
@@ -7269,7 +7269,7 @@ async function save() {
           ...item,<#
           if (hasOrderBy) {
           #>
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line @typescript-eslint/no-explicit-any
           order_by: (item as any)._seq,<#
           }
           #>
@@ -7398,7 +7398,7 @@ async function save() {
           ...item,<#
           if (hasOrderBy) {
           #>
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line @typescript-eslint/no-explicit-any
           order_by: (item as any)._seq,<#
           }
           #>
@@ -7795,7 +7795,7 @@ watch(
     }
     for (let i = 0; i < dialogModel.<#=inline_column_name#>.length; i++) {
       const item = dialogModel.<#=inline_column_name#>[i];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       (item as any)._seq = i + 1;
     }
   },

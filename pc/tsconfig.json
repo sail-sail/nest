@@ -7,9 +7,12 @@
     "importHelpers": false,
     "removeComments": false,
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "module": "none",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noUnusedLocals": false,
     "noEmit": true,
     "allowJs": true,
     "jsx": "preserve",
@@ -18,14 +21,13 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "lib": [ "esnext", "dom", "WebWorker" ],
+    "lib": [ "esnext", "DOM", "DOM.Iterable", "WebWorker" ],
     "types": [
       "@vue-macros/reactivity-transform/macros-global",
       "vite/client",
       "node",
       "unplugin-vue-define-options/macros-global"
     ],
-    "baseUrl": ".",
     "paths": {
       "@/*": [ "./src/*" ],
       "#/*": [ "./src/typings/*" ]

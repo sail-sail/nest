@@ -80,3 +80,60 @@ const now = dayjs().format('YYYY-MM-DD');
 ```vue
 <el-button>Click Me</el-button>
 ```
+
+## 弹窗规范 — CustomDialog
+
+禁止在页面中内联 `el-dialog`，所有弹窗必须使用 `CustomDialog` 组件，抽离为独立的 `XxxDialog.vue` 文件。
+
+### 核心规则
+- **一个弹窗一个文件**：`XxxDialog.vue` 放在同目录下
+- **Promise 模式**：`showDialog()` 返回 Promise，调用方 `await` 获取结果
+- **DialogAction**：每个弹窗定义自己的 `DialogAction` 类型
+- **CustomDialog type**：`"auto"` 自适应 / `"medium"` 中等 / `"large"` 大
+
+### 弹窗骨架 `XxxDialog.vue`
+
+```typescript
+type DialogAction = "refund"; // 按业务定义
+
+type OnCloseResolveType = {
+  type: "ok" | "cancel";
+};
+
+let onCloseResolve = function(_value: OnCloseResolveType) { };
+
+const customDialogRef = $(useTemplateRef("customDialogRef"));
+
+async function showDialog(arg: { action: DialogAction; row: XxxModel }) {
+  const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
+    type: "auto",
+    title: "弹窗标题",
+  });
+  onCloseResolve = dialogRes.onCloseResolve;
+  return await dialogRes.dialogPrm;
+}
+
+function onClose() {
+  onCloseResolve({ type: "cancel" });
+}
+
+async function onConfirm() {
+  onCloseResolve({ type: "ok" });
+}
+
+defineExpose({ showDialog });
+```
+
+### 调用方
+
+```typescript
+const xxxDialogRef = $(useTemplateRef("xxxDialogRef"));
+
+const res = await xxxDialogRef!.showDialog({ action: "refund", row });
+if (res.type === "ok") {
+  await dataGrid(true);
+}
+```
+
+### 示例参考
+- `src/layout/change_password/ChangePassword.vue`
