@@ -586,6 +586,7 @@ defineOptions({
 });
 
 const pagePath = getPagePathCronJobLog();
+// @ts-ignore
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -693,7 +694,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<CronJobLogSearch>(initSearch());
 
 // 定时任务
 const cron_job_id_search = $computed({
@@ -1326,7 +1327,7 @@ watch(
       propsNotReset,
       isListSelectDialog,
       ...rest
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     } = builtInSearch as any;
     return rest;
   }),

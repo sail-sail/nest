@@ -772,6 +772,7 @@ defineOptions({
 });
 
 const pagePath = getPagePathCronJob();
+// @ts-ignore
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
@@ -894,7 +895,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<CronJobSearch>(initSearch());
 
 // 任务
 const job_id_search = $computed({
@@ -1902,7 +1903,7 @@ watch(
       propsNotReset,
       isListSelectDialog,
       ...rest
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     } = builtInSearch as any;
     return rest;
   }),

@@ -23,7 +23,7 @@ export async function setLblByIdJob(
 }
 
 export function intoInputJob(
-  model?: JobInput,
+  model?: JobInput | null,
 ) {
   const input: JobInput = {
     // ID

@@ -20,7 +20,7 @@ export async function setLblByIdCronJobLogDetail(
 }
 
 export function intoInputCronJobLogDetail(
-  model?: CronJobLogDetailInput,
+  model?: CronJobLogDetailInput | null,
 ) {
   const input: CronJobLogDetailInput = {
     // ID
