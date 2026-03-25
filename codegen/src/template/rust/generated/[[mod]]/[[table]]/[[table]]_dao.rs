@@ -6825,11 +6825,28 @@ pub async fn update_by_id_<#=table#>(
     sql_fields += "<#=column_name_mysql#>=null,";
   }<#
     } else {
+      const is_sys_dict = (function() {
+        if (!column.dict && !column.dictbiz) {
+          return false;
+        }
+        const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
+      if (![ "int", "decimal", "tinyint" ].includes(data_type) && columnDictModels.length > 0) {
+        return true;
+      }
+      return false;
+    })();
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#><#
     if (inline_column_modelLabels.length > 0 && column_name === opts?.lbl_field
-      || [ "varchar", "text" ].includes(data_type)
+      || ([ "varchar", "text" ].includes(data_type) && !foreignKey && !is_sys_dict)
     ) {
   #>.clone()<#
     }
