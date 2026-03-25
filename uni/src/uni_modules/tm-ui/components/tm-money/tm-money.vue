@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, computed, onMounted, ref, shallowRef, watch } from 'vue'
+import { type PropType, computed, onMounted, ref, shallowRef, watch } from 'vue'
 import { covetUniNumber, getUnit } from '../../libs/tool';
 import { TMUPLOAD_PHOTO_STATUS } from '../../interface';
 import { useTmConfig } from "../../libs/config";

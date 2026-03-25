@@ -152,7 +152,7 @@ export async function subscribe<T>(
     callbacks = [ ];
     topicCallbackMap.set(topic, callbacks);
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   callbacks.push(callback as any);
   socket.send(JSON.stringify({
     action: "subscribe",
@@ -206,7 +206,7 @@ export async function unSubscribes(
 /** 取消订阅 */
 export async function unSubscribe(
   topic: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   callback?: ((data: any) => void),
 ) {
   if (closeSocketTimeout) {
@@ -281,7 +281,7 @@ let closeSocketTimeout: NodeJS.Timeout | undefined = undefined;
 export async function publish(
   data: {
     topic: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     payload: any;
   },
 ) {
