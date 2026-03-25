@@ -482,7 +482,7 @@ export function getPagePathWxRefund() {
 export async function getDefaultInputWxRefund() {
   const defaultInput: WxRefundInput = {
     channel: WxRefundChannel.Original,
-    status: WxRefundStatus.Processing,
+    status: WxRefundStatus.NoRefund,
     funds_account: WxRefundFundsAccount.Unsettled,
     amount_total: 0,
     amount_refund: 0,
