@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* oxlint-disable @typescript-eslint/no-explicit-any */
 import cfg from "@/utils/config.ts";
 import { uniqueID, uuid } from "./StringUtil.ts";
 import { ElMessage } from "element-plus";

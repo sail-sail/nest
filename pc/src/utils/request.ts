@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* oxlint-disable @typescript-eslint/no-explicit-any */
 import { ElMessage } from "element-plus";
 import useUsrStore from "../store/usr.ts";
 import useIndexStore from "../store/index.ts";

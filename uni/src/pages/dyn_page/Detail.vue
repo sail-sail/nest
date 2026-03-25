@@ -693,7 +693,7 @@ async function onEditDynPageField() {
       sort?: Sort[],
       opt?: GqlOpt,
     ): Promise<DynPageFieldModel | undefined> {
-      return dyn_page_model?.dyn_page_field?.[index];
+      return dyn_page_model?.dyn_page_field?.[index] as DynPageFieldModel | undefined;
     },
   });
   

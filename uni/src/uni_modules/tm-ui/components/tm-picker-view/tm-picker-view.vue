@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch, PropType, getCurrentInstance, nextTick, shallowRef } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch, type PropType, getCurrentInstance, nextTick, shallowRef } from 'vue';
 import { useTmConfig } from "../../libs/config";
 import pickerItem from './picker-item.vue';
 

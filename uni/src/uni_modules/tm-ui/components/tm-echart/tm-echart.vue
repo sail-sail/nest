@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	// @ts-nocheck
-	import { computed, ref, onMounted, watch, PropType, getCurrentInstance, nextTick } from "vue";
+	import { computed, ref, onMounted, watch, type PropType, getCurrentInstance, nextTick } from "vue";
 	import { arrayNumberValid, getUid, arrayNumberValidByStyleMP, arrayNumberValidByStyleBorderColor, arrayNumberValidByStyleBorderStyle, covetUniNumber, linearValid, getUnit } from "../../libs/tool";
 	import { useTmConfig } from "../../libs/config";
 	import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";

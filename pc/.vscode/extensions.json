@@ -20,7 +20,8 @@
     "jacobpfeifer.pfeifer-hurl",
     "hongyan-prettyjson.pretty-json-vscode",
     "dbaeumer.vscode-eslint",
-    "maggie.eslint-rules-zh-plugin"
+    "maggie.eslint-rules-zh-plugin",
+    "VoidZero.vite-plus-extension-pack"
   ],
   "unwantedRecommendations": [
     "mattpocock.ts-error-translator"

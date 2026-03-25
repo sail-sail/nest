@@ -84,12 +84,12 @@
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
-  "typescript.inlayHints.parameterTypes.enabled": false,
+  "js/ts.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
   "editor.quickSuggestionsDelay": 0,
-  "typescript.suggest.autoImports": false,
-  "typescript.updateImportsOnFileMove.enabled": "never",
+  "js/ts.suggest.autoImports": false,
+  "js/ts.updateImportsOnFileMove.enabled": "never",
   "unocss.root": "",
   "unocss.colorPreview": false,
   "terminal.integrated.env.windows": {
@@ -97,6 +97,7 @@
   },
   "files.eol": "\n",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.oxc": "explicit"
   }
 }
