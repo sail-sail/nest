@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, PropType } from 'vue';
+import { ref, computed, onMounted, watch, type PropType } from 'vue';
 import { useTmConfig } from "../../libs/config";
 import { tmDate, type tmDateTypeTime, createDate } from '../../libs/tmDate';
 import { getDefaultColor} from "../../libs/colors";

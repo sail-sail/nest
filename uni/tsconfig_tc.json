@@ -3,7 +3,7 @@
     "target": "ESNext",
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
-    "module": "none",
+    "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,

@@ -10,7 +10,7 @@
 		| ☑ | ☑️ | ☑️ | x | ☑️ | 4.14+ | 1.0.0 |
 	 */
 	
-	import { SlotsType, PropType, computed, nextTick } from "vue"
+	import { SlotsType, type PropType, computed, nextTick } from "vue"
 	import { getUid } from "../../core/util/xCoreUtil.uts"
 	import { getDefaultColor } from "../../core/util/xCoreColorUtil.uts"
 	import { checkIsCssUnit } from "../../core/util/xCoreUtil.uts"

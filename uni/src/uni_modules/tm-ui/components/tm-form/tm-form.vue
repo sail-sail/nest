@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, computed, nextTick, provide, ref } from 'vue';
+import { type PropType, computed, nextTick, provide, ref } from 'vue';
 import { defaultValidator } from "./validator"
 import { useTmConfig } from "../../libs/config";
 import { deepClone } from '../../libs/tool';

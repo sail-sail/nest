@@ -13,7 +13,7 @@
     </view>
 </template>
 <script setup lang="ts">
-import { computed, PropType, provide } from 'vue';
+import { computed, type PropType, provide } from 'vue';
 import {
     arrayNumber
 } from "../../libs/tool";
