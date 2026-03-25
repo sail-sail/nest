@@ -576,6 +576,12 @@ html:is(.dark) {
   overflow-x: hidden;
   overflow-y: auto;
 }
+.ql-editor span {
+  color: var(--el-input-text-color) !important;
+}
+.ql-toolbar {
+  color: var(--el-input-text-color) !important;
+}
 html .ql-container {
   height: auto;
 }

@@ -2382,7 +2382,7 @@ pub async fn update_by_id_wxw_usr(
     args.push(tenant_id.into());
   }
   // 企微应用
-  if let Some(wxw_app_id) = input.wxw_app_id.clone() {
+  if let Some(wxw_app_id) = input.wxw_app_id {
     field_num += 1;
     sql_fields += "wxw_app_id=?,";
     args.push(wxw_app_id.into());

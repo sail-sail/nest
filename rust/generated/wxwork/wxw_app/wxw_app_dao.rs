@@ -2464,7 +2464,7 @@ pub async fn update_by_id_wxw_app(
     args.push(agentid.into());
   }
   // 可信域名
-  if let Some(domain_id) = input.domain_id.clone() {
+  if let Some(domain_id) = input.domain_id {
     field_num += 1;
     sql_fields += "domain_id=?,";
     args.push(domain_id.into());
