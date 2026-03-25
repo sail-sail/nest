@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
+/* oxlint-disable @typescript-eslint/no-empty-object-type */
 import type {
   TenantInput as TenantInputType,
   TenantModel as TenantModelType,

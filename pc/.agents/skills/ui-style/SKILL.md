@@ -83,106 +83,18 @@ const now = dayjs().format('YYYY-MM-DD');
 
 ## 弹窗规范 — CustomDialog
 
-所有弹窗必须使用 `CustomDialog` 组件，将弹窗逻辑抽离为独立的 `.vue` 文件，而非在页面中内联 `el-dialog`。
+禁止在页面中内联 `el-dialog`，所有弹窗必须使用 `CustomDialog` 组件，抽离为独立的 `XxxDialog.vue` 文件。
 
-### 核心原则
-- **一个弹窗一个文件**：弹窗逻辑、模板、状态全部封装在独立的 `XxxDialog.vue` 中
-- **Promise 模式**：通过 `customDialogRef.showDialog()` 返回 Promise，调用方 `await` 获取结果
-- **dialogAction**：每个弹窗都定义 `DialogAction` 类型，便于后续扩展复用
+### 核心规则
+- **一个弹窗一个文件**：`XxxDialog.vue` 放在同目录下
+- **Promise 模式**：`showDialog()` 返回 Promise，调用方 `await` 获取结果
+- **DialogAction**：每个弹窗定义自己的 `DialogAction` 类型
+- **CustomDialog type**：`"auto"` 自适应 / `"medium"` 中等 / `"large"` 大
 
-### 错误方式 — 在页面中内联弹窗
+### 弹窗骨架 `XxxDialog.vue`
 
-```vue
-<!-- List.vue 中内联写弹窗，导致文件臃肿 -->
-<template>
-  <!-- ...列表代码... -->
-  <el-dialog v-model="dialogVisible" title="退款">
-    <!-- 弹窗内容写在这里 -->
-  </el-dialog>
-</template>
-
-<script setup>
-let dialogVisible = $ref(false);
-// 大量弹窗逻辑代码全堆在 List.vue 里...
-</script>
-```
-
-### 正确方式 — 独立弹窗文件
-
-#### 1. 弹窗组件 `XxxDialog.vue`
-
-```vue
-<template>
-<CustomDialog
-  ref="customDialogRef"
->
-  <div
-    un-flex="~ col"
-    un-p="4"
-  >
-    
-    <!-- 表单内容 -->
-    <el-form
-      label-width="90px"
-    >
-      
-      <el-form-item
-        label="字段名"
-      >
-        <CustomInput
-          v-model="dialogModel.field"
-        ></CustomInput>
-      </el-form-item>
-      
-    </el-form>
-    
-    <!-- 底部按钮 -->
-    <div
-      un-p="y-3"
-      un-box-border
-      un-flex
-      un-justify-center
-      un-items-center
-    >
-      
-      <el-button
-        @click="onClose"
-      >
-        <span>取消</span>
-      </el-button>
-      
-      <el-button
-        type="primary"
-        @click="onConfirm"
-      >
-        <span>确定</span>
-      </el-button>
-      
-    </div>
-    
-  </div>
-</CustomDialog>
-</template>
-
-<script lang="ts" setup>
-
-type DialogAction = "refund"; // 按业务定义，如 "refund" | "adjust" 等
-
-type DialogModel = {
-  id?: XxxId;
-  // ...业务字段
-};
-
-function initDialogModel(): DialogModel {
-  return {
-    id: undefined,
-  };
-}
-
-let dialogModel = $ref<DialogModel>(initDialogModel());
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let dialogAction = $ref<DialogAction>("refund");
+```typescript
+type DialogAction = "refund"; // 按业务定义
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
@@ -192,89 +104,36 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 const customDialogRef = $(useTemplateRef("customDialogRef"));
 
-/** 打开对话框 */
-async function showDialog(
-  arg: {
-    action: DialogAction;
-    row: XxxModel; // 按业务需要传入数据
-  },
-) {
+async function showDialog(arg: { action: DialogAction; row: XxxModel }) {
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "auto",
     title: "弹窗标题",
   });
   onCloseResolve = dialogRes.onCloseResolve;
-  dialogAction = arg.action;
-
-  // 初始化弹窗数据
-  dialogModel = {
-    id: arg.row.id,
-  };
-
   return await dialogRes.dialogPrm;
 }
 
-/** 关闭 */
 function onClose() {
-  onCloseResolve({
-    type: "cancel",
-  });
+  onCloseResolve({ type: "cancel" });
 }
 
-/** 确定 */
 async function onConfirm() {
-  // 业务逻辑...
-  onCloseResolve({
-    type: "ok",
-  });
+  onCloseResolve({ type: "ok" });
 }
 
-defineExpose({
-  showDialog,
-});
-</script>
+defineExpose({ showDialog });
 ```
 
-#### 2. 调用方 `List.vue`
+### 调用方
 
-```vue
-<template>
-  <!-- ...页面内容... -->
-  <XxxDialog
-    ref="xxxDialogRef"
-  ></XxxDialog>
-</template>
-
-<script lang="ts" setup>
-import XxxDialog from "./XxxDialog.vue";
-
+```typescript
 const xxxDialogRef = $(useTemplateRef("xxxDialogRef"));
 
-async function onXxx() {
-  const res = await xxxDialogRef!.showDialog({
-    action: "refund",
-    row,
-  });
-  if (res.type === "ok") {
-    // 刷新数据等后续操作
-    await dataGrid(true);
-  }
+const res = await xxxDialogRef!.showDialog({ action: "refund", row });
+if (res.type === "ok") {
+  await dataGrid(true);
 }
-</script>
 ```
 
-### 关键要点
-
-| 要点 | 说明 |
-|------|------|
-| 文件命名 | `XxxDialog.vue`，放在同一目录下 |
-| showDialog 参数 | 必须包含 `action`，业务数据按需传入 |
-| 返回值 | `{ type: "ok" \| "cancel" }`，可按需扩展更多字段 |
-| dialogAction | 每个弹窗自定义，如 `"refund"`、`"adjust"`，不必统一 |
-| 数据初始化 | 在 `showDialog` 中完成，不用 `initDialogModel` 外部调用 |
-| API 调用 | 弹窗内部完成，调用方只关心结果 |
-| CustomDialog type | `"auto"` 自适应 / `"medium"` 中等 / `"large"` 大 |
-
-
-## 示例参考
+### 示例参考
 - `src/layout/change_password/ChangePassword.vue`

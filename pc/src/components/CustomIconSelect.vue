@@ -285,7 +285,7 @@ const icon_models_filtered = $computed<IconModel[]>(() => {
         code: "",
         lbl: "",
         img_lbl_svg: selectedLbl,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
     }
   } else {
@@ -524,7 +524,7 @@ function onScrollIntoViewIfNeeded() {
   if (!selectedId) {
     return;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   const ele = document.getElementById(selectedId) as any;
   if (ele) {
     if (ele.scrollIntoViewIfNeeded) {

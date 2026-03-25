@@ -76,16 +76,16 @@
 import Decimal from "decimal.js";
 
 const emit = defineEmits<{
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
 
 const props = withDefaults(
   defineProps<{
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     precision?: number;
     step?: number;
