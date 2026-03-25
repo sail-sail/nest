@@ -1620,7 +1620,7 @@ pub async fn update_by_id_field_permit(
   
   let mut field_num: usize = 0;
   // 菜单
-  if let Some(menu_id) = input.menu_id.clone() {
+  if let Some(menu_id) = input.menu_id {
     field_num += 1;
     sql_fields += "menu_id=?,";
     args.push(menu_id.into());
