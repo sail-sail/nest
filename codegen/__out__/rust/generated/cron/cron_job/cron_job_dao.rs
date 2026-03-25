@@ -2506,7 +2506,7 @@ pub async fn update_by_id_cron_job(
     args.push(seq.into());
   }
   // 名称
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
@@ -2518,13 +2518,13 @@ pub async fn update_by_id_cron_job(
     args.push(job_id.into());
   }
   // Cron表达式
-  if let Some(cron) = input.cron {
+  if let Some(cron) = input.cron.clone() {
     field_num += 1;
     sql_fields += "cron=?,";
     args.push(cron.into());
   }
   // 时区
-  if let Some(timezone) = input.timezone {
+  if let Some(timezone) = input.timezone.clone() {
     field_num += 1;
     sql_fields += "timezone=?,";
     args.push(timezone.into());
@@ -2548,7 +2548,7 @@ pub async fn update_by_id_cron_job(
     args.push(order_by.into());
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());

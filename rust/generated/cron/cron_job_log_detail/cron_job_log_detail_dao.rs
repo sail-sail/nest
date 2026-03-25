@@ -1805,7 +1805,7 @@ pub async fn update_by_id_cron_job_log_detail(
     args.push(cron_job_log_id.into());
   }
   // 日志明细
-  if let Some(lbl) = input.lbl {
+  if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());

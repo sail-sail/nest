@@ -2148,7 +2148,7 @@ pub async fn update_by_id_dict_detail(
   
   let mut field_num: usize = 0;
   // 系统字典
-  if let Some(dict_id) = input.dict_id.clone() {
+  if let Some(dict_id) = input.dict_id {
     field_num += 1;
     sql_fields += "dict_id=?,";
     args.push(dict_id.into());

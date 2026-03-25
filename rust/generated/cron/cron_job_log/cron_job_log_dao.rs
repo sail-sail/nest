@@ -2141,7 +2141,7 @@ pub async fn update_by_id_cron_job_log(
     args.push(exec_state.into());
   }
   // 执行结果
-  if let Some(exec_result) = input.exec_result {
+  if let Some(exec_result) = input.exec_result.clone() {
     field_num += 1;
     sql_fields += "exec_result=?,";
     args.push(exec_result.into());
@@ -2165,7 +2165,7 @@ pub async fn update_by_id_cron_job_log(
     sql_fields += "end_time=null,";
   }
   // 备注
-  if let Some(rem) = input.rem {
+  if let Some(rem) = input.rem.clone() {
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());
