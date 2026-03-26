@@ -268,13 +268,6 @@ pub async fn delete_by_ids_tenant(
     }
   }
   
-  for old_model in &old_models {
-    if old_model.is_sys == 1 {
-      let err_msg = "不能删除系统记录";
-      return Err(eyre!(err_msg));
-    }
-  }
-  
   let num = tenant_dao::delete_by_ids_tenant(
     tenant_ids,
     options,

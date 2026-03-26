@@ -2774,18 +2774,15 @@ pub async fn delete_by_ids_menu(
   
   del_cache_menu().await?;
   
+  let old_models = find_by_ids_ok_menu(
+    ids.clone(),
+    options,
+  ).await?;
+  
   let mut num = 0;
-  for id in ids.clone() {
+  for old_model in old_models {
     
-    let old_model = find_by_id_menu(
-      id,
-      options,
-    ).await?;
-    
-    let old_model = match old_model {
-      Some(model) => model,
-      None => continue,
-    };
+    let id = old_model.id;
     
     if !is_silent_mode {
       info!(

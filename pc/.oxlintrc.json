@@ -1,4 +1,5 @@
 {
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": [
     "oxc",
     "typescript",
@@ -29,7 +30,7 @@
         "closeBracket": 0,
         "alignAttributesVertically": true,
         "ignores": []
-      },
+      }
     ],
     "vue/no-dupe-keys": "allow",
     "no-useless-assignment": "allow"

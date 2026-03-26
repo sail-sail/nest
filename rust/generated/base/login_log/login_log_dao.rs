@@ -2230,18 +2230,15 @@ pub async fn delete_by_ids_login_log(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  let old_models = find_by_ids_ok_login_log(
+    ids.clone(),
+    options,
+  ).await?;
+  
   let mut num = 0;
-  for id in ids.clone() {
+  for old_model in old_models {
     
-    let old_model = find_by_id_login_log(
-      id,
-      options,
-    ).await?;
-    
-    let old_model = match old_model {
-      Some(model) => model,
-      None => continue,
-    };
+    let id = old_model.id;
     
     if !is_silent_mode {
       info!(

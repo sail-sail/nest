@@ -214,22 +214,6 @@ pub async fn update_by_id_permit(
   options: Option<Options>,
 ) -> Result<PermitId> {
   
-  let old_model = validate_option_permit(
-    permit_dao::find_by_id_permit(
-      permit_id,
-      options,
-    ).await?,
-  ).await?;
-  
-  // 不能修改系统记录的系统字段
-  if old_model.is_sys == 1 {
-    // 菜单
-    permit_input.menu_id = None;
-    permit_input.menu_id_lbl = None;
-    // 编码
-    permit_input.code = None;
-  }
-  
   let permit_id = permit_dao::update_by_id_permit(
     permit_id,
     permit_input,
@@ -256,23 +240,6 @@ pub async fn delete_by_ids_permit(
   permit_ids: Vec<PermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
-  
-  let old_models = permit_dao::find_all_permit(
-    Some(PermitSearch {
-      ids: Some(permit_ids.clone()),
-      ..Default::default()
-    }),
-    None,
-    None,
-    options,
-  ).await?;
-  
-  for old_model in &old_models {
-    if old_model.is_sys == 1 {
-      let err_msg = "不能删除系统记录";
-      return Err(eyre!(err_msg));
-    }
-  }
   
   let num = permit_dao::delete_by_ids_permit(
     permit_ids,
