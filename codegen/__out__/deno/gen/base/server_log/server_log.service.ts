@@ -196,9 +196,9 @@ export async function updateByIdServerLog(
   input: ServerLogInput,
 ): Promise<ServerLogId> {
   
-  const server_log_id2 = await server_logDao.updateByIdServerLog(server_log_id, input);
+  server_log_id = await server_logDao.updateByIdServerLog(server_log_id, input);
   
-  return server_log_id2;
+  return server_log_id;
 }
 
 /** 校验系统日志是否存在 */

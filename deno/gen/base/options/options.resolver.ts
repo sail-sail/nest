@@ -238,9 +238,9 @@ export async function updateByIdOptions(
     "edit",
   );
   
-  const id2: OptionsId = await updateByIdOptions(id, input);
+  id = await updateByIdOptions(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

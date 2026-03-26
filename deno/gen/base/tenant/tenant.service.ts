@@ -201,9 +201,9 @@ export async function updateByIdTenant(
     throw "不能修改已经锁定的 租户";
   }
   
-  const tenant_id2 = await tenantDao.updateByIdTenant(tenant_id, input);
+  tenant_id = await tenantDao.updateByIdTenant(tenant_id, input);
   
-  return tenant_id2;
+  return tenant_id;
 }
 
 /** 校验租户是否存在 */
@@ -226,12 +226,6 @@ export async function deleteByIdsTenant(
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
       throw "不能删除已经锁定的 租户";
-    }
-  }
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {
-      throw "不能删除系统记录";
     }
   }
   

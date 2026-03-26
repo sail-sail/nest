@@ -196,9 +196,9 @@ export async function updateByIdDictbiz(
   input: DictbizInput,
 ): Promise<DictbizId> {
   
-  const dictbiz_id2 = await dictbizDao.updateByIdDictbiz(dictbiz_id, input);
+  dictbiz_id = await dictbizDao.updateByIdDictbiz(dictbiz_id, input);
   
-  return dictbiz_id2;
+  return dictbiz_id;
 }
 
 /** 校验业务字典是否存在 */
@@ -215,14 +215,6 @@ export async function validateOptionDictbiz(
 export async function deleteByIdsDictbiz(
   dictbiz_ids: DictbizId[],
 ): Promise<number> {
-  
-  const old_models = await dictbizDao.findByIdsDictbiz(dictbiz_ids);
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {
-      throw "不能删除系统记录";
-    }
-  }
   
   const dictbiz_num = await dictbizDao.deleteByIdsDictbiz(dictbiz_ids);
   return dictbiz_num;

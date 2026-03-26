@@ -113,6 +113,4 @@ export function intoInputDept(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

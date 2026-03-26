@@ -121,8 +121,6 @@ export function intoInputDict(
     return;
   }
   
-  input.id = undefined;
-  
   // 系统字典明细
   input?.dict_detail?.map(intoInputDictDetail);
 }

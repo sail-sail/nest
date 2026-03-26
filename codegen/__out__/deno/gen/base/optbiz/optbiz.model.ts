@@ -114,6 +114,4 @@ export function intoInputOptbiz(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

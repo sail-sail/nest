@@ -78,6 +78,4 @@ export function intoInputServerLog(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

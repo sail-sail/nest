@@ -250,9 +250,9 @@ export async function updateByIdMenu(
     "edit",
   );
   
-  const id2: MenuId = await updateByIdMenu(id, input);
+  id = await updateByIdMenu(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

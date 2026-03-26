@@ -238,9 +238,9 @@ export async function updateByIdRole(
     "edit",
   );
   
-  const id2: RoleId = await updateByIdRole(id, input);
+  id = await updateByIdRole(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

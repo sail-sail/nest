@@ -1724,15 +1724,20 @@ export async function deleteByIdsLang(
   
   await delCacheLang();
   
+  const oldModels = await findByIdsOkLang(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdLang(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }
     if (!is_silent_mode) {
       log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
+    }
+    
+    if (oldModel.is_sys === 1) {
+      throw "不能删除系统记录";
     }
     const args = new QueryArgs();
     let sql = `update base_lang set is_deleted=1`;

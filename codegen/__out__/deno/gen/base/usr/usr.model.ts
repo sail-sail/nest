@@ -125,6 +125,4 @@ export function intoInputUsr(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }
