@@ -22,6 +22,7 @@
     "**/.eslintrc-auto-import.json": true,
     "**/.npmrc": true,
     "**/.husky": true,
+    "**/.oxlintrc.json": true,
     "graphql.config.js": true
   },
   "search.exclude": {
@@ -49,6 +50,7 @@
     "**/.eslintrc-auto-import.json": true,
     "**/.npmrc": true,
     "**/.husky": true,
+    "**/.oxlintrc.json": true,
     "graphql.config.js": true
   },
   "files.watcherExclude": {
@@ -65,6 +67,7 @@
     "gen/**": true,
     "**/*.log": true,
     "lib/script/publish_cnf.js": true,
+    "**/.oxlintrc.json": true,
     "**/.pnpm-store/**": true
   },
   "diffEditor.useInlineViewWhenSpaceIsLimited": false,
@@ -75,7 +78,7 @@
   "git.autofetch": false,
   "git.autorefresh": true,
   "scm.showHistoryGraph": false,
-  "typescript.inlayHints.parameterTypes.enabled": false,
+  "js/ts.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
   "deno.enable": true,

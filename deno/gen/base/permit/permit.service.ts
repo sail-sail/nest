@@ -196,22 +196,11 @@ export async function updateByIdPermit(
   input: PermitInput,
 ): Promise<PermitId> {
   
-  const old_model = await permitDao.validateOptionPermit(
-    await permitDao.findByIdPermit(permit_id),
-  );
+  const old_model = await permitDao.findByIdOkPermit(permit_id);
   
-  // 不能修改系统记录的系统字段
-  if (old_model.is_sys === 1) {
-    // 菜单
-    input.menu_id = undefined;
-    input.menu_id_lbl = "";
-    // 编码
-    input.code = undefined;
-  }
+  permit_id = await permitDao.updateByIdPermit(permit_id, input);
   
-  const permit_id2 = await permitDao.updateByIdPermit(permit_id, input);
-  
-  return permit_id2;
+  return permit_id;
 }
 
 /** 校验按钮权限是否存在 */
@@ -228,14 +217,6 @@ export async function validateOptionPermit(
 export async function deleteByIdsPermit(
   permit_ids: PermitId[],
 ): Promise<number> {
-  
-  const old_models = await permitDao.findByIdsPermit(permit_ids);
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {
-      throw "不能删除系统记录";
-    }
-  }
   
   const permit_num = await permitDao.deleteByIdsPermit(permit_ids);
   return permit_num;

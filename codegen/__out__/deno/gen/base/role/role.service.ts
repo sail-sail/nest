@@ -201,9 +201,9 @@ export async function updateByIdRole(
     throw "不能修改已经锁定的 角色";
   }
   
-  const role_id2 = await roleDao.updateByIdRole(role_id, input);
+  role_id = await roleDao.updateByIdRole(role_id, input);
   
-  return role_id2;
+  return role_id;
 }
 
 /** 校验角色是否存在 */
@@ -226,12 +226,6 @@ export async function deleteByIdsRole(
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
       throw "不能删除已经锁定的 角色";
-    }
-  }
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {
-      throw "不能删除系统记录";
     }
   }
   

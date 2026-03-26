@@ -238,9 +238,9 @@ export async function updateByIdDynPageVal(
     "edit",
   );
   
-  const id2: DynPageValId = await updateByIdDynPageVal(id, input);
+  id = await updateByIdDynPageVal(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

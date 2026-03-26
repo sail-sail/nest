@@ -109,6 +109,4 @@ export function intoInputDynPageData(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

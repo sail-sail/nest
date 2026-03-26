@@ -281,9 +281,9 @@ export async function updateByIdUsr(
     "edit",
   );
   
-  const id2: UsrId = await updateByIdUsr(id, input);
+  id = await updateByIdUsr(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

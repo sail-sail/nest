@@ -238,9 +238,9 @@ export async function updateByIdIcon(
     "edit",
   );
   
-  const id2: IconId = await updateByIdIcon(id, input);
+  id = await updateByIdIcon(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

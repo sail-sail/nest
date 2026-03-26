@@ -196,19 +196,11 @@ export async function updateByIdDictDetail(
   input: DictDetailInput,
 ): Promise<DictDetailId> {
   
-  const old_model = await dict_detailDao.validateOptionDictDetail(
-    await dict_detailDao.findByIdDictDetail(dict_detail_id),
-  );
+  const old_model = await dict_detailDao.findByIdOkDictDetail(dict_detail_id);
   
-  // 不能修改系统记录的系统字段
-  if (old_model.is_sys === 1) {
-    // 值
-    input.val = undefined;
-  }
+  dict_detail_id = await dict_detailDao.updateByIdDictDetail(dict_detail_id, input);
   
-  const dict_detail_id2 = await dict_detailDao.updateByIdDictDetail(dict_detail_id, input);
-  
-  return dict_detail_id2;
+  return dict_detail_id;
 }
 
 /** 校验系统字典明细是否存在 */
@@ -225,14 +217,6 @@ export async function validateOptionDictDetail(
 export async function deleteByIdsDictDetail(
   dict_detail_ids: DictDetailId[],
 ): Promise<number> {
-  
-  const old_models = await dict_detailDao.findByIdsDictDetail(dict_detail_ids);
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {
-      throw "不能删除系统记录";
-    }
-  }
   
   const dict_detail_num = await dict_detailDao.deleteByIdsDictDetail(dict_detail_ids);
   return dict_detail_num;

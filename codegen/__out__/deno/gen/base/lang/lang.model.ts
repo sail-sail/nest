@@ -112,6 +112,4 @@ export function intoInputLang(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

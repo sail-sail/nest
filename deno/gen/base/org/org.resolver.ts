@@ -238,9 +238,9 @@ export async function updateByIdOrg(
     "edit",
   );
   
-  const id2: OrgId = await updateByIdOrg(id, input);
+  id = await updateByIdOrg(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

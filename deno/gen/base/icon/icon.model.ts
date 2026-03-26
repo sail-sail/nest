@@ -111,6 +111,4 @@ export function intoInputIcon(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

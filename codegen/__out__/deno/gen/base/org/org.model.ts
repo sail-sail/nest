@@ -113,6 +113,4 @@ export function intoInputOrg(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }
