@@ -124,6 +124,4 @@ export function intoInputOperationRecord(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

@@ -572,19 +572,17 @@ export async function updateById<#=Table_Up#>(
   ) {
   #>
   
-  const old_model = await <#=table#>Dao.validateOption<#=Table_Up#>(
-    await <#=table#>Dao.findById<#=Table_Up#>(<#=table#>_id<#
-      if (hasDataPermit() && hasCreateUsrId) {
-      #>, {<#
+  const old_model = await <#=table#>Dao.findByIdOk<#=Table_Up#>(<#=table#>_id<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
       if (hasDataPermit() && hasCreateUsrId) {
       #>
       hasDataPermit: true,<#
       }
       #>
     }<#
-      }
-    #>),
-  );<#
+    }
+  #>);<#
   }
   #><#
   if (hasAudit) {
@@ -623,51 +621,9 @@ export async function updateById<#=Table_Up#>(
     #>
   }<#
   }
-  #><#
-  if (hasIsSys && opts.sys_fields && opts.sys_fields.length > 0) {
   #>
   
-  // 不能修改系统记录的系统字段
-  if (old_model.is_sys === 1) {<#
-  opts.sys_fields = opts.sys_fields || [ ];
-  for (let i = 0; i < opts.sys_fields.length; i++) {
-    const sys_field = opts.sys_fields[i];
-    const column = columns.find(item => item.COLUMN_NAME === sys_field);
-    if (!column) {
-      throw new Error(`${ mod }_${ table }: sys_fields 字段 ${ sys_field } 不存在`);
-    }
-    const column_comment = column.COLUMN_COMMENT;
-    const foreignKey = column.foreignKey;
-  #><#
-    if (!foreignKey && !column.dict && !column.dictbiz
-      && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
-    ) {
-  #>
-    // <#=column_comment#>
-    input.<#=sys_field#> = undefined;<#
-    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
-  #>
-    // <#=column_comment#>
-    input.<#=sys_field#> = undefined;
-    input.<#=sys_field#>_lbl = "";<#
-    } else if (foreignKey || column.dict || column.dictbiz) {
-  #>
-    // <#=column_comment#>
-    input.<#=sys_field#> = undefined;
-    input.<#=sys_field#>_lbl = "";<#
-    } else {
-  #>
-    // <#=column_comment#>
-    input.<#=sys_field#> = undefined;<#
-    }
-  #><#
-  }
-  #>
-  }<#
-  }
-  #>
-  
-  const <#=table#>_id2 = await <#=table#>Dao.updateById<#=Table_Up#>(<#=table#>_id, input<#
+  <#=table#>_id = await <#=table#>Dao.updateById<#=Table_Up#>(<#=table#>_id, input<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -685,7 +641,7 @@ export async function updateById<#=Table_Up#>(
   }
   #>
   
-  return <#=table#>_id2;
+  return <#=table#>_id;
 }
 
 /** 校验<#=table_comment#>是否存在 */
@@ -1006,7 +962,7 @@ export async function auditReview<#=Table_Up#>(
 export async function deleteByIds<#=Table_Up#>(
   <#=table#>_ids: <#=Table_Up#>Id[],
 ): Promise<number> {<#
-  if (hasLocked || hasIsSys || hasAudit) {
+  if (hasLocked || hasAudit) {
   #>
   
   const old_models = await <#=table#>Dao.findByIds<#=Table_Up#>(<#=table#>_ids);<#
@@ -1023,23 +979,6 @@ export async function deleteByIds<#=Table_Up#>(
       } else {
       #>
       throw "不能删除已经锁定的 <#=table_comment#>";<#
-      }
-      #>
-    }
-  }<#
-  }
-  #><#
-  if (hasIsSys) {
-  #>
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {<#
-      if (isUseI18n) {
-      #>
-      throw await ns("不能删除系统记录");<#
-      } else {
-      #>
-      throw "不能删除系统记录";<#
       }
       #>
     }

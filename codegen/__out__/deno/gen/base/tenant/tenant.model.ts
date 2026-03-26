@@ -126,6 +126,4 @@ export function intoInputTenant(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

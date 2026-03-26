@@ -196,9 +196,9 @@ export async function updateByIdMenu(
   input: MenuInput,
 ): Promise<MenuId> {
   
-  const menu_id2 = await menuDao.updateByIdMenu(menu_id, input);
+  menu_id = await menuDao.updateByIdMenu(menu_id, input);
   
-  return menu_id2;
+  return menu_id;
 }
 
 /** 校验菜单是否存在 */

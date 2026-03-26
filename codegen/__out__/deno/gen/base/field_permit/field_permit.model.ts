@@ -85,6 +85,4 @@ export function intoInputFieldPermit(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

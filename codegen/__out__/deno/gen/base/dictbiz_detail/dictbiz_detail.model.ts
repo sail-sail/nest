@@ -115,6 +115,4 @@ export function intoInputDictbizDetail(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

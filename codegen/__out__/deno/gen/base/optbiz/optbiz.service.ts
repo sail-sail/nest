@@ -204,26 +204,16 @@ export async function updateByIdOptbiz(
   input: OptbizInput,
 ): Promise<OptbizId> {
   
-  const old_model = await optbizDao.validateOptionOptbiz(
-    await optbizDao.findByIdOptbiz(optbiz_id),
-  );
+  const old_model = await optbizDao.findByIdOkOptbiz(optbiz_id);
   
   const is_locked = await optbizDao.getIsLockedByIdOptbiz(optbiz_id);
   if (is_locked) {
     throw "不能修改已经锁定的 业务选项";
   }
   
-  // 不能修改系统记录的系统字段
-  if (old_model.is_sys === 1) {
-    // 名称
-    input.lbl = undefined;
-    // 键
-    input.ky = undefined;
-  }
+  optbiz_id = await optbizDao.updateByIdOptbiz(optbiz_id, input);
   
-  const optbiz_id2 = await optbizDao.updateByIdOptbiz(optbiz_id, input);
-  
-  return optbiz_id2;
+  return optbiz_id;
 }
 
 /** 校验业务选项是否存在 */
@@ -246,12 +236,6 @@ export async function deleteByIdsOptbiz(
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
       throw "不能删除已经锁定的 业务选项";
-    }
-  }
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {
-      throw "不能删除系统记录";
     }
   }
   
