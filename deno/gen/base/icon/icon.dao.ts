@@ -1683,6 +1683,13 @@ export async function updateByIdIcon(
     log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
   }
   
+  // 图标
+  if (input.img != null && input.img !== oldModel?.img) {
+    await deleteObject(
+      oldModel?.img,
+    );
+  }
+  
   return id;
 }
 
@@ -1755,10 +1762,11 @@ export async function deleteByIdsIcon(
   
   await delCacheIcon();
   
+  const oldModels = await findByIdsOkIcon(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdIcon(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

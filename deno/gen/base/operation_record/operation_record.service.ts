@@ -196,9 +196,9 @@ export async function updateByIdOperationRecord(
   input: OperationRecordInput,
 ): Promise<OperationRecordId> {
   
-  const operation_record_id2 = await operation_recordDao.updateByIdOperationRecord(operation_record_id, input);
+  operation_record_id = await operation_recordDao.updateByIdOperationRecord(operation_record_id, input);
   
-  return operation_record_id2;
+  return operation_record_id;
 }
 
 /** 校验操作记录是否存在 */

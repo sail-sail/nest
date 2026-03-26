@@ -4,6 +4,7 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
+const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasIsMonth = columns.some((column) => column.isMonth);
 const hasDate = columns.some((column) => column.DATA_TYPE === "date");
 const hasDatetime = columns.some((column) => column.DATA_TYPE === "datetime");
@@ -288,7 +289,8 @@ for (let i = 0; i < columns.length; i++) {
   const column_comment = column.COLUMN_COMMENT;
   const isAtt = column.isAtt;
   const isImg = column.isImg;
-  if (!isAtt && !isImg) continue;
+  const isFluentEditor = column.isFluentEditor;
+  if (!isAtt && !isImg && !isFluentEditor) continue;
   hasAttOrImg = true;
   break;
 }
@@ -5963,6 +5965,48 @@ export async function updateById<#=Table_Up#>(
     input.menu_ids = await filterMenuIdsByTenant(input.menu_ids);
   }<#
   }
+  #><#
+  if (hasIsSys && opts.sys_fields && opts.sys_fields.length > 0) {
+  #>
+  
+  // 不能修改系统记录的系统字段
+  if (oldModel.is_sys === 1) {<#
+  opts.sys_fields = opts.sys_fields || [ ];
+  for (let i = 0; i < opts.sys_fields.length; i++) {
+    const sys_field = opts.sys_fields[i];
+    const column = columns.find(item => item.COLUMN_NAME === sys_field);
+    if (!column) {
+      throw new Error(`${ mod }_${ table }: sys_fields 字段 ${ sys_field } 不存在`);
+    }
+    const column_comment = column.COLUMN_COMMENT;
+    const foreignKey = column.foreignKey;
+  #><#
+    if (!foreignKey && !column.dict && !column.dictbiz
+      && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
+    ) {
+  #>
+    // <#=column_comment#>
+    input.<#=sys_field#> = undefined;<#
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+  #>
+    // <#=column_comment#>
+    input.<#=sys_field#> = undefined;
+    input.<#=sys_field#>_lbl = "";<#
+    } else if (foreignKey || column.dict || column.dictbiz) {
+  #>
+    // <#=column_comment#>
+    input.<#=sys_field#> = undefined;
+    input.<#=sys_field#>_lbl = "";<#
+    } else {
+  #>
+    // <#=column_comment#>
+    input.<#=sys_field#> = undefined;<#
+    }
+  #><#
+  }
+  #>
+  }<#
+  }
   #>
   
   const args = new QueryArgs();
@@ -6821,6 +6865,32 @@ export async function updateById<#=Table_Up#>(
   }<#
   }
   #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    if (column_name === "update_usr_id") continue;
+    if (column_name === "update_time") continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    const column_comment = column.COLUMN_COMMENT;
+    const isAtt = column.isAtt;
+    const isImg = column.isImg;
+    const isFluentEditor = column.isFluentEditor;
+    if (!isAtt && !isImg && !isFluentEditor) continue;
+  #>
+  
+  // <#=column_comment#>
+  if (input.<#=column_name_rust#> != null && input.<#=column_name_rust#> !== oldModel?.<#=column_name_rust#>) {
+    await deleteObject(
+      oldModel?.<#=column_name_rust#>,
+    );
+  }<#
+  }
+  #><#
   if (mod === "cron" && table === "cron_job") {
   #>
   
@@ -6941,16 +7011,32 @@ export async function deleteByIds<#=Table_Up#>(
   }
   #>
   
+  const oldModels = await findByIdsOk<#=Table_Up#>(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById<#=Table_Up#>(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }
     if (!is_silent_mode) {
       log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
     }<#
+    if (hasIsSys) {
+    #>
+    
+    if (oldModel.is_sys === 1) {<#
+      if (isUseI18n) {
+      #>
+      throw await ns("不能删除系统记录");<#
+      } else {
+      #>
+      throw "不能删除系统记录";<#
+      }
+      #>
+    }<#
+    }
+    #><#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     
@@ -7220,7 +7306,8 @@ export async function deleteByIds<#=Table_Up#>(
       const column_comment = column.COLUMN_COMMENT;
       const isAtt = column.isAtt;
       const isImg = column.isImg;
-      if (!isAtt && !isImg) continue;
+      const isFluentEditor = column.isFluentEditor;
+      if (!isAtt && !isImg && !isFluentEditor) continue;
     #>
     
     // <#=column_comment#>
@@ -8000,7 +8087,8 @@ export async function forceDeleteByIds<#=Table_Up#>(
       const column_comment = column.COLUMN_COMMENT;
       const isAtt = column.isAtt;
       const isImg = column.isImg;
-      if (!isAtt && !isImg) continue;
+      const isFluentEditor = column.isFluentEditor;
+      if (!isAtt && !isImg && !isFluentEditor) continue;
     #>
     
     // <#=column_comment#>

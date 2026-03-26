@@ -238,9 +238,9 @@ export async function updateByIdDomain(
     "edit",
   );
   
-  const id2: DomainId = await updateByIdDomain(id, input);
+  id = await updateByIdDomain(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

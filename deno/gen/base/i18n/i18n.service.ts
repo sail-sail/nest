@@ -202,11 +202,11 @@ export async function updateByIdI18n(
   input: I18nInput,
 ): Promise<I18nId> {
   
-  const i18n_id2 = await i18nDao.updateByIdI18n(i18n_id, input);
+  i18n_id = await i18nDao.updateByIdI18n(i18n_id, input);
   
   await update_i18n_version();
   
-  return i18n_id2;
+  return i18n_id;
 }
 
 /** 校验国际化是否存在 */

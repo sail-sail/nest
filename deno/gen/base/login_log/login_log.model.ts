@@ -118,6 +118,4 @@ export function intoInputLoginLog(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

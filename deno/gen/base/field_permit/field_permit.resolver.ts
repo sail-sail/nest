@@ -196,9 +196,9 @@ export async function updateByIdFieldPermit(
     "edit",
   );
   
-  const id2: FieldPermitId = await updateByIdFieldPermit(id, input);
+  id = await updateByIdFieldPermit(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

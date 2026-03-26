@@ -196,9 +196,9 @@ export async function updateByIdDynPage(
   input: DynPageInput,
 ): Promise<DynPageId> {
   
-  const dyn_page_id2 = await dyn_pageDao.updateByIdDynPage(dyn_page_id, input);
+  dyn_page_id = await dyn_pageDao.updateByIdDynPage(dyn_page_id, input);
   
-  return dyn_page_id2;
+  return dyn_page_id;
 }
 
 /** 校验动态页面是否存在 */

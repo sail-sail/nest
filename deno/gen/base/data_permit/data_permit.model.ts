@@ -115,6 +115,4 @@ export function intoInputDataPermit(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch, type PropType, getCurrentInstance, ComponentInstance, onUpdated, nextTick, provide } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch, type PropType, getCurrentInstance, type ComponentInstance, onUpdated, nextTick, provide } from 'vue';
 import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumber, arrayNumberValidByStyleBorderColor, linearValid, getUnit, getUid } from "../../libs/tool";
 import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
 import { useTmConfig } from "../../libs/config";

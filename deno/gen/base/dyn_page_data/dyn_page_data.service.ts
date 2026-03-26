@@ -203,9 +203,9 @@ export async function updateByIdDynPageData(
   input: DynPageDataInput,
 ): Promise<DynPageDataId> {
   
-  const dyn_page_data_id2 = await dyn_page_dataDao.updateByIdDynPageData(dyn_page_data_id, input);
+  dyn_page_data_id = await dyn_page_dataDao.updateByIdDynPageData(dyn_page_data_id, input);
   
-  return dyn_page_data_id2;
+  return dyn_page_data_id;
 }
 
 /** 校验动态页面数据是否存在 */

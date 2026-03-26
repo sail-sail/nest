@@ -124,8 +124,6 @@ export function intoInputDictbiz(
     return;
   }
   
-  input.id = undefined;
-  
   // 业务字典明细
   input?.dictbiz_detail?.map(intoInputDictbizDetail);
 }

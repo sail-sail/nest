@@ -196,9 +196,9 @@ export async function updateByIdLoginLog(
   input: LoginLogInput,
 ): Promise<LoginLogId> {
   
-  const login_log_id2 = await login_logDao.updateByIdLoginLog(login_log_id, input);
+  login_log_id = await login_logDao.updateByIdLoginLog(login_log_id, input);
   
-  return login_log_id2;
+  return login_log_id;
 }
 
 /** 校验登录日志是否存在 */

@@ -201,9 +201,9 @@ export async function updateByIdUsr(
     throw "不能修改已经锁定的 用户";
   }
   
-  const usr_id2 = await usrDao.updateByIdUsr(usr_id, input);
+  usr_id = await usrDao.updateByIdUsr(usr_id, input);
   
-  return usr_id2;
+  return usr_id;
 }
 
 /** 校验用户是否存在 */

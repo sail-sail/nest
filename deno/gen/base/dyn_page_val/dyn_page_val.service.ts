@@ -196,9 +196,9 @@ export async function updateByIdDynPageVal(
   input: DynPageValInput,
 ): Promise<DynPageValId> {
   
-  const dyn_page_val_id2 = await dyn_page_valDao.updateByIdDynPageVal(dyn_page_val_id, input);
+  dyn_page_val_id = await dyn_page_valDao.updateByIdDynPageVal(dyn_page_val_id, input);
   
-  return dyn_page_val_id2;
+  return dyn_page_val_id;
 }
 
 /** 校验动态页面值是否存在 */
