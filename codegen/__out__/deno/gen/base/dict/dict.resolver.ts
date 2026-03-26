@@ -238,9 +238,9 @@ export async function updateByIdDict(
     "edit",
   );
   
-  const id2: DictId = await updateByIdDict(id, input);
+  id = await updateByIdDict(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

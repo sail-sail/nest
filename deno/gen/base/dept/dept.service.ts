@@ -232,9 +232,9 @@ export async function updateByIdDept(
     throw "不能修改已经锁定的 部门";
   }
   
-  const dept_id2 = await deptDao.updateByIdDept(dept_id, input);
+  dept_id = await deptDao.updateByIdDept(dept_id, input);
   
-  return dept_id2;
+  return dept_id;
 }
 
 /** 校验部门是否存在 */

@@ -196,9 +196,9 @@ export async function updateByIdPermit(
     "edit",
   );
   
-  const id2: PermitId = await updateByIdPermit(id, input);
+  id = await updateByIdPermit(id, input);
   
-  return id2;
+  return id;
 }
 
 /**
