@@ -196,22 +196,11 @@ export async function updateByIdFieldPermit(
   input: FieldPermitInput,
 ): Promise<FieldPermitId> {
   
-  const old_model = await field_permitDao.validateOptionFieldPermit(
-    await field_permitDao.findByIdFieldPermit(field_permit_id),
-  );
+  const old_model = await field_permitDao.findByIdOkFieldPermit(field_permit_id);
   
-  // 不能修改系统记录的系统字段
-  if (old_model.is_sys === 1) {
-    // 菜单
-    input.menu_id = undefined;
-    input.menu_id_lbl = "";
-    // 编码
-    input.code = undefined;
-  }
+  field_permit_id = await field_permitDao.updateByIdFieldPermit(field_permit_id, input);
   
-  const field_permit_id2 = await field_permitDao.updateByIdFieldPermit(field_permit_id, input);
-  
-  return field_permit_id2;
+  return field_permit_id;
 }
 
 /** 校验字段权限是否存在 */
@@ -228,14 +217,6 @@ export async function validateOptionFieldPermit(
 export async function deleteByIdsFieldPermit(
   field_permit_ids: FieldPermitId[],
 ): Promise<number> {
-  
-  const old_models = await field_permitDao.findByIdsFieldPermit(field_permit_ids);
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {
-      throw "不能删除系统记录";
-    }
-  }
   
   const field_permit_num = await field_permitDao.deleteByIdsFieldPermit(field_permit_ids);
   return field_permit_num;

@@ -2301,10 +2301,11 @@ export async function deleteByIdsDynPageField(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
+  const oldModels = await findByIdsOkDynPageField(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdDynPageField(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

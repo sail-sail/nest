@@ -122,8 +122,6 @@ export function intoInputDynPage(
     return;
   }
   
-  input.id = undefined;
-  
   // 动态页面字段
   input?.dyn_page_field?.map(intoInputDynPageField);
 }

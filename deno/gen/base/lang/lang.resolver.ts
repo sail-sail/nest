@@ -238,9 +238,9 @@ export async function updateByIdLang(
     "edit",
   );
   
-  const id2: LangId = await updateByIdLang(id, input);
+  id = await updateByIdLang(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

@@ -12,7 +12,8 @@ import type {
 } from "/lib/S3/error.ts";
 
 import {
-  error
+  log,
+  error,
 } from "/lib/context.ts";
 
 let _bucket: S3Bucket | undefined;
@@ -134,6 +135,7 @@ export async function deleteObject(
   if (!id) {
     return;
   }
+  log(`ossDao.deleteObject: ${ id }`);
   const bucket = await getBucket();
   await bucket.deleteObject(id);
 }

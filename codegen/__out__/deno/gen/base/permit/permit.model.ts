@@ -85,6 +85,4 @@ export function intoInputPermit(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

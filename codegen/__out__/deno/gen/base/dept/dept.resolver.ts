@@ -238,9 +238,9 @@ export async function updateByIdDept(
     "edit",
   );
   
-  const id2: DeptId = await updateByIdDept(id, input);
+  id = await updateByIdDept(id, input);
   
-  return id2;
+  return id;
 }
 
 /**
