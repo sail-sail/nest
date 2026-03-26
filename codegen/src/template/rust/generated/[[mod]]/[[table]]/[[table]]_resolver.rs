@@ -908,7 +908,7 @@ pub async fn update_by_id_<#=table#>(
   
   let old_data = find_by_id_<#=table#>(
     id,
-    None,
+    options,
   ).await?;<#
   }
   #>
@@ -922,8 +922,8 @@ pub async fn update_by_id_<#=table#>(
   #>
   
   let new_data = find_by_id_<#=table#>(
-    res.clone(),
-    None,
+    res,
+    options,
   ).await?;<#
   if (isUseI18n) {
   #>

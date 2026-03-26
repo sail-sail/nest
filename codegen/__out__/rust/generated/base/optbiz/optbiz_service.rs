@@ -233,13 +233,6 @@ pub async fn update_by_id_optbiz(
   options: Option<Options>,
 ) -> Result<OptbizId> {
   
-  let old_model = validate_option_optbiz(
-    optbiz_dao::find_by_id_optbiz(
-      optbiz_id,
-      options,
-    ).await?,
-  ).await?;
-  
   let is_locked = optbiz_dao::get_is_locked_by_id_optbiz(
     optbiz_id,
     None,
@@ -248,14 +241,6 @@ pub async fn update_by_id_optbiz(
   if is_locked {
     let err_msg = "不能修改已经锁定的 业务选项";
     return Err(eyre!(err_msg));
-  }
-  
-  // 不能修改系统记录的系统字段
-  if old_model.is_sys == 1 {
-    // 名称
-    optbiz_input.lbl = None;
-    // 键
-    optbiz_input.ky = None;
   }
   
   let optbiz_id = optbiz_dao::update_by_id_optbiz(
@@ -298,13 +283,6 @@ pub async fn delete_by_ids_optbiz(
   for old_model in &old_models {
     if old_model.is_locked == 1 {
       let err_msg = "不能删除已经锁定的 业务选项";
-      return Err(eyre!(err_msg));
-    }
-  }
-  
-  for old_model in &old_models {
-    if old_model.is_sys == 1 {
-      let err_msg = "不能删除系统记录";
       return Err(eyre!(err_msg));
     }
   }

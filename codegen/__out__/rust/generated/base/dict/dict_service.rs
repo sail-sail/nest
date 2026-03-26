@@ -214,25 +214,6 @@ pub async fn update_by_id_dict(
   options: Option<Options>,
 ) -> Result<DictId> {
   
-  let old_model = validate_option_dict(
-    dict_dao::find_by_id_dict(
-      dict_id,
-      options,
-    ).await?,
-  ).await?;
-  
-  // 不能修改系统记录的系统字段
-  if old_model.is_sys == 1 {
-    // 编码
-    dict_input.code = None;
-    // 数据类型
-    dict_input.r#type = None;
-    dict_input.type_lbl = None;
-    // 启用
-    dict_input.is_enabled = None;
-    dict_input.is_enabled_lbl = None;
-  }
-  
   let dict_id = dict_dao::update_by_id_dict(
     dict_id,
     dict_input,
@@ -259,23 +240,6 @@ pub async fn delete_by_ids_dict(
   dict_ids: Vec<DictId>,
   options: Option<Options>,
 ) -> Result<u64> {
-  
-  let old_models = dict_dao::find_all_dict(
-    Some(DictSearch {
-      ids: Some(dict_ids.clone()),
-      ..Default::default()
-    }),
-    None,
-    None,
-    options,
-  ).await?;
-  
-  for old_model in &old_models {
-    if old_model.is_sys == 1 {
-      let err_msg = "不能删除系统记录";
-      return Err(eyre!(err_msg));
-    }
-  }
   
   let num = dict_dao::delete_by_ids_dict(
     dict_ids,

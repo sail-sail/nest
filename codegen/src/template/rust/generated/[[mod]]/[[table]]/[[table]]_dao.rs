@@ -5,6 +5,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
+const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasMany2manyNotInline = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
@@ -6618,6 +6619,50 @@ pub async fn update_by_id_<#=table#>(
   )?;<#
   }
   #><#
+  if (hasIsSys && opts.sys_fields && opts.sys_fields.length > 0) {
+  #>
+  
+  // 不能修改系统记录的系统字段
+  if old_model.is_sys == 1 {<#
+    for (let i = 0; i < opts.sys_fields.length; i++) {
+      const sys_field = opts.sys_fields[i];
+      const column = columns.find(item => item.COLUMN_NAME === sys_field);
+      if (!column) {
+        throw new Error(`${ mod }_${ table }: sys_fields 字段 ${ sys_field } 不存在`);
+      }
+      const column_comment = column.COLUMN_COMMENT;
+      if (column_comment.endsWith("multiple")) {
+        _data_type = "[String]";
+      }
+      const foreignKey = column.foreignKey;
+    #><#
+      if (!foreignKey && !column.dict && !column.dictbiz
+        && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
+      ) {
+    #>
+    // <#=column_comment#>
+    input.<#=rustKeyEscape(sys_field)#> = None;<#
+      } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+    #>
+    // <#=column_comment#>
+    input.<#=rustKeyEscape(sys_field)#> = None;
+    input.<#=sys_field#>_lbl = None;<#
+      } else if (foreignKey || column.dict || column.dictbiz) {
+    #>
+    // <#=column_comment#>
+    input.<#=rustKeyEscape(sys_field)#> = None;
+    input.<#=sys_field#>_lbl = None;<#
+      } else {
+    #>
+    // <#=column_comment#>
+    input.<#=rustKeyEscape(sys_field)#> = None;<#
+      }
+    #><#
+    }
+    #>
+  }<#
+  }
+  #><#
   if (opts.langTable && isUseI18n) {
   #>
   
@@ -7975,18 +8020,15 @@ pub async fn delete_by_ids_<#=table#>(
   }
   #>
   
+  let old_models = find_by_ids_ok_<#=table#>(
+    ids.clone(),
+    options,
+  ).await?;
+  
   let mut num = 0;
-  for id in ids.clone() {
+  for old_model in old_models {
     
-    let old_model = find_by_id_<#=table#>(
-      id,
-      options,
-    ).await?;
-    
-    let old_model = match old_model {
-      Some(model) => model,
-      None => continue,
-    };
+    let id = old_model.id;
     
     if !is_silent_mode {
       info!(
@@ -7997,6 +8039,22 @@ pub async fn delete_by_ids_<#=table#>(
         serde_json::to_string(&old_model)?,
       );
     }<#
+    if (hasIsSys) {
+    #>
+    
+    if old_model.is_sys == 1 {<#
+      if (isUseI18n) {
+      #>
+      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;<#
+      } else {
+      #>
+      let err_msg = "不能删除系统记录";<#
+      }
+      #>
+      return Err(eyre!(err_msg));
+    }<#
+    }
+    #><#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     

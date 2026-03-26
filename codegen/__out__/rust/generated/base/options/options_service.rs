@@ -214,13 +214,6 @@ pub async fn update_by_id_options(
   options: Option<Options>,
 ) -> Result<OptionsId> {
   
-  let old_model = validate_option_options(
-    options_dao::find_by_id_options(
-      options_id,
-      options,
-    ).await?,
-  ).await?;
-  
   let is_locked = options_dao::get_is_locked_by_id_options(
     options_id,
     None,
@@ -229,14 +222,6 @@ pub async fn update_by_id_options(
   if is_locked {
     let err_msg = "不能修改已经锁定的 系统选项";
     return Err(eyre!(err_msg));
-  }
-  
-  // 不能修改系统记录的系统字段
-  if old_model.is_sys == 1 {
-    // 名称
-    options_input.lbl = None;
-    // 键
-    options_input.ky = None;
   }
   
   let options_id = options_dao::update_by_id_options(
@@ -279,13 +264,6 @@ pub async fn delete_by_ids_options(
   for old_model in &old_models {
     if old_model.is_locked == 1 {
       let err_msg = "不能删除已经锁定的 系统选项";
-      return Err(eyre!(err_msg));
-    }
-  }
-  
-  for old_model in &old_models {
-    if old_model.is_sys == 1 {
-      let err_msg = "不能删除系统记录";
       return Err(eyre!(err_msg));
     }
   }
