@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ComputedRef, type PropType, computed, ref } from "vue";
+import { type ComputedRef, type PropType, computed, ref } from "vue";
 import { arrayNumberValid, arrayNumberValidByStyleMP,arrayNumberValidByBorderWidth, covetUniNumber,arrayNumberValidByStyleBorderColor, arrayNumberValidByStyleBorderStyle, linearValid } from "../../libs/tool";
 import { useTmConfig } from "../../libs/config";
 import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";

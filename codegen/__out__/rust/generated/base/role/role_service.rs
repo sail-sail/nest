@@ -287,13 +287,6 @@ pub async fn delete_by_ids_role(
     }
   }
   
-  for old_model in &old_models {
-    if old_model.is_sys == 1 {
-      let err_msg = "不能删除系统记录";
-      return Err(eyre!(err_msg));
-    }
-  }
-  
   let num = role_dao::delete_by_ids_role(
     role_ids,
     options,

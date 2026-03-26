@@ -14,6 +14,7 @@
     "**/.npmrc": true,
     ".gitignore": true,
     "app/Cargo.toml": true,
+    "**/.oxlintrc.json": true,
     "generated/common/gql/schema.graphql": true
   },
   "search.exclude": {
@@ -30,6 +31,7 @@
     ".editorconfig": true,
     "**/.npmrc": true,
     ".gitignore": true,
+    "**/.oxlintrc.json": true,
     "generated/common/gql/schema.graphql": true
   },
   "files.watcherExclude": {
@@ -47,6 +49,7 @@
     "**/*.log": true,
     "generated/common/gql/schema.graphql": true,
     "**/.pnpm-store/**": true,
+    "**/.oxlintrc.json": true,
     "**/*.rs.bk": true
   },
   "deno.enable": false,

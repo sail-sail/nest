@@ -214,19 +214,6 @@ pub async fn update_by_id_dict_detail(
   options: Option<Options>,
 ) -> Result<DictDetailId> {
   
-  let old_model = validate_option_dict_detail(
-    dict_detail_dao::find_by_id_dict_detail(
-      dict_detail_id,
-      options,
-    ).await?,
-  ).await?;
-  
-  // 不能修改系统记录的系统字段
-  if old_model.is_sys == 1 {
-    // 值
-    dict_detail_input.val = None;
-  }
-  
   let dict_detail_id = dict_detail_dao::update_by_id_dict_detail(
     dict_detail_id,
     dict_detail_input,
@@ -253,23 +240,6 @@ pub async fn delete_by_ids_dict_detail(
   dict_detail_ids: Vec<DictDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
-  
-  let old_models = dict_detail_dao::find_all_dict_detail(
-    Some(DictDetailSearch {
-      ids: Some(dict_detail_ids.clone()),
-      ..Default::default()
-    }),
-    None,
-    None,
-    options,
-  ).await?;
-  
-  for old_model in &old_models {
-    if old_model.is_sys == 1 {
-      let err_msg = "不能删除系统记录";
-      return Err(eyre!(err_msg));
-    }
-  }
   
   let num = dict_detail_dao::delete_by_ids_dict_detail(
     dict_detail_ids,
