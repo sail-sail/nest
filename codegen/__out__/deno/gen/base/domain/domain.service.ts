@@ -201,9 +201,9 @@ export async function updateByIdDomain(
     throw "不能修改已经锁定的 域名";
   }
   
-  const domain_id2 = await domainDao.updateByIdDomain(domain_id, input);
+  domain_id = await domainDao.updateByIdDomain(domain_id, input);
   
-  return domain_id2;
+  return domain_id;
 }
 
 /** 校验域名是否存在 */

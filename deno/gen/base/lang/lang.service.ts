@@ -196,9 +196,9 @@ export async function updateByIdLang(
   input: LangInput,
 ): Promise<LangId> {
   
-  const lang_id2 = await langDao.updateByIdLang(lang_id, input);
+  lang_id = await langDao.updateByIdLang(lang_id, input);
   
-  return lang_id2;
+  return lang_id;
 }
 
 /** 校验语言是否存在 */
@@ -215,14 +215,6 @@ export async function validateOptionLang(
 export async function deleteByIdsLang(
   lang_ids: LangId[],
 ): Promise<number> {
-  
-  const old_models = await langDao.findByIdsLang(lang_ids);
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {
-      throw "不能删除系统记录";
-    }
-  }
   
   const lang_num = await langDao.deleteByIdsLang(lang_ids);
   return lang_num;

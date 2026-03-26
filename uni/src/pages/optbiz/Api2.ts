@@ -8,7 +8,7 @@ export async function getUniReleasing(
 ) {
   const res: {
     getUniReleasing: Query["getUniReleasing"];
-  } = await mutation({
+  } = await query({
     query: /* GraphQL */ `
       query {
         getUniReleasing

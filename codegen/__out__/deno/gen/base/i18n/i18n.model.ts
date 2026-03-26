@@ -104,6 +104,4 @@ export function intoInputI18n(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

@@ -238,9 +238,9 @@ export async function updateByIdTenant(
     "edit",
   );
   
-  const id2: TenantId = await updateByIdTenant(id, input);
+  id = await updateByIdTenant(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

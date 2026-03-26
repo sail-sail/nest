@@ -113,6 +113,4 @@ export function intoInputDomain(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

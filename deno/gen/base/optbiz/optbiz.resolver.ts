@@ -238,9 +238,9 @@ export async function updateByIdOptbiz(
     "edit",
   );
   
-  const id2: OptbizId = await updateByIdOptbiz(id, input);
+  id = await updateByIdOptbiz(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

@@ -238,9 +238,9 @@ export async function updateByIdDataPermit(
     "edit",
   );
   
-  const id2: DataPermitId = await updateByIdDataPermit(id, input);
+  id = await updateByIdDataPermit(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

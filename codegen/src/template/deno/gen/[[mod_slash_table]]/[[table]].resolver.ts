@@ -698,11 +698,11 @@ export async function updateById<#=Table_Up2#>(
   }
   #>
   
-  const id2: <#=Table_Up#>Id = await updateById<#=Table_Up2#>(id, input);<#
+  id = await updateById<#=Table_Up2#>(id, input);<#
   if (log) {
   #>
   
-  const new_data = await findById<#=Table_Up2#>(id2);
+  const new_data = await findById<#=Table_Up2#>(id);
   
   const end_time = new Date();
   await log({
@@ -718,7 +718,7 @@ export async function updateById<#=Table_Up2#>(
   }
   #>
   
-  return id2;
+  return id;
 }<#
 }
 #><#
