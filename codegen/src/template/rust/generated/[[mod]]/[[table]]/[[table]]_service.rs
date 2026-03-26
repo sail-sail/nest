@@ -543,7 +543,6 @@ pub async fn update_by_id_<#=table#>(
   }
   #><#
   if (
-    (hasIsSys && opts.sys_fields && opts.sys_fields.length > 0) ||
     hasAudit
   ) {
   #>
@@ -615,50 +614,6 @@ pub async fn update_by_id_<#=table#>(
     }
     #>
     return Err(eyre!(err_msg));
-  }<#
-  }
-  #><#
-  if (hasIsSys && opts.sys_fields && opts.sys_fields.length > 0) {
-  #>
-  
-  // 不能修改系统记录的系统字段
-  if old_model.is_sys == 1 {<#
-    for (let i = 0; i < opts.sys_fields.length; i++) {
-      const sys_field = opts.sys_fields[i];
-      const column = columns.find(item => item.COLUMN_NAME === sys_field);
-      if (!column) {
-        throw new Error(`${ mod }_${ table }: sys_fields 字段 ${ sys_field } 不存在`);
-      }
-      const column_comment = column.COLUMN_COMMENT;
-      if (column_comment.endsWith("multiple")) {
-        _data_type = "[String]";
-      }
-      const foreignKey = column.foreignKey;
-    #><#
-      if (!foreignKey && !column.dict && !column.dictbiz
-        && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
-      ) {
-    #>
-    // <#=column_comment#>
-    <#=table#>_input.<#=rustKeyEscape(sys_field)#> = None;<#
-      } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
-    #>
-    // <#=column_comment#>
-    <#=table#>_input.<#=rustKeyEscape(sys_field)#> = None;
-    <#=table#>_input.<#=sys_field#>_lbl = None;<#
-      } else if (foreignKey || column.dict || column.dictbiz) {
-    #>
-    // <#=column_comment#>
-    <#=table#>_input.<#=rustKeyEscape(sys_field)#> = None;
-    <#=table#>_input.<#=sys_field#>_lbl = None;<#
-      } else {
-    #>
-    // <#=column_comment#>
-    <#=table#>_input.<#=rustKeyEscape(sys_field)#> = None;<#
-      }
-    #><#
-    }
-    #>
   }<#
   }
   #>
@@ -1112,7 +1067,7 @@ pub async fn delete_by_ids_<#=table#>(
   let options = Some(options);<#
   }
   #><#
-  if (hasLocked || hasIsSys || hasAudit) {
+  if (hasLocked || hasAudit) {
   #>
   
   let old_models = <#=table#>_dao::find_all_<#=table#>(
@@ -1147,24 +1102,6 @@ pub async fn delete_by_ids_<#=table#>(
       } else {
       #>
       let err_msg = "不能删除已经锁定的 <#=table_comment#>";<#
-      }
-      #>
-      return Err(eyre!(err_msg));
-    }
-  }<#
-  }
-  #><#
-  if (hasIsSys) {
-  #>
-  
-  for old_model in &old_models {
-    if old_model.is_sys == 1 {<#
-      if (isUseI18n) {
-      #>
-      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;<#
-      } else {
-      #>
-      let err_msg = "不能删除系统记录";<#
       }
       #>
       return Err(eyre!(err_msg));

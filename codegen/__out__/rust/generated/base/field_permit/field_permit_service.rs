@@ -214,22 +214,6 @@ pub async fn update_by_id_field_permit(
   options: Option<Options>,
 ) -> Result<FieldPermitId> {
   
-  let old_model = validate_option_field_permit(
-    field_permit_dao::find_by_id_field_permit(
-      field_permit_id,
-      options,
-    ).await?,
-  ).await?;
-  
-  // 不能修改系统记录的系统字段
-  if old_model.is_sys == 1 {
-    // 菜单
-    field_permit_input.menu_id = None;
-    field_permit_input.menu_id_lbl = None;
-    // 编码
-    field_permit_input.code = None;
-  }
-  
   let field_permit_id = field_permit_dao::update_by_id_field_permit(
     field_permit_id,
     field_permit_input,
@@ -256,23 +240,6 @@ pub async fn delete_by_ids_field_permit(
   field_permit_ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
-  
-  let old_models = field_permit_dao::find_all_field_permit(
-    Some(FieldPermitSearch {
-      ids: Some(field_permit_ids.clone()),
-      ..Default::default()
-    }),
-    None,
-    None,
-    options,
-  ).await?;
-  
-  for old_model in &old_models {
-    if old_model.is_sys == 1 {
-      let err_msg = "不能删除系统记录";
-      return Err(eyre!(err_msg));
-    }
-  }
   
   let num = field_permit_dao::delete_by_ids_field_permit(
     field_permit_ids,

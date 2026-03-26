@@ -260,23 +260,6 @@ pub async fn delete_by_ids_dictbiz_detail(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let old_models = dictbiz_detail_dao::find_all_dictbiz_detail(
-    Some(DictbizDetailSearch {
-      ids: Some(dictbiz_detail_ids.clone()),
-      ..Default::default()
-    }),
-    None,
-    None,
-    options,
-  ).await?;
-  
-  for old_model in &old_models {
-    if old_model.is_sys == 1 {
-      let err_msg = "不能删除系统记录";
-      return Err(eyre!(err_msg));
-    }
-  }
-  
   let num = dictbiz_detail_dao::delete_by_ids_dictbiz_detail(
     dictbiz_detail_ids,
     options,
