@@ -1978,10 +1978,11 @@ export async function deleteByIdsMenu(
   
   await delCacheMenu();
   
+  const oldModels = await findByIdsOkMenu(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdMenu(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

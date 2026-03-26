@@ -55,7 +55,6 @@
     "xlsx-handlebars": "0.2.2"
   },
   "devDependencies": {
-    "@eslint/js": "10.0.1",
     "@plugin-web-update-notification/vite": "2.0.2",
     "@types/file-saver": "2.0.7",
     "@types/node": "25.5.0",
@@ -63,20 +62,18 @@
     "@unocss/preset-rem-to-px": "66.6.7",
     "@vitejs/plugin-vue": "6.0.5",
     "@vitejs/plugin-vue-jsx": "5.1.5",
-    "@vue-macros/eslint-config": "3.1.2",
     "@vue-macros/reactivity-transform": "3.1.2",
     "@vue/compiler-sfc": "3.5.30",
     "@vue/devtools-api": "8.1.1",
     "@vue/runtime-core": "3.5.30",
     "dotenv": "17.3.1",
-    "eslint-plugin-vue": "10.8.0",
     "globals": "17.4.0",
     "mysql2": "3.20.0",
+    "oxlint": "1.57.0",
     "sass": "1.98.0",
     "spark-md5": "3.0.2",
     "svgo": "4.0.1",
     "typescript": "6.0.2",
-    "typescript-eslint": "8.57.2",
     "unocss": "66.6.7",
     "unplugin-auto-import": "21.0.0",
     "unplugin-icons": "23.0.1",
@@ -90,9 +87,9 @@
     "vite-plugin-vue-devtools": "8.1.1",
     "vite-plugin-vue-inspector": "5.4.0",
     "vite-plugin-wasm": "3.6.0",
+    "vite-plus": "latest",
     "vitest": "npm:@voidzero-dev/vite-plus-test@latest",
-    "vue-tsc": "3.2.6",
-    "vite-plus": "latest"
+    "vue-tsc": "3.2.6"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

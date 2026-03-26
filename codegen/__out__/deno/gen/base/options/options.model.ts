@@ -111,6 +111,4 @@ export function intoInputOptions(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

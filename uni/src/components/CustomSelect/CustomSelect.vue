@@ -549,6 +549,7 @@ onUnmounted(() => {
 });
 
 defineExpose({
+  data,
   refresh: onRefresh,
   togglePicker,
 });

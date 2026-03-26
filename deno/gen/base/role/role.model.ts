@@ -123,6 +123,4 @@ export function intoInputRole(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

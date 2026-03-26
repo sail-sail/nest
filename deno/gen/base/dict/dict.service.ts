@@ -202,25 +202,9 @@ export async function updateByIdDict(
   
   input.is_add = undefined;
   
-  const old_model = await dictDao.validateOptionDict(
-    await dictDao.findByIdDict(dict_id),
-  );
+  dict_id = await dictDao.updateByIdDict(dict_id, input);
   
-  // 不能修改系统记录的系统字段
-  if (old_model.is_sys === 1) {
-    // 编码
-    input.code = undefined;
-    // 数据类型
-    input.type = undefined;
-    input.type_lbl = "";
-    // 启用
-    input.is_enabled = undefined;
-    input.is_enabled_lbl = "";
-  }
-  
-  const dict_id2 = await dictDao.updateByIdDict(dict_id, input);
-  
-  return dict_id2;
+  return dict_id;
 }
 
 /** 校验系统字典是否存在 */
@@ -237,14 +221,6 @@ export async function validateOptionDict(
 export async function deleteByIdsDict(
   dict_ids: DictId[],
 ): Promise<number> {
-  
-  const old_models = await dictDao.findByIdsDict(dict_ids);
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {
-      throw "不能删除系统记录";
-    }
-  }
   
   const dict_num = await dictDao.deleteByIdsDict(dict_ids);
   return dict_num;

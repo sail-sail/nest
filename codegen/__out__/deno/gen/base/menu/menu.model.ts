@@ -120,6 +120,4 @@ export function intoInputMenu(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

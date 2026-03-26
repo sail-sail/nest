@@ -1665,6 +1665,16 @@ export async function updateByIdDataPermit(
     );
   }
   
+  // 不能修改系统记录的系统字段
+  if (oldModel.is_sys === 1) {
+    // 菜单
+    input.menu_id = undefined;
+    input.menu_id_lbl = "";
+    // 范围
+    input.scope = undefined;
+    input.scope_lbl = "";
+  }
+  
   const args = new QueryArgs();
   let sql = `update base_data_permit set `;
   let updateFldNum = 0;
@@ -1868,15 +1878,20 @@ export async function deleteByIdsDataPermit(
   
   await delCacheDataPermit();
   
+  const oldModels = await findByIdsOkDataPermit(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdDataPermit(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }
     if (!is_silent_mode) {
       log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
+    }
+    
+    if (oldModel.is_sys === 1) {
+      throw "不能删除系统记录";
     }
     const args = new QueryArgs();
     let sql = `update base_data_permit set is_deleted=1`;

@@ -2235,12 +2235,13 @@ export async function deleteByIdsDynPage(
   
   await delCacheDynPage();
   
+  const oldModels = await findByIdsOkDynPage(ids, options);
   let affectedRows = 0;
   const menu_ids_to_delete: MenuId[] = [];
   
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdDynPage(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

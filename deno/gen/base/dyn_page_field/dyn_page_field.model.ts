@@ -153,6 +153,4 @@ export function intoInputDynPageField(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

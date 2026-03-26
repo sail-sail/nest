@@ -201,9 +201,9 @@ export async function updateByIdOrg(
     throw "不能修改已经锁定的 组织";
   }
   
-  const org_id2 = await orgDao.updateByIdOrg(org_id, input);
+  org_id = await orgDao.updateByIdOrg(org_id, input);
   
-  return org_id2;
+  return org_id;
 }
 
 /** 校验组织是否存在 */

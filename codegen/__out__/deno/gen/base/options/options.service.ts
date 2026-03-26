@@ -204,26 +204,16 @@ export async function updateByIdOptions(
   input: OptionsInput,
 ): Promise<OptionsId> {
   
-  const old_model = await optionsDao.validateOptionOptions(
-    await optionsDao.findByIdOptions(options_id),
-  );
+  const old_model = await optionsDao.findByIdOkOptions(options_id);
   
   const is_locked = await optionsDao.getIsLockedByIdOptions(options_id);
   if (is_locked) {
     throw "不能修改已经锁定的 系统选项";
   }
   
-  // 不能修改系统记录的系统字段
-  if (old_model.is_sys === 1) {
-    // 名称
-    input.lbl = undefined;
-    // 键
-    input.ky = undefined;
-  }
+  options_id = await optionsDao.updateByIdOptions(options_id, input);
   
-  const options_id2 = await optionsDao.updateByIdOptions(options_id, input);
-  
-  return options_id2;
+  return options_id;
 }
 
 /** 校验系统选项是否存在 */
@@ -246,12 +236,6 @@ export async function deleteByIdsOptions(
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
       throw "不能删除已经锁定的 系统选项";
-    }
-  }
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {
-      throw "不能删除系统记录";
     }
   }
   

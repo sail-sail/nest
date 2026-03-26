@@ -196,9 +196,9 @@ export async function updateByIdIcon(
   input: IconInput,
 ): Promise<IconId> {
   
-  const icon_id2 = await iconDao.updateByIdIcon(icon_id, input);
+  icon_id = await iconDao.updateByIdIcon(icon_id, input);
   
-  return icon_id2;
+  return icon_id;
 }
 
 /** 校验图标库是否存在 */
