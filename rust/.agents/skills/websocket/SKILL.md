@@ -1,6 +1,6 @@
 ---
 name: websocket
-description: WebSocket 使用规范. 当需要在前端订阅后端事件通知时使用此技能
+description: WebSocket 使用规范. 需要在前端订阅后端事件通知时使用
 compatibility: Vue 3 + Rust 后端
 metadata:
   version: "1.0"
