@@ -92,7 +92,7 @@ async function connect() {
       socket = undefined;
       reConnect();
     });
-    socket.onError(function(err) {
+    socket.onError(function(_err) {
       try {
         socket?.close({ });
       } catch (_err) {
