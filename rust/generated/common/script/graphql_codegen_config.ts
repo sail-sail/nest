@@ -15,6 +15,10 @@ const config: CodegenConfig = {
       "config": {
         "useTypeImports": true,
         "scalars": {
+          "SmolStr": {
+            "input": "string",
+            "output": "string",
+          },
           "Decimal": {
             "input": "InstanceType<typeof import(\"decimal.js\").default>",
             "output": "InstanceType<typeof import(\"decimal.js\").default>"
@@ -50,10 +54,6 @@ const config: CodegenConfig = {
           "JSONArray": {
             "input": "any[]",
             "output": "any[]"
-          },
-          "SmolStr": {
-            "input": "string",
-            "output": "string"
           },
           ...getScalarsPC(),
         }
@@ -67,6 +67,10 @@ const config: CodegenConfig = {
       "config": {
         "useTypeImports": true,
         "scalars": {
+          "SmolStr": {
+            "input": "string",
+            "output": "string",
+          },
           "Decimal": {
             "input": "InstanceType<typeof import(\"decimal.js\").default>",
             "output": "InstanceType<typeof import(\"decimal.js\").default>"
@@ -102,10 +106,6 @@ const config: CodegenConfig = {
           "JSONArray": {
             "input": "any[]",
             "output": "any[]"
-          },
-          "SmolStr": {
-            "input": "string",
-            "output": "string"
           },
           ...getScalarsPC(),
         }

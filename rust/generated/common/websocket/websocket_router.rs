@@ -267,7 +267,7 @@ pub async fn ws_upgrade(
             client_id_topics_map.remove(&client_id);
           }
           Err(e) => {
-            error!("websocket error: {}", e);
+            // error!("websocket error: {}", e);
             let mut socket_sink_map = socket_sink_map().lock().await;
             let socket_ref = socket_sink_map.remove(&client_id);
             if let Some(socket_ref) = socket_ref {
