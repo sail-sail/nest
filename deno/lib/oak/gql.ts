@@ -51,6 +51,7 @@ scalar Date
 scalar Decimal
 scalar BigDecimal
 scalar Uuid
+scalar SmolStr
 "分页输入"
 input PageInput {
   pgOffset: Int

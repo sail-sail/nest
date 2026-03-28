@@ -7,6 +7,16 @@ import type {
   GetLoginTenants,
 } from "#/types";
 
+import {
+  parseUrl,
+} from "@/utils/StringUtil.ts";
+
+import cfg from "@/utils/config.ts";
+
+import useUsrStore from "@/store/usr.ts";
+
+const usrStore = useUsrStore();
+
 /** 根据 当前网址的域名+端口 获取 租户列表 */
 export async function getLoginTenants(
   variables: { domain: string },
@@ -16,7 +26,7 @@ export async function getLoginTenants(
     getLoginTenants: Query["getLoginTenants"],
   } = await query({
     query: /* GraphQL */ `
-      query($domain: String!) {
+      query($domain: SmolStr!) {
         getLoginTenants(domain: $domain) {
           id
           lbl
@@ -57,9 +67,38 @@ export async function login(
 
 export async function checkLogin(
   opt?: GqlOpt,
-) {
+): Promise<boolean> {
   opt = opt || { };
   opt.showErrMsg = false;
+  if (!cfg.appid) {
+    let tenant_id: TenantId | undefined = undefined;
+    // #ifdef H5
+    const urlObj = parseUrl(location.href);
+    if (urlObj.query?.tenant_id) {
+      tenant_id = urlObj.query.tenant_id as TenantId;
+      usrStore.setTenantId(tenant_id);
+      uni.setStorageSync("client_tenant_id", tenant_id);
+      return true;
+    }
+    // #endif
+    if (cfg.client_tenant_id) {
+      tenant_id = cfg.client_tenant_id as TenantId;
+      usrStore.setTenantId(tenant_id);
+      uni.setStorageSync("client_tenant_id", tenant_id);
+      return true;
+    }
+    const tenant_models = await getLoginTenants({
+      domain: cfg.domain,
+    });
+    const tenant_model = tenant_models[0];
+    tenant_id = tenant_model?.id;
+    if (tenant_id) {
+      usrStore.setTenantId(tenant_id);
+      uni.setStorageSync("client_tenant_id", tenant_id);
+      return true;
+    }
+    return false;
+  }
   const res: {
     checkLogin: Query["checkLogin"],
   } = await query({
