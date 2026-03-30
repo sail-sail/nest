@@ -201,9 +201,9 @@ export async function updateByIdWxoApp(
     throw "不能修改已经锁定的 公众号设置";
   }
   
-  const wxo_app_id2 = await wxo_appDao.updateByIdWxoApp(wxo_app_id, input);
+  wxo_app_id = await wxo_appDao.updateByIdWxoApp(wxo_app_id, input);
   
-  return wxo_app_id2;
+  return wxo_app_id;
 }
 
 /** 校验公众号设置是否存在 */

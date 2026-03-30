@@ -1732,10 +1732,11 @@ export async function deleteByIdsWxoAppToken(
   
   await delCacheWxoAppToken();
   
+  const oldModels = await findByIdsOkWxoAppToken(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdWxoAppToken(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

@@ -201,9 +201,9 @@ export async function updateByIdWxApp(
     throw "不能修改已经锁定的 小程序设置";
   }
   
-  const wx_app_id2 = await wx_appDao.updateByIdWxApp(wx_app_id, input);
+  wx_app_id = await wx_appDao.updateByIdWxApp(wx_app_id, input);
   
-  return wx_app_id2;
+  return wx_app_id;
 }
 
 /** 校验小程序设置是否存在 */

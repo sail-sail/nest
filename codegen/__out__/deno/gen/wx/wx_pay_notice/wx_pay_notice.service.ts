@@ -196,9 +196,9 @@ export async function updateByIdWxPayNotice(
   input: WxPayNoticeInput,
 ): Promise<WxPayNoticeId> {
   
-  const wx_pay_notice_id2 = await wx_pay_noticeDao.updateByIdWxPayNotice(wx_pay_notice_id, input);
+  wx_pay_notice_id = await wx_pay_noticeDao.updateByIdWxPayNotice(wx_pay_notice_id, input);
   
-  return wx_pay_notice_id2;
+  return wx_pay_notice_id;
 }
 
 /** 校验微信支付通知是否存在 */

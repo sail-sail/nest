@@ -196,9 +196,9 @@ export async function updateByIdWxoUsr(
   input: WxoUsrInput,
 ): Promise<WxoUsrId> {
   
-  const wxo_usr_id2 = await wxo_usrDao.updateByIdWxoUsr(wxo_usr_id, input);
+  wxo_usr_id = await wxo_usrDao.updateByIdWxoUsr(wxo_usr_id, input);
   
-  return wxo_usr_id2;
+  return wxo_usr_id;
 }
 
 /** 校验公众号用户是否存在 */

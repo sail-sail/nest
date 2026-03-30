@@ -132,6 +132,4 @@ export function intoInputWxPayNotice(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

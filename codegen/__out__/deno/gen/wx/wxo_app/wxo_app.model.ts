@@ -133,6 +133,4 @@ export function intoInputWxoApp(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

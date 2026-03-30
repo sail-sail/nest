@@ -137,6 +137,4 @@ export function intoInputWxPay(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

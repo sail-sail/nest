@@ -2008,6 +2008,20 @@ export async function updateByIdWxPay(
     log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
   }
   
+  // 公钥
+  if (input.public_key != null && input.public_key !== oldModel?.public_key) {
+    await deleteObject(
+      oldModel?.public_key,
+    );
+  }
+  
+  // 私钥
+  if (input.private_key != null && input.private_key !== oldModel?.private_key) {
+    await deleteObject(
+      oldModel?.private_key,
+    );
+  }
+  
   return id;
 }
 
@@ -2080,10 +2094,11 @@ export async function deleteByIdsWxPay(
   
   await delCacheWxPay();
   
+  const oldModels = await findByIdsOkWxPay(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdWxPay(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

@@ -130,6 +130,4 @@ export function intoInputWxAppToken(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

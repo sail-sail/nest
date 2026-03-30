@@ -134,6 +134,4 @@ export function intoInputWxoUsr(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

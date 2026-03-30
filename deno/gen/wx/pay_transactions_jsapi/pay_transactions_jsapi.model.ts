@@ -163,6 +163,4 @@ export function intoInputPayTransactionsJsapi(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

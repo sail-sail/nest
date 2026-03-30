@@ -196,9 +196,9 @@ export async function updateByIdWxRefund(
   input: WxRefundInput,
 ): Promise<WxRefundId> {
   
-  const wx_refund_id2 = await wx_refundDao.updateByIdWxRefund(wx_refund_id, input);
+  wx_refund_id = await wx_refundDao.updateByIdWxRefund(wx_refund_id, input);
   
-  return wx_refund_id2;
+  return wx_refund_id;
 }
 
 /** 校验微信退款申请是否存在 */

@@ -120,6 +120,5 @@ export function intoInputWxApp(
     return;
   }
   
-  input.id = undefined;
   input.default_role_codes = undefined;
 }

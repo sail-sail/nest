@@ -196,9 +196,9 @@ export async function updateByIdPayTransactionsJsapi(
   input: PayTransactionsJsapiInput,
 ): Promise<PayTransactionsJsapiId> {
   
-  const pay_transactions_jsapi_id2 = await pay_transactions_jsapiDao.updateByIdPayTransactionsJsapi(pay_transactions_jsapi_id, input);
+  pay_transactions_jsapi_id = await pay_transactions_jsapiDao.updateByIdPayTransactionsJsapi(pay_transactions_jsapi_id, input);
   
-  return pay_transactions_jsapi_id2;
+  return pay_transactions_jsapi_id;
 }
 
 /** 校验微信JSAPI下单是否存在 */

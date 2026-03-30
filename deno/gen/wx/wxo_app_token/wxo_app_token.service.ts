@@ -196,9 +196,9 @@ export async function updateByIdWxoAppToken(
   input: WxoAppTokenInput,
 ): Promise<WxoAppTokenId> {
   
-  const wxo_app_token_id2 = await wxo_app_tokenDao.updateByIdWxoAppToken(wxo_app_token_id, input);
+  wxo_app_token_id = await wxo_app_tokenDao.updateByIdWxoAppToken(wxo_app_token_id, input);
   
-  return wxo_app_token_id2;
+  return wxo_app_token_id;
 }
 
 /** 校验小程序接口凭据是否存在 */

@@ -209,6 +209,7 @@
               v-model="dialogModel.total"
               placeholder="请输入 总金额(分)"
               :readonly="isLocked || isReadonly"
+              :is-hide-zero="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>
@@ -222,6 +223,7 @@
               v-model="dialogModel.payer_total"
               placeholder="请输入 用户支付金额(分)"
               :readonly="isLocked || isReadonly"
+              :is-hide-zero="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>

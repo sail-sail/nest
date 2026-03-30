@@ -134,6 +134,5 @@ export function intoInputWxoApp(
     return;
   }
   
-  input.id = undefined;
   input.default_role_codes = undefined;
 }

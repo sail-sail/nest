@@ -238,9 +238,9 @@ export async function updateByIdWxoAppToken(
     "edit",
   );
   
-  const id2: WxoAppTokenId = await updateByIdWxoAppToken(id, input);
+  id = await updateByIdWxoAppToken(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

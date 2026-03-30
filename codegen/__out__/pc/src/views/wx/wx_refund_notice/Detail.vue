@@ -181,6 +181,7 @@
               v-model="dialogModel.amount_total"
               placeholder="请输入 订单金额(分)"
               :readonly="isLocked || isReadonly"
+              :is-hide-zero="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>
@@ -194,6 +195,7 @@
               v-model="dialogModel.amount_refund"
               placeholder="请输入 退款金额(分)"
               :readonly="isLocked || isReadonly"
+              :is-hide-zero="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>
@@ -207,6 +209,7 @@
               v-model="dialogModel.amount_payer_total"
               placeholder="请输入 用户实际支付金额(分)"
               :readonly="isLocked || isReadonly"
+              :is-hide-zero="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>
@@ -220,6 +223,7 @@
               v-model="dialogModel.amount_payer_refund"
               placeholder="请输入 用户退款金额(分)"
               :readonly="isLocked || isReadonly"
+              :is-hide-zero="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>

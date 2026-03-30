@@ -108,6 +108,4 @@ export function intoInputWxRefundNotice(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

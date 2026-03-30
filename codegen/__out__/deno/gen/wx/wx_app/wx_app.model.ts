@@ -119,6 +119,4 @@ export function intoInputWxApp(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

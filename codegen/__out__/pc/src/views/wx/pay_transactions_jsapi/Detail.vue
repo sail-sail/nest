@@ -243,6 +243,7 @@
               v-model="dialogModel.total_fee"
               placeholder="请输入 订单金额(分)"
               :readonly="isLocked || isReadonly"
+              :is-hide-zero="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>

@@ -201,9 +201,9 @@ export async function updateByIdWxPay(
     throw "不能修改已经锁定的 微信支付设置";
   }
   
-  const wx_pay_id2 = await wx_payDao.updateByIdWxPay(wx_pay_id, input);
+  wx_pay_id = await wx_payDao.updateByIdWxPay(wx_pay_id, input);
   
-  return wx_pay_id2;
+  return wx_pay_id;
 }
 
 /** 校验微信支付设置是否存在 */

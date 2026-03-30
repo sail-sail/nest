@@ -1924,6 +1924,13 @@ export async function updateByIdWxoUsr(
     log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
   }
   
+  // 头像
+  if (input.head_img != null && input.head_img !== oldModel?.head_img) {
+    await deleteObject(
+      oldModel?.head_img,
+    );
+  }
+  
   return id;
 }
 
@@ -1996,10 +2003,11 @@ export async function deleteByIdsWxoUsr(
   
   await delCacheWxoUsr();
   
+  const oldModels = await findByIdsOkWxoUsr(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdWxoUsr(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }
