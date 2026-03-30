@@ -4426,7 +4426,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     let lbl = dictbiz_model.map(|item| item.lbl.clone());
     input.<#=column_name#>_lbl = lbl;
   }<#
-    } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && modelLabel) {
+    } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
   #>
   
   // <#=column_comment#>
