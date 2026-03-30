@@ -537,6 +537,7 @@ export async function request<T>(
     notAuthorization?: boolean;
     method?: string;
     data?: any;
+    client_tenant_id?: TenantId | null;
   },
 ): Promise<T> {
   const indexStore = useIndexStore();
@@ -560,7 +561,16 @@ export async function request<T>(
         config.header.authorization = authorization;
       }
     }
-    res = await (uni as any).request(config as any) as any;
+    
+    let client_tenant_id = config.client_tenant_id;
+    if (!client_tenant_id) {
+      client_tenant_id = uni.getStorageSync("client_tenant_id") as TenantId | null;
+    }
+    if (client_tenant_id) {
+      config.header = config.header || { };
+      config.header["TenantId"] = client_tenant_id;
+    }
+    res = await uni.request(config as any);
   } catch(errTmp) {
     err = (errTmp as Error);
   } finally {

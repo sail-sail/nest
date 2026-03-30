@@ -198,13 +198,14 @@ function hasTimePart(timeStr: string): boolean {
 }
 
 /**
- * 优化开始时间,如果没有时分秒则设置为 00:00:00
+ * 优化开始时间,如果没有时分秒则设置为
  * @param timeStr 时间字符串
  * @returns 优化后的时间字符串
  */
 function optimizeStartTime(timeStr: string): string {
+    timeStr = timeStr || '';
     if (!timeStr || !hasTimePart(timeStr)) {
-        // 提取日期部分,并添加 00:00:00
+        // 提取日期部分,并添加00:00:00
         const datePattern = /^(\d{4}[-/]\d{1,2}[-/]\d{1,2})/;
         const match = timeStr.match(datePattern);
         if (match) {
@@ -220,6 +221,7 @@ function optimizeStartTime(timeStr: string): string {
  * @returns 优化后的时间字符串
  */
 function optimizeEndTime(timeStr: string): string {
+    timeStr = timeStr || '';
     if (!timeStr || !hasTimePart(timeStr)) {
         // 提取日期部分,并添加 23:59:59
         const datePattern = /^(\d{4}[-/]\d{1,2}[-/]\d{1,2})/;
@@ -429,7 +431,7 @@ function getTypes(): tmDateTypeTime {
 function validTimeDate(val: string[]): string[] {
     let str = ['', '']
     if (val.length >= 1) {
-        // 优化开始时间:如果没有时分秒则设置为 00:00:00
+        // 优化开始时间:如果没有时分秒则设置为00:00:00
         str[0] = optimizeStartTime(val[0]!)
     }
     if (val.length >= 2) {
