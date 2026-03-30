@@ -233,13 +233,6 @@ pub async fn update_by_id_job(
   options: Option<Options>,
 ) -> Result<JobId> {
   
-  let old_model = validate_option_job(
-    job_dao::find_by_id_job(
-      job_id,
-      options,
-    ).await?,
-  ).await?;
-  
   let is_locked = job_dao::get_is_locked_by_id_job(
     job_id,
     None,
@@ -248,12 +241,6 @@ pub async fn update_by_id_job(
   if is_locked {
     let err_msg = "不能修改已经锁定的 任务";
     return Err(eyre!(err_msg));
-  }
-  
-  // 不能修改系统记录的系统字段
-  if old_model.is_sys == 1 {
-    // 编码
-    job_input.code = None;
   }
   
   let job_id = job_dao::update_by_id_job(
@@ -296,13 +283,6 @@ pub async fn delete_by_ids_job(
   for old_model in &old_models {
     if old_model.is_locked == 1 {
       let err_msg = "不能删除已经锁定的 任务";
-      return Err(eyre!(err_msg));
-    }
-  }
-  
-  for old_model in &old_models {
-    if old_model.is_sys == 1 {
-      let err_msg = "不能删除系统记录";
       return Err(eyre!(err_msg));
     }
   }

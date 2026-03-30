@@ -2186,6 +2186,12 @@ pub async fn update_by_id_job(
     );
   }
   
+  // 不能修改系统记录的系统字段
+  if old_model.is_sys == 1 {
+    // 编码
+    input.code = None;
+  }
+  
   {
     let mut input = input.clone();
     input.id = None;
@@ -2478,18 +2484,15 @@ pub async fn delete_by_ids_job(
   
   del_cache_job().await?;
   
+  let old_models = find_by_ids_ok_job(
+    ids.clone(),
+    options,
+  ).await?;
+  
   let mut num = 0;
-  for id in ids.clone() {
+  for old_model in old_models {
     
-    let old_model = find_by_id_job(
-      id,
-      options,
-    ).await?;
-    
-    let old_model = match old_model {
-      Some(model) => model,
-      None => continue,
-    };
+    let id = old_model.id;
     
     if !is_silent_mode {
       info!(
@@ -2499,6 +2502,11 @@ pub async fn delete_by_ids_job(
         method,
         serde_json::to_string(&old_model)?,
       );
+    }
+    
+    if old_model.is_sys == 1 {
+      let err_msg = "不能删除系统记录";
+      return Err(eyre!(err_msg));
     }
     
     let mut args = QueryArgs::new();
