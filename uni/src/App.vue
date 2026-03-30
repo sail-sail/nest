@@ -8,10 +8,7 @@ onLaunch((async(options?: App.LaunchShowOption) => {
   await initWxoCfg();
   // #endif
   
-  // 小程序单页模式
-  if (options?.scene !== 1154) {
-    await checkLogin();
-  }
+  await checkLogin(options);
   
 }));
 
