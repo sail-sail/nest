@@ -51,7 +51,7 @@ export async function initWxoCfg() {
   if (userAgent.isWechat) {
     const wxoAppid = await wxoGetAppid();
     if (!wxoAppid) {
-      return;
+      return false;
     }
     const appid = wxoAppid.appid;
     cfg.appid = appid;
@@ -61,7 +61,7 @@ export async function initWxoCfg() {
     if (code) {
       const model = await wxoLoginByCode(code);
       if (!model || !model.authorization) {
-        return;
+        return false;
       }
       usrStore.setAuthorization(model.authorization);
       usrStore.setUsrId(model.usr_id);
@@ -72,8 +72,9 @@ export async function initWxoCfg() {
       url.searchParams.delete("code");
       url.searchParams.delete("state");
       location.replace(url.toString());
-      return;
+      return true;
     }
   }
+  return false;
 }
 // #endif

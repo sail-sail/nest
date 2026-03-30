@@ -65,13 +65,12 @@ export async function login(
   return data;
 }
 
-export async function checkLogin(
-  opt?: GqlOpt,
-): Promise<boolean> {
-  opt = opt || { };
-  opt.showErrMsg = false;
+export async function checkClientTenantId(): Promise<boolean> {
+  let tenant_id: TenantId | null = uni.getStorageSync("client_tenant_id") as TenantId || null;
+  if (tenant_id) {
+    usrStore.setTenantId(tenant_id);
+  }
   if (!cfg.appid) {
-    let tenant_id: TenantId | undefined = undefined;
     // #ifdef H5
     const urlObj = parseUrl(location.href);
     if (urlObj.query?.tenant_id) {
@@ -87,17 +86,143 @@ export async function checkLogin(
       uni.setStorageSync("client_tenant_id", tenant_id);
       return true;
     }
-    const tenant_models = await getLoginTenants({
-      domain: cfg.domain,
-    });
-    const tenant_model = tenant_models[0];
-    tenant_id = tenant_model?.id;
-    if (tenant_id) {
-      usrStore.setTenantId(tenant_id);
-      uni.setStorageSync("client_tenant_id", tenant_id);
-      return true;
+    if (cfg.domain) {
+      const tenant_models = await getLoginTenants(
+        {
+          domain: cfg.domain,
+        },
+        {
+          notLoading: true,
+        },
+      );
+      const tenant_model = tenant_models[0];
+      tenant_id = tenant_model?.id;
+      if (tenant_id) {
+        usrStore.setTenantId(tenant_id);
+        uni.setStorageSync("client_tenant_id", tenant_id);
+        return true;
+      }
+      return false;
     }
     return false;
+  }
+  if (cfg.client_tenant_id) {
+    tenant_id = cfg.client_tenant_id as TenantId;
+    usrStore.setTenantId(tenant_id);
+    uni.setStorageSync("client_tenant_id", tenant_id);
+    return true;
+  }
+  let platform = "unknown";
+  // #ifdef WEB
+  const indexStore = useIndexStore();
+  const userAgent = indexStore.getUserAgent();
+  if (userAgent.isWxwork) {
+    platform = "wechat";
+  } else if (userAgent.isWechat) {
+    platform = "wechat";
+  } else if (userAgent.isPc) {
+    platform = "pc";
+  } else if (userAgent.isMobile) {
+    platform = "h5";
+  } else {
+    platform = "h5";
+  }
+  // #endif
+  // #ifdef MP-WEIXIN
+  platform = "wechat";
+  // #endif
+  // #ifdef MP-ALIPAY
+  platform = "alipay";
+  // #endif
+  // #ifdef MP-BAIDU
+  platform = "baidu";
+  // #endif
+  // #ifdef MP-TOUTIAO
+  platform = "toutiao";
+  // #endif
+  // #ifdef MP-LARK
+  platform = "lark";
+  // #endif
+  // #ifdef MP-QQ
+  platform = "qq";
+  // #endif
+  // #ifdef MP-KUAISHOU
+  platform = "kuaishou";
+  // #endif
+  // #ifdef MP-JD
+  platform = "jd";
+  // #endif
+  // #ifdef MP-360
+  platform = "360";
+  // #endif
+  // #ifdef MP-HARMONY
+  platform = "harmony";
+  // #endif
+  // #ifdef MP-XHS
+  platform = "xhs";
+  // #endif
+  const data: {
+    getTenantIdByAppid: Query["getTenantIdByAppid"];
+  } = await query(
+    {
+      query: /* GraphQL */ `
+        query($platform: SmolStr!, $appid: SmolStr!) {
+          getTenantIdByAppid(platform: $platform, appid: $appid)
+        }
+      `,
+      variables: {
+        platform,
+        appid: cfg.appid,
+      },
+    },
+    {
+      notLoading: true,
+    },
+  );
+  tenant_id = data.getTenantIdByAppid;
+  if (tenant_id) {
+    usrStore.setTenantId(tenant_id);
+    uni.setStorageSync("client_tenant_id", tenant_id);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * 如果是 web 端
+ * - 企业微信、微信 浏览器 需要立即检查是否登录
+ * - 其他 浏览器 不需要检查
+ * 如果是小程序
+ * - 场景值为 1154 的不需要检查
+ * - 其他场景值的需要检查
+ * 其他平台不需要检查
+ */
+export async function checkLogin(
+  options?: App.LaunchShowOption,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  opt = opt || { };
+  opt.notLoading = true;
+  opt.showErrMsg = false;
+  let isChecklogin = true;
+  // #ifdef WEB
+  const indexStore = useIndexStore();
+  const userAgent = indexStore.getUserAgent();
+  if (userAgent.isWxwork) {
+    isChecklogin = true;
+  } else if (userAgent.isWechat) {
+    isChecklogin = true;
+  } else {
+    isChecklogin = false;
+  }
+  // #endif
+  if (options?.scene === 1154) {
+    isChecklogin = false;
+  } else if (!cfg.appid) {
+    isChecklogin = false;
+  }
+  if (!isChecklogin) {
+    return await checkClientTenantId();
   }
   const res: {
     checkLogin: Query["checkLogin"],

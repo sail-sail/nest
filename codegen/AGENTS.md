@@ -17,24 +17,16 @@
 
 ⚠️ `codegen/__out__` 目录为代码生成输出目录，禁止修改也无读取的必要
 
-## 可用 Skills (.agents/skills/)
-
-- `create-module` - 创建新的业务模块。当需要添加新模块如 ec、crm 时使用
-- `create-table` - 数据库建表规范。创建新表时必须遵循
-- `dict` - 系统字典和业务字典配置。建表需要枚举字段或给表添加枚举类字段时使用
-- `table-config` - 表字段配置规范。建表后配置 src/tables/{mod}/{mod}.ts 文件时使用
-- `sql-exec` - 需要执行sql、验证写入结果、核对联表数据时使用
-
 ## 代码格式规范
-- 无论是前端还是后端, 函数调用和定义的参数都尽量拆行, 例如:
+- 无论是前端还是后端, 函数调用, 定义的参数和前端标签属性都尽量拆行, 例:
 
-```typescript
+```ts
 pay_order(booking_order_id, amt, success_time);
 ```
 
 应改为:
 
-```typescript
+```ts
 pay_order(
   booking_order_id,
   amt,
@@ -43,13 +35,13 @@ pay_order(
 ```
 
 ## mcp 相关规范
-- 尽量使用 utcp 查询工具
+- 可用 utcp 查询工具
 
 ## UTCP Code-Mode 规则
 
 ⚠️ **命名空间直接访问**：工具通过命名空间暴露，**禁止使用 `manual.` 前缀,`manual.tool` 只是语法占位符,运行时不存在 manual 对象**
 
-```typescript
+```ts
 // ❌ 错误
 await manual.chrome_devtools_mcp.tool()
 
