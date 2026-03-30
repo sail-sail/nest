@@ -9,14 +9,9 @@ import {
   parse as parseEnv,
 } from "dotenv";
 
-import { copyDir } from "/lib/util/fs_util.ts";
-
-const separator = Deno.build.os == "windows" ? ";" : ":";
-const path = Deno.env.get("path") || "";
-const paths = path.split(separator);
-const npmDir = paths.find((path) => path.endsWith("npm")) || "";
-const cmdPostfix = Deno.build.os == "windows" ? ".cmd" : "";
-const pnpmCmd = `${ npmDir == "" ? "pnpm": npmDir+ '/pnpm' }${cmdPostfix}`;
+import {
+  copyDir,
+} from "/lib/util/fs_util.ts";
 
 function getArg(name: string): string | undefined {
   const index = Deno.args.indexOf(name);
@@ -75,12 +70,11 @@ async function copyEnv() {
 
 async function codegen() {
   console.log("codegen");
-  const isWindows = Deno.build.os === "windows";
   const command = new Deno.Command(
-    isWindows ? "cmd" : pnpmCmd,
+    "npm",
     {
       cwd: denoDir,
-      args: isWindows ? ["/c", pnpmCmd, "run", "codegen"] : ["run", "codegen"],
+      args: ["run", "codegen"],
       stderr: "inherit",
       stdout: "inherit",
     }
@@ -93,12 +87,11 @@ async function codegen() {
 
 async function gqlgen() {
   console.log("gqlgen");
-  const isWindows = Deno.build.os === "windows";
   const command = new Deno.Command(
-    isWindows ? "cmd" : pnpmCmd,
+    "npm",
     {
       cwd: denoDir,
-      args: isWindows ? ["/c", pnpmCmd, "run", "gqlgen"] : ["run", "gqlgen"],
+      args: ["run", "gqlgen"],
       stderr: "inherit",
       stdout: "inherit",
     }
@@ -240,13 +233,11 @@ async function compile() {
 
 async function pc() {
   console.log("pc");
-  const isWindows = Deno.build.os === "windows";
-  const args = isWindows ? ["/c", pnpmCmd, "run", `build-${ env }`] : ["run", `build-${ env }`];
   const command = new Deno.Command(
-    isWindows ? "cmd" : pnpmCmd,
+    "npm",
     {
       cwd: pcDir,
-      args,
+      args: ["run", `build-${ env }`],
       stderr: "inherit",
       stdout: "inherit",
     }
@@ -267,12 +258,11 @@ async function pc() {
 
 async function uni() {
   console.log("uni");
-  const isWindows = Deno.build.os === "windows";
   const command = new Deno.Command(
-    isWindows ? "cmd" : pnpmCmd,
+    "npm",
     {
       cwd: uniDir,
-      args: isWindows ? ["/c", pnpmCmd, "run", `build:h5-${ env }`] : ["run", `build:h5-${ env }`],
+      args: ["run", `build:h5-${ env }`],
       stderr: "inherit",
       stdout: "inherit",
     }
@@ -292,12 +282,14 @@ async function uni() {
 
 async function nuxt() {
   console.log("nuxt");
-  const command = new Deno.Command(pnpmCmd, {
-    cwd: denoDir + "/../nuxt",
-    args: [
-      "run",
-      `build-${ env }`,
-    ],
+  const command = new Deno.Command(
+    "npm",
+    {
+      cwd: denoDir + "/../nuxt",
+      args: [
+        "run",
+        `build-${ env }`,
+      ],
     stderr: "inherit",
     stdout: "inherit",
   });
@@ -326,12 +318,11 @@ async function nuxt() {
 
 async function docs() {
   console.log("docs");
-  const isWindows = Deno.build.os === "windows";
   const command = new Deno.Command(
-    isWindows ? "cmd" : pnpmCmd,
+    "npm",
     {
       cwd: docsDir,
-      args: isWindows ? ["/c", pnpmCmd, "run", `build-${ env }`] : ["run", `build-${ env }`],
+      args: ["run", `build-${ env }`],
       stderr: "inherit",
       stdout: "inherit",
     }
@@ -351,16 +342,11 @@ async function docs() {
 
 async function publish() {
   console.log("publish");
-  const isWindows = Deno.build.os === "windows";
-  const args = isWindows ? ["/c", pnpmCmd] : [];
-  args.push("run", "publish");
-  if (pnpmCmd === "npm") {
-    args.push("--");
-  }
+  const args = ["run", "publish", "--"];
   args.push(`--env=${ env }`);
   args.push(`--command=${ commands.join(",") }`);
   const command = new Deno.Command(
-    isWindows ? "cmd" : pnpmCmd,
+    "npm",
     {
       cwd: denoDir,
       args,

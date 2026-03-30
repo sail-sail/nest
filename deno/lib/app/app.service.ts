@@ -29,3 +29,10 @@ export async function clearCache(): Promise<boolean> {
   // }
   return await appDao.clearCache();
 }
+
+export async function getTenantIdByAppid(
+  platform: string,
+  appid: string,
+): Promise<string> {
+  throw new Error(`getTenantIdByAppid is not implemented: platform: ${platform}, appid: ${appid}`);
+}

@@ -1,8 +1,6 @@
-import pages from "@/pages.json";
-
-import type {
-  Pinia,
-} from "pinia";
+import {
+  pages,
+} from "@/pages.json";
 
 let host = "";
 let port: string | undefined = undefined;
@@ -11,8 +9,9 @@ let domain = "";
 let wsProt = "ws:";
 const appid = "wxd4b24c53a1813485";
 const agentid = "";
+const client_tenant_id = "";
 
-const homePage = `/${pages.pages[0]?.path}`;
+const homePage = `/${pages[0]?.path}`;
 
 const accountInfo = uni.getAccountInfoSync?.();
 const envVersion = accountInfo?.miniProgram.envVersion;
@@ -98,7 +97,7 @@ const config: {
   domain: string;
   appid: string;
   agentid: string;
-  pinia: Pinia | undefined;
+  client_tenant_id: string;
 } = {
   urlBase,
   url,
@@ -111,7 +110,7 @@ const config: {
   domain,
   appid,
   agentid,
-  pinia: undefined,
+  client_tenant_id,
 };
 
 export default config;
