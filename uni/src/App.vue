@@ -3,7 +3,7 @@
 // #ifdef H5
 import {
   initWxWorkCfg,
-} from "./utils/WxWorkUtil";
+} from "./utils/WxWorkUtil.ts";
 // #endif
 
 onLaunch((async(options?: App.LaunchShowOption) => {
@@ -11,13 +11,10 @@ onLaunch((async(options?: App.LaunchShowOption) => {
   indexStore.setLaunchOptions(options);
   
   // #ifdef H5
-  await initWxWorkCfg();
+  if (await initWxWorkCfg()) return;
   // #endif
   
-  // 小程序单页模式
-  if (options?.scene !== 1154) {
-    await checkLogin();
-  }
+  await checkLogin(options);
   
 }));
 

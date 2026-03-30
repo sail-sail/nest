@@ -15,9 +15,6 @@ src/pages/{table}/
 ├── List.vue    # 列表页
 ├── DetailModal.vue # 详情弹窗
 ├── Dialog.vue  # 新增/编辑页
-└── Api.ts      # GraphQL 操作
+├── Api.ts      # GraphQL 操作
+└── Api2.ts     # 自定义 GraphQL 接口
 ```
-
-## 可用 Skills (.agents/skills/)
-
-- `uni-spec` - 移动端页面开发规范. 开发 UI 界面时使用

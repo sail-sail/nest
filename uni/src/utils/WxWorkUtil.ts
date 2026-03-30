@@ -59,8 +59,8 @@ export async function wxwGetAppid(): Promise<{
 }
 
 export async function initWxWorkCfg() {
-  const indexStore = useIndexStore(cfg.pinia);
-  const usrStore = useUsrStore(cfg.pinia);
+  const indexStore = useIndexStore();
+  const usrStore = useUsrStore();
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWxwork || userAgent.isWechat) {
     const href = location.href;
@@ -69,7 +69,7 @@ export async function initWxWorkCfg() {
     if (code) {
       const login_model = await wxwLoginByCode(code);
       if (!login_model || !login_model.authorization) {
-        return;
+        return false;
       }
       usrStore.setAuthorization(login_model.authorization);
       usrStore.setUsername(login_model.username);
@@ -79,7 +79,7 @@ export async function initWxWorkCfg() {
       url.searchParams.delete("code");
       url.searchParams.delete("state");
       location.replace(url.toString());
-      return;
+      return true;
     }
     const {
       appid,
@@ -114,5 +114,6 @@ export async function initWxWorkCfg() {
       },
     });
   }
+  return false;
 }
 // #endif
