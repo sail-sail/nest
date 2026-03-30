@@ -201,9 +201,9 @@ export async function updateByIdSeo(
     throw "不能修改已经锁定的 SEO优化";
   }
   
-  const seo_id2 = await seoDao.updateByIdSeo(seo_id, input);
+  seo_id = await seoDao.updateByIdSeo(seo_id, input);
   
-  return seo_id2;
+  return seo_id;
 }
 
 /** 校验SEO优化是否存在 */

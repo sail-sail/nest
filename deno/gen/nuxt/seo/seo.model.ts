@@ -131,6 +131,4 @@ export function intoInputSeo(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

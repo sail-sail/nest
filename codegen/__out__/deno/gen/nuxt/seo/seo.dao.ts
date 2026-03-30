@@ -1838,6 +1838,13 @@ export async function updateByIdSeo(
     log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
   }
   
+  // 分享图片
+  if (input.og_image != null && input.og_image !== oldModel?.og_image) {
+    await deleteObject(
+      oldModel?.og_image,
+    );
+  }
+  
   return id;
 }
 
@@ -1910,10 +1917,11 @@ export async function deleteByIdsSeo(
   
   await delCacheSeo();
   
+  const oldModels = await findByIdsOkSeo(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdSeo(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

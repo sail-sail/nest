@@ -238,9 +238,9 @@ export async function updateByIdSeo(
     "edit",
   );
   
-  const id2: SeoId = await updateByIdSeo(id, input);
+  id = await updateByIdSeo(id, input);
   
-  return id2;
+  return id;
 }
 
 /**
