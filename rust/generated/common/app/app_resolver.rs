@@ -1,40 +1,33 @@
 use color_eyre::eyre::Result;
-use async_graphql::{Context, Object};
 
-use crate::common::context::Ctx;
+use smol_str::SmolStr;
 
 use super::app_service;
 
-#[derive(Default)]
-pub struct AppQuery;
+/// 生成 id 主键
+pub async fn generate_id(
+) -> Result<SmolStr> {
+  let res = app_service::generate_id().await?;
+  Ok(res)
+}
 
-#[Object]
-impl AppQuery {
+/// 检查是否已经登录
+pub async fn check_login(
+) -> Result<bool> {
+  let res = app_service::check_login().await?;
+  Ok(res)
+}
+
+/// 根据 appid 获取租户 id
+pub async fn get_tenant_id_by_appid(
+  platform: SmolStr,
+  appid: SmolStr,
+) -> Result<SmolStr> {
   
-  /// 生成 id 主键
-  async fn generate_id(
-    &self,
-    ctx: &Context<'_>,
-  ) -> Result<String> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .build()
-      .scope({
-        app_service::generate_id()
-      }).await
-  }
+  let res = app_service::get_tenant_id_by_appid(
+    platform,
+    appid,
+  ).await?;
   
-  /// 检查是否已经登录
-  async fn check_login(
-    &self,
-    ctx: &Context<'_>,
-  ) -> Result<bool> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .build()
-      .scope({
-        app_service::check_login()
-      }).await
-  }
-  
+  Ok(res)
 }

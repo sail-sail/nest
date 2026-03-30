@@ -34,7 +34,7 @@ use async_graphql::MergedObject;
 #[derive(MergedObject, Default)]
 pub struct CommonQuery(
   oss::oss_graphql::OssQuery,
-  app::app_resolver::AppQuery,
+  app::app_graphql::AppQuery,
   dict_detail::dict_detail_graphql::DictDetailQuery,
   dictbiz_detail::dictbiz_detail_graphql::DictbizDetailQuery,
   lang::lang_graphql::LangQuery,
