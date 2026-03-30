@@ -2433,18 +2433,15 @@ pub async fn delete_by_ids_wxw_msg(
     .set_is_debug(Some(false));
   let options = Some(options);
   
+  let old_models = find_by_ids_ok_wxw_msg(
+    ids.clone(),
+    options,
+  ).await?;
+  
   let mut num = 0;
-  for id in ids.clone() {
+  for old_model in old_models {
     
-    let old_model = find_by_id_wxw_msg(
-      id,
-      options,
-    ).await?;
-    
-    let old_model = match old_model {
-      Some(model) => model,
-      None => continue,
-    };
+    let id = old_model.id;
     
     if !is_silent_mode {
       info!(
