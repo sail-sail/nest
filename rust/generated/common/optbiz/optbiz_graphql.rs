@@ -12,6 +12,7 @@ pub struct OptbizQuery;
 impl OptbizQuery {
   
   /// 移动端是否发版中 uni_releasing
+  #[graphql(name = "getUniReleasing")]
   async fn get_uni_releasing(
     &self,
     ctx: &Context<'_>,
