@@ -8,6 +8,11 @@ metadata:
 
 # 页面开发样式规范
 
+## 编码规范
+- 使用 Vue Macros 的 reactivity transform（`$ref`、`$computed` 等）
+- vue 相关的类型都无需导入, 如 `ref`, `computed` 等, 直接使用即可, 因为 `vite.config.mts` 配置了自动导入 `AutoImport`
+- 函数定义和调用的时候, 参数都换行, vue 组件属性也换行
+
 ## CSS - Attributify Mode
 
 ### 基础用法

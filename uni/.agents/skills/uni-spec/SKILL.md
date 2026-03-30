@@ -10,6 +10,7 @@ metadata:
 - 使用 Vue Macros 的 reactivity transform（`$ref`、`$computed` 等）
 - 当 `[ ]` 代表的是值时中间有空格, 例如: `const arr = [ 1, 2, 3 ];`, `const arr = [ ];`, `{ }` 也同理
 - 函数定义和调用的时候, 参数都换行, vue 组件属性也换行
+- vue 相关的类型都无需导入, 如 `ref`, `computed` 等, 直接使用即可, 因为 `vite.config.mts` 配置了自动导入 `AutoImport`
 
 # form表单
 

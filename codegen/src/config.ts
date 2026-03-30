@@ -686,6 +686,11 @@ export interface TableCloumn {
     dateFormat?: "YYYYMMDD" | "YYYYMM" | "YYYY" | "YY";
   };
   
+  /**
+   * CustomInputNumber 组件是否在值为0时隐藏, 默认为true
+   */
+  isHideZero?: boolean;
+  
 }
 
 /**
