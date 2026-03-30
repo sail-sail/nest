@@ -129,6 +129,4 @@ export function intoInputWxwApp(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

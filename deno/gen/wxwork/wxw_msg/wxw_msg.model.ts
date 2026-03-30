@@ -147,6 +147,4 @@ export function intoInputWxwMsg(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

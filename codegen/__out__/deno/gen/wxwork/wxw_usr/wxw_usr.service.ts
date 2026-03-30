@@ -196,9 +196,9 @@ export async function updateByIdWxwUsr(
   input: WxwUsrInput,
 ): Promise<WxwUsrId> {
   
-  const wxw_usr_id2 = await wxw_usrDao.updateByIdWxwUsr(wxw_usr_id, input);
+  wxw_usr_id = await wxw_usrDao.updateByIdWxwUsr(wxw_usr_id, input);
   
-  return wxw_usr_id2;
+  return wxw_usr_id;
 }
 
 /** 校验企微用户是否存在 */

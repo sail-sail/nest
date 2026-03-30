@@ -238,9 +238,9 @@ export async function updateByIdWxwApp(
     "edit",
   );
   
-  const id2: WxwAppId = await updateByIdWxwApp(id, input);
+  id = await updateByIdWxwApp(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

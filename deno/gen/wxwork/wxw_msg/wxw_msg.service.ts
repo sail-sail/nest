@@ -196,9 +196,9 @@ export async function updateByIdWxwMsg(
   input: WxwMsgInput,
 ): Promise<WxwMsgId> {
   
-  const wxw_msg_id2 = await wxw_msgDao.updateByIdWxwMsg(wxw_msg_id, input);
+  wxw_msg_id = await wxw_msgDao.updateByIdWxwMsg(wxw_msg_id, input);
   
-  return wxw_msg_id2;
+  return wxw_msg_id;
 }
 
 /** 校验企微消息是否存在 */

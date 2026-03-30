@@ -201,9 +201,9 @@ export async function updateByIdWxwApp(
     throw "不能修改已经锁定的 企微应用";
   }
   
-  const wxw_app_id2 = await wxw_appDao.updateByIdWxwApp(wxw_app_id, input);
+  wxw_app_id = await wxw_appDao.updateByIdWxwApp(wxw_app_id, input);
   
-  return wxw_app_id2;
+  return wxw_app_id;
 }
 
 /** 校验企微应用是否存在 */
