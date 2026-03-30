@@ -340,12 +340,14 @@ for (let i = 0; i < columns.length; i++) {
             continue;
           }
           const readonlyPlaceholder = column.readonlyPlaceholder;
+          const placeholderInForm = column.placeholderInForm;
           const modelLabel = column.modelLabel;
           if (column.inlineMany2manyTab) continue;
           const isPassword = column.isPassword;
           form_item_index++;
           const fieldPermit = column.fieldPermit;
           const isVirtual = column.isVirtual;
+          const isHideZero = column.isHideZero ?? true;
         #>
         
         <template<#
@@ -511,11 +513,25 @@ for (let i = 0; i < columns.length; i++) {
                 };
               })"<#
               if (isUseI18n) {
+              #><#
+              if (placeholderInForm) {
+              #>
+              :placeholder="`${ ns('<#=placeholderInForm#>') }`"<#
+              } else {
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              }
+              #><#
+              } else {
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
               } else {
               #>
               placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               }
               #><#
               if (foreignKey.multiple) {
@@ -611,11 +627,25 @@ for (let i = 0; i < columns.length; i++) {
               }
               #><#
               if (isUseI18n) {
+              #><#
+              if (placeholderInForm) {
+              #>
+              :placeholder="`${ ns('<#=placeholderInForm#>') }`"<#
+              } else {
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              }
+              #><#
+              } else {
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
               } else {
               #>
               placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               }
               #><#
               if (foreignKey.multiple) {
@@ -668,11 +698,25 @@ for (let i = 0; i < columns.length; i++) {
               #>
               :method="getTree<#=Foreign_Table_Up#>"<#
               if (isUseI18n) {
+              #><#
+              if (placeholderInForm) {
+              #>
+              :placeholder="`${ ns('<#=placeholderInForm#>') }`"<#
+              } else {
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              }
+              #><#
+              } else {
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
               } else {
               #>
               placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               }
               #><#
               if (foreignKey.lbl !== "lbl") {
@@ -737,11 +781,25 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               code="<#=column.dict#>"<#
               if (isUseI18n) {
+              #><#
+              if (placeholderInForm) {
+              #>
+              :placeholder="`${ ns('<#=placeholderInForm#>') }`"<#
+              } else {
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              }
+              #><#
+              } else {
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
               } else {
               #>
               placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               }
               #><#
               if (column.readonly) {
@@ -786,11 +844,25 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               code="<#=column.dictbiz#>"<#
               if (isUseI18n) {
+              #><#
+              if (placeholderInForm) {
+              #>
+              :placeholder="`${ ns('<#=placeholderInForm#>') }`"<#
+              } else {
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              }
+              #><#
+              } else {
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
               } else {
               #>
               placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               }
               #><#
               if (column.readonly) {
@@ -845,11 +917,25 @@ for (let i = 0; i < columns.length; i++) {
               }
               #><#
               if (isUseI18n) {
+              #><#
+              if (placeholderInForm) {
+              #>
+              :placeholder="`${ ns('<#=placeholderInForm#>') }`"<#
+              } else {
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              }
+              #><#
+              } else {
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
               } else {
               #>
               placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               }
               #><#
               if (column.readonly) {
@@ -923,11 +1009,25 @@ for (let i = 0; i < columns.length; i++) {
             <CustomInputNumber
               v-model="dialogModel.<#=column_name#>"<#
               if (isUseI18n) {
+              #><#
+              if (placeholderInForm) {
+              #>
+              :placeholder="`${ ns('<#=placeholderInForm#>') }`"<#
+              } else {
               #>
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              }
+              #><#
+              } else {
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
               } else {
               #>
               placeholder="请输入 <#=column_comment#>"<#
+              }
+              #><#
               }
               #><#
               if (column.readonly) {
@@ -954,6 +1054,7 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               }
               #>
+              :is-hide-zero="<#=isHideZero.toString()#>"
             ></CustomInputNumber><#
             } else if (column.DATA_TYPE === "decimal") {
               let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -979,11 +1080,25 @@ for (let i = 0; i < columns.length; i++) {
               #>
               :precision="<#=precision#>"<#
               if (isUseI18n) {
+              #><#
+              if (placeholderInForm) {
+              #>
+              :placeholder="`${ ns('<#=placeholderInForm#>') }`"<#
+              } else {
               #>
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              }
+              #><#
+              } else {
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
               } else {
               #>
               placeholder="请输入 <#=column_comment#>"<#
+              }
+              #><#
               }
               #><#
               if (column.readonly) {
@@ -1010,6 +1125,7 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               }
               #>
+              :is-hide-zero="<#=isHideZero.toString()#>"
             ></CustomInputNumber><#
             } else if (column.isAtt) {
             #>
@@ -1071,11 +1187,25 @@ for (let i = 0; i < columns.length; i++) {
             <CustomCityPicker
               v-model="<#=column_name#>_city_picker"<#
               if (isUseI18n) {
+              #><#
+              if (placeholderInForm) {
+              #>
+              :placeholder="`${ ns('<#=placeholderInForm#>') }`"<#
+              } else {
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              }
+              #><#
+              } else {
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
               } else {
               #>
               placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               }
               #><#
               if (column.readonly) {
@@ -1120,11 +1250,25 @@ for (let i = 0; i < columns.length; i++) {
               }
               #><#
               if (isUseI18n) {
+              #><#
+              if (placeholderInForm) {
+              #>
+              :placeholder="`${ ns('<#=placeholderInForm#>') }`"<#
+              } else {
               #>
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              }
+              #><#
+              } else {
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
               } else {
               #>
               placeholder="请输入 <#=column_comment#>"<#
+              }
+              #><#
               }
               #><#
               if (column.readonly) {
@@ -1348,6 +1492,7 @@ for (let i = 0; i < columns.length; i++) {
                 }
                 const width = (column.width || 180) + 10;
                 const readonlyPlaceholder = column.readonlyPlaceholder;
+                const placeholderInForm = column.placeholderInForm;
                 const modelLabel = column.modelLabel;
                 const isPassword = column.isPassword;
                 const isSwitch = column.isSwitch;
@@ -1364,6 +1509,7 @@ for (let i = 0; i < columns.length; i++) {
                     align = "center";
                   }
                 }
+                const isHideZero = column.isHideZero ?? true;
               #>
               
               <el-table-column<#
@@ -1566,11 +1712,25 @@ for (let i = 0; i < columns.length; i++) {
                       v-model="row.<#=column_name#>"
                       :method="getTree<#=Foreign_Table_Up#>"<#
                       if (isUseI18n) {
+                      #><#
+                      if (placeholderInForm) {
+                      #>
+                      :placeholder="`${ ns('<#=placeholderInForm#>') }`"<#
+                      } else {
                       #>
                       :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+                      }
+                      #><#
+                      } else {
+                      #><#
+                      if (placeholderInForm) {
+                      #>
+                      placeholder="<#=placeholderInForm#>"<#
                       } else {
                       #>
                       placeholder="请选择 <#=column_comment#>"<#
+                      }
+                      #><#
                       }
                       #><#
                       if (foreignKey.lbl !== "lbl") {
@@ -1919,7 +2079,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       align="center"
-                      :is-hide-zero="true"
+                      :is-hide-zero="<#=isHideZero.toString()#>"
                     ></CustomInputNumber><#
                     } else if (column.DATA_TYPE === "decimal") {
                       let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -1970,7 +2130,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       align="center"
-                      :is-hide-zero="true"
+                      :is-hide-zero="<#=isHideZero.toString()#>"
                     ></CustomInputNumber><#
                     } else {
                     #>
@@ -2207,6 +2367,7 @@ for (let i = 0; i < columns.length; i++) {
                   const modelLabel = column.modelLabel;
                   if (column.inlineMany2manyTab) continue;
                   const isPassword = column.isPassword;
+                  const isHideZero = column.isHideZero ?? true;
                 #>
                 
                 <el-form-item<#
@@ -2768,6 +2929,7 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     }
                     #>
+                    :is-hide-zero="<#=isHideZero.toString()#>"
                   ></CustomInputNumber><#
                   } else if (column.DATA_TYPE === "decimal") {
                     let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -2824,6 +2986,7 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     }
                     #>
+                    :is-hide-zero="<#=isHideZero.toString()#>"
                   ></CustomInputNumber><#
                   } else {
                   #>
@@ -3015,6 +3178,7 @@ for (let i = 0; i < columns.length; i++) {
                   continue;
                 }
                 const isPassword = column.isPassword;
+                const isHideZero = column.isHideZero ?? true;
               #><#
                 if (many2many.column2 !== column_name) {
               #>
@@ -3415,7 +3579,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       align="center"
-                      :is-hide-zero="true"
+                      :is-hide-zero="<#=isHideZero.toString()#>"
                     ></CustomInputNumber><#
                     } else if (column.DATA_TYPE === "decimal") {
                       let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -3466,7 +3630,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       align="center"
-                      :is-hide-zero="true"
+                      :is-hide-zero="<#=isHideZero.toString()#>"
                     ></CustomInputNumber><#
                     } else {
                     #>

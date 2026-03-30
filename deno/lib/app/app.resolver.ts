@@ -22,3 +22,11 @@ export async function checkLogin() {
   await authService.getAuthModel();
   return true;
 }
+
+export async function getTenantIdByAppid(
+  platform: string,
+  appid: string,
+) {
+  setNotVerifyToken(true);
+  return await appService.getTenantIdByAppid(platform, appid);
+}
