@@ -16,6 +16,15 @@ src/views/{mod}/{table}/
 └── Api2.ts     # 手写自定义接口
 ```
 
+## 手写接口约定
+
+- `Api.ts` 为生成文件, 尽量不改
+- 自定义 GraphQL 接口统一写到 `src/views/{mod}/{table}/Api2.ts`
+- 页面中如果需要调用手写接口, 从 `./Api2.ts` 导入, 以减少与生成代码的 git 冲突
+
+## 编码规范
+- 异常无需捕获，发起Graphql请求时会自动由全局错误处理器处理
+
 ## Query 模板
 
 ```typescript

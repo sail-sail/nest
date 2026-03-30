@@ -180,7 +180,6 @@
     un-relative
     un-w="full"
     class="upload_image_item"
-    tabindex="0"
     :style="{
       height: `${ props.itemHeight }px`,
     }"
@@ -196,6 +195,7 @@
       un-items-center
       un-b="1 dotted gray-300 dark:gray-600"
       un-rounded
+      tabindex="0"
       class="upload_image_empty upload_image_readonly_placeholder"
     >
       <span>{{ props.readonlyPlaceholder ?? "" }}</span>
@@ -211,6 +211,7 @@
       un-items-center
       un-b="1 dotted gray-300 dark:gray-600"
       un-rounded
+      tabindex="0"
       class="upload_image_empty"
     ></div>
   </div>
