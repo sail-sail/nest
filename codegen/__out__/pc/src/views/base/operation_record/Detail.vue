@@ -147,6 +147,7 @@
               v-model="dialogModel.time"
               placeholder="请输入 耗时(毫秒)"
               :readonly="isLocked || isReadonly"
+              :is-hide-zero="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>
