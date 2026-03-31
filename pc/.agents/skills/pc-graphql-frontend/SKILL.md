@@ -1,6 +1,6 @@
 ---
 name: pc-graphql-frontend
-description: 前端自定义 GraphQL API 接口. 当需要在 Vue 3 前端调用后端自定义接口（非标准 CRUD）时使用此技能
+description: 前端自定义 GraphQL API 接口. 当需要在前端调用后端自定义接口（非标准 CRUD）时使用
 compatibility: Vue 3 + TypeScript
 metadata:
   version: "1.0"
@@ -57,6 +57,8 @@ export async function 函数名(
   return data;
 }
 ```
+
+- `query()` 和 `mutation()` 由 `@/utils/graphql` 导入, 无需手动引入 vite 会自动注入
 
 ## Mutation 模板
 

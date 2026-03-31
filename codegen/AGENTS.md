@@ -11,7 +11,7 @@
 | `uni/` | Uni-app 移动端 |
 | `codegen/` | 代码生成引擎 (原理是生成代码覆盖到 `codegen/__out__` 目录, 然后再 `git diff` `git patch` 到工程目录) |
 | `codegen/src/tables/` | 数据库表定义和配置 |
-| `codegen/src/tables/{mod}/{mod}.sql` | 此模块的建表语句, `base`为系统基础模块, `wx`为微信模块(若有) |
+| `codegen/src/tables/{mod}/{mod}.sql` | 此模块的建表语句, `base`为系统基础模块 |
 | `codegen/src/tables/{mod}/{mod}.ts` | 表的相关配置,外键等 |
 | `codegen/src/tables/{mod}/{mod}_{table}.sql.csv` | 表的初始数据 |
 

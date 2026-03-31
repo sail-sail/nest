@@ -16,7 +16,7 @@ export default {
   ],
 };
 
-export interface TableCloumn {
+export interface TableColumn {
   
   /**
    * 是否忽略生成代码
@@ -24,7 +24,9 @@ export interface TableCloumn {
   ignoreCodegen?: boolean;
   
   /**
-   * 是否在pc前端隐藏此字段
+   * 是否跳过前端(pc和uni)生成
+   * 注: 历史命名, 实际含义: 仅生成后端代码, 不生成 pc 和 uni 前端
+   * 若在此基础上还想生成Api.ts接口相关字段, 则配置 onlyCodegenDenoButApi = true
    */
   onlyCodegenDeno?: boolean;
   
@@ -703,8 +705,8 @@ export interface TableCloumn {
  * min_items=N 指定列表的长度不能小于N
  * max_length=N 字符串的长度不能大于N
  * min_length=N 字符串的长度不能小于N
- * chars_max_length=N 字符串中 unicode 字符的的数量不能小于N
- * chars_min_length=N 字符串中 unicode 字符的的数量不能大于N
+ * chars_max_length=N 字符串中 unicode 字符的的数量不能大于N
+ * chars_min_length=N 字符串中 unicode 字符的的数量不能小于N
  * email 有效的 email
  * url 有效的 url
  * ip 有效的 ip 地址
@@ -738,12 +740,12 @@ export type Validator = {
   min_items?: number;
   
   /**
-   * chars_max_length=N 字符串中 unicode 字符的的数量不能小于N
+   * chars_max_length=N 字符串中 unicode 字符的的数量不能大于N
    */
   chars_max_length?: number;
   
   /**
-   * chars_min_length=N 字符串中 unicode 字符的的数量不能大于N
+   * chars_min_length=N 字符串中 unicode 字符的的数量不能小于N
    */
   chars_min_length?: number;
   
@@ -813,6 +815,8 @@ export interface TablesConfigItem {
     
     /**
      * 是否只创建后端, 默认为false
+     * 注: 历史命名, 实际含义: 仅生成后端代码, 不生成 pc 和 uni 前端
+     * 若在此基础上还想生成Api.ts接口相关字段, 则配置 onlyCodegenDenoButApi = true
      */
     onlyCodegenDeno?: boolean;
     
@@ -1025,7 +1029,7 @@ export interface TablesConfigItem {
         table: string;
         table_name: string;
       };
-      records: TableCloumn[];
+      records: TableColumn[];
     };
     
     /**
@@ -1123,7 +1127,7 @@ export interface TablesConfigItem {
     is_with_auth_optional?: boolean;
     
   },
-  columns: TableCloumn[];
+  columns: TableColumn[];
   records?: any[];
 }
 
