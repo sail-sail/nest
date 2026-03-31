@@ -1,7 +1,7 @@
 import { execSync } from "node:child_process";
 
 const parentBranchs = [
-  "main",
+  "rust",
 ];
 
 async function exec() {
