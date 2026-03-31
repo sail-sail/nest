@@ -1,0 +1,9 @@
+id,parent_id,lbl,route_path,is_home_hide,is_enabled,is_hidden,order_by
+BLBxqwTuTPq3mvbkwlq9+Q,,工作流,,0,1,0,60000
+HXWau3obRomBVMgINE3ZQg,BLBxqwTuTPq3mvbkwlq9+Q,流程定义,/bpm/process_def,0,1,0,60001
+iW3SbtTWTx+WuFyN4exq1Q,BLBxqwTuTPq3mvbkwlq9+Q,流程版本,/bpm/process_revision,0,0,1,60002
+z1FptDHOSO2eEX9SvCJxAw,BLBxqwTuTPq3mvbkwlq9+Q,流程实例,/bpm/process_inst,0,1,0,60003
+T1sN9EbfRl2lJ/+PMah2rw,BLBxqwTuTPq3mvbkwlq9+Q,节点实例,/bpm/node_inst,0,0,1,60004
+U2VeD5+/TX2rrBiC52gzIA,BLBxqwTuTPq3mvbkwlq9+Q,审批任务,/bpm/task,0,1,0,60005
+ffy5PnaMTmGXLNZudil8FQ,BLBxqwTuTPq3mvbkwlq9+Q,转交记录,/bpm/transfer,0,0,1,60006
++E1QwZakTQq+/+6s05r0aw,BLBxqwTuTPq3mvbkwlq9+Q,流程日志,/bpm/log,0,0,1,60007

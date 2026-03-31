@@ -1,0 +1,11 @@
+id,code,lbl,type,order_by,is_sys,is_add
+ZxjrvSG1SLyL9js3n2/rQw,bpm_node_type,节点类型,string,20,1,0
+Zd1dDfzIT8aSl6Z6/BRASQ,bpm_approve_method,审批方式,string,21,1,0
+Xsb5KrXXRIOCe01O4rPbRQ,bpm_assignee_type,处理人规则,string,22,1,0
+1Hr6dueBRLKIY6QQ7Qdp2Q,bpm_inst_status,流程实例-状态,string,23,1,0
+Jk1hNjuOS3i0+LU/ucSirQ,bpm_node_inst_status,节点实例-状态,string,24,1,0
+8L6RblbsT9+wZP9gSnXK2w,bpm_task_status,审批任务-状态,string,25,1,0
+m+R2VGqxRLGchGE/gyfnwQ,bpm_task_action,审批任务-动作,string,26,1,0
+wdcNukw5Q7epVAP6KHTbmQ,bpm_log_action,流程日志-动作,string,27,1,0
+3rDuHoFATU2+eGhD4f4Aog,bpm_revision_status,流程版本-状态,string,28,1,0
+/I9pbnPKThS8vKEeiSJ9MQ,bpm_process_def_category,流程定义-分类,string,29,0,1
