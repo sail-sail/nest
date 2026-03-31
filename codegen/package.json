@@ -8,7 +8,7 @@
     "codegen": "node --experimental-strip-types src/bin/codegen.ts",
     "gqlgen": "cd ../rust && npm run gqlgen",
     "codeapply": "node --experimental-strip-types src/bin/codeapply.ts",
-    "coderemove": "node --experimental-strip-types src/bin/coderemove_rs.ts",
+    "coderemove": "node --experimental-strip-types src/bin/coderemove.ts",
     "initdb": "node --experimental-strip-types src/util/npmInitDB.ts",
     "importCsv": "node --experimental-strip-types src/util/npmImportCsv.ts",
     "sql": "node --experimental-strip-types src/util/npmSql.ts",

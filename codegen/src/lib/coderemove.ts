@@ -1,7 +1,10 @@
-import { dirname, resolve } from "path";
+import {
+  resolve,
+  dirname,
+} from "path";
+
 import { Context } from "./information_schema.ts";
 import { rm } from "fs/promises";
-
 import { fileURLToPath } from "url";
 
 // 获取当前文件的目录路径 (ES 模块中 __dirname 的等效方法)
@@ -27,11 +30,11 @@ export async function coderemove(context: Context, table_name: string) {
   const mod_slash_table = table_name.replace("_", "/");
   const table = table_name.substring(table_name.indexOf("_") + 1);
   
-  console.log(`删除: ${ out }/deno/gen/${ mod_slash_table }/`);
-  await rm(`${ out }/deno/gen/${ mod_slash_table }/`, { force: true, recursive: true });
+  let str = "";
   
-  console.log(`删除: ${ out }/rust/generated/gen/${ mod_slash_table }/`);
-  await rm(`${ out }/rust/generated/gen/${ mod_slash_table }/`, { force: true, recursive: true });
+  str = `${ out }/rust/generated/${ mod_slash_table }/`;
+  console.log(`删除: ${ str }`);
+  await rm(str, { force: true, recursive: true });
   
   console.log(`删除: ${ out }/pc/src/views/${ mod_slash_table }/`);
   await rm(`${ out }/pc/src/views/${ mod_slash_table }/`, { force: true, recursive: true });
@@ -39,18 +42,16 @@ export async function coderemove(context: Context, table_name: string) {
   console.log(`删除: ${ out }/pc/public/excel_template/${ mod_slash_table }.xlsx`);
   await rm(`${ out }/pc/public/excel_template/${ mod_slash_table }.xlsx`, { force: true, recursive: true });
   
-  console.log(`删除: ${ projectPh }/deno/gen/${ mod_slash_table }/`);
-  await rm(`${ projectPh }/deno/gen/${ mod_slash_table }/`, { force: true, recursive: true });
-  
-  console.log(`删除: ${ projectPh }/rust/generated/gen/${ mod_slash_table }/`);
-  await rm(`${ projectPh }/rust/generated/gen/${ mod_slash_table }/`, { force: true, recursive: true });
+  str = `${ projectPh }/rust/generated/${ mod_slash_table }/`;
+  console.log(`删除: ${ str }`);
+  await rm(str, { force: true, recursive: true });
   
   console.log(`删除: ${ projectPh }/pc/src/views/${ mod_slash_table }/`);
   await rm(`${ projectPh }/pc/src/views/${ mod_slash_table }/`, { force: true, recursive: true });
   
   console.log(`删除: ${ projectPh }/pc/public/excel_template/${ mod_slash_table }.xlsx`);
   await rm(`${ projectPh }/pc/public/excel_template/${ mod_slash_table }.xlsx`, { force: true, recursive: true });
-  
+    
   console.log(`删除: ${ out }/uni/src/pages/${ table }/`);
   await rm(`${ out }/uni/src/pages/${ table }/`, { force: true, recursive: true });
   
