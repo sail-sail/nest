@@ -78,9 +78,6 @@ pub struct NodeInstModel {
   /// 节点状态
   #[graphql(name = "status_lbl")]
   pub status_lbl: SmolStr,
-  /// 耗时(秒)
-  #[graphql(name = "duration_seconds")]
-  pub duration_seconds: u32,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -122,8 +119,6 @@ impl FromRow<'_, MySqlRow> for NodeInstModel {
     let status_lbl: &str = row.try_get("status")?;
     let status: NodeInstStatus = status_lbl.try_into()?;
     let status_lbl = SmolStr::new(status_lbl);
-    // 耗时(秒)
-    let duration_seconds: u32 = row.try_get("duration_seconds")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
@@ -158,7 +153,6 @@ impl FromRow<'_, MySqlRow> for NodeInstModel {
       node_type_lbl,
       status,
       status_lbl,
-      duration_seconds,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -201,9 +195,6 @@ pub struct NodeInstFieldComment {
   /// 节点状态
   #[graphql(name = "status_lbl")]
   pub status_lbl: SmolStr,
-  /// 耗时(秒)
-  #[graphql(name = "duration_seconds")]
-  pub duration_seconds: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: SmolStr,
@@ -265,9 +256,6 @@ pub struct NodeInstSearch {
   /// 节点状态
   #[graphql(name = "status")]
   pub status: Option<Vec<NodeInstStatus>>,
-  /// 耗时(秒)
-  #[graphql(skip)]
-  pub duration_seconds: Option<[Option<u32>; 2]>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -345,10 +333,6 @@ impl std::fmt::Debug for NodeInstSearch {
     if let Some(ref status) = self.status {
       item = item.field("status", status);
     }
-    // 耗时(秒)
-    if let Some(ref duration_seconds) = self.duration_seconds {
-      item = item.field("duration_seconds", duration_seconds);
-    }
     // 创建人
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
@@ -420,9 +404,6 @@ pub struct NodeInstInput {
   /// 节点状态
   #[graphql(name = "status_lbl")]
   pub status_lbl: Option<SmolStr>,
-  /// 耗时(秒)
-  #[graphql(name = "duration_seconds")]
-  pub duration_seconds: Option<u32>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
@@ -484,9 +465,6 @@ impl std::fmt::Debug for NodeInstInput {
     if let Some(ref status) = self.status {
       item = item.field("status", status);
     }
-    if let Some(ref duration_seconds) = self.duration_seconds {
-      item = item.field("duration_seconds", duration_seconds);
-    }
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
@@ -526,8 +504,6 @@ impl From<NodeInstModel> for NodeInstInput {
       // 节点状态
       status: model.status.into(),
       status_lbl: model.status_lbl.into(),
-      // 耗时(秒)
-      duration_seconds: model.duration_seconds.into(),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -564,8 +540,6 @@ impl From<NodeInstInput> for NodeInstSearch {
       node_type: input.node_type.map(|x| vec![x]),
       // 节点状态
       status: input.status.map(|x| vec![x]),
-      // 耗时(秒)
-      duration_seconds: input.duration_seconds.map(|x| [Some(x), Some(x)]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建人

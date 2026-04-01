@@ -65,7 +65,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(1,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -139,20 +139,6 @@
               placeholder="请选择 节点状态"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
-          </el-form-item>
-        </template>
-        
-        <template v-if="(showBuildIn || builtInModel?.duration_seconds == null) && dialogAction !== 'add' && dialogAction !== 'copy' && dialogAction !== 'edit'">
-          <el-form-item
-            label="耗时(秒)"
-            prop="duration_seconds"
-          >
-            <CustomInputNumber
-              v-model="dialogModel.duration_seconds"
-              placeholder="请输入 耗时(秒)"
-              :readonly="isLocked || isReadonly"
-              :is-hide-zero="true"
-            ></CustomInputNumber>
           </el-form-item>
         </template>
         

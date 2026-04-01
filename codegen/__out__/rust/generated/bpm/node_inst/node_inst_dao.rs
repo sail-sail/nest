@@ -73,7 +73,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 12 * 2);
+  let mut where_query = String::with_capacity(80 * 11 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -262,23 +262,6 @@ async fn get_where_query(
       where_query.push_str(" and t.status in (");
       where_query.push_str(&arg);
       where_query.push(')');
-    }
-  }
-  // 耗时(秒)
-  {
-    let mut duration_seconds = match search {
-      Some(item) => item.duration_seconds.unwrap_or_default(),
-      None => Default::default(),
-    };
-    let duration_seconds_gt = duration_seconds[0].take();
-    let duration_seconds_lt = duration_seconds[1].take();
-    if let Some(duration_seconds_gt) = duration_seconds_gt {
-      where_query.push_str(" and t.duration_seconds >= ?");
-      args.push(duration_seconds_gt.into());
-    }
-    if let Some(duration_seconds_lt) = duration_seconds_lt {
-      where_query.push_str(" and t.duration_seconds <= ?");
-      args.push(duration_seconds_lt.into());
     }
   }
   // 创建人
@@ -808,7 +791,6 @@ pub async fn get_field_comments_node_inst(
     node_type_lbl: "节点类型".into(),
     status: "节点状态".into(),
     status_lbl: "节点状态".into(),
-    duration_seconds: "耗时(秒)".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
     create_time: "创建时间".into(),
@@ -1734,7 +1716,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 12 + 20);
+  let mut sql_fields = String::with_capacity(80 * 11 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1754,11 +1736,9 @@ async fn _creates(
   sql_fields += ",node_type";
   // 节点状态
   sql_fields += ",status";
-  // 耗时(秒)
-  sql_fields += ",duration_seconds";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 12 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 11 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1920,13 +1900,6 @@ async fn _creates(
     if let Some(status) = input.status {
       sql_values += ",?";
       args.push(status.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 耗时(秒)
-    if let Some(duration_seconds) = input.duration_seconds {
-      sql_values += ",?";
-      args.push(duration_seconds.into());
     } else {
       sql_values += ",default";
     }
@@ -2167,7 +2140,7 @@ pub async fn update_by_id_node_inst(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 12 + 20);
+  let mut sql_fields = String::with_capacity(80 * 11 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2207,12 +2180,6 @@ pub async fn update_by_id_node_inst(
     field_num += 1;
     sql_fields += "status=?,";
     args.push(status.into());
-  }
-  // 耗时(秒)
-  if let Some(duration_seconds) = input.duration_seconds {
-    field_num += 1;
-    sql_fields += "duration_seconds=?,";
-    args.push(duration_seconds.into());
   }
   
   if field_num > 0 {

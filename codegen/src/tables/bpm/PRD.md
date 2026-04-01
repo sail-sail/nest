@@ -290,7 +290,7 @@ bpm_process_inst_log (审批日志)
 | `process_revision_id` | varchar(22) | 关联的流程版本 |
 | `status` | varchar(20) | 状态: running / approved / rejected / revoked |
 | `biz_code` | varchar(50) | 关联业务编码快照, 用于回调分发 |
-| `form_data_id` | varchar(22) | 业务数据 ID |
+| `biz_id` | varchar(22) | 业务数据 ID |
 | `start_usr_id` | varchar(22) | 发起人 |
 | `start_usr_id_lbl` | varchar(45) | 发起人标签 |
 | `start_dept_id` | varchar(22) | 发起人部门 (发起时快照) |
@@ -299,7 +299,6 @@ bpm_process_inst_log (审批日志)
 | `end_time` | datetime | 结束时间 |
 | `current_node_ids` | json | 当前活跃节点 ID 列表 (并行时可能多个) |
 | `current_node_lbls` | varchar(500) | 当前节点名称 (便于列表展示) |
-| `duration_seconds` | int unsigned | 流程总耗时 (秒) |
 | `tenant_id` | varchar(22) | 租户 |
 | + 审计字段 | | create/update/delete |
 
@@ -317,7 +316,6 @@ bpm_process_inst_log (审批日志)
 | `status` | varchar(20) | pending / running / completed / skipped / rejected |
 | `start_time` | datetime | 开始时间 |
 | `end_time` | datetime | 结束时间 |
-| `duration_seconds` | int unsigned | 耗时 (秒) |
 | `tenant_id` | varchar(22) | 租户 |
 | + 审计字段 | | create/update/delete |
 
@@ -335,10 +333,8 @@ bpm_process_inst_log (审批日志)
 | `status` | varchar(20) | pending / approved / rejected / transferred / revoked |
 | `action` | varchar(20) | 执行的动作: pending / approve / reject / transfer / return / add_sign |
 | `opinion` | varchar(1000) | 审批意见 |
-| `sign_img` | varchar(500) | 手写签名图片 URL |
 | `start_time` | datetime | 任务生成时间 |
 | `end_time` | datetime | 处理时间 |
-| `duration_seconds` | int unsigned | 耗时 (秒) |
 | `is_read` | tinyint unsigned | 是否已读 |
 | `tenant_id` | varchar(22) | 租户 |
 | + 审计字段 | | create/update/delete |
@@ -411,36 +407,35 @@ mutation saveAndPublishsProcessDef(
 ```graphql
 # 发起流程
 mutation startProcess(
-  process_def_id: String!
-  form_data_id: String!
-  title: String!
+  process_def_id: ProcessDefId!
+  biz_id: SmolStr!
+  lbl: SmolStr!
 ): BpmProcessInstId!
 
 # 审批操作
 mutation completeTask(
-  task_id: String!
+  task_id: SmolStr!
   action: String!        # approve / reject / return / add_sign
   opinion: String
-  sign_img: String       # 手写签名
-  return_node_id: String # 退回时指定节点
-  add_sign_usr_ids: [String!] # 加签时指定用户
+  return_node_id: SmolStr # 退回时指定节点
+  add_sign_usr_ids: [SmolStr!] # 加签时指定用户
 ): Boolean!
 
 # 转交
 mutation transferTask(
-  task_id: String!
-  to_usr_id: String!
-  reason: String
+  task_id: SmolStr!
+  to_usr_id: SmolStr!
+  reason: SmolStr
 ): Boolean!
 
 # 撤回 (发起人)
 mutation revokeProcess(
-  process_inst_id: String!
+  process_inst_id: SmolStr!
 ): Boolean!
 
 # 催办
 mutation urgeTask(
-  task_id: String!
+  task_id: SmolStr!
 ): Boolean!
 ```
 
@@ -649,7 +644,7 @@ ALTER TABLE oa_leave ADD COLUMN bpm_status ENUM('running', 'approved', 'rejected
 // 前端: 提交业务表单后, 调用 startProcess
 const instId = await startProcess({
   process_def_id: "请假流程ID",
-  form_data_id: leaveId,
+  biz_id: leaveId,
   title: `${userName}的请假申请`,
 });
 ```
@@ -660,8 +655,8 @@ const instId = await startProcess({
 
 ```rust
 // app/bpm/callbacks.rs
-// 流程通过 → UPDATE oa_leave SET bpm_status='approved' WHERE id=form_data_id
-// 流程拒绝 → UPDATE oa_leave SET bpm_status='rejected' WHERE id=form_data_id
+// 流程通过 → UPDATE oa_leave SET bpm_status='approved' WHERE id=biz_id
+// 流程拒绝 → UPDATE oa_leave SET bpm_status='rejected' WHERE id=biz_id
 ```
 
 `bpm_process_def.biz_code` 用于定义流程归属的业务, `bpm_process_inst.biz_code` 用于运行时快照和回调路由。

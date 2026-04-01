@@ -509,15 +509,6 @@
             </el-table-column>
           </template>
           
-          <!-- 耗时(秒) -->
-          <template v-else-if="'duration_seconds' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
             <el-table-column
@@ -961,14 +952,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "耗时(秒)",
-      prop: "duration_seconds",
-      width: 120,
-      align: "right",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "创建人",
       prop: "create_usr_id_lbl",
       sortBy: "create_usr_id_lbl",
@@ -1269,7 +1252,6 @@ async function onImportExcel() {
     [ "节点ID" ]: "node_id",
     [ "节点类型" ]: "node_type_lbl",
     [ "节点状态" ]: "status_lbl",
-    [ "耗时(秒)" ]: "duration_seconds",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入",
@@ -1295,7 +1277,6 @@ async function onImportExcel() {
           "node_id": "string",
           "node_type_lbl": "string",
           "status_lbl": "string",
-          "duration_seconds": "number",
         },
       },
     );

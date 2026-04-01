@@ -94,9 +94,6 @@ pub struct TaskModel {
   /// 审批意见
   #[graphql(name = "opinion")]
   pub opinion: SmolStr,
-  /// 耗时(秒)
-  #[graphql(name = "duration_seconds")]
-  pub duration_seconds: u32,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -149,8 +146,6 @@ impl FromRow<'_, MySqlRow> for TaskModel {
     // 审批意见
     let opinion: &str = row.try_get("opinion")?;
     let opinion = SmolStr::new(opinion);
-    // 耗时(秒)
-    let duration_seconds: u32 = row.try_get("duration_seconds")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
@@ -190,7 +185,6 @@ impl FromRow<'_, MySqlRow> for TaskModel {
       action,
       action_lbl,
       opinion,
-      duration_seconds,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -248,9 +242,6 @@ pub struct TaskFieldComment {
   /// 审批意见
   #[graphql(name = "opinion")]
   pub opinion: SmolStr,
-  /// 耗时(秒)
-  #[graphql(name = "duration_seconds")]
-  pub duration_seconds: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: SmolStr,
@@ -342,9 +333,6 @@ pub struct TaskSearch {
   /// 审批意见
   #[graphql(skip)]
   pub opinion_like: Option<SmolStr>,
-  /// 耗时(秒)
-  #[graphql(skip)]
-  pub duration_seconds: Option<[Option<u32>; 2]>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -455,10 +443,6 @@ impl std::fmt::Debug for TaskSearch {
     if let Some(ref opinion_like) = self.opinion_like {
       item = item.field("opinion_like", opinion_like);
     }
-    // 耗时(秒)
-    if let Some(ref duration_seconds) = self.duration_seconds {
-      item = item.field("duration_seconds", duration_seconds);
-    }
     // 创建人
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
@@ -545,9 +529,6 @@ pub struct TaskInput {
   /// 审批意见
   #[graphql(name = "opinion")]
   pub opinion: Option<SmolStr>,
-  /// 耗时(秒)
-  #[graphql(name = "duration_seconds")]
-  pub duration_seconds: Option<u32>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
@@ -624,9 +605,6 @@ impl std::fmt::Debug for TaskInput {
     if let Some(ref opinion) = self.opinion {
       item = item.field("opinion", opinion);
     }
-    if let Some(ref duration_seconds) = self.duration_seconds {
-      item = item.field("duration_seconds", duration_seconds);
-    }
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
@@ -674,8 +652,6 @@ impl From<TaskModel> for TaskInput {
       action_lbl: model.action_lbl.into(),
       // 审批意见
       opinion: model.opinion.into(),
-      // 耗时(秒)
-      duration_seconds: model.duration_seconds.into(),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -722,8 +698,6 @@ impl From<TaskInput> for TaskSearch {
       action: input.action.map(|x| vec![x]),
       // 审批意见
       opinion: input.opinion,
-      // 耗时(秒)
-      duration_seconds: input.duration_seconds.map(|x| [Some(x), Some(x)]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建人

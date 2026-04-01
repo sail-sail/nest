@@ -48,8 +48,6 @@ export const taskFields = [
   "action_lbl",
   // 审批意见
   "opinion",
-  // 耗时(秒)
-  "duration_seconds",
   // 创建人
   "create_usr_id",
   "create_usr_id_lbl",

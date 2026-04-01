@@ -44,8 +44,6 @@ export function intoInputNodeInst(
     // 节点状态
     status: model?.status,
     status_lbl: model?.status_lbl,
-    // 耗时(秒)
-    duration_seconds: model?.duration_seconds != null ? Number(model?.duration_seconds || 0) : undefined,
   };
   return input;
 }
@@ -703,7 +701,6 @@ export async function getFieldCommentsNodeInst(
           node_type_lbl,
           status,
           status_lbl,
-          duration_seconds,
           create_usr_id,
           create_usr_id_lbl,
           create_time,
@@ -733,7 +730,6 @@ export async function getDefaultInputNodeInst() {
   const defaultInput: NodeInstInput = {
     node_type: NodeInstNodeType.Approve,
     status: NodeInstStatus.Pending,
-    duration_seconds: 0,
   };
   return defaultInput;
 }

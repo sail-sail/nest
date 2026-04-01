@@ -75,7 +75,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 18 * 2);
+  let mut where_query = String::with_capacity(80 * 17 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -336,21 +336,21 @@ async fn get_where_query(
   }
   // 业务数据ID
   {
-    let form_data_id = match search {
-      Some(item) => item.form_data_id.clone(),
+    let biz_id = match search {
+      Some(item) => item.biz_id.clone(),
       None => None,
     };
-    if let Some(form_data_id) = form_data_id {
-      where_query.push_str(" and t.form_data_id=?");
-      args.push(form_data_id.into());
+    if let Some(biz_id) = biz_id {
+      where_query.push_str(" and t.biz_id=?");
+      args.push(biz_id.into());
     }
-    let form_data_id_like = match search {
-      Some(item) => item.form_data_id_like.clone(),
+    let biz_id_like = match search {
+      Some(item) => item.biz_id_like.clone(),
       None => None,
     };
-    if let Some(form_data_id_like) = form_data_id_like && !form_data_id_like.is_empty() {
-      where_query.push_str(" and t.form_data_id like ?");
-      args.push(format!("%{}%", sql_like(&form_data_id_like)).into());
+    if let Some(biz_id_like) = biz_id_like && !biz_id_like.is_empty() {
+      where_query.push_str(" and t.biz_id like ?");
+      args.push(format!("%{}%", sql_like(&biz_id_like)).into());
     }
   }
   // 发起人
@@ -517,23 +517,6 @@ async fn get_where_query(
     if let Some(current_node_lbls_like) = current_node_lbls_like && !current_node_lbls_like.is_empty() {
       where_query.push_str(" and t.current_node_lbls like ?");
       args.push(format!("%{}%", sql_like(&current_node_lbls_like)).into());
-    }
-  }
-  // 总耗时(秒)
-  {
-    let mut duration_seconds = match search {
-      Some(item) => item.duration_seconds.unwrap_or_default(),
-      None => Default::default(),
-    };
-    let duration_seconds_gt = duration_seconds[0].take();
-    let duration_seconds_lt = duration_seconds[1].take();
-    if let Some(duration_seconds_gt) = duration_seconds_gt {
-      where_query.push_str(" and t.duration_seconds >= ?");
-      args.push(duration_seconds_gt.into());
-    }
-    if let Some(duration_seconds_lt) = duration_seconds_lt {
-      where_query.push_str(" and t.duration_seconds <= ?");
-      args.push(duration_seconds_lt.into());
     }
   }
   // 创建人
@@ -1137,14 +1120,13 @@ pub async fn get_field_comments_process_inst(
     status_lbl: "状态".into(),
     biz_code: "关联业务".into(),
     biz_code_lbl: "关联业务".into(),
-    form_data_id: "业务数据ID".into(),
+    biz_id: "业务数据ID".into(),
     start_usr_id: "发起人".into(),
     start_usr_id_lbl: "发起人".into(),
     start_dept_id: "发起人部门".into(),
     start_dept_id_lbl: "发起人部门".into(),
     current_node_ids: "当前活跃节点".into(),
     current_node_lbls: "当前节点名称".into(),
-    duration_seconds: "总耗时(秒)".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
     create_time: "创建时间".into(),
@@ -2220,7 +2202,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 18 + 20);
+  let mut sql_fields = String::with_capacity(80 * 17 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2245,7 +2227,7 @@ async fn _creates(
   // 关联业务
   sql_fields += ",biz_code";
   // 业务数据ID
-  sql_fields += ",form_data_id";
+  sql_fields += ",biz_id";
   // 发起人
   sql_fields += ",start_usr_id_lbl";
   // 发起人
@@ -2258,11 +2240,9 @@ async fn _creates(
   sql_fields += ",current_node_ids";
   // 当前节点名称
   sql_fields += ",current_node_lbls";
-  // 总耗时(秒)
-  sql_fields += ",duration_seconds";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 18 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 17 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2446,9 +2426,9 @@ async fn _creates(
       sql_values += ",default";
     }
     // 业务数据ID
-    if let Some(form_data_id) = input.form_data_id {
+    if let Some(biz_id) = input.biz_id {
       sql_values += ",?";
-      args.push(form_data_id.into());
+      args.push(biz_id.into());
     } else {
       sql_values += ",default";
     }
@@ -2499,13 +2479,6 @@ async fn _creates(
     if let Some(current_node_lbls) = input.current_node_lbls {
       sql_values += ",?";
       args.push(current_node_lbls.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 总耗时(秒)
-    if let Some(duration_seconds) = input.duration_seconds {
-      sql_values += ",?";
-      args.push(duration_seconds.into());
     } else {
       sql_values += ",default";
     }
@@ -2746,7 +2719,7 @@ pub async fn update_by_id_process_inst(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 18 + 20);
+  let mut sql_fields = String::with_capacity(80 * 17 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2802,10 +2775,10 @@ pub async fn update_by_id_process_inst(
     args.push(biz_code.into());
   }
   // 业务数据ID
-  if let Some(form_data_id) = input.form_data_id.clone() {
+  if let Some(biz_id) = input.biz_id.clone() {
     field_num += 1;
-    sql_fields += "form_data_id=?,";
-    args.push(form_data_id.into());
+    sql_fields += "biz_id=?,";
+    args.push(biz_id.into());
   }
   // 发起人
   if let Some(start_usr_id_lbl) = input.start_usr_id_lbl {
@@ -2846,12 +2819,6 @@ pub async fn update_by_id_process_inst(
     field_num += 1;
     sql_fields += "current_node_lbls=?,";
     args.push(current_node_lbls.into());
-  }
-  // 总耗时(秒)
-  if let Some(duration_seconds) = input.duration_seconds {
-    field_num += 1;
-    sql_fields += "duration_seconds=?,";
-    args.push(duration_seconds.into());
   }
   
   if field_num > 0 {

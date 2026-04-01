@@ -52,7 +52,7 @@ export function intoInputProcessInst(
     biz_code: model?.biz_code,
     biz_code_lbl: model?.biz_code_lbl,
     // 业务数据ID
-    form_data_id: model?.form_data_id,
+    biz_id: model?.biz_id,
     // 发起人
     start_usr_id: model?.start_usr_id,
     start_usr_id_lbl: model?.start_usr_id_lbl,
@@ -63,8 +63,6 @@ export function intoInputProcessInst(
     current_node_ids: model?.current_node_ids,
     // 当前节点名称
     current_node_lbls: model?.current_node_lbls,
-    // 总耗时(秒)
-    duration_seconds: model?.duration_seconds != null ? Number(model?.duration_seconds || 0) : undefined,
   };
   return input;
 }
@@ -691,7 +689,7 @@ export function useDownloadImportTemplateProcessInst() {
             process_revision_id_lbl
             status_lbl
             biz_code_lbl
-            form_data_id
+            biz_id
             start_usr_id_lbl
             start_dept_id_lbl
           }
@@ -903,14 +901,13 @@ export async function getFieldCommentsProcessInst(
           status_lbl,
           biz_code,
           biz_code_lbl,
-          form_data_id,
+          biz_id,
           start_usr_id,
           start_usr_id_lbl,
           start_dept_id,
           start_dept_id_lbl,
           current_node_ids,
           current_node_lbls,
-          duration_seconds,
           create_usr_id,
           create_usr_id_lbl,
           create_time,
@@ -940,7 +937,6 @@ export async function getDefaultInputProcessInst() {
   const defaultInput: ProcessInstInput = {
     status: ProcessInstStatus.Running,
     biz_code: ProcessInstBizCode.BpmTest,
-    duration_seconds: 0,
   };
   return defaultInput;
 }

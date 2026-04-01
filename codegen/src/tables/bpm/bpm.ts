@@ -176,7 +176,7 @@ export default defineConfig({
         noDetail: true,
       },
       {
-        COLUMN_NAME: "form_data_id",
+        COLUMN_NAME: "biz_id",
         notForeignKeyById: true,
         noList: true,
         noDetail: true,
@@ -210,12 +210,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "current_node_lbls",
         width: 200,
-        noAdd: true,
-        noEdit: true,
-      },
-      {
-        COLUMN_NAME: "duration_seconds",
-        width: 120,
         noAdd: true,
         noEdit: true,
       },
@@ -254,12 +248,6 @@ export default defineConfig({
         COLUMN_NAME: "status",
         search: true,
         width: 100,
-      },
-      {
-        COLUMN_NAME: "duration_seconds",
-        width: 120,
-        noAdd: true,
-        noEdit: true,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -314,12 +302,6 @@ export default defineConfig({
         COLUMN_NAME: "opinion",
         width: 300,
         noList: true,
-      },
-      {
-        COLUMN_NAME: "duration_seconds",
-        width: 120,
-        noAdd: true,
-        noEdit: true,
       },
       {
         COLUMN_NAME: "create_usr_id",

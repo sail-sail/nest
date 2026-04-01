@@ -552,15 +552,6 @@
             </el-table-column>
           </template>
           
-          <!-- 耗时(秒) -->
-          <template v-else-if="'duration_seconds' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
             <el-table-column
@@ -1039,14 +1030,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "耗时(秒)",
-      prop: "duration_seconds",
-      width: 120,
-      align: "right",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "创建人",
       prop: "create_usr_id_lbl",
       sortBy: "create_usr_id_lbl",
@@ -1348,7 +1331,6 @@ async function onImportExcel() {
     [ "处理人" ]: "assignee_usr_id_lbl",
     [ "任务状态" ]: "status_lbl",
     [ "审批动作" ]: "action_lbl",
-    [ "耗时(秒)" ]: "duration_seconds",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入",
@@ -1375,7 +1357,6 @@ async function onImportExcel() {
           "assignee_usr_id_lbl": "string",
           "status_lbl": "string",
           "action_lbl": "string",
-          "duration_seconds": "number",
         },
       },
     );

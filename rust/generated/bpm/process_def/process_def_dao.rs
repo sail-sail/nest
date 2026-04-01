@@ -2443,6 +2443,22 @@ pub async fn update_by_id_process_def(
     }
   }
   
+  // 如果更新了 graph_json, 需要校验当前版本是否有正在运行的实例
+  let graph_json_to_sync = input.graph_json.clone();
+  if graph_json_to_sync.is_some() && !old_model.current_revision_id.is_empty() {
+    let has_running = crate::bpm::process_inst::process_inst_dao::exists_process_inst(
+      Some(crate::bpm::process_inst::process_inst_model::ProcessInstSearch {
+        process_revision_id: Some(vec![old_model.current_revision_id.clone()]),
+        status: Some(vec![crate::bpm::process_inst::process_inst_model::ProcessInstStatus::Running]),
+        ..Default::default()
+      }),
+      options,
+    ).await?;
+    if has_running {
+      return Err(eyre!("此流程版本有正在运行的实例, 不允许修改"));
+    }
+  }
+  
   let mut args = QueryArgs::new();
   
   let mut sql_fields = String::with_capacity(80 * 17 + 20);
@@ -2615,6 +2631,20 @@ pub async fn update_by_id_process_def(
       options,
     ).await?;
     
+    // 同步 graph_json 到当前版本
+    if let Some(graph_json) = graph_json_to_sync {
+      if !old_model.current_revision_id.is_empty() {
+        crate::bpm::process_revision::process_revision_dao::update_by_id_process_revision(
+          old_model.current_revision_id,
+          crate::bpm::process_revision::process_revision_model::ProcessRevisionInput {
+            graph_json: Some(graph_json),
+            ..Default::default()
+          },
+          options,
+        ).await?;
+      }
+    }
+    
   }
   
   Ok(id)
@@ -2733,6 +2763,29 @@ pub async fn delete_by_ids_process_def(
   for old_model in old_models {
     
     let id = old_model.id;
+    
+    // 遍历版本表, 如果有版本被实例关联则不允许删除
+    let revisions = crate::bpm::process_revision::process_revision_dao::find_all_process_revision(
+      Some(crate::bpm::process_revision::process_revision_model::ProcessRevisionSearch {
+        process_def_id: Some(vec![id]),
+        ..Default::default()
+      }),
+      None,
+      None,
+      options,
+    ).await?;
+    for revision in &revisions {
+      let has_inst = crate::bpm::process_inst::process_inst_dao::exists_process_inst(
+        Some(crate::bpm::process_inst::process_inst_model::ProcessInstSearch {
+          process_revision_id: Some(vec![revision.id.clone()]),
+          ..Default::default()
+        }),
+        options,
+      ).await?;
+      if has_inst {
+        return Err(eyre!("流程定义 \"{}\" 的版本 \"{}\" 存在关联的流程实例, 不允许删除", old_model.lbl, revision.lbl));
+      }
+    }
     
     if !is_silent_mode {
       info!(

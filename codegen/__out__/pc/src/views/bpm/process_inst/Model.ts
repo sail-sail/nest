@@ -45,7 +45,7 @@ export const processInstFields = [
   "biz_code",
   "biz_code_lbl",
   // 业务数据ID
-  "form_data_id",
+  "biz_id",
   // 发起人
   "start_usr_id",
   "start_usr_id_lbl",
@@ -56,8 +56,6 @@ export const processInstFields = [
   "current_node_ids",
   // 当前节点名称
   "current_node_lbls",
-  // 总耗时(秒)
-  "duration_seconds",
   // 创建人
   "create_usr_id",
   "create_usr_id_lbl",

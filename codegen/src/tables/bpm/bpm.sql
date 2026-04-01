@@ -70,7 +70,7 @@ CREATE TABLE `bpm_process_inst` (
   `process_revision_id_lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '流程版本',
   `status` ENUM('running', 'approved', 'rejected', 'revoked') NOT NULL DEFAULT 'running' COMMENT '状态,dict:bpm_inst_status',
   `biz_code` ENUM('bpm_test') NOT NULL DEFAULT 'bpm_test' COMMENT '关联业务,dict:bpm_biz_code',
-  `form_data_id` varchar(22) NOT NULL DEFAULT '' COMMENT '业务数据ID',
+  `biz_id` varchar(22) NOT NULL DEFAULT '' COMMENT '业务数据ID',
   `start_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '发起人',
   `start_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '发起人',
   `start_dept_id` varchar(22) NOT NULL DEFAULT '' COMMENT '发起人部门',
@@ -79,7 +79,6 @@ CREATE TABLE `bpm_process_inst` (
   `end_time` datetime DEFAULT NULL COMMENT '结束时间',
   `current_node_ids` json DEFAULT NULL COMMENT '当前活跃节点',
   `current_node_lbls` varchar(500) NOT NULL DEFAULT '' COMMENT '当前节点名称',
-  `duration_seconds` int unsigned NOT NULL DEFAULT 0 COMMENT '总耗时(秒)',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -110,7 +109,6 @@ CREATE TABLE `bpm_node_inst` (
   `status` ENUM('pending', 'running', 'completed', 'skipped', 'rejected') NOT NULL DEFAULT 'pending' COMMENT '节点状态,dict:bpm_node_inst_status',
   `start_time` datetime DEFAULT NULL COMMENT '开始时间',
   `end_time` datetime DEFAULT NULL COMMENT '结束时间',
-  `duration_seconds` int unsigned NOT NULL DEFAULT 0 COMMENT '耗时(秒)',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -126,7 +124,7 @@ CREATE TABLE `bpm_node_inst` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='节点实例';
 
-------------------------------------------------------------------------- 任务
+------------------------------------------------------------------------- 审批任务
 DROP TABLE IF EXISTS `bpm_task`;
 CREATE TABLE `bpm_task` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -139,11 +137,9 @@ CREATE TABLE `bpm_task` (
   `assignee_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '处理人',
   `status` ENUM('pending', 'approved', 'rejected', 'transferred', 'revoked') NOT NULL DEFAULT 'pending' COMMENT '任务状态,dict:bpm_task_status',
   `action` ENUM('pending', 'approve', 'reject', 'transfer', 'return', 'add_sign') NOT NULL DEFAULT 'pending' COMMENT '审批动作,dict:bpm_task_action',
-  `opinion` varchar(1000) NOT NULL DEFAULT '' COMMENT '审批意见',
-  `sign_img` varchar(500) NOT NULL DEFAULT '' COMMENT '手写签名',
+  `opinion` varchar(200) NOT NULL DEFAULT '' COMMENT '审批意见',
   `start_time` datetime DEFAULT NULL COMMENT '任务生成时间',
   `end_time` datetime DEFAULT NULL COMMENT '处理时间',
-  `duration_seconds` int unsigned NOT NULL DEFAULT 0 COMMENT '耗时(秒)',
   `is_read` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '已读,dict:yes_no',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -201,7 +197,7 @@ CREATE TABLE `bpm_log` (
   `action` ENUM('start', 'approve', 'reject', 'transfer', 'return', 'add_sign', 'revoke', 'auto_approve', 'cc', 'end') NOT NULL DEFAULT 'start' COMMENT '动作,dict:bpm_log_action',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '操作人',
   `usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '操作人',
-  `opinion` varchar(1000) NOT NULL DEFAULT '' COMMENT '意见',
+  `opinion` varchar(200) NOT NULL DEFAULT '' COMMENT '审批意见',
   `node_label` varchar(100) NOT NULL DEFAULT '' COMMENT '节点名称',
   `log_time` datetime DEFAULT NULL COMMENT '操作时间',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',

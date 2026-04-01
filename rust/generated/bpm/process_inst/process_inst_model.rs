@@ -87,8 +87,8 @@ pub struct ProcessInstModel {
   #[graphql(name = "biz_code_lbl")]
   pub biz_code_lbl: SmolStr,
   /// 业务数据ID
-  #[graphql(name = "form_data_id")]
-  pub form_data_id: SmolStr,
+  #[graphql(name = "biz_id")]
+  pub biz_id: SmolStr,
   /// 发起人
   #[graphql(name = "start_usr_id")]
   pub start_usr_id: UsrId,
@@ -107,9 +107,6 @@ pub struct ProcessInstModel {
   /// 当前节点名称
   #[graphql(name = "current_node_lbls")]
   pub current_node_lbls: SmolStr,
-  /// 总耗时(秒)
-  #[graphql(name = "duration_seconds")]
-  pub duration_seconds: u32,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -156,8 +153,8 @@ impl FromRow<'_, MySqlRow> for ProcessInstModel {
     let biz_code: ProcessInstBizCode = biz_code_lbl.try_into()?;
     let biz_code_lbl = SmolStr::new(biz_code_lbl);
     // 业务数据ID
-    let form_data_id: &str = row.try_get("form_data_id")?;
-    let form_data_id = SmolStr::new(form_data_id);
+    let biz_id: &str = row.try_get("biz_id")?;
+    let biz_id = SmolStr::new(biz_id);
     // 发起人
     let start_usr_id: UsrId = row.try_get("start_usr_id")?;
     let start_usr_id_lbl: Option<&str> = row.try_get("start_usr_id_lbl")?;
@@ -172,8 +169,6 @@ impl FromRow<'_, MySqlRow> for ProcessInstModel {
     // 当前节点名称
     let current_node_lbls: &str = row.try_get("current_node_lbls")?;
     let current_node_lbls = SmolStr::new(current_node_lbls);
-    // 总耗时(秒)
-    let duration_seconds: u32 = row.try_get("duration_seconds")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
@@ -210,14 +205,13 @@ impl FromRow<'_, MySqlRow> for ProcessInstModel {
       status_lbl,
       biz_code,
       biz_code_lbl,
-      form_data_id,
+      biz_id,
       start_usr_id,
       start_usr_id_lbl,
       start_dept_id,
       start_dept_id_lbl,
       current_node_ids,
       current_node_lbls,
-      duration_seconds,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -267,8 +261,8 @@ pub struct ProcessInstFieldComment {
   #[graphql(name = "biz_code_lbl")]
   pub biz_code_lbl: SmolStr,
   /// 业务数据ID
-  #[graphql(name = "form_data_id")]
-  pub form_data_id: SmolStr,
+  #[graphql(name = "biz_id")]
+  pub biz_id: SmolStr,
   /// 发起人
   #[graphql(name = "start_usr_id")]
   pub start_usr_id: SmolStr,
@@ -287,9 +281,6 @@ pub struct ProcessInstFieldComment {
   /// 当前节点名称
   #[graphql(name = "current_node_lbls")]
   pub current_node_lbls: SmolStr,
-  /// 总耗时(秒)
-  #[graphql(name = "duration_seconds")]
-  pub duration_seconds: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: SmolStr,
@@ -365,10 +356,10 @@ pub struct ProcessInstSearch {
   pub biz_code: Option<Vec<ProcessInstBizCode>>,
   /// 业务数据ID
   #[graphql(skip)]
-  pub form_data_id: Option<SmolStr>,
+  pub biz_id: Option<SmolStr>,
   /// 业务数据ID
   #[graphql(skip)]
-  pub form_data_id_like: Option<SmolStr>,
+  pub biz_id_like: Option<SmolStr>,
   /// 发起人
   #[graphql(name = "start_usr_id")]
   pub start_usr_id: Option<Vec<UsrId>>,
@@ -402,9 +393,6 @@ pub struct ProcessInstSearch {
   /// 当前节点名称
   #[graphql(skip)]
   pub current_node_lbls_like: Option<SmolStr>,
-  /// 总耗时(秒)
-  #[graphql(skip)]
-  pub duration_seconds: Option<[Option<u32>; 2]>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -496,11 +484,11 @@ impl std::fmt::Debug for ProcessInstSearch {
       item = item.field("biz_code", biz_code);
     }
     // 业务数据ID
-    if let Some(ref form_data_id) = self.form_data_id {
-      item = item.field("form_data_id", form_data_id);
+    if let Some(ref biz_id) = self.biz_id {
+      item = item.field("biz_id", biz_id);
     }
-    if let Some(ref form_data_id_like) = self.form_data_id_like {
-      item = item.field("form_data_id_like", form_data_id_like);
+    if let Some(ref biz_id_like) = self.biz_id_like {
+      item = item.field("biz_id_like", biz_id_like);
     }
     // 发起人
     if let Some(ref start_usr_id) = self.start_usr_id {
@@ -538,10 +526,6 @@ impl std::fmt::Debug for ProcessInstSearch {
     }
     if let Some(ref current_node_lbls_like) = self.current_node_lbls_like {
       item = item.field("current_node_lbls_like", current_node_lbls_like);
-    }
-    // 总耗时(秒)
-    if let Some(ref duration_seconds) = self.duration_seconds {
-      item = item.field("duration_seconds", duration_seconds);
     }
     // 创建人
     if let Some(ref create_usr_id) = self.create_usr_id {
@@ -621,8 +605,8 @@ pub struct ProcessInstInput {
   #[graphql(name = "biz_code_lbl")]
   pub biz_code_lbl: Option<SmolStr>,
   /// 业务数据ID
-  #[graphql(name = "form_data_id")]
-  pub form_data_id: Option<SmolStr>,
+  #[graphql(name = "biz_id")]
+  pub biz_id: Option<SmolStr>,
   /// 发起人
   #[graphql(name = "start_usr_id")]
   pub start_usr_id: Option<UsrId>,
@@ -641,9 +625,6 @@ pub struct ProcessInstInput {
   /// 当前节点名称
   #[graphql(name = "current_node_lbls")]
   pub current_node_lbls: Option<SmolStr>,
-  /// 总耗时(秒)
-  #[graphql(name = "duration_seconds")]
-  pub duration_seconds: Option<u32>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
@@ -711,8 +692,8 @@ impl std::fmt::Debug for ProcessInstInput {
     if let Some(ref biz_code) = self.biz_code {
       item = item.field("biz_code", biz_code);
     }
-    if let Some(ref form_data_id) = self.form_data_id {
-      item = item.field("form_data_id", form_data_id);
+    if let Some(ref biz_id) = self.biz_id {
+      item = item.field("biz_id", biz_id);
     }
     if let Some(ref start_usr_id) = self.start_usr_id {
       item = item.field("start_usr_id", start_usr_id);
@@ -731,9 +712,6 @@ impl std::fmt::Debug for ProcessInstInput {
     }
     if let Some(ref current_node_lbls) = self.current_node_lbls {
       item = item.field("current_node_lbls", current_node_lbls);
-    }
-    if let Some(ref duration_seconds) = self.duration_seconds {
-      item = item.field("duration_seconds", duration_seconds);
     }
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
@@ -778,7 +756,7 @@ impl From<ProcessInstModel> for ProcessInstInput {
       biz_code: model.biz_code.into(),
       biz_code_lbl: model.biz_code_lbl.into(),
       // 业务数据ID
-      form_data_id: model.form_data_id.into(),
+      biz_id: model.biz_id.into(),
       // 发起人
       start_usr_id: model.start_usr_id.into(),
       start_usr_id_lbl: model.start_usr_id_lbl.into(),
@@ -789,8 +767,6 @@ impl From<ProcessInstModel> for ProcessInstInput {
       current_node_ids: model.current_node_ids,
       // 当前节点名称
       current_node_lbls: model.current_node_lbls.into(),
-      // 总耗时(秒)
-      duration_seconds: model.duration_seconds.into(),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -832,7 +808,7 @@ impl From<ProcessInstInput> for ProcessInstSearch {
       // 关联业务
       biz_code: input.biz_code.map(|x| vec![x]),
       // 业务数据ID
-      form_data_id: input.form_data_id,
+      biz_id: input.biz_id,
       // 发起人
       start_usr_id: input.start_usr_id.map(|x| vec![x]),
       // 发起人
@@ -845,8 +821,6 @@ impl From<ProcessInstInput> for ProcessInstSearch {
       current_node_ids: input.current_node_ids,
       // 当前节点名称
       current_node_lbls: input.current_node_lbls,
-      // 总耗时(秒)
-      duration_seconds: input.duration_seconds.map(|x| [Some(x), Some(x)]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建人

@@ -52,8 +52,6 @@ export function intoInputTask(
     action_lbl: model?.action_lbl,
     // 审批意见
     opinion: model?.opinion,
-    // 耗时(秒)
-    duration_seconds: model?.duration_seconds != null ? Number(model?.duration_seconds || 0) : undefined,
   };
   return input;
 }
@@ -820,7 +818,6 @@ export async function getFieldCommentsTask(
           action,
           action_lbl,
           opinion,
-          duration_seconds,
           create_usr_id,
           create_usr_id_lbl,
           create_time,
@@ -850,7 +847,6 @@ export async function getDefaultInputTask() {
   const defaultInput: TaskInput = {
     status: TaskStatus.Pending,
     action: TaskAction.Pending,
-    duration_seconds: 0,
   };
   return defaultInput;
 }

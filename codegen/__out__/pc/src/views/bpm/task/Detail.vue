@@ -199,20 +199,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.duration_seconds == null) && dialogAction !== 'add' && dialogAction !== 'copy' && dialogAction !== 'edit'">
-          <el-form-item
-            label="耗时(秒)"
-            prop="duration_seconds"
-          >
-            <CustomInputNumber
-              v-model="dialogModel.duration_seconds"
-              placeholder="请输入 耗时(秒)"
-              :readonly="isLocked || isReadonly"
-              :is-hide-zero="true"
-            ></CustomInputNumber>
-          </el-form-item>
-        </template>
-        
       </el-form>
     </div>
     <div
