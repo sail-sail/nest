@@ -377,4 +377,109 @@ export const routesGen: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/bpm/log",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "流程日志",
+        component: () => import("@/views/bpm/log/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "流程日志",
+        },
+      },
+    ],
+  },
+  {
+    path: "/bpm/node_inst",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "节点实例",
+        component: () => import("@/views/bpm/node_inst/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "节点实例",
+        },
+      },
+    ],
+  },
+  {
+    path: "/bpm/process_def",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "流程定义",
+        component: () => import("@/views/bpm/process_def/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "流程定义",
+        },
+      },
+    ],
+  },
+  {
+    path: "/bpm/process_inst",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "流程实例",
+        component: () => import("@/views/bpm/process_inst/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "流程实例",
+        },
+      },
+    ],
+  },
+  {
+    path: "/bpm/process_revision",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "流程版本",
+        component: () => import("@/views/bpm/process_revision/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "流程版本",
+        },
+      },
+    ],
+  },
+  {
+    path: "/bpm/task",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "审批任务",
+        component: () => import("@/views/bpm/task/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "审批任务",
+        },
+      },
+    ],
+  },
+  {
+    path: "/bpm/transfer",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "转交记录",
+        component: () => import("@/views/bpm/transfer/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "转交记录",
+        },
+      },
+    ],
+  },
 ];

@@ -176,7 +176,7 @@ bpm_process_inst_log (审批日志)
 | `lbl` | varchar(100) | 流程名称 |
 | `category` | varchar(45) | 流程分类 (dict) |
 | `description` | varchar(500) | 流程描述 |
-| `form_table` | varchar(100) | 关联业务表名 (如 `oa_leave`) |
+| `menu_id` | varchar(22) | 关联页面 (FK → base_menu) |
 | `current_revision_id` | varchar(22) | 当前生效版本 |
 | `is_enabled` | tinyint | 启用状态 |
 | `order_by` | int unsigned | 排序 |
@@ -192,8 +192,8 @@ bpm_process_inst_log (审批日志)
 |------|------|------|
 | `id` | varchar(22) | 主键 |
 | `process_def_id` | varchar(22) | 所属流程定义 |
-| `version` | int unsigned | 版本号 (递增) |
-| `lbl` | varchar(100) | 版本标签 (如 "v1", "v2") |
+| `lbl` | varchar(200) | 名称 (流程名称跟版本号的组合, 如 "请假流程 v1", "请假流程 v2") |
+| `process_version` | int unsigned | 版本号 (递增) |
 | `graph_json` | json | 完整流程图 JSON (节点 + 连线 + 坐标) |
 | `status` | varchar(20) | 版本状态: published / archived |
 | `publish_time` | datetime | 发布时间 |
@@ -288,7 +288,7 @@ bpm_process_inst_log (审批日志)
 | `process_def_id` | varchar(22) | 流程定义 |
 | `process_revision_id` | varchar(22) | 关联的流程版本 |
 | `status` | varchar(20) | 状态: running / approved / rejected / revoked |
-| `form_table` | varchar(100) | 业务表名 |
+| `menu_id` | varchar(22) | 关联页面 (FK → base_menu) |
 | `form_data_id` | varchar(22) | 业务数据 ID |
 | `start_usr_id` | varchar(22) | 发起人 |
 | `start_usr_id_lbl` | varchar(45) | 发起人标签 |
@@ -415,7 +415,7 @@ mutation publishProcess(
 # 发起流程
 mutation startProcess(
   process_def_id: String!
-  form_table: String!
+  menu_id: String!
   form_data_id: String!
   title: String!
 ): BpmProcessInstId!
@@ -651,7 +651,7 @@ ALTER TABLE oa_leave ADD COLUMN bpm_status varchar(20) NOT NULL DEFAULT '' COMME
 // 前端: 提交业务表单后, 调用 startProcess
 const instId = await startProcess({
   process_def_id: "请假流程ID",
-  form_table: "oa_leave",
+  menu_id: "请假页面的菜单ID",
   form_data_id: leaveId,
   title: `${userName}的请假申请`,
 });
@@ -667,7 +667,7 @@ const instId = await startProcess({
 // 流程拒绝 → UPDATE oa_leave SET bpm_status='rejected' WHERE id=form_data_id
 ```
 
-可通过 `bpm_process_def.form_table` 字段路由到对应的回调逻辑。
+可通过 `bpm_process_def.menu_id` 字段路由到对应的回调逻辑。
 
 ---
 

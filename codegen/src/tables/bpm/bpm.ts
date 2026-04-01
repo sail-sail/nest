@@ -6,6 +6,7 @@ export default defineConfig({
     opts: {
       uniques: [
         ["code"],
+        ["lbl"],
       ],
       hasSelectInput: true,
     },
@@ -30,24 +31,43 @@ export default defineConfig({
       {
         COLUMN_NAME: "lbl",
         width: 200,
+        align: "center",
       },
       {
-        COLUMN_NAME: "description",
-        noList: true,
-        width: 300,
-      },
-      {
-        COLUMN_NAME: "form_table",
+        COLUMN_NAME: "menu_id",
+        modelLabel: "menu_id_lbl",
+        foreignKey: {
+          mod: "base",
+          table: "menu",
+        },
         width: 160,
+        align: "center",
       },
       {
         COLUMN_NAME: "current_revision_id",
+        modelLabel: "current_revision_id_lbl",
         foreignKey: {
           mod: "bpm",
           table: "process_revision",
+          selectType: "selectInput",
+          isSearchBySelectInput: true,
         },
         noAdd: true,
         noEdit: true,
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "order_by",
+      },
+      {
+        COLUMN_NAME: "description",
+        width: 300,
+        isTextarea: true,
+      },
+      {
+        COLUMN_NAME: "rem",
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -67,54 +87,59 @@ export default defineConfig({
   bpm_process_revision: {
     opts: {
       defaultSort: {
-        prop: "version",
+        prop: "process_version",
         order: "descending",
       },
+      detailCustomDialogType: "medium",
+      detailFormCols: 3,
     },
     columns: [
       {
         COLUMN_NAME: "process_def_id",
+        modelLabel: "process_def_id_lbl",
         search: true,
+        foreignKey: {
+          selectType: "selectInput",
+          isSearchByLbl: true,
+        },
       },
       {
-        COLUMN_NAME: "version",
+        COLUMN_NAME: "lbl",
+        width: 200,
+        align: "center",
+        fixed: false,
+        readonly: true,
+        readonlyPlaceholder: "(自动生成)",
+      },
+      {
+        COLUMN_NAME: "process_version",
         width: 100,
         align: "center",
-        noAdd: true,
-        noEdit: true,
+        readonly: true,
+        readonlyPlaceholder: "(自动生成)",
       },
       {
         COLUMN_NAME: "graph_json",
-        noList: true,
-        noDetail: true,
-        noAdd: true,
-        noEdit: true,
+        width: 100,
       },
       {
         COLUMN_NAME: "publish_time",
         noAdd: true,
         noEdit: true,
+        search: true,
       },
       {
         COLUMN_NAME: "publish_usr_id",
+        modelLabel: "publish_usr_id_lbl",
         foreignKey: {
           mod: "base",
           table: "usr",
+          selectType: "selectInput",
+          isSearchByLbl: true,
         },
         noAdd: true,
         noEdit: true,
-      },
-      {
-        COLUMN_NAME: "create_usr_id",
-      },
-      {
-        COLUMN_NAME: "create_time",
-      },
-      {
-        COLUMN_NAME: "update_usr_id",
-      },
-      {
-        COLUMN_NAME: "update_time",
+        search: true,
       },
     ],
   },
@@ -129,10 +154,12 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "process_def_id",
+        modelLabel: "process_def_id_lbl",
         search: true,
       },
       {
         COLUMN_NAME: "process_revision_id",
+        modelLabel: "process_revision_id_lbl",
         noList: true,
       },
       {
@@ -141,7 +168,12 @@ export default defineConfig({
         width: 100,
       },
       {
-        COLUMN_NAME: "form_table",
+        COLUMN_NAME: "menu_id",
+        modelLabel: "menu_id_lbl",
+        foreignKey: {
+          mod: "base",
+          table: "menu",
+        },
         width: 160,
         noDetail: true,
       },
@@ -153,6 +185,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "start_usr_id",
+        modelLabel: "start_usr_id_lbl",
         foreignKey: {
           mod: "base",
           table: "usr",
@@ -161,6 +194,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "start_dept_id",
+        modelLabel: "start_dept_id_lbl",
         foreignKey: {
           mod: "base",
           table: "dept",
@@ -169,6 +203,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "current_node_ids",
+        notForeignKeyById: true,
         noList: true,
         noDetail: true,
         noAdd: true,
@@ -205,6 +240,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "process_inst_id",
+        modelLabel: "process_inst_id_lbl",
         search: true,
       },
       {
@@ -250,14 +286,17 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "process_inst_id",
+        modelLabel: "process_inst_id_lbl",
         search: true,
       },
       {
         COLUMN_NAME: "node_inst_id",
+        modelLabel: "node_inst_id_lbl",
         noList: true,
       },
       {
         COLUMN_NAME: "assignee_usr_id",
+        modelLabel: "assignee_usr_id_lbl",
         foreignKey: {
           mod: "base",
           table: "usr",
@@ -303,9 +342,11 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "task_id",
+        modelLabel: "task_id_lbl",
       },
       {
         COLUMN_NAME: "from_usr_id",
+        modelLabel: "from_usr_id_lbl",
         foreignKey: {
           mod: "base",
           table: "usr",
@@ -313,6 +354,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "to_usr_id",
+        modelLabel: "to_usr_id_lbl",
         foreignKey: {
           mod: "base",
           table: "usr",
@@ -343,14 +385,17 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "process_inst_id",
+        modelLabel: "process_inst_id_lbl",
         search: true,
       },
       {
         COLUMN_NAME: "node_inst_id",
+        modelLabel: "node_inst_id_lbl",
         noList: true,
       },
       {
         COLUMN_NAME: "task_id",
+        modelLabel: "task_id_lbl",
         noList: true,
       },
       {
@@ -360,6 +405,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "usr_id",
+        modelLabel: "usr_id_lbl",
         foreignKey: {
           mod: "base",
           table: "usr",

@@ -158,6 +158,48 @@ export function getScalars() {
       "output": "UsrId",
     },
     
+    // 流程日志
+    "LogId": {
+      "input": "LogId",
+      "output": "LogId",
+    },
+    
+    // 节点实例
+    "NodeInstId": {
+      "input": "NodeInstId",
+      "output": "NodeInstId",
+    },
+    
+    // 流程定义
+    "ProcessDefId": {
+      "input": "ProcessDefId",
+      "output": "ProcessDefId",
+    },
+    
+    // 流程实例
+    "ProcessInstId": {
+      "input": "ProcessInstId",
+      "output": "ProcessInstId",
+    },
+    
+    // 流程版本
+    "ProcessRevisionId": {
+      "input": "ProcessRevisionId",
+      "output": "ProcessRevisionId",
+    },
+    
+    // 审批任务
+    "TaskId": {
+      "input": "TaskId",
+      "output": "TaskId",
+    },
+    
+    // 转交记录
+    "TransferId": {
+      "input": "TransferId",
+      "output": "TransferId",
+    },
+    
   };
   return scalars;
 }

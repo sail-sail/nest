@@ -102,3 +102,31 @@ type TenantId = Distinct<string, typeof tenantId>;
 declare const usrId: unique symbol;
 /** 用户 */
 type UsrId = Distinct<string, typeof usrId>;
+
+declare const logId: unique symbol;
+/** 流程日志 */
+type LogId = Distinct<string, typeof logId>;
+
+declare const node_instId: unique symbol;
+/** 节点实例 */
+type NodeInstId = Distinct<string, typeof node_instId>;
+
+declare const process_defId: unique symbol;
+/** 流程定义 */
+type ProcessDefId = Distinct<string, typeof process_defId>;
+
+declare const process_instId: unique symbol;
+/** 流程实例 */
+type ProcessInstId = Distinct<string, typeof process_instId>;
+
+declare const process_revisionId: unique symbol;
+/** 流程版本 */
+type ProcessRevisionId = Distinct<string, typeof process_revisionId>;
+
+declare const taskId: unique symbol;
+/** 审批任务 */
+type TaskId = Distinct<string, typeof taskId>;
+
+declare const transferId: unique symbol;
+/** 转交记录 */
+type TransferId = Distinct<string, typeof transferId>;
