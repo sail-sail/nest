@@ -18,6 +18,7 @@ const branchs: {
   { from: "rust", to: "rust4cron" },
   { from: "rust", to: "rust4wx" },
   { from: "rust", to: "rust4wxwork" },
+  { from: "rust", to: "rust4bpm" },
 ];
 
 const httpProxy = "http://127.0.0.1:7890";
