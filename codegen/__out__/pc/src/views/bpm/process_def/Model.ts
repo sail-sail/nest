@@ -34,9 +34,9 @@ export const processDefFields = [
   "code",
   // 流程名称
   "lbl",
-  // 关联页面
-  "menu_id",
-  "menu_id_lbl",
+  // 关联业务
+  "biz_code",
+  "biz_code_lbl",
   // 当前生效版本
   "current_revision_id",
   "current_revision_id_lbl",
@@ -49,6 +49,8 @@ export const processDefFields = [
   "description",
   // 备注
   "rem",
+  // 流程图
+  "graph_json",
   // 创建人
   "create_usr_id",
   "create_usr_id_lbl",

@@ -9,6 +9,8 @@ export default defineConfig({
         ["lbl"],
       ],
       hasSelectInput: true,
+      detailCustomDialogType: "large",
+      detailFormCols: 3,
     },
     columns: [
       {
@@ -34,12 +36,7 @@ export default defineConfig({
         align: "center",
       },
       {
-        COLUMN_NAME: "menu_id",
-        modelLabel: "menu_id_lbl",
-        foreignKey: {
-          mod: "base",
-          table: "menu",
-        },
+        COLUMN_NAME: "biz_code",
         width: 160,
         align: "center",
       },
@@ -52,8 +49,8 @@ export default defineConfig({
           selectType: "selectInput",
           isSearchBySelectInput: true,
         },
+        require: false,
         noAdd: true,
-        noEdit: true,
       },
       {
         COLUMN_NAME: "is_enabled",
@@ -64,10 +61,16 @@ export default defineConfig({
       {
         COLUMN_NAME: "description",
         width: 300,
-        isTextarea: true,
+        align: "left",
+        isTextarea: false,
       },
       {
         COLUMN_NAME: "rem",
+        isTextarea: false,
+      },
+      {
+        COLUMN_NAME: "graph_json",
+        width: 100,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -90,7 +93,7 @@ export default defineConfig({
         prop: "process_version",
         order: "descending",
       },
-      detailCustomDialogType: "medium",
+      detailCustomDialogType: "large",
       detailFormCols: 3,
     },
     columns: [
@@ -168,12 +171,7 @@ export default defineConfig({
         width: 100,
       },
       {
-        COLUMN_NAME: "menu_id",
-        modelLabel: "menu_id_lbl",
-        foreignKey: {
-          mod: "base",
-          table: "menu",
-        },
+        COLUMN_NAME: "biz_code",
         width: 160,
         noDetail: true,
       },

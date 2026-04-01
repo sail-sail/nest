@@ -43,7 +43,7 @@
 #### 3.1.1 流程定义管理
 
 - 创建/编辑/删除流程定义
-- 流程定义包含: 名称、编码、分类、表单关联、描述
+- 流程定义包含: 名称、编码、关联业务、分类、描述
 - **流程图设计器 (PC)**
   - 拖拽式节点编排: 开始节点 → 审批节点 → 条件分支 → 结束节点
   - 连线/删除连线
@@ -174,13 +174,14 @@ bpm_process_inst_log (审批日志)
 | `code_seq` | int unsigned | 编码序列号 |
 | `code` | varchar(45) | 流程编码 (唯一) |
 | `lbl` | varchar(100) | 流程名称 |
+| `biz_code` | varchar(50) | 关联业务编码 (系统字典 `bpm_biz_code`, 如 `oa_leave` / `oa_expense`) |
 | `category` | varchar(45) | 流程分类 (dict) |
-| `description` | varchar(500) | 流程描述 |
-| `menu_id` | varchar(22) | 关联页面 (FK → base_menu) |
 | `current_revision_id` | varchar(22) | 当前生效版本 |
 | `is_enabled` | tinyint | 启用状态 |
 | `order_by` | int unsigned | 排序 |
+| `description` | varchar(500) | 流程描述 |
 | `rem` | varchar(100) | 备注 |
+| `graph_json` | json | 流程图(JSON草稿) |
 | `tenant_id` | varchar(22) | 租户 |
 | + 审计字段 | | create/update/delete |
 
@@ -288,7 +289,7 @@ bpm_process_inst_log (审批日志)
 | `process_def_id` | varchar(22) | 流程定义 |
 | `process_revision_id` | varchar(22) | 关联的流程版本 |
 | `status` | varchar(20) | 状态: running / approved / rejected / revoked |
-| `menu_id` | varchar(22) | 关联页面 (FK → base_menu) |
+| `biz_code` | varchar(50) | 关联业务编码快照, 用于回调分发 |
 | `form_data_id` | varchar(22) | 业务数据 ID |
 | `start_usr_id` | varchar(22) | 发起人 |
 | `start_usr_id_lbl` | varchar(45) | 发起人标签 |
@@ -396,18 +397,14 @@ bpm_process_inst_log (审批日志)
 #### 流程设计 API
 
 ```graphql
-# 保存流程图设计 (存入 process_def 的草稿 graph_json)
-mutation saveProcessDesign(
-  process_def_id: String!
-  "流程图 JSON 字符串"
-  graph_json: String!
-): Boolean!
-
-# 发布流程 → 从当前 graph_json 快照生成 process_revision
-mutation publishProcess(
-  process_def_id: String!
-): BpmProcessRevisionId!
+# 保存并发布流程 → 从当前 graph_json 快照生成 process_revision
+# 底层调用 creates_process_def 保存草稿, creates_process_revision 生成版本, updates_process_def 更新 current_revision_id
+mutation saveAndPublishsProcessDef(
+  inputs: [ProcessDefInput!]!
+): [ProcessDefId!]!
 ```
+
+- 编辑流程定义时, 如果点击的是 "编辑 {{ dialogModel.current_revision_id_lbl }}" 按钮, 则修改当前版本的 graph_json 草稿, 同时修改 版本表的 graph_json, 在这之前校验这个流程版本是否有正在运行的实例, 如果有则不允许修改, 删除流程定义时遍历版本表, 如果有版本被实例关联则不允许删除
 
 #### 流程运行 API
 
@@ -415,7 +412,6 @@ mutation publishProcess(
 # 发起流程
 mutation startProcess(
   process_def_id: String!
-  menu_id: String!
   form_data_id: String!
   title: String!
 ): BpmProcessInstId!
@@ -512,7 +508,7 @@ query getProcessGraph(
 
 ```
 1. 校验: process_def 是否启用, 是否有发布版本
-2. 创建 bpm_process_inst (status=running)
+2. 创建 bpm_process_inst (status=running, 写入 biz_code 快照)
 3. 创建 bpm_node_inst (开始节点, status=completed)
 4. 写入 bpm_log (action=start)
 5. 推进到下一个节点 → 调用 advanceProcess()
@@ -638,11 +634,13 @@ match assignee_type:
 
 其他业务模块接入审批流的标准方式:
 
+每个接入 BPM 的业务模块需要先注册唯一 `biz_code`。`biz_code` 是稳定的业务标识, 用于流程定义归属、流程实例快照和后端回调分发, 不直接依赖具体菜单 ID 或页面路由。建议通过系统字典 `bpm_biz_code` 维护, 例如 `oa_leave`、`oa_expense`。
+
 ### 9.1 业务表改造
 
 ```sql
 -- 在业务表上增加流程状态字段
-ALTER TABLE oa_leave ADD COLUMN bpm_status varchar(20) NOT NULL DEFAULT '' COMMENT '审批状态,dict:bpm_inst_status';
+ALTER TABLE oa_leave ADD COLUMN bpm_status ENUM('running', 'approved', 'rejected', 'revoked') NOT NULL DEFAULT 'running' COMMENT '审批状态,dict:bpm_inst_status';
 ```
 
 ### 9.2 发起流程
@@ -651,7 +649,6 @@ ALTER TABLE oa_leave ADD COLUMN bpm_status varchar(20) NOT NULL DEFAULT '' COMME
 // 前端: 提交业务表单后, 调用 startProcess
 const instId = await startProcess({
   process_def_id: "请假流程ID",
-  menu_id: "请假页面的菜单ID",
   form_data_id: leaveId,
   title: `${userName}的请假申请`,
 });
@@ -659,7 +656,7 @@ const instId = await startProcess({
 
 ### 9.3 流程回调
 
-后端在流程结束时自动更新业务表状态:
+后端按 `process_inst.biz_code` 分发业务回调, 在流程结束时自动更新业务表状态:
 
 ```rust
 // app/bpm/callbacks.rs
@@ -667,7 +664,7 @@ const instId = await startProcess({
 // 流程拒绝 → UPDATE oa_leave SET bpm_status='rejected' WHERE id=form_data_id
 ```
 
-可通过 `bpm_process_def.menu_id` 字段路由到对应的回调逻辑。
+`bpm_process_def.biz_code` 用于定义流程归属的业务, `bpm_process_inst.biz_code` 用于运行时快照和回调路由。
 
 ---
 
@@ -726,6 +723,7 @@ const instId = await startProcess({
 | `bpm_node_type` | 节点类型 | start / approve / condition / parallel / end |
 | `bpm_approve_method` | 审批方式 | or_sign / counter_sign / sequential |
 | `bpm_assignee_type` | 处理人规则 | user / role / dept_head / parent_dept_head / starter_select / form_field |
+| `bpm_biz_code` | 关联业务编码 | oa_leave / oa_expense / crm_contract / ... |
 | `bpm_inst_status` | 流程实例状态 | running / approved / rejected / revoked |
 | `bpm_node_inst_status` | 节点实例状态 | pending / running / completed / skipped / rejected |
 | `bpm_task_status` | 任务状态 | pending / approved / rejected / transferred / revoked |
@@ -733,6 +731,8 @@ const instId = await startProcess({
 | `bpm_log_action` | 日志动作 | start / approve / reject / transfer / return / add_sign / revoke / auto_approve / cc / end |
 | `bpm_revision_status` | 版本状态 | published / archived |
 | `bpm_process_def_category` | 流程分类 | 人事 / 财务 / 行政 / 采购 / 其他 (允许用户扩展) |
+
+`bpm_biz_code` 的值应由各业务模块以系统记录方式维护, 且必须保持稳定, 作为后端回调分发的关键标识。
 
 ---
 

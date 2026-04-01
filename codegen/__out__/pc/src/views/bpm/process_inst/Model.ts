@@ -41,9 +41,9 @@ export const processInstFields = [
   // 状态
   "status",
   "status_lbl",
-  // 关联页面
-  "menu_id",
-  "menu_id_lbl",
+  // 关联业务
+  "biz_code",
+  "biz_code_lbl",
   // 业务数据ID
   "form_data_id",
   // 发起人

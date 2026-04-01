@@ -555,8 +555,8 @@
             </el-table-column>
           </template>
           
-          <!-- 关联页面 -->
-          <template v-else-if="'menu_id_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_id == null)">
+          <!-- 关联业务 -->
+          <template v-else-if="'biz_code_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -762,8 +762,6 @@ const props = defineProps<{
   process_revision_id?: string|string[]; // 流程版本
   process_revision_id_lbl?: string; // 流程版本
   status?: string|string[]; // 状态
-  menu_id?: string|string[]; // 关联页面
-  menu_id_lbl?: string; // 关联页面
   start_usr_id?: string|string[]; // 发起人
   start_usr_id_lbl?: string; // 发起人
   start_dept_id?: string|string[]; // 发起人部门
@@ -785,8 +783,6 @@ const builtInSearchType: { [key: string]: string } = {
   process_revision_id_lbl: "string[]",
   status: "string[]",
   status_lbl: "string[]",
-  menu_id: "string[]",
-  menu_id_lbl: "string[]",
   start_usr_id: "string[]",
   start_usr_id_lbl: "string[]",
   start_dept_id: "string[]",
@@ -1086,11 +1082,11 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "关联页面",
-      prop: "menu_id_lbl",
-      sortBy: "menu_id_lbl",
+      label: "关联业务",
+      prop: "biz_code_lbl",
+      sortBy: "biz_code",
       width: 160,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1428,7 +1424,7 @@ async function onImportExcel() {
     [ "实例标题" ]: "lbl",
     [ "流程定义" ]: "process_def_id_lbl",
     [ "状态" ]: "status_lbl",
-    [ "关联页面" ]: "menu_id_lbl",
+    [ "关联业务" ]: "biz_code_lbl",
     [ "发起人" ]: "start_usr_id_lbl",
     [ "发起人部门" ]: "start_dept_id_lbl",
     [ "当前节点名称" ]: "current_node_lbls",
@@ -1457,7 +1453,7 @@ async function onImportExcel() {
           "lbl": "string",
           "process_def_id_lbl": "string",
           "status_lbl": "string",
-          "menu_id_lbl": "string",
+          "biz_code_lbl": "string",
           "start_usr_id_lbl": "string",
           "start_dept_id_lbl": "string",
           "current_node_lbls": "string",

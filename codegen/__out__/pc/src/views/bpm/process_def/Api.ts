@@ -3,6 +3,10 @@ import {
   UniqueType,
 } from "#/types.ts";
 
+import {
+  ProcessDefBizCode,
+} from "#/types.ts";
+
 import type {
   Query,
   Mutation,
@@ -12,10 +16,6 @@ import type {
 import {
   processDefQueryField,
 } from "./Model.ts";
-
-import {
-  findTreeMenu,
-} from "@/views/base/menu/Api.ts";
 
 export async function setLblByIdProcessDef(
   model?: ProcessDefModel | null,
@@ -36,9 +36,9 @@ export function intoInputProcessDef(
     code: model?.code,
     // 流程名称
     lbl: model?.lbl,
-    // 关联页面
-    menu_id: model?.menu_id,
-    menu_id_lbl: model?.menu_id_lbl,
+    // 关联业务
+    biz_code: model?.biz_code,
+    biz_code_lbl: model?.biz_code_lbl,
     // 当前生效版本
     current_revision_id: model?.current_revision_id,
     current_revision_id_lbl: model?.current_revision_id_lbl,
@@ -51,6 +51,8 @@ export function intoInputProcessDef(
     description: model?.description,
     // 备注
     rem: model?.rem,
+    // 流程图
+    graph_json: model?.graph_json,
   };
   return input;
 }
@@ -488,18 +490,18 @@ export async function forceDeleteByIdsProcessDef(
   return res;
 }
 
-export async function findAllMenu(
-  search?: MenuSearch,
+export async function findAllProcessRevision(
+  search?: ProcessRevisionSearch,
   page?: PageInput,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
   const data: {
-    findAllMenu: MenuModel[];
+    findAllProcessRevision: ProcessRevisionModel[];
   } = await query({
     query: /* GraphQL */ `
-      query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllMenu(search: $search, page: $page, sort: $sort) {
+      query($search: ProcessRevisionSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllProcessRevision(search: $search, page: $page, sort: $sort) {
           id
           lbl
         }
@@ -511,36 +513,18 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const menu_models = data.findAllMenu;
-  return menu_models;
+  const process_revision_models = data.findAllProcessRevision;
+  return process_revision_models;
 }
 
-export async function getListMenu() {
-  const data = await findAllMenu(
-    {
-      is_enabled: [ 1 ],
-    },
+export async function getListProcessRevision() {
+  const data = await findAllProcessRevision(
+    undefined,
     undefined,
     [
       {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
-export async function getTreeMenu() {
-  const data = await findTreeMenu(
-    undefined,
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
+        prop: "process_version",
+        order: "descending",
       },
     ],
     {
@@ -565,13 +549,16 @@ export function useDownloadImportTemplateProcessDef() {
         query {
           getFieldCommentsProcessDef {
             lbl
-            menu_id_lbl
+            biz_code_lbl
             order_by
             description
             rem
+            graph_json
           }
-          findAllMenu {
-            id
+          getDict(codes: [
+            "bpm_biz_code",
+          ]) {
+            code
             lbl
           }
         }
@@ -630,13 +617,11 @@ export function useExportExcelProcessDef() {
             findAllProcessDef(search: $search, page: $page, sort: $sort) {
               ${ processDefQueryField }
             }
-            findAllMenu {
-              lbl
-            }
             findAllProcessRevision {
               lbl
             }
             getDict(codes: [
+              "bpm_biz_code",
               "is_enabled",
             ]) {
               code
@@ -767,8 +752,8 @@ export async function getFieldCommentsProcessDef(
           id,
           code,
           lbl,
-          menu_id,
-          menu_id_lbl,
+          biz_code,
+          biz_code_lbl,
           current_revision_id,
           current_revision_id_lbl,
           is_enabled,
@@ -776,6 +761,7 @@ export async function getFieldCommentsProcessDef(
           order_by,
           description,
           rem,
+          graph_json,
           create_usr_id,
           create_usr_id_lbl,
           create_time,
@@ -803,6 +789,7 @@ export function getPagePathProcessDef() {
 /** 新增时的默认值 */
 export async function getDefaultInputProcessDef() {
   const defaultInput: ProcessDefInput = {
+    biz_code: ProcessDefBizCode.BpmTest,
     is_enabled: 1,
     order_by: 1,
   };

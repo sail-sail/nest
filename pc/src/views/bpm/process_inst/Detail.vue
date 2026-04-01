@@ -336,10 +336,6 @@ import {
 } from "@/views/base/usr/Api.ts";
 
 import {
-  getTreeMenu,
-} from "@/views/base/menu/Api.ts";
-
-import {
   getTreeDept,
 } from "@/views/base/dept/Api.ts";
 
@@ -744,7 +740,7 @@ watch(
     dialogModel.process_def_id,
     dialogModel.process_revision_id,
     dialogModel.status,
-    dialogModel.menu_id,
+    dialogModel.biz_code,
     dialogModel.start_usr_id,
     dialogModel.start_dept_id,
   ],
@@ -761,8 +757,8 @@ watch(
     if (!dialogModel.status) {
       dialogModel.status_lbl = "";
     }
-    if (!dialogModel.menu_id) {
-      dialogModel.menu_id_lbl = "";
+    if (!dialogModel.biz_code) {
+      dialogModel.biz_code_lbl = "";
     }
     if (!dialogModel.start_usr_id) {
       dialogModel.start_usr_id_lbl = "";

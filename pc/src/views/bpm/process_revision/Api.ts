@@ -20,7 +20,6 @@ export async function setLblByIdProcessRevision(
   if (!model) {
     return;
   }
-  // model.graph_json = model.graph_json && JSON.stringify(model.graph_json) || "";
 }
 
 export function intoInputProcessRevision(

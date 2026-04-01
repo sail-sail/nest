@@ -37,7 +37,6 @@ use crate::common::exceptions::service_exception::ServiceException;
 use crate::base::tenant::tenant_model::TenantId;
 use crate::bpm::process_def::process_def_model::ProcessDefId;
 use crate::bpm::process_revision::process_revision_model::ProcessRevisionId;
-use crate::base::menu::menu_model::MenuId;
 use crate::base::usr::usr_model::UsrId;
 use crate::base::dept::dept_model::DeptId;
 
@@ -81,12 +80,12 @@ pub struct ProcessInstModel {
   /// 状态
   #[graphql(name = "status_lbl")]
   pub status_lbl: SmolStr,
-  /// 关联页面
-  #[graphql(name = "menu_id")]
-  pub menu_id: MenuId,
-  /// 关联页面
-  #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: SmolStr,
+  /// 关联业务
+  #[graphql(name = "biz_code")]
+  pub biz_code: ProcessInstBizCode,
+  /// 关联业务
+  #[graphql(name = "biz_code_lbl")]
+  pub biz_code_lbl: SmolStr,
   /// 业务数据ID
   #[graphql(name = "form_data_id")]
   pub form_data_id: SmolStr,
@@ -152,10 +151,10 @@ impl FromRow<'_, MySqlRow> for ProcessInstModel {
     let status_lbl: &str = row.try_get("status")?;
     let status: ProcessInstStatus = status_lbl.try_into()?;
     let status_lbl = SmolStr::new(status_lbl);
-    // 关联页面
-    let menu_id: MenuId = row.try_get("menu_id")?;
-    let menu_id_lbl: Option<&str> = row.try_get("menu_id_lbl")?;
-    let menu_id_lbl = SmolStr::new(menu_id_lbl.unwrap_or_default());
+    // 关联业务
+    let biz_code_lbl: &str = row.try_get("biz_code")?;
+    let biz_code: ProcessInstBizCode = biz_code_lbl.try_into()?;
+    let biz_code_lbl = SmolStr::new(biz_code_lbl);
     // 业务数据ID
     let form_data_id: &str = row.try_get("form_data_id")?;
     let form_data_id = SmolStr::new(form_data_id);
@@ -209,8 +208,8 @@ impl FromRow<'_, MySqlRow> for ProcessInstModel {
       process_revision_id_lbl,
       status,
       status_lbl,
-      menu_id,
-      menu_id_lbl,
+      biz_code,
+      biz_code_lbl,
       form_data_id,
       start_usr_id,
       start_usr_id_lbl,
@@ -261,12 +260,12 @@ pub struct ProcessInstFieldComment {
   /// 状态
   #[graphql(name = "status_lbl")]
   pub status_lbl: SmolStr,
-  /// 关联页面
-  #[graphql(name = "menu_id")]
-  pub menu_id: SmolStr,
-  /// 关联页面
-  #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: SmolStr,
+  /// 关联业务
+  #[graphql(name = "biz_code")]
+  pub biz_code: SmolStr,
+  /// 关联业务
+  #[graphql(name = "biz_code_lbl")]
+  pub biz_code_lbl: SmolStr,
   /// 业务数据ID
   #[graphql(name = "form_data_id")]
   pub form_data_id: SmolStr,
@@ -361,18 +360,9 @@ pub struct ProcessInstSearch {
   /// 状态
   #[graphql(name = "status")]
   pub status: Option<Vec<ProcessInstStatus>>,
-  /// 关联页面
-  #[graphql(name = "menu_id")]
-  pub menu_id: Option<Vec<MenuId>>,
-  /// 关联页面
-  #[graphql(name = "menu_id_save_null")]
-  pub menu_id_is_null: Option<bool>,
-  /// 关联页面
-  #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: Option<Vec<SmolStr>>,
-  /// 关联页面
-  #[graphql(name = "menu_id_lbl_like")]
-  pub menu_id_lbl_like: Option<SmolStr>,
+  /// 关联业务
+  #[graphql(skip)]
+  pub biz_code: Option<Vec<ProcessInstBizCode>>,
   /// 业务数据ID
   #[graphql(skip)]
   pub form_data_id: Option<SmolStr>,
@@ -501,18 +491,9 @@ impl std::fmt::Debug for ProcessInstSearch {
     if let Some(ref status) = self.status {
       item = item.field("status", status);
     }
-    // 关联页面
-    if let Some(ref menu_id) = self.menu_id {
-      item = item.field("menu_id", menu_id);
-    }
-    if let Some(ref menu_id_lbl) = self.menu_id_lbl {
-      item = item.field("menu_id_lbl", menu_id_lbl);
-    }
-    if let Some(ref menu_id_lbl_like) = self.menu_id_lbl_like {
-      item = item.field("menu_id_lbl_like", menu_id_lbl_like);
-    }
-    if let Some(ref menu_id_is_null) = self.menu_id_is_null {
-      item = item.field("menu_id_is_null", menu_id_is_null);
+    // 关联业务
+    if let Some(ref biz_code) = self.biz_code {
+      item = item.field("biz_code", biz_code);
     }
     // 业务数据ID
     if let Some(ref form_data_id) = self.form_data_id {
@@ -633,12 +614,12 @@ pub struct ProcessInstInput {
   /// 状态
   #[graphql(name = "status_lbl")]
   pub status_lbl: Option<SmolStr>,
-  /// 关联页面
-  #[graphql(name = "menu_id")]
-  pub menu_id: Option<MenuId>,
-  /// 关联页面
-  #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: Option<SmolStr>,
+  /// 关联业务
+  #[graphql(name = "biz_code")]
+  pub biz_code: Option<ProcessInstBizCode>,
+  /// 关联业务
+  #[graphql(name = "biz_code_lbl")]
+  pub biz_code_lbl: Option<SmolStr>,
   /// 业务数据ID
   #[graphql(name = "form_data_id")]
   pub form_data_id: Option<SmolStr>,
@@ -727,11 +708,8 @@ impl std::fmt::Debug for ProcessInstInput {
     if let Some(ref status) = self.status {
       item = item.field("status", status);
     }
-    if let Some(ref menu_id) = self.menu_id {
-      item = item.field("menu_id", menu_id);
-    }
-    if let Some(ref menu_id_lbl) = self.menu_id_lbl {
-      item = item.field("menu_id_lbl", menu_id_lbl);
+    if let Some(ref biz_code) = self.biz_code {
+      item = item.field("biz_code", biz_code);
     }
     if let Some(ref form_data_id) = self.form_data_id {
       item = item.field("form_data_id", form_data_id);
@@ -796,9 +774,9 @@ impl From<ProcessInstModel> for ProcessInstInput {
       // 状态
       status: model.status.into(),
       status_lbl: model.status_lbl.into(),
-      // 关联页面
-      menu_id: model.menu_id.into(),
-      menu_id_lbl: model.menu_id_lbl.into(),
+      // 关联业务
+      biz_code: model.biz_code.into(),
+      biz_code_lbl: model.biz_code_lbl.into(),
       // 业务数据ID
       form_data_id: model.form_data_id.into(),
       // 发起人
@@ -851,10 +829,8 @@ impl From<ProcessInstInput> for ProcessInstSearch {
       process_revision_id_lbl: input.process_revision_id_lbl.map(|x| vec![x]),
       // 状态
       status: input.status.map(|x| vec![x]),
-      // 关联页面
-      menu_id: input.menu_id.map(|x| vec![x]),
-      // 关联页面
-      menu_id_lbl: input.menu_id_lbl.map(|x| vec![x]),
+      // 关联业务
+      biz_code: input.biz_code.map(|x| vec![x]),
       // 业务数据ID
       form_data_id: input.form_data_id,
       // 发起人
@@ -1032,6 +1008,119 @@ impl TryFrom<String> for ProcessInstStatus {
           index: "status".to_owned(),
           source: Box::new(sqlx::Error::Protocol(
             "{s} 无法转换到 状态".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+/// 流程实例关联业务
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum ProcessInstBizCode {
+  /// 测试流程
+  #[default]
+  #[graphql(name="bpm_test")]
+  #[serde(rename = "bpm_test")]
+  BpmTest,
+}
+
+impl fmt::Display for ProcessInstBizCode {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::BpmTest => write!(f, "bpm_test"),
+    }
+  }
+}
+
+impl From<ProcessInstBizCode> for SmolStr {
+  fn from(value: ProcessInstBizCode) -> Self {
+    match value {
+      ProcessInstBizCode::BpmTest => "bpm_test".into(),
+    }
+  }
+}
+
+impl From<ProcessInstBizCode> for String {
+  fn from(value: ProcessInstBizCode) -> Self {
+    match value {
+      ProcessInstBizCode::BpmTest => "bpm_test".into(),
+    }
+  }
+}
+
+impl From<ProcessInstBizCode> for ArgType {
+  fn from(value: ProcessInstBizCode) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl FromStr for ProcessInstBizCode {
+  type Err = color_eyre::eyre::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "bpm_test" => Ok(Self::BpmTest),
+      _ => Err(eyre!("{s} 无法转换到 关联业务")),
+    }
+  }
+}
+
+impl TryFrom<&str> for ProcessInstBizCode {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "bpm_test" => Ok(Self::BpmTest),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "biz_code".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 关联业务".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for ProcessInstBizCode {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "bpm_test" => Ok(Self::BpmTest),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "biz_code".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 关联业务".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl ProcessInstBizCode {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::BpmTest => "bpm_test",
+    }
+  }
+}
+
+impl TryFrom<String> for ProcessInstBizCode {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "bpm_test" => Ok(Self::BpmTest),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "biz_code".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 关联业务".to_owned(),
           )),
         }),
       )),

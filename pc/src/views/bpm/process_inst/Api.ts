@@ -5,6 +5,7 @@ import {
 
 import {
   ProcessInstStatus,
+  ProcessInstBizCode,
 } from "#/types.ts";
 
 import type {
@@ -18,10 +19,6 @@ import {
 } from "./Model.ts";
 
 import {
-  findTreeMenu,
-} from "@/views/base/menu/Api.ts";
-
-import {
   findTreeDept,
 } from "@/views/base/dept/Api.ts";
 
@@ -32,7 +29,6 @@ export async function setLblByIdProcessInst(
   if (!model) {
     return;
   }
-  model.current_node_ids = model.current_node_ids && JSON.stringify(model.current_node_ids) || "";
 }
 
 export function intoInputProcessInst(
@@ -52,9 +48,9 @@ export function intoInputProcessInst(
     // 状态
     status: model?.status,
     status_lbl: model?.status_lbl,
-    // 关联页面
-    menu_id: model?.menu_id,
-    menu_id_lbl: model?.menu_id_lbl,
+    // 关联业务
+    biz_code: model?.biz_code,
+    biz_code_lbl: model?.biz_code_lbl,
     // 业务数据ID
     form_data_id: model?.form_data_id,
     // 发起人
@@ -568,52 +564,6 @@ export async function getListProcessRevision() {
   return data;
 }
 
-export async function findAllMenu(
-  search?: MenuSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllMenu: MenuModel[];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllMenu(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const menu_models = data.findAllMenu;
-  return menu_models;
-}
-
-export async function getListMenu() {
-  const data = await findAllMenu(
-    {
-      is_enabled: [ 1 ],
-    },
-    undefined,
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 export async function findAllUsr(
   search?: UsrSearch,
   page?: PageInput,
@@ -706,22 +656,6 @@ export async function getListDept() {
   return data;
 }
 
-export async function getTreeMenu() {
-  const data = await findTreeMenu(
-    undefined,
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 export async function getTreeDept() {
   const data = await findTreeDept(
     undefined,
@@ -756,7 +690,7 @@ export function useDownloadImportTemplateProcessInst() {
             process_def_id_lbl
             process_revision_id_lbl
             status_lbl
-            menu_id_lbl
+            biz_code_lbl
             form_data_id
             start_usr_id_lbl
             start_dept_id_lbl
@@ -766,10 +700,6 @@ export function useDownloadImportTemplateProcessInst() {
             lbl
           }
           findAllProcessRevision {
-            id
-            lbl
-          }
-          findAllMenu {
             id
             lbl
           }
@@ -783,6 +713,7 @@ export function useDownloadImportTemplateProcessInst() {
           }
           getDict(codes: [
             "bpm_inst_status",
+            "bpm_biz_code",
           ]) {
             code
             lbl
@@ -849,9 +780,6 @@ export function useExportExcelProcessInst() {
             findAllProcessRevision {
               lbl
             }
-            findAllMenu {
-              lbl
-            }
             findAllUsr {
               lbl
             }
@@ -860,6 +788,7 @@ export function useExportExcelProcessInst() {
             }
             getDict(codes: [
               "bpm_inst_status",
+              "bpm_biz_code",
             ]) {
               code
               lbl
@@ -972,8 +901,8 @@ export async function getFieldCommentsProcessInst(
           process_revision_id_lbl,
           status,
           status_lbl,
-          menu_id,
-          menu_id_lbl,
+          biz_code,
+          biz_code_lbl,
           form_data_id,
           start_usr_id,
           start_usr_id_lbl,
@@ -1010,6 +939,7 @@ export function getPagePathProcessInst() {
 export async function getDefaultInputProcessInst() {
   const defaultInput: ProcessInstInput = {
     status: ProcessInstStatus.Running,
+    biz_code: ProcessInstBizCode.BpmTest,
     duration_seconds: 0,
   };
   return defaultInput;

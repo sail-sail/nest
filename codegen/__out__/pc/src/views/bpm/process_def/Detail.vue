@@ -65,7 +65,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(3,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -104,21 +104,22 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.menu_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.biz_code == null)">
           <el-form-item
-            label="关联页面"
-            prop="menu_id"
+            label="关联业务"
+            prop="biz_code"
           >
-            <CustomTreeSelect
-              v-model="dialogModel.menu_id"
-              :method="getTreeMenu"
-              placeholder="请选择 关联页面"
+            <DictSelect
+              v-model="dialogModel.biz_code"
+              :set="dialogModel.biz_code = dialogModel.biz_code ?? undefined"
+              code="bpm_biz_code"
+              placeholder="请选择 关联业务"
               :readonly="isLocked || isReadonly"
-            ></CustomTreeSelect>
+            ></DictSelect>
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.current_revision_id == null) && dialogAction !== 'add' && dialogAction !== 'copy' && dialogAction !== 'edit'">
+        <template v-if="(showBuildIn || builtInModel?.current_revision_id == null) && dialogAction !== 'add' && dialogAction !== 'copy'">
           <el-form-item
             label="当前生效版本"
             prop="current_revision_id"
@@ -151,15 +152,11 @@
           <el-form-item
             label="流程描述"
             prop="description"
-            un-grid="col-span-full"
           >
             <CustomInput
               v-model="dialogModel.description"
-              type="textarea"
-              :autosize="{ minRows: 2, maxRows: 5 }"
               placeholder="请输入 流程描述"
               :readonly="isLocked || isReadonly"
-              @keyup.enter.stop
             ></CustomInput>
           </el-form-item>
         </template>
@@ -168,15 +165,24 @@
           <el-form-item
             label="备注"
             prop="rem"
-            un-grid="col-span-full"
           >
             <CustomInput
               v-model="dialogModel.rem"
-              type="textarea"
-              :autosize="{ minRows: 2, maxRows: 5 }"
               placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
-              @keyup.enter.stop
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.graph_json == null)">
+          <el-form-item
+            label="流程图"
+            prop="graph_json"
+          >
+            <CustomInput
+              v-model="dialogModel.graph_json"
+              placeholder="请输入 流程图"
+              :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -287,10 +293,6 @@ import {
   intoInputProcessDef,
 } from "./Api.ts";
 
-import {
-  getTreeMenu,
-} from "@/views/base/menu/Api.ts";
-
 import SelectInputProcessRevision from "@/views/bpm/process_revision/SelectInput.vue";
 
 const emit = defineEmits<{
@@ -351,11 +353,11 @@ watchEffect(async () => {
         message: "流程名称 长度不能超过 100",
       },
     ],
-    // 关联页面
-    menu_id: [
+    // 关联业务
+    biz_code: [
       {
         required: true,
-        message: "请选择 关联页面",
+        message: "请选择 关联业务",
       },
     ],
     // 排序
@@ -417,7 +419,7 @@ async function showDialog(
   oldDialogNotice = notice;
   dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
-    type: "auto",
+    type: "large",
     title: $$(dialogTitle),
     pointerPierce: true,
     notice: $$(dialogNotice),
@@ -697,14 +699,18 @@ async function nextId() {
 
 watch(
   () => [
-    dialogModel.menu_id,
+    dialogModel.biz_code,
+    dialogModel.current_revision_id,
   ],
   () => {
     if (!inited) {
       return;
     }
-    if (!dialogModel.menu_id) {
-      dialogModel.menu_id_lbl = "";
+    if (!dialogModel.biz_code) {
+      dialogModel.biz_code_lbl = "";
+    }
+    if (!dialogModel.current_revision_id) {
+      dialogModel.current_revision_id_lbl = "";
     }
   },
 );

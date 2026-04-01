@@ -499,8 +499,8 @@
             </el-table-column>
           </template>
           
-          <!-- 关联页面 -->
-          <template v-else-if="'menu_id_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_id == null)">
+          <!-- 关联业务 -->
+          <template v-else-if="'biz_code_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -570,6 +570,15 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 流程图 -->
+          <template v-else-if="'graph_json' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -729,8 +738,6 @@ const props = defineProps<{
   id?: ProcessDefId; // ID
   lbl?: string; // 流程名称
   lbl_like?: string; // 流程名称
-  menu_id?: string|string[]; // 关联页面
-  menu_id_lbl?: string; // 关联页面
   current_revision_id?: string|string[]; // 当前生效版本
   current_revision_id_lbl?: string; // 当前生效版本
   is_enabled?: string|string[]; // 启用
@@ -745,8 +752,6 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  menu_id: "string[]",
-  menu_id_lbl: "string[]",
   current_revision_id: "string[]",
   current_revision_id_lbl: "string[]",
   is_enabled: "number[]",
@@ -995,9 +1000,9 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "关联页面",
-      prop: "menu_id_lbl",
-      sortBy: "menu_id_lbl",
+      label: "关联业务",
+      prop: "biz_code_lbl",
+      sortBy: "biz_code",
       width: 160,
       align: "center",
       headerAlign: "center",
@@ -1034,7 +1039,7 @@ function getTableColumns(): ColumnType[] {
       label: "流程描述",
       prop: "description",
       width: 300,
-      align: "center",
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1043,6 +1048,14 @@ function getTableColumns(): ColumnType[] {
       prop: "rem",
       width: 280,
       align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "流程图",
+      prop: "graph_json",
+      width: 100,
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1344,12 +1357,13 @@ async function onImportExcel() {
   }
   const header: { [key: string]: string } = {
     [ "流程名称" ]: "lbl",
-    [ "关联页面" ]: "menu_id_lbl",
+    [ "关联业务" ]: "biz_code_lbl",
     [ "当前生效版本" ]: "current_revision_id_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
     [ "流程描述" ]: "description",
     [ "备注" ]: "rem",
+    [ "流程图" ]: "graph_json",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入",
@@ -1372,12 +1386,13 @@ async function onImportExcel() {
       {
         key_types: {
           "lbl": "string",
-          "menu_id_lbl": "string",
+          "biz_code_lbl": "string",
           "current_revision_id_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
           "description": "string",
           "rem": "string",
+          "graph_json": "string",
         },
       },
     );

@@ -35,7 +35,6 @@ use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
-use crate::base::menu::menu_model::MenuId;
 use crate::bpm::process_revision::process_revision_model::ProcessRevisionId;
 use crate::base::usr::usr_model::UsrId;
 
@@ -68,12 +67,12 @@ pub struct ProcessDefModel {
   /// 流程名称
   #[graphql(name = "lbl")]
   pub lbl: SmolStr,
-  /// 关联页面
-  #[graphql(name = "menu_id")]
-  pub menu_id: MenuId,
-  /// 关联页面
-  #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: SmolStr,
+  /// 关联业务
+  #[graphql(name = "biz_code")]
+  pub biz_code: ProcessDefBizCode,
+  /// 关联业务
+  #[graphql(name = "biz_code_lbl")]
+  pub biz_code_lbl: SmolStr,
   /// 当前生效版本
   #[graphql(name = "current_revision_id")]
   pub current_revision_id: ProcessRevisionId,
@@ -95,6 +94,9 @@ pub struct ProcessDefModel {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: SmolStr,
+  /// 流程图
+  #[graphql(name = "graph_json")]
+  pub graph_json: Option<SmolStr>,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -129,10 +131,10 @@ impl FromRow<'_, MySqlRow> for ProcessDefModel {
     // 流程名称
     let lbl: &str = row.try_get("lbl")?;
     let lbl = SmolStr::new(lbl);
-    // 关联页面
-    let menu_id: MenuId = row.try_get("menu_id")?;
-    let menu_id_lbl: Option<&str> = row.try_get("menu_id_lbl")?;
-    let menu_id_lbl = SmolStr::new(menu_id_lbl.unwrap_or_default());
+    // 关联业务
+    let biz_code_lbl: &str = row.try_get("biz_code")?;
+    let biz_code: ProcessDefBizCode = biz_code_lbl.try_into()?;
+    let biz_code_lbl = SmolStr::new(biz_code_lbl);
     // 当前生效版本
     let current_revision_id: ProcessRevisionId = row.try_get("current_revision_id")?;
     let current_revision_id_lbl: Option<&str> = row.try_get("current_revision_id_lbl")?;
@@ -148,6 +150,9 @@ impl FromRow<'_, MySqlRow> for ProcessDefModel {
     // 备注
     let rem: &str = row.try_get("rem")?;
     let rem = SmolStr::new(rem);
+    // 流程图
+    let graph_json: Option<sqlx::types::Json<serde_json::Value>> = row.try_get("graph_json")?;
+    let graph_json = graph_json.map(|v| SmolStr::new(v.to_string()));
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
@@ -178,8 +183,8 @@ impl FromRow<'_, MySqlRow> for ProcessDefModel {
       code_seq,
       code,
       lbl,
-      menu_id,
-      menu_id_lbl,
+      biz_code,
+      biz_code_lbl,
       current_revision_id,
       current_revision_id_lbl,
       is_enabled,
@@ -187,6 +192,7 @@ impl FromRow<'_, MySqlRow> for ProcessDefModel {
       order_by,
       description,
       rem,
+      graph_json,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -214,12 +220,12 @@ pub struct ProcessDefFieldComment {
   /// 流程名称
   #[graphql(name = "lbl")]
   pub lbl: SmolStr,
-  /// 关联页面
-  #[graphql(name = "menu_id")]
-  pub menu_id: SmolStr,
-  /// 关联页面
-  #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: SmolStr,
+  /// 关联业务
+  #[graphql(name = "biz_code")]
+  pub biz_code: SmolStr,
+  /// 关联业务
+  #[graphql(name = "biz_code_lbl")]
+  pub biz_code_lbl: SmolStr,
   /// 当前生效版本
   #[graphql(name = "current_revision_id")]
   pub current_revision_id: SmolStr,
@@ -241,6 +247,9 @@ pub struct ProcessDefFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: SmolStr,
+  /// 流程图
+  #[graphql(name = "graph_json")]
+  pub graph_json: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: SmolStr,
@@ -293,18 +302,9 @@ pub struct ProcessDefSearch {
   /// 流程名称
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<SmolStr>,
-  /// 关联页面
-  #[graphql(name = "menu_id")]
-  pub menu_id: Option<Vec<MenuId>>,
-  /// 关联页面
-  #[graphql(name = "menu_id_save_null")]
-  pub menu_id_is_null: Option<bool>,
-  /// 关联页面
-  #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: Option<Vec<SmolStr>>,
-  /// 关联页面
-  #[graphql(name = "menu_id_lbl_like")]
-  pub menu_id_lbl_like: Option<SmolStr>,
+  /// 关联业务
+  #[graphql(skip)]
+  pub biz_code: Option<Vec<ProcessDefBizCode>>,
   /// 当前生效版本
   #[graphql(name = "current_revision_id")]
   pub current_revision_id: Option<Vec<ProcessRevisionId>>,
@@ -335,6 +335,9 @@ pub struct ProcessDefSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<SmolStr>,
+  /// 流程图
+  #[graphql(skip)]
+  pub graph_json: Option<SmolStr>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -402,18 +405,9 @@ impl std::fmt::Debug for ProcessDefSearch {
     if let Some(ref lbl_like) = self.lbl_like {
       item = item.field("lbl_like", lbl_like);
     }
-    // 关联页面
-    if let Some(ref menu_id) = self.menu_id {
-      item = item.field("menu_id", menu_id);
-    }
-    if let Some(ref menu_id_lbl) = self.menu_id_lbl {
-      item = item.field("menu_id_lbl", menu_id_lbl);
-    }
-    if let Some(ref menu_id_lbl_like) = self.menu_id_lbl_like {
-      item = item.field("menu_id_lbl_like", menu_id_lbl_like);
-    }
-    if let Some(ref menu_id_is_null) = self.menu_id_is_null {
-      item = item.field("menu_id_is_null", menu_id_is_null);
+    // 关联业务
+    if let Some(ref biz_code) = self.biz_code {
+      item = item.field("biz_code", biz_code);
     }
     // 当前生效版本
     if let Some(ref current_revision_id) = self.current_revision_id {
@@ -449,6 +443,10 @@ impl std::fmt::Debug for ProcessDefSearch {
     }
     if let Some(ref rem_like) = self.rem_like {
       item = item.field("rem_like", rem_like);
+    }
+    // 流程图
+    if let Some(ref graph_json) = self.graph_json {
+      item = item.field("graph_json", graph_json);
     }
     // 创建人
     if let Some(ref create_usr_id) = self.create_usr_id {
@@ -509,12 +507,12 @@ pub struct ProcessDefInput {
   /// 流程名称
   #[graphql(name = "lbl")]
   pub lbl: Option<SmolStr>,
-  /// 关联页面
-  #[graphql(name = "menu_id")]
-  pub menu_id: Option<MenuId>,
-  /// 关联页面
-  #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: Option<SmolStr>,
+  /// 关联业务
+  #[graphql(name = "biz_code")]
+  pub biz_code: Option<ProcessDefBizCode>,
+  /// 关联业务
+  #[graphql(name = "biz_code_lbl")]
+  pub biz_code_lbl: Option<SmolStr>,
   /// 当前生效版本
   #[graphql(name = "current_revision_id")]
   pub current_revision_id: Option<ProcessRevisionId>,
@@ -536,6 +534,9 @@ pub struct ProcessDefInput {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<SmolStr>,
+  /// 流程图
+  #[graphql(name = "graph_json")]
+  pub graph_json: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
@@ -591,11 +592,8 @@ impl std::fmt::Debug for ProcessDefInput {
     if let Some(ref lbl) = self.lbl {
       item = item.field("lbl", lbl);
     }
-    if let Some(ref menu_id) = self.menu_id {
-      item = item.field("menu_id", menu_id);
-    }
-    if let Some(ref menu_id_lbl) = self.menu_id_lbl {
-      item = item.field("menu_id_lbl", menu_id_lbl);
+    if let Some(ref biz_code) = self.biz_code {
+      item = item.field("biz_code", biz_code);
     }
     if let Some(ref current_revision_id) = self.current_revision_id {
       item = item.field("current_revision_id", current_revision_id);
@@ -614,6 +612,9 @@ impl std::fmt::Debug for ProcessDefInput {
     }
     if let Some(ref rem) = self.rem {
       item = item.field("rem", rem);
+    }
+    if let Some(ref graph_json) = self.graph_json {
+      item = item.field("graph_json", graph_json);
     }
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
@@ -649,9 +650,9 @@ impl From<ProcessDefModel> for ProcessDefInput {
       code: model.code.into(),
       // 流程名称
       lbl: model.lbl.into(),
-      // 关联页面
-      menu_id: model.menu_id.into(),
-      menu_id_lbl: model.menu_id_lbl.into(),
+      // 关联业务
+      biz_code: model.biz_code.into(),
+      biz_code_lbl: model.biz_code_lbl.into(),
       // 当前生效版本
       current_revision_id: model.current_revision_id.into(),
       current_revision_id_lbl: model.current_revision_id_lbl.into(),
@@ -664,6 +665,8 @@ impl From<ProcessDefModel> for ProcessDefInput {
       description: model.description.into(),
       // 备注
       rem: model.rem.into(),
+      // 流程图
+      graph_json: model.graph_json,
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -696,10 +699,8 @@ impl From<ProcessDefInput> for ProcessDefSearch {
       code: input.code,
       // 流程名称
       lbl: input.lbl,
-      // 关联页面
-      menu_id: input.menu_id.map(|x| vec![x]),
-      // 关联页面
-      menu_id_lbl: input.menu_id_lbl.map(|x| vec![x]),
+      // 关联业务
+      biz_code: input.biz_code.map(|x| vec![x]),
       // 当前生效版本
       current_revision_id: input.current_revision_id.map(|x| vec![x]),
       // 当前生效版本
@@ -712,6 +713,8 @@ impl From<ProcessDefInput> for ProcessDefSearch {
       description: input.description,
       // 备注
       rem: input.rem,
+      // 流程图
+      graph_json: input.graph_json,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建人
@@ -730,6 +733,119 @@ impl From<ProcessDefInput> for ProcessDefSearch {
 }
 
 impl_id!(ProcessDefId);
+
+/// 流程定义关联业务
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum ProcessDefBizCode {
+  /// 测试流程
+  #[default]
+  #[graphql(name="bpm_test")]
+  #[serde(rename = "bpm_test")]
+  BpmTest,
+}
+
+impl fmt::Display for ProcessDefBizCode {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::BpmTest => write!(f, "bpm_test"),
+    }
+  }
+}
+
+impl From<ProcessDefBizCode> for SmolStr {
+  fn from(value: ProcessDefBizCode) -> Self {
+    match value {
+      ProcessDefBizCode::BpmTest => "bpm_test".into(),
+    }
+  }
+}
+
+impl From<ProcessDefBizCode> for String {
+  fn from(value: ProcessDefBizCode) -> Self {
+    match value {
+      ProcessDefBizCode::BpmTest => "bpm_test".into(),
+    }
+  }
+}
+
+impl From<ProcessDefBizCode> for ArgType {
+  fn from(value: ProcessDefBizCode) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl FromStr for ProcessDefBizCode {
+  type Err = color_eyre::eyre::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "bpm_test" => Ok(Self::BpmTest),
+      _ => Err(eyre!("{s} 无法转换到 关联业务")),
+    }
+  }
+}
+
+impl TryFrom<&str> for ProcessDefBizCode {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
+    match s {
+      "bpm_test" => Ok(Self::BpmTest),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "biz_code".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 关联业务".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl TryFrom<SmolStr> for ProcessDefBizCode {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "bpm_test" => Ok(Self::BpmTest),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "biz_code".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 关联业务".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
+
+impl ProcessDefBizCode {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::BpmTest => "bpm_test",
+    }
+  }
+}
+
+impl TryFrom<String> for ProcessDefBizCode {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "bpm_test" => Ok(Self::BpmTest),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "biz_code".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "{s} 无法转换到 关联业务".to_owned(),
+          )),
+        }),
+      )),
+    }
+  }
+}
 
 /// 流程定义 检测字段是否允许前端排序
 pub fn check_sort_process_def(

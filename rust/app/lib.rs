@@ -2,6 +2,7 @@
 #![recursion_limit="512"]
 
 pub mod base;
+pub mod bpm;
 
 use async_graphql::{
   MergedObject,
@@ -19,6 +20,7 @@ pub struct Query(
 pub struct Mutation(
   generated::common::CommonMutation,
   generated::GenMutation,
+  crate::bpm::AppBpmMutation,
 );
 
 pub type QuerySchema = Schema<Query, Mutation, EmptySubscription>;

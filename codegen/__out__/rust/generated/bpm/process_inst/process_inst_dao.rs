@@ -59,7 +59,6 @@ use super::process_inst_model::*;
 use crate::base::tenant::tenant_model::TenantId;
 use crate::bpm::process_def::process_def_model::ProcessDefId;
 use crate::bpm::process_revision::process_revision_model::ProcessRevisionId;
-use crate::base::menu::menu_model::MenuId;
 use crate::base::usr::usr_model::UsrId;
 use crate::base::dept::dept_model::DeptId;
 
@@ -311,72 +310,28 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
-  // 关联页面
+  // 关联业务
   {
-    let menu_id: Option<Vec<MenuId>> = match search {
-      Some(item) => item.menu_id.clone(),
+    let biz_code: Option<Vec<ProcessInstBizCode>> = match search {
+      Some(item) => item.biz_code.clone(),
       None => None,
     };
-    if let Some(menu_id) = menu_id {
+    if let Some(biz_code) = biz_code {
       let arg = {
-        if menu_id.is_empty() {
+        if biz_code.is_empty() {
           SmolStr::new("null")
         } else {
-          let mut items = Vec::with_capacity(menu_id.len());
-          for item in menu_id {
+          let mut items = Vec::with_capacity(biz_code.len());
+          for item in biz_code {
             args.push(item.into());
             items.push("?");
           }
           SmolStr::new(items.join(","))
         }
       };
-      where_query.push_str(" and t.menu_id in (");
+      where_query.push_str(" and t.biz_code in (");
       where_query.push_str(&arg);
       where_query.push(')');
-    }
-  }
-  {
-    let menu_id_is_null: bool = match search {
-      Some(item) => item.menu_id_is_null.unwrap_or(false),
-      None => false,
-    };
-    if menu_id_is_null {
-      where_query.push_str(" and t.menu_id is null");
-    }
-  }
-  {
-    let menu_id_lbl: Option<Vec<SmolStr>> = match search {
-      Some(item) => item.menu_id_lbl.clone(),
-      None => None,
-    };
-    if let Some(menu_id_lbl) = menu_id_lbl {
-      let arg = {
-        if menu_id_lbl.is_empty() {
-          SmolStr::new("null")
-        } else {
-          let mut items = Vec::with_capacity(menu_id_lbl.len());
-          for item in menu_id_lbl {
-            args.push(item.into());
-            items.push("?");
-          }
-          SmolStr::new(items.join(","))
-        }
-      };
-      where_query.push_str(" and t.menu_id_lbl in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-    {
-      let menu_id_lbl_like = match search {
-        Some(item) => item.menu_id_lbl_like.clone(),
-        None => None,
-      };
-      if let Some(menu_id_lbl_like) = menu_id_lbl_like {
-        if !menu_id_lbl_like.is_empty() {
-          where_query.push_str(" and menu_id_lbl like ?");
-          args.push(format!("%{}%", sql_like(&menu_id_lbl_like)).into());
-        }
-      }
     }
   }
   // 业务数据ID
@@ -843,14 +798,14 @@ pub async fn find_all_process_inst(
       return Err(eyre!("search.status.length > {ids_limit}"));
     }
   }
-  // 关联页面
-  if let Some(search) = &search && let Some(menu_id) = &search.menu_id {
-    let len = menu_id.len();
+  // 关联业务
+  if let Some(search) = &search && let Some(biz_code) = &search.biz_code {
+    let len = biz_code.len();
     if len == 0 {
       return Ok(vec![]);
     }
     if len > ids_limit {
-      return Err(eyre!("search.menu_id.length > {ids_limit}"));
+      return Err(eyre!("search.biz_code.length > {ids_limit}"));
     }
   }
   // 发起人
@@ -948,10 +903,12 @@ pub async fn find_all_process_inst(
   
   let dict_vec = get_dict(&[
     "bpm_inst_status",
+    "bpm_biz_code",
   ]).await?;
   let [
     status_dict,
-  ]: [Vec<_>; 1] = dict_vec
+    biz_code_dict,
+  ]: [Vec<_>; 2] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -965,6 +922,15 @@ pub async fn find_all_process_inst(
         .find(|item| item.val == model.status.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.status.clone().into())
+    };
+    
+    // 关联业务
+    model.biz_code_lbl = {
+      biz_code_dict
+        .iter()
+        .find(|item| item.val == model.biz_code.as_str())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.biz_code.clone().into())
     };
     
   }
@@ -1048,9 +1014,9 @@ pub async fn find_count_process_inst(
       return Err(eyre!("search.status.length > {ids_limit}"));
     }
   }
-  // 关联页面
-  if let Some(search) = &search && search.menu_id.is_some() {
-    let len = search.menu_id.as_ref().unwrap().len();
+  // 关联业务
+  if let Some(search) = &search && search.biz_code.is_some() {
+    let len = search.biz_code.as_ref().unwrap().len();
     if len == 0 {
       return Ok(0);
     }
@@ -1059,7 +1025,7 @@ pub async fn find_count_process_inst(
       .and_then(|x| x.get_ids_limit())
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
-      return Err(eyre!("search.menu_id.length > {ids_limit}"));
+      return Err(eyre!("search.biz_code.length > {ids_limit}"));
     }
   }
   // 发起人
@@ -1169,8 +1135,8 @@ pub async fn get_field_comments_process_inst(
     process_revision_id_lbl: "流程版本".into(),
     status: "状态".into(),
     status_lbl: "状态".into(),
-    menu_id: "关联页面".into(),
-    menu_id_lbl: "关联页面".into(),
+    biz_code: "关联业务".into(),
+    biz_code_lbl: "关联业务".into(),
     form_data_id: "业务数据ID".into(),
     start_usr_id: "发起人".into(),
     start_usr_id_lbl: "发起人".into(),
@@ -1612,9 +1578,9 @@ pub async fn exists_process_inst(
       return Err(eyre!("search.status.length > {ids_limit}"));
     }
   }
-  // 关联页面
-  if let Some(search) = &search && search.menu_id.is_some() {
-    let len = search.menu_id.as_ref().unwrap().len();
+  // 关联业务
+  if let Some(search) = &search && search.biz_code.is_some() {
+    let len = search.biz_code.as_ref().unwrap().len();
     if len == 0 {
       return Ok(false);
     }
@@ -1623,7 +1589,7 @@ pub async fn exists_process_inst(
       .and_then(|x| x.get_ids_limit())
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
-      return Err(eyre!("search.menu_id.length > {ids_limit}"));
+      return Err(eyre!("search.biz_code.length > {ids_limit}"));
     }
   }
   // 发起人
@@ -1889,6 +1855,7 @@ pub async fn set_id_by_lbl_process_inst(
   
   let dict_vec = get_dict(&[
     "bpm_inst_status",
+    "bpm_biz_code",
   ]).await?;
   
   // 状态
@@ -1899,6 +1866,21 @@ pub async fn set_id_by_lbl_process_inst(
         .iter()
         .find(|item| {
           item.lbl == status_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
+  // 关联业务
+  if input.biz_code.is_none() {
+    let biz_code_dict = &dict_vec[1];
+    if let Some(biz_code_lbl) = input.biz_code_lbl.clone() {
+      input.biz_code = biz_code_dict
+        .iter()
+        .find(|item| {
+          item.lbl == biz_code_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -2003,40 +1985,29 @@ pub async fn set_id_by_lbl_process_inst(
     input.status_lbl = lbl;
   }
   
-  // 关联页面
-  if input.menu_id_lbl.is_some()
-    && !input.menu_id_lbl.as_ref().unwrap().is_empty()
-    && input.menu_id.is_none()
+  // 关联业务
+  if
+    input.biz_code_lbl.is_some() && !input.biz_code_lbl.as_ref().unwrap().is_empty()
+    && input.biz_code.is_none()
   {
-    input.menu_id_lbl = input.menu_id_lbl.map(|item| 
-      SmolStr::new(item.trim())
-    );
-    let model = crate::base::menu::menu_dao::find_one_menu(
-      crate::base::menu::menu_model::MenuSearch {
-        lbl: input.menu_id_lbl.clone(),
-        ..Default::default()
-      }.into(),
-      None,
-      Some(Options::new().set_is_debug(Some(false))),
-    ).await?;
-    if let Some(model) = model {
-      input.menu_id = model.id.into();
+    let biz_code_dict = &dict_vec[1];
+    let dict_model = biz_code_dict.iter().find(|item| {
+      item.lbl == input.biz_code_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    if let Some(val) = val {
+      input.biz_code = val.parse::<ProcessInstBizCode>()?.into();
     }
   } else if
-    (input.menu_id_lbl.is_none() || input.menu_id_lbl.as_ref().unwrap().is_empty())
-    && input.menu_id.is_some()
+    (input.biz_code_lbl.is_none() || input.biz_code_lbl.as_ref().unwrap().is_empty())
+    && input.biz_code.is_some()
   {
-    let menu_model = crate::base::menu::menu_dao::find_one_menu(
-      crate::base::menu::menu_model::MenuSearch {
-        id: input.menu_id.clone(),
-        ..Default::default()
-      }.into(),
-      None,
-      Some(Options::new().set_is_debug(Some(false))),
-    ).await?;
-    if let Some(menu_model) = menu_model {
-      input.menu_id_lbl = menu_model.lbl.into();
-    }
+    let biz_code_dict = &dict_vec[1];
+    let dict_model = biz_code_dict.iter().find(|item| {
+      item.val == input.biz_code.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    input.biz_code_lbl = lbl;
   }
   
   // 发起人
@@ -2271,10 +2242,8 @@ async fn _creates(
   sql_fields += ",process_revision_id";
   // 状态
   sql_fields += ",status";
-  // 关联页面
-  sql_fields += ",menu_id_lbl";
-  // 关联页面
-  sql_fields += ",menu_id";
+  // 关联业务
+  sql_fields += ",biz_code";
   // 业务数据ID
   sql_fields += ",form_data_id";
   // 发起人
@@ -2469,21 +2438,10 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 关联页面
-    if let Some(menu_id_lbl) = input.menu_id_lbl {
-      if !menu_id_lbl.is_empty() {
-        sql_values += ",?";
-        args.push(menu_id_lbl.into());
-      } else {
-        sql_values += ",default";
-      }
-    } else {
-      sql_values += ",default";
-    }
-    // 关联页面
-    if let Some(menu_id) = input.menu_id {
+    // 关联业务
+    if let Some(biz_code) = input.biz_code {
       sql_values += ",?";
-      args.push(menu_id.into());
+      args.push(biz_code.into());
     } else {
       sql_values += ",default";
     }
@@ -2837,19 +2795,11 @@ pub async fn update_by_id_process_inst(
     sql_fields += "status=?,";
     args.push(status.into());
   }
-  // 关联页面
-  if let Some(menu_id_lbl) = input.menu_id_lbl {
-    if !menu_id_lbl.is_empty() {
-      field_num += 1;
-      sql_fields += "menu_id_lbl=?,";
-      args.push(menu_id_lbl.into());
-    }
-  }
-  // 关联页面
-  if let Some(menu_id) = input.menu_id {
+  // 关联业务
+  if let Some(biz_code) = input.biz_code {
     field_num += 1;
-    sql_fields += "menu_id=?,";
-    args.push(menu_id.into());
+    sql_fields += "biz_code=?,";
+    args.push(biz_code.into());
   }
   // 业务数据ID
   if let Some(form_data_id) = input.form_data_id.clone() {
@@ -3037,7 +2987,6 @@ fn get_cache_tables() -> Vec<&'static str> {
     table,
     "bpm_process_def",
     "bpm_process_revision",
-    "base_menu",
     "base_dept",
   ]
 }

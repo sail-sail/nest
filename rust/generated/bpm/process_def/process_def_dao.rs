@@ -58,7 +58,6 @@ use crate::common::dict_detail::dict_detail_dao::get_dict;
 use super::process_def_model::*;
 
 use crate::base::tenant::tenant_model::TenantId;
-use crate::base::menu::menu_model::MenuId;
 use crate::bpm::process_revision::process_revision_model::ProcessRevisionId;
 use crate::base::usr::usr_model::UsrId;
 
@@ -75,7 +74,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 16 * 2);
+  let mut where_query = String::with_capacity(80 * 17 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -186,72 +185,28 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
   }
-  // 关联页面
+  // 关联业务
   {
-    let menu_id: Option<Vec<MenuId>> = match search {
-      Some(item) => item.menu_id.clone(),
+    let biz_code: Option<Vec<ProcessDefBizCode>> = match search {
+      Some(item) => item.biz_code.clone(),
       None => None,
     };
-    if let Some(menu_id) = menu_id {
+    if let Some(biz_code) = biz_code {
       let arg = {
-        if menu_id.is_empty() {
+        if biz_code.is_empty() {
           SmolStr::new("null")
         } else {
-          let mut items = Vec::with_capacity(menu_id.len());
-          for item in menu_id {
+          let mut items = Vec::with_capacity(biz_code.len());
+          for item in biz_code {
             args.push(item.into());
             items.push("?");
           }
           SmolStr::new(items.join(","))
         }
       };
-      where_query.push_str(" and t.menu_id in (");
+      where_query.push_str(" and t.biz_code in (");
       where_query.push_str(&arg);
       where_query.push(')');
-    }
-  }
-  {
-    let menu_id_is_null: bool = match search {
-      Some(item) => item.menu_id_is_null.unwrap_or(false),
-      None => false,
-    };
-    if menu_id_is_null {
-      where_query.push_str(" and t.menu_id is null");
-    }
-  }
-  {
-    let menu_id_lbl: Option<Vec<SmolStr>> = match search {
-      Some(item) => item.menu_id_lbl.clone(),
-      None => None,
-    };
-    if let Some(menu_id_lbl) = menu_id_lbl {
-      let arg = {
-        if menu_id_lbl.is_empty() {
-          SmolStr::new("null")
-        } else {
-          let mut items = Vec::with_capacity(menu_id_lbl.len());
-          for item in menu_id_lbl {
-            args.push(item.into());
-            items.push("?");
-          }
-          SmolStr::new(items.join(","))
-        }
-      };
-      where_query.push_str(" and t.menu_id_lbl in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-    {
-      let menu_id_lbl_like = match search {
-        Some(item) => item.menu_id_lbl_like.clone(),
-        None => None,
-      };
-      if let Some(menu_id_lbl_like) = menu_id_lbl_like {
-        if !menu_id_lbl_like.is_empty() {
-          where_query.push_str(" and menu_id_lbl like ?");
-          args.push(format!("%{}%", sql_like(&menu_id_lbl_like)).into());
-        }
-      }
     }
   }
   // 当前生效版本
@@ -399,6 +354,17 @@ async fn get_where_query(
     if let Some(rem_like) = rem_like && !rem_like.is_empty() {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
+    }
+  }
+  // 流程图
+  {
+    let graph_json = match search {
+      Some(item) => item.graph_json.clone(),
+      None => None,
+    };
+    if let Some(graph_json) = graph_json {
+      where_query.push_str(" and t.graph_json=?");
+      args.push(graph_json.into());
     }
   }
   // 创建人
@@ -633,14 +599,14 @@ pub async fn find_all_process_def(
       return Ok(vec![]);
     }
   }
-  // 关联页面
-  if let Some(search) = &search && let Some(menu_id) = &search.menu_id {
-    let len = menu_id.len();
+  // 关联业务
+  if let Some(search) = &search && let Some(biz_code) = &search.biz_code {
+    let len = biz_code.len();
     if len == 0 {
       return Ok(vec![]);
     }
     if len > ids_limit {
-      return Err(eyre!("search.menu_id.length > {ids_limit}"));
+      return Err(eyre!("search.biz_code.length > {ids_limit}"));
     }
   }
   // 当前生效版本
@@ -744,16 +710,27 @@ pub async fn find_all_process_def(
   }
   
   let dict_vec = get_dict(&[
+    "bpm_biz_code",
     "is_enabled",
   ]).await?;
   let [
+    biz_code_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 1] = dict_vec
+  ]: [Vec<_>; 2] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
   #[allow(unused_variables)]
   for model in &mut res {
+    
+    // 关联业务
+    model.biz_code_lbl = {
+      biz_code_dict
+        .iter()
+        .find(|item| item.val == model.biz_code.as_str())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.biz_code.clone().into())
+    };
     
     // 启用
     model.is_enabled_lbl = {
@@ -803,9 +780,9 @@ pub async fn find_count_process_def(
       return Ok(0);
     }
   }
-  // 关联页面
-  if let Some(search) = &search && search.menu_id.is_some() {
-    let len = search.menu_id.as_ref().unwrap().len();
+  // 关联业务
+  if let Some(search) = &search && search.biz_code.is_some() {
+    let len = search.biz_code.as_ref().unwrap().len();
     if len == 0 {
       return Ok(0);
     }
@@ -814,7 +791,7 @@ pub async fn find_count_process_def(
       .and_then(|x| x.get_ids_limit())
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
-      return Err(eyre!("search.menu_id.length > {ids_limit}"));
+      return Err(eyre!("search.biz_code.length > {ids_limit}"));
     }
   }
   // 当前生效版本
@@ -919,8 +896,8 @@ pub async fn get_field_comments_process_def(
     id: "ID".into(),
     code: "编码".into(),
     lbl: "流程名称".into(),
-    menu_id: "关联页面".into(),
-    menu_id_lbl: "关联页面".into(),
+    biz_code: "关联业务".into(),
+    biz_code_lbl: "关联业务".into(),
     current_revision_id: "当前生效版本".into(),
     current_revision_id_lbl: "当前生效版本".into(),
     is_enabled: "启用".into(),
@@ -928,6 +905,7 @@ pub async fn get_field_comments_process_def(
     order_by: "排序".into(),
     description: "流程描述".into(),
     rem: "备注".into(),
+    graph_json: "流程图".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
     create_time: "创建时间".into(),
@@ -1319,9 +1297,9 @@ pub async fn exists_process_def(
       return Ok(false);
     }
   }
-  // 关联页面
-  if let Some(search) = &search && search.menu_id.is_some() {
-    let len = search.menu_id.as_ref().unwrap().len();
+  // 关联业务
+  if let Some(search) = &search && search.biz_code.is_some() {
+    let len = search.biz_code.as_ref().unwrap().len();
     if len == 0 {
       return Ok(false);
     }
@@ -1330,7 +1308,7 @@ pub async fn exists_process_def(
       .and_then(|x| x.get_ids_limit())
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
-      return Err(eyre!("search.menu_id.length > {ids_limit}"));
+      return Err(eyre!("search.biz_code.length > {ids_limit}"));
     }
   }
   // 当前生效版本
@@ -1651,12 +1629,28 @@ pub async fn set_id_by_lbl_process_def(
   let mut input = input;
   
   let dict_vec = get_dict(&[
+    "bpm_biz_code",
     "is_enabled",
   ]).await?;
   
+  // 关联业务
+  if input.biz_code.is_none() {
+    let biz_code_dict = &dict_vec[0];
+    if let Some(biz_code_lbl) = input.biz_code_lbl.clone() {
+      input.biz_code = biz_code_dict
+        .iter()
+        .find(|item| {
+          item.lbl == biz_code_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[0];
+    let is_enabled_dict = &dict_vec[1];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -1669,40 +1663,29 @@ pub async fn set_id_by_lbl_process_def(
     }
   }
   
-  // 关联页面
-  if input.menu_id_lbl.is_some()
-    && !input.menu_id_lbl.as_ref().unwrap().is_empty()
-    && input.menu_id.is_none()
+  // 关联业务
+  if
+    input.biz_code_lbl.is_some() && !input.biz_code_lbl.as_ref().unwrap().is_empty()
+    && input.biz_code.is_none()
   {
-    input.menu_id_lbl = input.menu_id_lbl.map(|item| 
-      SmolStr::new(item.trim())
-    );
-    let model = crate::base::menu::menu_dao::find_one_menu(
-      crate::base::menu::menu_model::MenuSearch {
-        lbl: input.menu_id_lbl.clone(),
-        ..Default::default()
-      }.into(),
-      None,
-      Some(Options::new().set_is_debug(Some(false))),
-    ).await?;
-    if let Some(model) = model {
-      input.menu_id = model.id.into();
+    let biz_code_dict = &dict_vec[0];
+    let dict_model = biz_code_dict.iter().find(|item| {
+      item.lbl == input.biz_code_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    if let Some(val) = val {
+      input.biz_code = val.parse::<ProcessDefBizCode>()?.into();
     }
   } else if
-    (input.menu_id_lbl.is_none() || input.menu_id_lbl.as_ref().unwrap().is_empty())
-    && input.menu_id.is_some()
+    (input.biz_code_lbl.is_none() || input.biz_code_lbl.as_ref().unwrap().is_empty())
+    && input.biz_code.is_some()
   {
-    let menu_model = crate::base::menu::menu_dao::find_one_menu(
-      crate::base::menu::menu_model::MenuSearch {
-        id: input.menu_id.clone(),
-        ..Default::default()
-      }.into(),
-      None,
-      Some(Options::new().set_is_debug(Some(false))),
-    ).await?;
-    if let Some(menu_model) = menu_model {
-      input.menu_id_lbl = menu_model.lbl.into();
-    }
+    let biz_code_dict = &dict_vec[0];
+    let dict_model = biz_code_dict.iter().find(|item| {
+      item.val == input.biz_code.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    input.biz_code_lbl = lbl;
   }
   
   // 当前生效版本
@@ -1746,7 +1729,7 @@ pub async fn set_id_by_lbl_process_def(
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[0];
+    let is_enabled_dict = &dict_vec[1];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
@@ -1758,7 +1741,7 @@ pub async fn set_id_by_lbl_process_def(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[0];
+    let is_enabled_dict = &dict_vec[1];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
@@ -1918,7 +1901,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 16 + 20);
+  let mut sql_fields = String::with_capacity(80 * 17 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1934,10 +1917,8 @@ async fn _creates(
   sql_fields += ",code";
   // 流程名称
   sql_fields += ",lbl";
-  // 关联页面
-  sql_fields += ",menu_id_lbl";
-  // 关联页面
-  sql_fields += ",menu_id";
+  // 关联业务
+  sql_fields += ",biz_code";
   // 当前生效版本
   sql_fields += ",current_revision_id_lbl";
   // 当前生效版本
@@ -1950,9 +1931,11 @@ async fn _creates(
   sql_fields += ",description";
   // 备注
   sql_fields += ",rem";
+  // 流程图
+  sql_fields += ",graph_json";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 16 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 17 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2099,21 +2082,10 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 关联页面
-    if let Some(menu_id_lbl) = input.menu_id_lbl {
-      if !menu_id_lbl.is_empty() {
-        sql_values += ",?";
-        args.push(menu_id_lbl.into());
-      } else {
-        sql_values += ",default";
-      }
-    } else {
-      sql_values += ",default";
-    }
-    // 关联页面
-    if let Some(menu_id) = input.menu_id {
+    // 关联业务
+    if let Some(biz_code) = input.biz_code {
       sql_values += ",?";
-      args.push(menu_id.into());
+      args.push(biz_code.into());
     } else {
       sql_values += ",default";
     }
@@ -2160,6 +2132,13 @@ async fn _creates(
     if let Some(rem) = input.rem {
       sql_values += ",?";
       args.push(rem.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 流程图
+    if let Some(graph_json) = input.graph_json {
+      sql_values += ",?";
+      args.push(graph_json.into());
     } else {
       sql_values += ",default";
     }
@@ -2466,7 +2445,7 @@ pub async fn update_by_id_process_def(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 16 + 20);
+  let mut sql_fields = String::with_capacity(80 * 17 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2493,19 +2472,11 @@ pub async fn update_by_id_process_def(
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
-  // 关联页面
-  if let Some(menu_id_lbl) = input.menu_id_lbl {
-    if !menu_id_lbl.is_empty() {
-      field_num += 1;
-      sql_fields += "menu_id_lbl=?,";
-      args.push(menu_id_lbl.into());
-    }
-  }
-  // 关联页面
-  if let Some(menu_id) = input.menu_id {
+  // 关联业务
+  if let Some(biz_code) = input.biz_code {
     field_num += 1;
-    sql_fields += "menu_id=?,";
-    args.push(menu_id.into());
+    sql_fields += "biz_code=?,";
+    args.push(biz_code.into());
   }
   // 当前生效版本
   if let Some(current_revision_id_lbl) = input.current_revision_id_lbl {
@@ -2544,6 +2515,12 @@ pub async fn update_by_id_process_def(
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());
+  }
+  // 流程图
+  if let Some(graph_json) = input.graph_json {
+    field_num += 1;
+    sql_fields += "graph_json=?,";
+    args.push(graph_json.into());
   }
   
   if field_num > 0 {
@@ -2677,7 +2654,6 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_process_def();
   vec![
     table,
-    "base_menu",
     "bpm_process_revision",
   ]
 }

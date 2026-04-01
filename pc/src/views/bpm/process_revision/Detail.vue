@@ -65,13 +65,10 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(3,380px)] rows-[auto_1fr]"
-        un-grid-auto-rows="[auto]"
+        un-grid="~ cols-[repeat(3,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
-        un-flex=" [1_0_0]"
-        un-overflow-hidden
         
         :model="dialogModel"
         :rules="form_rules"
@@ -124,21 +121,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.graph_json == null)">
-          <el-form-item
-            label="流程图"
-            prop="graph_json"
-            un-grid-col="span-full"
-            un-self-stretch
-            un-min-h="0"
-          >
-            <FlowDesigner
-              v-model="dialogModel.graph_json"
-              :readonly="isLocked || isReadonly"
-            />
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.publish_time == null) && dialogAction !== 'add' && dialogAction !== 'copy' && dialogAction !== 'edit'">
           <el-form-item
             label="发布时间"
@@ -171,9 +153,26 @@
         </template>
         
       </el-form>
+        
+      <template v-if="(showBuildIn || builtInModel?.graph_json == null)">
+        <el-form-item
+          label="流程图"
+          prop="graph_json"
+          un-grid-col="span-full"
+          un-w="full"
+          un-flex="[1_0_0]"
+          un-overflow-hidden
+        >
+          <FlowDesigner
+            v-model="dialogModel.graph_json"
+            :readonly="isLocked || isReadonly"
+          ></FlowDesigner>
+        </el-form-item>
+      </template>
+      
     </div>
     <div
-      un-p="y-3"
+      un-p="b-3"
       un-box-border
       un-flex
       un-justify-center
@@ -386,7 +385,7 @@ async function showDialog(
   oldDialogNotice = notice;
   dialogNotice = notice ?? "";
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
-    type: "medium",
+    type: "large",
     title: $$(dialogTitle),
     pointerPierce: true,
     notice: $$(dialogNotice),
