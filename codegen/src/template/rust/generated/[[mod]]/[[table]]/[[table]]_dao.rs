@@ -167,7 +167,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
     return item.COLUMN_NAME === inlineForeignTab.column;
   });
   if (!inline_column) {
-    throw `inlineForeignTab 中的表: ${ mod }_${ table } 不存在`;
+    throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 的列 ${ inlineForeignTab.column } 不存在`;
     process.exit(1);
   }
   const inline_column_modelLabel = inline_column.modelLabel;
@@ -5606,7 +5606,7 @@ async fn _creates(
         return item.COLUMN_NAME === inlineForeignTab.column;
       });
       if (!inline_column) {
-        throw `inlineForeignTab 中的表: ${ mod }_${ table } 不存在`;
+        throw `inlineForeignTab 中的 column: ${ inlineForeignTab.column } 在表 ${ mod }_${ table } 中不存在`;
         process.exit(1);
       }
       const inline_column_modelLabel = inline_column.modelLabel;

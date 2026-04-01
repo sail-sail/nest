@@ -16,23 +16,6 @@
   "rules": {
     "unicorn/no-single-promise-in-promise-methods": "allow",
     "unicorn/no-useless-spread": "allow",
-    "@typescript-eslint/no-unused-vars": "allow",
-    "vue/prop-name-casing": "allow",
-    "vue/html-self-closing": "allow",
-    "vue/multi-word-component-names": "allow",
-    "vue/multiline-html-element-content-newline": "allow",
-    "vue/html-indent": [
-      "error",
-      2,
-      {
-        "attribute": 1,
-        "baseIndent": 0,
-        "closeBracket": 0,
-        "alignAttributesVertically": true,
-        "ignores": []
-      }
-    ],
-    "vue/no-dupe-keys": "allow",
-    "no-useless-assignment": "allow"
+    "@typescript-eslint/no-unused-vars": "allow"
   }
 }

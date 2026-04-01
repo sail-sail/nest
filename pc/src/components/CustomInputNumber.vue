@@ -177,6 +177,9 @@ const modelValueComputed = $computed({
 
 const modelLabel = $computed(() => {
   if (modelValue == null) {
+    if (props.readonlyPlaceholder) {
+      return props.readonlyPlaceholder;
+    }
     return "";
   }
   if (isNaN(Number(modelValue))) {
