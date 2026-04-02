@@ -44,7 +44,7 @@ export const logFields = [
   // 操作人
   "usr_id",
   "usr_id_lbl",
-  // 意见
+  // 审批意见
   "opinion",
   // 节点名称
   "node_label",

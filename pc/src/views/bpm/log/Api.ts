@@ -47,7 +47,7 @@ export function intoInputLog(
     // 操作人
     usr_id: model?.usr_id,
     usr_id_lbl: model?.usr_id_lbl,
-    // 意见
+    // 审批意见
     opinion: model?.opinion,
     // 节点名称
     node_label: model?.node_label,

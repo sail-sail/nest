@@ -182,12 +182,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.opinion == null)">
           <el-form-item
-            label="意见"
+            label="审批意见"
             prop="opinion"
           >
             <CustomInput
               v-model="dialogModel.opinion"
-              placeholder="请输入 意见"
+              placeholder="请输入 审批意见"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>

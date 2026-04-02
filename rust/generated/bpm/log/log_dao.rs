@@ -427,7 +427,7 @@ async fn get_where_query(
       }
     }
   }
-  // 意见
+  // 审批意见
   {
     let opinion = match search {
       Some(item) => item.opinion.clone(),
@@ -1039,7 +1039,7 @@ pub async fn get_field_comments_log(
     action_lbl: "动作".into(),
     usr_id: "操作人".into(),
     usr_id_lbl: "操作人".into(),
-    opinion: "意见".into(),
+    opinion: "审批意见".into(),
     node_label: "节点名称".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
@@ -2053,7 +2053,7 @@ async fn _creates(
   sql_fields += ",usr_id_lbl";
   // 操作人
   sql_fields += ",usr_id";
-  // 意见
+  // 审批意见
   sql_fields += ",opinion";
   // 节点名称
   sql_fields += ",node_label";
@@ -2264,7 +2264,7 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 意见
+    // 审批意见
     if let Some(opinion) = input.opinion {
       sql_values += ",?";
       args.push(opinion.into());
@@ -2586,7 +2586,7 @@ pub async fn update_by_id_log(
     sql_fields += "usr_id=?,";
     args.push(usr_id.into());
   }
-  // 意见
+  // 审批意见
   if let Some(opinion) = input.opinion.clone() {
     field_num += 1;
     sql_fields += "opinion=?,";

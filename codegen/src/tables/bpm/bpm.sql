@@ -104,7 +104,7 @@ CREATE TABLE `bpm_node_inst` (
   `process_inst_id` varchar(22) NOT NULL DEFAULT '' COMMENT '流程实例',
   `process_inst_id_lbl` varchar(200) NOT NULL DEFAULT '' COMMENT '流程实例',
   `node_id` varchar(45) NOT NULL DEFAULT '' COMMENT '节点ID',
-  `node_type` ENUM('start', 'approve', 'condition', 'parallel', 'end') NOT NULL DEFAULT 'approve' COMMENT '节点类型,dict:bpm_node_type',
+  `node_type` ENUM('start', 'approve', 'condition_group', 'cc', 'end') NOT NULL DEFAULT 'approve' COMMENT '节点类型,dict:bpm_node_type',
   `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '节点名称',
   `status` ENUM('pending', 'running', 'completed', 'skipped', 'rejected') NOT NULL DEFAULT 'pending' COMMENT '节点状态,dict:bpm_node_inst_status',
   `start_time` datetime DEFAULT NULL COMMENT '开始时间',

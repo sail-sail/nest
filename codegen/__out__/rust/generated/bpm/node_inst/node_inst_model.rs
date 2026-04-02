@@ -571,14 +571,14 @@ pub enum NodeInstNodeType {
   #[graphql(name="approve")]
   #[serde(rename = "approve")]
   Approve,
-  /// 条件分支
-  #[graphql(name="condition")]
-  #[serde(rename = "condition")]
-  Condition,
-  /// 并行网关
-  #[graphql(name="parallel")]
-  #[serde(rename = "parallel")]
-  Parallel,
+  /// 条件分支组
+  #[graphql(name="condition_group")]
+  #[serde(rename = "condition_group")]
+  ConditionGroup,
+  /// 抄送
+  #[graphql(name="cc")]
+  #[serde(rename = "cc")]
+  Cc,
   /// 结束
   #[graphql(name="end")]
   #[serde(rename = "end")]
@@ -590,8 +590,8 @@ impl fmt::Display for NodeInstNodeType {
     match self {
       Self::Start => write!(f, "start"),
       Self::Approve => write!(f, "approve"),
-      Self::Condition => write!(f, "condition"),
-      Self::Parallel => write!(f, "parallel"),
+      Self::ConditionGroup => write!(f, "condition_group"),
+      Self::Cc => write!(f, "cc"),
       Self::End => write!(f, "end"),
     }
   }
@@ -602,8 +602,8 @@ impl From<NodeInstNodeType> for SmolStr {
     match value {
       NodeInstNodeType::Start => "start".into(),
       NodeInstNodeType::Approve => "approve".into(),
-      NodeInstNodeType::Condition => "condition".into(),
-      NodeInstNodeType::Parallel => "parallel".into(),
+      NodeInstNodeType::ConditionGroup => "condition_group".into(),
+      NodeInstNodeType::Cc => "cc".into(),
       NodeInstNodeType::End => "end".into(),
     }
   }
@@ -614,8 +614,8 @@ impl From<NodeInstNodeType> for String {
     match value {
       NodeInstNodeType::Start => "start".into(),
       NodeInstNodeType::Approve => "approve".into(),
-      NodeInstNodeType::Condition => "condition".into(),
-      NodeInstNodeType::Parallel => "parallel".into(),
+      NodeInstNodeType::ConditionGroup => "condition_group".into(),
+      NodeInstNodeType::Cc => "cc".into(),
       NodeInstNodeType::End => "end".into(),
     }
   }
@@ -634,8 +634,8 @@ impl FromStr for NodeInstNodeType {
     match s {
       "start" => Ok(Self::Start),
       "approve" => Ok(Self::Approve),
-      "condition" => Ok(Self::Condition),
-      "parallel" => Ok(Self::Parallel),
+      "condition_group" => Ok(Self::ConditionGroup),
+      "cc" => Ok(Self::Cc),
       "end" => Ok(Self::End),
       _ => Err(eyre!("{s} 无法转换到 节点类型")),
     }
@@ -649,8 +649,8 @@ impl TryFrom<&str> for NodeInstNodeType {
     match s {
       "start" => Ok(Self::Start),
       "approve" => Ok(Self::Approve),
-      "condition" => Ok(Self::Condition),
-      "parallel" => Ok(Self::Parallel),
+      "condition_group" => Ok(Self::ConditionGroup),
+      "cc" => Ok(Self::Cc),
       "end" => Ok(Self::End),
       _ => Err(sqlx::Error::Decode(
         Box::new(sqlx::Error::ColumnDecode {
@@ -671,8 +671,8 @@ impl TryFrom<SmolStr> for NodeInstNodeType {
     match s.as_str() {
       "start" => Ok(Self::Start),
       "approve" => Ok(Self::Approve),
-      "condition" => Ok(Self::Condition),
-      "parallel" => Ok(Self::Parallel),
+      "condition_group" => Ok(Self::ConditionGroup),
+      "cc" => Ok(Self::Cc),
       "end" => Ok(Self::End),
       _ => Err(sqlx::Error::Decode(
         Box::new(sqlx::Error::ColumnDecode {
@@ -691,8 +691,8 @@ impl NodeInstNodeType {
     match self {
       Self::Start => "start",
       Self::Approve => "approve",
-      Self::Condition => "condition",
-      Self::Parallel => "parallel",
+      Self::ConditionGroup => "condition_group",
+      Self::Cc => "cc",
       Self::End => "end",
     }
   }
@@ -705,8 +705,8 @@ impl TryFrom<String> for NodeInstNodeType {
     match s.as_str() {
       "start" => Ok(Self::Start),
       "approve" => Ok(Self::Approve),
-      "condition" => Ok(Self::Condition),
-      "parallel" => Ok(Self::Parallel),
+      "condition_group" => Ok(Self::ConditionGroup),
+      "cc" => Ok(Self::Cc),
       "end" => Ok(Self::End),
       _ => Err(sqlx::Error::Decode(
         Box::new(sqlx::Error::ColumnDecode {

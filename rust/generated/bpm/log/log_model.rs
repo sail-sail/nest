@@ -90,7 +90,7 @@ pub struct LogModel {
   /// 操作人
   #[graphql(name = "usr_id_lbl")]
   pub usr_id_lbl: SmolStr,
-  /// 意见
+  /// 审批意见
   #[graphql(name = "opinion")]
   pub opinion: SmolStr,
   /// 节点名称
@@ -142,7 +142,7 @@ impl FromRow<'_, MySqlRow> for LogModel {
     let usr_id: UsrId = row.try_get("usr_id")?;
     let usr_id_lbl: Option<&str> = row.try_get("usr_id_lbl")?;
     let usr_id_lbl = SmolStr::new(usr_id_lbl.unwrap_or_default());
-    // 意见
+    // 审批意见
     let opinion: &str = row.try_get("opinion")?;
     let opinion = SmolStr::new(opinion);
     // 节点名称
@@ -238,7 +238,7 @@ pub struct LogFieldComment {
   /// 操作人
   #[graphql(name = "usr_id_lbl")]
   pub usr_id_lbl: SmolStr,
-  /// 意见
+  /// 审批意见
   #[graphql(name = "opinion")]
   pub opinion: SmolStr,
   /// 节点名称
@@ -332,10 +332,10 @@ pub struct LogSearch {
   /// 操作人
   #[graphql(name = "usr_id_lbl_like")]
   pub usr_id_lbl_like: Option<SmolStr>,
-  /// 意见
+  /// 审批意见
   #[graphql(skip)]
   pub opinion: Option<SmolStr>,
-  /// 意见
+  /// 审批意见
   #[graphql(skip)]
   pub opinion_like: Option<SmolStr>,
   /// 节点名称
@@ -449,7 +449,7 @@ impl std::fmt::Debug for LogSearch {
     if let Some(ref usr_id_is_null) = self.usr_id_is_null {
       item = item.field("usr_id_is_null", usr_id_is_null);
     }
-    // 意见
+    // 审批意见
     if let Some(ref opinion) = self.opinion {
       item = item.field("opinion", opinion);
     }
@@ -543,7 +543,7 @@ pub struct LogInput {
   /// 操作人
   #[graphql(name = "usr_id_lbl")]
   pub usr_id_lbl: Option<SmolStr>,
-  /// 意见
+  /// 审批意见
   #[graphql(name = "opinion")]
   pub opinion: Option<SmolStr>,
   /// 节点名称
@@ -671,7 +671,7 @@ impl From<LogModel> for LogInput {
       // 操作人
       usr_id: model.usr_id.into(),
       usr_id_lbl: model.usr_id_lbl.into(),
-      // 意见
+      // 审批意见
       opinion: model.opinion.into(),
       // 节点名称
       node_label: model.node_label.into(),
@@ -719,7 +719,7 @@ impl From<LogInput> for LogSearch {
       usr_id: input.usr_id.map(|x| vec![x]),
       // 操作人
       usr_id_lbl: input.usr_id_lbl.map(|x| vec![x]),
-      // 意见
+      // 审批意见
       opinion: input.opinion,
       // 节点名称
       node_label: input.node_label,

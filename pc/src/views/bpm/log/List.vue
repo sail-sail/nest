@@ -521,7 +521,7 @@
             </el-table-column>
           </template>
           
-          <!-- 意见 -->
+          <!-- 审批意见 -->
           <template v-else-if="'opinion' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
@@ -1001,7 +1001,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "意见",
+      label: "审批意见",
       prop: "opinion",
       width: 300,
       align: "center",
@@ -1316,7 +1316,7 @@ async function onImportExcel() {
     [ "流程实例" ]: "process_inst_id_lbl",
     [ "动作" ]: "action_lbl",
     [ "操作人" ]: "usr_id_lbl",
-    [ "意见" ]: "opinion",
+    [ "审批意见" ]: "opinion",
     [ "节点名称" ]: "node_label",
   };
   const file = await uploadFileDialogRef.showDialog({

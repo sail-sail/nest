@@ -45,10 +45,11 @@
 - 创建/编辑/删除流程定义
 - 流程定义包含: 名称、编码、关联业务、分类、描述
 - **流程图设计器 (PC)**
-  - 拖拽式节点编排: 开始节点 → 审批节点 → 条件分支 → 结束节点
-  - 连线/删除连线
+  - 链式审批流编排: 开始节点 → 审批节点 → 条件分支 → 抄送节点 → 结束节点
+  - 点击节点之间的 "+" 按钮插入新节点 (审批人 / 抄送人 / 条件分支)
   - 节点属性配置面板 (处理人规则、超时设置等)
-  - 保存后生成结构化 JSON 存储
+  - 纵向自动布局, 无需手动拖拽排列
+  - 保存后生成结构化 JSON (链式树) 存储
 - 流程定义支持版本管理: 编辑 → 发布 → 生成不可变版本快照
 - 启用/停用流程定义
 
@@ -58,9 +59,9 @@
 |----------|------|------|
 | 开始节点 | `start` | 每个流程有且仅有一个, 提交即通过 |
 | 审批节点 | `approve` | 核心节点, 需要处理人操作 |
-| 条件分支 | `condition` | 根据表单字段值走不同分支 |
-| 并行网关 | `parallel` | 所有分支同时执行, 全部完成后合并 |
-| 结束节点 | `end` | 流程正常结束 |
+| 抄送节点 | `cc` | 通知指定人员, 不阻塞流程 |
+| 条件分支组 | `condition_group` | 包含多个带优先级的条件分支; 同优先级多条匹配时并行执行, 全部完成后汇合 |
+| 结束节点 | `end` | 流程正常结束 (链式末尾隐式终止) |
 
 #### 3.1.3 处理人规则
 
@@ -119,7 +120,6 @@
 |------|------|
 | 条件分支表达式引擎 | 支持 `field > 1000 && field2 == "A"` 等简单表达式 |
 | 超时自动处理 | 超过 N 小时/天未处理, 自动同意/自动转交/自动提醒 |
-| 抄送通知 | 节点完成后通知指定人员 |
 | 流程委托 | A 委托 B 代审批 (休假场景) |
 | 流程数据统计 | 平均耗时、超时率、各节点瓶颈分析 |
 | 移动端流程图查看 | UniApp 端查看流程图 + 当前节点 |
@@ -195,7 +195,7 @@ bpm_process_inst_log (审批日志)
 | `process_def_id` | varchar(22) | 所属流程定义 |
 | `lbl` | varchar(200) | 名称 (流程名称跟版本号的组合, 如 "请假流程 v1", "请假流程 v2") |
 | `process_version` | int unsigned | 版本号 (递增) |
-| `graph_json` | json | 完整流程图 JSON (节点 + 连线 + 坐标) |
+| `graph_json` | json | 完整流程图 JSON (链式树结构) |
 | `status` | varchar(20) | 版本状态: published / archived |
 | `publish_time` | datetime | 发布时间 |
 | `publish_usr_id` | varchar(22) | 发布人 |
@@ -205,78 +205,118 @@ bpm_process_inst_log (审批日志)
 
 #### 4.3.3 `bpm_node_def` — 节点定义 (存储在 graph_json 内, 不单独建表)
 
-> 节点定义嵌入 `bpm_process_revision.graph_json` JSON 中, 不单独建表。以下是 JSON 结构规范:
+> 节点定义嵌入 `bpm_process_revision.graph_json` JSON 中, 不单独建表。
+> 采用**链式树结构**: 每个节点通过 `child` 指向下一个节点, 条件分支组内含多个带优先级的子链。
+> 布局由前端自动计算 (纵向排列), 不存储坐标。
+>
+> **条件分支优先级规则:**
+> - 按优先级数值从小到大**分层评估**
+> - 先评估所有优先级=1 的条件, 如果有匹配则不再评估优先级=2, 3...
+> - **同优先级多条同时匹配 → 并行执行**: 匹配的分支子链同时推进, 全部完成后汇合到 `condition_group.child`
+> - 同优先级仅一条匹配 → 等价于普通条件分支 (XOR)
+> - `expression` 为空字符串的分支视为兆底分支, 仅在同优先级无其他匹配时生效
 
 ```jsonc
 {
-  "nodes": [
-    {
-      "id": "node_001",
-      "type": "start",               // start / approve / condition / parallel / end
-      "label": "提交申请",
-      "x": 100, "y": 200,            // 流程图坐标
-      "config": {}                    // 类型特定配置 (见下)
+  // 根节点: 开始节点 (有且仅有一个)
+  "id": "node_001",
+  "type": "start",
+  "label": "发起人",
+  "config": {},
+  "child": {
+    // 审批节点
+    "id": "node_002",
+    "type": "approve",
+    "label": "审核人",
+    "config": {
+      "assignee_type": "dept_head", // 处理人规则
+      "assignee_users": [],         // 指定用户 ID 列表
+      "assignee_roles": [],         // 指定角色 ID 列表
+      "approve_method": "or_sign",  // 审批方式: or_sign / counter_sign / sequential
+      "counter_sign_ratio": 100,    // 会签通过比例 (%)
+      "can_return": true,           // 是否允许退回
+      "can_transfer": true,         // 是否允许转交
+      "can_add_sign": true,         // 是否允许加签
+      "timeout_hours": 0,           // 超时时间 (0=不超时)
+      "timeout_action": "none"      // 超时动作: none / auto_approve / notify
     },
-    {
-      "id": "node_002",
-      "type": "approve",
-      "label": "部门负责人审批",
-      "x": 300, "y": 200,
-      "config": {
-        "assignee_type": "dept_head", // 处理人规则
-        "assignee_users": [],         // 指定用户 ID 列表
-        "assignee_roles": [],         // 指定角色 ID 列表
-        "approve_method": "or_sign",  // 审批方式: or_sign / counter_sign / sequential
-        "counter_sign_ratio": 100,    // 会签通过比例 (%)
-        "can_return": true,           // 是否允许退回
-        "can_transfer": true,         // 是否允许转交
-        "can_add_sign": true,         // 是否允许加签
-        "timeout_hours": 0,           // 超时时间 (0=不超时)
-        "timeout_action": "none",     // 超时动作: none / auto_approve / notify
-        "cc_users": [],               // 抄送用户
-        "cc_roles": []                // 抄送角色
-      }
-    },
-    {
+    "child": {
+      // 条件分支组: 包含多个按优先级排列的分支
       "id": "node_003",
-      "type": "condition",
-      "label": "金额判断",
-      "x": 500, "y": 200,
-      "config": {
-        "conditions": [
-          {
-            "id": "cond_1",
-            "label": "金额 ≤ 5000",
-            "expression": "amount <= 5000",
-            "target_edge_id": "edge_003"
-          },
-          {
-            "id": "cond_2",
-            "label": "金额 > 5000",
-            "expression": "amount > 5000",
-            "target_edge_id": "edge_004"
+      "type": "condition_group",
+      "label": "",
+      "conditions": [
+        {
+          "id": "cond_1",
+          "label": "条件1",
+          "priority": 1,             // 优先级 (按顺序评估, 优先级小的先匹配)
+          "expression": "dept in ['天旭']",
+          "child": {
+            // 该分支内的子链
+            "id": "node_004",
+            "type": "approve",
+            "label": "审核人",
+            "config": {
+              "assignee_type": "user",
+              "assignee_users": ["usr_xxx"],
+              "assignee_roles": [],
+              "approve_method": "or_sign",
+              "counter_sign_ratio": 100,
+              "can_return": true,
+              "can_transfer": true,
+              "can_add_sign": true,
+              "timeout_hours": 0,
+              "timeout_action": "none"
+            },
+            "child": null
           }
-        ],
-        "default_edge_id": "edge_003" // 兜底分支
+        },
+        {
+          "id": "cond_2",
+          "label": "条件2",
+          "priority": 2,
+          "expression": "",           // 空表达式 = 兜底/默认分支
+          "child": null               // 该分支无额外节点, 直接走主链
+        }
+      ],
+      // 所有分支汇合后继续主链
+      "child": {
+        // 抄送节点: 通知指定人, 不阻塞流程
+        "id": "node_005",
+        "type": "cc",
+        "label": "抄送人",
+        "config": {
+          "cc_type": "starter_select", // 抄送人规则: user / role / starter_select
+          "cc_users": [],              // 指定用户 ID 列表
+          "cc_roles": []               // 指定角色 ID 列表
+        },
+        "child": null                  // child 为 null 表示流程结束
       }
     }
-  ],
-  "edges": [
-    {
-      "id": "edge_001",
-      "source": "node_001",
-      "target": "node_002",
-      "label": ""
-    },
-    {
-      "id": "edge_002",
-      "source": "node_002",
-      "target": "node_003",
-      "label": ""
-    }
-  ]
+  }
 }
 ```
+
+**节点通用字段说明:**
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `id` | string | 节点唯一标识 (如 `node_001`) |
+| `type` | string | 节点类型: `start` / `approve` / `condition_group` / `cc` / `end` |
+| `label` | string | 节点显示名称 |
+| `config` | object | 类型特定配置 (各类型不同) |
+| `child` | object \| null | 下一个节点, `null` 表示流程结束 |
+
+**condition_group 特有字段:**
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `conditions` | array | 条件分支列表, 按 `priority` 排序 |
+| `conditions[].id` | string | 分支标识 |
+| `conditions[].label` | string | 分支名称 (如 "条件1") |
+| `conditions[].priority` | number | 优先级 (越小越先评估; 同优先级多条匹配时并行执行) |
+| `conditions[].expression` | string | 条件表达式, 空字符串为兜底分支 |
+| `conditions[].child` | object \| null | 该分支的子节点链 |
 
 #### 4.3.4 `bpm_process_inst` — 流程实例
 
@@ -299,6 +339,7 @@ bpm_process_inst_log (审批日志)
 | `end_time` | datetime | 结束时间 |
 | `current_node_ids` | json | 当前活跃节点 ID 列表 (并行时可能多个) |
 | `current_node_lbls` | varchar(500) | 当前节点名称 (便于列表展示) |
+| `variables` | json | 流程变量 (如表单字段值, 用于条件判断) |
 | `tenant_id` | varchar(22) | 租户 |
 | + 审计字段 | | create/update/delete |
 
@@ -512,24 +553,42 @@ query getProcessGraph(
 ### 6.2 推进流程 `advanceProcess()`
 
 ```
-1. 获取当前节点的下游 edges
-2. 如果下游是 condition 节点:
-   - 评估每个条件表达式
-   - 选择匹配的分支 (或走默认分支)
-   - 递归 advanceProcess() 到目标节点
-3. 如果下游是 parallel 节点:
-   - 创建所有分支的 node_inst
-   - 对每个分支递归 advanceProcess()
-4. 如果下游是 approve 节点:
+输入: 当前节点 (node)
+
+1. 读取当前节点的 child
+2. 如果 child 为 null:
+   - 检查当前节点是否属于 condition_group 的分支子链:
+     a. 如果是分支子链末尾 → 标记该分支已完成
+        - 检查同优先级的其他并行分支是否全部完成
+        - 全部完成 → 继续走 condition_group.child (主链汇合)
+        - 未全部完成 → 等待其他分支
+     b. 如果不是分支子链 → 流程结束
+        - 更新 process_inst.status=approved, end_time
+        - 写入 bpm_log (action=end)
+3. 如果 child.type == "condition_group":
+   - 创建 bpm_node_inst (condition_group, status=completed)
+   - 按 priority 分层评估 conditions:
+     a. 收集所有优先级=1 的条件, 评估 expression
+     b. 如果有匹配:
+        - 仅 1 条匹配 → 单分支执行 (XOR)
+        - 多条匹配 → 所有匹配分支并行执行, 全部完成后汇合
+        - 对每个匹配分支, 若其 child 不为 null 则递归 advanceProcess(分支.child)
+     c. 如果无匹配 → 继续评估优先级=2, 以此类推
+     d. 所有优先级都无匹配 → 直接走 condition_group.child (兆底)
+4. 如果 child.type == "approve":
    - 创建 bpm_node_inst (status=running)
-   - 根据处理人规则, 解析出具体用户列表
+   - 根据处理人规则, 解析出具体用户列表 (resolveAssignees)
    - 为每个用户创建 bpm_task (status=pending)
    - 更新 process_inst.current_node_ids
-5. 如果下游是 end 节点:
+5. 如果 child.type == "cc":
    - 创建 bpm_node_inst (status=completed)
-   - 更新 process_inst.status=approved, end_time
-   - 写入 bpm_log (action=end)
+   - 根据 cc_type 解析抄送人列表
+   - 写入 bpm_log (action=cc)
+   - 发送通知 (不阻塞流程)
+   - 立即递归 advanceProcess(cc_node.child) 继续推进
 ```
+
+> **并行分支中的 reject 处理**: 任一并行分支中的任务被拒绝, 整个流程终止 (process_inst.status=rejected), 其他并行分支的未处理任务标记为 skipped。
 
 ### 6.3 完成任务 `completeTask()`
 
@@ -571,7 +630,7 @@ match assignee_type:
 | 页面 | 路由 | 说明 |
 |------|------|------|
 | 流程定义列表 | `/bpm/process_def` | 搜索/新增/编辑/启用停用/发布 |
-| 流程设计器 | `/bpm/process_def/design/:id` | 拖拽式流程图编辑器 |
+| 流程设计器 | `/bpm/process_def/design/:id` | 链式审批流编辑器 |
 | 流程版本列表 | `/bpm/process_revision` | 查看历史版本 |
 
 ### 7.2 用户端页面
@@ -587,12 +646,15 @@ match assignee_type:
 
 ### 7.3 流程设计器技术方案
 
-推荐使用 **Vue Flow** ([vue-flow](https://vueflow.dev/)):
+使用 **LogicFlow** ([LogicFlow](https://07.logic-flow.cn/api/logicFlowApi.html)):
 
-- 基于 Vue 3, 拖拽式节点编排
-- 自定义节点渲染 (审批节点/条件节点等不同样式)
-- 导出 JSON (nodes + edges)
-- 支持缩放/平移/对齐
+- 链式审批流风格 (类似钉钉/飞书审批流设计器)
+- 纵向自动布局, 无需手动拖拽排列
+- 点击节点之间的 "+" 按钮插入新节点 (弹出选择: 审批人 / 抄送人 / 条件分支)
+- 自定义节点渲染 (审批节点=橙色, 抄送节点=蓝色, 条件分支=绿色)
+- 点击节点卡片右侧 ">" 打开属性配置面板
+- 条件分支支持 "添加条件" 按钮动态增加分支
+- 导出链式树 JSON (无坐标, 无 edges)
 
 ### 7.4 流程图查看 (只读)
 
@@ -698,7 +760,7 @@ const instId = await startProcess({
 ```
 1. 条件表达式引擎
 2. 超时自动处理
-3. 抄送/委托
+3. 流程委托
 4. 数据统计
 ```
 
@@ -715,7 +777,7 @@ const instId = await startProcess({
 
 | 编码 | 说明 | 值 |
 |------|------|------|
-| `bpm_node_type` | 节点类型 | start / approve / condition / parallel / end |
+| `bpm_node_type` | 节点类型 | start / approve / condition_group / cc / end |
 | `bpm_approve_method` | 审批方式 | or_sign / counter_sign / sequential |
 | `bpm_assignee_type` | 处理人规则 | user / role / dept_head / parent_dept_head / starter_select / form_field |
 | `bpm_biz_code` | 关联业务编码 | oa_leave / oa_expense / crm_contract / ... |

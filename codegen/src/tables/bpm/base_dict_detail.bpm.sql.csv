@@ -1,9 +1,9 @@
 id,dict_id,_dict_lbl,lbl,val,order_by,is_sys
 d2b8HmriRYqJUIWzZ1/Tqw,ZxjrvSG1SLyL9js3n2/rQw,节点类型,开始,start,1,1
 9U1Rk+iDQhW5WE/3FE3JDw,ZxjrvSG1SLyL9js3n2/rQw,,审批,approve,2,1
-L1D6EXZYSwCUoKeXYY+9bQ,ZxjrvSG1SLyL9js3n2/rQw,,条件分支,condition,3,1
-4LBF9ZquQKSLL7Gdtj3wKw,ZxjrvSG1SLyL9js3n2/rQw,,并行网关,parallel,4,1
-frgXnRq6Q+CZVd6pLOmX6g,ZxjrvSG1SLyL9js3n2/rQw,,结束,end,5,1
+L1D6EXZYSwCUoKeXYY+9bQ,ZxjrvSG1SLyL9js3n2/rQw,,条件分支组,condition_group,3,1
+4LBF9ZquQKSLL7Gdtj3wKw,ZxjrvSG1SLyL9js3n2/rQw,,抄送,cc,4,1
+frgXnRq6Q+CZVd6pLOmL6g,ZxjrvSG1SLyL9js3n2/rQw,,结束,end,5,1
 ,,,,,,
 3oQgSfjuTQCfSzKwOb0N3A,Zd1dDfzIT8aSl6Z6/BRASQ,审批方式,或签,or_sign,1,1
 2POMLsYwRj6GXMLiZXOYXw,Zd1dDfzIT8aSl6Z6/BRASQ,,会签,counter_sign,2,1
