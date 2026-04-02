@@ -200,7 +200,7 @@ use generated::common::context::{
 - 函数定义和调用时，多参数统一换行
 - 如需操作附件，使用 [generated/common/oss/oss_dao.rs](../../../generated/common/oss/oss_dao.rs)
 - 不执行 `cargo fmt`
-- 如需补注释，只写简洁业务注释
+- service 层业务开发过程中, 若表有配置 `modelLabel` 冗余字段 `xxx_id_lbl` 则create/update要传入显示名称, 否则可不传
 
 ## 模块注册
 
