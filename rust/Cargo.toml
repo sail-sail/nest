@@ -24,9 +24,9 @@ dotenv = "0.15.0"
 rust-s3 = { version = "0.37.1", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
 imstr = { version = "0.2.0", features = ["serde"] }
 jwt = "0.16.0"
-sha2 = "0.10.9"
-sha1 = "0.10.6"
-hmac = { version = "0.12.1", features = ["reset"] }
+sha2 = "0.11.0"
+sha1 = "0.11.0"
+hmac = { version = "0.13.0", features = ["reset"] }
 hex-literal = "1.1.0"
 hex = "0.4.3"
 base64 = "0.22.1"
@@ -38,13 +38,13 @@ url = "2.5.8"
 # sqlformat = "0.3.5"
 smallvec = { version = "1.15.1", features = ["union", "serde"] }
 # downcast-rs = "2.0.1"
-uuid = { version = "1.21.0", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "1.23.0", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.13.0"
 deadpool-redis = "0.23.0"
-redis = { version = "1.0.5", features = ["tokio-comp"], default-features = false }
+redis = { version = "1.1.0", features = ["tokio-comp"], default-features = false }
 bigdecimal = "0.4.10"
 time = "0.3.47"
-rust_decimal = { version = "1.40.0", features = ["maths"]}
+rust_decimal = { version = "1.41.0", features = ["maths"]}
 rust_decimal_macros = "1.40.0"
 # enum_dispatch = "0.3.13"
 # pin-project-lite = "0.2.16"
@@ -74,7 +74,7 @@ serde_with = "3.18.0"
 csv = "1.4.0"
 docx-handlebars = "0.3.3"
 xlsx-handlebars = "0.2.2"
-tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"] }
+tokio-tungstenite = { version = "0.29.0", features = ["rustls-tls-webpki-roots"] }
 rust-embed = { version = "8.11.0", features = ["include-exclude"] }
 percent-encoding = "2.3.2"
 qrcode = { version = "0.14.1", default-features = false }
