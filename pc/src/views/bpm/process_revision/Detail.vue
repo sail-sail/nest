@@ -278,8 +278,6 @@ import SelectInputProcessDef from "@/views/bpm/process_def/SelectInput.vue";
 
 import SelectInputUsr from "@/views/base/usr/SelectInput.vue";
 
-import FlowDesigner from "./FlowDesigner.vue";
-
 const emit = defineEmits<{
   nextId: [
     {

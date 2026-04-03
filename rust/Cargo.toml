@@ -24,9 +24,9 @@ dotenv = "0.15.0"
 rust-s3 = { version = "0.37.1", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
 imstr = { version = "0.2.0", features = ["serde"] }
 jwt = "0.16.0"
-sha2 = "0.11.0"
-sha1 = "0.11.0"
-hmac = { version = "0.13.0", features = ["reset"] }
+sha2 = "0.10.9"
+sha1 = "0.10.6"
+hmac = { version = "0.12.1", features = ["reset"] }
 hex-literal = "1.1.0"
 hex = "0.4.3"
 base64 = "0.22.1"

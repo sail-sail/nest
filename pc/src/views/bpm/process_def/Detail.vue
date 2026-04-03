@@ -315,8 +315,6 @@ import {
 
 import SelectInputProcessRevision from "@/views/bpm/process_revision/SelectInput.vue";
 
-import FlowDesigner from "@/views/bpm/process_revision/FlowDesigner.vue";
-
 const emit = defineEmits<{
   nextId: [
     {

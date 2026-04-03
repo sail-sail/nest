@@ -646,8 +646,6 @@ match assignee_type:
 
 ### 7.3 流程设计器技术方案
 
-使用 **LogicFlow** ([LogicFlow](https://07.logic-flow.cn/api/logicFlowApi.html)):
-
 - 链式审批流风格 (类似钉钉/飞书审批流设计器)
 - 纵向自动布局, 无需手动拖拽排列
 - 点击节点之间的 "+" 按钮插入新节点 (弹出选择: 审批人 / 抄送人 / 条件分支)
