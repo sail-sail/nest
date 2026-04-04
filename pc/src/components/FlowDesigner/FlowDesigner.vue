@@ -51,10 +51,11 @@ import type {
 } from "./FlowTypes";
 import {
   createDefaultFlow,
+  createDefaultConditions,
+  createConditionGroupNode,
   scanMaxId,
   resetNodeIdSeq,
   genNodeId,
-  genCondId,
   defaultApproveConfig,
   defaultCcConfig,
   insertAfter,
@@ -86,10 +87,30 @@ function parseJson(jsonStr?: string | null): FlowNode | null {
   try {
     const obj = JSON.parse(jsonStr);
     if (!obj || !obj.id || !obj.type) return null;
-    return obj as FlowNode;
+    return normalizeFlow(obj as FlowNode);
   } catch {
     return null;
   }
+}
+
+function normalizeFlow(node: FlowNode | null): FlowNode | null {
+  if (!node) {
+    return null;
+  }
+
+  if (node.type === "condition_group" && !node.conditions?.length) {
+    node.label = node.label || "条件分支";
+    node.conditions = createDefaultConditions();
+  }
+
+  if (node.conditions) {
+    node.conditions.forEach((branch) => {
+      branch.child = normalizeFlow(branch.child);
+    });
+  }
+
+  node.child = normalizeFlow(node.child);
+  return node;
 }
 
 /** 链式树 → JSON 字符串 */
@@ -151,43 +172,27 @@ function onInsertNode(
 
   const nodeType = type as InsertableNodeType;
 
-  // 特殊：插入到空分支
+  // 特殊：插入到分支头部
   if (targetId.startsWith("branch:")) {
     const branchId = targetId.slice(7);
     const brNode = findBranch(flowRoot, branchId);
     if (brNode) {
-      brNode.child = createNode(nodeType);
+      const newNode = nodeType === "condition_group"
+        ? createConditionGroupNode()
+        : createNode(nodeType);
+      newNode.child = brNode.child;
+      brNode.child = newNode;
       syncToModel();
       return;
     }
   }
 
   if (nodeType === "condition_group") {
-    // 条件分支组
-    const condGroup: FlowNode = {
-      id: genNodeId(),
-      type: "condition_group",
-      label: "",
-      config: {},
-      conditions: [
-        {
-          id: genCondId(),
-          label: "条件1",
-          priority: 1,
-          expression: "",
-          child: null,
-        },
-        {
-          id: genCondId(),
-          label: "条件2",
-          priority: 2,
-          expression: "",
-          child: null,
-        },
-      ],
-      child: null,
-    };
-    insertAfter(flowRoot, targetId, condGroup);
+    insertAfter(
+      flowRoot,
+      targetId,
+      createConditionGroupNode(),
+    );
   } else {
     const newNode = createNode(nodeType);
     insertAfter(flowRoot, targetId, newNode);

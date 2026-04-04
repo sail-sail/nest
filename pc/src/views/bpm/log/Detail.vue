@@ -111,7 +111,7 @@
               :find-by-values="findByIdsNodeInst"
               :options-map="((item: NodeInstModel) => {
                 return {
-                  label: item.,
+                  label: item.lbl,
                   value: item.id,
                 };
               })"

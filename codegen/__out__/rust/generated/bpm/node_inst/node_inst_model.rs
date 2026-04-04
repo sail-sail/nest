@@ -72,12 +72,27 @@ pub struct NodeInstModel {
   /// 节点类型
   #[graphql(name = "node_type_lbl")]
   pub node_type_lbl: SmolStr,
+  /// 节点名称
+  #[graphql(name = "lbl")]
+  pub lbl: SmolStr,
   /// 节点状态
   #[graphql(name = "status")]
   pub status: NodeInstStatus,
   /// 节点状态
   #[graphql(name = "status_lbl")]
   pub status_lbl: SmolStr,
+  /// 开始时间
+  #[graphql(name = "start_time")]
+  pub start_time: Option<chrono::NaiveDateTime>,
+  /// 开始时间
+  #[graphql(name = "start_time_lbl")]
+  pub start_time_lbl: SmolStr,
+  /// 结束时间
+  #[graphql(name = "end_time")]
+  pub end_time: Option<chrono::NaiveDateTime>,
+  /// 结束时间
+  #[graphql(name = "end_time_lbl")]
+  pub end_time_lbl: SmolStr,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -115,10 +130,25 @@ impl FromRow<'_, MySqlRow> for NodeInstModel {
     let node_type_lbl: &str = row.try_get("node_type")?;
     let node_type: NodeInstNodeType = node_type_lbl.try_into()?;
     let node_type_lbl = SmolStr::new(node_type_lbl);
+    // 节点名称
+    let lbl: &str = row.try_get("lbl")?;
+    let lbl = SmolStr::new(lbl);
     // 节点状态
     let status_lbl: &str = row.try_get("status")?;
     let status: NodeInstStatus = status_lbl.try_into()?;
     let status_lbl = SmolStr::new(status_lbl);
+    // 开始时间
+    let start_time: Option<chrono::NaiveDateTime> = row.try_get("start_time")?;
+    let start_time_lbl: SmolStr = match start_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
+    };
+    // 结束时间
+    let end_time: Option<chrono::NaiveDateTime> = row.try_get("end_time")?;
+    let end_time_lbl: SmolStr = match end_time {
+      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
+      None => SmolStr::new(""),
+    };
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
@@ -151,8 +181,13 @@ impl FromRow<'_, MySqlRow> for NodeInstModel {
       node_id,
       node_type,
       node_type_lbl,
+      lbl,
       status,
       status_lbl,
+      start_time,
+      start_time_lbl,
+      end_time,
+      end_time_lbl,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -189,12 +224,27 @@ pub struct NodeInstFieldComment {
   /// 节点类型
   #[graphql(name = "node_type_lbl")]
   pub node_type_lbl: SmolStr,
+  /// 节点名称
+  #[graphql(name = "lbl")]
+  pub lbl: SmolStr,
   /// 节点状态
   #[graphql(name = "status")]
   pub status: SmolStr,
   /// 节点状态
   #[graphql(name = "status_lbl")]
   pub status_lbl: SmolStr,
+  /// 开始时间
+  #[graphql(name = "start_time")]
+  pub start_time: SmolStr,
+  /// 开始时间
+  #[graphql(name = "start_time_lbl")]
+  pub start_time_lbl: SmolStr,
+  /// 结束时间
+  #[graphql(name = "end_time")]
+  pub end_time: SmolStr,
+  /// 结束时间
+  #[graphql(name = "end_time_lbl")]
+  pub end_time_lbl: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: SmolStr,
@@ -253,9 +303,21 @@ pub struct NodeInstSearch {
   /// 节点类型
   #[graphql(skip)]
   pub node_type: Option<Vec<NodeInstNodeType>>,
+  /// 节点名称
+  #[graphql(name = "lbl")]
+  pub lbl: Option<SmolStr>,
+  /// 节点名称
+  #[graphql(name = "lbl_like")]
+  pub lbl_like: Option<SmolStr>,
   /// 节点状态
   #[graphql(name = "status")]
   pub status: Option<Vec<NodeInstStatus>>,
+  /// 开始时间
+  #[graphql(skip)]
+  pub start_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
+  /// 结束时间
+  #[graphql(skip)]
+  pub end_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -329,9 +391,24 @@ impl std::fmt::Debug for NodeInstSearch {
     if let Some(ref node_type) = self.node_type {
       item = item.field("node_type", node_type);
     }
+    // 节点名称
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
+    if let Some(ref lbl_like) = self.lbl_like {
+      item = item.field("lbl_like", lbl_like);
+    }
     // 节点状态
     if let Some(ref status) = self.status {
       item = item.field("status", status);
+    }
+    // 开始时间
+    if let Some(ref start_time) = self.start_time {
+      item = item.field("start_time", start_time);
+    }
+    // 结束时间
+    if let Some(ref end_time) = self.end_time {
+      item = item.field("end_time", end_time);
     }
     // 创建人
     if let Some(ref create_usr_id) = self.create_usr_id {
@@ -398,12 +475,33 @@ pub struct NodeInstInput {
   /// 节点类型
   #[graphql(name = "node_type_lbl")]
   pub node_type_lbl: Option<SmolStr>,
+  /// 节点名称
+  #[graphql(name = "lbl")]
+  pub lbl: Option<SmolStr>,
   /// 节点状态
   #[graphql(name = "status")]
   pub status: Option<NodeInstStatus>,
   /// 节点状态
   #[graphql(name = "status_lbl")]
   pub status_lbl: Option<SmolStr>,
+  /// 开始时间
+  #[graphql(name = "start_time")]
+  pub start_time: Option<chrono::NaiveDateTime>,
+  /// 开始时间
+  #[graphql(name = "start_time_lbl")]
+  pub start_time_lbl: Option<SmolStr>,
+  /// 开始时间
+  #[graphql(name = "start_time_save_null")]
+  pub start_time_save_null: Option<bool>,
+  /// 结束时间
+  #[graphql(name = "end_time")]
+  pub end_time: Option<chrono::NaiveDateTime>,
+  /// 结束时间
+  #[graphql(name = "end_time_lbl")]
+  pub end_time_lbl: Option<SmolStr>,
+  /// 结束时间
+  #[graphql(name = "end_time_save_null")]
+  pub end_time_save_null: Option<bool>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
@@ -462,8 +560,17 @@ impl std::fmt::Debug for NodeInstInput {
     if let Some(ref node_type) = self.node_type {
       item = item.field("node_type", node_type);
     }
+    if let Some(ref lbl) = self.lbl {
+      item = item.field("lbl", lbl);
+    }
     if let Some(ref status) = self.status {
       item = item.field("status", status);
+    }
+    if let Some(ref start_time) = self.start_time {
+      item = item.field("start_time", start_time);
+    }
+    if let Some(ref end_time) = self.end_time {
+      item = item.field("end_time", end_time);
     }
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
@@ -501,9 +608,19 @@ impl From<NodeInstModel> for NodeInstInput {
       // 节点类型
       node_type: model.node_type.into(),
       node_type_lbl: model.node_type_lbl.into(),
+      // 节点名称
+      lbl: model.lbl.into(),
       // 节点状态
       status: model.status.into(),
       status_lbl: model.status_lbl.into(),
+      // 开始时间
+      start_time: model.start_time,
+      start_time_lbl: model.start_time_lbl.into(),
+      start_time_save_null: Some(true),
+      // 结束时间
+      end_time: model.end_time,
+      end_time_lbl: model.end_time_lbl.into(),
+      end_time_save_null: Some(true),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -538,8 +655,14 @@ impl From<NodeInstInput> for NodeInstSearch {
       node_id: input.node_id,
       // 节点类型
       node_type: input.node_type.map(|x| vec![x]),
+      // 节点名称
+      lbl: input.lbl,
       // 节点状态
       status: input.status.map(|x| vec![x]),
+      // 开始时间
+      start_time: input.start_time.map(|x| [Some(x), Some(x)]),
+      // 结束时间
+      end_time: input.end_time.map(|x| [Some(x), Some(x)]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建人

@@ -35,6 +35,7 @@ export const logFields = [
   "process_inst_id_lbl",
   // 节点实例
   "node_inst_id",
+  "node_inst_id_lbl",
   // 关联任务
   "task_id",
   "task_id_lbl",

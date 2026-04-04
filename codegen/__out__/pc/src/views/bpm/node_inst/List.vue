@@ -49,6 +49,19 @@
         </el-form-item>
       </template>
       
+      <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
+        <el-form-item
+          label="节点名称"
+          prop="lbl_like"
+        >
+          <CustomInput
+            v-model="search.lbl_like"
+            placeholder="请输入 节点名称"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <template v-if="(showBuildIn || builtInSearch?.status == null)">
         <el-form-item
           label="节点状态"
@@ -500,8 +513,35 @@
             </el-table-column>
           </template>
           
+          <!-- 节点名称 -->
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 节点状态 -->
           <template v-else-if="'status_lbl' === col.prop && (showBuildIn || builtInSearch?.status == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 开始时间 -->
+          <template v-else-if="'start_time_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 结束时间 -->
+          <template v-else-if="'end_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -661,6 +701,8 @@ const props = defineProps<{
   id?: NodeInstId; // ID
   process_inst_id?: string|string[]; // 流程实例
   process_inst_id_lbl?: string; // 流程实例
+  lbl?: string; // 节点名称
+  lbl_like?: string; // 节点名称
   status?: string|string[]; // 节点状态
 }>();
 
@@ -943,10 +985,36 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "节点名称",
+      prop: "lbl",
+      width: 160,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "节点状态",
       prop: "status_lbl",
       sortBy: "status",
       width: 100,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "开始时间",
+      prop: "start_time_lbl",
+      sortBy: "start_time",
+      width: 160,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "结束时间",
+      prop: "end_time_lbl",
+      sortBy: "end_time",
+      width: 160,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1251,7 +1319,10 @@ async function onImportExcel() {
     [ "流程实例" ]: "process_inst_id_lbl",
     [ "节点ID" ]: "node_id",
     [ "节点类型" ]: "node_type_lbl",
+    [ "节点名称" ]: "lbl",
     [ "节点状态" ]: "status_lbl",
+    [ "开始时间" ]: "start_time_lbl",
+    [ "结束时间" ]: "end_time_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入",
@@ -1276,7 +1347,10 @@ async function onImportExcel() {
           "process_inst_id_lbl": "string",
           "node_id": "string",
           "node_type_lbl": "string",
+          "lbl": "string",
           "status_lbl": "string",
+          "start_time_lbl": "date",
+          "end_time_lbl": "date",
         },
       },
     );

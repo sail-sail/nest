@@ -210,15 +210,19 @@ const title = $computed(() => {
 
 <style scoped>
 .flow-node-config {
+  z-index: 2;
   position: absolute;
   top: 0;
-  right: 4px;
+  right: 0;
   box-sizing: border-box;
   border: 1px solid var(--el-border-color);
+  border-right: none;
+  border-top: none;
   z-index: 20;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  background-color: var(--el-bg-color-overlay);
 }
 
 .flow-node-config__header {

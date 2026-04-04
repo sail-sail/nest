@@ -245,9 +245,20 @@ export default defineConfig({
         width: 100,
       },
       {
+        COLUMN_NAME: "lbl",
+        width: 160,
+        fixed: false,
+      },
+      {
         COLUMN_NAME: "status",
         search: true,
         width: 100,
+      },
+      {
+        COLUMN_NAME: "start_time",
+      },
+      {
+        COLUMN_NAME: "end_time",
       },
       {
         COLUMN_NAME: "create_usr_id",

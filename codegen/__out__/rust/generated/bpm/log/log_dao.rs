@@ -1790,6 +1790,42 @@ pub async fn set_id_by_lbl_log(
     }
   }
   
+  // 节点实例
+  if input.node_inst_id_lbl.is_some()
+    && !input.node_inst_id_lbl.as_ref().unwrap().is_empty()
+    && input.node_inst_id.is_none()
+  {
+    input.node_inst_id_lbl = input.node_inst_id_lbl.map(|item| 
+      SmolStr::new(item.trim())
+    );
+    let model = crate::bpm::node_inst::node_inst_dao::find_one_node_inst(
+      crate::bpm::node_inst::node_inst_model::NodeInstSearch {
+        lbl: input.node_inst_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(model) = model {
+      input.node_inst_id = model.id.into();
+    }
+  } else if
+    (input.node_inst_id_lbl.is_none() || input.node_inst_id_lbl.as_ref().unwrap().is_empty())
+    && input.node_inst_id.is_some()
+  {
+    let node_inst_model = crate::bpm::node_inst::node_inst_dao::find_one_node_inst(
+      crate::bpm::node_inst::node_inst_model::NodeInstSearch {
+        id: input.node_inst_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(node_inst_model) = node_inst_model {
+      input.node_inst_id_lbl = node_inst_model.lbl.into();
+    }
+  }
+  
   // 关联任务
   if input.task_id_lbl.is_some()
     && !input.task_id_lbl.as_ref().unwrap().is_empty()

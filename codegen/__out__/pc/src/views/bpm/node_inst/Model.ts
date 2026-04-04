@@ -38,9 +38,17 @@ export const nodeInstFields = [
   // 节点类型
   "node_type",
   "node_type_lbl",
+  // 节点名称
+  "lbl",
   // 节点状态
   "status",
   "status_lbl",
+  // 开始时间
+  "start_time",
+  "start_time_lbl",
+  // 结束时间
+  "end_time",
+  "end_time_lbl",
   // 创建人
   "create_usr_id",
   "create_usr_id_lbl",

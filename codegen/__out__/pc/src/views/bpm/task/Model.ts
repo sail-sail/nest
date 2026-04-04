@@ -37,6 +37,7 @@ export const taskFields = [
   "process_inst_id_lbl",
   // 节点实例
   "node_inst_id",
+  "node_inst_id_lbl",
   // 处理人
   "assignee_usr_id",
   "assignee_usr_id_lbl",

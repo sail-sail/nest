@@ -517,7 +517,7 @@ export async function findAllNodeInst(
       query($search: NodeInstSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllNodeInst(search: $search, page: $page, sort: $sort) {
           id
-          
+          lbl
         }
       }
     `,
@@ -666,7 +666,7 @@ export function useDownloadImportTemplateLog() {
           }
           findAllNodeInst {
             id
-            
+            lbl
           }
           findAllTask {
             id
@@ -739,6 +739,9 @@ export function useExportExcelLog() {
               ${ logQueryField }
             }
             findAllProcessInst {
+              lbl
+            }
+            findAllNodeInst {
               lbl
             }
             findAllTask {

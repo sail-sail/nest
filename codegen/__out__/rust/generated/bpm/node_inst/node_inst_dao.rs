@@ -73,7 +73,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 11 * 2);
+  let mut where_query = String::with_capacity(80 * 14 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -240,6 +240,25 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
+  // 节点名称
+  {
+    let lbl = match search {
+      Some(item) => item.lbl.clone(),
+      None => None,
+    };
+    if let Some(lbl) = lbl {
+      where_query.push_str(" and t.lbl=?");
+      args.push(lbl.into());
+    }
+    let lbl_like = match search {
+      Some(item) => item.lbl_like.clone(),
+      None => None,
+    };
+    if let Some(lbl_like) = lbl_like && !lbl_like.is_empty() {
+      where_query.push_str(" and t.lbl like ?");
+      args.push(format!("%{}%", sql_like(&lbl_like)).into());
+    }
+  }
   // 节点状态
   {
     let status: Option<Vec<NodeInstStatus>> = match search {
@@ -262,6 +281,40 @@ async fn get_where_query(
       where_query.push_str(" and t.status in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+  }
+  // 开始时间
+  {
+    let mut start_time = match search {
+      Some(item) => item.start_time.unwrap_or_default(),
+      None => Default::default(),
+    };
+    let start_time_gt = start_time[0].take();
+    let start_time_lt = start_time[1].take();
+    if let Some(start_time_gt) = start_time_gt {
+      where_query.push_str(" and t.start_time >= ?");
+      args.push(start_time_gt.into());
+    }
+    if let Some(start_time_lt) = start_time_lt {
+      where_query.push_str(" and t.start_time <= ?");
+      args.push(start_time_lt.into());
+    }
+  }
+  // 结束时间
+  {
+    let mut end_time = match search {
+      Some(item) => item.end_time.unwrap_or_default(),
+      None => Default::default(),
+    };
+    let end_time_gt = end_time[0].take();
+    let end_time_lt = end_time[1].take();
+    if let Some(end_time_gt) = end_time_gt {
+      where_query.push_str(" and t.end_time >= ?");
+      args.push(end_time_gt.into());
+    }
+    if let Some(end_time_lt) = end_time_lt {
+      where_query.push_str(" and t.end_time <= ?");
+      args.push(end_time_lt.into());
     }
   }
   // 创建人
@@ -789,8 +842,13 @@ pub async fn get_field_comments_node_inst(
     node_id: "节点ID".into(),
     node_type: "节点类型".into(),
     node_type_lbl: "节点类型".into(),
+    lbl: "节点名称".into(),
     status: "节点状态".into(),
     status_lbl: "节点状态".into(),
+    start_time: "开始时间".into(),
+    start_time_lbl: "开始时间".into(),
+    end_time: "结束时间".into(),
+    end_time_lbl: "结束时间".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
     create_time: "创建时间".into(),
@@ -1457,6 +1515,40 @@ pub async fn set_id_by_lbl_node_inst(
   #[allow(unused_mut)]
   let mut input = input;
   
+  // 开始时间
+  if input.start_time.is_none() && let Some(start_time_lbl) = input.start_time_lbl.as_ref().filter(|s| !s.is_empty()) {
+    input.start_time = chrono::NaiveDateTime::parse_from_str(start_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
+    if input.start_time.is_none() {
+      input.start_time = chrono::NaiveDateTime::parse_from_str(start_time_lbl, "%Y-%m-%d").ok();
+    }
+    if input.start_time.is_none() {
+      let field_comments = get_field_comments_node_inst(
+        None,
+      ).await?;
+      let column_comment = field_comments.start_time;
+      
+      let err_msg = "日期格式错误";
+      return Err(eyre!("{column_comment} {err_msg}"));
+    }
+  }
+  
+  // 结束时间
+  if input.end_time.is_none() && let Some(end_time_lbl) = input.end_time_lbl.as_ref().filter(|s| !s.is_empty()) {
+    input.end_time = chrono::NaiveDateTime::parse_from_str(end_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
+    if input.end_time.is_none() {
+      input.end_time = chrono::NaiveDateTime::parse_from_str(end_time_lbl, "%Y-%m-%d").ok();
+    }
+    if input.end_time.is_none() {
+      let field_comments = get_field_comments_node_inst(
+        None,
+      ).await?;
+      let column_comment = field_comments.end_time;
+      
+      let err_msg = "日期格式错误";
+      return Err(eyre!("{column_comment} {err_msg}"));
+    }
+  }
+  
   let dict_vec = get_dict(&[
     "bpm_node_type",
     "bpm_node_inst_status",
@@ -1716,7 +1808,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 11 + 20);
+  let mut sql_fields = String::with_capacity(80 * 14 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1734,11 +1826,17 @@ async fn _creates(
   sql_fields += ",node_id";
   // 节点类型
   sql_fields += ",node_type";
+  // 节点名称
+  sql_fields += ",lbl";
   // 节点状态
   sql_fields += ",status";
+  // 开始时间
+  sql_fields += ",start_time";
+  // 结束时间
+  sql_fields += ",end_time";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 11 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 14 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1896,10 +1994,35 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
+    // 节点名称
+    if let Some(lbl) = input.lbl {
+      sql_values += ",?";
+      args.push(lbl.into());
+    } else {
+      sql_values += ",default";
+    }
     // 节点状态
     if let Some(status) = input.status {
       sql_values += ",?";
       args.push(status.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 开始时间
+    if let Some(start_time) = input.start_time {
+      sql_values += ",?";
+      args.push(start_time.into());
+    } else if input.start_time_save_null == Some(true) {
+      sql_values += ",null";
+    } else {
+      sql_values += ",default";
+    }
+    // 结束时间
+    if let Some(end_time) = input.end_time {
+      sql_values += ",?";
+      args.push(end_time.into());
+    } else if input.end_time_save_null == Some(true) {
+      sql_values += ",null";
     } else {
       sql_values += ",default";
     }
@@ -2140,7 +2263,7 @@ pub async fn update_by_id_node_inst(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 11 + 20);
+  let mut sql_fields = String::with_capacity(80 * 14 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2175,11 +2298,35 @@ pub async fn update_by_id_node_inst(
     sql_fields += "node_type=?,";
     args.push(node_type.into());
   }
+  // 节点名称
+  if let Some(lbl) = input.lbl.clone() {
+    field_num += 1;
+    sql_fields += "lbl=?,";
+    args.push(lbl.into());
+  }
   // 节点状态
   if let Some(status) = input.status {
     field_num += 1;
     sql_fields += "status=?,";
     args.push(status.into());
+  }
+  // 开始时间
+  if let Some(start_time) = input.start_time {
+    field_num += 1;
+    sql_fields += "start_time=?,";
+    args.push(start_time.into());
+  } else if input.start_time_save_null == Some(true) {
+    field_num += 1;
+    sql_fields += "start_time=null,";
+  }
+  // 结束时间
+  if let Some(end_time) = input.end_time {
+    field_num += 1;
+    sql_fields += "end_time=?,";
+    args.push(end_time.into());
+  } else if input.end_time_save_null == Some(true) {
+    field_num += 1;
+    sql_fields += "end_time=null,";
   }
   
   if field_num > 0 {

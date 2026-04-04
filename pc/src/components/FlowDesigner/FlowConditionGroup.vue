@@ -1,5 +1,9 @@
 <template>
   <div class="flow-cond-group">
+    
+    <!-- 顶部竖线 -->
+    <div class="flow-cond-group__v-line"></div>
+    
     <!-- 添加条件按钮 -->
     <div
       v-if="!readonly"
@@ -17,14 +21,13 @@
         class="flow-cond-branch"
       >
         <!-- 顶部横线 -->
-        <div class="flow-cond-branch__top-line">
+        <div
+          v-if="showBranchLines"
+          class="flow-cond-branch__top-line"
+        >
           <div
             class="flow-cond-branch__h-line"
-            :class="{
-              'flow-cond-branch__h-line--left': idx === 0,
-              'flow-cond-branch__h-line--right': idx === conditions.length - 1,
-              'flow-cond-branch__h-line--mid': idx > 0 && idx < conditions.length - 1,
-            }"
+            :class="getBranchLineClass(idx)"
           ></div>
         </div>
 
@@ -44,7 +47,7 @@
               {{ branch.expression || "请设置条件" }}
             </div>
             <ElIconClose
-              v-if="!readonly && conditions.length > 2"
+              v-if="!readonly"
               class="flow-cond-branch__close"
               un-w="3.5"
               un-h="3.5"
@@ -74,25 +77,28 @@
         </div>
 
         <!-- 底部横线 -->
-        <div class="flow-cond-branch__bottom-line">
+        <div
+          v-if="showBranchLines"
+          class="flow-cond-branch__bottom-line"
+        >
           <div
             class="flow-cond-branch__h-line"
-            :class="{
-              'flow-cond-branch__h-line--left': idx === 0,
-              'flow-cond-branch__h-line--right': idx === conditions.length - 1,
-              'flow-cond-branch__h-line--mid': idx > 0 && idx < conditions.length - 1,
-            }"
+            :class="getBranchLineClass(idx)"
           ></div>
         </div>
+        
       </div>
     </div>
+    
+    <!-- 底部竖线 -->
+    <div class="flow-cond-group__v-line"></div>
+    
   </div>
 </template>
 
 <script lang="ts" setup>
 import type {
   ConditionBranch,
-  InsertableNodeType,
   NodeStatusMap,
 } from "./FlowTypes";
 import { genCondId } from "./FlowTypes";
@@ -101,6 +107,7 @@ import FlowAddButton from "./FlowAddButton.vue";
 defineOptions({ name: "FlowConditionGroup" });
 
 const props = defineProps<{
+  groupId: string;
   conditions: ConditionBranch[];
   readonly?: boolean;
   editingNodeId?: string;
@@ -115,6 +122,10 @@ const emit = defineEmits<{
   "click-branch": [branch: ConditionBranch];
 }>();
 
+const showBranchLines = $computed(() => {
+  return props.conditions.length > 1;
+});
+
 function onAddCondition() {
   const newPriority = props.conditions.length + 1;
   props.conditions.push({
@@ -128,13 +139,41 @@ function onAddCondition() {
 }
 
 function onRemoveBranch(idx: number) {
+  const removedBranchId = props.conditions[idx]?.id;
+  if (!removedBranchId) {
+    return;
+  }
+
   props.conditions.splice(idx, 1);
+
+  if (props.editingNodeId === removedBranchId) {
+    emit("select", "");
+  }
+
+  if (!props.conditions.length) {
+    emit("remove", props.groupId);
+    return;
+  }
+
   // 重新排序 priority
   props.conditions.forEach((br, i) => {
     br.priority = i + 1;
     br.label = `条件${i + 1}`;
   });
   emit("update");
+}
+
+function getBranchLineClass(idx: number) {
+  if (!showBranchLines) {
+    return "";
+  }
+  if (idx === 0) {
+    return "flow-cond-branch__h-line--left";
+  }
+  if (idx === props.conditions.length - 1) {
+    return "flow-cond-branch__h-line--right";
+  }
+  return "flow-cond-branch__h-line--mid";
 }
 
 function onClickBranch(branch: ConditionBranch) {
@@ -147,19 +186,12 @@ function onInsertInBranch(
   branch: ConditionBranch,
   type: string,
 ) {
-  // 通知父组件：在该 branch 的末尾（最后一个节点之后）插入
-  // 但我们直接用 tail 插入的方式，通过 emit insert 交给 FlowDesigner 处理
-  // 这里如果 branch.child 为 null，就是在 branch 上直接插入第一个
+  // 这个 "+" 按钮渲染在分支首节点之前，语义上应该始终插入到分支头部。
   emit(
     "insert",
-    branch.child ? getTailId(branch.child) : `branch:${branch.id}`,
+    `branch:${branch.id}`,
     type,
   );
-}
-
-function getTailId(node: { id: string; child: any }): string {
-  if (!node.child) return node.id;
-  return getTailId(node.child);
 }
 </script>
 
@@ -169,6 +201,10 @@ function getTailId(node: { id: string; child: any }): string {
   flex-direction: column;
   align-items: center;
   position: relative;
+  /* 边框 */
+  border: 1px dashed #d9d9d9;
+  border-radius: 4px;
+  margin: 0 16px;
 }
 
 .flow-cond-group__add-btn {
@@ -316,6 +352,12 @@ function getTailId(node: { id: string; child: any }): string {
   content: "";
   width: 2px;
   flex: 1;
+  background: #cacaca;
+}
+
+.flow-cond-group__v-line {
+  width: 2px;
+  height: 16px;
   background: #cacaca;
 }
 </style>

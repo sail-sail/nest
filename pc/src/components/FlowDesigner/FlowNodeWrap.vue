@@ -1,52 +1,9 @@
 <template>
   <div class="flow-node-wrap">
-    <!-- 节点卡片 -->
-    <div
-      class="flow-node-card"
-      :class="[
-        `flow-node-card--${node.type}`,
-        {
-          'is-active': editingNodeId === node.id,
-          [`is-status-${nodeStatus}`]: !!nodeStatus,
-        },
-      ]"
-      @click="emit('select', node.id)"
-    >
-      <!-- 节点头部 -->
-      <div class="flow-node-card__header">
-        <span class="flow-node-card__icon">{{ iconMap[node.type] }}</span>
-        <span class="flow-node-card__type-lbl">{{ typeLabelMap[node.type] }}</span>
-        <ElIconClose
-          v-if="!readonly && canRemove"
-          class="flow-node-card__close"
-          un-w="3.5"
-          un-h="3.5"
-          @click.stop="emit('remove', node.id)"
-        />
-      </div>
-      <!-- 节点体 -->
-      <div class="flow-node-card__body">
-        <span class="flow-node-card__label">{{ bodyText }}</span>
-        <ElIconArrowRight
-          v-if="!readonly && hasConfig"
-          class="flow-node-card__arrow"
-          un-w="4"
-          un-h="4"
-        />
-      </div>
-    </div>
-
-    <!-- "+" 按钮 -->
-    <FlowAddButton
-      v-if="node.type !== 'end'"
-      :readonly="readonly"
-      @add="(type: string) => emit('insert', node.id, type)"
-    />
-
-    <!-- 条件分支组 -->
-    <template v-if="node.child?.type === 'condition_group'">
+    <template v-if="node.type === 'condition_group'">
       <FlowConditionGroup
-        :conditions="node.child.conditions!"
+        :group-id="node.id"
+        :conditions="node.conditions ?? []"
         :readonly="readonly"
         :editing-node-id="editingNodeId"
         :node-statuses="nodeStatuses"
@@ -59,12 +16,12 @@
       <!-- 条件组汇合后的 "+" 按钮 -->
       <FlowAddButton
         :readonly="readonly"
-        @add="(type: string) => emit('insert', node.child!.id, type)"
+        @add="(type: string) => emit('insert', node.id, type)"
       />
       <!-- 条件组汇合后的 child 递归 -->
       <FlowNodeWrap
-        v-if="node.child.child"
-        :node="node.child.child"
+        v-if="node.child"
+        :node="node.child"
         :readonly="readonly"
         :editing-node-id="editingNodeId"
         :node-statuses="nodeStatuses"
@@ -74,11 +31,55 @@
         @update="emit('update')"
         @click-branch="(br: any) => emit('click-branch', br)"
       />
+
     </template>
 
-    <!-- 普通 child 递归 -->
-    <template v-else-if="node.child">
+    <template v-else>
+      <!-- 节点卡片 -->
+      <div
+        class="flow-node-card"
+        :class="[
+          `flow-node-card--${node.type}`,
+          {
+            'is-active': editingNodeId === node.id,
+            [`is-status-${nodeStatus}`]: !!nodeStatus,
+          },
+        ]"
+        @click="emit('select', node.id)"
+      >
+        <!-- 节点头部 -->
+        <div class="flow-node-card__header">
+          <span class="flow-node-card__icon">{{ iconMap[node.type] }}</span>
+          <span class="flow-node-card__type-lbl">{{ typeLabelMap[node.type] }}</span>
+          <ElIconClose
+            v-if="!readonly && canRemove"
+            class="flow-node-card__close"
+            un-w="3.5"
+            un-h="3.5"
+            @click.stop="emit('remove', node.id)"
+          />
+        </div>
+        <!-- 节点体 -->
+        <div class="flow-node-card__body">
+          <span class="flow-node-card__label">{{ bodyText }}</span>
+          <ElIconArrowRight
+            v-if="!readonly && hasConfig"
+            class="flow-node-card__arrow"
+            un-w="4"
+            un-h="4"
+          />
+        </div>
+      </div>
+
+      <!-- "+" 按钮 -->
+      <FlowAddButton
+        v-if="node.type !== 'end'"
+        :readonly="readonly"
+        @add="(type: string) => emit('insert', node.id, type)"
+      />
+
       <FlowNodeWrap
+        v-if="node.child"
         :node="node.child"
         :readonly="readonly"
         :editing-node-id="editingNodeId"
@@ -92,7 +93,7 @@
     </template>
 
     <!-- 最末节点 — 流程结束标记 -->
-    <template v-if="!node.child && isLeafEnd">
+    <template v-if="isLeafEnd">
       <div class="flow-end-dot">
         <div class="flow-end-dot__circle"></div>
         <span class="flow-end-dot__text">流程结束</span>
@@ -302,19 +303,19 @@ const bodyText = $computed(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding-top: 8px;
+  gap: 2px;
+  padding-top: 6px;
 }
 
 .flow-end-dot__circle {
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: #cacaca;
+  background: var(--el-text-color-secondary);
 }
 
 .flow-end-dot__text {
   font-size: 13px;
-  color: #999;
+  color: var(--el-text-color-secondary);
 }
 </style>

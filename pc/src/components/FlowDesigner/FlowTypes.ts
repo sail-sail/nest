@@ -101,6 +101,38 @@ export function createDefaultFlow(): FlowNode {
   };
 }
 
+/** 创建默认条件分支 */
+export function createDefaultConditions(): ConditionBranch[] {
+  return [
+    {
+      id: genCondId(),
+      label: "条件1",
+      priority: 1,
+      expression: "",
+      child: null,
+    },
+    {
+      id: genCondId(),
+      label: "条件2",
+      priority: 2,
+      expression: "",
+      child: null,
+    },
+  ];
+}
+
+/** 创建默认条件分支组 */
+export function createConditionGroupNode(): FlowNode {
+  return {
+    id: genNodeId(),
+    type: "condition_group",
+    label: "条件分支",
+    config: {},
+    conditions: createDefaultConditions(),
+    child: null,
+  };
+}
+
 /** 扫描树中最大 ID 序号，用于 resetNodeIdSeq */
 export function scanMaxId(node: FlowNode | null): number {
   if (!node) return 0;

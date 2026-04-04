@@ -41,9 +41,19 @@ export function intoInputNodeInst(
     // 节点类型
     node_type: model?.node_type,
     node_type_lbl: model?.node_type_lbl,
+    // 节点名称
+    lbl: model?.lbl,
     // 节点状态
     status: model?.status,
     status_lbl: model?.status_lbl,
+    // 开始时间
+    start_time: model?.start_time,
+    start_time_lbl: model?.start_time_lbl,
+    start_time_save_null: model?.start_time_save_null,
+    // 结束时间
+    end_time: model?.end_time,
+    end_time_lbl: model?.end_time_lbl,
+    end_time_save_null: model?.end_time_save_null,
   };
   return input;
 }
@@ -514,7 +524,10 @@ export function useDownloadImportTemplateNodeInst() {
             process_inst_id_lbl
             node_id
             node_type_lbl
+            lbl
             status_lbl
+            start_time_lbl
+            end_time_lbl
           }
           findAllProcessInst {
             id
@@ -699,8 +712,13 @@ export async function getFieldCommentsNodeInst(
           node_id,
           node_type,
           node_type_lbl,
+          lbl,
           status,
           status_lbl,
+          start_time,
+          start_time_lbl,
+          end_time,
+          end_time_lbl,
           create_usr_id,
           create_usr_id_lbl,
           create_time,

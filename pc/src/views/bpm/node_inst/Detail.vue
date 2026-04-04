@@ -65,7 +65,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -127,6 +127,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
+          <el-form-item
+            label="节点名称"
+            prop="lbl"
+          >
+            <CustomInput
+              v-model="dialogModel.lbl"
+              placeholder="请输入 节点名称"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.status == null)">
           <el-form-item
             label="节点状态"
@@ -139,6 +152,38 @@
               placeholder="请选择 节点状态"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.start_time == null)">
+          <el-form-item
+            label="开始时间"
+            prop="start_time"
+          >
+            <CustomDatePicker
+              v-model="dialogModel.start_time"
+              type="datetime"
+              format="YYYY-MM-DD HH:mm:ss"
+              value-format="YYYY-MM-DDTHH:mm:ss"
+              placeholder="请选择 开始时间"
+              :readonly="isLocked || isReadonly"
+            ></CustomDatePicker>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.end_time == null)">
+          <el-form-item
+            label="结束时间"
+            prop="end_time"
+          >
+            <CustomDatePicker
+              v-model="dialogModel.end_time"
+              type="datetime"
+              format="YYYY-MM-DD HH:mm:ss"
+              value-format="YYYY-MM-DDTHH:mm:ss"
+              placeholder="请选择 结束时间"
+              :readonly="isLocked || isReadonly"
+            ></CustomDatePicker>
           </el-form-item>
         </template>
         
@@ -313,6 +358,18 @@ watchEffect(async () => {
       {
         required: true,
         message: "请选择 节点类型",
+      },
+    ],
+    // 节点名称
+    lbl: [
+      {
+        required: true,
+        message: "请输入 节点名称",
+      },
+      {
+        type: "string",
+        max: 100,
+        message: "节点名称 长度不能超过 100",
       },
     ],
     // 节点状态
@@ -532,6 +589,7 @@ async function onRefresh() {
     dialogModel = intoInputNodeInst({
       ...data,
     });
+    dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
   node_inst_model = data;
 }
@@ -629,6 +687,8 @@ watch(
     dialogModel.process_inst_id,
     dialogModel.node_type,
     dialogModel.status,
+    dialogModel.start_time,
+    dialogModel.end_time,
   ],
   () => {
     if (!inited) {
@@ -642,6 +702,14 @@ watch(
     }
     if (!dialogModel.status) {
       dialogModel.status_lbl = "";
+    }
+    if (!dialogModel.start_time) {
+      dialogModel.start_time_lbl = "";
+      dialogModel.start_time_save_null = true;
+    }
+    if (!dialogModel.end_time) {
+      dialogModel.end_time_lbl = "";
+      dialogModel.end_time_save_null = true;
     }
   },
 );
