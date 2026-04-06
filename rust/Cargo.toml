@@ -13,7 +13,7 @@ tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter", "local-time", "parking_lot"] }
 tracing-appender = "0.2.4"
 tracing-attributes = "0.1.31"
-tokio = { version = "1.50.0", features = ["rt-multi-thread", "macros", "net", "fs"] }
+tokio = { version = "1.51.0", features = ["rt-multi-thread", "macros", "net", "fs"] }
 poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
 async-graphql = { version = "7.2.1", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing", "raw_value"] }
 smol_str = { version = "0.3.6", features = ["serde"] }
@@ -24,9 +24,9 @@ dotenv = "0.15.0"
 rust-s3 = { version = "0.37.1", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
 imstr = { version = "0.2.0", features = ["serde"] }
 jwt = "0.16.0"
-sha2 = "0.11.0"
-sha1 = "0.11.0"
-hmac = { version = "0.13.0", features = ["reset"] }
+sha2 = "0.10.9"
+sha1 = "0.10.6"
+hmac = { version = "0.12.1", features = ["reset"] }
 hex-literal = "1.1.0"
 hex = "0.4.3"
 base64 = "0.22.1"
@@ -41,7 +41,7 @@ smallvec = { version = "1.15.1", features = ["union", "serde"] }
 uuid = { version = "1.23.0", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.13.0"
 deadpool-redis = "0.23.0"
-redis = { version = "1.1.0", features = ["tokio-comp"], default-features = false }
+redis = { version = "1.2.0", features = ["tokio-comp"], default-features = false }
 bigdecimal = "0.4.10"
 time = "0.3.47"
 rust_decimal = { version = "1.41.0", features = ["maths"]}
