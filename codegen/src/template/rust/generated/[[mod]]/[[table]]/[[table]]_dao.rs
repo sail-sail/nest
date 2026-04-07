@@ -1714,7 +1714,7 @@ async fn get_from_query(
   json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#>,<#
     }
   #>
-  <#=mod#>_<#=table#>.id <#=many2many.column1#> from <#=foreignKey.mod#>_<#=many2many.table#>
+  <#=mod#>_<#=table#>.id <#=many2many.column1#> from <#=many2many.mod#>_<#=many2many.table#>
   inner join <#=foreignKey.mod#>_<#=foreignKey.table#> on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
   inner join <#=mod#>_<#=table#> on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
   if (hasIsDeleted) {
