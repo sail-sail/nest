@@ -21,7 +21,14 @@
       {{ item.content }}
     </div>
   </TransitionGroup>
-  <NuxtPage />
+  <NuxtLayout>
+    <NuxtPage
+      :transition="{
+        name: 'bounce',
+        mode: 'out-in'
+      }"
+    />
+  </NuxtLayout>
 </div>
 </template>
 

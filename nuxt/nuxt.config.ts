@@ -7,6 +7,9 @@ export default defineNuxtConfig({
   ],
   experimental: {
     asyncContext: true,
+    // 全局启用视图过渡，按页面逐个页面禁用
+    // https://nuxt.com.cn/docs/4.x/getting-started/transitions
+    viewTransition: true,
   },
   devtools: {
     enabled: false,
