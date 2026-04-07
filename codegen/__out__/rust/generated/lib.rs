@@ -8,10 +8,10 @@ use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
 pub struct GenQuery(
-  base::BaseQuery,
+  base::BaseGenQuery,
 );
 
 #[derive(MergedObject, Default)]
 pub struct GenMutation(
-  base::BaseMutation,
+  base::BaseGenMutation,
 );
