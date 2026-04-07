@@ -399,7 +399,11 @@ async function onInput(
     modelValue = selectedIds;
   } else {
     modelValue = selectedIds[0];
+  }<#
+  if (!opts?.lbl_field) {
+    throw new Error(`表: ${table} 缺少 opts.lbl_field 字段, 无法显示标签`);
   }
+  #>
   inputValue = selectedModels.map((item) => item.<#=opts?.lbl_field#> || "").join(",");
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
