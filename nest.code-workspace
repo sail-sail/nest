@@ -39,6 +39,7 @@
     "deno.lint": true,
     "unocss.root": [
       "pc",
+      "nuxt",
       "uni"
     ],
     "unocss.colorPreview": false,
