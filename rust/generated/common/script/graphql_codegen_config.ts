@@ -59,6 +59,58 @@ const config: CodegenConfig = {
         }
       }
     },
+    "../nuxt/typings/types.ts": {
+      "plugins": [
+        "typescript",
+        "typescript-operations"
+      ],
+      "config": {
+        "useTypeImports": true,
+        "scalars": {
+          "SmolStr": {
+            "input": "string",
+            "output": "string",
+          },
+          "Decimal": {
+            "input": "InstanceType<typeof import(\"decimal.js\").default>",
+            "output": "InstanceType<typeof import(\"decimal.js\").default>"
+          },
+          "BigDecimal": {
+            "input": "InstanceType<typeof import(\"decimal.js\").default>",
+            "output": "InstanceType<typeof import(\"decimal.js\").default>"
+          },
+          "NaiveDate": {
+            "input": "string",
+            "output": "string"
+          },
+          "Date": {
+            "input": "string",
+            "output": "string"
+          },
+          "JSON": {
+            "input": "string",
+            "output": "string"
+          },
+          "Uuid": {
+            "input": "string",
+            "output": "string"
+          },
+          "NaiveDateTime": {
+            "input": "string",
+            "output": "string"
+          },
+          "JSONObject": {
+            "input": "Record<string, any>",
+            "output": "Record<string, any>"
+          },
+          "JSONArray": {
+            "input": "any[]",
+            "output": "any[]"
+          },
+          ...getScalarsPC(),
+        }
+      }
+    },
     "../uni/src/typings/types.ts": {
       "plugins": [
         "typescript",

@@ -337,33 +337,6 @@ pub async fn delete_by_ids_seo(
   Ok(num)
 }
 
-/// 根据 id 设置默认SEO优化
-#[allow(dead_code)]
-#[function_name::named]
-pub async fn default_by_id_seo(
-  id: SeoId,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  info!(
-    "{req_id} {function_name}: id: {id:?}",
-    req_id = get_req_id(),
-    function_name = function_name!(),
-  );
-  
-  use_permit(
-    SmolStr::new(get_page_path_seo()),
-    SmolStr::new("edit"),
-  ).await?;
-  
-  let num = seo_service::default_by_id_seo(
-    id,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 根据 id 查找SEO优化是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false

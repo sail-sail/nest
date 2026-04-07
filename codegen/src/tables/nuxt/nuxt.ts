@@ -8,10 +8,31 @@ export default defineConfig({
     },
     columns: [
       {
-        COLUMN_NAME: "title",
-        width: 180,
-        align: "left",
+        COLUMN_NAME: "domain_ids",
+        COLUMN_COMMENT: "所属域名",
         require: true,
+        align: "left",
+        width: 280,
+        search: true,
+        foreignKey: {
+          hasSelectAdd: true,
+          multipleSetDefault: true,
+          isSearchByLbl: true,
+        },
+        many2many: {
+          mod: "nuxt",
+          table: "seo_domain",
+        },
+      },
+      {
+        COLUMN_NAME: "ico",
+        fixed: false,
+        isImg: true,
+        isPublicAtt: true,
+      },
+      {
+        COLUMN_NAME: "lbl",
+        fixed: false,
       },
       {
         COLUMN_NAME: "description",
@@ -41,9 +62,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "is_locked",
-      },
-      {
-        COLUMN_NAME: "is_default",
       },
       {
         COLUMN_NAME: "order_by",

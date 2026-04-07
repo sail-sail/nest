@@ -10,6 +10,8 @@ declare global {
   
   /** SEO优化 */
   interface SeoModel extends SeoModelType {
+    /** 图标 */
+    ico_lbl: string;
     /** 分享图片 */
     og_image_lbl: string;
   }
@@ -32,8 +34,13 @@ declare global {
 export const seoFields = [
   // ID
   "id",
+  // 所属域名
+  "domain_ids",
+  "domain_ids_lbl",
+  // 图标
+  "ico",
   // 标题
-  "title",
+  "lbl",
   // 描述
   "description",
   // 关键词
@@ -47,9 +54,6 @@ export const seoFields = [
   // 锁定
   "is_locked",
   "is_locked_lbl",
-  // 默认
-  "is_default",
-  "is_default_lbl",
   // 排序
   "order_by",
   // 备注

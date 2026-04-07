@@ -368,27 +368,6 @@ impl SeoGenMutation {
       }).await
   }
   
-  /// 根据 id 设置默认SEO优化
-  #[graphql(name = "defaultByIdSeo")]
-  async fn default_by_id_seo(
-    &self,
-    ctx: &Context<'_>,
-    #[graphql(name = "id")]
-    id: SeoId,
-  ) -> Result<u64> {
-    
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()
-      .build()
-      .scope({
-        seo_resolver::default_by_id_seo(
-          id,
-          None,
-        )
-      }).await
-  }
-  
   /// 根据 ids 锁定或解锁数据
   #[graphql(name = "lockByIdsSeo")]
   async fn lock_by_ids_seo(

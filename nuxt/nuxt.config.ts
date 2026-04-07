@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@nuxt/eslint",
     "@una-ui/nuxt",
+    "@formkit/auto-animate",
   ],
   hooks: {
     // 修改构建清单，禁用prefetch和preload

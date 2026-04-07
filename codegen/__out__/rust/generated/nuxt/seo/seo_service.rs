@@ -295,21 +295,6 @@ pub async fn delete_by_ids_seo(
   Ok(num)
 }
 
-/// 根据 seo_id 设置默认SEO优化
-#[allow(dead_code)]
-pub async fn default_by_id_seo(
-  seo_id: SeoId,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = seo_dao::default_by_id_seo(
-    seo_id,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 根据 seo_id 查找SEO优化是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
