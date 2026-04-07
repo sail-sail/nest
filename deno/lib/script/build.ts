@@ -313,7 +313,7 @@ async function nuxt() {
   const ecosystemStr2 = ecosystemStr
     .replaceAll("{env}", env)
     .replaceAll("{NUXT_PORT}", parsedEnv.NUXT_PORT);
-  await Deno.writeTextFile(`${ buildDir }/../nuxt/ecosystem.config.js`, ecosystemStr2);
+  await Deno.writeTextFile(`${ buildDir }/../nuxt/ecosystem.config.json`, ecosystemStr2);
 }
 
 async function docs() {
