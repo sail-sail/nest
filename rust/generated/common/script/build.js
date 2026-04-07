@@ -94,9 +94,21 @@ async function uni() {
 
 async function nuxt() {
   console.log("nuxt");
-  await remove(`${ buildDir }/nuxt/`);
   
-  await copy(`${ nuxtDir }/.output/`, `${ buildDir }/nuxt/`);
+  try {
+    await remove(`${ buildDir }/nuxt/`);
+  } catch (err) { }
+  
+  await mkdir(`${ buildDir }/nuxt`, { recursive: true });
+  
+  child_process.execSync(`npm run build-${ env }`, {
+    cwd: nuxtDir,
+    stdio: "inherit",
+  });
+  
+  await copy(`${ nuxtDir }/.output/`, `${ buildDir }/nuxt/`, {
+    dereference: true,
+  });
   await copy(`${ nuxtDir }/.npmrc`, `${ buildDir }/nuxt/server/.npmrc`);
   const parsedEnv = dotenv.parse(await readFile(`${ nuxtDir }/.env.${ env }`, "utf8"));
   const ecosystemStr = await readFile(`${ nuxtDir }/ecosystem.config.json`, "utf8");
@@ -121,10 +133,12 @@ async function compile() {
   let cmd = "";
   cmd += `wsl -e bash -lic `;
   cmd += `"`;
-  // cmd += `export HTTPS_PROXY="http://192.168.80.1:7890" && `;
-  // cmd += `rustup update`;
+  // cmd += `export HTTPS_PROXY="http://192.168.80.1:7729"`;
+  // cmd += ` && rustup update`;
   // cmd += ` && rustup target add x86_64-unknown-linux-musl`;
+  // cmd += ` && `;
   cmd += `cargo build --bin ${ projectName } --release --target=x86_64-unknown-linux-musl`;
+  // cmd += ` && unset HTTPS_PROXY`;
   cmd += `"`;
   child_process.execSync(cmd, {
     cwd,

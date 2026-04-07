@@ -97,14 +97,17 @@ console.log(publishPath);
       let cmd = "";
       cmd += `rm -rf ${ publishPath }/docs`;
       cmd += ` ; pm2 stop ${ projectName }`;
+      cmd += ` ; pm2 stop ${ projectName }4nuxt`;
       cmd += ` ; rm -rf ${ publishPath }/pc`
       cmd += ` ; rm -rf ${ publishPath }/rust`
       cmd += ` ; rm -rf ${ publishPath }/uni`
+      cmd += ` ; rm -rf ${ publishPath }/nuxt`;
       cmd += ` ; mkdir -p ${ publishPath }`;
       cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
       cmd += ` ; rmdir ${ publishPathTmp }`;
       cmd += ` ; chmod -R 755 ${ publishPath }/rust/${ ecosystem.apps[0].script.replace("./", "") }`;
       cmd += ` ; cd ${ publishPath }/rust/ && pm2 start ecosystem.config.json`;
+      cmd += ` ; cd ${ publishPath }/nuxt/ && pm2 start ecosystem.config.json`;
       data = await ssh.exec(cmd);
     } catch (err) {
       console.error(err);
@@ -126,6 +129,24 @@ console.log(publishPath);
       cmd += ` ; mv -f ${ publishPathTmp }/rust/* ${ publishPath }/rust/`;
       cmd += ` ; chmod -R 755 ${ publishPath }/rust/${ ecosystem.apps[0].name.replaceAll("4{env}", "") }`;
       cmd += ` ; cd ${ publishPath }/rust/ && pm2 start ecosystem.config.json`;
+      let data;
+      try {
+        data = await ssh.exec(cmd);
+      } catch (err) {
+        console.error(err);
+      }
+      if (data) {
+        console.log(data);
+      }
+      continue;
+    }
+    if (cmd === "nuxt") {
+      let cmd = "echo 'nuxt'";
+      cmd += ` ; pm2 stop ${ projectName }4nuxt`;
+      cmd += ` ; rm -rf ${ publishPath }/nuxt`
+      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      cmd += ` ; cd ${ publishPath }/nuxt/ && pm2 start ecosystem.config.json`;
       let data;
       try {
         data = await ssh.exec(cmd);
