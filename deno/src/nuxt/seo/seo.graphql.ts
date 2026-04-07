@@ -6,7 +6,7 @@ defineGraphql(resolver, /* GraphQL */ `
 
 type Query {
   "查找默认的SEO优化"
-  findDefaultSeo: SeoModel
+  findDefaultSeo(domain: SmolStr!): SeoModel
 }
   
 `);

@@ -21,6 +21,14 @@ export async function setLblByIdSeo(
     return;
   }
   
+  // 图标
+  if (model.ico) {
+    model.ico_lbl = location.origin + getImgUrl({
+      id: model.ico,
+      height: 100,
+    });
+  }
+  
   // 分享图片
   if (model.og_image) {
     model.og_image_lbl = location.origin + getImgUrl({
@@ -36,8 +44,13 @@ export function intoInputSeo(
   const input: SeoInput = {
     // ID
     id: model?.id,
+    // 所属域名
+    domain_ids: model?.domain_ids,
+    domain_ids_lbl: model?.domain_ids_lbl,
+    // 图标
+    ico: model?.ico,
     // 标题
-    title: model?.title,
+    lbl: model?.lbl,
     // 描述
     description: model?.description,
     // 关键词
@@ -51,9 +64,6 @@ export function intoInputSeo(
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
-    // 默认
-    is_default: model?.is_default,
-    is_default_lbl: model?.is_default_lbl,
     // 排序
     order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
@@ -416,32 +426,6 @@ export async function deleteByIdsSeo(
 }
 
 /**
- * 根据 id 设置默认 SEO优化
- */
-export async function defaultByIdSeo(
-  id?: SeoId,
-  opt?: GqlOpt,
-) {
-  if (!id) {
-    return 0;
-  }
-  const data: {
-    defaultByIdSeo: Mutation["defaultByIdSeo"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($id: SeoId!) {
-        defaultByIdSeo(id: $id)
-      }
-    `,
-    variables: {
-      id,
-    },
-  }, opt);
-  const res = data.defaultByIdSeo;
-  return res;
-}
-
-/**
  * 根据 ids 锁定或解锁 SEO优化
  */
 export async function lockByIdsSeo(
@@ -521,6 +505,52 @@ export async function forceDeleteByIdsSeo(
   return res;
 }
 
+export async function findAllDomain(
+  search?: DomainSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllDomain: DomainModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllDomain(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const domain_models = data.findAllDomain;
+  return domain_models;
+}
+
+export async function getListDomain() {
+  const data = await findAllDomain(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载 SEO优化 导入模板
  */
@@ -535,7 +565,9 @@ export function useDownloadImportTemplateSeo() {
       query: /* GraphQL */ `
         query {
           getFieldCommentsSeo {
-            title
+            domain_ids_lbl
+            ico
+            lbl
             description
             keywords
             og_image
@@ -543,6 +575,10 @@ export function useDownloadImportTemplateSeo() {
             og_description
             order_by
             rem
+          }
+          findAllDomain {
+            id
+            lbl
           }
         }
       `,
@@ -600,9 +636,11 @@ export function useExportExcelSeo() {
             findAllSeo(search: $search, page: $page, sort: $sort) {
               ${ seoQueryField }
             }
+            findAllDomain {
+              lbl
+            }
             getDict(codes: [
               "is_locked",
-              "is_default",
             ]) {
               code
               lbl
@@ -730,7 +768,10 @@ export async function getFieldCommentsSeo(
       query {
         getFieldCommentsSeo {
           id,
-          title,
+          domain_ids,
+          domain_ids_lbl,
+          ico,
+          lbl,
           description,
           keywords,
           og_image,
@@ -738,8 +779,6 @@ export async function getFieldCommentsSeo(
           og_description,
           is_locked,
           is_locked_lbl,
-          is_default,
-          is_default_lbl,
           order_by,
           rem,
           create_usr_id,

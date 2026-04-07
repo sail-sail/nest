@@ -28,6 +28,40 @@
       @keydown.enter="onSearch(true)"
     >
       
+      <template v-if="(showBuildIn || builtInSearch?.domain_ids == null)">
+        <el-form-item
+          label="所属域名"
+          prop="domain_ids"
+        >
+          <CustomSelect
+            v-model="domain_ids_search"
+            :method="getListDomain"
+            :options-map="((item: DomainModel) => {
+              return {
+                label: item.lbl,
+                value: item.id,
+              };
+            })"
+            placeholder="请选择 所属域名"
+            multiple
+            @change="onSearch(false)"
+          ></CustomSelect>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
+        <el-form-item
+          label="标题"
+          prop="lbl_like"
+        >
+          <CustomInput
+            v-model="search.lbl_like"
+            placeholder="请输入 标题"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <div
         class="search-ids-checked"
       >
@@ -453,8 +487,37 @@
           :key="col.prop"
         >
           
+          <!-- 所属域名 -->
+          <template v-if="'domain_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.domain_ids == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkList
+                  v-model="row[column.property]"
+                ></LinkList>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 图标 -->
+          <template v-else-if="'ico' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkImage
+                  v-model="row[column.property]"
+                  un-h="8"
+                ></LinkImage>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 标题 -->
-          <template v-if="'title' === col.prop">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -524,23 +587,6 @@
                   v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_locked"
                   @change="onIs_locked(row.id, row.is_locked)"
-                ></CustomSwitch>
-              </template>
-            </el-table-column>
-          </template>
-          
-          <!-- 默认 -->
-          <template v-else-if="'is_default_lbl' === col.prop && (showBuildIn || builtInSearch?.is_default == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_default"
-                  :before-change="() => row.is_default == 0"
-                  @change="onIs_default(row.id)"
                 ></CustomSwitch>
               </template>
             </el-table-column>
@@ -681,7 +727,6 @@ import {
   revertByIdsSeo,
   deleteByIdsSeo,
   forceDeleteByIdsSeo,
-  defaultByIdSeo,
   lockByIdsSeo,
   useExportExcelSeo,
   updateByIdSeo,
@@ -730,7 +775,10 @@ const props = defineProps<{
   selectedIds?: SeoId[]; //已选择行的id列表
   isMultiple?: string; //是否多选
   id?: SeoId; // ID
-  is_default?: string|string[]; // 默认
+  domain_ids?: string|string[]; // 所属域名
+  domain_ids_lbl?: string[]; // 所属域名
+  lbl?: string; // 标题
+  lbl_like?: string; // 标题
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -742,8 +790,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  is_default: "number[]",
-  is_default_lbl: "string[]",
+  domain_ids: "string[]",
+  domain_ids_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -802,6 +850,20 @@ function initSearch() {
 }
 
 let search = $ref<SeoSearch>(initSearch());
+
+// 所属域名
+const domain_ids_search = $computed({
+  get() {
+    return search.domain_ids || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.domain_ids = undefined;
+    } else {
+      search.domain_ids = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function onRecycle() {
@@ -956,9 +1018,25 @@ let tableData = $ref<SeoModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
+      label: "所属域名",
+      prop: "domain_ids_lbl",
+      sortBy: "domain_ids_lbl",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
+      label: "图标",
+      prop: "ico",
+      width: 48,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
       label: "标题",
-      prop: "title",
-      width: 180,
+      prop: "lbl",
+      width: 200,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1006,15 +1084,6 @@ function getTableColumns(): ColumnType[] {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
-      width: 85,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
-      label: "默认",
-      prop: "is_default_lbl",
-      sortBy: "is_default",
       width: 85,
       align: "center",
       headerAlign: "center",
@@ -1334,7 +1403,9 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ "标题" ]: "title",
+    [ "所属域名" ]: "domain_ids_lbl",
+    [ "图标" ]: "ico",
+    [ "标题" ]: "lbl",
     [ "描述" ]: "description",
     [ "关键词" ]: "keywords",
     [ "分享图片" ]: "og_image",
@@ -1364,7 +1435,9 @@ async function onImportExcel() {
       header,
       {
         key_types: {
-          "title": "string",
+          "domain_ids_lbl": "string[]",
+          "ico": "string",
+          "lbl": "string",
           "description": "string",
           "keywords": "string",
           "og_image": "string",
@@ -1411,27 +1484,6 @@ async function onIs_locked(id: SeoId, is_locked: 0 | 1) {
   await lockByIdsSeo(
     [ id ],
     is_locked,
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
-}
-
-/** 默认 */
-async function onIs_default(id: SeoId) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await defaultByIdSeo(
-    id,
     {
       notLoading,
     },

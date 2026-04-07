@@ -271,32 +271,6 @@ export async function deleteByIdsSeo(
 }
 
 /**
- * 根据 id 设置默认SEO优化
- */
-export async function defaultByIdSeo(
-  id: SeoId,
-): Promise<number> {
-  
-  const {
-    defaultByIdSeo,
-  } = await import("./seo.service.ts");
-  
-  const {
-    getPagePathSeo,
-  } = await import("./seo.model.ts");
-  
-  set_is_tran(true);
-  
-  await usePermit(
-    getPagePathSeo(),
-    "edit",
-  );
-  
-  const res = await defaultByIdSeo(id);
-  return res;
-}
-
-/**
  * 根据 ids 锁定或者解锁SEO优化
  */
 export async function lockByIdsSeo(

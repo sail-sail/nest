@@ -9,8 +9,14 @@ scalar SeoId
 type SeoModel {
   "ID"
   id: SeoId!
+  "所属域名"
+  domain_ids: [DomainId!]!
+  "所属域名"
+  domain_ids_lbl: [String!]!
+  "图标"
+  ico: String!
   "标题"
-  title: String!
+  lbl: String!
   "描述"
   description: String!
   "关键词"
@@ -25,10 +31,6 @@ type SeoModel {
   is_locked: Int!
   "锁定"
   is_locked_lbl: String!
-  "默认"
-  is_default: Int!
-  "默认"
-  is_default_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -55,8 +57,14 @@ type SeoModel {
 type SeoFieldComment {
   "ID"
   id: String!
+  "所属域名"
+  domain_ids: String!
+  "所属域名"
+  domain_ids_lbl: String!
+  "图标"
+  ico: String!
   "标题"
-  title: String!
+  lbl: String!
   "描述"
   description: String!
   "关键词"
@@ -71,10 +79,6 @@ type SeoFieldComment {
   is_locked: String!
   "锁定"
   is_locked_lbl: String!
-  "默认"
-  is_default: String!
-  "默认"
-  is_default_lbl: String!
   "排序"
   order_by: String!
   "备注"
@@ -99,8 +103,14 @@ type SeoFieldComment {
 input SeoInput {
   "ID"
   id: SeoId
+  "所属域名"
+  domain_ids: [DomainId!]
+  "所属域名"
+  domain_ids_lbl: [String!]
+  "图标"
+  ico: String
   "标题"
-  title: String
+  lbl: String
   "描述"
   description: String
   "关键词"
@@ -115,10 +125,6 @@ input SeoInput {
   is_locked: Int
   "锁定"
   is_locked_lbl: String
-  "默认"
-  is_default: Int
-  "默认"
-  is_default_lbl: String
   "排序"
   order_by: Int
   "备注"
@@ -131,8 +137,17 @@ input SeoSearch {
   ids: [SeoId!]
   "ID"
   id: SeoId
-  "默认"
-  is_default: [Int!]
+  "所属域名"
+  domain_ids: [DomainId!]
+  "所属域名"
+  domain_ids_is_null: Boolean
+  "所属域名"
+  domain_ids_lbl: [String!]
+  "所属域名"
+  domain_ids_lbl_like: String
+  "标题"
+  lbl: String
+  lbl_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
@@ -173,8 +188,6 @@ type Mutation {
   updateByIdSeo(id: SeoId!, input: SeoInput!): SeoId!
   "根据 ids 删除SEO优化"
   deleteByIdsSeo(ids: [SeoId!]!): Int!
-  "根据 id 设置默认SEO优化"
-  defaultByIdSeo(id: SeoId!): Int!
   "根据 ids 锁定或者解锁SEO优化"
   lockByIdsSeo(ids: [SeoId!]!, is_locked: Int!): Int!
   "根据 ids 还原SEO优化"

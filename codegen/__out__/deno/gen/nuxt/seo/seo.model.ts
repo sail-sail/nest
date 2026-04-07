@@ -27,9 +27,9 @@ declare global {
   
   /** SEO优化 */
   interface SeoSearch extends SeoSearchType {
-    /** 标题 */
-    title?: string;
-    title_like?: string;
+    /** 图标 */
+    ico?: string;
+    ico_like?: string;
     /** 描述 */
     description?: string;
     description_like?: string;

@@ -234,16 +234,6 @@ export async function deleteByIdsSeo(
 }
 
 /**
- * 根据 id 设置默认SEO优化
- */
-export async function defaultByIdSeo(
-  id: SeoId,
-): Promise<number> {
-  const seo_num = await seoDao.defaultByIdSeo(id);
-  return seo_num;
-}
-
-/**
  * 根据 ids 锁定或者解锁SEO优化
  */
 export async function lockByIdsSeo(

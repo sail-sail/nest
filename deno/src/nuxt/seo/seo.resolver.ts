@@ -6,6 +6,7 @@ import {
  * 查找默认的SEO优化
  */
 export async function findDefaultSeo(
+  domain: string,
 ): Promise<SeoModel | undefined> {
   const {
     findDefaultSeo,
@@ -14,7 +15,7 @@ export async function findDefaultSeo(
   const context = useContext();
   context.notVerifyToken = true;
   
-  const res = await findDefaultSeo();
+  const res = await findDefaultSeo(domain);
   
   return res;
 }

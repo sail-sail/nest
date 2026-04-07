@@ -66,6 +66,10 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
+  many2manyUpdate,
+} from "/lib/util/dao_util.ts";
+
+import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -110,11 +114,26 @@ async function getWhereQuery(
   if (search?.ids != null) {
     whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
-  if (search?.title != null) {
-    whereQuery += ` and t.title=${ args.push(search.title) }`;
+  if (search?.domain_ids != null) {
+    whereQuery += ` and base_domain.id in (${ args.push(search.domain_ids) })`;
   }
-  if (isNotEmpty(search?.title_like)) {
-    whereQuery += ` and t.title like ${ args.push("%" + sqlLike(search?.title_like) + "%") }`;
+  if (search?.domain_ids_is_null) {
+    whereQuery += ` and base_domain.id is null`;
+  }
+  if (isNotEmpty(search?.domain_ids_lbl_like)) {
+    whereQuery += ` and base_domain.lbl like ${ args.push("%" + sqlLike(search?.domain_ids_lbl_like) + "%") }`;
+  }
+  if (search?.ico != null) {
+    whereQuery += ` and t.ico=${ args.push(search.ico) }`;
+  }
+  if (isNotEmpty(search?.ico_like)) {
+    whereQuery += ` and t.ico like ${ args.push("%" + sqlLike(search?.ico_like) + "%") }`;
+  }
+  if (search?.lbl != null) {
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
+  }
+  if (isNotEmpty(search?.lbl_like)) {
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.description != null) {
     whereQuery += ` and t.description=${ args.push(search.description) }`;
@@ -148,9 +167,6 @@ async function getWhereQuery(
   }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
-  }
-  if (search?.is_default != null) {
-    whereQuery += ` and t.is_default in (${ args.push(search.is_default) })`;
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
@@ -216,7 +232,24 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  let fromQuery = `nuxt_seo t`;
+  
+  const is_deleted = search?.is_deleted ?? 0;
+  let fromQuery = `nuxt_seo t
+  left join nuxt_seo_domain
+    on nuxt_seo_domain.seo_id=t.id
+    and nuxt_seo_domain.is_deleted=${ args.push(is_deleted) }
+  left join base_domain
+    on nuxt_seo_domain.domain_id=base_domain.id
+    and base_domain.is_deleted=${ args.push(is_deleted) }
+  left join(select
+  json_objectagg(nuxt_seo_domain.order_by,base_domain.id) domain_ids,
+  json_objectagg(nuxt_seo_domain.order_by,base_domain.lbl) domain_ids_lbl,
+  nuxt_seo.id seo_id
+  from nuxt_seo_domain
+  inner join base_domain on base_domain.id=nuxt_seo_domain.domain_id
+  inner join nuxt_seo on nuxt_seo.id=nuxt_seo_domain.seo_id
+  where nuxt_seo_domain.is_deleted=${ args.push(is_deleted) }
+  group by seo_id) _domain on _domain.seo_id=t.id`;
   return fromQuery;
 }
 
@@ -254,6 +287,17 @@ export async function findCountSeo(
   if (search && search.ids && search.ids.length === 0) {
     return 0;
   }
+  // 所属域名
+  if (search && search.domain_ids != null) {
+    const len = search.domain_ids.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.domain_ids.length > ${ ids_limit }`);
+    }
+  }
   // 锁定
   if (search && search.is_locked != null) {
     const len = search.is_locked.length;
@@ -263,17 +307,6 @@ export async function findCountSeo(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.is_locked.length > ${ ids_limit }`);
-    }
-  }
-  // 默认
-  if (search && search.is_default != null) {
-    const len = search.is_default.length;
-    if (len === 0) {
-      return 0;
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_default.length > ${ ids_limit }`);
     }
   }
   // 创建人
@@ -361,6 +394,17 @@ export async function findAllSeo(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
+  // 所属域名
+  if (search && search.domain_ids != null) {
+    const len = search.domain_ids.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.domain_ids.length > ${ ids_limit }`);
+    }
+  }
   // 锁定
   if (search && search.is_locked != null) {
     const len = search.is_locked.length;
@@ -370,17 +414,6 @@ export async function findAllSeo(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.is_locked.length > ${ ids_limit }`);
-    }
-  }
-  // 默认
-  if (search && search.is_default != null) {
-    const len = search.is_default.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_default.length > ${ ids_limit }`);
     }
   }
   // 创建人
@@ -408,6 +441,8 @@ export async function findAllSeo(
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
+      ,max(domain_ids) domain_ids
+      ,max(domain_ids_lbl) domain_ids_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -470,13 +505,37 @@ export async function findAllSeo(
       throw new Error(`结果集过大, 超过 ${ find_all_result_limit }`);
     }
   }
+  for (const item of result) {
+    
+    // 所属域名
+    if (item.domain_ids) {
+      const obj = item.domain_ids;
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.domain_ids = keys.map((key) => obj[key]);
+    } else {
+      item.domain_ids = [ ];
+    }
+    if (item.domain_ids_lbl) {
+      const obj = item.domain_ids_lbl;
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.domain_ids_lbl = keys.map((key) => obj[key]);
+    } else {
+      item.domain_ids_lbl = [ ];
+    }
+  }
   
   const [
     is_lockedDict, // 锁定
-    is_defaultDict, // 默认
   ] = await getDict([
     "is_locked",
-    "is_default",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -491,16 +550,6 @@ export async function findAllSeo(
       }
     }
     model.is_locked_lbl = is_locked_lbl || "";
-    
-    // 默认
-    let is_default_lbl = model.is_default?.toString() || "";
-    if (model.is_default != null) {
-      const dictItem = is_defaultDict.find((dictItem) => dictItem.val === String(model.is_default));
-      if (dictItem) {
-        is_default_lbl = dictItem.lbl;
-      }
-    }
-    model.is_default_lbl = is_default_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -544,11 +593,31 @@ export async function setIdByLblSeo(
   
   const [
     is_lockedDict, // 锁定
-    is_defaultDict, // 默认
   ] = await getDict([
     "is_locked",
-    "is_default",
   ]);
+  
+  // 所属域名
+  if (!input.domain_ids && input.domain_ids_lbl) {
+    input.domain_ids_lbl = input.domain_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    input.domain_ids_lbl = Array.from(new Set(input.domain_ids_lbl));
+    if (input.domain_ids_lbl.length === 0) {
+      input.domain_ids = [ ];
+    } else {
+      const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+      const args = new QueryArgs();
+      const sql = `select t.id from base_domain t where t.lbl in (${ args.push(input.domain_ids_lbl) })`;
+      interface Result {
+        id: DomainId;
+      }
+      const models = await query<Result>(sql, args, {
+        debug: is_debug_sql,
+      });
+      input.domain_ids = models.map((item: { id: DomainId }) => item.id);
+    }
+  }
   
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
@@ -560,17 +629,6 @@ export async function setIdByLblSeo(
     const lbl = is_lockedDict.find((itemTmp) => itemTmp.val === String(input.is_locked))?.lbl || "";
     input.is_locked_lbl = lbl;
   }
-  
-  // 默认
-  if (isNotEmpty(input.is_default_lbl) && input.is_default == null) {
-    const val = is_defaultDict.find((itemTmp) => itemTmp.lbl === input.is_default_lbl)?.val;
-    if (val != null) {
-      input.is_default = Number(val);
-    }
-  } else if (isEmpty(input.is_default_lbl) && input.is_default != null) {
-    const lbl = is_defaultDict.find((itemTmp) => itemTmp.val === String(input.is_default))?.lbl || "";
-    input.is_default_lbl = lbl;
-  }
 }
 
 // MARK: getFieldCommentsSeo
@@ -578,7 +636,10 @@ export async function setIdByLblSeo(
 export async function getFieldCommentsSeo(): Promise<SeoFieldComment> {
   const field_comments: SeoFieldComment = {
     id: "ID",
-    title: "标题",
+    domain_ids: "所属域名",
+    domain_ids_lbl: "所属域名",
+    ico: "图标",
+    lbl: "标题",
     description: "描述",
     keywords: "关键词",
     og_image: "分享图片",
@@ -586,8 +647,6 @@ export async function getFieldCommentsSeo(): Promise<SeoFieldComment> {
     og_description: "分享描述",
     is_locked: "锁定",
     is_locked_lbl: "锁定",
-    is_default: "默认",
-    is_default_lbl: "默认",
     order_by: "排序",
     rem: "备注",
     create_usr_id: "创建人",
@@ -1089,11 +1148,18 @@ export async function validateSeo(
     fieldComments.id,
   );
   
+  // 图标
+  await validators.chars_max_length(
+    input.ico,
+    22,
+    fieldComments.ico,
+  );
+  
   // 标题
   await validators.chars_max_length(
-    input.title,
-    45,
-    fieldComments.title,
+    input.lbl,
+    100,
+    fieldComments.lbl,
   );
   
   // 描述
@@ -1382,7 +1448,7 @@ async function _creates(
   await delCacheSeo();
   
   const args = new QueryArgs();
-  let sql = "insert into nuxt_seo(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,title,description,keywords,og_image,og_title,og_description,is_locked,is_default,order_by,rem)values";
+  let sql = "insert into nuxt_seo(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,ico,lbl,description,keywords,og_image,og_title,og_description,is_locked,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1480,8 +1546,13 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.title != null) {
-        sql += `,${ args.push(input.title) }`;
+      if (input.ico != null) {
+        sql += `,${ args.push(input.ico) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.lbl != null) {
+        sql += `,${ args.push(input.lbl) }`;
       } else {
         sql += ",default";
       }
@@ -1515,11 +1586,6 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.is_default != null) {
-        sql += `,${ args.push(input.is_default) }`;
-      } else {
-        sql += ",default";
-      }
       if (input.order_by != null) {
         sql += `,${ args.push(input.order_by) }`;
       } else {
@@ -1546,6 +1612,22 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
+  for (let i = 0; i < inputs2.length; i++) {
+    const input = inputs2[i];
+    
+    // 所属域名
+    await many2manyUpdate(
+      input,
+      "domain_ids",
+      {
+        mod: "nuxt",
+        table: "seo_domain",
+        column1: "seo_id",
+        column2: "domain_id",
+      },
+    );
+  }
+  
   await delCacheSeo();
   
   return ids2;
@@ -1555,6 +1637,7 @@ async function _creates(
 /** 删除缓存 */
 export async function delCacheSeo() {
   await delCacheCtx(`dao.sql.nuxt_seo`);
+  await delCacheCtx(`dao.sql.base_domain`);
 }
 
 // MARK: updateTenantByIdSeo
@@ -1680,9 +1763,15 @@ export async function updateByIdSeo(
   const args = new QueryArgs();
   let sql = `update nuxt_seo set `;
   let updateFldNum = 0;
-  if (input.title != null) {
-    if (input.title != oldModel.title) {
-      sql += `title=${ args.push(input.title) },`;
+  if (input.ico != null) {
+    if (input.ico != oldModel.ico) {
+      sql += `ico=${ args.push(input.ico) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.lbl != null) {
+    if (input.lbl != oldModel.lbl) {
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
@@ -1722,12 +1811,6 @@ export async function updateByIdSeo(
       updateFldNum++;
     }
   }
-  if (input.is_default != null) {
-    if (input.is_default != oldModel.is_default) {
-      sql += `is_default=${ args.push(input.is_default) },`;
-      updateFldNum++;
-    }
-  }
   if (input.order_by != null) {
     if (input.order_by != oldModel.order_by) {
       sql += `order_by=${ args.push(input.order_by) },`;
@@ -1758,6 +1841,23 @@ export async function updateByIdSeo(
     }
   }
   let sqlSetFldNum = updateFldNum;
+  
+  updateFldNum++;
+  
+  // 所属域名
+  await many2manyUpdate(
+    {
+      ...input,
+      id: id as unknown as string,
+    },
+    "domain_ids",
+    {
+      mod: "nuxt",
+      table: "seo_domain",
+      column1: "seo_id",
+      column2: "domain_id",
+    },
+  );
   
   if (updateFldNum > 0) {
     if (!is_silent_mode && !is_creating) {
@@ -1836,6 +1936,13 @@ export async function updateByIdSeo(
   
   if (!is_silent_mode) {
     log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
+  }
+  
+  // 图标
+  if (input.ico != null && input.ico !== oldModel?.ico) {
+    await deleteObject(
+      oldModel?.ico,
+    );
   }
   
   // 分享图片
@@ -1958,44 +2065,19 @@ export async function deleteByIdsSeo(
       },
     );
     affectedRows += res.affectedRows;
+    {
+      const domain_ids = oldModel.domain_ids;
+      if (domain_ids && domain_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update nuxt_seo_domain set is_deleted=1 where seo_id=${ args.push(id) } and domain_id in (${ args.push(domain_ids) }) and is_deleted=0`;
+        await execute(sql, args);
+      }
+    }
   }
   
   await delCacheSeo();
   
   return affectedRows;
-}
-
-// MARK: defaultByIdSeo
-/** 根据 id 设置默认SEO优化 */
-export async function defaultByIdSeo(
-  id: SeoId,
-  options?: {
-  },
-): Promise<number> {
-  
-  const table = getTableNameSeo();
-  const method = "defaultByIdSeo";
-  
-  if (!id) {
-    throw new Error("defaultByIdSeo: id cannot be empty");
-  }
-  
-  await delCacheSeo();
-  
-  {
-    const args = new QueryArgs();
-    const sql = `update nuxt_seo set is_default=0 where is_default=1 and id!=${ args.push(id) }`;
-    await execute(sql, args);
-  }
-  
-  const args = new QueryArgs();
-  const sql = `update nuxt_seo set is_default=1 where id=${ args.push(id) }`;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCacheSeo();
-  
-  return num;
 }
 
 // MARK: getIsLockedByIdSeo
@@ -2144,6 +2226,14 @@ export async function revertByIdsSeo(
     const sql = `update nuxt_seo set is_deleted=0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    {
+      const domain_ids = old_model.domain_ids;
+      if (domain_ids && domain_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update nuxt_seo_domain set is_deleted=0 where seo_id=${ args.push(id) } and domain_id in (${ args.push(domain_ids) }) and is_deleted=1`;
+        await execute(sql, args);
+      }
+    }
   }
   
   await delCacheSeo();
@@ -2206,6 +2296,25 @@ export async function forceDeleteByIdsSeo(
     const sql = `delete from nuxt_seo where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    if (oldModel) {
+      const domain_ids = oldModel.domain_ids;
+      if (domain_ids && domain_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from nuxt_seo_domain where seo_id=${ args.push(id) } and domain_id in (${ args.push(domain_ids) })`;
+        await execute(
+          sql,
+          args,
+          {
+            debug: is_debug_sql,
+          },
+        );
+      }
+    }
+    
+    // 图标
+    await deleteObject(
+      oldModel?.ico,
+    );
     
     // 分享图片
     await deleteObject(
