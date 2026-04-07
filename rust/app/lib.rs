@@ -12,13 +12,16 @@ use async_graphql::{
 pub struct Query(
   generated::common::CommonQuery,
   generated::GenQuery,
-  crate::base::menu::menu_graphql::MenuQuery,
+  
+  base::BaseAppQuery,
 );
 
 #[derive(MergedObject, Default)]
 pub struct Mutation(
   generated::common::CommonMutation,
   generated::GenMutation,
+  
+  base::BaseAppMutation,
 );
 
 pub type QuerySchema = Schema<Query, Mutation, EmptySubscription>;
