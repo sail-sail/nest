@@ -1329,7 +1329,7 @@ async function getFromQuery(
     }
   #>
   <#=mod#>_<#=table#>.id <#=many2many.column1#>
-  from <#=foreignKey.mod#>_<#=many2many.table#>
+  from <#=many2many.mod#>_<#=many2many.table#>
   inner join <#=foreignKey.mod#>_<#=foreignKey.table#> on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
   inner join <#=mod#>_<#=table#> on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
   if (hasIsDeleted) {
