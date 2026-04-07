@@ -309,7 +309,7 @@ async function nuxt() {
   
   const parsedEnv = parseEnv(await Deno.readTextFile(`${ nuxtDir }/.env.${ env }`));
   
-  const ecosystemStr = await Deno.readTextFile(`${ nuxtDir }/ecosystem.config.js`);
+  const ecosystemStr = await Deno.readTextFile(`${ nuxtDir }/ecosystem.config.json`);
   const ecosystemStr2 = ecosystemStr
     .replaceAll("{env}", env)
     .replaceAll("{NUXT_PORT}", parsedEnv.NUXT_PORT);
