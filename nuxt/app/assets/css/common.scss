@@ -1,0 +1,66 @@
+::-webkit-scrollbar-track-piece {
+  background-color: transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+  cursor: pointer;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: rgba(144, 146, 152, 0.3);
+}
+html,body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  --el-font-size-base: 13px;
+  font-size: var(--el-font-size-base);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  text-rendering: optimizeLegibility;
+}
+
+.app_message {
+  position: fixed;
+  top: 10px;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
+  font-size: 18px;
+}
+
+.app_message_inner {
+  display: flex;
+  align-items: center;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 5px;
+  white-space: pre-wrap;
+  // transform: translateY(-100%);
+  // transition: transform 0.3s;
+}
+
+.app_message_info {
+  color: #fff;
+}
+
+.app_message_error {
+  color: lightcoral;
+}

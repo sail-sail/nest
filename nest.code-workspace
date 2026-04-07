@@ -9,6 +9,10 @@
       "deno": false
     },
     {
+      "path": "./nuxt",
+      "deno": false
+    },
+    {
       "path": "./uni",
       "deno": false
     },

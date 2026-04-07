@@ -2,6 +2,7 @@
 #![recursion_limit="512"]
 
 pub mod base;
+pub mod nuxt;
 
 use async_graphql::{
   MergedObject,
@@ -12,13 +13,18 @@ use async_graphql::{
 pub struct Query(
   generated::common::CommonQuery,
   generated::GenQuery,
-  crate::base::menu::menu_graphql::MenuQuery,
+  
+  base::BaseAppQuery,
+  nuxt::NuxtAppQuery,
 );
 
 #[derive(MergedObject, Default)]
 pub struct Mutation(
   generated::common::CommonMutation,
   generated::GenMutation,
+  
+  base::BaseAppMutation,
+  nuxt::NuxtAppMutation,
 );
 
 pub type QuerySchema = Schema<Query, Mutation, EmptySubscription>;

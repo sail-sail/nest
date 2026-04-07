@@ -2,6 +2,7 @@
 const child_process = require("node:child_process");
 const path = require("node:path");
 const minimist = require("minimist");
+const dotenv = require("dotenv");
 const ecosystem = require(`${ __dirname }/../../../ecosystem.config.json`);
 
 const {
@@ -30,6 +31,7 @@ const projectName = ecosystem.apps[0].script.replace("./", "");
 
 const rustDir = projectDir + "/rust";
 const pcDir = projectDir + "/pc";
+const nuxtDir = projectDir + "/nuxt";
 const uniDir = projectDir + "/uni";
 
 async function removeExcelTemplate() {
@@ -88,6 +90,21 @@ async function uni() {
   await mkdir(`${ buildDir }/uni`, { recursive: true });
   await remove(`${ buildDir }/uni/`);
   await copy(`${ projectDir }/uni/dist/build/h5/`, `${ buildDir }/uni/`);
+}
+
+async function nuxt() {
+  console.log("nuxt");
+  await remove(`${ buildDir }/nuxt/`);
+  
+  await copy(`${ nuxtDir }/.output/`, `${ buildDir }/nuxt/`);
+  await copy(`${ nuxtDir }/.npmrc`, `${ buildDir }/nuxt/server/.npmrc`);
+  const parsedEnv = dotenv.parse(await readFile(`${ nuxtDir }/.env.${ env }`, "utf8"));
+  const ecosystemStr = await readFile(`${ nuxtDir }/ecosystem.config.json`, "utf8");
+  const ecosystemStr2 = ecosystemStr
+    .replaceAll("{env}", env)
+    .replaceAll("{NUXT_PORT}", parsedEnv.NUXT_PORT);
+  await writeFile(`${ buildDir }/nuxt/ecosystem.config.json`, ecosystemStr2);
+  
 }
 
 async function docs() {
@@ -149,6 +166,8 @@ async function publish() {
       await pc();
     } else if (command === "uni") {
       await uni();
+    } else if (command === "nuxt") {
+      await nuxt();
     } else if (command === "docs") {
       await docs();
     }
@@ -158,6 +177,7 @@ async function publish() {
     await compile();
     await pc();
     await uni();
+    await nuxt();
     // await docs();
   }
   await publish();

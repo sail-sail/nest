@@ -377,4 +377,19 @@ export const routesGen: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/nuxt/seo",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "SEO优化",
+        component: () => import("@/views/nuxt/seo/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "SEO优化",
+        },
+      },
+    ],
+  },
 ];

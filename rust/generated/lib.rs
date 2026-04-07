@@ -3,15 +3,18 @@
 
 pub mod common;
 pub mod base;
+pub mod nuxt;
 
 use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
 pub struct GenQuery(
   base::BaseQuery,
+  nuxt::NuxtQuery,
 );
 
 #[derive(MergedObject, Default)]
 pub struct GenMutation(
   base::BaseMutation,
+  nuxt::NuxtMutation,
 );

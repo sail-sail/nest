@@ -102,3 +102,7 @@ type TenantId = Distinct<string, typeof tenantId>;
 declare const usrId: unique symbol;
 /** 用户 */
 type UsrId = Distinct<string, typeof usrId>;
+
+declare const seoId: unique symbol;
+/** SEO优化 */
+type SeoId = Distinct<string, typeof seoId>;
