@@ -3,11 +3,11 @@ pub mod seo;
 use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
-pub struct NuxtQuery(
+pub struct NuxtGenQuery(
   self::seo::seo_graphql::SeoGenQuery,
 );
 
 #[derive(MergedObject, Default)]
-pub struct NuxtMutation(
+pub struct NuxtGenMutation(
   self::seo::seo_graphql::SeoGenMutation,
 );

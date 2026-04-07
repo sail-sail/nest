@@ -20,7 +20,7 @@ const modUp = mod.substring(0, 1).toUpperCase() + mod.substring(1);
 #>
 
 #[derive(MergedObject, Default)]
-pub struct <#=modUp#>Query(<#
+pub struct <#=modUp#>GenQuery(<#
   for (let i = 0; i < allTables.length; i++) {
     const record = allTables[i];
     let table_name = record.TABLE_NAME;
@@ -40,7 +40,7 @@ pub struct <#=modUp#>Query(<#
 );
 
 #[derive(MergedObject, Default)]
-pub struct <#=modUp#>Mutation(<#
+pub struct <#=modUp#>GenMutation(<#
   for (let i = 0; i < allTables.length; i++) {
     const record = allTables[i];
     let table_name = record.TABLE_NAME;
