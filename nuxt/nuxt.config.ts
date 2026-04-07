@@ -16,10 +16,11 @@ export default defineNuxtConfig({
     "@vue-macros/nuxt",
     "@nuxt/icon",
     "@nuxt/eslint",
+    "@una-ui/nuxt",
   ],
   hooks: {
     // 修改构建清单，禁用prefetch和preload
-    'build:manifest': (manifest) => {
+    "build:manifest": (manifest) => {
       for (const key in manifest) {
         if (manifest[key]) {
           manifest[key].prefetch = false;
@@ -48,6 +49,12 @@ export default defineNuxtConfig({
         "@": fileURLToPath(new URL("./", import.meta.url)),
         "#": fileURLToPath(new URL("./typings", import.meta.url)),
       },
+    },
+    optimizeDeps: {
+      include: [
+        "graphql/index.mjs",
+        "graphql-combine-query", // CJS
+      ]
     },
   },
   compatibilityDate: "2024-12-11",

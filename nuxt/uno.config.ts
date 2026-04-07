@@ -1,5 +1,6 @@
 import {
   promises as fs,
+  // @ts-ignore
 } from "node:fs";
 
 import {
@@ -11,6 +12,7 @@ import {
   transformerCompileClass,
   transformerDirectives,
   transformerVariantGroup,
+  // @ts-ignore
 } from "unocss";
 
 import presetRemToPx from "@unocss/preset-rem-to-px";
@@ -41,7 +43,7 @@ export default defineConfig({
     presetIcons({
       warn: true,
       collections: {
-        iconfont: async (iconName) => await fs.readFile(`./assets/iconfont/${ iconName }.svg`, "utf8"),
+        iconfont: async (iconName: string) => await fs.readFile(`./assets/iconfont/${ iconName }.svg`, "utf8"),
       },
     }),
     presetAttributify({
