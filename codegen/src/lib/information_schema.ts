@@ -2,7 +2,7 @@ import * as mysql from "mysql2";
 import type { Pool, PoolConnection } from "mysql2/promise";
 import nestConfig from "./nest_config.ts";
 import tables from "../tables/tables.ts";
-import config, { type TableCloumn, type TablesConfigItem } from "../config.ts";
+import config, { type TableColumn, type TablesConfigItem } from "../config.ts";
 import { isEmpty, pushEnumMsg } from "./StringUitl.ts";
 // import { Chalk } from "chalk";
 
@@ -69,12 +69,12 @@ export async function getTableComment(context: Context, table_name: string) {
   return table_comment;
 }
 
-let allTableSchemaRecords: TableCloumn[] = undefined;
+let allTableSchemaRecords: TableColumn[] = undefined;
 
 async function getSchema0(
   context: Context,
   table_name: string,
-): Promise<TableCloumn[]> {
+): Promise<TableColumn[]> {
   if (!table_name) {
     return [ ];
   }
@@ -88,35 +88,35 @@ async function getSchema0(
       order by t.ORDINAL_POSITION
     `;
     const result = await context.conn.query(sql);
-    allTableSchemaRecords = result[0] as TableCloumn[];
+    allTableSchemaRecords = result[0] as TableColumn[];
   }
-  const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
+  const records = allTableSchemaRecords.filter((item: TableColumn) => item.TABLE_NAME === table_name);
   if (!tables[table_name]) {
     throw `数据库中, 表: ${ table_name } 不存在!`;
   }
-  const hasOrderBy = records.some((item: TableCloumn) => item.COLUMN_NAME === "order_by" && !item.onlyCodegenDeno);
+  const hasOrderBy = records.some((item: TableColumn) => item.COLUMN_NAME === "order_by" && !item.onlyCodegenDeno);
   // 是否有系统字段 is_sys
-  const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
+  const hasIs_sys = records.some((item: TableColumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
   // 是否有隐藏字段
-  const hasIsHidden = records.some((item: TableCloumn) => [ "is_hidden" ].includes(item.COLUMN_NAME));
-  const hasOrgId = records.some((item: TableCloumn) => [ "org_id" ].includes(item.COLUMN_NAME));
-  const hasOrgIdLbl = records.some((item: TableCloumn) => [ "org_id_lbl" ].includes(item.COLUMN_NAME));
-  const hasCreateTime = records.some((item: TableCloumn) => [ "create_time" ].includes(item.COLUMN_NAME));
-  const hasCreateUsrId = records.some((item: TableCloumn) => [ "create_usr_id" ].includes(item.COLUMN_NAME));
-  const hasCreateUsrIdLbl = records.some((item: TableCloumn) => [ "create_usr_id_lbl" ].includes(item.COLUMN_NAME));
-  const hasUpdateTime = records.some((item: TableCloumn) => [ "update_time" ].includes(item.COLUMN_NAME));
-  const hasUpdateUsrId = records.some((item: TableCloumn) => [ "update_usr_id" ].includes(item.COLUMN_NAME));
-  const hasUpdateUsrIdLbl = records.some((item: TableCloumn) => [ "update_usr_id_lbl" ].includes(item.COLUMN_NAME));
-  const hasIsDeleted = records.some((item: TableCloumn) => [ "is_deleted" ].includes(item.COLUMN_NAME));
-  const hasDeleteUsrId = records.some((item: TableCloumn) => [ "delete_usr_id" ].includes(item.COLUMN_NAME));
-  const hasDeleteUsrIdLbl = records.some((item: TableCloumn) => [ "delete_usr_id_lbl" ].includes(item.COLUMN_NAME));
-  const hasDeleteTime = records.some((item: TableCloumn) => [ "delete_time" ].includes(item.COLUMN_NAME));
-  const hasVersion = records.some((item: TableCloumn) => [ "version" ].includes(item.COLUMN_NAME));
-  const records2: TableCloumn[] = [ ];
+  const hasIsHidden = records.some((item: TableColumn) => [ "is_hidden" ].includes(item.COLUMN_NAME));
+  const hasOrgId = records.some((item: TableColumn) => [ "org_id" ].includes(item.COLUMN_NAME));
+  const hasOrgIdLbl = records.some((item: TableColumn) => [ "org_id_lbl" ].includes(item.COLUMN_NAME));
+  const hasCreateTime = records.some((item: TableColumn) => [ "create_time" ].includes(item.COLUMN_NAME));
+  const hasCreateUsrId = records.some((item: TableColumn) => [ "create_usr_id" ].includes(item.COLUMN_NAME));
+  const hasCreateUsrIdLbl = records.some((item: TableColumn) => [ "create_usr_id_lbl" ].includes(item.COLUMN_NAME));
+  const hasUpdateTime = records.some((item: TableColumn) => [ "update_time" ].includes(item.COLUMN_NAME));
+  const hasUpdateUsrId = records.some((item: TableColumn) => [ "update_usr_id" ].includes(item.COLUMN_NAME));
+  const hasUpdateUsrIdLbl = records.some((item: TableColumn) => [ "update_usr_id_lbl" ].includes(item.COLUMN_NAME));
+  const hasIsDeleted = records.some((item: TableColumn) => [ "is_deleted" ].includes(item.COLUMN_NAME));
+  const hasDeleteUsrId = records.some((item: TableColumn) => [ "delete_usr_id" ].includes(item.COLUMN_NAME));
+  const hasDeleteUsrIdLbl = records.some((item: TableColumn) => [ "delete_usr_id_lbl" ].includes(item.COLUMN_NAME));
+  const hasDeleteTime = records.some((item: TableColumn) => [ "delete_time" ].includes(item.COLUMN_NAME));
+  const hasVersion = records.some((item: TableColumn) => [ "version" ].includes(item.COLUMN_NAME));
+  const records2: TableColumn[] = [ ];
   if (!tables[table_name]?.columns) {
     throw new Error(`table: ${ table_name } columns is empty!`);
   }
-  const idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "id");
+  const idColumn = records.find((item: TableColumn) => item.COLUMN_NAME === "id");
   if (idColumn) {
     records2.push(idColumn);
   }
@@ -134,15 +134,15 @@ async function getSchema0(
       }
     }
   }
-  const tenant_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
-  if (tenant_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id")) {
+  const tenant_idColumn = records.find((item: TableColumn) => item.COLUMN_NAME === "tenant_id");
+  if (tenant_idColumn && !records2.some((item: TableColumn) => item.COLUMN_NAME === "tenant_id")) {
     records2.push(tenant_idColumn);
   }
-  const is_deletedColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "is_deleted");
-  if (is_deletedColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "is_deleted")) {
+  const is_deletedColumn = records.find((item: TableColumn) => item.COLUMN_NAME === "is_deleted");
+  if (is_deletedColumn && !records2.some((item: TableColumn) => item.COLUMN_NAME === "is_deleted")) {
     records2.push(is_deletedColumn);
   }
-  if (hasIs_sys && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "is_sys")) {
+  if (hasIs_sys && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "is_sys")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "is_sys",
       COLUMN_TYPE: "tinyint(1) unsigned",
@@ -152,7 +152,7 @@ async function getSchema0(
     });
   }
   // 隐藏记录
-  if (hasIsHidden && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "is_hidden")) {
+  if (hasIsHidden && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "is_hidden")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "is_hidden",
       COLUMN_TYPE: "tinyint(1) unsigned",
@@ -162,7 +162,7 @@ async function getSchema0(
     });
   }
   // 组织
-  if (hasOrgId && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "org_id")) {
+  if (hasOrgId && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "org_id")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "org_id",
       COLUMN_TYPE: "varchar(22)",
@@ -179,7 +179,7 @@ async function getSchema0(
     });
   }
   // 创建人
-  if (hasCreateUsrId && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "create_usr_id")) {
+  if (hasCreateUsrId && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "create_usr_id")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "create_usr_id",
       COLUMN_TYPE: "varchar(22)",
@@ -190,7 +190,7 @@ async function getSchema0(
     });
   }
   // 创建时间
-  if (hasCreateTime && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "create_time")) {
+  if (hasCreateTime && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "create_time")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "create_time",
       COLUMN_TYPE: "datetime",
@@ -200,7 +200,7 @@ async function getSchema0(
     });
   }
   // 更新人
-  if (hasUpdateUsrId && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "update_usr_id")) {
+  if (hasUpdateUsrId && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "update_usr_id")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "update_usr_id",
       COLUMN_TYPE: "varchar(22)",
@@ -211,7 +211,7 @@ async function getSchema0(
     });
   }
   // 更新时间
-  if (hasUpdateTime && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "update_time")) {
+  if (hasUpdateTime && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "update_time")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "update_time",
       COLUMN_TYPE: "datetime",
@@ -226,7 +226,7 @@ async function getSchema0(
     if (column_name === "id") {
       item.canSearch = true;
     }
-    const record = records2.find((item: TableCloumn) => item.COLUMN_NAME === column_name);
+    const record = records2.find((item: TableColumn) => item.COLUMN_NAME === column_name);
     if (column_name === "is_hidden") {
       if (item.onlyCodegenDeno != null) {
         item.onlyCodegenDeno = true;
@@ -601,7 +601,7 @@ async function getSchema0(
         throw new Error(`表: ${ table_name } 列: ${ column_name } autoCode 配置错误, 必须指定 seq 属性!`);
       }
       const seq = item.autoCode.seq;
-      if (!records.some((record: TableCloumn) => record.COLUMN_NAME === seq)) {
+      if (!records.some((record: TableColumn) => record.COLUMN_NAME === seq)) {
         throw new Error(`表: ${ table_name } 列: ${ column_name }, autoCode 配置错误, seq 指定的列 ${ seq } 不存在`);
       }
       // 自动编码默认固定生成唯一索引配置
@@ -663,7 +663,7 @@ async function getSchema0(
       continue;
     }
     const column_name = record.COLUMN_NAME;
-    const column = tables[table_name].columns.find((item: TableCloumn) => item.COLUMN_NAME === column_name);
+    const column = tables[table_name].columns.find((item: TableColumn) => item.COLUMN_NAME === column_name);
     if (column) {
       const isIcon = column.isIcon;
       if (isIcon) {
@@ -695,7 +695,7 @@ async function getSchema0(
     }
   }
   // 用于显示的字段
-  if (!tables[table_name]?.opts?.lbl_field && records2.some((item: TableCloumn) => item.COLUMN_NAME === "lbl")) {
+  if (!tables[table_name]?.opts?.lbl_field && records2.some((item: TableColumn) => item.COLUMN_NAME === "lbl")) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.lbl_field = "lbl";
   }
@@ -824,7 +824,7 @@ export async function getSchema(
   tables[table_name].opts.table = table;
   tables[table_name].opts.tableUp = table.substring(0,1).toUpperCase() + table.substring(1);
   tables[table_name].opts.table_comment = await getTableComment(context, table_name);
-  const hasTenant_id = records.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
+  const hasTenant_id = records.some((item: TableColumn) => item.COLUMN_NAME === "tenant_id");
   tables[table_name].opts.hasTenant_id = hasTenant_id;
   const columns = [ ];
   
@@ -854,7 +854,7 @@ export async function getSchema(
   
   for (let k = 0; k < records.length; k++) {
     const record = records[k];
-    let column: TableCloumn = tables[table_name].columns.find((column: any) => column.COLUMN_NAME === record.COLUMN_NAME);
+    let column: TableColumn = tables[table_name].columns.find((column: any) => column.COLUMN_NAME === record.COLUMN_NAME);
     if (column) {
       Object.assign(record, column);
     }
@@ -1040,7 +1040,7 @@ export async function getSchema(
   }
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const column = tables[table_name].columns[i];
-    const record = records.find((item: TableCloumn) => item.COLUMN_NAME === column.COLUMN_NAME);
+    const record = records.find((item: TableColumn) => item.COLUMN_NAME === column.COLUMN_NAME);
     if (record) continue;
     if (!column.foreignKey) {
       if (column.COLUMN_NAME.endsWith("_ids")) {
@@ -1254,7 +1254,7 @@ export async function getSchema(
         tables[table_name].opts.langTable.opts.mod = mod;
         tables[table_name].opts.langTable.opts.table = `${ table }_lang`;
         tables[table_name].opts.langTable.opts.table_name = table_name2;
-        tables[table_name].opts.langTable.records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name2);
+        tables[table_name].opts.langTable.records = allTableSchemaRecords.filter((item: TableColumn) => item.TABLE_NAME === table_name2);
       }
     }
   }
@@ -1285,17 +1285,17 @@ export async function getSchema(
   }
   
   // 校验 modelLabel 对应的字段是否在外键关联表中存在
-  const oldRecords = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
+  const oldRecords = allTableSchemaRecords.filter((item: TableColumn) => item.TABLE_NAME === table_name);
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const column = tables[table_name].columns[i];
     if (column.modelLabel && column.foreignKey) {
-      if (!oldRecords.some((item0: TableCloumn) => item0.COLUMN_NAME === column.modelLabel)) {
+      if (!oldRecords.some((item0: TableColumn) => item0.COLUMN_NAME === column.modelLabel)) {
         throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 的 modelLabel: ${ column.modelLabel } 不存在!`);
       }
       continue;
     }
     if (!column.modelLabel && column.foreignKey
-      && oldRecords.some((item0: TableCloumn) => item0.COLUMN_NAME === `${ column.COLUMN_NAME }_lbl`)
+      && oldRecords.some((item0: TableColumn) => item0.COLUMN_NAME === `${ column.COLUMN_NAME }_lbl`)
     ) {
       throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 的 modelLabel 未设置, 但却存在 ${ column.COLUMN_NAME }_lbl 字段!`);
     }
