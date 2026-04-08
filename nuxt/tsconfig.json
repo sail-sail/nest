@@ -5,7 +5,9 @@
     "allowImportingTsExtensions": true,
     "types": [
       "node",
-      "@vue-macros/reactivity-transform/macros-global"
+      "@vue-macros/reactivity-transform/macros-global",
+      "./typings/ids.d.ts",
+      "./typings/typings.d.ts"
     ],
     "paths": {
       "@/*": [ "./*" ],

@@ -77,50 +77,6 @@
         @submit.prevent
       >
         
-        <template v-if="(showBuildIn || builtInModel?.domain_ids == null)">
-          <el-form-item
-            label="所属域名"
-            prop="domain_ids"
-          >
-            <CustomSelect
-              ref="domain_idsRef"
-              v-model="dialogModel.domain_ids"
-              :set="dialogModel.domain_ids = dialogModel.domain_ids ?? [ ]"
-              :method="getListDomain"
-              :find-by-values="findByIdsDomain"
-              :options-map="((item: DomainModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
-              placeholder="请选择 所属域名"
-              multiple
-              :multiple-set-default="true"
-              :readonly="isLocked || isReadonly"
-            >
-              
-              <template
-                v-if="domainPermit('add')"
-                #footer
-              >
-                <div
-                  un-flex="~"
-                  un-justify-center
-                >
-                  <el-button
-                    plain
-                    @click="domain_idsOpenAddDialog"
-                  >
-                    新增域名
-                  </el-button>
-                </div>
-              </template>
-              
-            </CustomSelect>
-          </el-form-item>
-        </template>
-        
         <template v-if="(showBuildIn || builtInModel?.ico == null)">
           <el-form-item
             label="图标"
@@ -334,11 +290,6 @@
     </div>
   </div>
   
-  <!-- 域名 -->
-  <DomainDetailDialog
-    ref="domainDetailDialogRef"
-  ></DomainDetailDialog>
-  
 </CustomDialog>
 </template>
 
@@ -358,17 +309,6 @@ import {
   intoInputSeo,
 } from "./Api.ts";
 
-import {
-  getListDomain,
-} from "./Api.ts";
-
-import {
-  findByIdsDomain,
-} from "@/views/base/domain/Api.ts";
-
-// 域名
-import DomainDetailDialog from "@/views/base/domain/Detail.vue";
-
 const emit = defineEmits<{
   nextId: [
     {
@@ -384,9 +324,6 @@ const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit(pagePath);
 
-// 域名
-const domainPermit = permitStore.getPermit("/base/domain");
-
 let inited = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
@@ -398,7 +335,6 @@ let oldIsLocked = $ref(false);
 let dialogNotice = $ref("");
 
 let dialogModel = $ref<SeoInput>({
-  domain_ids: [ ],
 } as SeoInput);
 
 let seo_model = $ref<SeoModel>();
@@ -419,13 +355,6 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
-    // 所属域名
-    domain_ids: [
-      {
-        required: true,
-        message: "请选择 所属域名",
-      },
-    ],
     // 标题
     lbl: [
       {
@@ -459,34 +388,6 @@ watchEffect(async () => {
     ],
   };
 });
-
-// 域名
-const domainDetailDialogRef = $(useTemplateRef("domainDetailDialogRef"));
-const domain_idsRef = $(useTemplateRef("domain_idsRef"));
-
-/** 打开新增 域名 对话框 */
-async function domain_idsOpenAddDialog() {
-  if (!domain_idsRef || !domainDetailDialogRef) {
-    return;
-  }
-  const {
-    changedIds,
-  } = await domainDetailDialogRef.showDialog({
-    title: "新增 域名",
-    action: "add",
-  });
-  if (changedIds.length > 0) {
-    await domain_idsRef.refresh();
-    dialogModel.domain_ids = dialogModel.domain_ids || [ ];
-    for (const id of changedIds) {
-      if (dialogModel.domain_ids.includes(id)) {
-        continue;
-      }
-      dialogModel.domain_ids.push(id);
-    }
-  }
-  domain_idsRef.focus();
-}
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
@@ -563,14 +464,10 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (dialogAction === "add") {
-      isLocked = false;
+    if (!permit("edit")) {
+      isLocked = true;
     } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
+      isLocked = toValue(arg?.isLocked) ?? isLocked;
     }
   });
   dialogAction = action || "add";
@@ -578,7 +475,6 @@ async function showDialog(
   ids = [ ];
   changedIds = [ ];
   dialogModel = {
-    domain_ids: [ ],
   };
   seo_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
@@ -627,8 +523,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        is_locked: undefined,
-        is_locked_lbl: undefined,
         order_by: order_by + 1,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
@@ -656,27 +550,6 @@ async function showDialog(
   inited = true;
   return await dialogRes.dialogPrm;
 }
-
-watch(
-  () => [ inited, isLocked, is_deleted, dialogNotice ],
-  async () => {
-    if (!inited) {
-      return;
-    }
-    if (oldDialogNotice != null) {
-      return;
-    }
-    if (is_deleted) {
-      dialogNotice = "(已删除)";
-      return;
-    }
-    if (isLocked) {
-      dialogNotice = "(已锁定)";
-      return;
-    }
-    dialogNotice = "";
-  },
-);
 
 /** 键盘按 Insert */
 async function onInsert() {
@@ -839,20 +712,6 @@ async function nextId() {
   );
   return true;
 }
-
-watch(
-  () => [
-    dialogModel.domain_ids,
-  ],
-  () => {
-    if (!inited) {
-      return;
-    }
-    if (!dialogModel.domain_ids || dialogModel.domain_ids.length === 0) {
-      dialogModel.domain_ids_lbl = [ ];
-    }
-  },
-);
 
 /** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {

@@ -8,23 +8,6 @@ export default defineConfig({
     },
     columns: [
       {
-        COLUMN_NAME: "domain_ids",
-        COLUMN_COMMENT: "所属域名",
-        require: true,
-        align: "left",
-        width: 280,
-        search: true,
-        foreignKey: {
-          hasSelectAdd: true,
-          multipleSetDefault: true,
-          isSearchByLbl: true,
-        },
-        many2many: {
-          mod: "nuxt",
-          table: "seo_domain",
-        },
-      },
-      {
         COLUMN_NAME: "ico",
         fixed: false,
         isImg: true,
@@ -59,9 +42,6 @@ export default defineConfig({
         COLUMN_NAME: "og_description",
         width: 280,
         align: "left",
-      },
-      {
-        COLUMN_NAME: "is_locked",
       },
       {
         COLUMN_NAME: "order_by",

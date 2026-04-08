@@ -35,7 +35,6 @@ use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
-use crate::base::domain::domain_model::DomainId;
 use crate::base::usr::usr_model::UsrId;
 
 static CAN_SORT_IN_API_SEO: [&str; 3] = [
@@ -58,12 +57,6 @@ pub struct SeoModel {
   pub tenant_id: TenantId,
   /// ID
   pub id: SeoId,
-  /// 所属域名
-  #[graphql(name = "domain_ids")]
-  pub domain_ids: Vec<DomainId>,
-  /// 所属域名
-  #[graphql(name = "domain_ids_lbl")]
-  pub domain_ids_lbl: Vec<SmolStr>,
   /// 图标
   #[graphql(name = "ico")]
   pub ico: SmolStr,
@@ -85,12 +78,6 @@ pub struct SeoModel {
   /// 分享描述
   #[graphql(name = "og_description")]
   pub og_description: SmolStr,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: u8,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: SmolStr,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
@@ -123,47 +110,6 @@ impl FromRow<'_, MySqlRow> for SeoModel {
     let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: SeoId = row.try_get("id")?;
-    // 所属域名
-    let domain_ids: Option<sqlx::types::Json<HashMap<&str, DomainId>>> = row.try_get("domain_ids")?;
-    let domain_ids = domain_ids.unwrap_or_default().0;
-    let domain_ids = {
-      let mut keys: Vec<u32> = domain_ids.keys()
-        .map(|x| 
-          x.parse::<u32>().unwrap_or_default()
-        )
-        .collect();
-      keys.sort();
-      keys.into_iter()
-        .map(|x| 
-          domain_ids.get(x.to_string().as_str())
-            .unwrap_or(&DomainId::default())
-            .to_owned()
-        )
-        .collect::<Vec<DomainId>>()
-    };
-    let domain_ids_lbl: Option<sqlx::types::Json<HashMap<&str, &str>>> = row.try_get("domain_ids_lbl")?;
-    let domain_ids_lbl = domain_ids_lbl.unwrap_or_default().0;
-    let domain_ids_lbl = {
-      let mut keys: Vec<u32> = domain_ids_lbl.keys()
-        .map(|x| 
-          x.parse::<u32>()
-            .map_err(|_| sqlx::Error::Decode(
-              Box::new(sqlx::error::Error::Protocol(
-                "domain_ids_lbl order_by Invalid u32".to_string()
-              ))
-            ))
-        )
-        .collect::<Result<_, _>>()?;
-      keys.sort();
-      keys
-        .into_iter()
-        .map(|x| 
-          domain_ids_lbl.get(x.to_string().as_str())
-            .map(SmolStr::new)
-            .unwrap_or_default()
-        )
-        .collect::<Vec<SmolStr>>()
-    };
     // 图标
     let ico: &str = row.try_get("ico")?;
     let ico = SmolStr::new(ico);
@@ -185,9 +131,6 @@ impl FromRow<'_, MySqlRow> for SeoModel {
     // 分享描述
     let og_description: &str = row.try_get("og_description")?;
     let og_description = SmolStr::new(og_description);
-    // 锁定
-    let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl = SmolStr::new(is_locked.to_string());
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
@@ -220,8 +163,6 @@ impl FromRow<'_, MySqlRow> for SeoModel {
       tenant_id,
       is_deleted,
       id,
-      domain_ids,
-      domain_ids_lbl,
       ico,
       lbl,
       description,
@@ -229,8 +170,6 @@ impl FromRow<'_, MySqlRow> for SeoModel {
       og_image,
       og_title,
       og_description,
-      is_locked,
-      is_locked_lbl,
       order_by,
       rem,
       create_usr_id,
@@ -254,12 +193,6 @@ pub struct SeoFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: SmolStr,
-  /// 所属域名
-  #[graphql(name = "domain_ids")]
-  pub domain_ids: SmolStr,
-  /// 所属域名
-  #[graphql(name = "domain_ids_lbl")]
-  pub domain_ids_lbl: SmolStr,
   /// 图标
   #[graphql(name = "ico")]
   pub ico: SmolStr,
@@ -281,12 +214,6 @@ pub struct SeoFieldComment {
   /// 分享描述
   #[graphql(name = "og_description")]
   pub og_description: SmolStr,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: SmolStr,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: SmolStr,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: SmolStr,
@@ -330,15 +257,6 @@ pub struct SeoSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
-  /// 所属域名
-  #[graphql(name = "domain_ids")]
-  pub domain_ids: Option<Vec<DomainId>>,
-  /// 所属域名
-  #[graphql(name = "domain_ids_save_null")]
-  pub domain_ids_is_null: Option<bool>,
-  /// 所属域名
-  #[graphql(name = "domain_ids_lbl_like")]
-  pub domain_ids_lbl_like: Option<SmolStr>,
   /// 图标
   #[graphql(skip)]
   pub ico: Option<SmolStr>,
@@ -381,9 +299,6 @@ pub struct SeoSearch {
   /// 分享描述
   #[graphql(skip)]
   pub og_description_like: Option<SmolStr>,
-  /// 锁定
-  #[graphql(skip)]
-  pub is_locked: Option<Vec<u8>>,
   /// 排序
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
@@ -442,10 +357,6 @@ impl std::fmt::Debug for SeoSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
-    // 所属域名
-    if let Some(ref domain_ids) = self.domain_ids {
-      item = item.field("domain_ids", domain_ids);
-    }
     // 图标
     if let Some(ref ico) = self.ico {
       item = item.field("ico", ico);
@@ -494,10 +405,6 @@ impl std::fmt::Debug for SeoSearch {
     }
     if let Some(ref og_description_like) = self.og_description_like {
       item = item.field("og_description_like", og_description_like);
-    }
-    // 锁定
-    if let Some(ref is_locked) = self.is_locked {
-      item = item.field("is_locked", is_locked);
     }
     // 排序
     if let Some(ref order_by) = self.order_by {
@@ -560,12 +467,6 @@ pub struct SeoInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
-  /// 所属域名
-  #[graphql(name = "domain_ids")]
-  pub domain_ids: Option<Vec<DomainId>>,
-  /// 所属域名
-  #[graphql(name = "domain_ids_lbl")]
-  pub domain_ids_lbl: Option<Vec<SmolStr>>,
   /// 图标
   #[graphql(name = "ico")]
   pub ico: Option<SmolStr>,
@@ -587,12 +488,6 @@ pub struct SeoInput {
   /// 分享描述
   #[graphql(name = "og_description")]
   pub og_description: Option<SmolStr>,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: Option<u8>,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: Option<SmolStr>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
@@ -645,9 +540,6 @@ impl std::fmt::Debug for SeoInput {
     if let Some(ref tenant_id) = self.tenant_id {
       item = item.field("tenant_id", tenant_id);
     }
-    if let Some(ref domain_ids_lbl) = self.domain_ids_lbl {
-      item = item.field("domain_ids_lbl", domain_ids_lbl);
-    }
     if let Some(ref ico) = self.ico {
       item = item.field("ico", ico);
     }
@@ -668,9 +560,6 @@ impl std::fmt::Debug for SeoInput {
     }
     if let Some(ref og_description) = self.og_description {
       item = item.field("og_description", og_description);
-    }
-    if let Some(ref is_locked) = self.is_locked {
-      item = item.field("is_locked", is_locked);
     }
     if let Some(ref order_by) = self.order_by {
       item = item.field("order_by", order_by);
@@ -706,9 +595,6 @@ impl From<SeoModel> for SeoInput {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
-      // 所属域名
-      domain_ids: model.domain_ids.into(),
-      domain_ids_lbl: model.domain_ids_lbl.into(),
       // 图标
       ico: model.ico.into(),
       // 标题
@@ -723,9 +609,6 @@ impl From<SeoModel> for SeoInput {
       og_title: model.og_title.into(),
       // 分享描述
       og_description: model.og_description.into(),
-      // 锁定
-      is_locked: model.is_locked.into(),
-      is_locked_lbl: model.is_locked_lbl.into(),
       // 排序
       order_by: model.order_by.into(),
       // 备注
@@ -756,8 +639,6 @@ impl From<SeoInput> for SeoSearch {
       // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
-      // 所属域名
-      domain_ids: input.domain_ids,
       // 图标
       ico: input.ico,
       // 标题
@@ -772,8 +653,6 @@ impl From<SeoInput> for SeoSearch {
       og_title: input.og_title,
       // 分享描述
       og_description: input.og_description,
-      // 锁定
-      is_locked: input.is_locked.map(|x| vec![x]),
       // 排序
       order_by: input.order_by.map(|x| [Some(x), Some(x)]),
       // 备注

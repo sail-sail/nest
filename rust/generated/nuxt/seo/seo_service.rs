@@ -233,16 +233,6 @@ pub async fn update_by_id_seo(
   options: Option<Options>,
 ) -> Result<SeoId> {
   
-  let is_locked = seo_dao::get_is_locked_by_id_seo(
-    seo_id,
-    None,
-  ).await?;
-  
-  if is_locked {
-    let err_msg = "不能修改已经锁定的 SEO优化";
-    return Err(eyre!(err_msg));
-  }
-  
   let seo_id = seo_dao::update_by_id_seo(
     seo_id,
     seo_input,
@@ -270,59 +260,8 @@ pub async fn delete_by_ids_seo(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let old_models = seo_dao::find_all_seo(
-    Some(SeoSearch {
-      ids: Some(seo_ids.clone()),
-      ..Default::default()
-    }),
-    None,
-    None,
-    options,
-  ).await?;
-  
-  for old_model in &old_models {
-    if old_model.is_locked == 1 {
-      let err_msg = "不能删除已经锁定的 SEO优化";
-      return Err(eyre!(err_msg));
-    }
-  }
-  
   let num = seo_dao::delete_by_ids_seo(
     seo_ids,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
-/// 根据 seo_id 查找SEO优化是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-#[allow(dead_code)]
-pub async fn get_is_locked_by_id_seo(
-  seo_id: SeoId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let is_locked = seo_dao::get_is_locked_by_id_seo(
-    seo_id,
-    options,
-  ).await?;
-  
-  Ok(is_locked)
-}
-
-/// 根据 seo_ids 锁定或者解锁SEO优化
-#[allow(dead_code)]
-pub async fn lock_by_ids_seo(
-  seo_ids: Vec<SeoId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = seo_dao::lock_by_ids_seo(
-    seo_ids,
-    is_locked,
     options,
   ).await?;
   

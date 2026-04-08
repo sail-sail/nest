@@ -23,11 +23,6 @@ use crate::common::util::string::sql_like;
 #[allow(unused_imports)]
 use crate::common::gql::model::SortOrderEnum;
 
-use crate::common::util::dao::{
-  many2many_update,
-  ManyOpts,
-};
-
 #[allow(unused_imports)]
 use crate::common::context::{
   get_auth_id,
@@ -60,12 +55,9 @@ use crate::common::gql::model::{
   SortInput,
 };
 
-use crate::common::dict_detail::dict_detail_dao::get_dict;
-
 use super::seo_model::*;
 
 use crate::base::tenant::tenant_model::TenantId;
-use crate::base::domain::domain_model::DomainId;
 use crate::base::usr::usr_model::UsrId;
 
 use crate::base::usr::usr_dao::find_by_id_usr;
@@ -81,7 +73,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 18 * 2);
+  let mut where_query = String::with_capacity(80 * 16 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -135,49 +127,6 @@ async fn get_where_query(
     if let Some(tenant_id) = tenant_id {
       where_query.push_str(" and t.tenant_id=?");
       args.push(tenant_id.into());
-    }
-  }
-  // 所属域名
-  {
-    let domain_ids: Option<Vec<DomainId>> = match search {
-      Some(item) => item.domain_ids.clone(),
-      None => None,
-    };
-    if let Some(domain_ids) = domain_ids {
-      let arg = {
-        if domain_ids.is_empty() {
-          SmolStr::new("null")
-        } else {
-          let mut items = Vec::with_capacity(domain_ids.len());
-          for item in domain_ids {
-            args.push(item.into());
-            items.push("?");
-          }
-          SmolStr::new(items.join(","))
-        }
-      };
-      where_query.push_str(" and base_domain.id in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
-  {
-    let domain_ids_is_null: bool = match search {
-      Some(item) => item.domain_ids_is_null.unwrap_or(false),
-      None => false,
-    };
-    if domain_ids_is_null {
-      where_query.push_str(" and t.domain_ids is null");
-    }
-  }
-  {
-    let domain_ids_lbl_like = match search {
-      Some(item) => item.domain_ids_lbl_like.clone(),
-      None => None,
-    };
-    if let Some(domain_ids_lbl_like) = domain_ids_lbl_like && !domain_ids_lbl_like.is_empty() {
-      where_query.push_str(" and base_domain.lbl like ?");
-      args.push(format!("%{}%", sql_like(&domain_ids_lbl_like)).into());
     }
   }
   // 图标
@@ -311,30 +260,6 @@ async fn get_where_query(
     if let Some(og_description_like) = og_description_like && !og_description_like.is_empty() {
       where_query.push_str(" and t.og_description like ?");
       args.push(format!("%{}%", sql_like(&og_description_like)).into());
-    }
-  }
-  // 锁定
-  {
-    let is_locked: Option<Vec<u8>> = match search {
-      Some(item) => item.is_locked.clone(),
-      None => None,
-    };
-    if let Some(is_locked) = is_locked {
-      let arg = {
-        if is_locked.is_empty() {
-          SmolStr::new("null")
-        } else {
-          let mut items = Vec::with_capacity(is_locked.len());
-          for item in is_locked {
-            args.push(item.into());
-            items.push("?");
-          }
-          SmolStr::new(items.join(","))
-        }
-      };
-      where_query.push_str(" and t.is_locked in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
     }
   }
   // 排序
@@ -553,22 +478,7 @@ async fn get_from_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let is_deleted = search
-    .and_then(|item| item.is_deleted)
-    .unwrap_or(0);
-  
-  let from_query = r#"nuxt_seo t
-  left join nuxt_seo_domain on nuxt_seo_domain.seo_id=t.id and nuxt_seo_domain.is_deleted=?
-  left join base_domain on nuxt_seo_domain.domain_id=base_domain.id and base_domain.is_deleted=?
-  left join (select json_objectagg(nuxt_seo_domain.order_by,base_domain.id) domain_ids,
-  json_objectagg(nuxt_seo_domain.order_by,base_domain.lbl) domain_ids_lbl,
-  nuxt_seo.id seo_id from nuxt_seo_domain
-  inner join base_domain on base_domain.id=nuxt_seo_domain.domain_id
-  inner join nuxt_seo on nuxt_seo.id=nuxt_seo_domain.seo_id where nuxt_seo_domain.is_deleted=?
-  group by seo_id) _domain on _domain.seo_id=t.id"#.to_owned();
-  for _ in 0..3 {
-    args.push(is_deleted.into());
-  }
+  let from_query = r#"nuxt_seo t"#.to_owned();
   Ok(from_query)
 }
 
@@ -618,26 +528,6 @@ pub async fn find_all_seo(
     }
     if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(vec![]);
-    }
-  }
-  // 所属域名
-  if let Some(search) = &search && let Some(domain_ids) = &search.domain_ids {
-    let len = domain_ids.len();
-    if len == 0 {
-      return Ok(vec![]);
-    }
-    if len > ids_limit {
-      return Err(eyre!("search.domain_ids.length > {ids_limit}"));
-    }
-  }
-  // 锁定
-  if let Some(search) = &search && let Some(is_locked) = &search.is_locked {
-    let len = is_locked.len();
-    if len == 0 {
-      return Ok(vec![]);
-    }
-    if len > ids_limit {
-      return Err(eyre!("search.is_locked.length > {ids_limit}"));
     }
   }
   // 创建人
@@ -697,8 +587,6 @@ pub async fn find_all_seo(
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
-  ,max(domain_ids) domain_ids
-  ,max(domain_ids_lbl) domain_ids_lbl
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -749,26 +637,8 @@ pub async fn find_all_seo(
     ));
   }
   
-  let dict_vec = get_dict(&[
-    "is_locked",
-  ]).await?;
-  let [
-    is_locked_dict,
-  ]: [Vec<_>; 1] = dict_vec
-    .try_into()
-    .map_err(|err| eyre!("{:#?}", err))?;
-  
   #[allow(unused_variables)]
   for model in &mut res {
-    
-    // 锁定
-    model.is_locked_lbl = {
-      is_locked_dict
-        .iter()
-        .find(|item| item.val == model.is_locked.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string().into())
-    };
     
   }
   
@@ -807,34 +677,6 @@ pub async fn find_count_seo(
     }
     if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
       return Ok(0);
-    }
-  }
-  // 所属域名
-  if let Some(search) = &search && search.domain_ids.is_some() {
-    let len = search.domain_ids.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(0);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.domain_ids.length > {ids_limit}"));
-    }
-  }
-  // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(0);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.is_locked.length > {ids_limit}"));
     }
   }
   // 创建人
@@ -935,8 +777,6 @@ pub async fn get_field_comments_seo(
   
   let mut field_comments = SeoFieldComment {
     id: "ID".into(),
-    domain_ids: "所属域名".into(),
-    domain_ids_lbl: "所属域名".into(),
     ico: "图标".into(),
     lbl: "标题".into(),
     description: "描述".into(),
@@ -944,8 +784,6 @@ pub async fn get_field_comments_seo(
     og_image: "分享图片".into(),
     og_title: "分享标题".into(),
     og_description: "分享描述".into(),
-    is_locked: "锁定".into(),
-    is_locked_lbl: "锁定".into(),
     order_by: "排序".into(),
     rem: "备注".into(),
     create_usr_id: "创建人".into(),
@@ -1339,34 +1177,6 @@ pub async fn exists_seo(
       return Ok(false);
     }
   }
-  // 所属域名
-  if let Some(search) = &search && search.domain_ids.is_some() {
-    let len = search.domain_ids.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(false);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.domain_ids.length > {ids_limit}"));
-    }
-  }
-  // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(false);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.is_locked.length > {ids_limit}"));
-    }
-  }
   // 创建人
   if let Some(search) = &search && search.create_usr_id.is_some() {
     let len = search.create_usr_id.as_ref().unwrap().len();
@@ -1628,84 +1438,6 @@ pub async fn set_id_by_lbl_seo(
   #[allow(unused_mut)]
   let mut input = input;
   
-  let dict_vec = get_dict(&[
-    "is_locked",
-  ]).await?;
-  
-  // 锁定
-  if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[0];
-    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
-      input.is_locked = is_locked_dict
-        .iter()
-        .find(|item| {
-          item.lbl == is_locked_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        });
-    }
-  }
-  
-  // 所属域名
-  if input.domain_ids_lbl.is_some() && input.domain_ids.is_none() {
-    input.domain_ids_lbl = input.domain_ids_lbl.map(|item| 
-      item.into_iter()
-        .map(|item| SmolStr::new(item.trim()))
-        .filter(|item| !item.is_empty())
-        .collect::<Vec<SmolStr>>()
-    );
-    input.domain_ids_lbl = input.domain_ids_lbl.map(|item| {
-      let mut set = HashSet::new();
-      item.into_iter()
-        .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<SmolStr>>()
-    });
-    let mut models = vec![];
-    for lbl in input.domain_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::base::domain::domain_dao::find_one_domain(
-        crate::base::domain::domain_model::DomainSearch {
-          lbl: lbl.into(),
-          ..Default::default()
-        }.into(),
-        None,
-        Some(Options::new().set_is_debug(Some(false))),
-      ).await?;
-      if let Some(model) = model {
-        models.push(model);
-      }
-    }
-    input.domain_ids = models.into_iter()
-      .map(|item| item.id)
-      .collect::<Vec<DomainId>>()
-      .into();
-  }
-  
-  // 锁定
-  if
-    input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
-    && input.is_locked.is_none()
-  {
-    let is_locked_dict = &dict_vec[0];
-    let dict_model = is_locked_dict.iter().find(|item| {
-      item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
-    });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
-    if let Some(val) = val {
-      input.is_locked = val.parse::<u8>()?.into();
-    }
-  } else if
-    (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
-    && input.is_locked.is_some()
-  {
-    let is_locked_dict = &dict_vec[0];
-    let dict_model = is_locked_dict.iter().find(|item| {
-      item.val == input.is_locked.unwrap_or_default().to_string()
-    });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
-    input.is_locked_lbl = lbl;
-  }
-  
   Ok(input)
 }
 
@@ -1844,7 +1576,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 18 + 20);
+  let mut sql_fields = String::with_capacity(80 * 16 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1868,15 +1600,13 @@ async fn _creates(
   sql_fields += ",og_title";
   // 分享描述
   sql_fields += ",og_description";
-  // 锁定
-  sql_fields += ",is_locked";
   // 排序
   sql_fields += ",order_by";
   // 备注
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 18 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 16 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2051,13 +1781,6 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 锁定
-    if let Some(is_locked) = input.is_locked {
-      sql_values += ",?";
-      args.push(is_locked.into());
-    } else {
-      sql_values += ",default";
-    }
     // 排序
     if let Some(order_by) = input.order_by {
       sql_values += ",?";
@@ -2096,30 +1819,6 @@ async fn _creates(
   
   if affected_rows != inputs2_len as u64 {
     return Err(eyre!("affectedRows: {affected_rows} != {inputs2_len}"));
-  }
-  
-  for (i, input) in inputs2
-    .into_iter()
-    .enumerate()
-  {
-    let id = inputs2_ids.get(i).unwrap().clone();
-    
-    // 所属域名
-    if let Some(domain_ids) = input.domain_ids {
-      many2many_update(
-        id.into(),
-        domain_ids
-          .into_iter()
-          .map(|item| item.into())
-          .collect(),
-        ManyOpts {
-          r#mod: "nuxt",
-          table: "seo_domain",
-          column1: "seo_id",
-          column2: "domain_id",
-        },
-      ).await?;
-    }
   }
   
   Ok(ids2)
@@ -2337,7 +2036,7 @@ pub async fn update_by_id_seo(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 18 + 20);
+  let mut sql_fields = String::with_capacity(80 * 16 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2388,12 +2087,6 @@ pub async fn update_by_id_seo(
     sql_fields += "og_description=?,";
     args.push(og_description.into());
   }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
-    field_num += 1;
-    sql_fields += "is_locked=?,";
-    args.push(is_locked.into());
-  }
   // 排序
   if let Some(order_by) = input.order_by {
     field_num += 1;
@@ -2405,11 +2098,6 @@ pub async fn update_by_id_seo(
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());
-  }
-  
-  // 所属域名
-  if input.domain_ids.is_some() {
-    field_num += 1;
   }
   
   if field_num > 0 {
@@ -2512,23 +2200,6 @@ pub async fn update_by_id_seo(
     
   }
   
-  // 所属域名
-  if let Some(domain_ids) = input.domain_ids {
-    many2many_update(
-      id.into(),
-      domain_ids
-        .into_iter()
-        .map(|item| item.into())
-        .collect(),
-      ManyOpts {
-        r#mod: "nuxt",
-        table: "seo_domain",
-        column1: "seo_id",
-        column2: "domain_id",
-      },
-    ).await?;
-  }
-  
   // 图标
   if let Some(ico) = input.ico.as_ref() && ico != &old_model.ico {
     crate::common::oss::oss_dao::delete_object(
@@ -2580,7 +2251,6 @@ fn get_cache_tables() -> Vec<&'static str> {
   let table = get_table_name_seo();
   vec![
     table,
-    "base_domain",
   ]
 }
 
@@ -2720,127 +2390,12 @@ pub async fn delete_by_ids_seo(
       args,
       options,
     ).await?;
-    {
-      let domain_ids = old_model.domain_ids.clone();
-      if !domain_ids.is_empty() {
-        let mut args = QueryArgs::new();
-        let mut sql = "update nuxt_seo_domain set is_deleted=1 where seo_id=? and".to_owned();
-        args.push(id.into());
-        let arg = {
-          let mut items = Vec::with_capacity(domain_ids.len());
-          for item in domain_ids {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        };
-        sql.push_str(" domain_id in (");
-        sql.push_str(&arg);
-        sql.push(')');
-        sql.push_str(" and is_deleted=0");
-        let sql = sql;
-        let args: Vec<_> = args.into();
-        execute(
-          sql,
-          args,
-          options,
-        ).await?;
-      }
-    }
   }
   
   del_cache_seo().await?;
   
   if num > MAX_SAFE_INTEGER {
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
-  }
-  
-  del_cache_seo().await?;
-  
-  Ok(num)
-}
-
-// MARK: get_is_locked_by_id_seo
-/// 根据 id 查找SEO优化是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-pub async fn get_is_locked_by_id_seo(
-  id: SeoId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let model = find_by_id_seo(
-    id,
-    options,
-  ).await?;
-  
-  let is_locked = {
-    if let Some(model) = model {
-      model.is_locked == 1
-    } else {
-      false
-    }
-  };
-  
-  Ok(is_locked)
-}
-
-// MARK: lock_by_ids_seo
-/// 根据 ids 锁定或者解锁SEO优化
-pub async fn lock_by_ids_seo(
-  ids: Vec<SeoId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let table = get_table_name_seo();
-  let method = "lock_by_ids_seo";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {ids:?}");
-    msg += &format!(" is_locked: {is_locked:?}");
-    if let Some(options) = &options {
-      msg += &format!(" options: {options:?}");
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  if ids.is_empty() {
-    return Ok(0);
-  }
-  
-  del_cache_seo().await?;
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let mut num = 0;
-  for id in ids.clone() {
-    let mut args = QueryArgs::new();
-    
-    let sql = format!("update {table} set is_locked=? where id=? limit 1");
-    
-    args.push(is_locked.into());
-    args.push(id.into());
-    
-    let args: Vec<_> = args.into();
-    
-    num += execute(
-      sql,
-      args,
-      options,
-    ).await?;
   }
   
   del_cache_seo().await?;
@@ -2942,33 +2497,6 @@ pub async fn revert_by_ids_seo(
       args,
       options,
     ).await?;
-    {
-      let domain_ids = old_model.domain_ids.clone();
-      if !domain_ids.is_empty() {
-        let mut args = QueryArgs::new();
-        let mut sql = "update nuxt_seo_domain set is_deleted=0 where seo_id=? and".to_owned();
-        args.push(id.into());
-        let arg = {
-          let mut items = Vec::with_capacity(domain_ids.len());
-          for item in domain_ids {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        };
-        sql.push_str(" domain_id in (");
-        sql.push_str(&arg);
-        sql.push(')');
-        sql.push_str(" and is_deleted=1");
-        let sql = sql;
-        let args: Vec<_> = args.into();
-        execute(
-          sql,
-          args,
-          options,
-        ).await?;
-      }
-    }
     
   }
   
@@ -3055,28 +2583,6 @@ pub async fn force_delete_by_ids_seo(
       args,
       options,
     ).await?;
-    {
-      let domain_ids = old_model.domain_ids.clone();
-      if !domain_ids.is_empty() {
-        let mut args = QueryArgs::new();
-        let mut sql = "delete from nuxt_seo_domain where seo_id=? and".to_owned();
-        args.push(id.into());
-        let mut items = Vec::with_capacity(domain_ids.len());
-        for item in domain_ids {
-          items.push("?");
-          args.push(item.clone().into());
-        }
-        sql.push_str(" domain_id in (");
-        sql.push_str(&items.join(","));
-        sql.push(')');
-        let args: Vec<_> = args.into();
-        execute(
-          sql,
-          args,
-          options,
-        ).await?;
-      }
-    }
     
     // 图标
     crate::common::oss::oss_dao::delete_object(

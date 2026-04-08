@@ -2430,17 +2430,6 @@ pub async fn delete_by_ids_domain(
         options,
       ).await?;
     }
-    {
-      let mut args = QueryArgs::new();
-      let sql = "update base_seo_domain set is_deleted=1 where domain_id=? and is_deleted=0".to_owned();
-      args.push(id.into());
-      let args: Vec<_> = args.into();
-      execute(
-        sql,
-        args,
-        options,
-      ).await?;
-    }
   }
   
   del_cache_domain().await?;
@@ -2812,17 +2801,6 @@ pub async fn force_delete_by_ids_domain(
     {
       let mut args = QueryArgs::new();
       let sql = "delete from base_tenant_domain where domain_id=?".to_owned();
-      args.push(id.into());
-      let args: Vec<_> = args.into();
-      execute(
-        sql,
-        args,
-        options,
-      ).await?;
-    }
-    {
-      let mut args = QueryArgs::new();
-      let sql = "delete from base_seo_domain where domain_id=?".to_owned();
       args.push(id.into());
       let args: Vec<_> = args.into();
       execute(

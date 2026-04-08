@@ -40,6 +40,7 @@ import {
 } from "./compositions/msg.ts";
 
 import {
+  initClientTenantId,
   useMySeoMeta,
 } from "./Api.ts";
 
@@ -49,6 +50,7 @@ const {
   resumeMsg,
 } = $(useMsgs());
 
+await initClientTenantId();
 await useMySeoMeta();
 </script>
 

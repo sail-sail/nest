@@ -204,28 +204,6 @@ impl SeoGenQuery {
       }).await
   }
   
-  /// 根据 id 查找SEO优化是否已锁定
-  /// 已锁定的记录不能修改和删除
-  /// 记录不存在则返回 false
-  #[graphql(name = "getIsLockedByIdSeo")]
-  async fn get_is_locked_by_id_seo(
-    &self,
-    ctx: &Context<'_>,
-    #[graphql(name = "id")]
-    id: SeoId,
-  ) -> Result<bool> {
-    
-    Ctx::builder(ctx)
-      .with_auth()?
-      .build()
-      .scope({
-        seo_resolver::get_is_locked_by_id_seo(
-          id,
-          None,
-        )
-      }).await
-  }
-  
   /// 获取SEO优化字段注释
   #[graphql(name = "getFieldCommentsSeo")]
   async fn get_field_comments_seo(
@@ -363,30 +341,6 @@ impl SeoGenMutation {
       .scope({
         seo_resolver::delete_by_ids_seo(
           ids,
-          None,
-        )
-      }).await
-  }
-  
-  /// 根据 ids 锁定或解锁数据
-  #[graphql(name = "lockByIdsSeo")]
-  async fn lock_by_ids_seo(
-    &self,
-    ctx: &Context<'_>,
-    #[graphql(name = "ids")]
-    ids: Vec<SeoId>,
-    #[graphql(name = "is_locked")]
-    is_locked: u8,
-  ) -> Result<u64> {
-    
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()
-      .build()
-      .scope({
-        seo_resolver::lock_by_ids_seo(
-          ids,
-          is_locked,
           None,
         )
       }).await

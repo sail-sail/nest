@@ -337,59 +337,6 @@ pub async fn delete_by_ids_seo(
   Ok(num)
 }
 
-/// 根据 id 查找SEO优化是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-#[allow(dead_code)]
-#[function_name::named]
-pub async fn get_is_locked_by_id_seo(
-  id: SeoId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  info!(
-    "{req_id} {function_name}: id: {id:?}",
-    req_id = get_req_id(),
-    function_name = function_name!(),
-  );
-  
-  let is_locked = seo_service::get_is_locked_by_id_seo(
-    id,
-    options,
-  ).await?;
-  
-  Ok(is_locked)
-}
-
-/// 根据 ids 锁定或者解锁SEO优化
-#[allow(dead_code)]
-#[function_name::named]
-pub async fn lock_by_ids_seo(
-  ids: Vec<SeoId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  info!(
-    "{req_id} {function_name}: ids: {ids:?} is_locked: {is_locked:?}",
-    req_id = get_req_id(),
-    function_name = function_name!(),
-  );
-  
-  use_permit(
-    SmolStr::new(get_page_path_seo()),
-    SmolStr::new("edit"),
-  ).await?;
-  
-  let num = seo_service::lock_by_ids_seo(
-    ids,
-    is_locked,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 获取SEO优化字段注释
 #[function_name::named]
 pub async fn get_field_comments_seo(
