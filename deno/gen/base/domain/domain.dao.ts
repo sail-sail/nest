@@ -1808,17 +1808,6 @@ export async function deleteByIdsDomain(
         },
       );
     }
-    {
-      const args = new QueryArgs();
-      const sql = `update base_seo_domain set is_deleted=1 where domain_id=${ args.push(id) } and is_deleted=0`;
-      await execute(
-        sql,
-        args,
-        {
-          debug: is_debug_sql,
-        },
-      );
-    }
   }
   
   await delCacheDomain();
@@ -2107,17 +2096,6 @@ export async function forceDeleteByIdsDomain(
     {
       const args = new QueryArgs();
       const sql = `delete from base_tenant_domain where domain_id=${ args.push(id) }`;
-      await execute(
-        sql,
-        args,
-        {
-          debug: is_debug_sql,
-        },
-      );
-    }
-    {
-      const args = new QueryArgs();
-      const sql = `delete from base_seo_domain where domain_id=${ args.push(id) }`;
       await execute(
         sql,
         args,

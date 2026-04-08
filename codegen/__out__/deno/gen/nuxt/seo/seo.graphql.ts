@@ -9,10 +9,6 @@ scalar SeoId
 type SeoModel {
   "ID"
   id: SeoId!
-  "所属域名"
-  domain_ids: [DomainId!]!
-  "所属域名"
-  domain_ids_lbl: [String!]!
   "图标"
   ico: String!
   "标题"
@@ -27,10 +23,6 @@ type SeoModel {
   og_title: String!
   "分享描述"
   og_description: String!
-  "锁定"
-  is_locked: Int!
-  "锁定"
-  is_locked_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -57,10 +49,6 @@ type SeoModel {
 type SeoFieldComment {
   "ID"
   id: String!
-  "所属域名"
-  domain_ids: String!
-  "所属域名"
-  domain_ids_lbl: String!
   "图标"
   ico: String!
   "标题"
@@ -75,10 +63,6 @@ type SeoFieldComment {
   og_title: String!
   "分享描述"
   og_description: String!
-  "锁定"
-  is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
   "排序"
   order_by: String!
   "备注"
@@ -103,10 +87,6 @@ type SeoFieldComment {
 input SeoInput {
   "ID"
   id: SeoId
-  "所属域名"
-  domain_ids: [DomainId!]
-  "所属域名"
-  domain_ids_lbl: [String!]
   "图标"
   ico: String
   "标题"
@@ -121,10 +101,6 @@ input SeoInput {
   og_title: String
   "分享描述"
   og_description: String
-  "锁定"
-  is_locked: Int
-  "锁定"
-  is_locked_lbl: String
   "排序"
   order_by: Int
   "备注"
@@ -137,14 +113,6 @@ input SeoSearch {
   ids: [SeoId!]
   "ID"
   id: SeoId
-  "所属域名"
-  domain_ids: [DomainId!]
-  "所属域名"
-  domain_ids_is_null: Boolean
-  "所属域名"
-  domain_ids_lbl: [String!]
-  "所属域名"
-  domain_ids_lbl_like: String
   "标题"
   lbl: String
   lbl_like: String
@@ -188,8 +156,6 @@ type Mutation {
   updateByIdSeo(id: SeoId!, input: SeoInput!): SeoId!
   "根据 ids 删除SEO优化"
   deleteByIdsSeo(ids: [SeoId!]!): Int!
-  "根据 ids 锁定或者解锁SEO优化"
-  lockByIdsSeo(ids: [SeoId!]!, is_locked: Int!): Int!
   "根据 ids 还原SEO优化"
   revertByIdsSeo(ids: [SeoId!]!): Int!
   "根据 ids 彻底删除SEO优化"

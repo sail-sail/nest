@@ -34,9 +34,6 @@ declare global {
 export const seoFields = [
   // ID
   "id",
-  // 所属域名
-  "domain_ids",
-  "domain_ids_lbl",
   // 图标
   "ico",
   // 标题
@@ -51,9 +48,6 @@ export const seoFields = [
   "og_title",
   // 分享描述
   "og_description",
-  // 锁定
-  "is_locked",
-  "is_locked_lbl",
   // 排序
   "order_by",
   // 备注

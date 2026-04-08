@@ -44,9 +44,6 @@ export function intoInputSeo(
   const input: SeoInput = {
     // ID
     id: model?.id,
-    // 所属域名
-    domain_ids: model?.domain_ids,
-    domain_ids_lbl: model?.domain_ids_lbl,
     // 图标
     ico: model?.ico,
     // 标题
@@ -61,9 +58,6 @@ export function intoInputSeo(
     og_title: model?.og_title,
     // 分享描述
     og_description: model?.og_description,
-    // 锁定
-    is_locked: model?.is_locked,
-    is_locked_lbl: model?.is_locked_lbl,
     // 排序
     order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
@@ -426,34 +420,6 @@ export async function deleteByIdsSeo(
 }
 
 /**
- * 根据 ids 锁定或解锁 SEO优化
- */
-export async function lockByIdsSeo(
-  ids: SeoId[],
-  is_locked: 0 | 1,
-  opt?: GqlOpt,
-): Promise<number> {
-  if (ids.length === 0) {
-    return 0;
-  }
-  const data: {
-    lockByIdsSeo: Mutation["lockByIdsSeo"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [SeoId!]!, $is_locked: Int!) {
-        lockByIdsSeo(ids: $ids, is_locked: $is_locked)
-      }
-    `,
-    variables: {
-      ids,
-      is_locked,
-    },
-  }, opt);
-  const res = data.lockByIdsSeo;
-  return res;
-}
-
-/**
  * 根据 ids 还原 SEO优化
  */
 export async function revertByIdsSeo(
@@ -505,52 +471,6 @@ export async function forceDeleteByIdsSeo(
   return res;
 }
 
-export async function findAllDomain(
-  search?: DomainSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllDomain: DomainModel[];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllDomain(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const domain_models = data.findAllDomain;
-  return domain_models;
-}
-
-export async function getListDomain() {
-  const data = await findAllDomain(
-    {
-      is_enabled: [ 1 ],
-    },
-    undefined,
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 /**
  * 下载 SEO优化 导入模板
  */
@@ -565,7 +485,6 @@ export function useDownloadImportTemplateSeo() {
       query: /* GraphQL */ `
         query {
           getFieldCommentsSeo {
-            domain_ids_lbl
             ico
             lbl
             description
@@ -575,10 +494,6 @@ export function useDownloadImportTemplateSeo() {
             og_description
             order_by
             rem
-          }
-          findAllDomain {
-            id
-            lbl
           }
         }
       `,
@@ -635,15 +550,6 @@ export function useExportExcelSeo() {
           query($search: SeoSearch, $page: PageInput, , $sort: [SortInput!]) {
             findAllSeo(search: $search, page: $page, sort: $sort) {
               ${ seoQueryField }
-            }
-            findAllDomain {
-              lbl
-            }
-            getDict(codes: [
-              "is_locked",
-            ]) {
-              code
-              lbl
             }
           }
         `,
@@ -768,8 +674,6 @@ export async function getFieldCommentsSeo(
       query {
         getFieldCommentsSeo {
           id,
-          domain_ids,
-          domain_ids_lbl,
           ico,
           lbl,
           description,
@@ -777,8 +681,6 @@ export async function getFieldCommentsSeo(
           og_image,
           og_title,
           og_description,
-          is_locked,
-          is_locked_lbl,
           order_by,
           rem,
           create_usr_id,
@@ -808,7 +710,6 @@ export function getPagePathSeo() {
 /** 新增时的默认值 */
 export async function getDefaultInputSeo() {
   const defaultInput: SeoInput = {
-    is_locked: 0,
     order_by: 1,
   };
   return defaultInput;

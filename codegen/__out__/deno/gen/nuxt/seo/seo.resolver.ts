@@ -271,38 +271,6 @@ export async function deleteByIdsSeo(
 }
 
 /**
- * 根据 ids 锁定或者解锁SEO优化
- */
-export async function lockByIdsSeo(
-  ids: SeoId[],
-  is_locked: 0 | 1,
-): Promise<number> {
-  
-  const {
-    lockByIdsSeo,
-  } = await import("./seo.service.ts");
-  
-  if (is_locked !== 0 && is_locked !== 1) {
-    throw new Error(`lockByIdsSeo.is_locked expect 0 or 1 but got ${ is_locked }`);
-  }
-  
-  const {
-    getPagePathSeo,
-  } = await import("./seo.model.ts");
-  
-  set_is_tran(true);
-  
-  await usePermit(
-    getPagePathSeo(),
-    "edit",
-  );
-  
-  const res = await lockByIdsSeo(ids, is_locked);
-  
-  return res;
-}
-
-/**
  * 根据 ids 还原SEO优化
  */
 export async function revertByIdsSeo(

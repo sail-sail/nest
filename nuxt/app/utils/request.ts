@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { saveAs } from "file-saver";
-import { useLoading } from "@/store/index";
-import { useAuthorization } from "@/store/usr";
+import { useLoading } from "@/store/index.ts";
+import { useAuthorization } from "@/store/usr.ts";
+import { useClientTenantId } from "../store/tenant/index.ts";
 
 export const baseURL = "";
 
@@ -17,6 +18,7 @@ export async function request<T>(
     data?: any;
     duration?: number;
     authorization?: string;
+    client_tenant_id?: TenantId | null;
   },
 ): Promise<T> {
   let authorization = $(useAuthorization());
@@ -45,6 +47,14 @@ export async function request<T>(
     
     if (authorization) {
       config.header.set("authorization", authorization);
+    }
+    
+    let client_tenant_id = config.client_tenant_id;
+    if (!client_tenant_id) {
+      client_tenant_id = useClientTenantId().value;
+    }
+    if (client_tenant_id) {
+      config.header.set("TenantId", client_tenant_id);
     }
     
     let body = config.data;

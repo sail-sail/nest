@@ -45,8 +45,6 @@ declare global {
     /** 分享描述 */
     og_description?: string;
     og_description_like?: string;
-    /** 锁定 */
-    is_locked?: number[];
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */

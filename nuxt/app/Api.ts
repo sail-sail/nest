@@ -3,10 +3,32 @@ import type {
   SeoModel,
 } from "#/types.ts";
 
-export async function useMySeoMeta() {
+import { useClientTenantId } from "./store/tenant/index.ts";
+
+/**
+ * 初始化客户端租户id
+ */
+export async function initClientTenantId() {
+  const client_tenant_id = useClientTenantId().value;
+  if (client_tenant_id) {
+    return client_tenant_id;
+  }
   const url = useRequestURL();
   const domain = url.host;
-  const seo_model = (await useAsyncData("useMySeoMeta", () => findDefaultSeo(domain))).data.value;
+  const tenants = (await useAsyncData("getLoginTenants", () => getLoginTenants(domain))).data.value;
+  if (!tenants) {
+    return null;
+  }
+  if (tenants.length > 0 && tenants[0]?.id) {
+    useClientTenantId().value = tenants[0].id;
+    return tenants[0].id;
+  }
+  return null;
+}
+
+export async function useMySeoMeta() {
+  const url = useRequestURL();
+  const seo_model = (await useAsyncData("useMySeoMeta", () => findDefaultSeo())).data.value;
   if (!seo_model) {
     // console.error("未找到默认的SEO优化");
     return;
@@ -39,15 +61,14 @@ export async function useMySeoMeta() {
 }
 
 async function findDefaultSeo(
-  domain: string,
   opt?: GqlOpt,
 ) {
   const res: {
     findDefaultSeo?: SeoModel;
   } = await query({
     query: /* GraphQL */ `
-      query($domain: SmolStr!) {
-        findDefaultSeo(domain: $domain) {
+      query {
+        findDefaultSeo {
           id
           ico
           lbl
@@ -59,9 +80,6 @@ async function findDefaultSeo(
         }
       }
     `,
-    variables: {
-      domain,
-    },
   }, opt);
   const data = res.findDefaultSeo;
   return data;
@@ -79,6 +97,9 @@ export async function getLoginTenants(
         getLoginTenants(domain: $domain) {
           id
           lbl
+          title
+          info
+          lang
         }
       }
     `,

@@ -196,11 +196,6 @@ export async function updateByIdSeo(
   input: SeoInput,
 ): Promise<SeoId> {
   
-  const is_locked = await seoDao.getIsLockedByIdSeo(seo_id);
-  if (is_locked) {
-    throw "不能修改已经锁定的 SEO优化";
-  }
-  
   seo_id = await seoDao.updateByIdSeo(seo_id, input);
   
   return seo_id;
@@ -221,26 +216,7 @@ export async function deleteByIdsSeo(
   seo_ids: SeoId[],
 ): Promise<number> {
   
-  const old_models = await seoDao.findByIdsSeo(seo_ids);
-  
-  for (const old_model of old_models) {
-    if (old_model.is_locked === 1) {
-      throw "不能删除已经锁定的 SEO优化";
-    }
-  }
-  
   const seo_num = await seoDao.deleteByIdsSeo(seo_ids);
-  return seo_num;
-}
-
-/**
- * 根据 ids 锁定或者解锁SEO优化
- */
-export async function lockByIdsSeo(
-  seo_ids: SeoId[],
-  is_locked: 0 | 1,
-): Promise<number> {
-  const seo_num = await seoDao.lockByIdsSeo(seo_ids, is_locked);
   return seo_num;
 }
 
