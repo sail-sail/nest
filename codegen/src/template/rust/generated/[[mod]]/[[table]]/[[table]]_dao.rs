@@ -753,6 +753,7 @@ if (
   (
     (hasCreateUsrId && hasCreateUsrIdLbl)
     || (hasUpdateUsrId && hasUpdateUsrIdLbl)
+    || (hasDeleteUsrId && hasDeleteUsrIdLbl)
   )
   && !findByIdTableUps.includes(Table_Up)
 ) {
