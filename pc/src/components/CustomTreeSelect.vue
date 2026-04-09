@@ -125,6 +125,7 @@ const props = withDefaults(
     maxWidth?: number;
     multiple?: boolean;
     init?: boolean;
+    pageInited?: boolean;
     props?: ExtractPropTypes<TreeOptionProps>;
     disabled?: boolean;
     readonly?: boolean;
@@ -137,6 +138,7 @@ const props = withDefaults(
     maxWidth: 550,
     multiple: false,
     init: true,
+    pageInited: undefined,
     props: () => ({
       label: 'lbl',
       children: 'children',
@@ -178,6 +180,15 @@ watch(
   () => modelValue,
   () => {
     emit("update:modelValue", modelValue);
+  },
+);
+
+watch(
+  () => props.pageInited,
+  async (value, oldValue) => {
+    if (value === true && oldValue === false) {
+      await onRefresh();
+    }
   },
 );
 
@@ -315,7 +326,7 @@ function onCheck() {
   emit("change", models);
 }
 
-async function refreshEfc() {
+async function onRefresh() {
   const method = props.method;
   if (!method) {
     inited = true;
@@ -327,11 +338,11 @@ async function refreshEfc() {
 }
 
 if (props.init) {
-  refreshEfc();
+  onRefresh();
 }
 
 defineExpose({
-  refresh: refreshEfc,
+  refresh: onRefresh,
 });
 </script>
 
