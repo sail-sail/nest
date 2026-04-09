@@ -58,6 +58,7 @@ export default defineNuxtConfig({
       include: [
         "graphql/index.mjs",
         "graphql-combine-query", // CJS
+        'file-saver', // CJS
       ]
     },
   },

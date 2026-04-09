@@ -26,23 +26,24 @@ export const useMsgs = () => {
       type: msg.type || "info",
       content: msg.content,
       duration,
-      timer: undefined,
     };
-    msg2.timer = setTimeout(() => {
-      msgs.value = msgs.value.filter((item) => item.id !== id);
-    }, msg2.duration || 300);
+    if (import.meta.client) {
+      msg2.timer = setTimeout(() => {
+        msgs.value = msgs.value.filter((item) => item.id !== id);
+      }, msg2.duration || 300);
+    }
     msgs.value.push(msg2);
   };
   
   const pauseMsg = (msg: Message) => {
-    if (msg.timer) {
+    if (import.meta.client && msg.timer) {
       clearTimeout(msg.timer);
       msg.timer = undefined;
     }
   }
   
   const resumeMsg = (msg: Message) => {
-    if (!msg.timer) {
+    if (import.meta.client && !msg.timer) {
       msg.timer = setTimeout(() => {
         msgs.value = msgs.value.filter((item) => item.id !== msg.id);
       }, msg.duration || 300);
