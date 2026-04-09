@@ -30,9 +30,20 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     code?: string;
+    pageInited?: boolean;
   }>(),
   {
     code: undefined,
+    pageInited: undefined,
+  },
+);
+
+watch(
+  () => props.pageInited,
+  async (value, oldValue) => {
+    if (value === true && oldValue === false) {
+      await dataMethod();
+    }
   },
 );
 

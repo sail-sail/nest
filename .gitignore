@@ -35,8 +35,6 @@ Cargo.lock
 deno.lock
 
 # 生成的类型文件
-**/typings/ids.d.ts
-!codegen/**/typings/ids.d.ts
 **/typings/types.ts
 **/typings/auto-imports.d.ts
 **/typings/components.d.ts

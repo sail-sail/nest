@@ -94,6 +94,7 @@
               })"
               placeholder="请选择 系统字典"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
