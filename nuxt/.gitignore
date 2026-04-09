@@ -24,4 +24,3 @@ logs
 # !.env.example
 
 typings/types.ts
-typings/ids.d.ts
