@@ -46,13 +46,14 @@ html,body {
 .app_message_inner {
   display: flex;
   align-items: center;
-  padding-left: 40px;
-  padding-right: 40px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 5px;
   white-space: pre-wrap;
+  position: relative;
   // transform: translateY(-100%);
   // transition: transform 0.3s;
 }

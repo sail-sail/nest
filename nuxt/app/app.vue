@@ -19,6 +19,24 @@
       @mouseresume="resumeMsg(item)"
     >
       {{ item.content }}
+      <!-- 关闭按钮圆圈 -->
+      <div
+        un-absolute
+        un-cursor-pointer
+        un-top=".5"
+        un-right=".5"
+        un-w="5"
+        un-h="5"
+        un-bg="hover:red-500"
+        un-text="3 hover:white"
+        un-rounded="full"
+        un-flex="~"
+        un-items-center
+        un-justify-center
+        @click="msgs = msgs.filter((msg) => msg.id !== item.id)"
+      >
+        X
+      </div>
     </div>
   </TransitionGroup>
   <NuxtLayout>
@@ -37,7 +55,7 @@ import "@/app/utils/DateUtil.ts";
 
 import {
   useMsgs,
-} from "./compositions/msg.ts";
+} from "./composables/msg.ts";
 
 import {
   initClientTenantId,

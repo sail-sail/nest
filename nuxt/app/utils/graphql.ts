@@ -14,7 +14,7 @@ import {
 
 import combinedQuery from "graphql-combine-query";
 
-import { useAuthorization } from "@/store/usr";
+import { useAuthorization } from "@/app/composables/usr/index.ts";
 
 declare global {
   
@@ -355,13 +355,8 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     }
   }
   if (errMsg) {
-    // eslint-disable-next-line no-empty
     if (!opt || opt.showErrMsg !== false) {
-    }
-    if (errMsg.startsWith("Error: ")) {
-      throw new Error(errMsg, { cause: errors });
-    } else {
-      throw errMsg;
+      throw createError(errMsg);
     }
   }
   return data;

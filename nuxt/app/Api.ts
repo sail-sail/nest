@@ -3,7 +3,7 @@ import type {
   SeoModel,
 } from "#/types.ts";
 
-import { useClientTenantId } from "./store/tenant/index.ts";
+import { useClientTenantId } from "./composables/tenant/index.ts";
 
 /**
  * 初始化客户端租户id
