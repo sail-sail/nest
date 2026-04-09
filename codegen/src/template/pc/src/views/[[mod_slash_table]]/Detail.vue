@@ -578,6 +578,7 @@ for (let i = 0; i < columns.length; i++) {
               @change="onJobId"<#
               }
               #>
+              :page-inited="inited"
             ><#
               if (foreignKey.hasSelectAdd) {
               #>
@@ -768,6 +769,7 @@ for (let i = 0; i < columns.length; i++) {
               :filter-node-method="useMenuTreeFilter"<#
               }
               #>
+              :page-inited="inited"
             ></CustomTreeSelect><#
             } else if (column.dict) {
             #>
@@ -1642,6 +1644,7 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
+                      :page-inited="inited"
                     ></CustomSelect><#
                     } else if (foreignKey && foreignKey.selectType === "selectInput") {
                       if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
@@ -1696,8 +1699,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       :page-inited="inited"
-                    >
-                    </SelectInput<#=Foreign_Table_Up#>><#
+                    ></SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree
                       && !foreignSchema.opts?.ignoreCodegen
                       && !foreignSchema.opts?.onlyCodegenDeno
@@ -1770,6 +1772,7 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
+                      :page-inited="inited"
                     ></CustomTreeSelect><#
                     } else if (column.dict && !isSwitch && !isCheckbox) {
                     #>
@@ -1812,6 +1815,7 @@ for (let i = 0; i < columns.length; i++) {
                       :has-select-add="true"<#
                       }
                       #>
+                      :page-inited="inited"
                     ></DictSelect><#
                     } else if (column.dict && isSwitch && !isCheckbox) {
                     #>
@@ -1924,6 +1928,7 @@ for (let i = 0; i < columns.length; i++) {
                       :has-select-add="true"<#
                       }
                       #>
+                      :page-inited="inited"
                     ></DictbizSelect><#
                     } else if (column.dictbiz && isSwitch) {
                     #>
@@ -2539,6 +2544,7 @@ for (let i = 0; i < columns.length; i++) {
                     @change="onJobId"<#
                     }
                     #>
+                    :page-inited="inited"
                   ><#
                     if (foreignKey.hasSelectAdd) {
                     #>
@@ -2699,6 +2705,7 @@ for (let i = 0; i < columns.length; i++) {
                     :filter-node-method="useMenuTreeFilter"<#
                     }
                     #>
+                    :page-inited="inited"
                   ></CustomTreeSelect><#
                   } else if (column.dict) {
                   #>
@@ -2748,6 +2755,7 @@ for (let i = 0; i < columns.length; i++) {
                     :has-select-add="true"<#
                     }
                     #>
+                    :page-inited="inited"
                   ></DictSelect><#
                   } else if (column.dictbiz) {
                   #>
@@ -2797,6 +2805,7 @@ for (let i = 0; i < columns.length; i++) {
                     :has-select-add="true"<#
                     }
                     #>
+                    :page-inited="inited"
                   ></DictbizSelect><#
                   } else if (data_type === "datetime" || data_type === "date") {
                   #>
@@ -3266,6 +3275,7 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
+                      :page-inited="inited"
                     ></CustomSelect><#
                     } else if (foreignKey && foreignKey.selectType === "selectInput") {
                       if (!selectInputForeign_Table_Ups.includes(Foreign_Table_Up)) {
@@ -3315,8 +3325,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       :page-inited="inited"
-                    >
-                    </SelectInput<#=Foreign_Table_Up#>><#
+                    ></SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree
                       && !foreignSchema.opts?.ignoreCodegen
                       && !foreignSchema.opts?.onlyCodegenDeno
@@ -3375,6 +3384,7 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
+                      :page-inited="inited"
                     ></CustomTreeSelect><#
                     } else if (column.dict) {
                     #>
@@ -3417,6 +3427,7 @@ for (let i = 0; i < columns.length; i++) {
                       :has-select-add="true"<#
                       }
                       #>
+                      :page-inited="inited"
                     ></DictSelect><#
                     } else if (column.dictbiz) {
                     #>
@@ -3459,6 +3470,7 @@ for (let i = 0; i < columns.length; i++) {
                       :has-select-add="true"<#
                       }
                       #>
+                      :page-inited="inited"
                     ></DictbizSelect><#
                     } else if (data_type === "datetime" || data_type === "date") {
                     #>
