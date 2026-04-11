@@ -108,7 +108,7 @@
   },
   "pnpm": {
     "overrides": {
-      "@vue/shared": "3.5.27"
+      "@vue/shared": "3.5.32"
     },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
