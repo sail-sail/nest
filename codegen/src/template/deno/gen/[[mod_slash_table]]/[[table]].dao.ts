@@ -744,6 +744,8 @@ for (const cascadeUpdateField of cascadeUpdateFields) {
     cascadeUpdateFieldTables.push({
       mod: cascadeUpdateField.mod,
       table: cascadeUpdateField.table,
+      idColumn: cascadeUpdateField.idColumn,
+      column: cascadeUpdateField.column,
     });
   }
   if (!cascadeUpdateFieldWatchColumns.includes(cascadeUpdateField.watchColumn)) {
@@ -6801,7 +6803,7 @@ export async function updateById<#=Table_Up#>(
     
     const <#=table#>_models = await findAll<#=Table_Up#>(
       {
-        <#=cascadeUpdateFields2.idColumn#>: [ id ],
+        <#=cascadeUpdateFieldTable.idColumn#>: [ id ],
       },
       undefined,
       undefined,
