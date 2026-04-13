@@ -122,7 +122,7 @@ CREATE TABLE `base_usr_role` (
 
 ## 表索引
 ```sql
-INDEX (`lbl`, `tenant_id`, `is_deleted`),
+INDEX (`tenant_id`, `is_deleted`, `lbl`),
 ```
 - 注意通常有唯一性的字段才需要加索引, 但不能是唯一索引
 
@@ -148,7 +148,7 @@ CREATE TABLE `base_example` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lbl`, `tenant_id`, `is_deleted`),
+  INDEX (`tenant_id`, `is_deleted`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='示例';
 ```

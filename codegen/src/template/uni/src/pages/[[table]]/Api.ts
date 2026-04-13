@@ -547,11 +547,6 @@ export async function setLblById<#=Table_Up#>(
     const data_type = column.DATA_TYPE;
     const column_comment = column.COLUMN_COMMENT || "";
     let formatter = column.formatter;
-    if (!formatter) {
-      if (data_type === "json") {
-        formatter = `model.${ column_name } = model.${ column_name } && JSON.stringify(model.${ column_name }) || "";`;
-      }
-    }
     const column_type = column.COLUMN_TYPE;
     let precision = 0;
     if (data_type === "decimal") {
@@ -1931,6 +1926,9 @@ export async function findLastOrderBy<#=Table_Up#>(
         findLastOrderBy<#=Table_Up2#>(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderBy<#=Table_Up2#>;
