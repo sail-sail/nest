@@ -94,6 +94,7 @@
               })"
               placeholder="请选择 企微应用"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>

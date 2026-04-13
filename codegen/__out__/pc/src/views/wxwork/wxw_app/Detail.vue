@@ -133,6 +133,7 @@
               })"
               placeholder="请选择 可信域名"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
