@@ -4,7 +4,7 @@
 
 ```
 deno/
-├── gen/                    # 自动生成（不要修改）
+├── gen/                    # 自动生成（可修改但尽量写在src中以减少git冲突的可能性）
 │   ├── types.ts           # GraphQL 类型
 │   └── {mod}/{table}/     # DAO、Model、GraphQL
 ├── src/                    # 手写业务逻辑
@@ -46,7 +46,9 @@ src/{mod}/{table}/
 | 多租户 | `tenant_id`, `org_id` 自动隔离 |
 | 事务 | 增删改 `context.is_tran = true`, 查询不设置 |
 | 认证 | 默认需登录, 公开接口设 `context.notVerifyToken = true` |
-| 错误 | `throw "中文提示"` 业务错误, `throw new Error()` 系统错误 |
+| 错误 | `throw "中文提示"` 或 `lib/exceptions/service.exception.ts` 业务错误, `throw new Error()` 系统错误, |
+
+- service 层业务开发过程中, 若表有配置 `modelLabel` 冗余字段 `xxx_id_lbl` 则create/update要传入显示名称, 否则可不传
 
 ## 模块注册
 

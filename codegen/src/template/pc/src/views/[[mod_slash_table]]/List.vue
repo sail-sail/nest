@@ -261,7 +261,7 @@ if (searchByKeyword) {
           hasModelLabel = true;
         }
         if (!column_comment) {
-          throw new Error(`表 ${ mod }_${ table } 的字段 ${ column_name } 没有注释，请补充注释后再生成`);
+          throw new Error(`表 ${ mod }_${ table } 的字段 ${ column_name } 在表上不存在, 或者没有注释，请补充注释后再生成`);
         }
       #><#
         if (search) {

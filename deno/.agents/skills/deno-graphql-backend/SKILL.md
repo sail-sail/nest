@@ -1,11 +1,11 @@
 ---
 name: deno-graphql-backend
-description: Deno GraphQL 后端接口的完整开发指南. 当需要创建、修改后端 API 接口时使用此技能
+description: Deno GraphQL 后端接口的完整开发指南. 当需要创建、修改后端 API 接口时使用
 ---
 
 # GraphQL 接口开发
 
-## 三层架构
+## 分层架构
 
 | 层 | 文件 | 职责 |
 |----|------|------|
@@ -54,12 +54,6 @@ defineGraphql(resolver, /* GraphQL */ `
 import {
   useContext,
 } from "/lib/context.ts";
-
-import type {
-  {Table}Id,
-  {Table}Input,
-  {Table}Search,
-} from "/gen/types.ts";
 
 // 查询 - 不需要事务
 export async function methodName(
@@ -136,23 +130,19 @@ export async function methodName(
   param: ParamType,
 ) {
 
-  // 1. 参数校验
   if (isEmpty(param)) {
     throw "参数不能为空";
   }
 
-  // 2. 获取当前用户
   const usr_id = await get_usr_id(false);
 
-  // 3. 查询数据
-  const {table}Model = await findOneOkXxx(
+  const {table}_model = await findOneOkXxx(
     {
       field: param,
     },
   );
 
-  // 查询列表, 变量名命名通常是 {table}Models
-  const {table}Models = await findAllXxx(
+  const {table}_models = await findAllXxx(
     {
       field: param,
     },
@@ -168,13 +158,16 @@ export async function methodName(
     ], // 一般无需排序参数传入 undefined 即可, 建表时已加默认排序
   );
 
-  // 4. 业务操作, 业务操作过程中如果不清楚表结构则可以到这里查看表结构 `codegen/src/tables/{mod}/{mod}.sql`, `codegen/src/tables/{mod}/{mod}.ts`
+  // 业务操作, 业务操作过程中如果不清楚表结构则可以到这里查看表结构 `codegen/src/tables/{mod}/{mod}.sql`, `codegen/src/tables/{mod}/{mod}.ts`
   // 注意: 业务逻辑开发过程中, 不需要写太多注释, 关键位置写一点业务注释即可
 
-  // 5. 返回结果
-  return {table}Models;
+  return {table}_models;
 }
 ```
+
+- 已有表的 Model/Input/Search 不要重复定义
+- {Table}Id, {Table}Input, {Table}Search 无需import可直接使用, 自动生成在 `{table}.model.ts` 中全局 `declare global { }` 类型定义
+- 主动抛出业务异常 ServiceException(message?: string, code?: string, _rollback?: boolean, _showStack = false) `lib/exceptions/service.exception.ts`: _rollback 是否回滚事务, 默认为 true, _showStack 是否打印堆栈信息, 默认为 false
 
 - 如需操作附件, 则使用 [oss.dao.ts](../../../lib/oss/oss.dao.ts) 提供的函数进行操作
 
@@ -193,23 +186,23 @@ import "./{table}/{table}.graphql.ts";
 
 | 函数 | 用途 |
 |------|------|
-| `findByIdXxx(id)` | ID查询 → `Model \| undefined` |
-| `findByIdOkXxx(id)` | ID查询（必存在否则抛异常）|
-| `findByIdsXxx(ids)` | 多ID查询 → `Model[]` |
-| `findByIdsOkXxx(ids)` | 多ID查询（必存在且顺序跟ids一致）|
-| `findOneXxx(search)` | 条件查单条 |
-| `findOneOkXxx(search)` | 条件查单条（必存在）|
-| `findAllXxx(search, page, sort)` | 条件查列表 包括搜索条件, 分页, 排序参数 |
-| `findCountXxx(search)` | 查询数量 |
-| `createXxx(input)` | 创建 → ID |
-| `createReturnXxx(input)` | 创建 → 立即查询返回完整记录 |
-| `updateByIdXxx(id, input)` | 更新 |
-| `updateByIdReturnXxx(id, input)` | 更新 → 立即查询返回完整记录 |
-| `deleteByIdsXxx(ids)` | 逻辑删除 |
-| `revertByIdsXxx(ids)` | 恢复删除 |
-| `forceDeleteByIdsXxx(ids)` | 彻底删除（慎用）|
-| `validateOptionXxx(model)` | 校验 undefined 时抛异常 |
-| `validateIsEnabledXxx(model)` | 校验禁用时抛异常 |
+| `findByIdXxx` | ID查询 （不存在则返回undefined）|
+| `findByIdOkXxx` | ID查询（必存在否则抛异常）|
+| `findByIdsXxx` | 多ID查询 → `Model[]` |
+| `findByIdsOkXxx` | 多ID查询（必存在且顺序跟ids一致）|
+| `findOneXxx` | 条件查单条 |
+| `findOneOkXxx` | 条件查单条（必存在）|
+| `findAllXxx` | 条件查列表 包括搜索条件, 分页, 排序参数 |
+| `findCountXxx` | 查询数量 |
+| `createXxx` | 创建 → ID |
+| `createReturnXxx` | 创建 → 立即查询返回完整记录 |
+| `updateByIdXxx` | 更新 |
+| `updateByIdReturnXxx` | 更新 → 立即查询返回完整记录 |
+| `deleteByIdsXxx` | 逻辑删除 |
+| `revertByIdsXxx` | 恢复删除 |
+| `forceDeleteByIdsXxx` | 彻底删除（慎用）|
+| `validateOptionXxx` | 校验 undefined 时抛异常 |
+| `validateIsEnabledXxx` | 校验禁用时抛异常 |
 
 ## 辅助函数
 

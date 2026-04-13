@@ -744,6 +744,8 @@ for (const cascadeUpdateField of cascadeUpdateFields) {
     cascadeUpdateFieldTables.push({
       mod: cascadeUpdateField.mod,
       table: cascadeUpdateField.table,
+      idColumn: cascadeUpdateField.idColumn,
+      column: cascadeUpdateField.column,
     });
   }
   if (!cascadeUpdateFieldWatchColumns.includes(cascadeUpdateField.watchColumn)) {
@@ -1329,7 +1331,7 @@ async function getFromQuery(
     }
   #>
   <#=mod#>_<#=table#>.id <#=many2many.column1#>
-  from <#=foreignKey.mod#>_<#=many2many.table#>
+  from <#=many2many.mod#>_<#=many2many.table#>
   inner join <#=foreignKey.mod#>_<#=foreignKey.table#> on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
   inner join <#=mod#>_<#=table#> on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
   if (hasIsDeleted) {
@@ -6801,7 +6803,7 @@ export async function updateById<#=Table_Up#>(
     
     const <#=table#>_models = await findAll<#=Table_Up#>(
       {
-        <#=cascadeUpdateFields2.idColumn#>: [ id ],
+        <#=cascadeUpdateFieldTable.idColumn#>: [ id ],
       },
       undefined,
       undefined,
