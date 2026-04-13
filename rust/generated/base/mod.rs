@@ -28,7 +28,7 @@ pub mod usr;
 use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
-pub struct BaseQuery(
+pub struct BaseGenQuery(
   self::data_permit::data_permit_graphql::DataPermitGenQuery,
   self::dept::dept_graphql::DeptGenQuery,
   self::dict::dict_graphql::DictGenQuery,
@@ -58,7 +58,7 @@ pub struct BaseQuery(
 );
 
 #[derive(MergedObject, Default)]
-pub struct BaseMutation(
+pub struct BaseGenMutation(
   self::data_permit::data_permit_graphql::DataPermitGenMutation,
   self::dept::dept_graphql::DeptGenMutation,
   self::dict::dict_graphql::DictGenMutation,

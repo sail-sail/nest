@@ -26,7 +26,7 @@ pub struct GenQuery(<#
     const mod2 = mods[i];
     const mod2Up = mod2.substring(0, 1).toUpperCase() + mod2.substring(1);
   #>
-  <#=mod2#>::<#=mod2Up#>Query,<#
+  <#=mod2#>::<#=mod2Up#>GenQuery,<#
   }
   #>
 );
@@ -37,7 +37,7 @@ pub struct GenMutation(<#
     const mod2 = mods[i];
     const mod2Up = mod2.substring(0, 1).toUpperCase() + mod2.substring(1);
   #>
-  <#=mod2#>::<#=mod2Up#>Mutation,<#
+  <#=mod2#>::<#=mod2Up#>GenMutation,<#
   }
   #>
 );

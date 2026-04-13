@@ -695,6 +695,9 @@ export async function findLastOrderByOptbiz(
         findLastOrderByOptbiz(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByOptbiz;

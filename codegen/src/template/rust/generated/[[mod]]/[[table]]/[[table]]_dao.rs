@@ -582,6 +582,8 @@ for (const cascadeUpdateField of cascadeUpdateFields) {
     cascadeUpdateFieldTables.push({
       mod: cascadeUpdateField.mod,
       table: cascadeUpdateField.table,
+      idColumn: cascadeUpdateField.idColumn,
+      column: cascadeUpdateField.column,
     });
   }
   if (!cascadeUpdateFieldWatchColumns.includes(cascadeUpdateField.watchColumn)) {
@@ -753,6 +755,7 @@ if (
   (
     (hasCreateUsrId && hasCreateUsrIdLbl)
     || (hasUpdateUsrId && hasUpdateUsrIdLbl)
+    || (hasDeleteUsrId && hasDeleteUsrIdLbl)
   )
   && !findByIdTableUps.includes(Table_Up)
 ) {
@@ -1714,7 +1717,7 @@ async fn get_from_query(
   json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#>,<#
     }
   #>
-  <#=mod#>_<#=table#>.id <#=many2many.column1#> from <#=foreignKey.mod#>_<#=many2many.table#>
+  <#=mod#>_<#=table#>.id <#=many2many.column1#> from <#=many2many.mod#>_<#=many2many.table#>
   inner join <#=foreignKey.mod#>_<#=foreignKey.table#> on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
   inner join <#=mod#>_<#=table#> on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
   if (hasIsDeleted) {
@@ -6732,7 +6735,7 @@ pub async fn update_by_id_<#=table#>(
   if (cascadeUpdateFields.length > 0) {
   #>
   
-  let mut sql_set_flds: Vec<String> = vec![];
+  let mut sql_set_flds: Vec<SmolStr> = vec![];
   let mut sql_set_fld_input: <#=tableUP#>Input = <#=tableUP#>Input {
     ..Default::default()
   };<#
@@ -6782,7 +6785,7 @@ pub async fn update_by_id_<#=table#>(
       field_num += 1;<#
       if (cascadeUpdateFieldWatchColumns.includes(modelLabel)) {
       #>
-      sql_set_flds.push("<#=modelLabel#>".to_owned());
+      sql_set_flds.push(SmolStr::new("<#=modelLabel#>"));
       sql_set_fld_input.<#=modelLabel#> = Some(<#=modelLabel#>.clone());<#
       }
       #><#
@@ -6853,7 +6856,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
     #>
-    sql_set_flds.push("<#=column_name#>".to_owned());
+    sql_set_flds.push(SmolStr::new("<#=column_name#>"));
     sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
     }
     #>
@@ -6863,7 +6866,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
     #>
-    sql_set_flds.push("<#=column_name#>".to_owned());
+    sql_set_flds.push(SmolStr::new("<#=column_name#>"));
     sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
     }
     #>
@@ -6899,7 +6902,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
     #>
-    sql_set_flds.push("<#=column_name#>".to_owned());
+    sql_set_flds.push(SmolStr::new("<#=column_name#>"));
     sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
     }
     #><#
@@ -7063,7 +7066,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(val)) {
     #>
-    sql_set_flds.push("<#=val#>".to_owned());
+    sql_set_flds.push(SmolStr::new("<#=val#>"));
     sql_set_fld_input.<#=val#> = Some(<#=val#>.clone());<#
     }
     #><#
@@ -7669,7 +7672,7 @@ pub async fn update_by_id_<#=table#>(
       for (let i = 0; i < cascadeUpdateFieldWatchColumns.length; i++) {
         const fld = cascadeUpdateFieldWatchColumns[i];
       #>
-      sql_set_flds.includes("<#=fld#>")<#
+      sql_set_flds.contains(&SmolStr::new("<#=fld#>"))<#
       if (i < cascadeUpdateFieldWatchColumns.length - 1) {
       #> ||<#
       }
@@ -7689,7 +7692,7 @@ pub async fn update_by_id_<#=table#>(
       
       let <#=table#>_models = find_all_<#=table#>(
         Some(<#=tableUP#>Search {
-          <#=cascadeUpdateFieldTable.column#>: Some(vec![id]),
+          <#=cascadeUpdateFieldTable.idColumn#>: Some(vec![id]),
           ..Default::default()
         }),
         None,
@@ -7704,8 +7707,8 @@ pub async fn update_by_id_<#=table#>(
         };<#
         for (const item of cascadeUpdateFields2) {
         #>
-        if sql_set_flds.includes("<#=item.watchColumn#>") {
-          <#=table#>_input.<#=item.column#> = sql_set_fld_input.<#=item.watchColumn#>;
+        if sql_set_flds.contains(&SmolStr::new("<#=item.watchColumn#>")) {
+          <#=table#>_input.<#=item.column#> = sql_set_fld_input.<#=item.watchColumn#>.clone();
         }<#
         }
         #>
@@ -7813,9 +7816,16 @@ pub async fn update_by_id_<#=table#>(
   
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#>.as_ref() && <#=column_name_rust#> != &old_model.<#=column_name_rust#> {
-    crate::common::oss::oss_dao::delete_object(
+    let res = crate::common::oss::oss_dao::delete_object(
       old_model.<#=column_name_rust#>.as_str(),
-    ).await?;
+    ).await;
+    if let Err(err) = res {
+      info!(
+        "{} {table}.{method}: 删除对象失败, <#=column_name#>: {}, err: {err}",
+        get_req_id(),
+        old_model.<#=column_name_rust#>,
+      );
+    }
   }<#
   }
   #>
@@ -8415,9 +8425,16 @@ pub async fn delete_by_ids_<#=table#>(
     #>
     
     // <#=column_comment#>
-    crate::common::oss::oss_dao::delete_object(
-      old_model.<#=column_name#>.as_str(),
-    ).await?;<#
+    let res = crate::common::oss::oss_dao::delete_object(
+      old_model.<#=column_name_rust#>.as_str(),
+    ).await;
+    if let Err(err) = res {
+      info!(
+        "{} {table}.{method}: 删除对象失败, <#=column_name#>: {}, err: {err}",
+        get_req_id(),
+        old_model.<#=column_name_rust#>,
+      );
+    }<#
     }
     #><#
     }

@@ -13,7 +13,8 @@ use async_graphql::{
 pub struct Query(
   generated::common::CommonQuery,
   generated::GenQuery,
-  crate::base::menu::menu_graphql::MenuQuery,
+  
+  base::BaseAppQuery,
 );
 
 #[derive(MergedObject, Default)]

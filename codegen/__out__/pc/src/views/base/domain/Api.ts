@@ -691,6 +691,9 @@ export async function findLastOrderByDomain(
         findLastOrderByDomain(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByDomain;
