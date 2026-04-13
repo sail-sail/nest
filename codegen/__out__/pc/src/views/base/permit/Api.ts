@@ -410,6 +410,9 @@ export async function findLastOrderByPermit(
         findLastOrderByPermit(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByPermit;
