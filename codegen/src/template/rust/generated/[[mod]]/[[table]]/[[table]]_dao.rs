@@ -7816,9 +7816,16 @@ pub async fn update_by_id_<#=table#>(
   
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#>.as_ref() && <#=column_name_rust#> != &old_model.<#=column_name_rust#> {
-    crate::common::oss::oss_dao::delete_object(
+    let res = crate::common::oss::oss_dao::delete_object(
       old_model.<#=column_name_rust#>.as_str(),
-    ).await?;
+    ).await;
+    if let Err(err) = res {
+      info!(
+        "{} {table}.{method}: 删除对象失败, <#=column_name#>: {}, err: {err}",
+        get_req_id(),
+        old_model.<#=column_name_rust#>,
+      );
+    }
   }<#
   }
   #>
@@ -8418,9 +8425,16 @@ pub async fn delete_by_ids_<#=table#>(
     #>
     
     // <#=column_comment#>
-    crate::common::oss::oss_dao::delete_object(
-      old_model.<#=column_name#>.as_str(),
-    ).await?;<#
+    let res = crate::common::oss::oss_dao::delete_object(
+      old_model.<#=column_name_rust#>.as_str(),
+    ).await;
+    if let Err(err) = res {
+      info!(
+        "{} {table}.{method}: 删除对象失败, <#=column_name#>: {}, err: {err}",
+        get_req_id(),
+        old_model.<#=column_name_rust#>,
+      );
+    }<#
     }
     #><#
     }
