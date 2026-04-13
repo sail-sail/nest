@@ -4,22 +4,22 @@ import { fileURLToPath } from "node:url";
 export default defineNuxtConfig({
   css: [
     "~/assets/css/common.scss",
+    "swiper/swiper-bundle.css",
   ],
   experimental: {
     asyncContext: true,
     // 全局启用视图过渡，按页面逐个页面禁用
     // https://nuxt.com.cn/docs/4.x/getting-started/transitions
-    viewTransition: true,
+    // viewTransition: true,
   },
   devtools: {
-    enabled: false,
+    enabled: true,
   },
   modules: [
     "@unocss/nuxt",
     "@vue-macros/nuxt",
     "@nuxt/icon",
     "@nuxt/eslint",
-    "@una-ui/nuxt",
     "@formkit/auto-animate",
   ],
   hooks: {
@@ -57,8 +57,9 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: [
         "graphql/index.mjs",
-        "graphql-combine-query", // CJS
         'file-saver', // CJS
+        'swiper/modules',
+        'swiper/vue',
       ]
     },
   },
