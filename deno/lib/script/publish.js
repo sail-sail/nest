@@ -147,7 +147,7 @@ console.log(publishPath);
       cmd += ` ; rm -rf ${ publishPath }/nuxt`
       cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
       cmd += ` ; rm -rf ${ publishPathTmp }`;
-      cmd += ` ; cd ${ publishPath }/nuxt/ && pm2 start`;
+      cmd += ` ; cd ${ publishPath }/nuxt/ && pm2 start ecosystem.config.json`;
       let data;
       try {
         data = await ssh.exec(cmd);

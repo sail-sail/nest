@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { saveAs } from "file-saver";
-import { useLoading } from "@/store/index";
-import { useAuthorization } from "@/store/usr";
+import { useLoading } from "@/app/composables/index.ts";
+import { useAuthorization } from "@/app/composables/usr/index.ts";
+import { useClientTenantId } from "@/app/composables/tenant/index.ts";
+import { useMsgs } from "@/app/composables/msg.ts";
 
 export const baseURL = "";
 
@@ -17,13 +19,14 @@ export async function request<T>(
     data?: any;
     duration?: number;
     authorization?: string;
+    client_tenant_id?: TenantId | null;
   },
 ): Promise<T> {
   let authorization = $(useAuthorization());
   if (config?.authorization != null) {
     authorization = config?.authorization;
   }
-  let loading = $(useLoading());
+  const loading = useLoading();
   let err: any;
   let res: {
     data: any;
@@ -39,12 +42,20 @@ export async function request<T>(
       }
     }
     if (!config.notLoading) {
-      loading++;
+      loading.value++;
     }
     config.header = config.header || new Headers();
     
     if (authorization) {
       config.header.set("authorization", authorization);
+    }
+    
+    let client_tenant_id = config.client_tenant_id;
+    if (!client_tenant_id) {
+      client_tenant_id = useClientTenantId().value;
+    }
+    if (client_tenant_id) {
+      config.header.set("TenantId", client_tenant_id);
     }
     
     let body = config.data;
@@ -66,7 +77,7 @@ export async function request<T>(
       if (errMsg === "Internal Server Error") {
         errMsg = "系统正在维护，请稍后再试";
       }
-      throw errMsg;
+      throw createError(errMsg);
     }
     const header = resFt.headers;
     const data = resFt._data;
@@ -78,11 +89,11 @@ export async function request<T>(
     err = errTmp;
     const errStr = err && err.toString();
     if (errStr === "TypeError: Failed to fetch") {
-      err = "网络连接失败，请稍后再试";
+      err = createError("网络连接失败，请稍后再试");
     }
   } finally {
     if (!config.notLoading) {
-      loading--;
+      loading.value--;
     }
   }
   const header = res?.header || new Headers();
@@ -94,15 +105,52 @@ export async function request<T>(
     authorization = authorization2;
   }
   if (config.reqType === "graphql") {
-    if (err != null) {
-      throw err;
+    // [ { message: '测试错误', locations: [ [Object] ], path: [ 'findDefaultSeo' ] } ]
+    let errors = res?.data?.errors;
+    // errors 去重
+    let errMsgs: string[] = [ ];
+    if (err) {
+      errMsgs.push(err.toString());
+    }
+    if (errors && Array.isArray(errors)) {
+      const errMsgSet = new Set<string>();
+      for (const err of errors) {
+        const errMsg = err.message || err.toString();
+        if (!errMsgSet.has(errMsg)) {
+          errMsgSet.add(errMsg);
+          errMsgs.push(errMsg);
+        }
+      }
+    }
+    if (errMsgs.length > 0) {
+      const errMsg = errMsgs.join("\n");
+      if (!config || config.showErrMsg !== false) {
+        // throw createError(errMsg);
+        const {
+          showMsg,
+        } = $(useMsgs());
+        showMsg({
+          type: "error",
+          content: errMsg,
+        });
+      }
+      throw new Error(errMsg);
     }
     return res as T;
   }
   
   if (err != null && (!config || config.showErrMsg !== false)) {
     const errMsg = (err as any).errMsg || err.toString();
-    if (errMsg) { /* empty */ }
+    if (errMsg) {
+      // throw createError(errMsg);
+      const {
+        showMsg,
+      } = $(useMsgs());
+      showMsg({
+        type: "error",
+        content: errMsg,
+      });
+    }
     throw err;
   }
   const data = res!.data;
@@ -117,6 +165,16 @@ export async function request<T>(
   if (data && data.code !== 0) {
     if (data.msg && (!config || config.showErrMsg !== false)) {
       const errMsg = data.msg;
+      if (errMsg) {
+        // throw createError(errMsg);
+        const {
+          showMsg,
+        } = $(useMsgs());
+        showMsg({
+          type: "error",
+          content: errMsg,
+        });
+      }
     }
     throw data;
   }
@@ -142,7 +200,7 @@ export async function uploadFile(
   if (config?.authorization != null) {
     authorization = config?.authorization;
   }
-  let loading = $(useLoading());
+  const loading = useLoading();
   config = config || { };
   config.type = config.type || "oss";
   config.url = config.url || `${ baseURL }/api/${ config.type }/upload`;
@@ -166,7 +224,7 @@ export async function uploadFile(
   let res: any = undefined;
   try {
     if (!config.notLoading) {
-      loading++;
+      loading.value++;
     }
     res = await request<{
       code: number;
@@ -177,7 +235,7 @@ export async function uploadFile(
     err = (errTmp as Error);
   } finally {
     if (!config.notLoading) {
-      loading--;
+      loading.value--;
     }
   }
   const header = res?.header || new Headers();
@@ -190,6 +248,16 @@ export async function uploadFile(
   }
   if (err != null && (!config || config.showErrMsg !== false)) {
     const errMsg = (err as any).errMsg || err.toString();
+    if (errMsg) {
+      // throw createError(errMsg);
+      const {
+        showMsg,
+      } = $(useMsgs());
+      showMsg({
+        type: "error",
+        content: errMsg,
+      });
+    }
     throw err;
   }
   {
@@ -205,6 +273,16 @@ export async function uploadFile(
     if (data && data.code !== 0) {
       if (data.msg && (!config || config.showErrMsg !== false)) {
         const errMsg = data.msg;
+        if (errMsg) {
+          // throw createError(errMsg);
+          const {
+            showMsg,
+          } = $(useMsgs());
+          showMsg({
+            type: "error",
+            content: errMsg,
+          });
+        }
       }
       throw data;
     }
@@ -297,7 +375,7 @@ export function getImgUrl(
  *     inline?: "0"|"1";
  *   } | string)} id
  */
-export function downloadById(
+export async function downloadById(
   id: {
     id: string;
     filename?: string;
@@ -317,8 +395,17 @@ export function downloadById(
     model = id;
   }
   if (!model || !model.id) {
+    // throw createError("下载失败，id 为空");
+    const {
+      showMsg,
+    } = $(useMsgs());
+    showMsg({
+      type: "error",
+      content: "下载失败，id 为空",
+    });
     return;
   }
   const url = getDownloadUrl(model, type);
-  // saveAs(url);
+  const saveAs = (await import("file-saver")).default;
+  saveAs(url);
 }
