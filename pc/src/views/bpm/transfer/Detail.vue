@@ -95,6 +95,7 @@
               })"
               placeholder="请选择 原任务"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -117,6 +118,7 @@
               })"
               placeholder="请选择 转出人"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -139,6 +141,7 @@
               })"
               placeholder="请选择 接收人"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>

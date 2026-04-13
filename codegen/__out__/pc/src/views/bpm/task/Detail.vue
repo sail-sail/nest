@@ -108,6 +108,7 @@
               })"
               placeholder="请选择 流程实例"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -130,6 +131,7 @@
               })"
               placeholder="请选择 节点实例"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -152,6 +154,7 @@
               })"
               placeholder="请选择 处理人"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>

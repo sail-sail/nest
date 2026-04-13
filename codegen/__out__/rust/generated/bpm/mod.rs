@@ -9,7 +9,7 @@ pub mod transfer;
 use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
-pub struct BpmQuery(
+pub struct BpmGenQuery(
   self::log::log_graphql::LogGenQuery,
   self::node_inst::node_inst_graphql::NodeInstGenQuery,
   self::process_def::process_def_graphql::ProcessDefGenQuery,
@@ -20,7 +20,7 @@ pub struct BpmQuery(
 );
 
 #[derive(MergedObject, Default)]
-pub struct BpmMutation(
+pub struct BpmGenMutation(
   self::log::log_graphql::LogGenMutation,
   self::node_inst::node_inst_graphql::NodeInstGenMutation,
   self::process_def::process_def_graphql::ProcessDefGenMutation,

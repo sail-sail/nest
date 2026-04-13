@@ -9,12 +9,12 @@ use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
 pub struct GenQuery(
-  base::BaseQuery,
-  bpm::BpmQuery,
+  base::BaseGenQuery,
+  bpm::BpmGenQuery,
 );
 
 #[derive(MergedObject, Default)]
 pub struct GenMutation(
-  base::BaseMutation,
-  bpm::BpmMutation,
+  base::BaseGenMutation,
+  bpm::BpmGenMutation,
 );

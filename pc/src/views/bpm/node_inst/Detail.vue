@@ -95,6 +95,7 @@
               })"
               placeholder="请选择 流程实例"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>

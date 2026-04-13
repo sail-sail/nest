@@ -108,6 +108,7 @@
               })"
               placeholder="请选择 流程定义"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -130,6 +131,7 @@
               })"
               placeholder="请选择 流程版本"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -167,6 +169,7 @@
               })"
               placeholder="请选择 发起人"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -178,9 +181,11 @@
           >
             <CustomTreeSelect
               v-model="dialogModel.start_dept_id"
+              v-model:model-label="dialogModel.start_dept_id_lbl"
               :method="getTreeDept"
               placeholder="请选择 发起人部门"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomTreeSelect>
           </el-form-item>
         </template>
