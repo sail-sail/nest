@@ -666,6 +666,12 @@ export interface TableColumn {
   modelLabel?: string;
   
   /**
+   * 如果 isCascadeUpdateModelLabel 为 true, 则当这个字段作为外键关联的 lbl 字段时, 级联更新相关的字段, 默认为 false
+   * 注: 相关实现在 [[table]]_dao.rs 中搜索 cascadeUpdateFields 或 cascadeUpdateFieldTables 关键字
+   */
+  isCascadeUpdateModelLabel?: boolean;
+  
+  /**
    * 此字段是否要做字段权限控制, 默认为false
    */
   fieldPermit?: boolean;
@@ -1093,12 +1099,18 @@ export interface TablesConfigItem {
     
     /**
      * 级联更新字段, 当外键关联的字段变化时, 自动更新相关的字段
+     * 如果某个外键关联的字段有配置 modelLabel 并且配置 isCascadeUpdateModelLabel 为 true
+     * 则自动配置 cascadeUpdateFields, 监听这个字段的变化, 并且更新其它表相关的 modelLabel 字段
+     * 
+     * 注: 相关实现在 [[table]]_dao.rs 中搜索 cascadeUpdateFields 或 cascadeUpdateFieldTables
+     * src/lib/information_schema.ts 中搜索 isCascadeUpdateModelLabel
      */
     cascadeUpdateFields?: {
       /**
        * 监听变化的字段名, 一般为 lbl
        */
       watchColumn: string;
+      
       /**
        * 模块
        */

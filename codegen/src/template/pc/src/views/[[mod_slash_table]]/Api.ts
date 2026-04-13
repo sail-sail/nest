@@ -2541,6 +2541,9 @@ export async function findLastOrderBy<#=Table_Up#>(
         findLastOrderBy<#=Table_Up2#>(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderBy<#=Table_Up2#>;

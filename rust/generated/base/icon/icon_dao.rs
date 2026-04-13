@@ -2185,9 +2185,16 @@ pub async fn update_by_id_icon(
   
   // 图标
   if let Some(img) = input.img.as_ref() && img != &old_model.img {
-    crate::common::oss::oss_dao::delete_object(
+    let res = crate::common::oss::oss_dao::delete_object(
       old_model.img.as_str(),
-    ).await?;
+    ).await;
+    if let Err(err) = res {
+      info!(
+        "{} {table}.{method}: 删除对象失败, img: {}, err: {err}",
+        get_req_id(),
+        old_model.img,
+      );
+    }
   }
   
   Ok(id)
