@@ -202,6 +202,7 @@
               })"
               placeholder="请选择 网页授权域名"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
