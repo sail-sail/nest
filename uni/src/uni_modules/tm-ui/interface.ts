@@ -1,5 +1,5 @@
-import { I18nOptions, Tmui4xI18nTml } from "../tm-ui/local/interface";
-import { AxiosInstance } from "./libs/axios";
+import type { I18nOptions, Tmui4xI18nTml } from "../tm-ui/local/interface";
+import type { AxiosInstance } from "./libs/axios";
 import { Tmui4xI18n } from "./local/i18n";
 
 /*

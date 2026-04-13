@@ -298,6 +298,7 @@ const props = withDefaults(
     readonlyCollapseTags?: boolean;
     readonlyMaxCollapseTags?: number;
     hasSelectAdd?: boolean;
+    pageInited?: boolean;
   }>(),
   {
     optionsMap: function(item: DictbizModel) {
@@ -326,6 +327,7 @@ const props = withDefaults(
     readonlyCollapseTags: true,
     readonlyMaxCollapseTags: 1,
     hasSelectAdd: false,
+    pageInited: undefined,
   },
 );
 
@@ -355,6 +357,15 @@ watch(
   () => props.modelLabel,
   () => {
     modelLabel = props.modelLabel;
+  },
+);
+
+watch(
+  () => props.pageInited,
+  async (value, oldValue) => {
+    if (value === true && oldValue === false) {
+      await onRefresh();
+    }
   },
 );
 
