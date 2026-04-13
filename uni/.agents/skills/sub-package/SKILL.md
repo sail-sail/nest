@@ -1,4 +1,3 @@
-```skill
 ---
 name: sub-package
 description: 微信小程序分包（subPackages）配置。需要将页面拆分到子包时使用
@@ -47,4 +46,3 @@ metadata:
 - 同一目录下的多个页面归入同一个子包
 - tabBar 页面**不能**放入子包，必须留在主包
 - 首页（pages 数组第一项）**不能**放入子包
-```

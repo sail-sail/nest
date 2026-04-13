@@ -179,7 +179,7 @@ export async function checkClientTenantId(): Promise<boolean> {
       notLoading: true,
     },
   );
-  tenant_id = data.getTenantIdByAppid;
+  tenant_id = data.getTenantIdByAppid as TenantId;
   if (tenant_id) {
     usrStore.setTenantId(tenant_id);
     uni.setStorageSync("client_tenant_id", tenant_id);

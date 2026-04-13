@@ -2561,9 +2561,16 @@ pub async fn update_by_id_wxo_usr(
   
   // 头像
   if let Some(head_img) = input.head_img.as_ref() && head_img != &old_model.head_img {
-    crate::common::oss::oss_dao::delete_object(
+    let res = crate::common::oss::oss_dao::delete_object(
       old_model.head_img.as_str(),
-    ).await?;
+    ).await;
+    if let Err(err) = res {
+      info!(
+        "{} {table}.{method}: 删除对象失败, head_img: {}, err: {err}",
+        get_req_id(),
+        old_model.head_img,
+      );
+    }
   }
   
   Ok(id)

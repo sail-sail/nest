@@ -2664,16 +2664,30 @@ pub async fn update_by_id_wx_pay(
   
   // 公钥
   if let Some(public_key) = input.public_key.as_ref() && public_key != &old_model.public_key {
-    crate::common::oss::oss_dao::delete_object(
+    let res = crate::common::oss::oss_dao::delete_object(
       old_model.public_key.as_str(),
-    ).await?;
+    ).await;
+    if let Err(err) = res {
+      info!(
+        "{} {table}.{method}: 删除对象失败, public_key: {}, err: {err}",
+        get_req_id(),
+        old_model.public_key,
+      );
+    }
   }
   
   // 私钥
   if let Some(private_key) = input.private_key.as_ref() && private_key != &old_model.private_key {
-    crate::common::oss::oss_dao::delete_object(
+    let res = crate::common::oss::oss_dao::delete_object(
       old_model.private_key.as_str(),
-    ).await?;
+    ).await;
+    if let Err(err) = res {
+      info!(
+        "{} {table}.{method}: 删除对象失败, private_key: {}, err: {err}",
+        get_req_id(),
+        old_model.private_key,
+      );
+    }
   }
   
   Ok(id)

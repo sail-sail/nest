@@ -711,6 +711,9 @@ export async function findLastOrderByWxPay(
         findLastOrderByWxPay(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByWxPay;

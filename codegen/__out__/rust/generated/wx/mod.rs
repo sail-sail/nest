@@ -13,7 +13,7 @@ pub mod wxo_usr;
 use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
-pub struct WxQuery(
+pub struct WxGenQuery(
   self::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiGenQuery,
   self::wx_app::wx_app_graphql::WxAppGenQuery,
   self::wx_app_token::wx_app_token_graphql::WxAppTokenGenQuery,
@@ -28,7 +28,7 @@ pub struct WxQuery(
 );
 
 #[derive(MergedObject, Default)]
-pub struct WxMutation(
+pub struct WxGenMutation(
   self::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiGenMutation,
   self::wx_app::wx_app_graphql::WxAppGenMutation,
   self::wx_app_token::wx_app_token_graphql::WxAppTokenGenMutation,

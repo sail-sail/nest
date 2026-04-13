@@ -931,6 +931,17 @@ impl Ctx {
         req_id = self.req_id,
       );
     }
+    
+    if let Err(err) = &res {
+      // 检测到如果是 code 10065 的错误(套接字连接失败), 则手动抛出更友好的错误提示
+      if let sqlx::Error::Io(io_err) = &err {
+        if let Some(code) = io_err.raw_os_error() {
+          if code == 10065 {
+            return Err(eyre!("数据库连接失败, 请检查数据库是否启动"));
+          }
+        }
+      }
+    }
     Ok(res?)
   }
   
@@ -1140,6 +1151,17 @@ impl Ctx {
         "{req_id} {debug_sql}",
         req_id = self.req_id,
       );
+    }
+    
+    if let Err(err) = &res {
+      // 检测到如果是 code 10065 的错误(套接字连接失败), 则手动抛出更友好的错误提示
+      if let sqlx::Error::Io(io_err) = &err {
+        if let Some(code) = io_err.raw_os_error() {
+          if code == 10065 {
+            return Err(eyre!("数据库连接失败, 请检查数据库是否启动"));
+          }
+        }
+      }
     }
     Ok(res?)
   }

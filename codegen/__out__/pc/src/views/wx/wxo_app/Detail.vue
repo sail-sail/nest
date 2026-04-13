@@ -202,6 +202,7 @@
               })"
               placeholder="请选择 网页授权域名"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -228,6 +229,7 @@
               v-model="dialogModel.order_by"
               placeholder="请输入 排序"
               :readonly="isLocked || isReadonly"
+              :is-hide-zero="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>

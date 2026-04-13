@@ -113,6 +113,7 @@
               :method="getTreeMenu"
               placeholder="请选择 父菜单"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomTreeSelect>
           </el-form-item>
         </template>
@@ -136,6 +137,7 @@
               placeholder="请选择 所属角色"
               multiple
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -365,6 +367,7 @@
                       code="dyn_page_field_align"
                       placeholder=" "
                       :readonly="isLocked || isReadonly"
+                      :page-inited="inited"
                     ></DictSelect>
                   </template>
                 </template>
