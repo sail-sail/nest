@@ -95,6 +95,7 @@
                 },
               }"
               :filter-node-method="useMenuTreeFilter"
+              :page-inited="inited"
             ></CustomTreeSelect>
           </el-form-item>
         </template>

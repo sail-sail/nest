@@ -13,7 +13,9 @@
 src/views/{mod}/{table}/
 ├── Model.ts    # 类型定义
 ├── List.vue    # 列表页（搜索/表格/分页）
-├── Dialog.vue  # 新增/编辑弹窗
+├── Detail.vue  # 新增/编辑弹窗
+├── TreeList.vue  # 树形列表页
+├── SelectInput.vue  # 选择输入
 ├── Api.ts      # GraphQL 操作
 └── Api2.ts     # 自定义 GraphQL 接口
 ```

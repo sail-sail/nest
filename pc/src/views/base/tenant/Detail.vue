@@ -125,6 +125,7 @@
               multiple
               :multiple-set-default="true"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             >
               
               <template
@@ -192,6 +193,7 @@
               })"
               placeholder="请选择 语言"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>

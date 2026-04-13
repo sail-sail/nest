@@ -327,10 +327,10 @@ async function onLogin() {
   ]);
   if (old_username !== model.username || old_tenant_id !== model.tenant_id) {
     tabsStore.tabs = [ ];
-    location.href = "/";
+    location.href = location.pathname;
   } else if (router.currentRoute.value.query.tenant_id) {
     tabsStore.tabs = [ ];
-    location.href = "/";
+    location.href = location.pathname;
   } else {
     window.history.go(0);
   }

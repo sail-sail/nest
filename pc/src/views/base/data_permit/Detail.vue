@@ -95,6 +95,7 @@
                 } as any,
               }"
               :filter-node-method="(useMenuTreeFilter as any)"
+              :page-inited="inited"
             ></CustomTreeSelect>
           </el-form-item>
         </template>
