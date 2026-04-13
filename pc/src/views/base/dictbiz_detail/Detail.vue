@@ -94,6 +94,7 @@
               })"
               placeholder="请选择 业务字典"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>

@@ -87,6 +87,7 @@
               :method="getTreeMenu"
               placeholder="请选择 父菜单"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomTreeSelect>
           </el-form-item>
         </template>

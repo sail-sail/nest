@@ -12,6 +12,31 @@ import Inspector from "vite-plugin-vue-inspector";
 import ReactivityTransform from "@vue-macros/reactivity-transform/vite";
 import TurboConsole from "unplugin-turbo-console/vite";
 
+function patchUniAppVueSlotsMarker(): PluginOption {
+  const readonlyMarker = 'def(children, "_", type);';
+  const writableMarker = 'def(children, "_", type, true);';
+
+  return {
+    name: "patch-uni-app-vue-slots-marker",
+    enforce: "pre",
+    transform(
+      code,
+      id,
+    ) {
+      id = id.replace(/\\/g, "/");
+      const isUniAppVueRuntime = id.includes("@dcloudio/uni-h5") || id.includes("@dcloudio/uni-h5-vue");
+      
+      if (!isUniAppVueRuntime || !code.includes(readonlyMarker)) {
+        return null;
+      }
+      return {
+        code: code.split(readonlyMarker).join(writableMarker),
+        map: null,
+      };
+    },
+  };
+}
+
 const pluginsH5: PluginOption[] = [ ];
 
 const isH5 = process.env.UNI_PLATFORM === "h5";
@@ -45,6 +70,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    patchUniAppVueSlotsMarker(),
     Unocss({
       mode: "vue-scoped",
       configFile: "./uno_uni.config.ts",
