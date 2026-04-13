@@ -18,10 +18,9 @@ logs
 .fleet
 .idea
 
-# Local env files
-# .env
-# .env.*
-# !.env.example
+# 生成的类型文件
+**/typings/types.ts
+**/typings/auto-imports.d.ts
+**/typings/components.d.ts
 
 typings/types.ts
-typings/ids.d.ts
