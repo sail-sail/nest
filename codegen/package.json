@@ -25,17 +25,17 @@
     "clipboardy": "5.3.1",
     "commander": "14.0.3",
     "dayjs": "1.11.20",
-    "dotenv": "17.3.1",
+    "dotenv": "17.4.2",
     "ejsexcel": "4.2.2",
     "fast-csv": "5.0.5",
     "fs-extra": "11.3.4",
-    "mysql2": "3.20.0",
+    "mysql2": "3.22.0",
     "shelljs": "0.10.0",
     "uuid": "13.0.0"
   },
   "devDependencies": {
     "@types/fs-extra": "11.0.4",
-    "@types/node": "25.5.0",
+    "@types/node": "25.6.0",
     "@types/shelljs": "0.10.0",
     "@types/uuid": "11.0.0",
     "typescript": "6.0.2"

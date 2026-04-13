@@ -42,9 +42,9 @@ id,code,lbl,type,order_by,tenant_id,is_sys,is_add
 ### 生成 UUID
 
 ```bash
-nr uuid -- 4  # 生成需要的 UUID 数量
-nr importCsv {mod}/base_dictbiz.{mod}
-nr importCsv {mod}/base_dictbiz_detail.{mod}
+npm run uuid -- 4  # 生成需要的 UUID 数量
+npm run importCsv -- {mod}/base_dictbiz.{mod}
+npm run importCsv -- {mod}/base_dictbiz_detail.{mod}
 ```
 
 #### `base_dictbiz_detail.{mod}.sql.csv`:

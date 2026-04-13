@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ComputedRef, getCurrentInstance, inject, onBeforeMount, onBeforeUnmount, onMounted, type PropType, ref, watch } from 'vue';
+import { computed, type ComputedRef, getCurrentInstance, inject, onBeforeMount, onBeforeUnmount, onMounted, PropType, ref, watch } from 'vue';
 import { useTmConfig } from "../../libs/config";
 import TmDropdownMenu from '../tm-dropdown-menu/tm-dropdown-menu.vue';
 import { covetUniNumber, findParent } from '../../libs/tool';
 import { getDefaultColor } from '../../libs/colors';
-import { TmDropdownItemProps } from './propsType';
+import type { TmDropdownItemProps } from './propsType';
 import { type tmDropDownMenuItemType, type tmDropdownMenuTypeProide } from '../tm-dropdown-menu/propsType';
 type TmDropdownMenuType = InstanceType<typeof TmDropdownMenu>
 /**
@@ -80,7 +80,7 @@ watch(() => tmDropdownMenu?.value?.activeName, (newVal, oldVal) => {
 })
 watch(():any => props,()=>{
 	pubshChildren()
-})
+},{deep:true})
 onBeforeMount(() => {
 	pubshChildren()
 })
