@@ -28,6 +28,19 @@
       @keydown.enter="onSearch(true)"
     >
       
+      <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
+        <el-form-item
+          label="标题"
+          prop="lbl_like"
+        >
+          <CustomInput
+            v-model="search.lbl_like"
+            placeholder="请输入 标题"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <div
         class="search-ids-checked"
       >
@@ -262,22 +275,6 @@
               <span>导入</span>
             </el-dropdown-item>
             
-            <el-dropdown-item
-              v-if="permit('edit', '编辑') && !isLocked"
-              un-justify-center
-              @click="onLockByIds(1)"
-            >
-              <span>锁定</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('edit', '编辑') && !isLocked"
-              un-justify-center
-              @click="onLockByIds(0)"
-            >
-              <span>解锁</span>
-            </el-dropdown-item>
-            
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -453,8 +450,23 @@
           :key="col.prop"
         >
           
+          <!-- 图标 -->
+          <template v-if="'ico' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row, column }">
+                <LinkImage
+                  v-model="row[column.property]"
+                  un-h="8"
+                ></LinkImage>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 标题 -->
-          <template v-if="'title' === col.prop">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -513,39 +525,6 @@
             </el-table-column>
           </template>
           
-          <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_locked"
-                  @change="onIs_locked(row.id, row.is_locked)"
-                ></CustomSwitch>
-              </template>
-            </el-table-column>
-          </template>
-          
-          <!-- 默认 -->
-          <template v-else-if="'is_default_lbl' === col.prop && (showBuildIn || builtInSearch?.is_default == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_default"
-                  :before-change="() => row.is_default == 0"
-                  @change="onIs_default(row.id)"
-                ></CustomSwitch>
-              </template>
-            </el-table-column>
-          </template>
-          
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
             <el-table-column
@@ -554,7 +533,7 @@
             >
               <template #default="{ row }">
                 <CustomInputNumber
-                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
                   @change="updateByIdSeo(
@@ -681,8 +660,6 @@ import {
   revertByIdsSeo,
   deleteByIdsSeo,
   forceDeleteByIdsSeo,
-  defaultByIdSeo,
-  lockByIdsSeo,
   useExportExcelSeo,
   updateByIdSeo,
   importModelsSeo,
@@ -730,7 +707,8 @@ const props = defineProps<{
   selectedIds?: SeoId[]; //已选择行的id列表
   isMultiple?: string; //是否多选
   id?: SeoId; // ID
-  is_default?: string|string[]; // 默认
+  lbl?: string; // 标题
+  lbl_like?: string; // 标题
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -742,8 +720,6 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  is_default: "number[]",
-  is_default_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -956,9 +932,16 @@ let tableData = $ref<SeoModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
+      label: "图标",
+      prop: "ico",
+      width: 48,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
       label: "标题",
-      prop: "title",
-      width: 180,
+      prop: "lbl",
+      width: 200,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1001,24 +984,6 @@ function getTableColumns(): ColumnType[] {
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
-    },
-    {
-      label: "锁定",
-      prop: "is_locked_lbl",
-      sortBy: "is_locked",
-      width: 85,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
-      label: "默认",
-      prop: "is_default_lbl",
-      sortBy: "is_default",
-      width: 85,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
     },
     {
       label: "排序",
@@ -1334,13 +1299,13 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ "标题" ]: "title",
+    [ "图标" ]: "ico",
+    [ "标题" ]: "lbl",
     [ "描述" ]: "description",
     [ "关键词" ]: "keywords",
     [ "分享图片" ]: "og_image",
     [ "分享标题" ]: "og_title",
     [ "分享描述" ]: "og_description",
-    [ "锁定" ]: "is_locked_lbl",
     [ "排序" ]: "order_by",
     [ "备注" ]: "rem",
   };
@@ -1364,13 +1329,13 @@ async function onImportExcel() {
       header,
       {
         key_types: {
-          "title": "string",
+          "ico": "string",
+          "lbl": "string",
           "description": "string",
           "keywords": "string",
           "og_image": "string",
           "og_title": "string",
           "og_description": "string",
-          "is_locked_lbl": "string",
           "order_by": "number",
           "rem": "string",
         },
@@ -1400,49 +1365,6 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
-}
-
-/** 锁定 */
-async function onIs_locked(id: SeoId, is_locked: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await lockByIdsSeo(
-    [ id ],
-    is_locked,
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
-}
-
-/** 默认 */
-async function onIs_default(id: SeoId) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await defaultByIdSeo(
-    id,
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
 }
 
 /** 打开编辑页面 */
@@ -1608,40 +1530,6 @@ async function onForceDeleteByIds() {
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } SEO优化 成功`);
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
-/** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (permit("edit") === false) {
-    ElMessage.warning("无权限");
-    return;
-  }
-  if (selectedIds.length === 0) {
-    let msg = "";
-    if (is_locked === 1) {
-      msg = "请选择需要 锁定 的 SEO优化";
-    } else {
-      msg = "请选择需要 解锁 的 SEO优化";
-    }
-    ElMessage.warning(msg);
-    return;
-  }
-  const num = await lockByIdsSeo(selectedIds, is_locked);
-  if (num > 0) {
-    let msg = "";
-    if (is_locked === 1) {
-      msg = `锁定 ${ num } SEO优化 成功`;
-    } else {
-      msg = `解锋 ${ num } SEO优化 成功`;
-    }
-    ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }

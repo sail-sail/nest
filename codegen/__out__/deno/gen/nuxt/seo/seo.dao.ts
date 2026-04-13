@@ -47,10 +47,6 @@ import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import * as validators from "/lib/validators/mod.ts";
 
-import {
-  getDict,
-} from "/src/base/dict_detail/dict_detail.dao.ts";
-
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
@@ -110,11 +106,17 @@ async function getWhereQuery(
   if (search?.ids != null) {
     whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
-  if (search?.title != null) {
-    whereQuery += ` and t.title=${ args.push(search.title) }`;
+  if (search?.ico != null) {
+    whereQuery += ` and t.ico=${ args.push(search.ico) }`;
   }
-  if (isNotEmpty(search?.title_like)) {
-    whereQuery += ` and t.title like ${ args.push("%" + sqlLike(search?.title_like) + "%") }`;
+  if (isNotEmpty(search?.ico_like)) {
+    whereQuery += ` and t.ico like ${ args.push("%" + sqlLike(search?.ico_like) + "%") }`;
+  }
+  if (search?.lbl != null) {
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
+  }
+  if (isNotEmpty(search?.lbl_like)) {
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.description != null) {
     whereQuery += ` and t.description=${ args.push(search.description) }`;
@@ -145,12 +147,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.og_description_like)) {
     whereQuery += ` and t.og_description like ${ args.push("%" + sqlLike(search?.og_description_like) + "%") }`;
-  }
-  if (search?.is_locked != null) {
-    whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
-  }
-  if (search?.is_default != null) {
-    whereQuery += ` and t.is_default in (${ args.push(search.is_default) })`;
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
@@ -254,28 +250,6 @@ export async function findCountSeo(
   if (search && search.ids && search.ids.length === 0) {
     return 0;
   }
-  // 锁定
-  if (search && search.is_locked != null) {
-    const len = search.is_locked.length;
-    if (len === 0) {
-      return 0;
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_locked.length > ${ ids_limit }`);
-    }
-  }
-  // 默认
-  if (search && search.is_default != null) {
-    const len = search.is_default.length;
-    if (len === 0) {
-      return 0;
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_default.length > ${ ids_limit }`);
-    }
-  }
   // 创建人
   if (search && search.create_usr_id != null) {
     const len = search.create_usr_id.length;
@@ -360,28 +334,6 @@ export async function findAllSeo(
   }
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
-  }
-  // 锁定
-  if (search && search.is_locked != null) {
-    const len = search.is_locked.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_locked.length > ${ ids_limit }`);
-    }
-  }
-  // 默认
-  if (search && search.is_default != null) {
-    const len = search.is_default.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_default.length > ${ ids_limit }`);
-    }
   }
   // 创建人
   if (search && search.create_usr_id != null) {
@@ -471,36 +423,8 @@ export async function findAllSeo(
     }
   }
   
-  const [
-    is_lockedDict, // 锁定
-    is_defaultDict, // 默认
-  ] = await getDict([
-    "is_locked",
-    "is_default",
-  ]);
-  
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    // 锁定
-    let is_locked_lbl = model.is_locked?.toString() || "";
-    if (model.is_locked != null) {
-      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === String(model.is_locked));
-      if (dictItem) {
-        is_locked_lbl = dictItem.lbl;
-      }
-    }
-    model.is_locked_lbl = is_locked_lbl || "";
-    
-    // 默认
-    let is_default_lbl = model.is_default?.toString() || "";
-    if (model.is_default != null) {
-      const dictItem = is_defaultDict.find((dictItem) => dictItem.val === String(model.is_default));
-      if (dictItem) {
-        is_default_lbl = dictItem.lbl;
-      }
-    }
-    model.is_default_lbl = is_default_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -541,36 +465,6 @@ export async function setIdByLblSeo(
   const options = {
     is_debug: false,
   };
-  
-  const [
-    is_lockedDict, // 锁定
-    is_defaultDict, // 默认
-  ] = await getDict([
-    "is_locked",
-    "is_default",
-  ]);
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val != null) {
-      input.is_locked = Number(val);
-    }
-  } else if (isEmpty(input.is_locked_lbl) && input.is_locked != null) {
-    const lbl = is_lockedDict.find((itemTmp) => itemTmp.val === String(input.is_locked))?.lbl || "";
-    input.is_locked_lbl = lbl;
-  }
-  
-  // 默认
-  if (isNotEmpty(input.is_default_lbl) && input.is_default == null) {
-    const val = is_defaultDict.find((itemTmp) => itemTmp.lbl === input.is_default_lbl)?.val;
-    if (val != null) {
-      input.is_default = Number(val);
-    }
-  } else if (isEmpty(input.is_default_lbl) && input.is_default != null) {
-    const lbl = is_defaultDict.find((itemTmp) => itemTmp.val === String(input.is_default))?.lbl || "";
-    input.is_default_lbl = lbl;
-  }
 }
 
 // MARK: getFieldCommentsSeo
@@ -578,16 +472,13 @@ export async function setIdByLblSeo(
 export async function getFieldCommentsSeo(): Promise<SeoFieldComment> {
   const field_comments: SeoFieldComment = {
     id: "ID",
-    title: "标题",
+    ico: "图标",
+    lbl: "标题",
     description: "描述",
     keywords: "关键词",
     og_image: "分享图片",
     og_title: "分享标题",
     og_description: "分享描述",
-    is_locked: "锁定",
-    is_locked_lbl: "锁定",
-    is_default: "默认",
-    is_default_lbl: "默认",
     order_by: "排序",
     rem: "备注",
     create_usr_id: "创建人",
@@ -1089,11 +980,18 @@ export async function validateSeo(
     fieldComments.id,
   );
   
+  // 图标
+  await validators.chars_max_length(
+    input.ico,
+    22,
+    fieldComments.ico,
+  );
+  
   // 标题
   await validators.chars_max_length(
-    input.title,
-    45,
-    fieldComments.title,
+    input.lbl,
+    100,
+    fieldComments.lbl,
   );
   
   // 描述
@@ -1382,7 +1280,7 @@ async function _creates(
   await delCacheSeo();
   
   const args = new QueryArgs();
-  let sql = "insert into nuxt_seo(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,title,description,keywords,og_image,og_title,og_description,is_locked,is_default,order_by,rem)values";
+  let sql = "insert into nuxt_seo(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,ico,lbl,description,keywords,og_image,og_title,og_description,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1480,8 +1378,13 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.title != null) {
-        sql += `,${ args.push(input.title) }`;
+      if (input.ico != null) {
+        sql += `,${ args.push(input.ico) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.lbl != null) {
+        sql += `,${ args.push(input.lbl) }`;
       } else {
         sql += ",default";
       }
@@ -1507,16 +1410,6 @@ async function _creates(
       }
       if (input.og_description != null) {
         sql += `,${ args.push(input.og_description) }`;
-      } else {
-        sql += ",default";
-      }
-      if (input.is_locked != null) {
-        sql += `,${ args.push(input.is_locked) }`;
-      } else {
-        sql += ",default";
-      }
-      if (input.is_default != null) {
-        sql += `,${ args.push(input.is_default) }`;
       } else {
         sql += ",default";
       }
@@ -1680,9 +1573,15 @@ export async function updateByIdSeo(
   const args = new QueryArgs();
   let sql = `update nuxt_seo set `;
   let updateFldNum = 0;
-  if (input.title != null) {
-    if (input.title != oldModel.title) {
-      sql += `title=${ args.push(input.title) },`;
+  if (input.ico != null) {
+    if (input.ico != oldModel.ico) {
+      sql += `ico=${ args.push(input.ico) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.lbl != null) {
+    if (input.lbl != oldModel.lbl) {
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
@@ -1713,18 +1612,6 @@ export async function updateByIdSeo(
   if (input.og_description != null) {
     if (input.og_description != oldModel.og_description) {
       sql += `og_description=${ args.push(input.og_description) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.is_locked != null) {
-    if (input.is_locked != oldModel.is_locked) {
-      sql += `is_locked=${ args.push(input.is_locked) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.is_default != null) {
-    if (input.is_default != oldModel.is_default) {
-      sql += `is_default=${ args.push(input.is_default) },`;
       updateFldNum++;
     }
   }
@@ -1836,6 +1723,13 @@ export async function updateByIdSeo(
   
   if (!is_silent_mode) {
     log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
+  }
+  
+  // 图标
+  if (input.ico != null && input.ico !== oldModel?.ico) {
+    await deleteObject(
+      oldModel?.ico,
+    );
   }
   
   // 分享图片
@@ -1963,115 +1857,6 @@ export async function deleteByIdsSeo(
   await delCacheSeo();
   
   return affectedRows;
-}
-
-// MARK: defaultByIdSeo
-/** 根据 id 设置默认SEO优化 */
-export async function defaultByIdSeo(
-  id: SeoId,
-  options?: {
-  },
-): Promise<number> {
-  
-  const table = getTableNameSeo();
-  const method = "defaultByIdSeo";
-  
-  if (!id) {
-    throw new Error("defaultByIdSeo: id cannot be empty");
-  }
-  
-  await delCacheSeo();
-  
-  {
-    const args = new QueryArgs();
-    const sql = `update nuxt_seo set is_default=0 where is_default=1 and id!=${ args.push(id) }`;
-    await execute(sql, args);
-  }
-  
-  const args = new QueryArgs();
-  const sql = `update nuxt_seo set is_default=1 where id=${ args.push(id) }`;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCacheSeo();
-  
-  return num;
-}
-
-// MARK: getIsLockedByIdSeo
-/** 根据 id 查找 SEO优化 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedByIdSeo(
-  id: SeoId,
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<0 | 1 | undefined> {
-  
-  options = options ?? { };
-  options.is_debug = false;
-  
-  const seo_model = await findByIdSeo(
-    id,
-    options,
-  );
-  const is_locked = seo_model?.is_locked as (0 | 1 | undefined);
-  
-  return is_locked;
-}
-
-// MARK: lockByIdsSeo
-/** 根据 ids 锁定或者解锁 SEO优化 */
-export async function lockByIdsSeo(
-  ids: SeoId[],
-  is_locked: Readonly<0 | 1>,
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<number> {
-  
-  const table = getTableNameSeo();
-  const method = "lockByIdsSeo";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (ids) {
-      msg += ` ids:${ JSON.stringify(ids) }`;
-    }
-    if (is_locked != null) {
-      msg += ` is_locked:${ is_locked }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  if (!ids || !ids.length) {
-    return 0;
-  }
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
-  
-  await delCacheSeo();
-  
-  const args = new QueryArgs();
-  let sql = `update nuxt_seo set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(
-    sql,
-    args,
-    {
-      debug: is_debug_sql,
-    },
-  );
-  const num = result.affectedRows;
-  
-  await delCacheSeo();
-  
-  return num;
 }
 
 // MARK: revertByIdsSeo
@@ -2206,6 +1991,11 @@ export async function forceDeleteByIdsSeo(
     const sql = `delete from nuxt_seo where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    
+    // 图标
+    await deleteObject(
+      oldModel?.ico,
+    );
     
     // 分享图片
     await deleteObject(

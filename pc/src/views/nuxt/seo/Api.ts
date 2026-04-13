@@ -21,6 +21,14 @@ export async function setLblByIdSeo(
     return;
   }
   
+  // 图标
+  if (model.ico) {
+    model.ico_lbl = location.origin + getImgUrl({
+      id: model.ico,
+      height: 100,
+    });
+  }
+  
   // 分享图片
   if (model.og_image) {
     model.og_image_lbl = location.origin + getImgUrl({
@@ -36,8 +44,10 @@ export function intoInputSeo(
   const input: SeoInput = {
     // ID
     id: model?.id,
+    // 图标
+    ico: model?.ico,
     // 标题
-    title: model?.title,
+    lbl: model?.lbl,
     // 描述
     description: model?.description,
     // 关键词
@@ -48,12 +58,6 @@ export function intoInputSeo(
     og_title: model?.og_title,
     // 分享描述
     og_description: model?.og_description,
-    // 锁定
-    is_locked: model?.is_locked,
-    is_locked_lbl: model?.is_locked_lbl,
-    // 默认
-    is_default: model?.is_default,
-    is_default_lbl: model?.is_default_lbl,
     // 排序
     order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
@@ -416,60 +420,6 @@ export async function deleteByIdsSeo(
 }
 
 /**
- * 根据 id 设置默认 SEO优化
- */
-export async function defaultByIdSeo(
-  id?: SeoId,
-  opt?: GqlOpt,
-) {
-  if (!id) {
-    return 0;
-  }
-  const data: {
-    defaultByIdSeo: Mutation["defaultByIdSeo"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($id: SeoId!) {
-        defaultByIdSeo(id: $id)
-      }
-    `,
-    variables: {
-      id,
-    },
-  }, opt);
-  const res = data.defaultByIdSeo;
-  return res;
-}
-
-/**
- * 根据 ids 锁定或解锁 SEO优化
- */
-export async function lockByIdsSeo(
-  ids: SeoId[],
-  is_locked: 0 | 1,
-  opt?: GqlOpt,
-): Promise<number> {
-  if (ids.length === 0) {
-    return 0;
-  }
-  const data: {
-    lockByIdsSeo: Mutation["lockByIdsSeo"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [SeoId!]!, $is_locked: Int!) {
-        lockByIdsSeo(ids: $ids, is_locked: $is_locked)
-      }
-    `,
-    variables: {
-      ids,
-      is_locked,
-    },
-  }, opt);
-  const res = data.lockByIdsSeo;
-  return res;
-}
-
-/**
  * 根据 ids 还原 SEO优化
  */
 export async function revertByIdsSeo(
@@ -535,7 +485,8 @@ export function useDownloadImportTemplateSeo() {
       query: /* GraphQL */ `
         query {
           getFieldCommentsSeo {
-            title
+            ico
+            lbl
             description
             keywords
             og_image
@@ -599,13 +550,6 @@ export function useExportExcelSeo() {
           query($search: SeoSearch, $page: PageInput, , $sort: [SortInput!]) {
             findAllSeo(search: $search, page: $page, sort: $sort) {
               ${ seoQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_default",
-            ]) {
-              code
-              lbl
             }
           }
         `,
@@ -709,6 +653,9 @@ export async function findLastOrderBySeo(
         findLastOrderBySeo(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderBySeo;
@@ -730,16 +677,13 @@ export async function getFieldCommentsSeo(
       query {
         getFieldCommentsSeo {
           id,
-          title,
+          ico,
+          lbl,
           description,
           keywords,
           og_image,
           og_title,
           og_description,
-          is_locked,
-          is_locked_lbl,
-          is_default,
-          is_default_lbl,
           order_by,
           rem,
           create_usr_id,
@@ -769,7 +713,6 @@ export function getPagePathSeo() {
 /** 新增时的默认值 */
 export async function getDefaultInputSeo() {
   const defaultInput: SeoInput = {
-    is_locked: 0,
     order_by: 1,
   };
   return defaultInput;

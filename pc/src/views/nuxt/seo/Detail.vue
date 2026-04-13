@@ -77,13 +77,28 @@
         @submit.prevent
       >
         
-        <template v-if="(showBuildIn || builtInModel?.title == null)">
+        <template v-if="(showBuildIn || builtInModel?.ico == null)">
+          <el-form-item
+            label="图标"
+            prop="ico"
+          >
+            <UploadImage
+              v-model="dialogModel.ico"
+              db="nuxt_seo.ico"
+              :is-public="true"
+              :readonly="isLocked || isReadonly"
+              :page-inited="inited"
+            ></UploadImage>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             label="标题"
-            prop="title"
+            prop="lbl"
           >
             <CustomInput
-              v-model="dialogModel.title"
+              v-model="dialogModel.lbl"
               placeholder="请输入 标题"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
@@ -341,15 +356,15 @@ watchEffect(async () => {
   await nextTick();
   form_rules = {
     // 标题
-    title: [
+    lbl: [
       {
         required: true,
         message: "请输入 标题",
       },
       {
         type: "string",
-        max: 45,
-        message: "标题 长度不能超过 45",
+        max: 100,
+        message: "标题 长度不能超过 100",
       },
     ],
     // 描述
@@ -449,14 +464,10 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (dialogAction === "add") {
-      isLocked = false;
+    if (!permit("edit")) {
+      isLocked = true;
     } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
+      isLocked = toValue(arg?.isLocked) ?? isLocked;
     }
   });
   dialogAction = action || "add";
@@ -512,10 +523,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        is_default: undefined,
-        is_default_lbl: undefined,
-        is_locked: undefined,
-        is_locked_lbl: undefined,
         order_by: order_by + 1,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
@@ -543,27 +550,6 @@ async function showDialog(
   inited = true;
   return await dialogRes.dialogPrm;
 }
-
-watch(
-  () => [ inited, isLocked, is_deleted, dialogNotice ],
-  async () => {
-    if (!inited) {
-      return;
-    }
-    if (oldDialogNotice != null) {
-      return;
-    }
-    if (is_deleted) {
-      dialogNotice = "(已删除)";
-      return;
-    }
-    if (isLocked) {
-      dialogNotice = "(已锁定)";
-      return;
-    }
-    dialogNotice = "";
-  },
-);
 
 /** 键盘按 Insert */
 async function onInsert() {
@@ -634,6 +620,7 @@ async function onRefresh() {
     dialogModel = intoInputSeo({
       ...data,
     });
+    dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
   seo_model = data;
 }
@@ -725,20 +712,6 @@ async function nextId() {
   );
   return true;
 }
-
-watch(
-  () => [
-    dialogModel.is_default,
-  ],
-  () => {
-    if (!inited) {
-      return;
-    }
-    if (!dialogModel.is_default) {
-      dialogModel.is_default_lbl = "";
-    }
-  },
-);
 
 /** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
