@@ -108,6 +108,7 @@
               placeholder="请选择 任务"
               :readonly="isLocked || isReadonly"
               @change="onJobId"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -150,6 +151,7 @@
               v-model="dialogModel.order_by"
               placeholder="请输入 排序"
               :readonly="isLocked || isReadonly"
+              :is-hide-zero="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>

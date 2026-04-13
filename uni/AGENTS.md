@@ -14,7 +14,7 @@ src/pages/{table}/
 ├── Model.ts    # 类型定义
 ├── List.vue    # 列表页
 ├── DetailModal.vue # 详情弹窗
-├── Dialog.vue  # 新增/编辑页
+├── Detail.vue  # 新增/编辑页
 ├── Api.ts      # GraphQL 操作
 └── Api2.ts     # 自定义 GraphQL 接口
 ```

@@ -8,11 +8,11 @@ const defaultValidatorByType = (value: any, rule: TM.FORM_RULE_TYPE) => {
         if (rule.max == -1) return val >= rule.min
         return val >= rule.min && val <= rule.max
     }
-    if (typeof value == 'undefined' || typeof value == null) {
+    if (typeof value == 'undefined' || value == null) {
         return false
     }
     if (rule.type == 'string') {
-        let val = value.trim()
+        let val = String(value).trim()
         if (val === '') return false;
         let len = value.split('').length
         if (rule.max == -1) return len >= rule.min
@@ -36,7 +36,7 @@ const defaultValidatorByType = (value: any, rule: TM.FORM_RULE_TYPE) => {
     if (rule.type == 'phone') {
         let val = typeof value == 'string' ? value : value.toString()
         let reg = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/
-        return val.match(reg);
+        return !!val.match(reg);
     }
     if (rule.type == 'email' && typeof value == 'string') {
         let reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -63,9 +63,9 @@ export const defaultValidator = (value: any, rule: TM.FORM_RULE_TYPE, isForm?: b
         if (isNaN(value)) return false;
         // 如果设置了 min/max，则额外校验范围
         if (rule.min !== undefined && rule.min !== 1) { // min 默认是 1，如果不是默认值才校验
-            if (rule.max == -1) return value >= rule.min
-            return value >= rule.min && value <= rule.max
-        }
+        if (rule.max == -1) return value >= rule.min
+        return value >= rule.min && value <= rule.max
+    }
         return true; // 有值且不是 NaN，通过必填校验
     }
     

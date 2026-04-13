@@ -25,7 +25,7 @@ description: 微信支付流程开发. 实现支付功能时使用
 
 ### Step 1: 后端 - 统一下单接口
 
-> 参考 Skill: `graphql-api` 创建完整的 graphql → resolver → service 三层接口
+> 参考 Skill: `backend-api` 创建完整的 graphql → resolver → service 三层接口
 
 在业务模块的 `*_service.rs` 中调用 `transactions_jsapi`:
 

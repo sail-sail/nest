@@ -197,7 +197,7 @@ async fn get_where_query(
   }
   // 执行状态
   {
-    let exec_state: Option<Vec<CronJobLogExecState>> = match search {
+    let exec_state: Option<Vec<SmolStr>> = match search {
       Some(item) => item.exec_state.clone(),
       None => None,
     };
@@ -636,7 +636,7 @@ pub async fn find_all_cron_job_log(
         .iter()
         .find(|item| item.val == model.exec_state.as_str())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.exec_state.clone().into())
+        .unwrap_or_else(|| model.exec_state.clone())
     };
     
   }
@@ -1534,7 +1534,7 @@ pub async fn set_id_by_lbl_cron_job_log(
     });
     let val = dict_model.map(|item| SmolStr::new(&item.val));
     if let Some(val) = val {
-      input.exec_state = val.parse::<CronJobLogExecState>()?.into();
+      input.exec_state = val.into();
     }
   } else if
     (input.exec_state_lbl.is_none() || input.exec_state_lbl.as_ref().unwrap().is_empty())
@@ -1542,7 +1542,7 @@ pub async fn set_id_by_lbl_cron_job_log(
   {
     let exec_state_dict = &dict_vec[0];
     let dict_model = exec_state_dict.iter().find(|item| {
-      item.val == input.exec_state.unwrap_or_default().to_string()
+      item.val == input.exec_state.clone().unwrap_or_default()
     });
     let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.exec_state_lbl = lbl;
@@ -2135,7 +2135,7 @@ pub async fn update_by_id_cron_job_log(
     args.push(cron_job_id.into());
   }
   // 执行状态
-  if let Some(exec_state) = input.exec_state {
+  if let Some(exec_state) = input.exec_state.clone() {
     field_num += 1;
     sql_fields += "exec_state=?,";
     args.push(exec_state.into());

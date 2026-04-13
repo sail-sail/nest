@@ -1262,6 +1262,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     let <#=column_name#>_<#=cascade_field#>: Option<<#=_data_type#>> = row.try_get("<#=column_name#>_<#=cascade_field#>")?;
     let <#=column_name#>_<#=cascade_field#> = <#=column_name#>_<#=cascade_field#>.unwrap_or_default();<#
+      } else if (data_type === 'json') {
+    #>
+    let <#=column_name#>_<#=cascade_field#>: Option<sqlx::types::Json<serde_json::Value>> = row.try_get("<#=column_name#>_<#=cascade_field#>")?;
+    let <#=column_name#>_<#=cascade_field#> = <#=column_name#>_<#=cascade_field#>.map(|v| SmolStr::new(v.to_string()));
+      }
+    #><#
       } else {
     #>
     let <#=column_name#>_<#=cascade_field#>: Option<&str> = row.try_get("<#=column_name#>_<#=cascade_field#>")?;
@@ -1404,7 +1410,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         } else {
     #>
     // <#=column_comment#><#
-      if (_data_type === "SmolStr") {
+      if (data_type === "json") {
+    #>
+    let <#=column_name_rust#>: Option<sqlx::types::Json<serde_json::Value>> = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#> = <#=column_name_rust#>.map(|v| SmolStr::new(v.to_string()));<#
+      } else if (_data_type === "SmolStr") {
     #>
     let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
     let <#=column_name_rust#> = SmolStr::new(<#=column_name_rust#>);<#

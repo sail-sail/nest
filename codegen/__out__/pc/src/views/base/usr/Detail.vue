@@ -152,6 +152,7 @@
               placeholder="请选择 所属角色"
               multiple
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -168,6 +169,7 @@
               placeholder="请选择 所属部门"
               multiple
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomTreeSelect>
           </el-form-item>
         </template>
@@ -191,6 +193,7 @@
               placeholder="请选择 所属组织"
               multiple
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -215,6 +218,7 @@
               placeholder="请选择 默认组织"
               :readonly="isLocked || isReadonly"
               @change="old_default_org_id = dialogModel.default_org_id;"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>

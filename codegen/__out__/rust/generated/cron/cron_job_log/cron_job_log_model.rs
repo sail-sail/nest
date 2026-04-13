@@ -65,7 +65,7 @@ pub struct CronJobLogModel {
   pub cron_job_id_lbl: SmolStr,
   /// 执行状态
   #[graphql(name = "exec_state")]
-  pub exec_state: CronJobLogExecState,
+  pub exec_state: SmolStr,
   /// 执行状态
   #[graphql(name = "exec_state_lbl")]
   pub exec_state_lbl: SmolStr,
@@ -124,9 +124,9 @@ impl FromRow<'_, MySqlRow> for CronJobLogModel {
     let cron_job_id_lbl: Option<&str> = row.try_get("cron_job_id_lbl")?;
     let cron_job_id_lbl = SmolStr::new(cron_job_id_lbl.unwrap_or_default());
     // 执行状态
-    let exec_state_lbl: &str = row.try_get("exec_state")?;
-    let exec_state: CronJobLogExecState = exec_state_lbl.try_into()?;
-    let exec_state_lbl = SmolStr::new(exec_state_lbl);
+    let exec_state: &str = row.try_get("exec_state")?;
+    let exec_state = SmolStr::new(exec_state);
+    let exec_state_lbl = exec_state.clone();
     // 执行结果
     let exec_result: &str = row.try_get("exec_result")?;
     let exec_result = SmolStr::new(exec_result);
@@ -266,7 +266,7 @@ pub struct CronJobLogSearch {
   pub cron_job_id_lbl_like: Option<SmolStr>,
   /// 执行状态
   #[graphql(name = "exec_state")]
-  pub exec_state: Option<Vec<CronJobLogExecState>>,
+  pub exec_state: Option<Vec<SmolStr>>,
   /// 执行结果
   #[graphql(skip)]
   pub exec_result: Option<SmolStr>,
@@ -431,7 +431,7 @@ pub struct CronJobLogInput {
   pub cron_job_id_lbl: Option<SmolStr>,
   /// 执行状态
   #[graphql(name = "exec_state")]
-  pub exec_state: Option<CronJobLogExecState>,
+  pub exec_state: Option<SmolStr>,
   /// 执行状态
   #[graphql(name = "exec_state_lbl")]
   pub exec_state_lbl: Option<SmolStr>,
@@ -625,143 +625,6 @@ impl From<CronJobLogInput> for CronJobLogSearch {
 }
 
 impl_id!(CronJobLogId);
-
-/// 定时任务日志执行状态
-#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
-pub enum CronJobLogExecState {
-  /// 执行中
-  #[default]
-  #[graphql(name="running")]
-  #[serde(rename = "running")]
-  Running,
-  /// 成功
-  #[graphql(name="success")]
-  #[serde(rename = "success")]
-  Success,
-  /// 失败
-  #[graphql(name="fail")]
-  #[serde(rename = "fail")]
-  Fail,
-}
-
-impl fmt::Display for CronJobLogExecState {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      Self::Running => write!(f, "running"),
-      Self::Success => write!(f, "success"),
-      Self::Fail => write!(f, "fail"),
-    }
-  }
-}
-
-impl From<CronJobLogExecState> for SmolStr {
-  fn from(value: CronJobLogExecState) -> Self {
-    match value {
-      CronJobLogExecState::Running => "running".into(),
-      CronJobLogExecState::Success => "success".into(),
-      CronJobLogExecState::Fail => "fail".into(),
-    }
-  }
-}
-
-impl From<CronJobLogExecState> for String {
-  fn from(value: CronJobLogExecState) -> Self {
-    match value {
-      CronJobLogExecState::Running => "running".into(),
-      CronJobLogExecState::Success => "success".into(),
-      CronJobLogExecState::Fail => "fail".into(),
-    }
-  }
-}
-
-impl From<CronJobLogExecState> for ArgType {
-  fn from(value: CronJobLogExecState) -> Self {
-    ArgType::SmolStr(value.into())
-  }
-}
-
-impl FromStr for CronJobLogExecState {
-  type Err = color_eyre::eyre::Error;
-  
-  fn from_str(s: &str) -> Result<Self, Self::Err> {
-    match s {
-      "running" => Ok(Self::Running),
-      "success" => Ok(Self::Success),
-      "fail" => Ok(Self::Fail),
-      _ => Err(eyre!("{s} 无法转换到 执行状态")),
-    }
-  }
-}
-
-impl TryFrom<&str> for CronJobLogExecState {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: &str) -> Result<Self, sqlx::Error> {
-    match s {
-      "running" => Ok(Self::Running),
-      "success" => Ok(Self::Success),
-      "fail" => Ok(Self::Fail),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "exec_state".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 执行状态".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for CronJobLogExecState {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
-    match s.as_str() {
-      "running" => Ok(Self::Running),
-      "success" => Ok(Self::Success),
-      "fail" => Ok(Self::Fail),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "exec_state".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 执行状态".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl CronJobLogExecState {
-  pub fn as_str(&self) -> &str {
-    match self {
-      Self::Running => "running",
-      Self::Success => "success",
-      Self::Fail => "fail",
-    }
-  }
-}
-
-impl TryFrom<String> for CronJobLogExecState {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: String) -> Result<Self, sqlx::Error> {
-    match s.as_str() {
-      "running" => Ok(Self::Running),
-      "success" => Ok(Self::Success),
-      "fail" => Ok(Self::Fail),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "exec_state".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 执行状态".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
 
 /// 定时任务日志 检测字段是否允许前端排序
 pub fn check_sort_cron_job_log(

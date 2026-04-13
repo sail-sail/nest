@@ -690,6 +690,9 @@ export async function findLastOrderByDict(
         findLastOrderByDict(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByDict;

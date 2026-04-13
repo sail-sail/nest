@@ -759,6 +759,9 @@ export async function findLastOrderByCronJob(
         findLastOrderByCronJob(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByCronJob;

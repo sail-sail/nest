@@ -94,6 +94,7 @@
               })"
               placeholder="请选择 语言"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -108,6 +109,7 @@
               :method="getTreeMenu"
               placeholder="请选择 菜单"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomTreeSelect>
           </el-form-item>
         </template>

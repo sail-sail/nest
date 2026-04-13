@@ -158,7 +158,7 @@ watch(() => tmFormModelValue.value?.[props.name], (val: any, oldVal: any) => {
     tid = setTimeout(() => {
         _validFun(val)
     }, 200);
-}, { deep: true })
+}, {deep: true})
 
 watch(tmFormVaildType, (val: string) => {
     if (val == 'reset' || val == '') {
@@ -167,7 +167,7 @@ watch(tmFormVaildType, (val: string) => {
     }
     if (val == 'valid') {
         let value = tmFormModelValue.value[props.name]
-        _validFun(value)
+            _validFun(value)
         // if (typeof value !== 'undefined') {
         //     _validFun(value)
         // }
