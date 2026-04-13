@@ -732,6 +732,9 @@ export async function findLastOrderByRole(
         findLastOrderByRole(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByRole;
