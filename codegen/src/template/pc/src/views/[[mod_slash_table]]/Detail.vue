@@ -692,6 +692,11 @@ for (let i = 0; i < columns.length; i++) {
             #>
             <CustomTreeSelect
               v-model="dialogModel.<#=column_name#>"<#
+              if (modelLabel) {
+              #>
+              v-model:model-label="dialogModel.<#=modelLabel#>"<#
+              }
+              #><#
               if (foreignKey.multiple) {
               #>
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
@@ -1711,7 +1716,12 @@ for (let i = 0; i < columns.length; i++) {
                       :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
                       }
                       #>
-                      v-model="row.<#=column_name#>"
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="dialogModel.<#=modelLabel#>"<#
+                      }
+                      #>
                       :method="getTree<#=Foreign_Table_Up#>"<#
                       if (isUseI18n) {
                       #><#
@@ -2646,7 +2656,12 @@ for (let i = 0; i < columns.length; i++) {
                     :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? [ ]"<#
                     }
                     #>
-                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"
+                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
+                    if (modelLabel) {
+                    #>
+                    v-model:model-label="dialogModel.<#=modelLabel#>"<#
+                    }
+                    #>
                     :method="getTree<#=Foreign_Table_Up#>"<#
                     if (isUseI18n) {
                     #>
@@ -3337,7 +3352,12 @@ for (let i = 0; i < columns.length; i++) {
                       :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
                       }
                       #>
-                      v-model="row.<#=column_name#>"
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="dialogModel.<#=modelLabel#>"<#
+                      }
+                      #>
                       :method="getTree<#=Foreign_Table_Up#>"<#
                       if (isUseI18n) {
                       #>
