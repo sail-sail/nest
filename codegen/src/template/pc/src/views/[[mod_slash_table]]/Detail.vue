@@ -5837,7 +5837,42 @@ async function showDialog(
     #><#
     }
     #>
-  };
+  };<#
+  if (hasIsFluentEditor) {
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "is_locked") continue;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "version") continue;
+  if (column_name === "tenant_id") continue;
+  if (column.noDetail) continue;
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.showType === "dialog") {
+    continue;
+  }
+  if (
+    [
+      "is_default",
+    ].includes(column_name)
+  ) {
+    continue;
+  }
+  if (!column.isFluentEditor) {
+    continue;
+  }
+  #>
+  if (<#=column_name#>FluentEditor) {
+    <#=column_name#>FluentEditor.root.innerHTML = "";
+  }<#
+  }
+  #><#
+  }
+  #>
   <#=table#>_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
