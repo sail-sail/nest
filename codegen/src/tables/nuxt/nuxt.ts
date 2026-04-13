@@ -8,10 +8,14 @@ export default defineConfig({
     },
     columns: [
       {
-        COLUMN_NAME: "title",
-        width: 180,
-        align: "left",
-        require: true,
+        COLUMN_NAME: "ico",
+        fixed: false,
+        isImg: true,
+        isPublicAtt: true,
+      },
+      {
+        COLUMN_NAME: "lbl",
+        fixed: false,
       },
       {
         COLUMN_NAME: "description",
@@ -38,12 +42,6 @@ export default defineConfig({
         COLUMN_NAME: "og_description",
         width: 280,
         align: "left",
-      },
-      {
-        COLUMN_NAME: "is_locked",
-      },
-      {
-        COLUMN_NAME: "is_default",
       },
       {
         COLUMN_NAME: "order_by",
