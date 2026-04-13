@@ -653,6 +653,9 @@ export async function findLastOrderBySeo(
         findLastOrderBySeo(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderBySeo;
