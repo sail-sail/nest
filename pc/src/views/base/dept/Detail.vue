@@ -87,6 +87,7 @@
               :method="getTreeDept"
               placeholder="请选择 父部门"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomTreeSelect>
           </el-form-item>
         </template>
@@ -123,6 +124,7 @@
               placeholder="请选择 部门负责人"
               multiple
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -159,6 +161,7 @@
               })"
               placeholder="请选择 组织"
               :readonly="isLocked || isReadonly"
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>

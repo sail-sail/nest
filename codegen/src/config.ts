@@ -16,7 +16,7 @@ export default {
   ],
 };
 
-export interface TableCloumn {
+export interface TableColumn {
   
   /**
    * 是否忽略生成代码
@@ -24,7 +24,9 @@ export interface TableCloumn {
   ignoreCodegen?: boolean;
   
   /**
-   * 是否在pc前端隐藏此字段
+   * 是否跳过前端(pc和uni)生成
+   * 注: 历史命名, 实际含义: 仅生成后端代码, 不生成 pc 和 uni 前端
+   * 若在此基础上还想生成Api.ts接口相关字段, 则配置 onlyCodegenDenoButApi = true
    */
   onlyCodegenDeno?: boolean;
   
@@ -664,6 +666,12 @@ export interface TableCloumn {
   modelLabel?: string;
   
   /**
+   * 如果 isCascadeUpdateModelLabel 为 true, 则当这个字段作为外键关联的 lbl 字段时, 级联更新相关的字段, 默认为 false
+   * 注: 相关实现在 [[table]]_dao.rs 中搜索 cascadeUpdateFields 或 cascadeUpdateFieldTables 关键字
+   */
+  isCascadeUpdateModelLabel?: boolean;
+  
+  /**
    * 此字段是否要做字段权限控制, 默认为false
    */
   fieldPermit?: boolean;
@@ -703,8 +711,8 @@ export interface TableCloumn {
  * min_items=N 指定列表的长度不能小于N
  * max_length=N 字符串的长度不能大于N
  * min_length=N 字符串的长度不能小于N
- * chars_max_length=N 字符串中 unicode 字符的的数量不能小于N
- * chars_min_length=N 字符串中 unicode 字符的的数量不能大于N
+ * chars_max_length=N 字符串中 unicode 字符的的数量不能大于N
+ * chars_min_length=N 字符串中 unicode 字符的的数量不能小于N
  * email 有效的 email
  * url 有效的 url
  * ip 有效的 ip 地址
@@ -738,12 +746,12 @@ export type Validator = {
   min_items?: number;
   
   /**
-   * chars_max_length=N 字符串中 unicode 字符的的数量不能小于N
+   * chars_max_length=N 字符串中 unicode 字符的的数量不能大于N
    */
   chars_max_length?: number;
   
   /**
-   * chars_min_length=N 字符串中 unicode 字符的的数量不能大于N
+   * chars_min_length=N 字符串中 unicode 字符的的数量不能小于N
    */
   chars_min_length?: number;
   
@@ -813,6 +821,8 @@ export interface TablesConfigItem {
     
     /**
      * 是否只创建后端, 默认为false
+     * 注: 历史命名, 实际含义: 仅生成后端代码, 不生成 pc 和 uni 前端
+     * 若在此基础上还想生成Api.ts接口相关字段, 则配置 onlyCodegenDenoButApi = true
      */
     onlyCodegenDeno?: boolean;
     
@@ -1025,7 +1035,7 @@ export interface TablesConfigItem {
         table: string;
         table_name: string;
       };
-      records: TableCloumn[];
+      records: TableColumn[];
     };
     
     /**
@@ -1089,12 +1099,18 @@ export interface TablesConfigItem {
     
     /**
      * 级联更新字段, 当外键关联的字段变化时, 自动更新相关的字段
+     * 如果某个外键关联的字段有配置 modelLabel 并且配置 isCascadeUpdateModelLabel 为 true
+     * 则自动配置 cascadeUpdateFields, 监听这个字段的变化, 并且更新其它表相关的 modelLabel 字段
+     * 
+     * 注: 相关实现在 [[table]]_dao.rs 中搜索 cascadeUpdateFields 或 cascadeUpdateFieldTables
+     * src/lib/information_schema.ts 中搜索 isCascadeUpdateModelLabel
      */
     cascadeUpdateFields?: {
       /**
        * 监听变化的字段名, 一般为 lbl
        */
       watchColumn: string;
+      
       /**
        * 模块
        */
@@ -1123,7 +1139,7 @@ export interface TablesConfigItem {
     is_with_auth_optional?: boolean;
     
   },
-  columns: TableCloumn[];
+  columns: TableColumn[];
   records?: any[];
 }
 

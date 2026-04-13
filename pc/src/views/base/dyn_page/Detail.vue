@@ -146,6 +146,7 @@
                 isLocked || isReadonly
                   || menu_and_roles?.menu_model?.is_dyn_page == 0
               "
+              :page-inited="inited"
             ></CustomTreeSelect>
           </el-form-item>
         </template>
@@ -172,6 +173,7 @@
                 isLocked || isReadonly
                   || menu_and_roles?.menu_model?.is_dyn_page == 0
               "
+              :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -412,6 +414,7 @@
                       code="dyn_page_field_align"
                       placeholder=" "
                       :readonly="isLocked || isReadonly"
+                      :page-inited="inited"
                     ></DictSelect>
                   </template>
                 </template>

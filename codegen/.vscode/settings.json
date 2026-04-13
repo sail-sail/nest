@@ -19,6 +19,7 @@
     "**/__unconfig_vite.config.ts": true,
     "**/.npmrc": true,
     "cache": true,
+    "**/.oxlintrc.json": true,
     "**/.husky": true
   },
   "search.exclude": {
@@ -41,6 +42,7 @@
     "**/__unconfig_vite.config.ts": true,
     "**/.npmrc": true,
     "cache": true,
+    "**/.oxlintrc.json": true,
     "**/.husky": true
   },
   "files.watcherExclude": {
@@ -56,6 +58,7 @@
     ".temp/**": true,
     ".tmp/**": true,
     "**/*.log": true,
+    "**/.oxlintrc.json": true,
     "**/.pnpm-store/**": true
   },
   "diffEditor.useInlineViewWhenSpaceIsLimited": false,

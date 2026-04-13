@@ -124,14 +124,18 @@ ec_order: {
 
 - date/datetime类型的字段: 默认已经是 width: 160, align: "center", 无需配置 width 和 align
 - decimal类型的字段: 默认已经是 width: 100, align: "right", require: true,
-- 配置了 `modelLabel` 冗余字段的, 就不需要再配置 `modelLabel` 这个字段了, 比如:
+### modelLabel 冗余标签字段
+
+- 如果建表 SQL 中某个外键字段 `xxx_id` 同时有对应的 `xxx_id_lbl` 冗余字段, 则**必须**在配置中设置 `modelLabel: "xxx_id_lbl"`, 否则 codegen 会报错: `字段 xxx_id 的 modelLabel 未设置, 但却存在 xxx_id_lbl 字段`
+- 配置了 `modelLabel` 后, `xxx_id_lbl` 字段就不需要再单独出现在字段配置里了
+
 ```ts
 {
   COLUMN_NAME: "product_sku_id",
   modelLabel: "product_sku_id_lbl",
 },
+// product_sku_id_lbl 无需再出现在 columns 中
 ```
-中: `product_sku_id_lbl` 就不需要再出现在字段配置里了
 
 ## 审计字段
 

@@ -64,6 +64,7 @@
               :method="getTreeMenu"
               placeholder="请选择 菜单"
               :readonly="true"
+              :page-inited="inited"
             ></CustomTreeSelect>
           </el-form-item>
         </template>

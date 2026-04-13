@@ -757,6 +757,9 @@ export async function findLastOrderByWxwApp(
         findLastOrderByWxwApp(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByWxwApp;

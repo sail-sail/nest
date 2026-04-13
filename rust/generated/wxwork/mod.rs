@@ -6,7 +6,7 @@ pub mod wxw_usr;
 use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
-pub struct WxworkQuery(
+pub struct WxworkGenQuery(
   self::wxw_app::wxw_app_graphql::WxwAppGenQuery,
   self::wxw_app_token::wxw_app_token_graphql::WxwAppTokenGenQuery,
   self::wxw_msg::wxw_msg_graphql::WxwMsgGenQuery,
@@ -14,7 +14,7 @@ pub struct WxworkQuery(
 );
 
 #[derive(MergedObject, Default)]
-pub struct WxworkMutation(
+pub struct WxworkGenMutation(
   self::wxw_app::wxw_app_graphql::WxwAppGenMutation,
   self::wxw_app_token::wxw_app_token_graphql::WxwAppTokenGenMutation,
   self::wxw_msg::wxw_msg_graphql::WxwMsgGenMutation,
