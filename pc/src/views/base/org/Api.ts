@@ -688,6 +688,9 @@ export async function findLastOrderByOrg(
         findLastOrderByOrg(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByOrg;
