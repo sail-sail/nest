@@ -692,6 +692,11 @@ for (let i = 0; i < columns.length; i++) {
             #>
             <CustomTreeSelect
               v-model="dialogModel.<#=column_name#>"<#
+              if (modelLabel) {
+              #>
+              v-model:model-label="dialogModel.<#=modelLabel#>"<#
+              }
+              #><#
               if (foreignKey.multiple) {
               #>
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
@@ -1711,7 +1716,12 @@ for (let i = 0; i < columns.length; i++) {
                       :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
                       }
                       #>
-                      v-model="row.<#=column_name#>"
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="dialogModel.<#=modelLabel#>"<#
+                      }
+                      #>
                       :method="getTree<#=Foreign_Table_Up#>"<#
                       if (isUseI18n) {
                       #><#
@@ -2646,7 +2656,12 @@ for (let i = 0; i < columns.length; i++) {
                     :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? [ ]"<#
                     }
                     #>
-                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"
+                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
+                    if (modelLabel) {
+                    #>
+                    v-model:model-label="dialogModel.<#=modelLabel#>"<#
+                    }
+                    #>
                     :method="getTree<#=Foreign_Table_Up#>"<#
                     if (isUseI18n) {
                     #>
@@ -3337,7 +3352,12 @@ for (let i = 0; i < columns.length; i++) {
                       :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
                       }
                       #>
-                      v-model="row.<#=column_name#>"
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="dialogModel.<#=modelLabel#>"<#
+                      }
+                      #>
                       :method="getTree<#=Foreign_Table_Up#>"<#
                       if (isUseI18n) {
                       #>
@@ -5817,7 +5837,42 @@ async function showDialog(
     #><#
     }
     #>
-  };
+  };<#
+  if (hasIsFluentEditor) {
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "is_locked") continue;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "version") continue;
+  if (column_name === "tenant_id") continue;
+  if (column.noDetail) continue;
+  const foreignKey = column.foreignKey;
+  if (foreignKey && foreignKey.showType === "dialog") {
+    continue;
+  }
+  if (
+    [
+      "is_default",
+    ].includes(column_name)
+  ) {
+    continue;
+  }
+  if (!column.isFluentEditor) {
+    continue;
+  }
+  #>
+  if (<#=column_name#>FluentEditor) {
+    <#=column_name#>FluentEditor.root.innerHTML = "";
+  }<#
+  }
+  #><#
+  }
+  #>
   <#=table#>_model = undefined;
   if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
