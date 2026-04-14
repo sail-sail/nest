@@ -773,6 +773,9 @@ export async function findLastOrderByDynPageField(
         findLastOrderByDynPageField(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByDynPageField;

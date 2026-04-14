@@ -351,14 +351,17 @@ export async function gqlQuery(
       }
     }
   }
-  let errMsg = "";
+  const errMsgArr: string[] = [ ];
   if (errors && errors.length > 0) {
     for (let i = 0; i < errors.length; i++) {
       const item = errors[i];
-      errMsg += item.message + "\n";
+      if (!item.message || errMsgArr.includes(item.message)) {
+        continue;
+      }
+      errMsgArr.push(item.message);
     }
   }
-  errMsg = errMsg.trim();
+  const errMsg = errMsgArr.join("\n");
   if (errMsg) {
     if (!config || config.showErrMsg !== false) {
       uni.showToast({

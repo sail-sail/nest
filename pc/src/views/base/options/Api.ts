@@ -695,6 +695,9 @@ export async function findLastOrderByOptions(
         findLastOrderByOptions(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByOptions;

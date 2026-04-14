@@ -2202,16 +2202,30 @@ pub async fn update_by_id_seo(
   
   // 图标
   if let Some(ico) = input.ico.as_ref() && ico != &old_model.ico {
-    crate::common::oss::oss_dao::delete_object(
+    let res = crate::common::oss::oss_dao::delete_object(
       old_model.ico.as_str(),
-    ).await?;
+    ).await;
+    if let Err(err) = res {
+      info!(
+        "{} {table}.{method}: 删除对象失败, ico: {}, err: {err}",
+        get_req_id(),
+        old_model.ico,
+      );
+    }
   }
   
   // 分享图片
   if let Some(og_image) = input.og_image.as_ref() && og_image != &old_model.og_image {
-    crate::common::oss::oss_dao::delete_object(
+    let res = crate::common::oss::oss_dao::delete_object(
       old_model.og_image.as_str(),
-    ).await?;
+    ).await;
+    if let Err(err) = res {
+      info!(
+        "{} {table}.{method}: 删除对象失败, og_image: {}, err: {err}",
+        get_req_id(),
+        old_model.og_image,
+      );
+    }
   }
   
   Ok(id)

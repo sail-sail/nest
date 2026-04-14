@@ -376,16 +376,17 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       return data;
     }
   }
-  let errMsg = "";
+  const errMsgArr: string[] = [ ];
   if (errors && errors.length > 0) {
     for (let i = 0; i < errors.length; i++) {
       const item = errors[i];
-      errMsg += item.message;
-      if (i !== errors.length - 1) {
-        errMsg += "\n";
+      if (!item.message || errMsgArr.includes(item.message)) {
+        continue;
       }
+      errMsgArr.push(item.message);
     }
   }
+  const errMsg = errMsgArr.join("\n");
   if (errMsg) {
     if (!opt || opt.showErrMsg !== false) {
       ElMessage({
