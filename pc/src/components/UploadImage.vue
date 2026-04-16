@@ -178,7 +178,6 @@
   <div
     v-else-if="props.pageInited && props.readonly && thumbList.length < props.maxSize"
     un-relative
-    un-w="full"
     class="upload_image_item"
     :style="{
       height: `${ props.itemHeight }px`,
@@ -186,8 +185,8 @@
   >
     <div
       v-if="shouldShowReadonlyPlaceholder"
-      un-m="l-.75 t-.3"
-      un-h="[calc(100%-2px)]"
+      un-m="l-.75"
+      un-h="full"
       un-aspect="square"
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
@@ -201,9 +200,9 @@
       <span>{{ props.readonlyPlaceholder ?? "" }}</span>
     </div>
     <div
-      v-else
-      un-m="l-.75 t-.3"
-      un-h="[calc(100%-2px)]"
+      v-else-if="thumbList.length === 0"
+      un-m="l-.75"
+      un-h="full"
       un-aspect="square"
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
