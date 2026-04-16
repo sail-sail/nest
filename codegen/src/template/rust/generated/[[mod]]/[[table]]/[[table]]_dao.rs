@@ -4781,65 +4781,64 @@ async fn _creates(
       if (!isIcon) continue;
     #>
     // <#=column_comment#>
-    if (input.<#=column_name#>.is_none() || input.<#=column_name#>.as_ref().unwrap().is_empty()) &&
-      (input.<#=column_name#>_lbl.is_some() && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty())
-    {
-      let <#=column_name#>_lbl = input.<#=column_name#>_lbl.as_ref().unwrap();
-      let mut hash = sha2::Sha256::new();
-      hash.update(<#=column_name#>_lbl.clone().as_bytes());
-      let hash = hash.finalize();
-      let bytes = hash.as_slice();
-      let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
-      let <#=column_name#> = <#=column_name#>.get(0..22).unwrap().to_string();
-      let stat = head_object(&<#=column_name#>).await?;
-      if stat.is_none() {
-        let content_type = <#=column_name#>_lbl
-          .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(<#=column_name#>_lbl.len()))
-          .unwrap_or_default();
-        if !content_type.starts_with("image/") {
-          error!(
-            "{req_id} <#=column_name#>_lbl is not image: {<#=column_name#>_lbl}",
-            req_id = get_req_id(),
-          );
-          return Err(eyre!("<#=column_name#>_lbl is not image"));
-        }<#
-        if (hasTenant_id) {
-        #>
-        let tenant_id = {
-          if input.tenant_id.is_some() {
-            input.tenant_id
-          } else {
-            get_auth_tenant_id()
-          }
-        };<#
-        }
-        #>
-        put_object(
-          &<#=column_name#>,
-          <#=column_name#>_lbl.clone().as_bytes(),
-          content_type,
-          &<#=column_name#>,<#
-          if (column.isPublicAtt) {
-          #>
-          Some("1"),<#
-          } else {
-          #>
-          Some("0"),<#
-          }
-          #><#
+    if input.<#=column_name#>.is_none() || input.<#=column_name#>.as_ref().unwrap().is_empty() {
+      if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|<#=column_name#>_lbl| !<#=column_name#>_lbl.is_empty()) {
+        let mut hash = sha2::Sha256::new();
+        hash.update(<#=column_name#>_lbl.clone().as_bytes());
+        let hash = hash.finalize();
+        let bytes = hash.as_slice();
+        let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
+        let <#=column_name#> = SmolStr::from(<#=column_name#>.get(0..22).unwrap_or_default());
+        let stat = head_object(&<#=column_name#>).await?;
+        if stat.is_none() {
+          let content_type = <#=column_name#>_lbl
+            .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(<#=column_name#>_lbl.len()))
+            .unwrap_or_default();
+          if !content_type.starts_with("image/") {
+            error!(
+              "{req_id} <#=column_name#>_lbl is not image: {<#=column_name#>_lbl}",
+              req_id = get_req_id(),
+            );
+            return Err(eyre!("<#=column_name#>_lbl is not image"));
+          }<#
           if (hasTenant_id) {
           #>
-          tenant_id,<#
-          } else {
-          #>
-          None,<#
+          let tenant_id = {
+            if input.tenant_id.is_some() {
+              input.tenant_id
+            } else {
+              get_auth_tenant_id()
+            }
+          };<#
           }
           #>
-          Some("<#=table_name#>.<#=column_name#>"),
-          Some(&<#=column_name#>),
-        ).await?;
+          put_object(
+            &<#=column_name#>,
+            <#=column_name#>_lbl.clone().as_bytes(),
+            content_type,
+            &<#=column_name#>,<#
+            if (column.isPublicAtt) {
+            #>
+            Some("1"),<#
+            } else {
+            #>
+            Some("0"),<#
+            }
+            #><#
+            if (hasTenant_id) {
+            #>
+            tenant_id,<#
+            } else {
+            #>
+            None,<#
+            }
+            #>
+            Some("<#=table_name#>.<#=column_name#>"),
+            Some(&<#=column_name#>),
+          ).await?;
+        }
+        input.<#=column_name#> = Some(<#=column_name#>);
       }
-      input.<#=column_name#> = Some(<#=column_name#>);
     }<#
     }
     #>
@@ -6436,65 +6435,64 @@ pub async fn update_by_id_<#=table#>(
     if (!isIcon) continue;
   #>
   // <#=column_comment#>
-  if (input.<#=column_name#>.is_none() || input.<#=column_name#>.as_ref().unwrap().is_empty()) &&
-    (input.<#=column_name#>_lbl.is_some() && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty())
-  {
-    let <#=column_name#>_lbl = input.<#=column_name#>_lbl.as_ref().unwrap();
-    let mut hash = sha2::Sha256::new();
-    hash.update(<#=column_name#>_lbl.clone().as_bytes());
-    let hash = hash.finalize();
-    let bytes = hash.as_slice();
-    let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
-    let <#=column_name#> = <#=column_name#>.get(0..22).unwrap().to_string();
-    let stat = head_object(&<#=column_name#>).await?;
-    if stat.is_none() {
-      let content_type = <#=column_name#>_lbl
-        .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
-        .unwrap_or_default();
-      if !content_type.starts_with("image/") {
-        error!(
-          "{req_id} <#=column_name#>_lbl is not image: {<#=column_name#>_lbl}",
-          req_id = get_req_id(),
-        );
-        return Err(eyre!("<#=column_name#>_lbl is not image"));
-      }<#
-      if (hasTenant_id) {
-      #>
-      let tenant_id = {
-        if input.tenant_id.is_some() {
-          input.tenant_id
-        } else {
-          get_auth_tenant_id()
-        }
-      };<#
-      }
-      #>
-      put_object(
-        &<#=column_name#>,
-        <#=column_name#>_lbl.clone().as_bytes(),
-        content_type,
-        &<#=column_name#>,<#
-        if (column.isPublicAtt) {
-        #>
-        Some("1"),<#
-        } else {
-        #>
-        Some("0"),<#
-        }
-        #><#
+  if input.<#=column_name#>.is_none() || input.<#=column_name#>.as_ref().unwrap().is_empty() {
+    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|<#=column_name#>_lbl| !<#=column_name#>_lbl.is_empty()) {
+      let mut hash = sha2::Sha256::new();
+      hash.update(<#=column_name#>_lbl.clone().as_bytes());
+      let hash = hash.finalize();
+      let bytes = hash.as_slice();
+      let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
+      let <#=column_name#> = SmolStr::from(<#=column_name#>.get(0..22).unwrap_or_default());
+      let stat = head_object(&<#=column_name#>).await?;
+      if stat.is_none() {
+        let content_type = <#=column_name#>_lbl
+          .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
+          .unwrap_or_default();
+        if !content_type.starts_with("image/") {
+          error!(
+            "{req_id} <#=column_name#>_lbl is not image: {<#=column_name#>_lbl}",
+            req_id = get_req_id(),
+          );
+          return Err(eyre!("<#=column_name#>_lbl is not image"));
+        }<#
         if (hasTenant_id) {
         #>
-        tenant_id,<#
-        } else {
-        #>
-        None,<#
+        let tenant_id = {
+          if input.tenant_id.is_some() {
+            input.tenant_id
+          } else {
+            get_auth_tenant_id()
+          }
+        };<#
         }
         #>
-        Some("<#=table_name#>.<#=column_name#>"),
-        Some(&<#=column_name#>),
-      ).await?;
+        put_object(
+          &<#=column_name#>,
+          <#=column_name#>_lbl.clone().as_bytes(),
+          content_type,
+          &<#=column_name#>,<#
+          if (column.isPublicAtt) {
+          #>
+          Some("1"),<#
+          } else {
+          #>
+          Some("0"),<#
+          }
+          #><#
+          if (hasTenant_id) {
+          #>
+          tenant_id,<#
+          } else {
+          #>
+          None,<#
+          }
+          #>
+          Some("<#=table_name#>.<#=column_name#>"),
+          Some(&<#=column_name#>),
+        ).await?;
+      }
+      input.<#=column_name#> = Some(<#=column_name#>);
     }
-    input.<#=column_name#> = Some(<#=column_name#>);
   }<#
   }
   #>

@@ -130,11 +130,10 @@ pub async fn remove_socket_connection(
   if left_len == 0 {
     let mut socket_sink_map = socket_sink_map().lock().await;
     let current_sockets = socket_sink_map.get(client_id).cloned();
-    if let Some(current_sockets) = current_sockets {
-      if Arc::ptr_eq(&current_sockets, &client_sockets) {
+    if let Some(current_sockets) = current_sockets
+      && Arc::ptr_eq(&current_sockets, &client_sockets) {
         socket_sink_map.remove(client_id);
       }
-    }
   }
   if let Some(mut removed_socket) = removed_socket {
     let err = removed_socket.close().await;
