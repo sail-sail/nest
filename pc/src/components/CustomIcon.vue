@@ -32,7 +32,7 @@
     @keydown.enter="onIcon"
   >
     <div
-      v-if="modelLbl && modelLbl.startsWith('data:image/svg+xml;')"
+      v-if="modelLbl && useMaskMode"
       :style="{
         'mask-image': `url('${ modelLbl }')`,
         '-webkit-mask-image': `url('${ modelLbl }')`,
@@ -124,6 +124,12 @@ import {
   useFormItem,
 } from "element-plus";
 
+import {
+  decodeSvgDataUri,
+  isSvgDataUri,
+  shouldMaskSvg,
+} from "@/utils/svg_icon.ts";
+
 import CustomIconSelect from "./CustomIconSelect.vue";
 
 const emit = defineEmits<{
@@ -178,17 +184,24 @@ watch(
 const showViewer = ref(false);
 
 const isSvg = computed(() => {
-  return modelLbl.value?.startsWith("data:image/svg+xml;utf8,");
+  return isSvgDataUri(modelLbl.value);
+});
+
+const useMaskMode = computed(() => {
+  return shouldMaskSvg(modelLbl.value);
 });
 
 const urlList = computed(() => {
   const list: string[] = [ ];
   if (modelLbl.value) {
-    if (isSvg.value) {
-      const svgStr = decodeURIComponent(modelLbl.value.replace("data:image/svg+xml;utf8,", ""));
-      list.push(svgStr);
+    if (isSvg.value && useMaskMode.value) {
+      const svgStr = decodeSvgDataUri(modelLbl.value);
+      if (svgStr) {
+        list.push(svgStr);
+        return list;
+      }
     }
-    // list.push(modelLbl.value);
+    list.push(modelLbl.value);
   }
   return list;
 });
