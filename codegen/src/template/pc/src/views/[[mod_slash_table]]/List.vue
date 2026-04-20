@@ -1917,7 +1917,7 @@ if (searchByKeyword) {
                 >
                   <CustomIcon
                     v-model="row.<#=column_name#>"
-                    v-model:model-lbl="row.<#=column_name#>_lbl"
+                    v-model:model-label="row.<#=column_name#>_lbl"
                     :readonly="true"
                     un-w="8"
                     un-h="8"
