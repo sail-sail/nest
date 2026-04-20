@@ -559,7 +559,7 @@ export function useDownloadImportTemplateDataPermit() {
     try {
       const sheetName = "数据权限";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/data_permit.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/data_permit.xlsx`,
         {
           sheetName,
           data,
@@ -633,7 +633,7 @@ export function useExportExcelDataPermit() {
       try {
         const sheetName = "数据权限";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/data_permit.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/data_permit.xlsx`,
           {
             sheetName,
             columns,

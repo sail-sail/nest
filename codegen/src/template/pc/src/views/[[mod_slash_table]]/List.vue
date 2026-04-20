@@ -1942,7 +1942,18 @@ if (searchByKeyword) {
               <template #default="{ row, column }">
                 <LinkImage
                   v-model="row[column.property]"
-                  un-h="8"
+                  un-h="8"<#
+                  if (column.align === "left") {
+                  #>
+                  un-justify="start"<#
+                  } else if (column.align === "center") {
+                  #>
+                  un-justify="center"<#
+                  } else if (column.align === "right") {
+                  #>
+                  un-justify="end"<#
+                  }
+                  #>
                 ></LinkImage>
               </template>
             </el-table-column>

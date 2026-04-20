@@ -538,7 +538,7 @@ export function useDownloadImportTemplateOptbiz() {
     try {
       const sheetName = "业务选项";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/optbiz.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/optbiz.xlsx`,
         {
           sheetName,
           data,
@@ -609,7 +609,7 @@ export function useExportExcelOptbiz() {
       try {
         const sheetName = "业务选项";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/optbiz.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/optbiz.xlsx`,
           {
             sheetName,
             columns,
