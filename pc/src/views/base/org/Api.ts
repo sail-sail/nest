@@ -531,7 +531,7 @@ export function useDownloadImportTemplateOrg() {
     try {
       const sheetName = "组织";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/org.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/org.xlsx`,
         {
           sheetName,
           data,
@@ -602,7 +602,7 @@ export function useExportExcelOrg() {
       try {
         const sheetName = "组织";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/org.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/org.xlsx`,
           {
             sheetName,
             columns,
