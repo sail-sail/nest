@@ -1945,16 +1945,13 @@ if (searchByKeyword) {
                   un-h="8"<#
                   if (column.align === "left") {
                   #>
-                  un-justify="start"
-                  <#
+                  un-justify="start"<#
                   } else if (column.align === "center") {
                   #>
-                  un-justify="center"
-                  <#
+                  un-justify="center"<#
                   } else if (column.align === "right") {
                   #>
-                  un-justify="end"
-                  <#
+                  un-justify="end"<#
                   }
                   #>
                 ></LinkImage>
