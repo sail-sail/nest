@@ -503,7 +503,7 @@ export function useDownloadImportTemplateSeo() {
     try {
       const sheetName = "SEO优化";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/nuxt/seo.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/nuxt/seo.xlsx`,
         {
           sheetName,
           data,
@@ -567,7 +567,7 @@ export function useExportExcelSeo() {
       try {
         const sheetName = "SEO优化";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/nuxt/seo.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/nuxt/seo.xlsx`,
           {
             sheetName,
             columns,
