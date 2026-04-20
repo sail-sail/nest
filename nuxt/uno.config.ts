@@ -22,7 +22,7 @@ export default defineConfig({
     presetIcons({
       warn: true,
       collections: {
-        iconfont: async (iconName) => await fs.readFile(`./src/assets/iconfont/${ iconName }.svg`, "utf8"),
+        iconfont: async (iconName) => await fs.readFile(`./app/assets/iconfont/${ iconName }.svg`, "utf8"),
       },
     }),
     presetAttributify({
