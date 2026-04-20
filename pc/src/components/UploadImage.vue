@@ -371,7 +371,7 @@ async function onInput() {
     uploadFileArr = fileArr.slice(0, 1);
   }
 
-  let hasUploaded = false;
+  const uploadedIdArr: string[] = [ ];
   loading = true;
   try {
     for (const file0 of uploadFileArr) {
@@ -396,24 +396,24 @@ async function onInput() {
       if (!id) {
         continue;
       }
-      if (props.maxSize === 1) {
-        idArr = [ id ];
-        modelValue1 = id;
-        nowIndex = 0;
-      } else {
-        idArr.push(id);
-        modelValue1 = idArr.join(",");
-        nowIndex = idArr.length - 1;
-      }
-      hasUploaded = true;
-      emit("update:modelValue", modelValue1);
+      uploadedIdArr.push(id);
     }
   } finally {
     loading = false;
   }
-  if (hasUploaded) {
-    nextTick(focus);
+  if (uploadedIdArr.length === 0) {
+    return;
   }
+  if (props.maxSize === 1) {
+    modelValue1 = uploadedIdArr[0];
+    nowIndex = 0;
+  } else {
+    idArr.push(...uploadedIdArr);
+    modelValue1 = idArr.join(",");
+    nowIndex = idArr.length - 1;
+  }
+  emit("update:modelValue", modelValue1);
+  nextTick(focus);
 }
 
 // 点击上传图片
