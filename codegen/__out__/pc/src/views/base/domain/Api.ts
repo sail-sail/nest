@@ -534,7 +534,7 @@ export function useDownloadImportTemplateDomain() {
     try {
       const sheetName = "域名";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/domain.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/domain.xlsx`,
         {
           sheetName,
           data,
@@ -605,7 +605,7 @@ export function useExportExcelDomain() {
       try {
         const sheetName = "域名";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/domain.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/domain.xlsx`,
           {
             sheetName,
             columns,

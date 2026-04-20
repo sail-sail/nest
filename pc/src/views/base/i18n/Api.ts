@@ -599,7 +599,7 @@ export function useDownloadImportTemplateI18n() {
     try {
       const sheetName = "国际化";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/i18n.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/i18n.xlsx`,
         {
           sheetName,
           data,
@@ -669,7 +669,7 @@ export function useExportExcelI18n() {
       try {
         const sheetName = "国际化";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/i18n.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/i18n.xlsx`,
           {
             sheetName,
             columns,
