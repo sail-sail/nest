@@ -131,7 +131,7 @@ export function useRenderExcel() {
     },
     {
       dependencies: [
-        `${ location.origin }/ejsexcel.min.js`,
+        `${ location.origin }${ location.pathname }/ejsexcel.min.js`,
       ],
     },
   );

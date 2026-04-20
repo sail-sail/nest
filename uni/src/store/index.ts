@@ -1,6 +1,6 @@
 import {
   UserAgent,
-} from "@/utils/UserAgent";
+} from "@/utils/UserAgent.ts";
 
 // import {
 //   GetwxacodeunlimitEnvVersion,
@@ -23,8 +23,6 @@ let appBaseInfo: UniApp.GetAppBaseInfoResult | undefined;
 let userAgent: UserAgent | undefined;
   
 let launchOptions: App.LaunchShowOption | undefined;
-  
-let uid = "";
 
 let _safeTop = uni.getStorageSync<number | undefined>("indexStore._safeTop");
 let _safeWidth = uni.getStorageSync<number | undefined>("indexStore._safeWidth");
@@ -100,16 +98,6 @@ export default function() {
     return launchOptions!;
   }
   
-  function getUid() {
-    uid = uni.getStorageSync("_uid");
-    if (uid) {
-      return uid;
-    }
-    uid = uniqueID();
-    uni.setStorageSync("_uid", uid);
-    return uid;
-  }
-  
   /**
    * 小程序等顶部的安全距离
    */
@@ -178,7 +166,6 @@ export default function() {
   }
   
   return {
-    getUid,
     getLoading,
     addLoading,
     minusLoading,

@@ -533,7 +533,7 @@ export function useDownloadImportTemplateDict() {
     try {
       const sheetName = "系统字典";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/dict.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/dict.xlsx`,
         {
           sheetName,
           data,
@@ -604,7 +604,7 @@ export function useExportExcelDict() {
       try {
         const sheetName = "系统字典";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/dict.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/dict.xlsx`,
           {
             sheetName,
             columns,
