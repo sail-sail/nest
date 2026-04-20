@@ -395,7 +395,7 @@ for (let i = 0; i < columns.length; i++) {
             #>
             <CustomIcon
               v-model="dialogModel.<#=column_name#>"
-              v-model:model-lbl="dialogModel.<#=column_name#>_lbl"<#
+              v-model:model-label="dialogModel.<#=column_name#>_lbl"<#
               if (column.readonly) {
               #>
               :readonly="true"<#

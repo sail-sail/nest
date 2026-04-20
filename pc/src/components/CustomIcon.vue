@@ -32,22 +32,22 @@
     @keydown.enter="onIcon"
   >
     <div
-      v-if="modelLbl && useMaskMode"
+      v-if="modelLabel && useMaskMode"
       :style="{
-        'mask-image': `url('${ modelLbl }')`,
-        '-webkit-mask-image': `url('${ modelLbl }')`,
+        'mask-image': `url('${ modelLabel }')`,
+        '-webkit-mask-image': `url('${ modelLabel }')`,
       }"
       class="iconfont"
     ></div>
     <div
-      v-else-if="modelLbl"
+      v-else-if="modelLabel"
       un-flex="~ col"
       un-items-center
       un-justify-center
       un-w="full"
     >
       <img
-        :src="modelLbl"
+        :src="modelLabel"
         un-w="full"
         un-aspect="square"
         un-rounded="sm"
@@ -166,10 +166,10 @@ const {
 
 const modelValue = defineModel<string | null>();
 
-const modelLbl = defineModel<string | null>("modelLbl");
+const modelLabel = defineModel<string | null>("modelLabel");
 
 watch(
-  modelLbl,
+  modelLabel,
   async () => {
     if (props.validateEvent !== false && !props.readonly) {
      try {
@@ -184,24 +184,24 @@ watch(
 const showViewer = ref(false);
 
 const isSvg = computed(() => {
-  return isSvgDataUri(modelLbl.value);
+  return isSvgDataUri(modelLabel.value);
 });
 
 const useMaskMode = computed(() => {
-  return shouldMaskSvg(modelLbl.value);
+  return shouldMaskSvg(modelLabel.value);
 });
 
 const urlList = computed(() => {
   const list: string[] = [ ];
-  if (modelLbl.value) {
+  if (modelLabel.value) {
     if (isSvg.value && useMaskMode.value) {
-      const svgStr = decodeSvgDataUri(modelLbl.value);
+      const svgStr = decodeSvgDataUri(modelLabel.value);
       if (svgStr) {
         list.push(svgStr);
         return list;
       }
     }
-    list.push(modelLbl.value);
+    list.push(modelLabel.value);
   }
   return list;
 });
@@ -231,14 +231,14 @@ async function onIcon(e: KeyboardEvent | MouseEvent) {
     title: await nsAsync("选择图标"),
     model: {
       id: modelValue.value,
-      lbl: modelLbl.value,
+      lbl: modelLabel.value,
     },
   });
   wrapDivRef?.focus();
   if (type === "cancel") {
     return;
   }
-  modelLbl.value = changedIdLbl;
+  modelLabel.value = changedIdLbl;
   modelValue.value = changedId;
   emit("change", { id: changedId!, lbl: changedIdLbl! });
 }
