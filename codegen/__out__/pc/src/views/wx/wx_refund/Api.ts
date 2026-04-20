@@ -396,7 +396,7 @@ export function useExportExcelWxRefund() {
       try {
         const sheetName = "微信退款申请";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/wx/wx_refund.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/wx/wx_refund.xlsx`,
           {
             sheetName,
             columns,

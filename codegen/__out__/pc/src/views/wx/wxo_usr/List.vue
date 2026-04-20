@@ -495,6 +495,7 @@
                 <LinkImage
                   v-model="row[column.property]"
                   un-h="8"
+                  un-justify="center"
                 ></LinkImage>
               </template>
             </el-table-column>

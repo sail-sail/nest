@@ -568,7 +568,7 @@ export function useDownloadImportTemplateWxUsr() {
     try {
       const sheetName = "小程序用户";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/wx/wx_usr.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/wx/wx_usr.xlsx`,
         {
           sheetName,
           data,
@@ -641,7 +641,7 @@ export function useExportExcelWxUsr() {
       try {
         const sheetName = "小程序用户";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/wx/wx_usr.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/wx/wx_usr.xlsx`,
           {
             sheetName,
             columns,

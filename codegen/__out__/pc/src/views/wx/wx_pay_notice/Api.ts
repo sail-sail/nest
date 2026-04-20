@@ -388,7 +388,7 @@ export function useExportExcelWxPayNotice() {
       try {
         const sheetName = "微信支付通知";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/wx/wx_pay_notice.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/wx/wx_pay_notice.xlsx`,
           {
             sheetName,
             columns,
