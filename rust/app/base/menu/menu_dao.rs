@@ -136,7 +136,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
     options,
   ).await?;
   
-  res.sort_by(|a, b| a.order_by.cmp(&b.order_by));
+  res.sort_by_key(|a| a.order_by);
   
   if server_i18n_enable {
     for item in &mut res {
