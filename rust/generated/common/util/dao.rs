@@ -8,8 +8,8 @@ use sqlx::FromRow;
 
 use aes::cipher::{
   block_padding::Pkcs7,
-  BlockDecryptMut,
-  BlockEncryptMut,
+  BlockModeDecrypt,
+  BlockModeEncrypt,
   KeyIvInit,
 };
 
@@ -82,11 +82,13 @@ pub fn encrypt(
   let salt = &salt.as_str()[..16];
   let iv_str = &iv_str.as_str()[..16];
   let iv = iv_str.as_bytes();
+  let crypto_key = <&[u8; 16]>::try_from(crypto_key).unwrap();
+  let iv = <&[u8; 16]>::try_from(iv).unwrap();
   let ct = Aes128CbcEnc::new(
     crypto_key.into(),
     iv.into(),
   )
-    .encrypt_padded_vec_mut::<Pkcs7>(
+    .encrypt_padded_vec::<Pkcs7>(
       format!("{salt}{str}").as_bytes(),
     );
   let str2 = general_purpose::STANDARD.encode(ct);
@@ -121,11 +123,13 @@ pub fn decrypt(
     return "".to_owned();
   }
   let ct = ct.unwrap();
+  let crypto_key = <&[u8; 16]>::try_from(crypto_key).unwrap();
+  let iv = <&[u8; 16]>::try_from(iv).unwrap();
   let pt = Aes128CbcDec::new(
     crypto_key.into(),
     iv.into(),
   )
-    .decrypt_padded_vec_mut::<Pkcs7>(
+    .decrypt_padded_vec::<Pkcs7>(
       ct.as_slice(),
     )
     .ok();
