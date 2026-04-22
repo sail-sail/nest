@@ -126,6 +126,24 @@ INDEX (`tenant_id`, `is_deleted`, `lbl`),
 ```
 - 注意通常有唯一性的字段才需要加索引, 但不能是唯一索引
 
+## 关于城市地址
+
+- 地址固定有多个字段, 如果 `province_code` 或者 `*_province_code` 则自动识别为身份, codegen 会自动识别是省份编码无需其它配置, `province_lbl` 则是省份中文
+- `city_code`, `city_lbl`, `county_code`, `county_lbl` 同理, 剩下的详细地址则是 `address` 或者 `*_address`
+
+```sql
+`lbl` varchar(200) NOT NULL DEFAULT '' COMMENT '地址',
+`contact_name` varchar(50) NOT NULL DEFAULT '' COMMENT '联系人',
+`contact_phone` varchar(30) NOT NULL DEFAULT '' COMMENT '联系电话',
+`province_code` varchar(10) NOT NULL DEFAULT '' COMMENT '省份编码',
+`province_lbl` varchar(10) NOT NULL DEFAULT '' COMMENT '省份',
+`city_code` varchar(15) NOT NULL DEFAULT '' COMMENT '城市编码',
+`city_lbl` varchar(15) NOT NULL DEFAULT '' COMMENT '城市',
+`county_code` varchar(20) NOT NULL DEFAULT '' COMMENT '区县编码',
+`county_lbl` varchar(20) NOT NULL DEFAULT '' COMMENT '区县',
+`address` varchar(100) NOT NULL DEFAULT '' COMMENT '详细地址',
+```
+
 ## 完整示例
 
 ```sql
