@@ -161,3 +161,44 @@ ec_order: {
   ],
 },
 ```
+
+## 关于城市地址
+
+- 地址固定有多个字段, 如果 `province_code` 或者 `*_province_code` 则自动识别为身份, codegen 会自动识别是省份编码无需其它配置, `province_lbl` 则是省份中文
+- `city_code`, `city_lbl`, `county_code`, `county_lbl` 同理, 剩下的详细地址则是 `address` 或者 `*_address`
+
+```ts
+{
+  COLUMN_NAME: "contact_name",
+  width: 120,
+  search: true,
+},
+{
+  COLUMN_NAME: "contact_phone",
+  width: 120,
+  search: true,
+},
+{
+  COLUMN_NAME: "province_code",
+},
+{
+  COLUMN_NAME: "province_lbl",
+},
+{
+  COLUMN_NAME: "city_code",
+},
+{
+  COLUMN_NAME: "city_lbl",
+},
+{
+  COLUMN_NAME: "county_code",
+},
+{
+  COLUMN_NAME: "county_lbl",
+  COLUMN_COMMENT: "省市区",
+},
+{
+  COLUMN_NAME: "address",
+  isTextarea: false,
+},
+```
