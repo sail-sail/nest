@@ -255,17 +255,11 @@
     </template>
     
     <CustomDivider
-      v-if="!isLoading && inited && total > 0"
+      v-if="inited && total > 0"
     >
       共 {{ total }} {{ menu_model?.lbl }}数据
     </CustomDivider>
     
-    <CustomDivider
-      v-else-if="isLoading"
-    >
-      加载中...
-    </CustomDivider>
-  
   </scroll-view>
   
   <view

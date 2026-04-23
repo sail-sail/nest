@@ -244,17 +244,11 @@
     </template>
     
     <CustomDivider
-      v-if="!isLoading && inited && total > 0"
+      v-if="inited && total > 0"
     >
       共 {{ total }} 动态页面数据
     </CustomDivider>
     
-    <CustomDivider
-      v-else-if="isLoading"
-    >
-      加载中...
-    </CustomDivider>
-  
   </scroll-view>
   
   <view
