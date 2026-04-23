@@ -496,17 +496,11 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
     </template>
     
     <CustomDivider
-      v-if="!isLoading && inited && total > 0"
+      v-if="inited && total > 0"
     >
       共 {{ total }} <#=table_comment#>
     </CustomDivider>
     
-    <CustomDivider
-      v-else-if="isLoading"
-    >
-      加载中...
-    </CustomDivider>
-  
   </scroll-view><#
   if (opts.noAdd !== true) {
   #>
@@ -817,13 +811,14 @@ async function onReset() {<#
     const data_type = column?.DATA_TYPE;
     const column_type = column?.COLUMN_TYPE;
     const column_comment = column?.COLUMN_COMMENT || "";
+    const prop = search_field === searchByKeyword?.prop ? searchByKeyword.prop : column_name;
   #><#
   if (data_type === "datetime" || data_type === "date") {
   #>
-  search.<#=column_name#> = [ null, null ];<#
+  search.<#=prop#> = [ null, null ];<#
   } else {
   #>
-  search.<#=column_name#> = undefined;<#
+  search.<#=prop#> = undefined;<#
   }
   #><#
   }
