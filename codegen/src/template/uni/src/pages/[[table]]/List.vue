@@ -542,7 +542,8 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
 <script setup lang="ts">
 import {
   findAll<#=Table_Up#>,
-  findCount<#=Table_Up#>,<#
+  findCount<#=Table_Up#>,
+  setLblById<#=Table_Up#>,<#
   if (opts.noDelete !== true) {
   #>
   deleteByIds<#=Table_Up#>,<#
@@ -563,7 +564,16 @@ let <#=table#>_ids_selected = $ref<<#=Table_Up#>Id[]>([ ]);
 let <#=table#>_id_selected = $ref<<#=Table_Up#>Id>();
 
 const <#=table#>_models_key = "<#=table#>.List.<#=table#>_models";
-let <#=table#>_models = $ref<<#=Table_Up#>Model[]>(uni.getStorageSync(<#=table#>_models_key) || [ ]);
+let <#=table#>_models = $ref<<#=Table_Up#>Model[]>([ ]);
+
+(async function() {
+  const models = uni.getStorageSync(<#=table#>_models_key) || [ ];
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById<#=Table_Up#>(model);
+  }
+  <#=table#>_models = models;
+})();
 
 type SearchType = {<#
   for (let i = 0; i < search_fields.length; i++) {
