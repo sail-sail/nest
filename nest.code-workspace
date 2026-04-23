@@ -84,7 +84,8 @@
     "chat.tools.terminal.autoApprove": {
       "cargo check": true,
       "Tee-Object": true,
-      "ForEach-Object": true
+      "ForEach-Object": true,
+      "pnpm": true
     },
     "git.closeDiffOnOperation": true,
     "git.alwaysShowStagedChangesResourceGroup": false,
