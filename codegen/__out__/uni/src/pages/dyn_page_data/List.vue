@@ -287,6 +287,7 @@
 import {
   findAllDynPageData,
   findCountDynPageData,
+  setLblByIdDynPageData,
   deleteByIdsDynPageData,
 } from "./Api.ts";
 
@@ -298,7 +299,16 @@ let dyn_page_data_ids_selected = $ref<DynPageDataId[]>([ ]);
 let dyn_page_data_id_selected = $ref<DynPageDataId>();
 
 const dyn_page_data_models_key = "dyn_page_data.List.dyn_page_data_models";
-let dyn_page_data_models = $ref<DynPageDataModel[]>(uni.getStorageSync(dyn_page_data_models_key) || [ ]);
+let dyn_page_data_models = $ref<DynPageDataModel[]>([ ]);
+
+(async function() {
+  const models = uni.getStorageSync(dyn_page_data_models_key) || [ ];
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblByIdDynPageData(model);
+  }
+  dyn_page_data_models = models;
+})();
 
 type SearchType = {
   // 关联页面路由
