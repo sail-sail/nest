@@ -1706,7 +1706,7 @@ async fn get_from_query(
     }
     #>
   left join (select json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
-    if (foreignKey.lbl && !modelLabel) {
+    if ((foreignKey.lbl && !modelLabel) || foreignKey.isForceJoinQuery) {
   #>
   json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
     }
@@ -1727,7 +1727,7 @@ async fn get_from_query(
   #>
   group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
     } else if (foreignKey && !foreignKey.multiple) {
-      if (modelLabel) {
+      if (modelLabel && !foreignKey.isForceJoinQuery) {
         continue;
       }
   #>
@@ -2127,6 +2127,8 @@ pub async fn find_all_<#=table#>(
   #><#
   } else {
   #><#
+    if ((!column.modelLabel && foreignKey.lbl) || foreignKey.isForceJoinQuery) {
+  #><#
     if (!column.modelLabel && foreignKey.lbl) {
   #>
   ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=modelLabel#><#
@@ -2135,7 +2137,17 @@ pub async fn find_all_<#=table#>(
     for (let j = 0; j < cascade_fields.length; j++) {
       const cascade_field = cascade_fields[j];
   #>
+  ,max(<#=column_name#>_lbl.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
+    }
+  #><#
+    } else {
+  #><#
+    for (let j = 0; j < cascade_fields.length; j++) {
+      const cascade_field = cascade_fields[j];
+  #>
   ,max(<#=column_name#>_<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
+    }
+  #><#
     }
   #><#
   }
