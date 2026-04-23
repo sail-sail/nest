@@ -320,6 +320,12 @@ export interface TableColumn {
     /** 是否在表格中用弹出框的形式搜索, 而不是下拉框, 默认为 false */
     isSearchBySelectInput?: boolean;
     
+    /**
+     * dao 层的sql是否强制连表查询, 默认为 无 modelLabel 为 true, 有 modelLabel 为 false
+     * 如果为 true, 则不管是否有 modelLabel, 都强制连表查询
+     */
+    isForceJoinQuery?: boolean;
+    
   },
   
   /** foreignTabs 弹出框的大小, 默认为 medium */
