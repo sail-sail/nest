@@ -277,6 +277,7 @@
         v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
+        :disabled="is_form_hydrating"
         @click="onSave"
       >
         <template #icon>
@@ -289,6 +290,7 @@
         v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
+        :disabled="is_form_hydrating"
         @click="onSave"
       >
         <template #icon>
@@ -385,6 +387,7 @@ const permitStore = usePermitStore();
 const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
+let is_form_hydrating = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
@@ -720,42 +723,49 @@ async function onReset() {
 
 /** 刷新 */
 async function onRefresh() {
-  const id = dialogModel.id;
-  if (!id) {
+  is_form_hydrating = true;
+  try {
+    const id = dialogModel.id;
+    if (!id) {
+      const [
+        defaultModel,
+        order_by,
+      ] = await Promise.all([
+        getDefaultInputWxoApp(),
+        findLastOrderByWxoApp(
+          undefined,
+          {
+            notLoading: !inited,
+          },
+        ),
+      ]);
+      dialogModel = {
+        ...defaultModel,
+        ...builtInModel,
+        order_by: order_by + 1,
+      };
+      is_form_hydrating = false;
+      return;
+    }
     const [
-      defaultModel,
-      order_by,
+      data,
     ] = await Promise.all([
-      getDefaultInputWxoApp(),
-      findLastOrderByWxoApp(
-        undefined,
-        {
-          notLoading: !inited,
-        },
-      ),
+      findOneModel({
+        id,
+        is_deleted,
+      }),
     ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,
-      order_by: order_by + 1,
-    };
-    return;
+    if (data) {
+      dialogModel = intoInputWxoApp({
+        ...data,
+      });
+      dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
+    }
+    wxo_app_model = data;
+  } finally {
+    await nextTick();
+    is_form_hydrating = false;
   }
-  const [
-    data,
-  ] = await Promise.all([
-    findOneModel({
-      id,
-      is_deleted,
-    }),
-  ]);
-  if (data) {
-    dialogModel = intoInputWxoApp({
-      ...data,
-    });
-    dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
-  }
-  wxo_app_model = data;
 }
 
 /** 键盘按 PageUp */
@@ -853,7 +863,7 @@ watch(
     dialogModel.domain_id,
   ],
   () => {
-    if (!inited) {
+    if (!inited || is_form_hydrating) {
       return;
     }
     if (!dialogModel.encoding_type) {
@@ -878,7 +888,7 @@ async function onSaveKeydown(e: KeyboardEvent) {
 
 /** 保存并返回id */
 async function save() {
-  if (!inited || isReadonly) {
+  if (!inited || isReadonly || is_form_hydrating) {
     return;
   }
   if (!formRef) {
