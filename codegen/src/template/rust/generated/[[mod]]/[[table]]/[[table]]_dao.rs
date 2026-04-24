@@ -3820,55 +3820,53 @@ pub async fn find_by_unique_<#=table#>(
     const uniques = opts.uniques[i];
   #>
   
-  let mut models_tmp = {
-    if<#
-      for (let k = 0; k < uniques.length; k++) {
-        const unique = uniques[k];
-        const unique_rust = rustKeyEscape(unique);
-      #><#
-        if (unique !== "create_usr_id") {
-      #>
-      search.<#=unique_rust#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
-        } else {
-      #>
-      create_usr_id.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
-        }
-      #><#
+  let mut models_tmp = if<#
+    for (let k = 0; k < uniques.length; k++) {
+      const unique = uniques[k];
+      const unique_rust = rustKeyEscape(unique);
+    #><#
+      if (unique !== "create_usr_id") {
+    #>
+    search.<#=unique_rust#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
+      } else {
+    #>
+    create_usr_id.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
       }
-      #>
-    {
-      return Ok(vec![]);
+    #><#
     }
-    
+    #>
+  {
+    vec![]
+  } else {
     let search = <#=tableUP#>Search {<#
-      for (let k = 0; k < uniques.length; k++) {
-        const unique = uniques[k];
-        const column = columns.find((item) => item.COLUMN_NAME === unique);
-        if (column.ignoreCodegen) continue;
-        if (column.isVirtual) continue;
-        if (column.isPassword) continue;
-        if (column.isEncrypt) continue;
-        const data_type = column.DATA_TYPE;
-        const unique_rust = rustKeyEscape(unique);
-        let hasClone = true;
-        if ([ "int", "decimal", "tinyint", "date", "datetime" ].includes(data_type)) {
-          hasClone = false;
-        }
-      #><#
-        if (unique !== "create_usr_id") {
-      #>
-      <#=unique_rust#>: search.<#=unique_rust#><#
-        if (hasClone) {
-      #>.clone()<#
-        }
-      #>,<#
-        } else {
-      #>
-      create_usr_id,<#
-        }
-      #><#
+    for (let k = 0; k < uniques.length; k++) {
+      const unique = uniques[k];
+      const column = columns.find((item) => item.COLUMN_NAME === unique);
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      if (column.isPassword) continue;
+      if (column.isEncrypt) continue;
+      const data_type = column.DATA_TYPE;
+      const unique_rust = rustKeyEscape(unique);
+      let hasClone = true;
+      if ([ "int", "decimal", "tinyint", "date", "datetime" ].includes(data_type)) {
+        hasClone = false;
       }
-      #>
+    #><#
+      if (unique !== "create_usr_id") {
+    #>
+      <#=unique_rust#>: search.<#=unique_rust#><#
+      if (hasClone) {
+    #>.clone()<#
+      }
+    #>,<#
+      } else {
+    #>
+      create_usr_id,<#
+      }
+    #><#
+    }
+    #>
       ..Default::default()
     };
     
@@ -7636,7 +7634,7 @@ pub async fn update_by_id_<#=table#>(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }<#
