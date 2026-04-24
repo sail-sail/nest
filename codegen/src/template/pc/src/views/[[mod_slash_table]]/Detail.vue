@@ -3827,6 +3827,7 @@ for (let i = 0; i < columns.length; i++) {
         v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
+        :disabled="is_form_hydrating"
         @click="onSaveAndCopy"
       >
         <template #icon>
@@ -3850,6 +3851,7 @@ for (let i = 0; i < columns.length; i++) {
         v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
+        :disabled="is_form_hydrating"
         @click="onSave"
       >
         <template #icon>
@@ -3877,6 +3879,7 @@ for (let i = 0; i < columns.length; i++) {
         #>(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
+        :disabled="is_form_hydrating"
         @click="onSave"
       >
         <template #icon>
@@ -4944,6 +4947,7 @@ const <#=foreignSchema.opts.table#>Permit = permitStore.getPermit("/<#=foreignSc
 #>
 
 let inited = $ref(false);
+let is_form_hydrating = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view"<#
 if (hasAudit) {
@@ -4998,7 +5002,7 @@ const <#=county_lbl_column.COLUMN_NAME#>_city_picker = $computed<[string, string
       dialogModel.<#=province_code_column.COLUMN_NAME#> ?? "",
       dialogModel.<#=city_code_column.COLUMN_NAME#> ?? "",
       dialogModel.<#=county_code_column.COLUMN_NAME#> ?? "",
-    ];
+    ] as [string, string, string];
   },
   async set(codes) {
     const <#=province_code_column.COLUMN_NAME#> = codes?.[0] ?? "";
@@ -6480,7 +6484,7 @@ const cron_lbl = $computed(() => {
 watch(
   () => [ inited, job_lbl, cron_lbl ],
   () => {
-    if (!inited) {
+    if (!inited || is_form_hydrating) {
       return;
     }
     if (!job_lbl || !cron_lbl) {
@@ -6656,44 +6660,151 @@ async function subscribeDeleteCallback(ids?: <#=Table_Up#>Id[]) {
 
 /** 刷新 */
 async function onRefresh() {
-  const id = dialogModel.id;
-  if (!id) {
+  is_form_hydrating = true;
+  try {
+    const id = dialogModel.id;
+    if (!id) {
+      const [
+        defaultModel,<#
+        if (hasOrderBy) {
+        #>
+        order_by,<#
+        }
+        #>
+      ] = await Promise.all([
+        getDefaultInput<#=Table_Up#>(),<#
+        if (hasOrderBy) {
+        #>
+        findLastOrderBy<#=Table_Up#>(
+          undefined,
+          {
+            notLoading: !inited,
+          },
+        ),<#
+        }
+        #>
+      ]);
+      dialogModel = {
+        ...defaultModel,
+        ...builtInModel,<#
+        if (hasOrderBy) {
+        #>
+        order_by: order_by + 1,<#
+        }
+        #>
+      };
+      is_form_hydrating = false;
+      return;
+    }
     const [
-      defaultModel,<#
-      if (hasOrderBy) {
+      data,<#
+      if (hasDataPermit() && hasCreateUsrId) {
       #>
-      order_by,<#
+      editableDataPermits,<#
+      }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        const column_name = column.COLUMN_NAME;
+        const column_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let data_type = column.DATA_TYPE;
+        const many2many = column.many2many;
+        if (!many2many || !foreignKey) continue;
+        if (!column.inlineMany2manyTab) continue;
+        const table = many2many.table;
+        const mod = many2many.mod;
+        const inlineMany2manySchema = optTables[mod + "_" + table];
+        if (!inlineMany2manySchema) {
+          throw `表: ${ mod }_${ table } 不存在`;
+          process.exit(1);
+        }
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const foreign_table = foreignKey.table;
+        const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+        const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const inlineMany2manyColumns = inlineMany2manySchema.columns;
+      #>
+      
+      // <#=column_comment#>
+      _<#=column_name#>_<#=foreign_table#>_models,<#
       }
       #>
     ] = await Promise.all([
-      getDefaultInput<#=Table_Up#>(),<#
-      if (hasOrderBy) {
+      findOneModel({
+        id,<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted,<#
+        }
+        #>
+      }),<#
+      if (hasDataPermit() && hasCreateUsrId) {
       #>
-      findLastOrderBy<#=Table_Up#>(
-        undefined,
-        {
-          notLoading: !inited,
-        },
-      ),<#
+      getEditableDataPermitsByIds<#=Table_Up#>([ id ]),<#
+      }
+      #><#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        const column_name = column.COLUMN_NAME;
+        const column_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTable = foreignKey && foreignKey.table;
+        const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let data_type = column.DATA_TYPE;
+        const many2many = column.many2many;
+        if (!many2many || !foreignKey) continue;
+        if (!column.inlineMany2manyTab) continue;
+        const table = many2many.table;
+        const mod = many2many.mod;
+        const inlineMany2manySchema = optTables[mod + "_" + table];
+        if (!inlineMany2manySchema) {
+          throw `表: ${ mod }_${ table } 不存在`;
+          process.exit(1);
+        }
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const foreign_table = foreignKey.table;
+        const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
+        const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const inlineMany2manyColumns = inlineMany2manySchema.columns;
+      #>
+      await findAll<#=foreign_Table_Up#>({<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted,<#
+        }
+        #>
+      }),<#
       }
       #>
-    ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,<#
-      if (hasOrderBy) {
-      #>
-      order_by: order_by + 1,<#
-      }
-      #>
-    };
-    return;
-  }
-  const [
-    data,<#
+    ]);<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
-    editableDataPermits,<#
+    isEditableDataPermit = editableDataPermits[0] !== 0;<#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {
@@ -6733,190 +6844,90 @@ async function onRefresh() {
     #>
     
     // <#=column_comment#>
-    _<#=column_name#>_<#=foreign_table#>_models,<#
+    <#=column_name#>_<#=foreign_table#>_models = _<#=column_name#>_<#=foreign_table#>_models;<#
     }
     #>
-  ] = await Promise.all([
-    findOneModel({
-      id,<#
-      if (hasIsDeleted) {
-      #>
-      is_deleted,<#
-      }
-      #>
-    }),<#
-    if (hasDataPermit() && hasCreateUsrId) {
-    #>
-    getEditableDataPermitsByIds<#=Table_Up#>([ id ]),<#
-    }
-    #><#
-    for (let i = 0; i < columns.length; i++) {
+    if (data) {
+      dialogModel = intoInput<#=Table_Up#>({
+        ...data,<#
+        for (const inlineForeignTab of inlineForeignTabs) {
+          const table = inlineForeignTab.table;
+          const mod = inlineForeignTab.mod;
+          const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+          const Table_Up = tableUp.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          const inline_column_name = inlineForeignTab.column_name;
+          const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+        #><#
+          if (inline_foreign_type === "one2one") {
+        #>
+        // <#=inlineForeignTab.label#>
+        <#=inline_column_name#>: data.<#=inline_column_name#> || { },<#
+          }
+        #><#
+        }
+        #>
+      });<#
+      if (hasIsFluentEditor) {
+      #><#
+      for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
-      const column_comment = column.COLUMN_COMMENT;
-      let is_nullable = column.IS_NULLABLE === "YES";
+      if (column_name === "id") continue;
+      if (column_name === "is_locked") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "version") continue;
+      if (column_name === "tenant_id") continue;
+      if (column.noDetail) continue;
       const foreignKey = column.foreignKey;
-      const foreignTable = foreignKey && foreignKey.table;
-      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-        return item.substring(0, 1).toUpperCase() + item.substring(1);
-      }).join("");
-      let data_type = column.DATA_TYPE;
-      const many2many = column.many2many;
-      if (!many2many || !foreignKey) continue;
-      if (!column.inlineMany2manyTab) continue;
-      const table = many2many.table;
-      const mod = many2many.mod;
-      const inlineMany2manySchema = optTables[mod + "_" + table];
-      if (!inlineMany2manySchema) {
-        throw `表: ${ mod }_${ table } 不存在`;
-        process.exit(1);
+      if (foreignKey && foreignKey.showType === "dialog") {
+        continue;
       }
-      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-      const Table_Up = tableUp.split("_").map(function(item) {
-        return item.substring(0, 1).toUpperCase() + item.substring(1);
-      }).join("");
-      const foreign_table = foreignKey.table;
-      const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
-      const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
-        return item.substring(0, 1).toUpperCase() + item.substring(1);
-      }).join("");
-      const inlineMany2manyColumns = inlineMany2manySchema.columns;
-    #>
-    await findAll<#=foreign_Table_Up#>({<#
-      if (hasIsDeleted) {
-      #>
-      is_deleted,<#
+      if (
+        [
+          "is_default",
+        ].includes(column_name)
+      ) {
+        continue;
+      }
+      if (!column.isFluentEditor) {
+        continue;
       }
       #>
-    }),<#
-    }
-    #>
-  ]);<#
-  if (hasDataPermit() && hasCreateUsrId) {
-  #>
-  isEditableDataPermit = editableDataPermits[0] !== 0;<#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    const column_comment = column.COLUMN_COMMENT;
-    let is_nullable = column.IS_NULLABLE === "YES";
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-    let data_type = column.DATA_TYPE;
-    const many2many = column.many2many;
-    if (!many2many || !foreignKey) continue;
-    if (!column.inlineMany2manyTab) continue;
-    const table = many2many.table;
-    const mod = many2many.mod;
-    const inlineMany2manySchema = optTables[mod + "_" + table];
-    if (!inlineMany2manySchema) {
-      throw `表: ${ mod }_${ table } 不存在`;
-      process.exit(1);
-    }
-    const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-    const Table_Up = tableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-    const foreign_table = foreignKey.table;
-    const foreign_tableUp = foreign_table && foreign_table.substring(0, 1).toUpperCase()+foreign_table.substring(1);
-    const foreign_Table_Up = foreign_tableUp && foreign_tableUp.split("_").map(function(item) {
-      return item.substring(0, 1).toUpperCase() + item.substring(1);
-    }).join("");
-    const inlineMany2manyColumns = inlineMany2manySchema.columns;
-  #>
-  
-  // <#=column_comment#>
-  <#=column_name#>_<#=foreign_table#>_models = _<#=column_name#>_<#=foreign_table#>_models;<#
-  }
-  #>
-  if (data) {
-    dialogModel = intoInput<#=Table_Up#>({
-      ...data,<#
-      for (const inlineForeignTab of inlineForeignTabs) {
-        const table = inlineForeignTab.table;
-        const mod = inlineForeignTab.mod;
-        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-        const Table_Up = tableUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1);
-        }).join("");
-        const inline_column_name = inlineForeignTab.column_name;
-        const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
-      #><#
-        if (inline_foreign_type === "one2one") {
-      #>
-      // <#=inlineForeignTab.label#>
-      <#=inline_column_name#>: data.<#=inline_column_name#> || { },<#
+      if (<#=column_name#>FluentEditor) {
+        let <#=column_name#> = "";
+        if (dialogModel.<#=column_name#>) {
+          const url = getDownloadUrl({
+            id: dialogModel.<#=column_name#>,
+            inline: "1",
+          });
+          <#=column_name#> = await fetch(url).then((res) => res.text());
         }
+        <#=column_name#>FluentEditor.root.innerHTML = <#=column_name#>;
+      }<#
+      }
       #><#
       }
+      #><#
+      if (mod === "base" && table === "usr") {
       #>
-    });<#
-    if (hasIsFluentEditor) {
-    #><#
-    for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    if (column_name === "is_locked") continue;
-    if (column_name === "is_deleted") continue;
-    if (column_name === "version") continue;
-    if (column_name === "tenant_id") continue;
-    if (column.noDetail) continue;
-    const foreignKey = column.foreignKey;
-    if (foreignKey && foreignKey.showType === "dialog") {
-      continue;
-    }
-    if (
-      [
-        "is_default",
-      ].includes(column_name)
-    ) {
-      continue;
-    }
-    if (!column.isFluentEditor) {
-      continue;
-    }
-    #>
-    if (<#=column_name#>FluentEditor) {
-      let <#=column_name#> = "";
-      if (dialogModel.<#=column_name#>) {
-        const url = getDownloadUrl({
-          id: dialogModel.<#=column_name#>,
-          inline: "1",
-        });
-        <#=column_name#> = await fetch(url).then((res) => res.text());
+      old_default_org_id = dialogModel.default_org_id;<#
       }
-      <#=column_name#>FluentEditor.root.innerHTML = <#=column_name#>;
-    }<#
+      #><#
+      if (opts.lbl_field) {
+      #>
+      dialogTitle = `${ oldDialogTitle } - ${ dialogModel.<#=opts.lbl_field#> }`;<#
+      }
+      #>
     }
-    #><#
-    }
-    #><#
-    if (mod === "base" && table === "usr") {
-    #>
-    old_default_org_id = dialogModel.default_org_id;<#
-    }
-    #><#
-    if (opts.lbl_field) {
-    #>
-    dialogTitle = `${ oldDialogTitle } - ${ dialogModel.<#=opts.lbl_field#> }`;<#
-    }
-    #>
+    <#=table#>_model = data;
+  } finally {
+    await nextTick();
+    is_form_hydrating = false;
   }
-  <#=table#>_model = data;
 }
 
 /** 键盘按 PageUp */
@@ -7072,7 +7083,7 @@ watch(
     #>
   ],
   () => {
-    if (!inited) {
+    if (!inited || is_form_hydrating) {
       return;
     }<#
     for (let i = 0; i < columns.length; i++) {
@@ -7456,7 +7467,7 @@ async function onAuditReview() {
 
 /** 保存并返回id */
 async function save() {
-  if (!inited || isReadonly) {
+  if (!inited || isReadonly || is_form_hydrating) {
     return;
   }
   if (!formRef) {
@@ -7753,117 +7764,123 @@ async function onSaveAndCopy() {
   if (!id) {
     return;
   }
-  dialogAction = "copy";
-  const [<#
-    if (hasDefaultInputColumn) {
-    #>
-    defaultInput,<#
-    }
-    #>
-    data,<#
-    if (hasOrderBy) {
-    #>
-    order_by,<#
-    }
-    #>
-  ] = await Promise.all([<#
-    if (hasDefaultInputColumn) {
-    #>
-    getDefaultInput<#=Table_Up#>(),<#
-    }
-    #>
-    findOneModel({
-      id,<#
-      if (hasIsDeleted) {
+  is_form_hydrating = true;
+  try {
+    dialogAction = "copy";
+    const [<#
+      if (hasDefaultInputColumn) {
       #>
-      is_deleted,<#
+      defaultInput,<#
       }
       #>
-    }),<#
-    if (hasOrderBy) {
-    #>
-    findLastOrderBy<#=Table_Up#>(
-      undefined,
-      {
-        notLoading: !inited,
-      },
-    ),<#
+      data,<#
+      if (hasOrderBy) {
+      #>
+      order_by,<#
+      }
+      #>
+    ] = await Promise.all([<#
+      if (hasDefaultInputColumn) {
+      #>
+      getDefaultInput<#=Table_Up#>(),<#
+      }
+      #>
+      findOneModel({
+        id,<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted,<#
+        }
+        #>
+      }),<#
+      if (hasOrderBy) {
+      #>
+      findLastOrderBy<#=Table_Up#>(
+        undefined,
+        {
+          notLoading: !inited,
+        },
+      ),<#
+      }
+      #>
+    ]);
+    if (!data) {
+      return;
     }
-    #>
-  ]);
-  if (!data) {
-    return;
+    dialogModel = {
+      ...data,
+      id: undefined,<#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        if (column.noDetail) continue;
+        if (column.isAtt) continue;
+        const column_name = column.COLUMN_NAME;
+        if (column_name === "id") continue;
+        if (column_name === "is_locked") continue;
+        if (column_name === "is_deleted") continue;
+        if (column_name === "version") continue;
+        if (column_name === "tenant_id") continue;
+        if (column_name === "order_by") continue;
+        let data_type = column.DATA_TYPE;
+        let column_type = column.COLUMN_TYPE;
+        let column_comment = column.COLUMN_COMMENT || "";
+        if (!column.readonly) {
+          continue;
+        }
+      #>
+      <#=column_name#>: defaultInput.<#=column_name#>,<#
+      }
+      #><#
+      if (hasDefault) {
+      #>
+      is_default: undefined,
+      is_default_lbl: undefined,<#
+      }
+      #><#
+      if (hasLocked) {
+      #>
+      is_locked: undefined,
+      is_locked_lbl: undefined,<#
+      }
+      #><#
+      if (hasOrderBy) {
+      #>
+      order_by: order_by + 1,<#
+      }
+      #><#
+      for (const inlineForeignTab of inlineForeignTabs) {
+        const table = inlineForeignTab.table;
+        const mod = inlineForeignTab.mod;
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const inline_column_name = inlineForeignTab.column_name;
+        const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+      #><#
+        if (inline_foreign_type === "one2many") {
+      #>
+      // <#=inlineForeignTab.label#>
+      <#=inline_column_name#>: data.<#=inline_column_name#>?.map((item) => ({
+        ...item,
+        id: undefined,
+      })) || [ ],<#
+        } else if (inline_foreign_type === "one2one") {
+      #>
+      // <#=inlineForeignTab.label#>
+      <#=inline_column_name#>: data.<#=inline_column_name#> || { },<#
+        }
+      #><#
+      }
+      #>
+    };
+    Object.assign(dialogModel, { is_deleted: undefined });
+  } finally {
+    await nextTick();
+    is_form_hydrating = false;
   }
-  dialogModel = {
-    ...data,
-    id: undefined,<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
-      if (column.noDetail) continue;
-      if (column.isAtt) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column_name === "id") continue;
-      if (column_name === "is_locked") continue;
-      if (column_name === "is_deleted") continue;
-      if (column_name === "version") continue;
-      if (column_name === "tenant_id") continue;
-      if (column_name === "order_by") continue;
-      let data_type = column.DATA_TYPE;
-      let column_type = column.COLUMN_TYPE;
-      let column_comment = column.COLUMN_COMMENT || "";
-      if (!column.readonly) {
-        continue;
-      }
-    #>
-    <#=column_name#>: defaultInput.<#=column_name#>,<#
-    }
-    #><#
-    if (hasDefault) {
-    #>
-    is_default: undefined,
-    is_default_lbl: undefined,<#
-    }
-    #><#
-    if (hasLocked) {
-    #>
-    is_locked: undefined,
-    is_locked_lbl: undefined,<#
-    }
-    #><#
-    if (hasOrderBy) {
-    #>
-    order_by: order_by + 1,<#
-    }
-    #><#
-    for (const inlineForeignTab of inlineForeignTabs) {
-      const table = inlineForeignTab.table;
-      const mod = inlineForeignTab.mod;
-      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
-      const Table_Up = tableUp.split("_").map(function(item) {
-        return item.substring(0, 1).toUpperCase() + item.substring(1);
-      }).join("");
-      const inline_column_name = inlineForeignTab.column_name;
-      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
-    #><#
-      if (inline_foreign_type === "one2many") {
-    #>
-    // <#=inlineForeignTab.label#>
-    <#=inline_column_name#>: data.<#=inline_column_name#>?.map((item) => ({
-      ...item,
-      id: undefined,
-    })) || [ ],<#
-      } else if (inline_foreign_type === "one2one") {
-    #>
-    // <#=inlineForeignTab.label#>
-    <#=inline_column_name#>: data.<#=inline_column_name#> || { },<#
-      }
-    #><#
-    }
-    #>
-  };
-  Object.assign(dialogModel, { is_deleted: undefined });
 }<#
 }
 #>

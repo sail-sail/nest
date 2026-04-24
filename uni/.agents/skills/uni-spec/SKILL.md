@@ -53,13 +53,15 @@ onLoad(async (query?: AnyObject) => {
 ```
 
 - 表单通常会有 `let inited = $ref(false);` 标记是否初始化完成, 避免在初始化前触发表单变更事件
+- `is_form_hydrating` 则表示表单是否正在数据回填
+- 如果表单存在由其他字段派生但最终仍会持久化的字段, `watch` 中必须区分初始化回填和用户编辑; 初始化阶段不要自动回写派生字段, 避免首屏展示值与数据库值不一致, 或用户未编辑就隐式改库
 
 ```vue
 watch(
   () => dyn_page_field_input,
   () => {
     
-    if (!inited) {
+    if (!inited || is_form_hydrating) {
       return;
     }
     

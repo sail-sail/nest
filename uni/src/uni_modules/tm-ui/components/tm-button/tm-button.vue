@@ -493,6 +493,7 @@ export default {
 
 <style lang="scss" scoped>
 .tmButton {
+    cursor: pointer;
     position: relative;
     display: inline-flex;
     line-height: 1;
