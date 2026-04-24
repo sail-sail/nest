@@ -259,7 +259,7 @@
             
               <view
                 v-for="item of options4SelectV2Computed"
-                :id="'a' + item.value"
+                :id="getOptionAnchorId(item.value)"
                 :key="item.value"
                 :title="item.label"
                 un-m="x-2"
@@ -596,6 +596,28 @@ const modelLabels = computed(() => {
 
 const scrollIntoViewId = ref("");
 
+function getOptionAnchorId(
+  value?: string,
+) {
+  if (!value) {
+    return "";
+  }
+  return [
+    "option",
+    String(value)
+      .replaceAll("_", "__")
+      .replaceAll("+", "_plus_")
+      .replaceAll("/", "_slash_")
+      .replaceAll("=", "_eq_"),
+  ].join("_");
+}
+
+async function syncScrollIntoView() {
+  scrollIntoViewId.value = "";
+  await nextTick();
+  scrollIntoViewId.value = getOptionAnchorId(selectedValueArr.value[0]);
+}
+
 async function onClick() {
   if (readonly) {
     showPicker.value = false;
@@ -607,10 +629,8 @@ async function onClick() {
   searchStr.value = "";
   selectedValue.value = modelValue;
   showPicker.value = true;
-  scrollIntoViewId.value = "";
-  setTimeout(() => {
-    scrollIntoViewId.value = selectedValueArr.value[0] ? "a" + selectedValueArr.value[0] : "";
-  }, 500);
+  await nextTick();
+  await syncScrollIntoView();
 }
 
 const isLoading = ref(false);

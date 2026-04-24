@@ -391,7 +391,7 @@
       un-flex="1"
     >
       <tm-button
-        :disabled="!inited"
+        :disabled="!inited || is_form_hydrating"
         block
         @click="formRef?.submit()"
       >
@@ -469,6 +469,7 @@ type ActionType = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<ActionType>("add");
 
 const formRef = $ref<InstanceType<typeof TmForm>>();
+let is_form_hydrating = $ref(false);
 
 /** 复制 */
 async function onCopy() {
@@ -487,7 +488,7 @@ async function onSave(
   if (dialogAction === "view") {
     return;
   }
-  if (!inited) {
+  if (!inited || is_form_hydrating) {
     return;
   }
   if (formSubmitResult?.isPass === false) {
@@ -542,58 +543,64 @@ async function onSave(
 
 /** 刷新 */
 async function onRefresh() {
-  formRef?.resetValidation();
-  if (dialogAction === "add") {
-    dyn_page_input = await getDefaultInputDynPage();
-    dyn_page_input.order_by = props.order_by;
-  } else if (dialogAction === "copy") {
-    if (!dyn_page_id) {
-      uni.showToast({
-        title: "复制失败, id 不能为空",
-        icon: "none",
-      });
-      return;
+  is_form_hydrating = true;
+  try {
+    formRef?.resetValidation();
+    if (dialogAction === "add") {
+      dyn_page_input = await getDefaultInputDynPage();
+      dyn_page_input.order_by = props.order_by;
+    } else if (dialogAction === "copy") {
+      if (!dyn_page_id) {
+        uni.showToast({
+          title: "复制失败, id 不能为空",
+          icon: "none",
+        });
+        return;
+      }
+      dyn_page_model = await findOneModel(
+        {
+          id: dyn_page_id,
+          is_deleted: 0,
+        },
+        undefined,
+        {
+          notLoading: true,
+        },
+      );
+      if (!dyn_page_model) {
+        uni.showToast({
+          title: "动态页面 已被删除",
+          icon: "none",
+        });
+      }
+      dyn_page_input = intoInputDynPage(
+        dyn_page_model,
+      );
+      dyn_page_input.order_by = props.order_by;
+    } else if (dialogAction === "edit" || dialogAction === "view") {
+      dyn_page_model = await findOneModel(
+        {
+          id: dyn_page_id,
+          is_deleted: 0,
+        },
+        undefined,
+        {
+          notLoading: true,
+        },
+      );
+      if (!dyn_page_model) {
+        uni.showToast({
+          title: "动态页面 已被删除",
+          icon: "none",
+        });
+      }
+      dyn_page_input = intoInputDynPage(
+        dyn_page_model,
+      );
     }
-    dyn_page_model = await findOneModel(
-      {
-        id: dyn_page_id,
-        is_deleted: 0,
-      },
-      undefined,
-      {
-        notLoading: true,
-      },
-    );
-    if (!dyn_page_model) {
-      uni.showToast({
-        title: "动态页面 已被删除",
-        icon: "none",
-      });
-    }
-    dyn_page_input = intoInputDynPage(
-      dyn_page_model,
-    );
-    dyn_page_input.order_by = props.order_by;
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    dyn_page_model = await findOneModel(
-      {
-        id: dyn_page_id,
-        is_deleted: 0,
-      },
-      undefined,
-      {
-        notLoading: true,
-      },
-    );
-    if (!dyn_page_model) {
-      uni.showToast({
-        title: "动态页面 已被删除",
-        icon: "none",
-      });
-    }
-    dyn_page_input = intoInputDynPage(
-      dyn_page_model,
-    );
+  } finally {
+    await nextTick();
+    is_form_hydrating = false;
   }
 }
 
