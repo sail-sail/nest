@@ -632,8 +632,9 @@ export async function findByUniqueDictbizDetail(
   }
   const models: DictbizDetailModel[] = [ ];
   {
+    let canFind = true;
     if (search0.dictbiz_id == null) {
-      return [ ];
+      canFind = false;
     }
     let dictbiz_id: DictbizId[] = [ ];
     if (!Array.isArray(search0.dictbiz_id) && search0.dictbiz_id != null) {
@@ -642,19 +643,21 @@ export async function findByUniqueDictbizDetail(
       dictbiz_id = search0.dictbiz_id || [ ];
     }
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllDictbizDetail(
-      {
-        dictbiz_id,
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllDictbizDetail(
+        {
+          dictbiz_id,
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

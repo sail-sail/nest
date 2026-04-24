@@ -631,24 +631,27 @@ export async function findByUniqueOptbiz(
   }
   const models: OptbizModel[] = [ ];
   {
+    let canFind = true;
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
     if (search0.ky == null) {
-      return [ ];
+      canFind = false;
     }
     const ky = search0.ky;
-    const modelTmps = await findAllOptbiz(
-      {
-        lbl,
-        ky,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllOptbiz(
+        {
+          lbl,
+          ky,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

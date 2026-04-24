@@ -663,7 +663,7 @@ let selectedIds = $(tableSelected.selectedIds as unknown as ServerLogId[]);
 
 watch(
   () => selectedIds,
-  (oldVal, newVal) => {
+  (newVal, oldVal) => {
     if (!inited) {
       return;
     }

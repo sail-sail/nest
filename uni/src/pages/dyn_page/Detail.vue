@@ -548,7 +548,9 @@ async function onRefresh() {
     formRef?.resetValidation();
     if (dialogAction === "add") {
       dyn_page_input = await getDefaultInputDynPage();
-      dyn_page_input.order_by = props.order_by;
+      if (props.order_by) {
+        dyn_page_input.order_by = props.order_by;
+      }
     } else if (dialogAction === "copy") {
       if (!dyn_page_id) {
         uni.showToast({
@@ -576,7 +578,9 @@ async function onRefresh() {
       dyn_page_input = intoInputDynPage(
         dyn_page_model,
       );
-      dyn_page_input.order_by = props.order_by;
+      if (props.order_by) {
+        dyn_page_input.order_by = props.order_by;
+      }
     } else if (dialogAction === "edit" || dialogAction === "view") {
       dyn_page_model = await findOneModel(
         {
