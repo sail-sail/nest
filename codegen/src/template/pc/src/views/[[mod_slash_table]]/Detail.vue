@@ -5002,7 +5002,7 @@ const <#=county_lbl_column.COLUMN_NAME#>_city_picker = $computed<[string, string
       dialogModel.<#=province_code_column.COLUMN_NAME#> ?? "",
       dialogModel.<#=city_code_column.COLUMN_NAME#> ?? "",
       dialogModel.<#=county_code_column.COLUMN_NAME#> ?? "",
-    ];
+    ] as [string, string, string];
   },
   async set(codes) {
     const <#=province_code_column.COLUMN_NAME#> = codes?.[0] ?? "";
