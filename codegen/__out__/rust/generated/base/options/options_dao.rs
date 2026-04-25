@@ -1431,14 +1431,12 @@ pub async fn find_by_unique_options(
   
   let mut models: Vec<OptionsModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.lbl.is_none() ||
-      search.ky.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.lbl.is_none() ||
+    search.ky.is_none()
+  {
+    vec![]
+  } else {
     let search = OptionsSearch {
       lbl: search.lbl.clone(),
       ky: search.ky.clone(),
@@ -2326,7 +2324,7 @@ pub async fn update_by_id_options(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }

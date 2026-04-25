@@ -1474,7 +1474,9 @@ async function onRefresh() {
       <#=table#>_input = await getDefaultInput<#=Table_Up#>();<#
       if (hasOrderBy) {
       #>
-      <#=table#>_input.order_by = props.order_by;<#
+      if (props.order_by) {
+        <#=table#>_input.order_by = props.order_by;
+      }<#
       }
       #>
     } else if (dialogAction === "copy") {
@@ -1506,7 +1508,9 @@ async function onRefresh() {
       );<#
       if (hasOrderBy) {
       #>
-      <#=table#>_input.order_by = props.order_by;<#
+      if (props.order_by) {
+        <#=table#>_input.order_by = props.order_by;
+      }<#
       }
       #>
     } else if (dialogAction === "edit" || dialogAction === "view") {

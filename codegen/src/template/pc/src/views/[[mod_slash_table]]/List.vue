@@ -3522,7 +3522,7 @@ let selectedIds = $(tableSelected.selectedIds as unknown as <#=Table_Up#>Id[]);
 
 watch(
   () => selectedIds,
-  (oldVal, newVal) => {
+  (newVal, oldVal) => {
     if (!inited) {
       return;
     }
@@ -4944,7 +4944,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("forceDelete")) {<#
+  if (!permit("force_delete")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
