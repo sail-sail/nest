@@ -1451,14 +1451,12 @@ pub async fn find_by_unique_data_permit(
   
   let mut models: Vec<DataPermitModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.menu_id.is_none() ||
-      search.scope.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.menu_id.is_none() ||
+    search.scope.is_none()
+  {
+    vec![]
+  } else {
     let search = DataPermitSearch {
       menu_id: search.menu_id.clone(),
       scope: search.scope.clone(),
@@ -2367,7 +2365,7 @@ pub async fn update_by_id_data_permit(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }

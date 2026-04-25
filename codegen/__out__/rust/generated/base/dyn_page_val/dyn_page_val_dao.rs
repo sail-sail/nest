@@ -1205,15 +1205,13 @@ pub async fn find_by_unique_dyn_page_val(
   
   let mut models: Vec<DynPageValModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.ref_code.is_none() ||
-      search.ref_id.is_none() ||
-      search.code.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.ref_code.is_none() ||
+    search.ref_id.is_none() ||
+    search.code.is_none()
+  {
+    vec![]
+  } else {
     let search = DynPageValSearch {
       ref_code: search.ref_code.clone(),
       ref_id: search.ref_id.clone(),
@@ -1970,7 +1968,7 @@ pub async fn update_by_id_dyn_page_val(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }

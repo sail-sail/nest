@@ -1668,14 +1668,12 @@ pub async fn find_by_unique_menu(
   
   let mut models: Vec<MenuModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.parent_id.is_none() ||
-      search.lbl.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.parent_id.is_none() ||
+    search.lbl.is_none()
+  {
+    vec![]
+  } else {
     let search = MenuSearch {
       parent_id: search.parent_id.clone(),
       lbl: search.lbl.clone(),
@@ -2626,7 +2624,7 @@ pub async fn update_by_id_menu(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }
