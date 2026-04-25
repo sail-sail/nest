@@ -1595,13 +1595,11 @@ pub async fn find_by_unique_wx_usr(
   
   let mut models: Vec<WxUsrModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.openid.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.openid.is_none()
+  {
+    vec![]
+  } else {
     let search = WxUsrSearch {
       openid: search.openid.clone(),
       ..Default::default()
@@ -2592,7 +2590,7 @@ pub async fn update_by_id_wx_usr(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }

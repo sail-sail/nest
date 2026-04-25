@@ -1340,13 +1340,11 @@ pub async fn find_by_unique_wx_app_token(
   
   let mut models: Vec<WxAppTokenModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.wx_app_id.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.wx_app_id.is_none()
+  {
+    vec![]
+  } else {
     let search = WxAppTokenSearch {
       wx_app_id: search.wx_app_id.clone(),
       ..Default::default()
@@ -2131,7 +2129,7 @@ pub async fn update_by_id_wx_app_token(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }

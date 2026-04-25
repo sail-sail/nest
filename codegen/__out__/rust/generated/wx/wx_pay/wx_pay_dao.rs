@@ -1568,13 +1568,11 @@ pub async fn find_by_unique_wx_pay(
   
   let mut models: Vec<WxPayModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.appid.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.appid.is_none()
+  {
+    vec![]
+  } else {
     let search = WxPaySearch {
       appid: search.appid.clone(),
       ..Default::default()
@@ -1589,13 +1587,11 @@ pub async fn find_by_unique_wx_pay(
   };
   models.append(&mut models_tmp);
   
-  let mut models_tmp = {
-    if
-      search.notify_url.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.notify_url.is_none()
+  {
+    vec![]
+  } else {
     let search = WxPaySearch {
       notify_url: search.notify_url.clone(),
       ..Default::default()
@@ -1610,13 +1606,11 @@ pub async fn find_by_unique_wx_pay(
   };
   models.append(&mut models_tmp);
   
-  let mut models_tmp = {
-    if
-      search.refund_notify_url.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.refund_notify_url.is_none()
+  {
+    vec![]
+  } else {
     let search = WxPaySearch {
       refund_notify_url: search.refund_notify_url.clone(),
       ..Default::default()
@@ -2624,7 +2618,7 @@ pub async fn update_by_id_wx_pay(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }

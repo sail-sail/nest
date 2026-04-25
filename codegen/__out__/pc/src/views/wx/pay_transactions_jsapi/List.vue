@@ -892,7 +892,7 @@ let selectedIds = $(tableSelected.selectedIds as unknown as PayTransactionsJsapi
 
 watch(
   () => selectedIds,
-  (oldVal, newVal) => {
+  (newVal, oldVal) => {
     if (!inited) {
       return;
     }

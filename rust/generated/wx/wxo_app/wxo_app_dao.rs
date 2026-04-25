@@ -1807,13 +1807,11 @@ pub async fn find_by_unique_wxo_app(
   
   let mut models: Vec<WxoAppModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.code.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.code.is_none()
+  {
+    vec![]
+  } else {
     let search = WxoAppSearch {
       code: search.code.clone(),
       ..Default::default()
@@ -1828,13 +1826,11 @@ pub async fn find_by_unique_wxo_app(
   };
   models.append(&mut models_tmp);
   
-  let mut models_tmp = {
-    if
-      search.lbl.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.lbl.is_none()
+  {
+    vec![]
+  } else {
     let search = WxoAppSearch {
       lbl: search.lbl.clone(),
       ..Default::default()
@@ -1849,13 +1845,11 @@ pub async fn find_by_unique_wxo_app(
   };
   models.append(&mut models_tmp);
   
-  let mut models_tmp = {
-    if
-      search.appid.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.appid.is_none()
+  {
+    vec![]
+  } else {
     let search = WxoAppSearch {
       appid: search.appid.clone(),
       ..Default::default()
@@ -3025,7 +3019,7 @@ pub async fn update_by_id_wxo_app(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }
