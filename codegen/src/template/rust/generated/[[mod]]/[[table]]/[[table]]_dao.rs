@@ -2075,7 +2075,16 @@ pub async fn find_all_<#=table#>(
   let is_result_limit = page.as_ref()
     .and_then(|item| item.is_result_limit)
     .unwrap_or(true);
-  let page_query = get_page_query(page);
+  let page_query = get_page_query(page);<#
+  if (opts?.isHasForUpdate) {
+  #>
+  let for_update_str = if options.as_ref().and_then(|x| x.get_is_for_update()).unwrap_or(false) {
+    " for update"
+  } else {
+    ""
+  };<#
+  }
+  #>
   
   let sql = format!(r#"select f.* from (select t.*<#
   for (let i = 0; i < columns.length; i++) {
@@ -2159,7 +2168,11 @@ pub async fn find_all_<#=table#>(
   {lang_sql}<#
   }
   #>
-  from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
+  from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}<#
+  if (opts?.isHasForUpdate) {
+  #>{for_update_str}<#
+  }
+  #>"#);
   
   let args = args.into();<#
   if (cache) {
