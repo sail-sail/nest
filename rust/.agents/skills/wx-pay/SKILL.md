@@ -35,23 +35,24 @@ use crate::wx::pay_transactions_jsapi::pay_transactions_jsapi_model::{
   RequestPaymentOptions,
 };
 use crate::wx::pay_transactions_jsapi::pay_transactions_jsapi_dao::transactions_jsapi;
+use crate::wx::wx_pay_notice::wx_pay_notice_model::WX_PAY_NOTICE_ACTION_PAY_XXX;
 
 pub async fn pay_xxx(
   options: Option<Options>,
 ) -> Result<RequestPaymentOptions> {
   
-  // 1. 业务校验 & 创建待支付记录
+  // 业务校验 & 创建待支付记录
   let record_id = create_xxx_record(...).await?;
   
-  // 2. 构造 attach2（回调时用于识别业务）
+  // 构造 attach2（回调时用于识别业务）
   let attach2 = serde_json::json!({
-    "action": "pay_xxx",           // 业务标识
+    "action": WX_PAY_NOTICE_ACTION_PAY_XXX,
     "payload": {
       "record_id": record_id,      // 回调时需要的数据
     },
   }).to_string();
   
-  // 3. 调用统一下单
+  // 调用统一下单
   let request_payment_options = transactions_jsapi(
     TransactionsJsapiInput {
       description: "订单支付".to_string(),  // 支付描述
@@ -68,11 +69,17 @@ pub async fn pay_xxx(
 
 ### Step 2: 后端 - 支付回调处理
 
+先在 `app/wx/wx_pay_notice/wx_pay_notice_model.rs` 定义共享 action 常量，避免下单与回调两处字符串漂移:
+
+```rust
+pub static WX_PAY_NOTICE_ACTION_PAY_XXX: &str = "pay_xxx";
+```
+
 **2.1** 在 `app/wx/wx_pay_notice/wx_pay_notice_service.rs` 的 `wx_pay_notify` 函数末尾添加 `if action ==` 分支:
 
 ```rust
 // 在 wx_pay_notify 函数末尾的 if action == "..." 区域添加
-} else if action == "pay_xxx" {
+} else if action == WX_PAY_NOTICE_ACTION_PAY_XXX {
   let payload = &attach2_obj["payload"];
   let record_id = payload.get("record_id")
     .and_then(|v| v.as_str())
@@ -228,7 +235,7 @@ async function onPay() {
   // 检查最终状态
   if (trade_state !== PayTransactionsJsapiTradeState.Success) {
     uni.showToast({
-      title: "未查询到支付结果，请稍后再刷新",
+      title: "暂未查询到支付结果，请稍后再刷新",
       icon: "none",
       duration: 3000,
     });
