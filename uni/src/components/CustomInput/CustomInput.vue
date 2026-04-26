@@ -2,7 +2,7 @@
 <tm-input
   v-if="!readonly"
   ref="inputRef"
-  :model-value="modelValue"
+  :model-value="inputModelValue"
   class="custom_input w-full"
   :class="{
     'custom_input_readonly': readonly
@@ -13,7 +13,7 @@
   :selection-start="selectionStart"
   :selection-end="selectionEnd"
   width="100%"
-  :show-clear="props.clearable == null ? ((modelValue != null && modelValue !== '') ? !readonly : false) : props.clearable"
+  :show-clear="props.clearable == null ? ((inputModelValue != null && inputModelValue !== '') ? !readonly : false) : props.clearable"
   :readonly="readonly"
   :placeholder="(readonly || !props.pageInited) ? '' : props.placeholder"
   :placeholder-style="($attrs['placeholder-style'] as (string | undefined))"
@@ -211,6 +211,31 @@ const readonly = $computed(() => {
 
 const modelValue = ref(props.modelValue);
 
+function shouldHideInputZero(value: unknown) {
+  if (!props.isHideZero || value == null || value === "") {
+    return false;
+  }
+  if (props.isDecimal) {
+    try {
+      return new Decimal(value.toString()).isZero();
+    } catch {
+      return false;
+    }
+  }
+  if (props.isNumber || props.type === "number" || props.type === "digit" || props.type === "decimal") {
+    const numberValue = Number(value);
+    return !isNaN(numberValue) && numberValue === 0;
+  }
+  return false;
+}
+
+const inputModelValue = $computed(() => {
+  if (shouldHideInputZero(modelValue.value)) {
+    return "";
+  }
+  return modelValue.value;
+});
+
 watch(
   () => props.modelValue,
   () => {
@@ -339,7 +364,7 @@ async function focus() {
   selectionStart.value = undefined;
   selectionEnd.value = undefined;
   await nextTick();
-  const len = modelValue.value?.toString().length || 0;
+  const len = inputModelValue.value?.toString().length || 0;
   selectionStart.value = len;
   selectionEnd.value = len;
   isFocus.value = true;

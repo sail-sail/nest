@@ -129,6 +129,7 @@ watch(
 1. 相同前缀合并：`text-sm text-white` → `un-text="sm white"`
 2. 自引用用 `~`：`flex flex-col` → `un-flex="~ col"`
 3. 无参数用无值属性：`rounded` → `un-rounded`
+4. 单边边框如果同时写 `solid`/颜色, 必须先用 `0` 清零其它边框: `un-border="0 b-1 solid [#f0f2f5]"`, 不要写成 `un-border="b-1 solid [#f0f2f5]"`
 
 ## 自动引入的变量和组件
 由 `unplugin-auto-import` 自动生成，无需手动维护。配置在 `vite.config.mts` 的 `AutoImport({imports:[]})` 中
