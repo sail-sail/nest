@@ -1677,6 +1677,9 @@ pub struct Options {
   /// 创建状态
   is_creating: Option<bool>,
   
+  /// 是否锁定记录, 默认 false
+  is_for_update: Option<bool>,
+  
 }
 
 impl Options {
@@ -1693,6 +1696,7 @@ impl Options {
       ids_limit: None,
       is_silent_mode: None,
       is_creating: None,
+      is_for_update: None,
     }
   }
   
@@ -1731,6 +1735,14 @@ impl Debug for Options {
     if let Some(is_silent_mode) = self.is_silent_mode
       && is_silent_mode {
         item = item.field("is_silent_mode", &is_silent_mode);
+      }
+    if let Some(is_creating) = self.is_creating
+      && is_creating {
+        item = item.field("is_creating", &is_creating);
+      }
+    if let Some(is_for_update) = self.is_for_update
+      && is_for_update {
+        item = item.field("is_for_update", &is_for_update);
       }
     item.finish()
   }
@@ -1843,6 +1855,20 @@ impl Options {
   #[allow(dead_code)]
   pub fn get_is_creating(&self) -> Option<bool> {
     self.is_creating
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn set_is_for_update(self, is_for_update: Option<bool>) -> Self {
+    let mut self_ = self;
+    self_.is_for_update = is_for_update;
+    self_
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn get_is_for_update(&self) -> Option<bool> {
+    self.is_for_update
   }
   
 }
