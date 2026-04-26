@@ -1144,6 +1144,11 @@ export interface TablesConfigItem {
      */
     is_with_auth_optional?: boolean;
     
+    /**
+     * sql 查询是否启用 for update, 默认为 false
+     */
+    isHasForUpdate?: boolean;
+    
   },
   columns: TableColumn[];
   records?: any[];
