@@ -326,12 +326,6 @@ export interface TableColumn {
      */
     isForceJoinQuery?: boolean;
     
-    /**
-     * dao 层的sql是否强制连表查询, 默认为 无 modelLabel 为 true, 有 modelLabel 为 false
-     * 如果为 true, 则不管是否有 modelLabel, 都强制连表查询
-     */
-    isForceJoinQuery?: boolean;
-    
   },
   
   /** foreignTabs 弹出框的大小, 默认为 medium */
