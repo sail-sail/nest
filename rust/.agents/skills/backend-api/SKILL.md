@@ -196,6 +196,7 @@ use generated::common::context::{
 - `options` 和所有 `id` 类型都是 `Copy`，不要 `.clone()`
 - Input 中 `_lbl` 字段无需传递，DAO 会自动生成
 - 修改操作通常加 `.with_tran()`
+- 需要行锁时, 优先复用 generated DAO。若表在 codegen 配置里已开启 `opts.isHasForUpdate: true`, 则在事务内调用 `find_one[_ok]_*`、`find_by_id[_ok]_*`、`find_all_*` 时传 `Options::from(options).set_is_for_update(Some(true)).into()` 即可追加 `for update`, 不要为了加锁回退到手写 SQL
 - 需要登录的接口加 `.with_auth()?`
 - 函数定义和调用时，多参数统一换行
 - 如需操作附件，使用 [generated/common/oss/oss_dao.rs](../../../generated/common/oss/oss_dao.rs)
