@@ -496,7 +496,7 @@ async function onSave(
     if (firstValid) {
       uni.showToast({
         title: firstValid.message,
-        icon: "error",
+        icon: "none",
       });
     }
     return;
