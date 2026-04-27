@@ -21,8 +21,7 @@ use base64::{engine::general_purpose, Engine};
 use regex::Regex;
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions, MySqlRow};
-use sqlx::{Pool, MySql, Executor, FromRow, Row};
-use sqlx::pool::PoolConnection;
+use sqlx::{Pool, MySql, FromRow, Row, Transaction};
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
@@ -56,6 +55,8 @@ static DB_POOL_DW: OnceLock<Pool<MySql>> = OnceLock::new();
 static IS_DEBUG: OnceLock<bool> = OnceLock::new();
 static MULTIPLE_SPACE_REGEX: OnceLock<Regex> = OnceLock::new();
 
+type DbTransaction = Transaction<'static, MySql>;
+
 fn server_token_timeout() -> i64 {
   SERVER_TOKEN_TIMEOUT.get_or_init(|| env::var("server_tokentimeout")
     .unwrap_or("3600".to_owned())
@@ -77,6 +78,16 @@ fn db_pool_dw() -> Pool<MySql> {
     std::process::exit(1);
   }))
     .clone()
+}
+
+async fn get_transaction_conn_id(
+  tran: &mut DbTransaction,
+) -> Result<u64> {
+  let row = sqlx::query("select connection_id()")
+    .fetch_one(tran.as_mut())
+    .await?;
+  let connection_id: u64 = row.try_get(0).unwrap_or(0);
+  Ok(connection_id)
 }
 
 pub fn is_debug() -> bool {
@@ -380,9 +391,7 @@ impl Ctx {
   async fn query_conn_id(&self) -> Result<u64> {
     let mut tran = self.tran.lock().await;
     if let Some(tran) = tran.as_mut() {
-      let row = tran.fetch_one("select connection_id()").await?;
-      let connection_id: u64 = row.try_get(0).unwrap_or(0);
-      Ok(connection_id)
+      get_transaction_conn_id(tran).await
     } else {
       Ok(0)
     }
@@ -396,12 +405,8 @@ impl Ctx {
         return Ok(());
       }
     }
-    let mut tran = db_pool().acquire().await?;
-    tran.execute("begin").await?;
-    let connection_id: u64 = tran
-      .fetch_one("select connection_id()").await?
-      .try_get(0)
-      .unwrap_or(0);
+    let mut tran = db_pool().begin().await?;
+    let connection_id = get_transaction_conn_id(&mut tran).await?;
     info!(
       "{req_id} begin; -- {connection_id}",
       req_id = self.req_id,
@@ -418,10 +423,7 @@ impl Ctx {
     let mut tran = self.tran.lock().await;
     let tran = tran.take();
     if let Some(mut tran) = tran {
-      let connection_id: u64 = tran
-        .fetch_one("select connection_id()").await?
-        .try_get(0)
-        .unwrap_or(0);
+      let connection_id = get_transaction_conn_id(&mut tran).await?;
       if let Err(err) = res {
         let exception = err.downcast_ref::<ServiceException>();
         if let Some(exception) = exception {
@@ -463,13 +465,13 @@ impl Ctx {
             "{req_id} rollback; -- {connection_id}",
             req_id = self.req_id,
           );
-          tran.execute("rollback").await?;
+          tran.rollback().await?;
         } else {
           info!(
             "{req_id} commit; -- {connection_id}",
             req_id = self.req_id,
           );
-          tran.execute("commit").await?;
+          tran.commit().await?;
         }
         return Err(err);
       }
@@ -477,7 +479,7 @@ impl Ctx {
         "{req_id} commit; -- {connection_id}",
         req_id = self.req_id,
       );
-      tran.execute("commit").await?;
+      tran.commit().await?;
       return res;
     }
     if let Err(err) = res {
@@ -623,7 +625,7 @@ impl Ctx {
           .ok_or_else(|| {
             eyre!("Transaction not started")
           })?;
-        let res = tran.execute(query).await;
+        let res = query.execute(tran.as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
           error!(
@@ -830,7 +832,7 @@ impl Ctx {
           .ok_or_else(|| {
             eyre!("Transaction not started")
           })?;
-        let res = query.fetch_all((*tran).as_mut()).await;
+        let res = query.fetch_all(tran.as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
           error!(
@@ -1039,7 +1041,7 @@ impl Ctx {
           .ok_or_else(|| {
             eyre!("Transaction not started")
           })?;
-        let res = query.fetch_optional((*tran).as_mut()).await;
+        let res = query.fetch_optional(tran.as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
           error!(
@@ -1170,7 +1172,7 @@ pub struct Ctx {
   
   req_id: Arc<SmolStr>,
   
-  tran: Arc<Mutex<Option<PoolConnection<MySql>>>>,
+  tran: Arc<Mutex<Option<DbTransaction>>>,
   
   is_resful: bool,
   
@@ -1290,30 +1292,27 @@ impl Ctx {
         let mut tran = ctx.tran.lock().await;
         let tran = tran.take();
         if let Some(mut tran) = tran {
-          let connection_id: u64 = tran
-            .fetch_one("select connection_id()").await?
-            .try_get(0)
-            .unwrap_or(0);
+          let connection_id = get_transaction_conn_id(&mut tran).await?;
           if is_rollback {
             if is_success {
               info!(
                 "{req_id} commit; -- {connection_id}",
                 req_id = ctx.req_id,
               );
-              tran.execute("commit").await?;
+              tran.commit().await?;
             } else {
               info!(
                 "{req_id} rollback; -- {connection_id}",
                 req_id = ctx.req_id,
               );
-              tran.execute("rollback").await?;
+              tran.rollback().await?;
             }
           } else {
             info!(
               "{req_id} commit; -- {connection_id}",
               req_id = ctx.req_id,
             );
-            tran.execute("commit").await?;
+            tran.commit().await?;
           }
         }
       }

@@ -15,6 +15,7 @@ description: 表字段配置规范。配置 {mod}.ts、给表添加/修改字段
 - `opts.uniques`: 唯一约束, 需要唯一性的字段组合, 否则无需配置
 - `opts.defaultSort`: 需要默认排序的字段, 否则无需配置, 不配置则默认创建时间降序 `create_time` `descending`
 - `opts.cache`: 是否缓存, 需要缓存时配置
+- `opts.isHasForUpdate`: 让 codegen 为该表的 generated 查询 SQL 生成 `for update` 能力。配置后, 后端在事务里调用 generated 的 `find_one/find_one_ok/find_by_id/find_by_id_ok/find_all` 等查询时, 只要传入 `Options::from(options).set_is_for_update(Some(true)).into()` 就会在 SQL 末尾追加 `for update`, 不需要再手写锁表 SQL
 - `opts.inlineForeignTabs`: 内联关联表配置, 需要内联展示关联表时配置, 主表从表聚合关系使用
 
 ### defaultSort 是全局配置
