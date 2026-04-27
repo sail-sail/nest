@@ -843,8 +843,9 @@ export async function findByUniqueDept(
   }
   const models: DeptModel[] = [ ];
   {
+    let canFind = true;
     if (search0.parent_id == null) {
-      return [ ];
+      canFind = false;
     }
     let parent_id: DeptId[] = [ ];
     if (!Array.isArray(search0.parent_id) && search0.parent_id != null) {
@@ -853,19 +854,21 @@ export async function findByUniqueDept(
       parent_id = search0.parent_id || [ ];
     }
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllDept(
-      {
-        parent_id,
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllDept(
+        {
+          parent_id,
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

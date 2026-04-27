@@ -1,10 +1,10 @@
 <template>
 <tm-picker-date
   v-bind="$attrs"
-  v-model="modelValue"
+  v-model="pickerModelValue"
   v-model:model-str="modelValueStr"
   :format="props.format"
-  :format-sync-value="props.formatSyncValue"
+  :format-sync-value="pickerFormatSyncValue"
   class="custom_date"
   :class="{
     'custom_date_readonly': readonly,
@@ -39,6 +39,7 @@ const props = withDefaults(
     fontColor?: string;
     format?: string;
     formatSyncValue?: boolean;
+    valueFormat?: string;
   }>(),
   {
     readonly: undefined,
@@ -50,6 +51,7 @@ const props = withDefaults(
     fontColor: undefined,
     format: "YYYY-MM-DD",
     formatSyncValue: false,
+    valueFormat: undefined,
   },
 );
 
@@ -68,6 +70,48 @@ const readonly = $computed(() => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const modelValue = defineModel<any>();
 const modelValueStr = defineModel<string>("modelValueStr");
+
+const pickerFormatSyncValue = $computed(() => {
+  if (props.valueFormat) {
+    return false;
+  }
+  return props.formatSyncValue;
+});
+
+const coverModelValueToPickerValue = (value?: string) => {
+  if (!value || !props.valueFormat) {
+    return value;
+  }
+
+  const dateValue = dayjs(value);
+  if (!dateValue.isValid()) {
+    return value;
+  }
+
+  return dateValue.format("YYYY-MM-DD HH:mm:ss");
+};
+
+const coverPickerValueToModelValue = (value?: string) => {
+  if (!value || !props.valueFormat) {
+    return value;
+  }
+
+  const dateValue = dayjs(value);
+  if (!dateValue.isValid()) {
+    return value;
+  }
+
+  return dateValue.format(props.valueFormat);
+};
+
+const pickerModelValue = computed({
+  get() {
+    return coverModelValueToPickerValue(modelValue.value);
+  },
+  set(value?: string) {
+    modelValue.value = coverPickerValueToModelValue(value);
+  },
+});
 
 </script>
 

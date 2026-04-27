@@ -456,7 +456,9 @@ export default {
     cursor: no-drop;
   }
   &[disabled = false]{
+	/* #ifdef H5 */
     cursor: pointer;
+	/* #endif */
   }
 }
 .tmTabsDisabled {

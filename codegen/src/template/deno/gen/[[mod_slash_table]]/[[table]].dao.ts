@@ -3200,6 +3200,8 @@ export async function findByUnique<#=Table_Up#>(
     const uniques = opts.uniques[i];
   #>
   {<#
+    #>
+    let canFind = true;<#
     for (let k = 0; k < uniques.length; k++) {
       const unique = uniques[k];
       const column = columns.find((item) => item.COLUMN_NAME === unique);
@@ -3229,7 +3231,7 @@ export async function findByUnique<#=Table_Up#>(
       if (isPassword) continue;
     #>
     if (search0.<#=unique#> == null) {
-      return [ ];
+      canFind = false;
     }<#
     if (
       foreignKey
@@ -3296,20 +3298,22 @@ export async function findByUnique<#=Table_Up#>(
     #><#
     }
     #>
-    const modelTmps = await findAll<#=Table_Up#>(
-      {<#
-        for (let k = 0; k < uniques.length; k++) {
-          const unique = uniques[k];
-        #>
-        <#=unique#>,<#
-        }
-        #>
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAll<#=Table_Up#>(
+        {<#
+          for (let k = 0; k < uniques.length; k++) {
+            const unique = uniques[k];
+          #>
+          <#=unique#>,<#
+          }
+          #>
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }<#
   }
   #>
