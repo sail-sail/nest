@@ -498,7 +498,7 @@ export async function findByUniqueDynPageVal(
     if (search0.ref_code == null) {
       canFind = false;
     }
-    const ref_code = search0.ref_code;
+    const ref_code = search0.ref_code ?? undefined;
     if (search0.ref_id == null) {
       canFind = false;
     }
