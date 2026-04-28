@@ -15,6 +15,8 @@ metadata:
 - 增加业务校验、日志、权限、事务
 - 在 `app/{mod}/{table}/` 中新增 `*_graphql.rs`、`*_resolver.rs`、`*_service.rs`、`*_model.rs`
 - 只有当 `app/` 无法承载，且能力需要被 generated 内部复用时，才扩展 `generated/`
+- 空白行代码缩进要保持和上一行一致, 方便后续添加代码
+- rust编译慢可慢慢等
 
 ## 修改决策顺序
 
