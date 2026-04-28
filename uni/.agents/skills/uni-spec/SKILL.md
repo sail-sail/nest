@@ -11,6 +11,10 @@ metadata:
 - 当 `[ ]` 代表的是值时中间有空格, 例如: `const arr = [ 1, 2, 3 ];`, `const arr = [ ];`, `{ }` 也同理
 - 函数定义和调用的时候, 参数都换行, vue 组件属性也换行
 - vue 相关的类型都无需导入, 如 `ref`, `computed` 等, 直接使用即可, 因为 `vite.config.mts` 配置了自动导入 `AutoImport`
+- 空白行代码缩进要保持和上一行一致, 方便后续添加代码
+- 大块标签之间要留空行
+- 结构标签上面写上注释
+- 代码检查应该用 `pnpm typecheck`, `tsconfig_tc.json` 才是正确的类型检查配置，`tsconfig.json` 只是为了编辑器提示
 
 # form表单
 
@@ -24,7 +28,7 @@ metadata:
   :required="false"
 >
   <CustomInput
-    v-model="dyn_page_field_input.code"
+    v-model="usr_input.code"
     placeholder="请输入 编码"
   ></CustomInput>
 </tm-form-item>
@@ -36,6 +40,59 @@ metadata:
 - `numeral` - 数字格式化, 可直接使用, 无需引入
 
 # 常用开发技巧
+
+## 本地静态 Icon
+- 当前 uni 仓库已在 `uno.config.ts` 和 `uno_uni.config.ts` 中通过 UnoCSS `presetIcons` 注册了 `iconfont` collection，会自动读取 `src/assets/iconfont/{icon_name}.svg`
+- 对这类本地单色 svg 图标, 优先使用 `un-i="iconfont-图标名"` 挂在 `view` / `text` 等普通节点上，不要再写成 `image + src`，也不要用 `new URL(...svg, import.meta.url)` 去手动引资源
+- 图标颜色、尺寸直接用 UnoCSS 原子属性控制，例如 `un-text="[#f08b6a]"`、`un-w="5"`、`un-h="5"`
+- 仅当资源本身需要保留原始多色效果、渐变、位图展示时，才继续使用 `image` 标签
+- 可参考 `src/pages/product/Detail.vue` 的收藏按钮写法
+
+```vue
+<view
+  un-i="iconfont-favorite_service"
+  un-w="5"
+  un-h="5"
+  un-text="[#f08b6a]"
+></view>
+```
+
+## 富文本展示
+- 像 `detail` 这类富文本字段, 在当前仓库里通常保存的是 oss/tmpfile 附件 id, 不是 html 正文
+- 移动端展示时不要直接把字段值传给组件, 应先通过 `getDownloadUrl({ id, inline: "1" })` 拿到下载地址, 再用 `uni.request` 拉取 html 字符串
+- 模板中使用 `tm-html` 渲染拉取回来的 html 内容, 可参考 `src/pages/product/Detail.vue`
+
+```vue
+<view
+  v-if="detail_html"
+>
+  <tm-html
+    :value="detail_html"
+  ></tm-html>
+</view>
+```
+
+```ts
+async function loadDetailHtml(
+  detail?: string,
+) {
+  detail_html = "";
+  if (!detail) {
+    return;
+  }
+  const url = getDownloadUrl({
+    id: detail,
+    inline: "1",
+  });
+  const res = await uni.request({
+    url,
+    method: "GET",
+  });
+  detail_html = typeof res.data === "string"
+    ? res.data
+    : String(res.data || "");
+}
+```
 
 ## 页面参数接收
 - 使用 `onLoad` 生命周期钩子接收页面跳转传递的参数，**禁止**使用 `getCurrentPages()` 方式获取参数
