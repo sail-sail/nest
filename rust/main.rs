@@ -277,16 +277,16 @@ pub async fn graphql_handler(
   response
 }
 
-#[cfg(debug_assertions)]
-#[handler]
-pub fn graphql_playground(
-) -> impl poem::IntoResponse {
-  poem::web::Html(
-    async_graphql::http::playground_source(
-      async_graphql::http::GraphQLPlaygroundConfig::new("/graphql")
-    )
-  )
-}
+// #[cfg(debug_assertions)]
+// #[handler]
+// pub fn graphql_playground(
+// ) -> impl poem::IntoResponse {
+//   poem::web::Html(
+//     async_graphql::http::playground_source(
+//       async_graphql::http::GraphQLPlaygroundConfig::new("/graphql")
+//     )
+//   )
+// }
 
 #[tokio::main]
 #[allow(clippy::too_many_lines)]
@@ -471,10 +471,10 @@ async fn main() -> Result<(), std::io::Error> {
   
   let app = {
     let mut app = Route::new();
-    #[cfg(debug_assertions)]
-    {
-      app = app.at("/graphiql", get(graphql_playground));
-    }
+    // #[cfg(debug_assertions)]
+    // {
+    //   app = app.at("/graphiql", get(graphql_playground));
+    // }
     
     app = app.at("/metrics/graphql", metrics_graphql.exporter());
     
