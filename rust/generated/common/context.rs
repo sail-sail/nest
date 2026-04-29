@@ -7,7 +7,6 @@ use async_graphql::SimpleObject;
 use poem::http::{HeaderName, HeaderValue};
 use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
-use uuid::Uuid;
 use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
 use smol_str::SmolStr;
@@ -610,9 +609,6 @@ impl Ctx {
           ArgType::Json(s) => {
             query = query.bind(s);
           }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
           ArgType::SmolStr(s) => {
             query = query.bind(s.as_str());
           }
@@ -699,9 +695,6 @@ impl Ctx {
           query = query.bind(s);
         }
         ArgType::Json(s) => {
-          query = query.bind(s);
-        }
-        ArgType::Uuid(s) => {
           query = query.bind(s);
         }
         ArgType::SmolStr(s) => {
@@ -817,9 +810,6 @@ impl Ctx {
           ArgType::Json(s) => {
             query = query.bind(s);
           }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
           ArgType::SmolStr(s) => {
             query = query.bind(s.as_str());
           }
@@ -906,9 +896,6 @@ impl Ctx {
           query = query.bind(s);
         }
         ArgType::Json(s) => {
-          query = query.bind(s);
-        }
-        ArgType::Uuid(s) => {
           query = query.bind(s);
         }
         ArgType::SmolStr(s) => {
@@ -1026,9 +1013,6 @@ impl Ctx {
           ArgType::Json(s) => {
             query = query.bind(s);
           }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
           ArgType::SmolStr(s) => {
             query = query.bind(s.as_str());
           }
@@ -1114,9 +1098,6 @@ impl Ctx {
           query = query.bind(s);
         }
         ArgType::Json(s) => {
-          query = query.bind(s);
-        }
-        ArgType::Uuid(s) => {
           query = query.bind(s);
         }
         ArgType::SmolStr(s) => {
@@ -1391,7 +1372,6 @@ pub enum ArgType {
   DateTime(NaiveDateTime),
   Time(NaiveTime),
   Json(serde_json::Value),
-  Uuid(Uuid),
   SmolStr(SmolStr),
 }
 
@@ -1421,7 +1401,6 @@ impl Serialize for ArgType {
       ArgType::DateTime(value) => serializer.serialize_str(&value.format("%Y-%m-%d %H:%M:%S").to_string()),
       ArgType::Time(value) => serializer.serialize_str(&value.format("%H:%M:%S").to_string()),
       ArgType::Json(value) => serializer.serialize_str(&value.to_string()),
-      ArgType::Uuid(value) => serializer.serialize_str(&value.to_string()),
       ArgType::SmolStr(value) => serializer.serialize_str(value.as_str()),
     }
   }
@@ -1450,7 +1429,6 @@ impl Display for ArgType {
       ArgType::DateTime(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
       ArgType::Time(value) => write!(f, "{}", value.format("%H:%M:%S")),
       ArgType::Json(value) => write!(f, "{value}"),
-      ArgType::Uuid(value) => write!(f, "{value}"),
       ArgType::SmolStr(value) => write!(f, "{value}"),
     }
   }
@@ -1609,12 +1587,6 @@ impl From<NaiveTime> for ArgType {
 impl From<serde_json::Value> for ArgType {
   fn from(value: serde_json::Value) -> Self {
     ArgType::Json(value)
-  }
-}
-
-impl From<Uuid> for ArgType {
-  fn from(value: Uuid) -> Self {
-    ArgType::Uuid(value)
   }
 }
 
