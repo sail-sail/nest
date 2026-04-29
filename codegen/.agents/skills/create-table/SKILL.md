@@ -1,6 +1,6 @@
 ---
 name: create-table
-description: 数据库建表规范。创建新表时必须遵循
+description: 数据库建表规范。创建新表 SQL 时必须遵循；SQL 建完后生成 {mod}.ts 配置还要继续读取 table-config skill
 ---
 
 # 建表规范
@@ -37,6 +37,8 @@ description: 数据库建表规范。创建新表时必须遵循
 ```
 
 - 注意: 这些审计字段都不是必须的, 可根据业务需要选择性添加, 例如: 不需要租户隔离就不需要 `tenant_id` 字段, 不需要软删除就不需要 `is_deleted` 相关字段
+- `lbl` 是绝大多数业务主表的基础显示字段; 纯中间表、日志表、令牌表这类不面向业务展示的表可以没有 `lbl`
+- 这里只约束 SQL 建表; SQL 建完后生成 `codegen/src/tables/{mod}/{mod}.ts` 时, 还要读取 `../table-config/SKILL.md`, 并通常在 `columns` 中显式写出 `lbl`
 
 ## 业务字典 dictbiz
 ```sql
