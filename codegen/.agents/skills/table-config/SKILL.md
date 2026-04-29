@@ -1,6 +1,6 @@
 ---
 name: table-config
-description: 表字段配置规范。配置 {mod}.ts、给表添加/修改字段配置、建表后配置时必须先读取此技能
+description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取，尤其要检查 lbl、*_id_lbl/modelLabel、审计字段等容易漏掉的配置
 ---
 
 # 表配置规范
@@ -10,6 +10,13 @@ description: 表字段配置规范。配置 {mod}.ts、给表添加/修改字段
 
 ## 表配置结构详细文档和类型
 `codegen/src/config.ts`
+
+## 新表配置最小检查清单
+- 先按 SQL 中真实存在且需要生成到前后端的字段，显式写入 `columns`
+- 如果 SQL 中有 `lbl`，新表配置里通常也要显式写 `{ COLUMN_NAME: "lbl" }`，即使不额外配置 width/align/search
+- `lbl` 的 width/align/require/search 虽然有默认值，但这表示“写入 columns 后可少配属性”，不是“可以省略这个字段”
+- 如果有 `xxx_id_lbl` 冗余标签字段，则对应的 `xxx_id` 必须配置 `modelLabel`
+- 大部分表仍应补齐 `create_usr_id` `create_time` `update_usr_id` `update_time`
 
 ## 常用配置
 - `opts.uniques`: 唯一约束, 需要唯一性的字段组合, 否则无需配置
@@ -44,11 +51,14 @@ await findAllXxx(
 );
 ```
 
-## 默认值（无需配置）
+## 默认属性（不是指字段可以省略）
+
+- 下表表示字段已经写进 `columns` 后，可不额外再写的默认属性
+- 除少数非常特殊的表外，仓库里的业务表如果有 `lbl`，通常仍会在 `columns` 中显式保留 `lbl`
 
 | 字段/类型 | 默认行为 |
 |-----------|----------|
-| `lbl` | width/align/require/search 已有默认 |
+| `lbl` | 通常仍需显式写入 `columns`，但 width/align/require/search 已有默认 |
 | `*_id`/`*_ids` | foreignKey 自动推断 |
 | `*_id` 非外键字段 | 需设置 `notForeignKeyById: true` 阻止自动外键推断，如 `req_id`、`transaction_id` 等业务ID |
 | 数字类型 | align:right, width:100 |
@@ -60,6 +70,17 @@ await findAllXxx(
 | `建表语句中的 COMMENT '状态,dictbiz:{mod}_{table}_{column}' ` | `,dictbiz:` 表示业务字典,`:`后面的是业务字典编码,所以业务字典和系统字典都无需配置`foreignKey` |
 
 ## 需要配置的情况
+
+### 新建业务表的 `lbl`
+
+```ts
+{
+  COLUMN_NAME: "lbl",
+},
+```
+
+- 对新建业务表，除非这是纯中间表、日志表、或 SQL 本身没有 `lbl` 字段，否则建议把 `lbl` 作为基础字段显式放进 `columns`
+- 只有在你非常确定该表不需要在前端列表、详情、选择器里展示 `lbl` 时，才考虑省略
 
 ### 外键数据量大
 
