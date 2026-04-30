@@ -112,6 +112,7 @@ onLoad(async (query?: AnyObject) => {
 - 表单通常会有 `let inited = $ref(false);` 标记是否初始化完成, 避免在初始化前触发表单变更事件
 - `is_form_hydrating` 则表示表单是否正在数据回填
 - 如果表单存在由其他字段派生但最终仍会持久化的字段, `watch` 中必须区分初始化回填和用户编辑; 初始化阶段不要自动回写派生字段, 避免首屏展示值与数据库值不一致, 或用户未编辑就隐式改库
+- 异步初始化的表单/筛选页, 输入类组件优先透传 `:page-inited="inited"`; 在初始化完成前隐藏 placeholder, 避免先出现空提示再被默认值或缓存值覆盖
 
 ```vue
 watch(
@@ -128,6 +129,55 @@ watch(
     deep: true,
   },
 );
+```
+
+## CustomInput 数值输入
+- `CustomInput` 的 `type="decimal"` / `type="number"` 主要控制键盘或原生输入类型, **不会**自动把 `v-model` 转成 `Decimal` / `number`
+- 需要 `Decimal` 实例时必须显式传 `:is-decimal="true"`; 需要数字时传 `:is-number="true"`
+- 金额、积分、数量这类字段, 只要后续要调用 `lte`、`gt`、`eq` 等 `Decimal` 方法, 状态就必须保持 `Decimal`, 不要只写 `type="decimal"`
+- `CustomInput` 默认 `isHideZero=true`, 如果 `0` 需要在输入框里真实展示出来, 要补上 `:is-hide-zero="false"`
+
+```vue
+<CustomInput
+  v-model="recharge_amount"
+  type="decimal"
+  :is-decimal="true"
+  inputmode="decimal"
+  :is-hide-zero="false"
+  placeholder="请输入充值金额"
+></CustomInput>
+```
+
+## 页面刷新与事件约定
+- 跨页面刷新优先用 `uni.$emit` / `uni.$on`, 事件名统一写成页面路径语义, 例如 `"/pages/order/List:refresh"`、`"/pages/product/List:category_id_selected"`
+- 绑定事件前先 `uni.$off` 一次同名监听, 销毁时再 `uni.$off`, 避免页面反复进入后重复注册
+- 真正通过路由打开的页面优先在 `onLoad` / `onUnload` 中完成初始化和解绑; 被 tab 页直接 `import` 复用的“页面型组件”可以使用 `onMounted` / `onUnmounted`
+- 详情页、弹窗页如果既可能被路由打开, 也可能被父组件拿 `ref` 触发刷新, 统一暴露 `refresh()` 方法给外部调用
+
+```ts
+const refresh_event_name = "/pages/order/List:refresh";
+
+onLoad(async () => {
+  uni.$off(refresh_event_name, onPageRefresh);
+  uni.$on(refresh_event_name, onPageRefresh);
+  await initFrame();
+});
+
+onUnload(() => {
+  uni.$off(refresh_event_name, onPageRefresh);
+});
+
+async function initOrRefresh() {
+  if (!inited) {
+    await initFrame();
+  } else {
+    await onRefresh();
+  }
+}
+
+defineExpose({
+  refresh: initOrRefresh,
+});
 ```
 
 # 页面开发样式规范

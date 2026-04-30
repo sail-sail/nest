@@ -19,7 +19,9 @@ src/compositions/websocket.ts (PC端客户端)
   └── (同上)
 
 rust 后端: generated/common/websocket
-  └── websocket_dao::publish(topic, payload) - 推送消息到前端
+  ├── websocket_dao::publish(topic, payload)    - 推送消息到前端
+  ├── websocket_dao::subscribe_client_topics()  - 订阅主题
+  └── websocket_dao::un_subscribe_client_topics() - 取消订阅
 ```
 
 ## 使用示例
@@ -45,3 +47,16 @@ generated::common::websocket::websocket_dao::publish(
   })),
 ).await;
 ```
+
+## 后端路由
+
+- 升级路径: `/api/websocket/upgrade`
+- 连接参数: `?clientId=xxx&pwd=xxx`
+- 客户端支持 `subscribe`、`unSubscribe`、`ping` 三种操作
+
+## 注意事项
+
+- `publish()` 返回 `()`, 不返回 `Result`, 无需处理推送失败
+- 如果目标客户端未连接, `publish` 内部会静默跳过, 不会报错
+- 一个 clientId 可以连接多个 socket, 通过 connection_id 区分
+- 主题名是大小写敏感的字符串, 建议用驼峰命名
