@@ -2,6 +2,9 @@ import { fileURLToPath } from "node:url";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  future: {
+    compatibilityVersion: 5,
+  },
   css: [
     "~/assets/css/common.scss",
     "swiper/swiper-bundle.css",
@@ -10,7 +13,8 @@ export default defineNuxtConfig({
     asyncContext: true,
     // 全局启用视图过渡，按页面逐个页面禁用
     // https://nuxt.com.cn/docs/4.x/getting-started/transitions
-    // viewTransition: true,
+    viewTransition: true,
+    nitroAutoImports: true,
   },
   devtools: {
     enabled: true,
@@ -34,10 +38,17 @@ export default defineNuxtConfig({
     }
   },
   icon: {
+    serverBundle: {
+      collections: [
+        "carbon",
+        "tabler",
+      ],
+    },
     customCollections: [
       {
+        mode: "svg",
         prefix: "iconfont",
-        dir: "./assets/iconfont",
+        dir: "./app/assets/iconfont",
       },
     ],
   },
