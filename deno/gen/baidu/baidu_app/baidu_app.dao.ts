@@ -634,34 +634,40 @@ export async function findByUniqueBaiduApp(
   }
   const models: BaiduAppModel[] = [ ];
   {
+    let canFind = true;
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllBaiduApp(
-      {
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllBaiduApp(
+        {
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.appid == null) {
-      return [ ];
+      canFind = false;
     }
     const appid = search0.appid;
-    const modelTmps = await findAllBaiduApp(
-      {
-        appid,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllBaiduApp(
+        {
+          appid,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;
@@ -1931,10 +1937,11 @@ export async function deleteByIdsBaiduApp(
   
   await delCacheBaiduApp();
   
+  const oldModels = await findByIdsOkBaiduApp(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdBaiduApp(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

@@ -586,8 +586,9 @@ export async function findByUniqueBaiduAppToken(
   }
   const models: BaiduAppTokenModel[] = [ ];
   {
+    let canFind = true;
     if (search0.baidu_app_id == null) {
-      return [ ];
+      canFind = false;
     }
     let baidu_app_id: BaiduAppId[] = [ ];
     if (!Array.isArray(search0.baidu_app_id) && search0.baidu_app_id != null) {
@@ -595,15 +596,17 @@ export async function findByUniqueBaiduAppToken(
     } else {
       baidu_app_id = search0.baidu_app_id || [ ];
     }
-    const modelTmps = await findAllBaiduAppToken(
-      {
-        baidu_app_id,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllBaiduAppToken(
+        {
+          baidu_app_id,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;
@@ -1762,10 +1765,11 @@ export async function deleteByIdsBaiduAppToken(
   
   await delCacheBaiduAppToken();
   
+  const oldModels = await findByIdsOkBaiduAppToken(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdBaiduAppToken(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

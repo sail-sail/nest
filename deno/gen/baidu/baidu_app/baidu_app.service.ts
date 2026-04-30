@@ -201,9 +201,9 @@ export async function updateByIdBaiduApp(
     throw "不能修改已经锁定的 百度应用";
   }
   
-  const baidu_app_id2 = await baidu_appDao.updateByIdBaiduApp(baidu_app_id, input);
+  baidu_app_id = await baidu_appDao.updateByIdBaiduApp(baidu_app_id, input);
   
-  return baidu_app_id2;
+  return baidu_app_id;
 }
 
 /** 校验百度应用是否存在 */

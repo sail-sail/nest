@@ -238,9 +238,9 @@ export async function updateByIdBaiduApp(
     "edit",
   );
   
-  const id2: BaiduAppId = await updateByIdBaiduApp(id, input);
+  id = await updateByIdBaiduApp(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

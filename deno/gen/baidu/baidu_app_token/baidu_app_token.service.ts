@@ -196,9 +196,9 @@ export async function updateByIdBaiduAppToken(
   input: BaiduAppTokenInput,
 ): Promise<BaiduAppTokenId> {
   
-  const baidu_app_token_id2 = await baidu_app_tokenDao.updateByIdBaiduAppToken(baidu_app_token_id, input);
+  baidu_app_token_id = await baidu_app_tokenDao.updateByIdBaiduAppToken(baidu_app_token_id, input);
   
-  return baidu_app_token_id2;
+  return baidu_app_token_id;
 }
 
 /** 校验百度接口凭据是否存在 */

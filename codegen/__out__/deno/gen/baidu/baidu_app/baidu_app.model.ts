@@ -125,6 +125,4 @@ export function intoInputBaiduApp(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

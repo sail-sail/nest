@@ -722,6 +722,7 @@ defineOptions({
 });
 
 const pagePath = getPagePathBaiduApp();
+// @ts-ignore
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -830,7 +831,7 @@ function initSearch() {
   return search;
 }
 
-let search = $ref(initSearch());
+let search = $ref<BaiduAppSearch>(initSearch());
 
 // 启用
 const is_enabled_search = $computed({
@@ -946,7 +947,7 @@ let selectedIds = $(tableSelected.selectedIds as unknown as BaiduAppId[]);
 
 watch(
   () => selectedIds,
-  (oldVal, newVal) => {
+  (newVal, oldVal) => {
     if (!inited) {
       return;
     }
@@ -1625,7 +1626,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("forceDelete")) {
+  if (!permit("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1792,7 +1793,7 @@ watch(
       propsNotReset,
       isListSelectDialog,
       ...rest
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     } = builtInSearch as any;
     return rest;
   }),

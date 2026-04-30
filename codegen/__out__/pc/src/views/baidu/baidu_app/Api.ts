@@ -23,7 +23,7 @@ export async function setLblByIdBaiduApp(
 }
 
 export function intoInputBaiduApp(
-  model?: BaiduAppInput,
+  model?: BaiduAppInput | null,
 ) {
   const input: BaiduAppInput = {
     // ID
@@ -543,7 +543,7 @@ export function useDownloadImportTemplateBaiduApp() {
     try {
       const sheetName = "百度应用";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/baidu/baidu_app.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/baidu/baidu_app.xlsx`,
         {
           sheetName,
           data,
@@ -614,7 +614,7 @@ export function useExportExcelBaiduApp() {
       try {
         const sheetName = "百度应用";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/baidu/baidu_app.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/baidu/baidu_app.xlsx`,
           {
             sheetName,
             columns,
@@ -700,6 +700,9 @@ export async function findLastOrderByBaiduApp(
         findLastOrderByBaiduApp(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByBaiduApp;

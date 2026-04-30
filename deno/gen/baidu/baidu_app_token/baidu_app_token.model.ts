@@ -127,6 +127,4 @@ export function intoInputBaiduAppToken(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }
