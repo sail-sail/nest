@@ -673,49 +673,58 @@ export async function findByUniqueWxPay(
   }
   const models: WxPayModel[] = [ ];
   {
+    let canFind = true;
     if (search0.appid == null) {
-      return [ ];
+      canFind = false;
     }
     const appid = search0.appid;
-    const modelTmps = await findAllWxPay(
-      {
-        appid,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxPay(
+        {
+          appid,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.notify_url == null) {
-      return [ ];
+      canFind = false;
     }
     const notify_url = search0.notify_url;
-    const modelTmps = await findAllWxPay(
-      {
-        notify_url,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxPay(
+        {
+          notify_url,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.refund_notify_url == null) {
-      return [ ];
+      canFind = false;
     }
     const refund_notify_url = search0.refund_notify_url;
-    const modelTmps = await findAllWxPay(
-      {
-        refund_notify_url,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxPay(
+        {
+          refund_notify_url,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

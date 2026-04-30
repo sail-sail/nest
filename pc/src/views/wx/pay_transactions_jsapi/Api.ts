@@ -378,7 +378,7 @@ export function useExportExcelPayTransactionsJsapi() {
       try {
         const sheetName = "微信JSAPI下单";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/wx/pay_transactions_jsapi.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/wx/pay_transactions_jsapi.xlsx`,
           {
             sheetName,
             columns,

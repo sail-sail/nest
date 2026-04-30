@@ -666,49 +666,58 @@ export async function findByUniqueWxApp(
   }
   const models: WxAppModel[] = [ ];
   {
+    let canFind = true;
     if (search0.code == null) {
-      return [ ];
+      canFind = false;
     }
     const code = search0.code;
-    const modelTmps = await findAllWxApp(
-      {
-        code,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxApp(
+        {
+          code,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllWxApp(
-      {
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxApp(
+        {
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.appid == null) {
-      return [ ];
+      canFind = false;
     }
     const appid = search0.appid;
-    const modelTmps = await findAllWxApp(
-      {
-        appid,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxApp(
+        {
+          appid,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

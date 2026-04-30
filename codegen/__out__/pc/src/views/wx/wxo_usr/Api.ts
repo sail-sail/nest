@@ -559,7 +559,7 @@ export function useDownloadImportTemplateWxoUsr() {
     try {
       const sheetName = "公众号用户";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/wx/wxo_usr.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/wx/wxo_usr.xlsx`,
         {
           sheetName,
           data,
@@ -632,7 +632,7 @@ export function useExportExcelWxoUsr() {
       try {
         const sheetName = "公众号用户";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/wx/wxo_usr.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/wx/wxo_usr.xlsx`,
           {
             sheetName,
             columns,

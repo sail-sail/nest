@@ -946,7 +946,7 @@ let selectedIds = $(tableSelected.selectedIds as unknown as WxRefundId[]);
 
 watch(
   () => selectedIds,
-  (oldVal, newVal) => {
+  (newVal, oldVal) => {
     if (!inited) {
       return;
     }

@@ -583,8 +583,9 @@ export async function findByUniqueWxAppToken(
   }
   const models: WxAppTokenModel[] = [ ];
   {
+    let canFind = true;
     if (search0.wx_app_id == null) {
-      return [ ];
+      canFind = false;
     }
     let wx_app_id: WxAppId[] = [ ];
     if (!Array.isArray(search0.wx_app_id) && search0.wx_app_id != null) {
@@ -592,15 +593,17 @@ export async function findByUniqueWxAppToken(
     } else {
       wx_app_id = search0.wx_app_id || [ ];
     }
-    const modelTmps = await findAllWxAppToken(
-      {
-        wx_app_id,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxAppToken(
+        {
+          wx_app_id,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

@@ -625,7 +625,7 @@ export function useDownloadImportTemplateWxoApp() {
     try {
       const sheetName = "公众号设置";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/wx/wxo_app.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/wx/wxo_app.xlsx`,
         {
           sheetName,
           data,
@@ -701,7 +701,7 @@ export function useExportExcelWxoApp() {
       try {
         const sheetName = "公众号设置";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/wx/wxo_app.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/wx/wxo_app.xlsx`,
           {
             sheetName,
             columns,

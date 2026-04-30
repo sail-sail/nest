@@ -668,19 +668,22 @@ export async function findByUniqueWxoUsr(
   }
   const models: WxoUsrModel[] = [ ];
   {
+    let canFind = true;
     if (search0.openid == null) {
-      return [ ];
+      canFind = false;
     }
     const openid = search0.openid;
-    const modelTmps = await findAllWxoUsr(
-      {
-        openid,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxoUsr(
+        {
+          openid,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

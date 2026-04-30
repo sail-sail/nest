@@ -545,7 +545,7 @@ export function useDownloadImportTemplateWxApp() {
     try {
       const sheetName = "小程序设置";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/wx/wx_app.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/wx/wx_app.xlsx`,
         {
           sheetName,
           data,
@@ -616,7 +616,7 @@ export function useExportExcelWxApp() {
       try {
         const sheetName = "小程序设置";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/wx/wx_app.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/wx/wx_app.xlsx`,
           {
             sheetName,
             columns,

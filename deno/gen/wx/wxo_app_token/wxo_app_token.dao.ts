@@ -583,8 +583,9 @@ export async function findByUniqueWxoAppToken(
   }
   const models: WxoAppTokenModel[] = [ ];
   {
+    let canFind = true;
     if (search0.wxo_app_id == null) {
-      return [ ];
+      canFind = false;
     }
     let wxo_app_id: WxoAppId[] = [ ];
     if (!Array.isArray(search0.wxo_app_id) && search0.wxo_app_id != null) {
@@ -592,15 +593,17 @@ export async function findByUniqueWxoAppToken(
     } else {
       wxo_app_id = search0.wxo_app_id || [ ];
     }
-    const modelTmps = await findAllWxoAppToken(
-      {
-        wxo_app_id,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxoAppToken(
+        {
+          wxo_app_id,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

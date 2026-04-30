@@ -554,7 +554,7 @@ export function useDownloadImportTemplateWxPay() {
     try {
       const sheetName = "微信支付设置";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/wx/wx_pay.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/wx/wx_pay.xlsx`,
         {
           sheetName,
           data,
@@ -625,7 +625,7 @@ export function useExportExcelWxPay() {
       try {
         const sheetName = "微信支付设置";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/wx/wx_pay.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/wx/wx_pay.xlsx`,
           {
             sheetName,
             columns,

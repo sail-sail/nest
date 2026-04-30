@@ -440,6 +440,7 @@ const permitStore = usePermitStore();
 const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
+let is_form_hydrating = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
@@ -675,32 +676,39 @@ async function onReset() {
 
 /** 刷新 */
 async function onRefresh() {
-  const id = dialogModel.id;
-  if (!id) {
+  is_form_hydrating = true;
+  try {
+    const id = dialogModel.id;
+    if (!id) {
+      const [
+        defaultModel,
+      ] = await Promise.all([
+        getDefaultInputWxRefund(),
+      ]);
+      dialogModel = {
+        ...defaultModel,
+        ...builtInModel,
+      };
+      is_form_hydrating = false;
+      return;
+    }
     const [
-      defaultModel,
+      data,
     ] = await Promise.all([
-      getDefaultInputWxRefund(),
+      findOneModel({
+        id,
+      }),
     ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,
-    };
-    return;
+    if (data) {
+      dialogModel = intoInputWxRefund({
+        ...data,
+      });
+    }
+    wx_refund_model = data;
+  } finally {
+    await nextTick();
+    is_form_hydrating = false;
   }
-  const [
-    data,
-  ] = await Promise.all([
-    findOneModel({
-      id,
-    }),
-  ]);
-  if (data) {
-    dialogModel = intoInputWxRefund({
-      ...data,
-    });
-  }
-  wx_refund_model = data;
 }
 
 /** 键盘按 PageUp */
@@ -800,7 +808,7 @@ watch(
     dialogModel.amount_currency,
   ],
   () => {
-    if (!inited) {
+    if (!inited || is_form_hydrating) {
       return;
     }
     if (!dialogModel.channel) {
