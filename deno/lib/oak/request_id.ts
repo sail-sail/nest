@@ -18,6 +18,22 @@ const requestIdMap = new Map<string, number>();
 const requestTimeoutSec = 60;
 const requestTimeout = requestTimeoutSec * 1000;
 
+function setRequestIdTimeout(
+  requestId: string,
+) {
+  requestIdMap.set(requestId, setTimeout(() => {
+    requestIdMap.delete(requestId);
+  }, requestTimeout));
+}
+
+function validateRequestIdNotDuplicated(
+  requestId: string,
+) {
+  if (requestIdMap.has(requestId)) {
+    throw new ServiceException(`x-request-id is duplicated: ${ requestId }`, "request_id_duplicated");
+  }
+}
+
 export async function handleRequestId(
   response: Response,
   requestId?: string | null,
@@ -37,26 +53,23 @@ async function _handleRequestId(requestId?: string | null) {
   if (!requestId) {
     return;
   }
-  if (requestIdMap.has(requestId)) {
-    clearTimeout(requestIdMap.get(requestId));
-    requestIdMap.set(requestId, setTimeout(() => {
-      requestIdMap.delete(requestId);
-    }, requestTimeout));
-    throw new ServiceException(`x-request-id is duplicated: ${ requestId }`, "request_id_duplicated");
-  }
-  requestIdMap.set(requestId, setTimeout(() => {
-    requestIdMap.delete(requestId);
-  }, requestTimeout));
+  validateRequestIdNotDuplicated(requestId);
   const cache_enable = (await getEnv("cache_enable")) === "true";
   if (!cache_enable) {
+    validateRequestIdNotDuplicated(requestId);
+    setRequestIdTimeout(requestId);
     return;
   }
   const cache_x_request_id = await getEnv("cache_x_request_id");
   if (!cache_x_request_id) {
+    validateRequestIdNotDuplicated(requestId);
+    setRequestIdTimeout(requestId);
     return;
   }
   const client = await redisClient();
   if (!client) {
+    validateRequestIdNotDuplicated(requestId);
+    setRequestIdTimeout(requestId);
     return;
   }
   
@@ -72,4 +85,6 @@ async function _handleRequestId(requestId?: string | null) {
       ex: requestTimeoutSec,
     },
   );
+  validateRequestIdNotDuplicated(requestId);
+  setRequestIdTimeout(requestId);
 }

@@ -496,17 +496,11 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
     </template>
     
     <CustomDivider
-      v-if="!isLoading && inited && total > 0"
+      v-if="inited && total > 0"
     >
       共 {{ total }} <#=table_comment#>
     </CustomDivider>
     
-    <CustomDivider
-      v-else-if="isLoading"
-    >
-      加载中...
-    </CustomDivider>
-  
   </scroll-view><#
   if (opts.noAdd !== true) {
   #>
@@ -542,7 +536,8 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
 <script setup lang="ts">
 import {
   findAll<#=Table_Up#>,
-  findCount<#=Table_Up#>,<#
+  findCount<#=Table_Up#>,
+  setLblById<#=Table_Up#>,<#
   if (opts.noDelete !== true) {
   #>
   deleteByIds<#=Table_Up#>,<#
@@ -563,7 +558,16 @@ let <#=table#>_ids_selected = $ref<<#=Table_Up#>Id[]>([ ]);
 let <#=table#>_id_selected = $ref<<#=Table_Up#>Id>();
 
 const <#=table#>_models_key = "<#=table#>.List.<#=table#>_models";
-let <#=table#>_models = $ref<<#=Table_Up#>Model[]>(uni.getStorageSync(<#=table#>_models_key) || [ ]);
+let <#=table#>_models = $ref<<#=Table_Up#>Model[]>([ ]);
+
+(async function() {
+  const models = uni.getStorageSync(<#=table#>_models_key) || [ ];
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById<#=Table_Up#>(model);
+  }
+  <#=table#>_models = models;
+})();
 
 type SearchType = {<#
   for (let i = 0; i < search_fields.length; i++) {
@@ -807,13 +811,14 @@ async function onReset() {<#
     const data_type = column?.DATA_TYPE;
     const column_type = column?.COLUMN_TYPE;
     const column_comment = column?.COLUMN_COMMENT || "";
+    const prop = search_field === searchByKeyword?.prop ? searchByKeyword.prop : column_name;
   #><#
   if (data_type === "datetime" || data_type === "date") {
   #>
-  search.<#=column_name#> = [ null, null ];<#
+  search.<#=prop#> = [ null, null ];<#
   } else {
   #>
-  search.<#=column_name#> = undefined;<#
+  search.<#=prop#> = undefined;<#
   }
   #><#
   }

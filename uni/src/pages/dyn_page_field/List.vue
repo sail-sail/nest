@@ -257,17 +257,11 @@
     </template>
     
     <CustomDivider
-      v-if="!isLoading && inited && total > 0"
+      v-if="inited && total > 0"
     >
       共 {{ total }} 动态页面字段
     </CustomDivider>
     
-    <CustomDivider
-      v-else-if="isLoading"
-    >
-      加载中...
-    </CustomDivider>
-  
   </scroll-view>
   
   <view
@@ -300,6 +294,7 @@
 import {
   findAllDynPageField,
   findCountDynPageField,
+  setLblByIdDynPageField,
   deleteByIdsDynPageField,
 } from "./Api.ts";
 
@@ -311,7 +306,16 @@ let dyn_page_field_ids_selected = $ref<DynPageFieldId[]>([ ]);
 let dyn_page_field_id_selected = $ref<DynPageFieldId>();
 
 const dyn_page_field_models_key = "dyn_page_field.List.dyn_page_field_models";
-let dyn_page_field_models = $ref<DynPageFieldModel[]>(uni.getStorageSync(dyn_page_field_models_key) || [ ]);
+let dyn_page_field_models = $ref<DynPageFieldModel[]>([ ]);
+
+(async function() {
+  const models = uni.getStorageSync(dyn_page_field_models_key) || [ ];
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblByIdDynPageField(model);
+  }
+  dyn_page_field_models = models;
+})();
 
 type SearchType = {
   // 名称

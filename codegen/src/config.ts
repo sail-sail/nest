@@ -319,6 +319,12 @@ export interface TableColumn {
     
     /** 是否在表格中用弹出框的形式搜索, 而不是下拉框, 默认为 false */
     isSearchBySelectInput?: boolean;
+
+    /**
+     * dao 层的 sql 是否强制连表查询, 默认为: 无 modelLabel 为 true, 有 modelLabel 为 false
+     * 如果为 true, 则不管是否有 modelLabel, 都强制连表查询
+     */
+    isForceJoinQuery?: boolean;
     
   },
   
@@ -1137,6 +1143,11 @@ export interface TablesConfigItem {
      * 是否启用可选的认证功能, 如果启用, 则在访问这个表的数据时, 前端可以不登录就访问CRUD接口, 默认false, 默认必须登录
      */
     is_with_auth_optional?: boolean;
+    
+    /**
+     * sql 查询是否启用 for update, 默认为 false
+     */
+    isHasForUpdate?: boolean;
     
   },
   columns: TableColumn[];

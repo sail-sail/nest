@@ -1,8 +1,8 @@
 import {
   uuid,
-} from "@/utils/StringUtil";
+} from "@/utils/StringUtil.ts";
 
-import cfg from "@/utils/config";
+import cfg from "@/utils/config.ts";
 
 import type {
   SocketTask,
@@ -223,6 +223,7 @@ export async function unSubscribe(
         }
       }
     }, 600000);
+    return;
   }
   const callbacks = topicCallbackMap.get(topic);
   if (callbacks && callbacks.length > 0) {
@@ -262,42 +263,3 @@ export async function unSubscribe(
 }
 
 let closeSocketTimeout: NodeJS.Timeout | undefined = undefined;
-
-/** 发布消息 */
-export async function publish(
-  data: {
-    topic: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    payload: any;
-  },
-) {
-  if (closeSocketTimeout) {
-    clearTimeout(closeSocketTimeout);
-    closeSocketTimeout = undefined;
-  }
-  const callbacks = topicCallbackMap.get(data.topic);
-  if (callbacks && callbacks.length > 0) {
-    for (const callback of callbacks) {
-      callback(data.payload);
-    }
-  }
-  const socket0 = await connect();
-  socket0?.send({
-    data: JSON.stringify({
-      action: "publish",
-      data,
-    }),
-  });
-  
-  closeSocketTimeout = setTimeout(() => {
-    if (topicCallbackMap.size === 0) {
-      try {
-        socket?.close({ });
-      } catch (err) {
-        console.log(err);
-      } finally {
-        socket = undefined;
-      }
-    }
-  }, 600000);
-}

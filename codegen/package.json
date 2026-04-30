@@ -29,15 +29,15 @@
     "ejsexcel": "4.2.2",
     "fast-csv": "5.0.5",
     "fs-extra": "11.3.4",
-    "mysql2": "3.22.0",
+    "mysql2": "3.22.3",
     "shelljs": "0.10.0",
-    "uuid": "13.0.0"
+    "uuid": "14.0.0"
   },
   "devDependencies": {
     "@types/fs-extra": "11.0.4",
     "@types/node": "25.6.0",
     "@types/shelljs": "0.10.0",
     "@types/uuid": "11.0.0",
-    "typescript": "6.0.2"
+    "typescript": "6.0.3"
   }
 }
