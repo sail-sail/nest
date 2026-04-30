@@ -44,7 +44,7 @@
     "@std/log": "jsr:@std/log@0.224.14",
     "@std/path": "jsr:@std/path@1.1.4",
     "lru-cache": "npm:lru-cache@11.3.5",
-    "mysql2": "npm:mysql2@3.22.0",
+    "mysql2": "npm:mysql2@3.22.3",
     "xlsx-handlebars": "jsr:@sail/xlsx-handlebars@0.2.2",
     "docx-handlebars": "jsr:@sail/docx-handlebars@0.3.3",
     "dayjs": "npm:dayjs@1.11.20",
@@ -54,7 +54,7 @@
     "mime": "npm:mime@4.1.0",
     "jose": "jsr:@panva/jose@6.2.2",
     "mnemonist": "npm:mnemonist@0.40.3",
-    "redis": "https://deno.land/x/redis@v0.41.0/mod.ts",
+    "redis": "jsr:@db/redis@0.41.0",
     "sqlstring": "npm:sqlstring@2.3.3",
     "mqtt": "jsr:@ymjacky/mqtt5@0.0.22",
     "wechatpay-node-v3": "npm:wechatpay-node-v3@2.2.1"

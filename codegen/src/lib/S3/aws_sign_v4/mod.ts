@@ -102,7 +102,7 @@ export class AWSSignerV4 implements Signer {
 
     const canonicalRequest =
       `${request.method}\n${pathname}\n${canonicalQuerystring}\n${canonicalHeaders}\n${signedHeaders}\n${payloadHash}`;
-    const canonicalRequestDigest = await sha256Hex(canonicalRequest);
+    const canonicalRequestDigest = await sha256Hex(new TextEncoder().encode(canonicalRequest));
 
     const algorithm = "AWS4-HMAC-SHA256";
     const credentialScope =

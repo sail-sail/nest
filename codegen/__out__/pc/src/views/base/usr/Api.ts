@@ -747,7 +747,7 @@ export function useDownloadImportTemplateUsr() {
     try {
       const sheetName = "用户";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/usr.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/usr.xlsx`,
         {
           sheetName,
           data,
@@ -828,7 +828,7 @@ export function useExportExcelUsr() {
       try {
         const sheetName = "用户";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/usr.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/usr.xlsx`,
           {
             sheetName,
             columns,

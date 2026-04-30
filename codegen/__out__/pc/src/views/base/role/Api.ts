@@ -765,7 +765,7 @@ export function useDownloadImportTemplateRole() {
     try {
       const sheetName = "角色";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/role.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/role.xlsx`,
         {
           sheetName,
           data,
@@ -845,7 +845,7 @@ export function useExportExcelRole() {
       try {
         const sheetName = "角色";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/role.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/role.xlsx`,
           {
             sheetName,
             columns,
