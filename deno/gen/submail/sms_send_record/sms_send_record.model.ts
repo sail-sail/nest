@@ -3,8 +3,6 @@ import type {
   SmsSendRecordModel as SmsSendRecordModelType,
   SmsSendRecordSearch as SmsSendRecordSearchType,
   SmsSendRecordFieldComment as SmsSendRecordFieldCommentType,
-  // 状态
-  SmsSendRecordStatus,
   SortInput,
 } from "/gen/types.ts";
 
@@ -33,7 +31,7 @@ declare global {
     content?: string;
     content_like?: string;
     /** 状态 */
-    status?: SmsSendRecordStatus[];
+    status?: string[];
     /** 发送时间 */
     send_time?: [(string|undefined|null), (string|undefined|null)];
     /** 标签 */
@@ -104,6 +102,4 @@ export function intoInputSmsSendRecord(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

@@ -6,18 +6,6 @@ import * as resolver from "./sms_send_record.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar SmsSendRecordId
 
-"短信发送记录状态"
-enum SmsSendRecordStatus {
-  "成功"
-  success
-  "失败"
-  failure
-  "发送中"
-  sending
-  "暂停发送"
-  paused
-}
-
 type SmsSendRecordModel {
   "ID"
   id: SmsSendRecordId!
@@ -30,7 +18,7 @@ type SmsSendRecordModel {
   "内容"
   content: String!
   "状态"
-  status: SmsSendRecordStatus!
+  status: String!
   "状态"
   status_lbl: String!
   "发送时间"
@@ -96,7 +84,7 @@ input SmsSendRecordInput {
   "内容"
   content: String
   "状态"
-  status: SmsSendRecordStatus
+  status: String
   "状态"
   status_lbl: String
   "发送时间"

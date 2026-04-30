@@ -201,9 +201,9 @@ export async function updateByIdSmsApp(
     throw "不能修改已经锁定的 短信应用";
   }
   
-  const sms_app_id2 = await sms_appDao.updateByIdSmsApp(sms_app_id, input);
+  sms_app_id = await sms_appDao.updateByIdSmsApp(sms_app_id, input);
   
-  return sms_app_id2;
+  return sms_app_id;
 }
 
 /** 校验短信应用是否存在 */

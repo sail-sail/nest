@@ -121,6 +121,4 @@ export function intoInputSmsApp(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

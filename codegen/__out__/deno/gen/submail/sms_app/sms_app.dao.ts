@@ -672,34 +672,40 @@ export async function findByUniqueSmsApp(
   }
   const models: SmsAppModel[] = [ ];
   {
+    let canFind = true;
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllSmsApp(
-      {
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllSmsApp(
+        {
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.appid == null) {
-      return [ ];
+      canFind = false;
     }
     const appid = search0.appid;
-    const modelTmps = await findAllSmsApp(
-      {
-        appid,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllSmsApp(
+        {
+          appid,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;
@@ -1944,10 +1950,11 @@ export async function deleteByIdsSmsApp(
   
   await delCacheSmsApp();
   
+  const oldModels = await findByIdsOkSmsApp(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdSmsApp(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

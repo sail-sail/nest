@@ -196,9 +196,9 @@ export async function updateByIdSmsSendRecord(
   input: SmsSendRecordInput,
 ): Promise<SmsSendRecordId> {
   
-  const sms_send_record_id2 = await sms_send_recordDao.updateByIdSmsSendRecord(sms_send_record_id, input);
+  sms_send_record_id = await sms_send_recordDao.updateByIdSmsSendRecord(sms_send_record_id, input);
   
-  return sms_send_record_id2;
+  return sms_send_record_id;
 }
 
 /** 校验短信发送记录是否存在 */

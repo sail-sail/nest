@@ -68,7 +68,6 @@ import type {
   InputMaybe,
   PageInput,
   SortInput,
-  SmsSendRecordStatus,
 } from "/gen/types.ts";
 
 import {
@@ -500,7 +499,7 @@ export async function setIdByLblSmsSendRecord(
   if (isNotEmpty(input.status_lbl) && input.status == null) {
     const val = statusDict.find((itemTmp) => itemTmp.lbl === input.status_lbl)?.val;
     if (val != null) {
-      input.status = val as SmsSendRecordStatus;
+      input.status = val;
     }
   } else if (isEmpty(input.status_lbl) && input.status != null) {
     const lbl = statusDict.find((itemTmp) => itemTmp.val === input.status)?.lbl || "";
@@ -1716,10 +1715,11 @@ export async function deleteByIdsSmsSendRecord(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
+  const oldModels = await findByIdsOkSmsSendRecord(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdSmsSendRecord(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

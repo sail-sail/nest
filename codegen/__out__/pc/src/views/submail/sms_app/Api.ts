@@ -547,7 +547,7 @@ export function useDownloadImportTemplateSmsApp() {
     try {
       const sheetName = "短信应用";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/submail/sms_app.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/submail/sms_app.xlsx`,
         {
           sheetName,
           data,
@@ -619,7 +619,7 @@ export function useExportExcelSmsApp() {
       try {
         const sheetName = "短信应用";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/submail/sms_app.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/submail/sms_app.xlsx`,
           {
             sheetName,
             columns,
@@ -705,6 +705,9 @@ export async function findLastOrderBySmsApp(
         findLastOrderBySmsApp(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderBySmsApp;

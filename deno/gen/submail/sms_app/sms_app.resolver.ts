@@ -238,9 +238,9 @@ export async function updateByIdSmsApp(
     "edit",
   );
   
-  const id2: SmsAppId = await updateByIdSmsApp(id, input);
+  id = await updateByIdSmsApp(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

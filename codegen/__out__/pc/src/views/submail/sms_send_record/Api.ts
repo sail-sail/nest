@@ -1,9 +1,5 @@
 
 
-import {
-  SmsSendRecordStatus,
-} from "#/types.ts";
-
 import type {
   Query,
   Mutation,
@@ -487,7 +483,7 @@ export function useExportExcelSmsSendRecord() {
       try {
         const sheetName = "短信发送记录";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/submail/sms_send_record.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/submail/sms_send_record.xlsx`,
           {
             sheetName,
             columns,
@@ -558,7 +554,7 @@ export function getPagePathSmsSendRecord() {
 /** 新增时的默认值 */
 export async function getDefaultInputSmsSendRecord() {
   const defaultInput: SmsSendRecordInput = {
-    status: SmsSendRecordStatus.Success,
+    status: "success",
   };
   return defaultInput;
 }
