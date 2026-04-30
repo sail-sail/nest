@@ -621,7 +621,7 @@ let selectedIds = $(tableSelected.selectedIds as unknown as FieldPermitId[]);
 
 watch(
   () => selectedIds,
-  (oldVal, newVal) => {
+  (newVal, oldVal) => {
     if (!inited) {
       return;
     }

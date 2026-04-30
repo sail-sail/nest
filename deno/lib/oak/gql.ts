@@ -394,10 +394,12 @@ gqlRouter.post("/graphql", async function(ctx) {
 gqlRouter.get("/graphql", async function(ctx) {
   const request = ctx.request;
   const response = ctx.response;
-  await handleRequestId(
+  if (await handleRequestId(
     response,
     request.headers.get("x-request-id"),
-  );
+  )) {
+    return;
+  }
   const query = request.url.searchParams.get("query");
   if (!query) {
     throw new ServiceException("graphql query can not be empty", "invalid_request_query");

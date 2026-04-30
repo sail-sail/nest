@@ -503,7 +503,7 @@ export function useDownloadImportTemplateLang() {
     try {
       const sheetName = "语言";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/lang.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/lang.xlsx`,
         {
           sheetName,
           data,
@@ -573,7 +573,7 @@ export function useExportExcelLang() {
       try {
         const sheetName = "语言";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/lang.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/lang.xlsx`,
           {
             sheetName,
             columns,
