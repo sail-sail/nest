@@ -12,6 +12,9 @@ metadata:
 - 使用 Vue Macros 的 reactivity transform（`$ref`、`$computed` 等）
 - vue 相关的类型都无需导入, 如 `ref`, `computed` 等, 直接使用即可, 因为 `vite.config.mts` 配置了自动导入 `AutoImport`
 - 函数定义和调用的时候, 参数都换行, vue 组件属性也换行
+- 空白行代码缩进要保持和上一行一致, 方便后续添加代码
+- 大块标签之间要留空行
+- 结构标签上面写上注释
 
 ## CSS - Attributify Mode
 
@@ -20,17 +23,15 @@ metadata:
 
 ```html
 <!-- ❌ 传统方式 -->
-<el-button class="bg-blue-400 hover:bg-blue-500 text-sm text-white font-mono py-2 px-4 rounded border-2">
+<el-button class="bg-blue-400 hover:bg-blue-500 py-2 px-4 box-border">
   Button
 </el-button>
 
 <!-- ✅ Attributify -->
 <el-button
   un-bg="blue-400 hover:blue-500"
-  un-text="sm white"
-  un-font="mono"
   un-p="y-2 x-4"
-  un-border="2 rounded"
+  un-box-border
 >
   Button
 </el-button>
@@ -67,6 +68,23 @@ metadata:
 1. 相同前缀合并：`text-sm text-white` → `un-text="sm white"`
 2. 自引用用 `~`：`flex flex-col` → `un-flex="~ col"`
 3. 无参数用无值属性：`rounded` → `un-rounded`
+4. 单边边框如果同时写 `solid`/颜色, 必须先用 `0` 清零其它边框: `un-border="0 b-1 solid [#f0f2f5]"`, 不要写成 `un-border="b-1 solid [#f0f2f5]"`
+
+## 本地静态 Icon
+- 当前 uni 仓库已在 `uno.config.ts` 和 `uno_uni.config.ts` 中通过 UnoCSS `presetIcons` 注册了 `iconfont` collection，会自动读取 `src/assets/iconfont/{icon_name}.svg`
+- 对这类本地单色 svg 图标, 优先使用 `un-i="iconfont-图标名"` 挂在 `view` / `text` 等普通节点上，不要再写成 `image + src`，也不要用 `new URL(...svg, import.meta.url)` 去手动引资源
+- 图标颜色、尺寸直接用 UnoCSS 原子属性控制，例如 `un-text="[#f08b6a]"`、`un-w="5"`、`un-h="5"`
+- 仅当资源本身需要保留原始多色效果、渐变、位图展示时，才继续使用 `image` 标签
+- 可参考 `src/pages/product/Detail.vue` 的收藏按钮写法
+
+```vue
+<view
+  un-i="iconfont-favorite_service"
+  un-w="5"
+  un-h="5"
+  un-text="[#f08b6a]"
+></view>
+```
 
 ## 自动引入的变量和组件
 由 `unplugin-auto-import` 自动生成，无需手动维护。配置在 `vite.config.mts` 的 `AutoImport({imports:[]})` 中

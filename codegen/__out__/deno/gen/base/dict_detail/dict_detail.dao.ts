@@ -615,8 +615,9 @@ export async function findByUniqueDictDetail(
   }
   const models: DictDetailModel[] = [ ];
   {
+    let canFind = true;
     if (search0.dict_id == null) {
-      return [ ];
+      canFind = false;
     }
     let dict_id: DictId[] = [ ];
     if (!Array.isArray(search0.dict_id) && search0.dict_id != null) {
@@ -625,19 +626,21 @@ export async function findByUniqueDictDetail(
       dict_id = search0.dict_id || [ ];
     }
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllDictDetail(
-      {
-        dict_id,
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllDictDetail(
+        {
+          dict_id,
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

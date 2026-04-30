@@ -905,8 +905,9 @@ export async function findByUniqueDynPageField(
   }
   const models: DynPageFieldModel[] = [ ];
   {
+    let canFind = true;
     if (search0.dyn_page_id == null) {
-      return [ ];
+      canFind = false;
     }
     let dyn_page_id: DynPageId[] = [ ];
     if (!Array.isArray(search0.dyn_page_id) && search0.dyn_page_id != null) {
@@ -915,34 +916,39 @@ export async function findByUniqueDynPageField(
       dyn_page_id = search0.dyn_page_id || [ ];
     }
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllDynPageField(
-      {
-        dyn_page_id,
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllDynPageField(
+        {
+          dyn_page_id,
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.code == null) {
-      return [ ];
+      canFind = false;
     }
     const code = search0.code;
-    const modelTmps = await findAllDynPageField(
-      {
-        code,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllDynPageField(
+        {
+          code,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

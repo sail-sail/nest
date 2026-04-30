@@ -299,12 +299,14 @@ const modelValueComputed = $computed(() => {
   if (!modelLabel) {
     return modelValue;
   }
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
+  const labelProp = props.props.label || "label" as any;
   if (!props.multiple) {
     if (modelValue == null || modelValue === "") {
       return modelLabel;
     }
     const item = findModelById(data, modelValue as string);
-    if (!item || item.label !== modelLabel) {
+    if (!item || item[labelProp] !== modelLabel) {
       return modelLabel;
     }
     return modelValue;

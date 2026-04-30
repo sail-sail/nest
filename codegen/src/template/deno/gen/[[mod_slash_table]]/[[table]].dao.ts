@@ -1319,7 +1319,7 @@ async function getFromQuery(
     #>
   left join(select
   json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
-    if (foreignKey.lbl && !modelLabel) {
+    if ((foreignKey.lbl && !modelLabel) || foreignKey.isForceJoinQuery) {
   #>
   json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
     }
@@ -1341,7 +1341,7 @@ async function getFromQuery(
   #>
   group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
     } else if (foreignKey && !foreignKey.multiple) {
-      if (modelLabel) {
+      if (modelLabel && !foreignKey.isForceJoinQuery) {
         continue;
       }
   #>
@@ -1781,16 +1781,28 @@ export async function findAll<#=Table_Up#>(
       #><#
       } else {
       #><#
-        if (foreignKey.lbl && !modelLabel) {
+        if ((!column.modelLabel && foreignKey.lbl) || foreignKey.isForceJoinQuery) {
+      #><#
+          if (!column.modelLabel && foreignKey.lbl) {
       #>
       ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=column_name#>_lbl<#
+          }
+      #><#
+        for (let j = 0; j < cascade_fields.length; j++) {
+          const cascade_field = cascade_fields[j];
+      #>
+      ,max(<#=column_name#>_lbl.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
         }
+      #><#
+        } else {
       #><#
         for (let j = 0; j < cascade_fields.length; j++) {
           const cascade_field = cascade_fields[j];
       #>
       ,max(<#=column_name#>_<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
         }
+      #><#
+      }
       #><#
       }
       #><#
@@ -3188,6 +3200,8 @@ export async function findByUnique<#=Table_Up#>(
     const uniques = opts.uniques[i];
   #>
   {<#
+    #>
+    let canFind = true;<#
     for (let k = 0; k < uniques.length; k++) {
       const unique = uniques[k];
       const column = columns.find((item) => item.COLUMN_NAME === unique);
@@ -3217,7 +3231,7 @@ export async function findByUnique<#=Table_Up#>(
       if (isPassword) continue;
     #>
     if (search0.<#=unique#> == null) {
-      return [ ];
+      canFind = false;
     }<#
     if (
       foreignKey
@@ -3284,20 +3298,22 @@ export async function findByUnique<#=Table_Up#>(
     #><#
     }
     #>
-    const modelTmps = await findAll<#=Table_Up#>(
-      {<#
-        for (let k = 0; k < uniques.length; k++) {
-          const unique = uniques[k];
-        #>
-        <#=unique#>,<#
-        }
-        #>
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAll<#=Table_Up#>(
+        {<#
+          for (let k = 0; k < uniques.length; k++) {
+            const unique = uniques[k];
+          #>
+          <#=unique#>,<#
+          }
+          #>
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }<#
   }
   #>

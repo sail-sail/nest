@@ -142,7 +142,7 @@
             >
               
               <div
-                v-if="icon_model.img_lbl_svg && icon_model.img_lbl_svg.startsWith('data:image/svg+xml;')"
+                v-if="icon_model.img_lbl_svg && shouldMaskSvg(icon_model.img_lbl_svg)"
                 :style="{
                   'mask-image': `url(${ icon_model.img_lbl_svg })`,
                   '-webkit-mask-image': `url(${ icon_model.img_lbl_svg })`,
@@ -246,6 +246,10 @@
 import {
   checkImageMaxSize,
 } from "@/utils/image_util";
+
+import {
+  shouldMaskSvg,
+} from "@/utils/svg_icon";
 
 import {
   findAllIcon,

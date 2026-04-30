@@ -150,7 +150,7 @@
         <ElIconPlus />
       </el-icon>
       <div
-        v-if="!props.readonly && oldModelValue1 !== modelValue1"
+        v-if="!props.readonly && (props.maxSize === 1 && oldModelValue1 !== modelValue1)"
         un-absolute
         un-right="-.5"
         un-top="-1"
@@ -178,7 +178,6 @@
   <div
     v-else-if="props.pageInited && props.readonly && thumbList.length < props.maxSize"
     un-relative
-    un-w="full"
     class="upload_image_item"
     :style="{
       height: `${ props.itemHeight }px`,
@@ -186,8 +185,8 @@
   >
     <div
       v-if="shouldShowReadonlyPlaceholder"
-      un-m="l-.75 t-.3"
-      un-h="[calc(100%-2px)]"
+      un-m="l-.75"
+      un-h="full"
       un-aspect="square"
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
@@ -201,9 +200,9 @@
       <span>{{ props.readonlyPlaceholder ?? "" }}</span>
     </div>
     <div
-      v-else
-      un-m="l-.75 t-.3"
-      un-h="[calc(100%-2px)]"
+      v-else-if="thumbList.length === 0"
+      un-m="l-.75"
+      un-h="full"
       un-aspect="square"
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
@@ -219,6 +218,7 @@
 <input
   ref="fileRef"
   type="file"
+  :multiple="props.maxSize > 1"
   :accept="accept"
   style="display: none;"
   @change="onInput"
@@ -355,44 +355,60 @@ async function onInput() {
       return;
     }
   }
-  let file = fileRef?.files?.[0];
+  const fileArr = Array.from(fileRef.files || [ ]);
   fileRef.value = "";
-  if (!file) {
+  if (fileArr.length === 0) {
     return;
   }
-  if (file.size > props.maxFileSize) {
-    ElMessage.error(await nsAsync("文件大小不能超过 {0}M", props.maxFileSize / 1024 / 1024));
-    return;
+  let uploadFileArr = fileArr;
+  if (props.maxSize > 1) {
+    const remainSize = props.maxSize - idArr.length;
+    if (fileArr.length > remainSize) {
+      ElMessage.warning(await nsAsync("最多还能上传 {0} 张图片, 已忽略多余文件", remainSize));
+      uploadFileArr = fileArr.slice(0, remainSize);
+    }
+  } else {
+    uploadFileArr = fileArr.slice(0, 1);
   }
-  
-  file = await checkImageMaxSize(
-    file,
-    {
-      compress: props.compress,
-      maxImageWidth: props.maxImageWidth,
-      maxImageHeight: props.maxImageHeight,
-    },
-  );
-  
-  let id = undefined;
+
+  const uploadedIdArr: string[] = [ ];
   loading = true;
   try {
-    id = await uploadFile(file, undefined, {
-      db: props.db,
-      isPublic: props.isPublic,
-    });
+    for (const file0 of uploadFileArr) {
+      if (file0.size > props.maxFileSize) {
+        ElMessage.error(await nsAsync("文件大小不能超过 {0}M", props.maxFileSize / 1024 / 1024));
+        continue;
+      }
+
+      const file = await checkImageMaxSize(
+        file0,
+        {
+          compress: props.compress,
+          maxImageWidth: props.maxImageWidth,
+          maxImageHeight: props.maxImageHeight,
+        },
+      );
+
+      const id = await uploadFile(file, undefined, {
+        db: props.db,
+        isPublic: props.isPublic,
+      });
+      if (!id) {
+        continue;
+      }
+      uploadedIdArr.push(id);
+    }
   } finally {
     loading = false;
   }
-  if (!id) {
+  if (uploadedIdArr.length === 0) {
     return;
   }
   if (props.maxSize === 1) {
-    idArr = [ id ];
-    modelValue1 = id;
+    modelValue1 = uploadedIdArr[0];
     nowIndex = 0;
   } else {
-    idArr.push(id);
+    idArr.push(...uploadedIdArr);
     modelValue1 = idArr.join(",");
     nowIndex = idArr.length - 1;
   }

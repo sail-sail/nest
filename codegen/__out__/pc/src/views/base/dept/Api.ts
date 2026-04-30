@@ -703,7 +703,7 @@ export function useDownloadImportTemplateDept() {
     try {
       const sheetName = "部门";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/dept.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/dept.xlsx`,
         {
           sheetName,
           data,
@@ -780,7 +780,7 @@ export function useExportExcelDept() {
       try {
         const sheetName = "部门";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/dept.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/dept.xlsx`,
           {
             sheetName,
             columns,

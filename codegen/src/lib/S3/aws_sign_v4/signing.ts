@@ -11,7 +11,7 @@ export async function signAwsV4(
   key: string | Uint8Array,
   msg: string,
 ): Promise<string> {
-  const hash = await hmacSha256(key, msg);
+  const hash = await hmacSha256(key as any, msg);
   return hex(hash);
 }
 
@@ -37,11 +37,11 @@ export async function getSignatureKey(
   paddedKey.set(AWS4, 0);
   paddedKey.set(key, 4);
 
-  let mac = await hmacSha256(paddedKey, dateStamp);
+  let mac = await hmacSha256(paddedKey as any, dateStamp);
 
-  mac = await hmacSha256(mac, region);
-  mac = await hmacSha256(mac, service);
-  mac = await hmacSha256(mac, "aws4_request");
+  mac = await hmacSha256(mac as any, region);
+  mac = await hmacSha256(mac as any, service);
+  mac = await hmacSha256(mac as any, "aws4_request");
 
   return new Uint8Array(mac);
 }

@@ -455,7 +455,7 @@ export function useDownloadImportTemplateDynPageData() {
     try {
       const sheetName = "动态页面数据";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/dyn_page_data.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/dyn_page_data.xlsx`,
         {
           sheetName,
           data,
@@ -519,7 +519,7 @@ export function useExportExcelDynPageData() {
       try {
         const sheetName = "动态页面数据";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/dyn_page_data.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/dyn_page_data.xlsx`,
           {
             sheetName,
             columns,
