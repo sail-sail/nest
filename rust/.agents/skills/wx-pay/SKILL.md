@@ -106,7 +106,35 @@ pub static WX_PAY_NOTICE_ACTION_PAY_XXX: &str = "pay_xxx";
 }
 ```
 
-**2.2** 在业务模块 `app/{mod}/{table}_service.rs` 实现回调处理:
+**2.2** 在业务模块 `{table}_resolver.rs` 添加回调分发函数 (resolver 层负责日志 + 转调 service):
+
+```rust
+#[function_name::named]
+pub async fn pay_xxx_callback(
+  record_id: XxxRecordId,
+  amt: Decimal,
+  pay_time: NaiveDateTime,
+  transaction_id: SmolStr,
+  options: Option<Options>,
+) -> Result<()> {
+  
+  info!(
+    "{req_id} {function_name}: record_id={record_id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  {table}_service::pay_xxx_callback(
+    record_id,
+    amt,
+    pay_time,
+    transaction_id,
+    options,
+  ).await
+}
+```
+
+**2.3** 在业务模块 `app/{mod}/{table}/{table}_service.rs` 实现实际回调逻辑:
 
 ```rust
 /// 支付成功回调处理
@@ -390,7 +418,10 @@ if action == WX_REFUND_NOTICE_ACTION_REFUND_XXX {
 
 ### Step 3: 后端 - 业务退款成功回调
 
+退款回调从 `wx_refund_notice_service.rs` 直接调用 service 层 (与支付回调不同, 不需要经过 resolver):
+
 ```rust
+/// 退款成功回调处理
 pub async fn refund_xxx_callback(
   record_id: XxxRecordId,
   refund_amt: Decimal,
@@ -502,8 +533,10 @@ export async function refundXxx(
 
 | 端 | 文件 | 开发内容 |
 |----|------|----------|
-| Rust | `app/{mod}/xxx_service.rs` | 统一下单函数 / 业务退款函数 / 支付回调 / 退款成功回调 |
+| Rust | `app/{mod}/{table}/{table}_service.rs` | 统一下单函数 / 业务退款函数 / 回调业务逻辑 |
+| Rust | `app/{mod}/{table}/{table}_resolver.rs` | 支付回调分发函数 (加 `#[function_name::named]`) |
 | Rust | `app/wx/wx_pay_notice/wx_pay_notice_service.rs` | 添加 `if action ==` 分支 |
+| Rust | `app/wx/wx_pay_notice/wx_pay_notice_model.rs` | 支付 action 常量 |
 | Rust | `app/wx/wx_refund_notice/wx_refund_notice_service.rs` | 添加退款 `if action ==` 分支 |
 | Rust | `app/wx/wx_refund_notice/wx_refund_notice_model.rs` | 退款 action 常量 |
 | Uni | `src/pages/{table}/Api2.ts` | 支付接口函数 |
