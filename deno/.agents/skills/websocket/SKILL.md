@@ -13,8 +13,7 @@ metadata:
 ```
 uni/src/compositions/websocket.ts  (移动端客户端)
   ├── subscribe(topic, callback)   - 订阅主题
-  ├── unSubscribe(topic, callback) - 取消订阅
-  └── publish({ topic, payload })  - 发布消息
+  └── unSubscribe(topic, callback) - 取消订阅
 
 src/compositions/websocket.ts (PC端客户端)
   └── (同上)
@@ -48,8 +47,3 @@ await publish(
   }
 );
 ```
-
-## 注意事项
-
-- 同主题可注册多个 callback
-- 取消订阅时需传入相同的 callback 引用才能精确移除

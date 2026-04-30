@@ -747,8 +747,9 @@ export async function findByUniqueMenu(
   }
   const models: MenuModel[] = [ ];
   {
+    let canFind = true;
     if (search0.parent_id == null) {
-      return [ ];
+      canFind = false;
     }
     let parent_id: MenuId[] = [ ];
     if (!Array.isArray(search0.parent_id) && search0.parent_id != null) {
@@ -757,19 +758,21 @@ export async function findByUniqueMenu(
       parent_id = search0.parent_id || [ ];
     }
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllMenu(
-      {
-        parent_id,
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllMenu(
+        {
+          parent_id,
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

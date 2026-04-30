@@ -656,8 +656,9 @@ export async function findByUniqueDataPermit(
   }
   const models: DataPermitModel[] = [ ];
   {
+    let canFind = true;
     if (search0.menu_id == null) {
-      return [ ];
+      canFind = false;
     }
     let menu_id: MenuId[] = [ ];
     if (!Array.isArray(search0.menu_id) && search0.menu_id != null) {
@@ -666,7 +667,7 @@ export async function findByUniqueDataPermit(
       menu_id = search0.menu_id || [ ];
     }
     if (search0.scope == null) {
-      return [ ];
+      canFind = false;
     }
     let scope: DataPermitScope[] = [ ];
     if (!Array.isArray(search0.scope) && search0.scope != null) {
@@ -674,16 +675,18 @@ export async function findByUniqueDataPermit(
     } else {
       scope = search0.scope || [ ];
     }
-    const modelTmps = await findAllDataPermit(
-      {
-        menu_id,
-        scope,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllDataPermit(
+        {
+          menu_id,
+          scope,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;
