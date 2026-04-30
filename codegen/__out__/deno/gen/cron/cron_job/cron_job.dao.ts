@@ -753,8 +753,9 @@ export async function findByUniqueCronJob(
   }
   const models: CronJobModel[] = [ ];
   {
+    let canFind = true;
     if (search0.job_id == null) {
-      return [ ];
+      canFind = false;
     }
     let job_id: JobId[] = [ ];
     if (!Array.isArray(search0.job_id) && search0.job_id != null) {
@@ -763,19 +764,21 @@ export async function findByUniqueCronJob(
       job_id = search0.job_id || [ ];
     }
     if (search0.cron == null) {
-      return [ ];
+      canFind = false;
     }
     const cron = search0.cron;
-    const modelTmps = await findAllCronJob(
-      {
-        job_id,
-        cron,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllCronJob(
+        {
+          job_id,
+          cron,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;
@@ -2041,10 +2044,11 @@ export async function deleteByIdsCronJob(
   
   await delCacheCronJob();
   
+  const oldModels = await findByIdsOkCronJob(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdCronJob(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

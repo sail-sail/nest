@@ -196,9 +196,9 @@ export async function updateByIdCronJobLogDetail(
   input: CronJobLogDetailInput,
 ): Promise<CronJobLogDetailId> {
   
-  const cron_job_log_detail_id2 = await cron_job_log_detailDao.updateByIdCronJobLogDetail(cron_job_log_detail_id, input);
+  cron_job_log_detail_id = await cron_job_log_detailDao.updateByIdCronJobLogDetail(cron_job_log_detail_id, input);
   
-  return cron_job_log_detail_id2;
+  return cron_job_log_detail_id;
 }
 
 /** 校验定时任务日志明细是否存在 */

@@ -534,7 +534,7 @@ export function useDownloadImportTemplateJob() {
     try {
       const sheetName = "任务";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/cron/job.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/cron/job.xlsx`,
         {
           sheetName,
           data,
@@ -605,7 +605,7 @@ export function useExportExcelJob() {
       try {
         const sheetName = "任务";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/cron/job.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/cron/job.xlsx`,
           {
             sheetName,
             columns,
@@ -691,6 +691,9 @@ export async function findLastOrderByJob(
         findLastOrderByJob(search: $search)
       }
     `,
+    variables: {
+      search,
+    },
   }, opt);
   
   const order_by = data.findLastOrderByJob;

@@ -128,6 +128,4 @@ export function intoInputCronJobLog(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

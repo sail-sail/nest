@@ -124,6 +124,4 @@ export function intoInputCronJob(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }

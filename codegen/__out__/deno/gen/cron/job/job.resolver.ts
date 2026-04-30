@@ -238,9 +238,9 @@ export async function updateByIdJob(
     "edit",
   );
   
-  const id2: JobId = await updateByIdJob(id, input);
+  id = await updateByIdJob(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

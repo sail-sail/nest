@@ -68,7 +68,6 @@ import type {
   InputMaybe,
   PageInput,
   SortInput,
-  CronJobLogExecState,
 } from "/gen/types.ts";
 
 import {
@@ -603,7 +602,7 @@ export async function setIdByLblCronJobLog(
   if (isNotEmpty(input.exec_state_lbl) && input.exec_state == null) {
     const val = exec_stateDict.find((itemTmp) => itemTmp.lbl === input.exec_state_lbl)?.val;
     if (val != null) {
-      input.exec_state = val as CronJobLogExecState;
+      input.exec_state = val;
     }
   } else if (isEmpty(input.exec_state_lbl) && input.exec_state != null) {
     const lbl = exec_stateDict.find((itemTmp) => itemTmp.val === input.exec_state)?.lbl || "";
@@ -1830,10 +1829,11 @@ export async function deleteByIdsCronJobLog(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
+  const oldModels = await findByIdsOkCronJobLog(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdCronJobLog(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }

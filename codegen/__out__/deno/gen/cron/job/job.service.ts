@@ -196,24 +196,16 @@ export async function updateByIdJob(
   input: JobInput,
 ): Promise<JobId> {
   
-  const old_model = await jobDao.validateOptionJob(
-    await jobDao.findByIdJob(job_id),
-  );
+  const old_model = await jobDao.findByIdOkJob(job_id);
   
   const is_locked = await jobDao.getIsLockedByIdJob(job_id);
   if (is_locked) {
     throw "不能修改已经锁定的 任务";
   }
   
-  // 不能修改系统记录的系统字段
-  if (old_model.is_sys === 1) {
-    // 编码
-    input.code = undefined;
-  }
+  job_id = await jobDao.updateByIdJob(job_id, input);
   
-  const job_id2 = await jobDao.updateByIdJob(job_id, input);
-  
-  return job_id2;
+  return job_id;
 }
 
 /** 校验任务是否存在 */
@@ -236,12 +228,6 @@ export async function deleteByIdsJob(
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
       throw "不能删除已经锁定的 任务";
-    }
-  }
-  
-  for (const old_model of old_models) {
-    if (old_model.is_sys === 1) {
-      throw "不能删除系统记录";
     }
   }
   

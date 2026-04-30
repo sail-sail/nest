@@ -613,34 +613,40 @@ export async function findByUniqueJob(
   }
   const models: JobModel[] = [ ];
   {
+    let canFind = true;
     if (search0.code == null) {
-      return [ ];
+      canFind = false;
     }
     const code = search0.code;
-    const modelTmps = await findAllJob(
-      {
-        code,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllJob(
+        {
+          code,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllJob(
-      {
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllJob(
+        {
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;
@@ -1652,6 +1658,12 @@ export async function updateByIdJob(
     );
   }
   
+  // 不能修改系统记录的系统字段
+  if (oldModel.is_sys === 1) {
+    // 编码
+    input.code = undefined;
+  }
+  
   const args = new QueryArgs();
   let sql = `update cron_job set `;
   let updateFldNum = 0;
@@ -1867,15 +1879,20 @@ export async function deleteByIdsJob(
   
   await delCacheJob();
   
+  const oldModels = await findByIdsOkJob(ids, options);
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findByIdJob(id, options);
+    const oldModel = oldModels[i];
     if (!oldModel) {
       continue;
     }
     if (!is_silent_mode) {
       log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
+    }
+    
+    if (oldModel.is_sys === 1) {
+      throw "不能删除系统记录";
     }
     const args = new QueryArgs();
     let sql = `update cron_job set is_deleted=1`;

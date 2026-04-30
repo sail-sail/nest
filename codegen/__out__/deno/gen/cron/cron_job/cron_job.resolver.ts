@@ -240,9 +240,9 @@ export async function updateByIdCronJob(
     "edit",
   );
   
-  const id2: CronJobId = await updateByIdCronJob(id, input);
+  id = await updateByIdCronJob(id, input);
   
-  return id2;
+  return id;
 }
 
 /**

@@ -201,9 +201,9 @@ export async function updateByIdCronJob(
     throw "不能修改已经锁定的 定时任务";
   }
   
-  const cron_job_id2 = await cron_jobDao.updateByIdCronJob(cron_job_id, input);
+  cron_job_id = await cron_jobDao.updateByIdCronJob(cron_job_id, input);
   
-  return cron_job_id2;
+  return cron_job_id;
 }
 
 /** 校验定时任务是否存在 */

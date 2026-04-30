@@ -117,6 +117,4 @@ export function intoInputJob(
   if (!input) {
     return;
   }
-  
-  input.id = undefined;
 }
