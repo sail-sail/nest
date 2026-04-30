@@ -516,7 +516,7 @@ export function useDownloadImportTemplateIcon() {
     try {
       const sheetName = "图标库";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/icon.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/icon.xlsx`,
         {
           sheetName,
           data,
@@ -586,7 +586,7 @@ export function useExportExcelIcon() {
       try {
         const sheetName = "图标库";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/icon.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/icon.xlsx`,
           {
             sheetName,
             columns,

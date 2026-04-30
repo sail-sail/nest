@@ -606,8 +606,9 @@ export async function findByUniqueI18n(
   }
   const models: I18nModel[] = [ ];
   {
+    let canFind = true;
     if (search0.lang_id == null) {
-      return [ ];
+      canFind = false;
     }
     let lang_id: LangId[] = [ ];
     if (!Array.isArray(search0.lang_id) && search0.lang_id != null) {
@@ -616,7 +617,7 @@ export async function findByUniqueI18n(
       lang_id = search0.lang_id || [ ];
     }
     if (search0.menu_id == null) {
-      return [ ];
+      canFind = false;
     }
     let menu_id: MenuId[] = [ ];
     if (!Array.isArray(search0.menu_id) && search0.menu_id != null) {
@@ -625,20 +626,22 @@ export async function findByUniqueI18n(
       menu_id = search0.menu_id || [ ];
     }
     if (search0.code == null) {
-      return [ ];
+      canFind = false;
     }
     const code = search0.code;
-    const modelTmps = await findAllI18n(
-      {
-        lang_id,
-        menu_id,
-        code,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllI18n(
+        {
+          lang_id,
+          menu_id,
+          code,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

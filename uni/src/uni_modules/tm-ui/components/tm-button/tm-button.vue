@@ -366,7 +366,7 @@ const isHover = ref(false);
 
 watch(() => attrs.disableHover, (val) => {
     if (val) isHover.value = false;
-}, { immediate: true });
+});
 
 const touchStart = () => {
     if (attrs.disableHover || attrs.disabled || attrs.loading) return;
@@ -493,6 +493,7 @@ export default {
 
 <style lang="scss" scoped>
 .tmButton {
+    cursor: pointer;
     position: relative;
     display: inline-flex;
     line-height: 1;
@@ -505,7 +506,9 @@ export default {
         cursor: no-drop;
     }
     &[disabled = false]{
+        // #ifdef H5
         cursor: pointer;
+        // #endif
     }
     &.tmButtonLoading {
         opacity: 0.5;

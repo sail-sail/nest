@@ -63,7 +63,7 @@
 		 * primary:正常主题
 		 */
 		status: {
-			type: String,
+			type: String as PropType<"warn"|"success"|"error"|"info"|"primary">,
 			default: "primary"
 		},
 		/**

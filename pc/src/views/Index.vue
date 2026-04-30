@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import 'swiper/css/bundle';
+import "swiper/swiper-bundle.css";
 
 import type {
   Component,

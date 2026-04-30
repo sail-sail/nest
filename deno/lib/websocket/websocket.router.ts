@@ -1,8 +1,6 @@
 import {
   // log,
   error,
-  newContext,
-  runInAsyncHooks,
 } from "/lib/context.ts";
 
 import {
@@ -10,29 +8,71 @@ import {
 } from "@oak/oak";
 
 import {
-  callbacksMap,
-  socketMap,
-  clientIdTopicsMap,
-} from "./websocket.constants.ts";
+  addSocketConnection,
+  removeClientTopics,
+  removeSocketConnection,
+  subscribeClientTopics,
+  unSubscribeClientTopics,
+} from "./websocket.dao.ts";
+
+function getTopics(
+  data: unknown,
+) {
+  if (!data || typeof data !== "object") {
+    return [ ];
+  }
+  const topics = (data as {
+    topics?: unknown;
+  }).topics;
+  if (!Array.isArray(topics) || topics.length === 0) {
+    return [ ];
+  }
+  const nextTopics: string[] = [ ];
+  for (const topic of topics) {
+    if (typeof topic !== "string" || !topic || nextTopics.includes(topic)) {
+      continue;
+    }
+    nextTopics.push(topic);
+  }
+  return nextTopics;
+}
+
+function closeSocket(
+  socket: WebSocket,
+  message?: string,
+) {
+  if (
+    socket.readyState === WebSocket.CLOSED ||
+    socket.readyState === WebSocket.CLOSING
+  ) {
+    return;
+  }
+  try {
+    socket.close(1000, message);
+  } catch (_err) {
+    // empty
+  }
+}
+
+function cleanupConnection(
+  clientId: string,
+  connectionId: string,
+) {
+  if (!clientId || !connectionId) {
+    return;
+  }
+  const leftLen = removeSocketConnection(
+    clientId,
+    connectionId,
+  );
+  if (leftLen === 0) {
+    removeClientTopics(clientId);
+  }
+}
 
 const router = new Router({
   prefix: "/api/websocket/",
 });
-
-function onopen(socket: WebSocket, clientId: string) {
-  let socketOlds = socketMap.get(clientId);
-  if (!socketOlds) {
-    socketOlds = [ ];
-    socketMap.set(clientId, socketOlds);
-  }
-  socketOlds.push(socket);
-  
-  for (const socket2 of socketOlds) {
-    if (socket2.readyState !== WebSocket.OPEN) {
-      socket2.close(1000, `websocket: clientId ${ clientId } reconnect`);
-    }
-  }
-}
 
 const PWD = "0YSCBr1QQSOpOfi6GgH34A";
 
@@ -60,136 +100,85 @@ router.get("upgrade", function(ctx) {
     return;
   }
   const socket = ctx.upgrade();
+  const connectionId = crypto.randomUUID();
+  let isCleaned = false;
+
+  function cleanupCurrentConnection() {
+    if (!clientId || !connectionId) {
+      return;
+    }
+    if (isCleaned) {
+      return;
+    }
+    isCleaned = true;
+    cleanupConnection(
+      clientId,
+      connectionId,
+    );
+  }
+
   socket.onopen = function() {
     try {
-      onopen(socket, clientId);
+      addSocketConnection(
+        clientId,
+        connectionId,
+        socket,
+      );
     } catch (err0) {
       const err = err0 as Error;
       error(err);
-      try {
-        if (socket.readyState !== WebSocket.OPEN) {
-          socket.close(1000, err.message);
-        }
-      } catch (_err) {
-        error(_err);
-      }
+      cleanupCurrentConnection();
+      closeSocket(socket, err.message);
     }
   };
   socket.onclose = function() {
-    // log(`websocket: clientId ${ clientId } onclose`);
-    // socketMap.delete(clientId);
-    for (const [ clientId2, sockets ] of socketMap) {
-      if (sockets.includes(socket)) {
-        socketMap.set(clientId2, sockets.filter((item) => item !== socket));
-      }
-    }
-    clientIdTopicsMap.delete(clientId);
+    cleanupCurrentConnection();
   };
   socket.onerror = function(err0) {
     const err = err0 as ErrorEvent;
-    // log(`websocket: clientId ${ clientId } onerror`);
-    // error(err);
-    try {
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.close(1000, err.message);
-      }
-    } catch (_err) {
-      // error(_err);
-    }
-    // socketMap.delete(clientId);
-    for (const [ clientId2, sockets ] of socketMap) {
-      if (sockets.includes(socket)) {
-        socketMap.set(clientId2, sockets.filter((item) => item !== socket));
-      }
-    }
-    clientIdTopicsMap.delete(clientId);
-  }
+    cleanupCurrentConnection();
+    closeSocket(socket, err.message);
+  };
   socket.onmessage = async function(event) {
     const eventData = event.data;
     if (eventData === "ping") {
-      socket.send("pong");
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send("pong");
+      }
       return;
     }
-    if (typeof eventData !== "string") {
+    if (typeof eventData !== "string" || !eventData) {
       return;
     }
-    // log(eventData);
     try {
       const obj = JSON.parse(eventData);
-      const action = obj.action;
-      const data = obj.data;
+      const action = typeof obj?.action === "string" ? obj.action : "";
+      const data = obj?.data;
       if (action === "subscribe") {
-        const topics = data.topics;
-        if (!topics || topics.length === 0) {
+        const topics = getTopics(data);
+        if (topics.length === 0) {
           return;
         }
-        let oldTopics = clientIdTopicsMap.get(clientId);
-        if (!oldTopics) {
-          oldTopics = [ ];
-          clientIdTopicsMap.set(clientId, oldTopics);
-        }
-        for (const topic of topics) {
-          if (oldTopics.includes(topic)) {
-            continue;
-          }
-          oldTopics.push(topic);
-        }
-        clientIdTopicsMap.set(clientId, oldTopics);
-        return;
-      } else if (action === "publish") {
-        const topic = data.topic;
-        const callbacks = callbacksMap.get(topic);
-        if (callbacks && callbacks.length > 0) {
-          for (const callback of callbacks) {
-            const context = newContext(ctx);
-            await runInAsyncHooks(context, async function() {
-              await callback(data.payload);
-            });
-          }
-        }
-        const dataStr = JSON.stringify(data);
-        for (const [ clientId2, topics ] of clientIdTopicsMap) {
-          // if (clientId2 === clientId) {
-          //   continue;
-          // }
-          if (!topics.includes(topic)) {
-            continue;
-          }
-          const sockets = socketMap.get(clientId2);
-          if (!sockets || sockets.length === 0) {
-            continue;
-          }
-          for (const socket2 of sockets) {
-            if (socket2.readyState !== WebSocket.OPEN) {
-              socketMap.set(clientId2, sockets.filter((item) => item !== socket2));
-              clientIdTopicsMap.delete(clientId2);
-              try {
-                socket2.close();
-              } catch (_err) {
-                error(_err);
-              }
-              continue;
-            }
-            socket2.send(dataStr);
-          }
-        }
+        subscribeClientTopics(
+          clientId,
+          topics,
+        );
         return;
       } else if (action === "unSubscribe") {
-        const topics = data.topics;
-        if (!topics || topics.length === 0) {
+        const topics = getTopics(data);
+        if (topics.length === 0) {
           return;
         }
-        const oldTopics = clientIdTopicsMap.get(clientId);
-        if (!oldTopics) {
-          return;
-        }
-        const newTopics = oldTopics.filter((item) => !topics.includes(item));
-        clientIdTopicsMap.set(clientId, newTopics);
+        unSubscribeClientTopics(
+          clientId,
+          topics,
+        );
+        return;
       }
     } catch (err) {
       error(err);
     }
-  }
+  };
   response.body = {
     code: 0,
     data: null,
