@@ -606,19 +606,22 @@ export async function findByUniqueOrg(
   }
   const models: OrgModel[] = [ ];
   {
+    let canFind = true;
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllOrg(
-      {
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllOrg(
+        {
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

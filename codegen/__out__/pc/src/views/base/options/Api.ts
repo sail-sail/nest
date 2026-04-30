@@ -538,7 +538,7 @@ export function useDownloadImportTemplateOptions() {
     try {
       const sheetName = "系统选项";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/options.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/options.xlsx`,
         {
           sheetName,
           data,
@@ -609,7 +609,7 @@ export function useExportExcelOptions() {
       try {
         const sheetName = "系统选项";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/options.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/options.xlsx`,
           {
             sheetName,
             columns,

@@ -1917,7 +1917,7 @@ if (searchByKeyword) {
                 >
                   <CustomIcon
                     v-model="row.<#=column_name#>"
-                    v-model:model-lbl="row.<#=column_name#>_lbl"
+                    v-model:model-label="row.<#=column_name#>_lbl"
                     :readonly="true"
                     un-w="8"
                     un-h="8"
@@ -1942,7 +1942,18 @@ if (searchByKeyword) {
               <template #default="{ row, column }">
                 <LinkImage
                   v-model="row[column.property]"
-                  un-h="8"
+                  un-h="8"<#
+                  if (column.align === "left") {
+                  #>
+                  un-justify="start"<#
+                  } else if (column.align === "center") {
+                  #>
+                  un-justify="center"<#
+                  } else if (column.align === "right") {
+                  #>
+                  un-justify="end"<#
+                  }
+                  #>
                 ></LinkImage>
               </template>
             </el-table-column>
@@ -3511,7 +3522,7 @@ let selectedIds = $(tableSelected.selectedIds as unknown as <#=Table_Up#>Id[]);
 
 watch(
   () => selectedIds,
-  (oldVal, newVal) => {
+  (newVal, oldVal) => {
     if (!inited) {
       return;
     }
@@ -4933,7 +4944,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("forceDelete")) {<#
+  if (!permit("force_delete")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#

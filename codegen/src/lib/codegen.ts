@@ -289,7 +289,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             }
             lbl += `<% var prop = "`;
             if (
-              (foreignKey || column.dict || column.dictbiz)
+              (foreignKey || column.dict || column.dictbiz || column.isIcon)
               || (data_type === "date" || data_type === "datetime")
             ) {
               lbl += column_name + "_lbl";
@@ -365,7 +365,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             str += `<%forRow model in data.findAll${ Table_Up_IN }%>`;
           }
           str += `<% var prop = "`;
-          if (foreignKey || column.dict || column.dictbiz
+          if (foreignKey || column.dict || column.dictbiz || column.isIcon
             || (data_type === "date" || data_type === "datetime")
           ) {
             str += column_name + "_lbl";

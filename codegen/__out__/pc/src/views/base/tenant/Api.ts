@@ -721,7 +721,7 @@ export function useDownloadImportTemplateTenant() {
     try {
       const sheetName = "租户";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/tenant.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/tenant.xlsx`,
         {
           sheetName,
           data,
@@ -801,7 +801,7 @@ export function useExportExcelTenant() {
       try {
         const sheetName = "租户";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/tenant.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/tenant.xlsx`,
           {
             sheetName,
             columns,

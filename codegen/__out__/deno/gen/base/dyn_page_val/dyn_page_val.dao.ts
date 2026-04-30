@@ -494,29 +494,32 @@ export async function findByUniqueDynPageVal(
   }
   const models: DynPageValModel[] = [ ];
   {
+    let canFind = true;
     if (search0.ref_code == null) {
-      return [ ];
+      canFind = false;
     }
     const ref_code = search0.ref_code;
     if (search0.ref_id == null) {
-      return [ ];
+      canFind = false;
     }
     const ref_id = search0.ref_id;
     if (search0.code == null) {
-      return [ ];
+      canFind = false;
     }
     const code = search0.code;
-    const modelTmps = await findAllDynPageVal(
-      {
-        ref_code,
-        ref_id,
-        code,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllDynPageVal(
+        {
+          ref_code,
+          ref_id,
+          code,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

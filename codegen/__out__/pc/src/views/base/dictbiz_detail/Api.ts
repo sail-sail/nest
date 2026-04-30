@@ -557,7 +557,7 @@ export function useDownloadImportTemplateDictbizDetail() {
     try {
       const sheetName = "业务字典明细";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/dictbiz_detail.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/dictbiz_detail.xlsx`,
         {
           sheetName,
           data,
@@ -630,7 +630,7 @@ export function useExportExcelDictbizDetail() {
       try {
         const sheetName = "业务字典明细";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/dictbiz_detail.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/dictbiz_detail.xlsx`,
           {
             sheetName,
             columns,

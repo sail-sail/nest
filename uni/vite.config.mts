@@ -90,21 +90,21 @@ export default defineConfig({
           "dayjs": [
             [ "default", "dayjs" ]
           ],
-          "@/utils/common": [
+          "@/utils/common.ts": [
             "getDict",
             "getDictbiz",
             "list2tree",
           ],
-          "@/store/usr": [
+          "@/store/usr.ts": [
             [ "default", "useUsrStore" ],
           ],
-          "@/store/index": [
+          "@/store/index.ts": [
             [ "default", "useIndexStore" ],
           ],
           "@/store/inline_foreign_tab.ts": [
             "useInlineForeignTab",
           ],
-          "@/utils/request": [
+          "@/utils/request.ts": [
             "request",
             "getRequestUrl",
             "uploadFile",
@@ -116,17 +116,18 @@ export default defineConfig({
             "downloadFile",
             "uniLogin",
           ],
-          "@/utils/graphql": [
+          "@/utils/graphql.ts": [
             "query",
             "mutation",
           ],
-          "@/pages/index/Api": [
+          "@/pages/index/Api.ts": [
             "checkLogin",
           ],
-          "@/utils/StringUtil": [
+          "@/utils/StringUtil.ts": [
             "isEmpty",
             "isNotEmpty",
             "uniqueID",
+            "getUid",
           ],
           "decimal.js": [
             [ "default", "Decimal" ],

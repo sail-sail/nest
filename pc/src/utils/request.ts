@@ -4,8 +4,6 @@ import useUsrStore from "../store/usr.ts";
 import useIndexStore from "../store/index.ts";
 import { saveAs } from "file-saver";
 
-import cfg from "./config.ts";
-
 export const baseURL = "";
 
 export async function request<T>(
