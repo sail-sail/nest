@@ -740,8 +740,9 @@ export async function findByUniqueWxwAppToken(
   }
   const models: WxwAppTokenModel[] = [ ];
   {
+    let canFind = true;
     if (search0.wxw_app_id == null) {
-      return [ ];
+      canFind = false;
     }
     let wxw_app_id: WxwAppId[] = [ ];
     if (!Array.isArray(search0.wxw_app_id) && search0.wxw_app_id != null) {
@@ -750,34 +751,39 @@ export async function findByUniqueWxwAppToken(
       wxw_app_id = search0.wxw_app_id || [ ];
     }
     if (search0.type == null) {
-      return [ ];
+      canFind = false;
     }
     const type = search0.type;
-    const modelTmps = await findAllWxwAppToken(
-      {
-        wxw_app_id,
-        type,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxwAppToken(
+        {
+          wxw_app_id,
+          type,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.access_token == null) {
-      return [ ];
+      canFind = false;
     }
     const access_token = search0.access_token;
-    const modelTmps = await findAllWxwAppToken(
-      {
-        access_token,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxwAppToken(
+        {
+          access_token,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

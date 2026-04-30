@@ -481,7 +481,7 @@ export function useExportExcelWxwMsg() {
       try {
         const sheetName = "企微消息";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/wxwork/wxw_msg.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/wxwork/wxw_msg.xlsx`,
           {
             sheetName,
             columns,

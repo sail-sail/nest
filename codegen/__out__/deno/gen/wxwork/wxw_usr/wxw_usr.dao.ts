@@ -610,44 +610,50 @@ export async function findByUniqueWxwUsr(
   }
   const models: WxwUsrModel[] = [ ];
   {
+    let canFind = true;
     if (search0.corpid == null) {
-      return [ ];
+      canFind = false;
     }
     const corpid = search0.corpid;
     if (search0.userid == null) {
-      return [ ];
+      canFind = false;
     }
     const userid = search0.userid;
-    const modelTmps = await findAllWxwUsr(
-      {
-        corpid,
-        userid,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxwUsr(
+        {
+          corpid,
+          userid,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.corpid == null) {
-      return [ ];
+      canFind = false;
     }
     const corpid = search0.corpid;
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllWxwUsr(
-      {
-        corpid,
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxwUsr(
+        {
+          corpid,
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;

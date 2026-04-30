@@ -694,43 +694,50 @@ export async function findByUniqueWxwApp(
   }
   const models: WxwAppModel[] = [ ];
   {
+    let canFind = true;
     if (search0.lbl == null) {
-      return [ ];
+      canFind = false;
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAllWxwApp(
-      {
-        lbl,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxwApp(
+        {
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.corpid == null) {
-      return [ ];
+      canFind = false;
     }
     const corpid = search0.corpid;
     if (search0.agentid == null) {
-      return [ ];
+      canFind = false;
     }
     const agentid = search0.agentid;
-    const modelTmps = await findAllWxwApp(
-      {
-        corpid,
-        agentid,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxwApp(
+        {
+          corpid,
+          agentid,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   {
+    let canFind = true;
     if (search0.domain_id == null) {
-      return [ ];
+      canFind = false;
     }
     let domain_id: DomainId[] = [ ];
     if (!Array.isArray(search0.domain_id) && search0.domain_id != null) {
@@ -738,15 +745,17 @@ export async function findByUniqueWxwApp(
     } else {
       domain_id = search0.domain_id || [ ];
     }
-    const modelTmps = await findAllWxwApp(
-      {
-        domain_id,
-      },
-      undefined,
-      undefined,
-      options,
-    );
-    models.push(...modelTmps);
+    if (canFind) {
+      const modelTmps = await findAllWxwApp(
+        {
+          domain_id,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
   }
   
   return models;
