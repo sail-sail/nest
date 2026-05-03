@@ -598,7 +598,7 @@ export function useDownloadImportTemplateCronJob() {
     try {
       const sheetName = "定时任务";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/cron/cron_job.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/cron/cron_job.xlsx`,
         {
           sheetName,
           data,
@@ -673,7 +673,7 @@ export function useExportExcelCronJob() {
       try {
         const sheetName = "定时任务";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/cron/cron_job.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/cron/cron_job.xlsx`,
           {
             sheetName,
             columns,

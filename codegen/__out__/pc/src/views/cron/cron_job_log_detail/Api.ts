@@ -458,7 +458,7 @@ export function useExportExcelCronJobLogDetail() {
       try {
         const sheetName = "定时任务日志明细";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/cron/cron_job_log_detail.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/cron/cron_job_log_detail.xlsx`,
           {
             sheetName,
             columns,

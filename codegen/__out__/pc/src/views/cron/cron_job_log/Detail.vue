@@ -245,6 +245,7 @@ const permitStore = usePermitStore();
 const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
+let is_form_hydrating = $ref(false);
 
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
@@ -467,33 +468,40 @@ async function onReset() {
 
 /** 刷新 */
 async function onRefresh() {
-  const id = dialogModel.id;
-  if (!id) {
+  is_form_hydrating = true;
+  try {
+    const id = dialogModel.id;
+    if (!id) {
+      const [
+        defaultModel,
+      ] = await Promise.all([
+        getDefaultInputCronJobLog(),
+      ]);
+      dialogModel = {
+        ...defaultModel,
+        ...builtInModel,
+      };
+      is_form_hydrating = false;
+      return;
+    }
     const [
-      defaultModel,
+      data,
     ] = await Promise.all([
-      getDefaultInputCronJobLog(),
+      findOneModel({
+        id,
+        is_deleted,
+      }),
     ]);
-    dialogModel = {
-      ...defaultModel,
-      ...builtInModel,
-    };
-    return;
+    if (data) {
+      dialogModel = intoInputCronJobLog({
+        ...data,
+      });
+    }
+    cron_job_log_model = data;
+  } finally {
+    await nextTick();
+    is_form_hydrating = false;
   }
-  const [
-    data,
-  ] = await Promise.all([
-    findOneModel({
-      id,
-      is_deleted,
-    }),
-  ]);
-  if (data) {
-    dialogModel = intoInputCronJobLog({
-      ...data,
-    });
-  }
-  cron_job_log_model = data;
 }
 
 /** 键盘按 PageUp */
@@ -592,7 +600,7 @@ watch(
     dialogModel.end_time,
   ],
   () => {
-    if (!inited) {
+    if (!inited || is_form_hydrating) {
       return;
     }
     if (!dialogModel.cron_job_id) {

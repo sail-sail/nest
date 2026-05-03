@@ -1609,14 +1609,12 @@ pub async fn find_by_unique_cron_job(
   
   let mut models: Vec<CronJobModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.job_id.is_none() ||
-      search.cron.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.job_id.is_none() ||
+    search.cron.is_none()
+  {
+    vec![]
+  } else {
     let search = CronJobSearch {
       job_id: search.job_id.clone(),
       cron: search.cron.clone(),
@@ -2616,7 +2614,7 @@ pub async fn update_by_id_cron_job(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }

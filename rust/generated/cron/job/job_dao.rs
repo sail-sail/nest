@@ -1408,13 +1408,11 @@ pub async fn find_by_unique_job(
   
   let mut models: Vec<JobModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.code.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.code.is_none()
+  {
+    vec![]
+  } else {
     let search = JobSearch {
       code: search.code.clone(),
       ..Default::default()
@@ -1429,13 +1427,11 @@ pub async fn find_by_unique_job(
   };
   models.append(&mut models_tmp);
   
-  let mut models_tmp = {
-    if
-      search.lbl.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.lbl.is_none()
+  {
+    vec![]
+  } else {
     let search = JobSearch {
       lbl: search.lbl.clone(),
       ..Default::default()
@@ -2338,7 +2334,7 @@ pub async fn update_by_id_job(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }
