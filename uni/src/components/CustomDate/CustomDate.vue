@@ -1,9 +1,10 @@
 <template>
 <tm-picker-date
   v-bind="$attrs"
-  v-model="modelValue"
-  format="YYYY-MM-DD"
-  format-sync-value
+  v-model="pickerModelValue"
+  v-model:model-str="modelValueStr"
+  :format="props.format"
+  :format-sync-value="pickerFormatSyncValue"
   class="custom_date"
   :class="{
     'custom_date_readonly': readonly,
@@ -12,7 +13,7 @@
   :disabled="readonly"
 >
   <CustomInput
-    v-model="modelValue"
+    v-model="modelValueStr"
     readonly
     :clearable="props.clearable == null ? (readonly ? false : true) : props.clearable"
     :readonly-placeholder="(readonly || !props.pageInited) ? (props.pageInited ? props.readonlyPlaceholder : '') : props.placeholder"
@@ -36,6 +37,9 @@ const props = withDefaults(
     readonlyPlaceholder?: string;
     color?: string;
     fontColor?: string;
+    format?: string;
+    formatSyncValue?: boolean;
+    valueFormat?: string;
   }>(),
   {
     readonly: undefined,
@@ -45,6 +49,9 @@ const props = withDefaults(
     readonlyPlaceholder: undefined,
     color: "transparent",
     fontColor: undefined,
+    format: "YYYY-MM-DD",
+    formatSyncValue: false,
+    valueFormat: undefined,
   },
 );
 
@@ -62,6 +69,50 @@ const readonly = $computed(() => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const modelValue = defineModel<any>();
+const modelValueStr = defineModel<string>("modelValueStr");
+
+const pickerFormatSyncValue = $computed(() => {
+  if (props.valueFormat) {
+    return false;
+  }
+  return props.formatSyncValue;
+});
+
+const coverModelValueToPickerValue = (value?: string) => {
+  if (!value || !props.valueFormat) {
+    return value;
+  }
+
+  const dateValue = dayjs(value);
+  if (!dateValue.isValid()) {
+    return value;
+  }
+
+  return dateValue.format("YYYY-MM-DD HH:mm:ss");
+};
+
+const coverPickerValueToModelValue = (value?: string) => {
+  if (!value || !props.valueFormat) {
+    return value;
+  }
+
+  const dateValue = dayjs(value);
+  if (!dateValue.isValid()) {
+    return value;
+  }
+
+  return dateValue.format(props.valueFormat);
+};
+
+const pickerModelValue = computed({
+  get() {
+    return coverModelValueToPickerValue(modelValue.value);
+  },
+  set(value?: string) {
+    modelValue.value = coverPickerValueToModelValue(value);
+  },
+});
+
 </script>
 
 <style lang="scss" scoped>

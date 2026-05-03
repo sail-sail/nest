@@ -1420,15 +1420,13 @@ pub async fn find_by_unique_i18n(
   
   let mut models: Vec<I18nModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.lang_id.is_none() ||
-      search.menu_id.is_none() ||
-      search.code.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.lang_id.is_none() ||
+    search.menu_id.is_none() ||
+    search.code.is_none()
+  {
+    vec![]
+  } else {
     let search = I18nSearch {
       lang_id: search.lang_id.clone(),
       menu_id: search.menu_id.clone(),
@@ -2216,7 +2214,7 @@ pub async fn update_by_id_i18n(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }

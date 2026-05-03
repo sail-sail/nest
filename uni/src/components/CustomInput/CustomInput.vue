@@ -2,7 +2,7 @@
 <tm-input
   v-if="!readonly"
   ref="inputRef"
-  :model-value="modelValue"
+  :model-value="inputModelValue"
   class="custom_input w-full"
   :class="{
     'custom_input_readonly': readonly
@@ -13,14 +13,14 @@
   :selection-start="selectionStart"
   :selection-end="selectionEnd"
   width="100%"
-  :show-clear="props.clearable == null ? ((modelValue != null && modelValue !== '') ? !readonly : false) : props.clearable"
+  :show-clear="props.clearable == null ? ((inputModelValue != null && inputModelValue !== '') ? !readonly : false) : props.clearable"
   :readonly="readonly"
   :placeholder="(readonly || !props.pageInited) ? '' : props.placeholder"
   :placeholder-style="($attrs['placeholder-style'] as (string | undefined))"
   :maxlength="($attrs['maxlength'] as (number | undefined))"
   :color="props.color"
   :font-color="props.fontColor ? props.fontColor : (readonly ? 'var(--color-readonly)' : undefined)"
-  :type="props.type === 'decimal' ? 'digit' : props.type"
+  :type="inputType"
   :password="($attrs.password as (boolean | undefined))"
   :show-eye="($attrs['show-eye'] as (boolean | undefined))"
   :placeholder-class="($attrs['placeholder-class'] as (string | undefined))"
@@ -197,6 +197,31 @@ const props = withDefaults(
   },
 );
 
+const valueType = $computed(() => {
+  if (props.isDecimal) {
+    return "decimal";
+  }
+  if (props.isNumber) {
+    return "number";
+  }
+  return props.type;
+});
+
+const isDecimal = $computed(() => {
+  return valueType === "decimal";
+});
+
+const isNumber = $computed(() => {
+  return valueType === "number" || valueType === "digit";
+});
+
+const inputType = $computed(() => {
+  if (valueType === "decimal") {
+    return "digit";
+  }
+  return valueType;
+});
+
 const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
 
 const readonly = $computed(() => {
@@ -211,6 +236,81 @@ const readonly = $computed(() => {
 
 const modelValue = ref(props.modelValue);
 
+function parseDecimalValue(
+  value: string,
+) {
+  try {
+    return new Decimal(value || 0).toDecimalPlaces(props.precision, Decimal.ROUND_DOWN);
+  } catch {
+    return new Decimal(0);
+  }
+}
+
+function parseNumberValue(
+  value: string,
+) {
+  let numberValue = Math.round(Number(value) * Math.pow(10, props.precision)) / Math.pow(10, props.precision);
+  if (isNaN(numberValue)) {
+    numberValue = 0;
+  }
+  return numberValue;
+}
+
+function syncDecimalModelValue(
+  rawValue: string,
+  decimalValue: InstanceType<typeof Decimal>,
+) {
+  if (!rawValue || decimalValue.isNaN()) {
+    modelValue.value = "";
+    return;
+  }
+  if (props.isHideZero && decimalValue.isZero()) {
+    modelValue.value = "";
+    return;
+  }
+  modelValue.value = decimalValue.toString();
+}
+
+function syncNumberModelValue(
+  rawValue: string,
+  numberValue: number,
+) {
+  if (!rawValue || isNaN(numberValue)) {
+    modelValue.value = "";
+    return;
+  }
+  if (props.isHideZero && numberValue === 0) {
+    modelValue.value = "";
+    return;
+  }
+  modelValue.value = numberValue.toString();
+}
+
+function shouldHideInputZero(value: unknown) {
+  if (!props.isHideZero || value == null || value === "") {
+    return false;
+  }
+  if (isDecimal) {
+    try {
+      return new Decimal(value.toString()).isZero();
+    } catch {
+      return false;
+    }
+  }
+  if (isNumber) {
+    const numberValue = Number(value);
+    return !isNaN(numberValue) && numberValue === 0;
+  }
+  return false;
+}
+
+const inputModelValue = $computed(() => {
+  if (shouldHideInputZero(modelValue.value)) {
+    return "";
+  }
+  return modelValue.value;
+});
+
 watch(
   () => props.modelValue,
   () => {
@@ -220,7 +320,7 @@ watch(
       } else {
         modelValue.value = props.modelValue.toString();
       }
-    } else if (props.modelValue instanceof Number) {
+    } else if (typeof props.modelValue === "number" || props.modelValue instanceof Number) {
       if (props.isHideZero && props.modelValue == 0) {
         modelValue.value = "";
       } else {
@@ -236,48 +336,39 @@ watch(
 );
 
 function onUpdateModelValue(value: string) {
-  if (props.isDecimal) {
-    let decimalValue = new Decimal(value && value.trim() || 0).toDecimalPlaces(props.precision, Decimal.ROUND_DOWN);
-    if (decimalValue.isNaN() || decimalValue.isZero()) {
-      modelValue.value = "";
-    } else {
-      modelValue.value = decimalValue.toString();
-    }
-    if (decimalValue.isNaN()) {
-      decimalValue = new Decimal(0);
-    }
+  const rawValue = value.trim();
+  if (isDecimal) {
+    const decimalValue = parseDecimalValue(rawValue);
+    syncDecimalModelValue(rawValue, decimalValue);
     emit("update:modelValue", decimalValue);
-  } else if (props.isNumber) {
-    let numberValue = Math.round(Number(value) * Math.pow(10, props.precision)) / Math.pow(10, props.precision);
-    if (isNaN(numberValue)) {
-      numberValue = 0;
-    }
-    if (numberValue === 0) {
-      modelValue.value = "";
-    } else {
-      modelValue.value = numberValue.toString();
-    }
+  } else if (isNumber) {
+    const numberValue = parseNumberValue(rawValue);
+    syncNumberModelValue(rawValue, numberValue);
     emit("update:modelValue", numberValue);
-  }else {
+  } else {
     modelValue.value = value;
     emit("update:modelValue", modelValue.value);
   }
 }
 
 const shouldShowPlaceholder = $computed<boolean>(() => {
-  if (props.isDecimal) {
-    return modelValue.value == null || modelValue.value === "" || (props.isHideZero && new Decimal(modelValue.value).isZero());
+  if (isDecimal) {
+    if (modelValue.value == null || modelValue.value === "") {
+      return true;
+    }
+    try {
+      return props.isHideZero && new Decimal(modelValue.value).isZero();
+    } catch {
+      return true;
+    }
   }
-  if (props.isNumber) {
+  if (isNumber) {
     return modelValue.value == null || modelValue.value === "" || (props.isHideZero && Number(modelValue.value) == 0) || isNaN(Number(modelValue.value));
-  }
-  if (props.type === "number" || props.type === "digit" || props.type === "decimal") {
-    return modelValue.value == null || modelValue.value === "" || (props.isHideZero && Number(modelValue.value) == 0) || isNaN(modelValue.value);
   }
   return modelValue.value == null || modelValue.value === "";
 });
 
-const focusValue = ref<string>();
+const focusValue = ref<string | number>();
 
 function onFocus() {
   isFocus.value = true;
@@ -288,25 +379,24 @@ function onFocus() {
 }
 
 function onBlur(value: string) {
-  if (props.isDecimal) {
-    const decimalValue = new Decimal(value && value.trim() || 0).toDecimalPlaces(props.precision, Decimal.ROUND_DOWN);
+  const rawValue = value.trim();
+  if (isDecimal) {
+    const decimalValue = parseDecimalValue(rawValue);
     emit("blur", decimalValue);
     if (decimalValue.equals(new Decimal(focusValue.value || 0))) {
       return;
     }
     emit("change", decimalValue);
-  } else if (props.isNumber) {
-    let numberValue = Math.round(Number(value) * Math.pow(10, props.precision)) / Math.pow(10, props.precision);
-    if (isNaN(numberValue)) {
-      numberValue = 0;
-    }
+  } else if (isNumber) {
+    const numberValue = parseNumberValue(rawValue);
     emit("blur", numberValue);
     if (numberValue === Number(focusValue.value)) {
       return;
     }
     emit("change", numberValue);
   } else {
-    if (value === focusValue.value || "") {
+    emit("blur", value);
+    if (value === focusValue.value) {
       return;
     }
     emit("change", modelValue.value);
@@ -314,15 +404,20 @@ function onBlur(value: string) {
 }
 
 function onClear() {
-  if (props.isDecimal) {
-    modelValue.value = new Decimal(0).toString();
-  } else if (props.isNumber) {
-    modelValue.value = 0;
+  if (isDecimal) {
+    const decimalValue = new Decimal(0);
+    modelValue.value = "";
+    emit("update:modelValue", decimalValue);
+    emit("change", decimalValue);
+  } else if (isNumber) {
+    modelValue.value = "";
+    emit("update:modelValue", 0);
+    emit("change", 0);
   } else {
     modelValue.value = "";
+    emit("update:modelValue", modelValue.value);
+    emit("change", modelValue.value);
   }
-  emit("update:modelValue", modelValue.value);
-  emit("change", modelValue.value);
   emit("clear");
 }
 
@@ -339,7 +434,7 @@ async function focus() {
   selectionStart.value = undefined;
   selectionEnd.value = undefined;
   await nextTick();
-  const len = modelValue.value?.toString().length || 0;
+  const len = inputModelValue.value?.toString().length || 0;
   selectionStart.value = len;
   selectionEnd.value = len;
   isFocus.value = true;

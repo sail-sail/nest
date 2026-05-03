@@ -5,26 +5,27 @@ description: 移动端导出 Excel 时使用
 
 # Excel 导出
 
-后端 Rust + xlsx_handlebars，前端 uni.downloadFile。
+后端 Rust + xlsx_handlebars + rust-embed，前端 uni.downloadFile。
+
+> 注意: 此功能在项目中尚未有实际使用案例, 以下为指导性参考模式。实现时请根据实际模块路径调整, 不要照抄示例中的 `spc` 目录。
 
 ## 文件结构
 
-```
-rust/app/spc/{mod}/
-├── {table}_model.rs           # ExportExcelAsset
+```rust/app/{mod}/
+├── {table}_model.rs           # ExportExcel{Table}Asset
 ├── {table}_service.rs         # 导出逻辑
 ├── {table}_resful.rs          # HTTP 处理
 ├── {table}_router.rs          # 路由 handler
-└── export_excel_{table}.xlsx  # 模板
-
-rust/app/lib.rs              # 注册路由
+└── export_excel_{table}.xlsx  # 模板(放在编译时能访问的路径)
 ```
+
+路由在 `main.rs` 或 `app/lib.rs` 的 `register_routes` 中注册。
 
 ## 1. model.rs - 嵌入模板
 
 ```rust
 #[derive(rust_embed::Embed)]
-#[folder = "spc/{mod}/"]
+#[folder = "app/{mod}/{table}/"]
 #[include = "export_excel_{table}.xlsx"]
 pub struct ExportExcel{Table}Asset;
 ```
@@ -32,11 +33,13 @@ pub struct ExportExcel{Table}Asset;
 ## 2. service.rs - 导出逻辑
 
 ```rust
+use color_eyre::eyre::{Result, eyre};
 use smol_str::SmolStr;
 
-use generated::spc::{mod}::{table}_service;
-use generated::spc::{mod}::{table}_model::{TableSearch};
-use super::{mod}_model::ExportExcel{Table}Asset;
+use generated::common::context::Options;
+use generated::{mod}::{table}::{table}_service::find_all_{table};
+use generated::{mod}::{table}::{table}_model::TableSearch;
+use super::{mod}::{table}_model::ExportExcel{Table}Asset;
 
 pub async fn export_excel_{table}(
   search: Option<{Table}Search>,
@@ -45,7 +48,7 @@ pub async fn export_excel_{table}(
   options: Option<Options>,
 ) -> Result<(Vec<u8>, SmolStr)> {
   
-  let models = {table}_service::find_all_{table}(
+  let models = find_all_{table}(
     search,
     page,
     sort,
@@ -80,13 +83,14 @@ pub async fn export_excel_{table}(
   let sort = sort.and_then(|s| serde_json::from_str(&s).ok());
   
   info!(
-    "{} {}: {:?}",
-    get_req_id(),
-    function_name!(),
-    search,
+    "{req_id} {function_name}: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
   );
   
-  let (buf, filename) = {table}_service::export_excel_{table}(search, page, sort, options).await?;
+  let (buf, filename) = {table}_service::export_excel_{table}(
+    search, page, sort, options,
+  ).await?;
   
   Ok(Response::builder()
     .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
@@ -98,6 +102,12 @@ pub async fn export_excel_{table}(
 ## 4. router.rs - 路由
 
 ```rust
+use poem::{Request, Response, handler, web::Query};
+use serde::Deserialize;
+use smol_str::SmolStr;
+use generated::common::context::Ctx;
+use super::{table}_resful;
+
 #[derive(Deserialize)]
 struct ExportExcel{Table}Request {
   search: Option<SmolStr>,
@@ -113,7 +123,7 @@ pub async fn export_excel_{table}(
   Ctx::resful_builder(Some(req))
     .with_auth()?
     .build()
-    .resful_scope(async {
+    .resful_scope({
       {table}_resful::export_excel_{table}(
         params.search,
         params.page,
@@ -124,11 +134,27 @@ pub async fn export_excel_{table}(
 }
 ```
 
-## 5. lib.rs - 注册
+## 5. 路由注册
+
+在 `main.rs` 的 app 构建区域添加:
+
+```rust
+app = app.at(
+  "/api/{mod}/export_excel_{table}",
+  get(app::{mod}::{table}::{table}_router::export_excel_{table}),
+);
+```
+
+或在 `app/lib.rs` 的 `register_routes` 中:
 
 ```rust
 pub fn register_routes(app: Route) -> Route {
-  app.at("/api/{mod}/export_excel_{table}", get(spc::{mod}::{table}_router::export_excel_{table}))
+  let mut app = app;
+  app = app.at(
+    "/api/{mod}/{table}/export_excel_{table}",
+    get({mod}::{table}::{table}_router::export_excel_{table}),
+  );
+  app
 }
 ```
 
@@ -155,6 +181,6 @@ export function exportExcel(
     page: JSON.stringify(page),
     sort: JSON.stringify(sort),
   });
-  return `${ baseUrl }/api/{mod}/export_excel_{table}?${ params.toString() }`;
+  return `${ baseUrl }/api/{mod}/{table}/export_excel_{table}?${ params.toString() }`;
 }
 ```

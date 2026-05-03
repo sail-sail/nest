@@ -82,14 +82,14 @@ export default defineConfig({
           "@/components/CustomInput.vue": [
             [ "default", "CustomInput" ],
           ],
-          "@/utils/common": [
+          "@/utils/common.ts": [
             "getDict",
             "getDictbiz",
             "showUploadMsg",
             "list2tree",
             "setClientTenantId",
           ],
-          "@/utils/excel_util": [
+          "@/utils/excel_util.ts": [
             "getExcelData",
             "toExcelColumns",
             "useRenderExcel",
@@ -98,7 +98,7 @@ export default defineConfig({
             "splitArr",
             "splitCreateArr",
           ],
-          "@/locales" : [
+          "@/locales/index.ts": [
             "getLocale",
           ],
           "element-plus": [
@@ -165,37 +165,37 @@ export default defineConfig({
           "@/components/CustomSelect.vue": [
             [ "default", "CustomSelect" ],
           ],
-          "@/components/MessageBox": [
+          "@/components/MessageBox.ts": [
             "MessageBox",
           ],
-          "@/compositions/fullscreen": [
+          "@/compositions/fullscreen.ts": [
             "useFullscreenEfc",
           ],
-          "@/store/menu": [
+          "@/store/menu.ts": [
             [ "default", "useMenuStore" ],
           ],
-          "@/store/usr": [
+          "@/store/usr.ts": [
             [ "default", "useUsrStore" ],
           ],
-          "@/store/permit": [
+          "@/store/permit.ts": [
             [ "default", "usePermitStore" ],
           ],
-          "@/store/field_permit": [
+          "@/store/field_permit.ts": [
             [ "default", "useFieldPermitStore" ],
           ],
-          "@/store/tabs": [
+          "@/store/tabs.ts": [
             [ "default", "useTabsStore" ],
           ],
-          "@/store/tenant": [
+          "@/store/tenant.ts": [
             [ "default", "useTenantStore" ],
           ],
-          "@/store/index": [
+          "@/store/index.ts": [
             [ "default", "useIndexStore" ],
           ],
-          "@/store/dirty": [
+          "@/store/dirty.ts": [
             [ "default", "useDirtyStore" ],
           ],
-          "@/utils/request": [
+          "@/utils/request.ts": [
             "request",
             "getRequestUrl",
             "uploadFile",
@@ -205,27 +205,27 @@ export default defineConfig({
             "getImgUrl",
             "getImgUrlArr",
           ],
-          "@/utils/graphql": [
+          "@/utils/graphql.ts": [
             "query",
             "mutation",
             "getQueryUrl",
           ],
-          "@/utils/StringUtil": [
+          "@/utils/StringUtil.ts": [
             "isEmpty",
           ],
-          "@/utils/ObjectUtil": [
+          "@/utils/ObjectUtil.ts": [
             "deepCompare",
           ],
-          "@/router/util": [
+          "@/router/util.ts": [
             "openForeignPage",
           ],
-          "@/locales/i18n": [
+          "@/locales/i18n.ts": [
             "useI18n",
           ],
           "decimal.js": [
             [ "default", "Decimal" ],
           ],
-          "@/components/CustomCityPickerApi": [
+          "@/components/CustomCityPickerApi.ts": [
             "findNameByCodePcaCode",
           ],
         },

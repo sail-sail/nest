@@ -222,6 +222,7 @@ if (right_field && !right_field_column) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
         const modelLabel = column.modelLabel;
+        const isImg = column.isImg;
       #><#
         if (foreignKey) {
         #>
@@ -276,6 +277,49 @@ if (right_field && !right_field_column) {
             }
             #>
           ></CustomSelectModal>
+        </tm-form-item><#
+        } else if (isImg) {
+        #>
+        
+        <!-- <#=column_comment#> -->
+        <tm-form-item<#
+          if (column.noAdd === true) {
+          #>
+          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+          }
+          #>
+          label="<#=column_comment#>"
+          name="<#=column_name#>"<#
+          if (column.readonly) {
+          #>
+          :readonly="true"<#
+          } else {
+          #>
+          :readonly="dialogAction === 'view'"<#
+          }
+          #><#
+          if (!require) {
+          #>
+          :required="false"<#
+          }
+          #>
+        >
+          <CustomUploadImage
+            v-model="<#=table#>_input.<#=column_name#>"<#
+            if (placeholderInForm) {
+            #>
+            placeholder="<#=placeholderInForm#>"<#
+            } else {
+            #>
+            placeholder="上传<#=column_comment#>"<#
+            }
+            #><#
+            if (readonlyPlaceholder) {
+            #>
+            :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+            }
+            #>
+          ></CustomUploadImage>
         </tm-form-item><#
         } else if (data_type === "datetime" || data_type === "date") {
         #>
@@ -1130,7 +1174,7 @@ if (right_field && !right_field_column) {
       un-flex="1"
     >
       <tm-button
-        :disabled="!inited"
+        :disabled="!inited || is_form_hydrating"
         block
         @click="formRef?.submit()"
       >
@@ -1327,6 +1371,7 @@ type ActionType = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<ActionType>("add");
 
 const formRef = $ref<InstanceType<typeof TmForm>>();
+let is_form_hydrating = $ref(false);
 
 /** 复制 */
 async function onCopy() {
@@ -1345,7 +1390,7 @@ async function onSave(
   if (dialogAction === "view") {
     return;
   }
-  if (!inited) {
+  if (!inited || is_form_hydrating) {
     return;
   }<#
   if (opts.noAdd === true) {
@@ -1375,7 +1420,7 @@ async function onSave(
     if (firstValid) {
       uni.showToast({
         title: firstValid.message,
-        icon: "error",
+        icon: "none",
       });
     }
     return;
@@ -1422,66 +1467,76 @@ async function onSave(
 
 /** 刷新 */
 async function onRefresh() {
-  formRef?.resetValidation();
-  if (dialogAction === "add") {
-    <#=table#>_input = await getDefaultInput<#=Table_Up#>();<#
-    if (hasOrderBy) {
-    #>
-    <#=table#>_input.order_by = props.order_by;<#
+  is_form_hydrating = true;
+  try {
+    formRef?.resetValidation();
+    if (dialogAction === "add") {
+      <#=table#>_input = await getDefaultInput<#=Table_Up#>();<#
+      if (hasOrderBy) {
+      #>
+      if (props.order_by) {
+        <#=table#>_input.order_by = props.order_by;
+      }<#
+      }
+      #>
+    } else if (dialogAction === "copy") {
+      if (!<#=table#>_id) {
+        uni.showToast({
+          title: "复制失败, id 不能为空",
+          icon: "none",
+        });
+        return;
+      }
+      <#=table#>_model = await findOneModel(
+        {
+          id: <#=table#>_id,
+          is_deleted: 0,
+        },
+        undefined,
+        {
+          notLoading: true,
+        },
+      );
+      if (!<#=table#>_model) {
+        uni.showToast({
+          title: "<#=table_comment#> 已被删除",
+          icon: "none",
+        });
+      }
+      <#=table#>_input = intoInput<#=Table_Up#>(
+        <#=table#>_model,
+      );<#
+      if (hasOrderBy) {
+      #>
+      if (props.order_by) {
+        <#=table#>_input.order_by = props.order_by;
+      }<#
+      }
+      #>
+    } else if (dialogAction === "edit" || dialogAction === "view") {
+      <#=table#>_model = await findOneModel(
+        {
+          id: <#=table#>_id,
+          is_deleted: 0,
+        },
+        undefined,
+        {
+          notLoading: true,
+        },
+      );
+      if (!<#=table#>_model) {
+        uni.showToast({
+          title: "<#=table_comment#> 已被删除",
+          icon: "none",
+        });
+      }
+      <#=table#>_input = intoInput<#=Table_Up#>(
+        <#=table#>_model,
+      );
     }
-    #>
-  } else if (dialogAction === "copy") {
-    if (!<#=table#>_id) {
-      uni.showToast({
-        title: "复制失败, id 不能为空",
-        icon: "none",
-      });
-      return;
-    }
-    <#=table#>_model = await findOneModel(
-      {
-        id: <#=table#>_id,
-        is_deleted: 0,
-      },
-      undefined,
-      {
-        notLoading: true,
-      },
-    );
-    if (!<#=table#>_model) {
-      uni.showToast({
-        title: "<#=table_comment#> 已被删除",
-        icon: "none",
-      });
-    }
-    <#=table#>_input = intoInput<#=Table_Up#>(
-      <#=table#>_model,
-    );<#
-    if (hasOrderBy) {
-    #>
-    <#=table#>_input.order_by = props.order_by;<#
-    }
-    #>
-  } else if (dialogAction === "edit" || dialogAction === "view") {
-    <#=table#>_model = await findOneModel(
-      {
-        id: <#=table#>_id,
-        is_deleted: 0,
-      },
-      undefined,
-      {
-        notLoading: true,
-      },
-    );
-    if (!<#=table#>_model) {
-      uni.showToast({
-        title: "<#=table_comment#> 已被删除",
-        icon: "none",
-      });
-    }
-    <#=table#>_input = intoInput<#=Table_Up#>(
-      <#=table#>_model,
-    );
+  } finally {
+    await nextTick();
+    is_form_hydrating = false;
   }
 }<#
 if (hasInlineForeignTabs) {

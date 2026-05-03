@@ -1064,14 +1064,12 @@ pub async fn find_by_unique_field_permit(
   
   let mut models: Vec<FieldPermitModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.menu_id.is_none() ||
-      search.code.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.menu_id.is_none() ||
+    search.code.is_none()
+  {
+    vec![]
+  } else {
     let search = FieldPermitSearch {
       menu_id: search.menu_id.clone(),
       code: search.code.clone(),

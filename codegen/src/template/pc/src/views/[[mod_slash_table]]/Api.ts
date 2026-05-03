@@ -2162,7 +2162,7 @@ if (isUseI18n) {
       }
       #>
       const buffer = await workerFn(
-        `${ location.origin }/import_template/<#=mod_slash_table#>.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/<#=mod_slash_table#>.xlsx`,
         {
           sheetName,
           data,
@@ -2425,7 +2425,7 @@ if (isUseI18n) {
         }
         #>
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/<#=mod_slash_table#>.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/<#=mod_slash_table#>.xlsx`,
           {
             sheetName,
             columns,

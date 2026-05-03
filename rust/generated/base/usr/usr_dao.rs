@@ -1989,13 +1989,11 @@ pub async fn find_by_unique_usr(
   
   let mut models: Vec<UsrModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.lbl.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.lbl.is_none()
+  {
+    vec![]
+  } else {
     let search = UsrSearch {
       lbl: search.lbl.clone(),
       ..Default::default()
@@ -2010,13 +2008,11 @@ pub async fn find_by_unique_usr(
   };
   models.append(&mut models_tmp);
   
-  let mut models_tmp = {
-    if
-      search.username.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.username.is_none()
+  {
+    vec![]
+  } else {
     let search = UsrSearch {
       username: search.username.clone(),
       ..Default::default()
@@ -3231,7 +3227,7 @@ pub async fn update_by_id_usr(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }

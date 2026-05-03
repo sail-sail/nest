@@ -7,7 +7,6 @@ use async_graphql::SimpleObject;
 use poem::http::{HeaderName, HeaderValue};
 use rust_decimal::Decimal;
 use serde::{Serialize, Deserialize};
-use uuid::Uuid;
 use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
 use smol_str::SmolStr;
@@ -21,8 +20,7 @@ use base64::{engine::general_purpose, Engine};
 use regex::Regex;
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions, MySqlRow};
-use sqlx::{Pool, MySql, Executor, FromRow, Row};
-use sqlx::pool::PoolConnection;
+use sqlx::{Pool, MySql, FromRow, Row, Transaction};
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
@@ -56,6 +54,8 @@ static DB_POOL_DW: OnceLock<Pool<MySql>> = OnceLock::new();
 static IS_DEBUG: OnceLock<bool> = OnceLock::new();
 static MULTIPLE_SPACE_REGEX: OnceLock<Regex> = OnceLock::new();
 
+type DbTransaction = Transaction<'static, MySql>;
+
 fn server_token_timeout() -> i64 {
   SERVER_TOKEN_TIMEOUT.get_or_init(|| env::var("server_tokentimeout")
     .unwrap_or("3600".to_owned())
@@ -77,6 +77,16 @@ fn db_pool_dw() -> Pool<MySql> {
     std::process::exit(1);
   }))
     .clone()
+}
+
+async fn get_transaction_conn_id(
+  tran: &mut DbTransaction,
+) -> Result<u64> {
+  let row = sqlx::query("select connection_id()")
+    .fetch_one(tran.as_mut())
+    .await?;
+  let connection_id: u64 = row.try_get(0).unwrap_or(0);
+  Ok(connection_id)
 }
 
 pub fn is_debug() -> bool {
@@ -380,9 +390,7 @@ impl Ctx {
   async fn query_conn_id(&self) -> Result<u64> {
     let mut tran = self.tran.lock().await;
     if let Some(tran) = tran.as_mut() {
-      let row = tran.fetch_one("select connection_id()").await?;
-      let connection_id: u64 = row.try_get(0).unwrap_or(0);
-      Ok(connection_id)
+      get_transaction_conn_id(tran).await
     } else {
       Ok(0)
     }
@@ -396,12 +404,8 @@ impl Ctx {
         return Ok(());
       }
     }
-    let mut tran = db_pool().acquire().await?;
-    tran.execute("begin").await?;
-    let connection_id: u64 = tran
-      .fetch_one("select connection_id()").await?
-      .try_get(0)
-      .unwrap_or(0);
+    let mut tran = db_pool().begin().await?;
+    let connection_id = get_transaction_conn_id(&mut tran).await?;
     info!(
       "{req_id} begin; -- {connection_id}",
       req_id = self.req_id,
@@ -418,10 +422,7 @@ impl Ctx {
     let mut tran = self.tran.lock().await;
     let tran = tran.take();
     if let Some(mut tran) = tran {
-      let connection_id: u64 = tran
-        .fetch_one("select connection_id()").await?
-        .try_get(0)
-        .unwrap_or(0);
+      let connection_id = get_transaction_conn_id(&mut tran).await?;
       if let Err(err) = res {
         let exception = err.downcast_ref::<ServiceException>();
         if let Some(exception) = exception {
@@ -463,13 +464,13 @@ impl Ctx {
             "{req_id} rollback; -- {connection_id}",
             req_id = self.req_id,
           );
-          tran.execute("rollback").await?;
+          tran.rollback().await?;
         } else {
           info!(
             "{req_id} commit; -- {connection_id}",
             req_id = self.req_id,
           );
-          tran.execute("commit").await?;
+          tran.commit().await?;
         }
         return Err(err);
       }
@@ -477,7 +478,7 @@ impl Ctx {
         "{req_id} commit; -- {connection_id}",
         req_id = self.req_id,
       );
-      tran.execute("commit").await?;
+      tran.commit().await?;
       return res;
     }
     if let Err(err) = res {
@@ -608,9 +609,6 @@ impl Ctx {
           ArgType::Json(s) => {
             query = query.bind(s);
           }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
           ArgType::SmolStr(s) => {
             query = query.bind(s.as_str());
           }
@@ -623,7 +621,7 @@ impl Ctx {
           .ok_or_else(|| {
             eyre!("Transaction not started")
           })?;
-        let res = tran.execute(query).await;
+        let res = query.execute(tran.as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
           error!(
@@ -697,9 +695,6 @@ impl Ctx {
           query = query.bind(s);
         }
         ArgType::Json(s) => {
-          query = query.bind(s);
-        }
-        ArgType::Uuid(s) => {
           query = query.bind(s);
         }
         ArgType::SmolStr(s) => {
@@ -815,9 +810,6 @@ impl Ctx {
           ArgType::Json(s) => {
             query = query.bind(s);
           }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
           ArgType::SmolStr(s) => {
             query = query.bind(s.as_str());
           }
@@ -830,7 +822,7 @@ impl Ctx {
           .ok_or_else(|| {
             eyre!("Transaction not started")
           })?;
-        let res = query.fetch_all((*tran).as_mut()).await;
+        let res = query.fetch_all(tran.as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
           error!(
@@ -906,9 +898,6 @@ impl Ctx {
         ArgType::Json(s) => {
           query = query.bind(s);
         }
-        ArgType::Uuid(s) => {
-          query = query.bind(s);
-        }
         ArgType::SmolStr(s) => {
           query = query.bind(s.as_str());
         }
@@ -934,13 +923,11 @@ impl Ctx {
     
     if let Err(err) = &res {
       // 检测到如果是 code 10065 的错误(套接字连接失败), 则手动抛出更友好的错误提示
-      if let sqlx::Error::Io(io_err) = &err {
-        if let Some(code) = io_err.raw_os_error() {
-          if code == 10065 {
+      if let sqlx::Error::Io(io_err) = &err
+        && let Some(code) = io_err.raw_os_error()
+          && code == 10065 {
             return Err(eyre!("数据库连接失败, 请检查数据库是否启动"));
           }
-        }
-      }
     }
     Ok(res?)
   }
@@ -1026,9 +1013,6 @@ impl Ctx {
           ArgType::Json(s) => {
             query = query.bind(s);
           }
-          ArgType::Uuid(s) => {
-            query = query.bind(s);
-          }
           ArgType::SmolStr(s) => {
             query = query.bind(s.as_str());
           }
@@ -1041,7 +1025,7 @@ impl Ctx {
           .ok_or_else(|| {
             eyre!("Transaction not started")
           })?;
-        let res = query.fetch_optional((*tran).as_mut()).await;
+        let res = query.fetch_optional(tran.as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
           error!(
@@ -1116,9 +1100,6 @@ impl Ctx {
         ArgType::Json(s) => {
           query = query.bind(s);
         }
-        ArgType::Uuid(s) => {
-          query = query.bind(s);
-        }
         ArgType::SmolStr(s) => {
           query = query.bind(s.as_str());
         }
@@ -1155,13 +1136,11 @@ impl Ctx {
     
     if let Err(err) = &res {
       // 检测到如果是 code 10065 的错误(套接字连接失败), 则手动抛出更友好的错误提示
-      if let sqlx::Error::Io(io_err) = &err {
-        if let Some(code) = io_err.raw_os_error() {
-          if code == 10065 {
+      if let sqlx::Error::Io(io_err) = &err
+        && let Some(code) = io_err.raw_os_error()
+          && code == 10065 {
             return Err(eyre!("数据库连接失败, 请检查数据库是否启动"));
           }
-        }
-      }
     }
     Ok(res?)
   }
@@ -1174,7 +1153,7 @@ pub struct Ctx {
   
   req_id: Arc<SmolStr>,
   
-  tran: Arc<Mutex<Option<PoolConnection<MySql>>>>,
+  tran: Arc<Mutex<Option<DbTransaction>>>,
   
   is_resful: bool,
   
@@ -1294,30 +1273,27 @@ impl Ctx {
         let mut tran = ctx.tran.lock().await;
         let tran = tran.take();
         if let Some(mut tran) = tran {
-          let connection_id: u64 = tran
-            .fetch_one("select connection_id()").await?
-            .try_get(0)
-            .unwrap_or(0);
+          let connection_id = get_transaction_conn_id(&mut tran).await?;
           if is_rollback {
             if is_success {
               info!(
                 "{req_id} commit; -- {connection_id}",
                 req_id = ctx.req_id,
               );
-              tran.execute("commit").await?;
+              tran.commit().await?;
             } else {
               info!(
                 "{req_id} rollback; -- {connection_id}",
                 req_id = ctx.req_id,
               );
-              tran.execute("rollback").await?;
+              tran.rollback().await?;
             }
           } else {
             info!(
               "{req_id} commit; -- {connection_id}",
               req_id = ctx.req_id,
             );
-            tran.execute("commit").await?;
+            tran.commit().await?;
           }
         }
       }
@@ -1396,7 +1372,6 @@ pub enum ArgType {
   DateTime(NaiveDateTime),
   Time(NaiveTime),
   Json(serde_json::Value),
-  Uuid(Uuid),
   SmolStr(SmolStr),
 }
 
@@ -1426,7 +1401,6 @@ impl Serialize for ArgType {
       ArgType::DateTime(value) => serializer.serialize_str(&value.format("%Y-%m-%d %H:%M:%S").to_string()),
       ArgType::Time(value) => serializer.serialize_str(&value.format("%H:%M:%S").to_string()),
       ArgType::Json(value) => serializer.serialize_str(&value.to_string()),
-      ArgType::Uuid(value) => serializer.serialize_str(&value.to_string()),
       ArgType::SmolStr(value) => serializer.serialize_str(value.as_str()),
     }
   }
@@ -1455,7 +1429,6 @@ impl Display for ArgType {
       ArgType::DateTime(value) => write!(f, "{}", value.format("%Y-%m-%d %H:%M:%S")),
       ArgType::Time(value) => write!(f, "{}", value.format("%H:%M:%S")),
       ArgType::Json(value) => write!(f, "{value}"),
-      ArgType::Uuid(value) => write!(f, "{value}"),
       ArgType::SmolStr(value) => write!(f, "{value}"),
     }
   }
@@ -1617,12 +1590,6 @@ impl From<serde_json::Value> for ArgType {
   }
 }
 
-impl From<Uuid> for ArgType {
-  fn from(value: Uuid) -> Self {
-    ArgType::Uuid(value)
-  }
-}
-
 impl From<SmolStr> for ArgType {
   fn from(value: SmolStr) -> Self {
     ArgType::SmolStr(value)
@@ -1681,6 +1648,9 @@ pub struct Options {
   /// 创建状态
   is_creating: Option<bool>,
   
+  /// 是否锁定记录, 默认 false
+  is_for_update: Option<bool>,
+  
 }
 
 impl Options {
@@ -1697,6 +1667,7 @@ impl Options {
       ids_limit: None,
       is_silent_mode: None,
       is_creating: None,
+      is_for_update: None,
     }
   }
   
@@ -1735,6 +1706,14 @@ impl Debug for Options {
     if let Some(is_silent_mode) = self.is_silent_mode
       && is_silent_mode {
         item = item.field("is_silent_mode", &is_silent_mode);
+      }
+    if let Some(is_creating) = self.is_creating
+      && is_creating {
+        item = item.field("is_creating", &is_creating);
+      }
+    if let Some(is_for_update) = self.is_for_update
+      && is_for_update {
+        item = item.field("is_for_update", &is_for_update);
       }
     item.finish()
   }
@@ -1847,6 +1826,20 @@ impl Options {
   #[allow(dead_code)]
   pub fn get_is_creating(&self) -> Option<bool> {
     self.is_creating
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn set_is_for_update(self, is_for_update: Option<bool>) -> Self {
+    let mut self_ = self;
+    self_.is_for_update = is_for_update;
+    self_
+  }
+  
+  #[inline]
+  #[allow(dead_code)]
+  pub fn get_is_for_update(&self) -> Option<bool> {
+    self.is_for_update
   }
   
 }

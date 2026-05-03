@@ -1,53 +1,57 @@
 ---
 name: dict
-description: 系统字典和业务字典配置。建表需要枚举字段或给表添加枚举类字段时使用
+description: 系统字典和业务字典配置。SQL 中有 dict: 或 dictbiz: 标注的字段时使用
 ---
 
 # 字典配置
 
-## 字段声明
+## 字段声明（SQL 中）
 
 ```sql
--- 系统字典
+-- 系统字典：内置、跨租户共享
 `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
--- 业务字典, 字典编码格式: {mod}_{table}_{column}
+
+-- 业务字典：按模块独立
 `status` varchar(20) NOT NULL DEFAULT '' COMMENT '状态,dictbiz:ec_order_status',
 ```
 
-## 添加字典
+- `dict:` = 系统字典，`dictbiz:` = 业务字典
+- 有字典标注的字段在 `.ts` 配置中**无需配置** `foreignKey`
+- 若字典配置了 `is_sys=1`，则对应字段必须是 `ENUM` 类型
+
+## 添加字典数据
 
 ### 创建 CSV 文件
 
 ```
 src/tables/{mod}/
-├── base_dict.{mod}.sql.csv        # 系统字典
-├── base_dict_detail.{mod}.sql.csv # 系统字典明细
-├── base_dictbiz.{mod}.sql.csv     # 业务字典
-├── base_dictbiz_detail.{mod}.sql.csv # 业务字典明细
+├── base_dict.{mod}.sql.csv              # 系统字典
+├── base_dict_detail.{mod}.sql.csv       # 系统字典明细
+├── base_dictbiz.{mod}.sql.csv           # 业务字典
+├── base_dictbiz_detail.{mod}.sql.csv    # 业务字典明细
 ```
 
-- 注意 `mod` 代表当前模块, 可从表名中提取, 如 `ec_order` 表对应的模块为 `ec` 
+- `mod` 代表当前模块名，从表名中提取，如 `ec_order` 表的模块为 `ec`
 
-#### `base_dictbiz.{mod}.sql.csv`:
+### 业务字典主表 `base_dictbiz.{mod}.sql.csv`
+
 ```csv
 id,code,lbl,type,order_by,tenant_id,is_sys,is_add
 {uuid},exh_booking_order_state,订单-状态,string,1,ZDbZlC1OT8KaDg6soxMCBQ,1,0
 ```
-- `lbl`: `{table_comment}-{column_comment}`
-- `type`: `string` / `number`
-- `tenant_id`: 固定 `ZDbZlC1OT8KaDg6soxMCBQ`
-- `is_sys=1`: 系统记录，禁止修改/删除
-- `is_add=0`: 不允许用户新增字典明细条目, `1`为允许用户新增
 
-### 生成 UUID
+| 列 | 说明 |
+|----|------|
+| `id` | 用 `npm run uuid` 生成，**不要自己编 UUID** |
+| `code` | 字典编码，格式 `{mod}_{table}_{column}` |
+| `lbl` | 格式 `{table_comment}-{column_comment}` |
+| `type` | `string` 或 `number` |
+| `tenant_id` | **固定值** `ZDbZlC1OT8KaDg6soxMCBQ`，禁止替换为生成的 UUID |
+| `is_sys` | `1` = 系统保护（自动生成枚举类型，禁止用户修改/删除）；`0` = 普通记录 |
+| `is_add` | `0` = 不允许用户新增字典明细；`1` = 允许 |
 
-```bash
-npm run uuid -- 4  # 生成需要的 UUID 数量
-npm run importCsv -- {mod}/base_dictbiz.{mod}
-npm run importCsv -- {mod}/base_dictbiz_detail.{mod}
-```
+### 业务字典明细 `base_dictbiz_detail.{mod}.sql.csv`
 
-#### `base_dictbiz_detail.{mod}.sql.csv`:
 ```csv
 id,dictbiz_id,_dictbiz_lbl,lbl,val,order_by,tenant_id,is_sys
 {uuid},{上面的uuid},订单-状态,未支付,unpaid,1,ZDbZlC1OT8KaDg6soxMCBQ,1
@@ -55,10 +59,24 @@ id,dictbiz_id,_dictbiz_lbl,lbl,val,order_by,tenant_id,is_sys
 ,,,,,,,
 {uuid2},{另一个uuid},其他字典-状态,待审批,pending,1,ZDbZlC1OT8KaDg6soxMCBQ,1
 ```
-- `dictbiz_id`: 对应业务字典的 id
-- `_dictbiz_lbl`: 同组首行填标签，后续行留空
-- CSV 空白行用逗号表示：`,,,,,,,`
-- 业务字典和系统字典的`val`值通常为小写英文字母, 多个单词用`_`拼接
+
+| 列 | 说明 |
+|----|------|
+| `dictbiz_id` | 对应上面业务字典主表的 `id` |
+| `_dictbiz_lbl` | 同组首行填分组标签，后续行留空 |
+| `lbl` | 字典项显示名称 |
+| `val` | 字典项值，通常为小写英文字母，多单词用 `_` 拼接 |
+| `tenant_id` | **固定值** `ZDbZlC1OT8KaDg6soxMCBQ`，禁止替换 |
+
+- CSV 中的空白行用空逗号表示：`,,,,,,,`，用于分隔不同字典组
+
+### 导入
+
+```bash
+npm run uuid -- 4  # 生成需要的 UUID 数量
+npm run importCsv -- {mod}/base_dictbiz.{mod}
+npm run importCsv -- {mod}/base_dictbiz_detail.{mod}
+```
 
 ## 内置系统字典
 
@@ -69,13 +87,18 @@ id,dictbiz_id,_dictbiz_lbl,lbl,val,order_by,tenant_id,is_sys
 | is_enabled | 启用 |
 | is_default | 默认 |
 | yes_no | 是否 |
+| is_sys | 系统记录 |
+
+系统字典不需要手动创建 CSV，直接使用即可。
 
 ## is_sys 字段
+
+建表时如需标记"系统保护记录"：
 
 ```sql
 `is_sys` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '系统记录,dict:is_sys',
 ```
 
 `is_sys=1` 时：
-- 自动生成枚举类型
-- 禁止用户修改/删除
+- 自动生成枚举类型（配合 dict/dictbiz 使用）
+- 禁止用户修改/删除该记录

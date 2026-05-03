@@ -1421,14 +1421,12 @@ pub async fn find_by_unique_dict_detail(
   
   let mut models: Vec<DictDetailModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.dict_id.is_none() ||
-      search.lbl.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.dict_id.is_none() ||
+    search.lbl.is_none()
+  {
+    vec![]
+  } else {
     let search = DictDetailSearch {
       dict_id: search.dict_id.clone(),
       lbl: search.lbl.clone(),
@@ -2258,7 +2256,7 @@ pub async fn update_by_id_dict_detail(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }

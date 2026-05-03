@@ -35,7 +35,10 @@ use poem::{
   middleware::{CatchPanic, TokioMetrics, Tracing},
   EndpointExt, Route, Server,
 };
-use generated::common::gql::server_timing::ServerTiming;
+use generated::common::gql::server_timing::{
+  build_server_timing_header,
+  ServerTiming,
+};
 
 use dotenv::dotenv;
 use tracing::info;
@@ -136,6 +139,7 @@ pub async fn graphql_handler_get(
     None => "127.0.0.1".to_string(),
   };
   let ip = generated::common::gql::model::Ip(ip.into());
+  let now0 = Instant::now();
   
   let query = gql_params.query.replace("\\n", " ");
   let mut gql_req = Request::new(query);
@@ -180,9 +184,19 @@ pub async fn graphql_handler_get(
         .body(err.to_string())
     }
   };
-  Response::builder()
+  let mut response = Response::builder()
     .header(header::CONTENT_TYPE, "application/json; charset=utf-8")
-    .body(data)
+    .body(data);
+  response
+    .headers_mut()
+    .append(
+      "Server-Timing",
+      build_server_timing_header(
+        "graphql",
+        Instant::now().saturating_duration_since(now0),
+      ),
+    );
+  response
 }
 
 #[handler]
@@ -253,32 +267,26 @@ pub async fn graphql_handler(
   for (key, value) in &gql_response.http_headers {
     headers.insert(key, value.to_owned());
   }
-  let now1 = Instant::now();
-  let response_time = format!("app;dur={}", now1.saturating_duration_since(now0).as_millis());
-  let response_time = poem::http::header::HeaderValue::from_str(&response_time);
-  let response_time = match response_time {
-    Ok(response_time) => response_time,
-    Err(err) => {
-      error!("{}", err);
-      return Response::builder()
-        .status(StatusCode::INTERNAL_SERVER_ERROR)
-        .body(err.to_string())
-    }
-  };
-  headers.insert("Server-Timing", response_time);
+  headers.append(
+    "Server-Timing",
+    build_server_timing_header(
+      "graphql",
+      Instant::now().saturating_duration_since(now0),
+    ),
+  );
   response
 }
 
-#[cfg(debug_assertions)]
-#[handler]
-pub fn graphql_playground(
-) -> impl poem::IntoResponse {
-  poem::web::Html(
-    async_graphql::http::playground_source(
-      async_graphql::http::GraphQLPlaygroundConfig::new("/graphql")
-    )
-  )
-}
+// #[cfg(debug_assertions)]
+// #[handler]
+// pub fn graphql_playground(
+// ) -> impl poem::IntoResponse {
+//   poem::web::Html(
+//     async_graphql::http::playground_source(
+//       async_graphql::http::GraphQLPlaygroundConfig::new("/graphql")
+//     )
+//   )
+// }
 
 #[tokio::main]
 #[allow(clippy::too_many_lines)]
@@ -286,9 +294,6 @@ async fn main() -> Result<(), std::io::Error> {
   dotenv().ok();
   let server_title = std::env::var("server_title").expect("server_title not found in .env");
   let git_hash = std::env::var("GIT_HASH").ok();
-  if let Some(git_hash) = git_hash {
-    info!("git_hash: {git_hash}");
-  }
   
   #[cfg(debug_assertions)]
   let _guard = {
@@ -391,6 +396,10 @@ async fn main() -> Result<(), std::io::Error> {
       Some(guard)
     }
   };
+
+  if let Some(git_hash) = git_hash {
+    info!("git_hash: {git_hash}");
+  }
   
   // oss, tmpfile
   tokio::spawn(async move {
@@ -477,10 +486,10 @@ async fn main() -> Result<(), std::io::Error> {
   
   let app = {
     let mut app = Route::new();
-    #[cfg(debug_assertions)]
-    {
-      app = app.at("/graphiql", get(graphql_playground));
-    }
+    // #[cfg(debug_assertions)]
+    // {
+    //   app = app.at("/graphiql", get(graphql_playground));
+    // }
     
     app = app.at("/metrics/graphql", metrics_graphql.exporter());
     
