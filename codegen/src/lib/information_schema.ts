@@ -805,6 +805,65 @@ let tablesConfigItemMap: {
   [key: string]: TablesConfigItem;
 } = { };
 
+async function applyCascadeUpdateModelLabelsByTable(
+  context: Context,
+  table_name: string,
+  table_names: string[],
+) {
+  const schema = await getSchema(context, table_name, table_names);
+  const mod = schema.opts.mod;
+  const table = schema.opts.table;
+  for (let i = 0; i < schema.columns.length; i++) {
+    const column = schema.columns[i];
+    if (!column.isCascadeUpdateModelLabel) {
+      continue;
+    }
+    if (!column.modelLabel) {
+      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但 modelLabel 未设置!`);
+    }
+    if (!column.foreignKey) {
+      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但不是外键关联字段!`);
+    }
+    const foreignTableName = column.foreignKey.mod + "_" + column.foreignKey.table;
+    const foreignTableSchema = await getSchema(context, foreignTableName, table_names);
+    if (!foreignTableSchema) {
+      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但对应的外键关联表: ${ foreignTableName } 不存在!`);
+    }
+    foreignTableSchema.opts = foreignTableSchema.opts || { };
+    foreignTableSchema.opts.cascadeUpdateFields = foreignTableSchema.opts.cascadeUpdateFields || [ ];
+    const cascadeUpdateFields = foreignTableSchema.opts.cascadeUpdateFields;
+    if (!cascadeUpdateFields.some(
+        (item) =>
+          item.watchColumn === foreignTableSchema.opts.lbl_field &&
+          item.mod === mod &&
+          item.table === table &&
+          item.idColumn === column.COLUMN_NAME &&
+          item.column === column.modelLabel
+      )
+    ) {
+      cascadeUpdateFields.push({
+        watchColumn: foreignTableSchema.opts.lbl_field,
+        mod: mod,
+        table: table,
+        idColumn: column.COLUMN_NAME,
+        column: column.modelLabel,
+      });
+    }
+  }
+}
+
+export async function applyCascadeUpdateModelLabels(
+  context: Context,
+  table_names0: string[],
+  table_names: string[],
+) {
+  for (let i = 0; i < table_names0.length; i++) {
+    const table_name = table_names0[i];
+    if (!tables[table_name]) continue;
+    await applyCascadeUpdateModelLabelsByTable(context, table_name, table_names);
+  }
+}
+
 export async function getSchema(
   context: Context,
   table_name: string,
@@ -1307,54 +1366,6 @@ export async function getSchema(
       && oldRecords.some((item0: TableColumn) => item0.COLUMN_NAME === `${ column.COLUMN_NAME }_lbl`)
     ) {
       throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 的 modelLabel 未设置, 但却存在 ${ column.COLUMN_NAME }_lbl 字段!`);
-    }
-  }
-  
-  // isCascadeUpdateModelLabel
-  for (let i = 0; i < tables[table_name].columns.length; i++) {
-    const column = tables[table_name].columns[i];
-    if (!column.isCascadeUpdateModelLabel) {
-      continue;
-    }
-    if (!column.modelLabel) {
-      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但 modelLabel 未设置!`);
-    }
-    if (!column.foreignKey) {
-      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但不是外键关联字段!`);
-    }
-    const foreignTableName = column.foreignKey.mod + "_" + column.foreignKey.table;
-    const foreignTableSchema = await getSchema(context, foreignTableName, table_names);
-    if (!foreignTableSchema) {
-      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但对应的外键关联表: ${ foreignTableName } 不存在!`);
-    }
-    foreignTableSchema.opts = foreignTableSchema.opts || { };
-    foreignTableSchema.opts.cascadeUpdateFields = foreignTableSchema.opts.cascadeUpdateFields || [ ];
-    const cascadeUpdateFields = foreignTableSchema.opts.cascadeUpdateFields;
-    // cascadeUpdateFields: [
-    //     {
-    //       watchColumn: "lbl",
-    //       mod: "hqe",
-    //       table: "product",
-    //       idColumn: "category_id",
-    //       column: "category_id_lbl",
-    //     },
-    //   ],
-    if (!cascadeUpdateFields.some(
-        (item) =>
-          item.watchColumn === foreignTableSchema.opts.lbl_field &&
-          item.mod === mod &&
-          item.table === table &&
-          item.idColumn === column.COLUMN_NAME &&
-          item.column === column.modelLabel
-      )
-    ) {
-      cascadeUpdateFields.push({
-        watchColumn: foreignTableSchema.opts.lbl_field,
-        mod: mod,
-        table: table,
-        idColumn: column.COLUMN_NAME,
-        column: column.modelLabel,
-      });
     }
   }
   
