@@ -2091,41 +2091,6 @@ pub async fn update_by_id_return_operation_record(
   }
 }
 
-/// 获取需要清空缓存的表名
-#[allow(dead_code)]
-fn get_cache_tables() -> Vec<&'static str> {
-  let table = get_table_name_operation_record();
-  vec![
-    table,
-  ]
-}
-
-// MARK: del_cache_operation_record
-/// 清空缓存
-#[allow(dead_code)]
-pub async fn del_cache_operation_record() -> Result<()> {
-  
-  let cache_key1s = get_cache_tables();
-  
-  let cache_key1s = cache_key1s
-    .into_iter()
-    .map(|x|
-      SmolStr::new(format!("dao.sql.{x}"))
-    )
-    .collect::<Vec<SmolStr>>();
-  
-  let cache_key1s_str = cache_key1s
-    .iter()
-    .map(|item| item.as_str())
-    .collect::<Vec<&str>>();
-  
-  del_caches(
-    cache_key1s_str.as_slice(),
-  ).await?;
-  
-  Ok(())
-}
-
 // MARK: delete_by_ids_operation_record
 /// 根据 ids 删除操作记录
 #[allow(unused_variables)]

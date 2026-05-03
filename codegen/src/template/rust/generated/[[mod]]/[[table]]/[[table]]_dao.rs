@@ -7880,7 +7880,9 @@ pub async fn update_by_id_return_<#=table#>(
       "<#=table_comment#> update_by_id_return_<#=table#> id: {id}",
     )),
   }
-}
+}<#
+if (cache) {
+#>
 
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
@@ -7952,7 +7954,9 @@ pub async fn del_cache_<#=table#>() -> Result<()> {
   ).await?;
   
   Ok(())
+}<#
 }
+#>
 
 // MARK: delete_by_ids_<#=table#>
 /// 根据 ids 删除<#=table_comment#>
