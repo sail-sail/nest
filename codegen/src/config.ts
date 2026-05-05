@@ -350,6 +350,14 @@ export interface TableColumn {
    * 外键关联表, 表格上点击之后路由跳转的外键关联表
    */
   foreignPage?: {
+    /**
+     * 页面跳转的按钮类型, 默认为: link
+     *  link: 单元格上的链接
+     *  button: 表格操作栏的按钮
+     *  more: 表格操作栏的 更多操作 里面
+     */
+    linkType?: "link" | "button" | "more",
+    buttonLabel?: string;
     routeName: string;
     tabNameField?: string;
     query: {

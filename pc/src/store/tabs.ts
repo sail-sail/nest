@@ -400,6 +400,12 @@ export default function() {
       meta: route.meta,
     };
     if (query) {
+      // 删除掉 query 中值为 null 或 undefined 的项
+      Object.keys(query).forEach((key) => {
+        if (query[key] == null) {
+          delete query[key];
+        }
+      });
       tab.query = {
         ...query,
       };

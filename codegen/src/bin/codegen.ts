@@ -1,4 +1,5 @@
 import {
+  applyCascadeUpdateModelLabels,
   getSchema,
   hasSelectInputFn,
   initContext,
@@ -53,6 +54,11 @@ async function exec(context: Context, table_names0: string[]) {
     if (!tables[table_name]) continue;
     await getSchema(context, table_name, table_names);
   }
+  await applyCascadeUpdateModelLabels(
+    context,
+    table_names0,
+    table_names,
+  );
   for (let i = 0; i < table_names0.length; i++) {
     const table_name = table_names0[i];
     if (!tables[table_name]) continue;
