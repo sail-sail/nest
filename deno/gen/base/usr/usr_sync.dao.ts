@@ -99,6 +99,38 @@ import {
   syncUsrLblByUsrIdDynPageData,
 } from "/gen/base/dyn_page_data/dyn_page_data.dao.ts";
 
+import {
+  syncUsrLblByUsrIdWxApp,
+} from "/gen/wx/wx_app/wx_app.dao.ts";
+
+import {
+  syncUsrLblByUsrIdWxAppToken,
+} from "/gen/wx/wx_app_token/wx_app_token.dao.ts";
+
+import {
+  syncUsrLblByUsrIdWxUsr,
+} from "/gen/wx/wx_usr/wx_usr.dao.ts";
+
+import {
+  syncUsrLblByUsrIdWxoApp,
+} from "/gen/wx/wxo_app/wxo_app.dao.ts";
+
+import {
+  syncUsrLblByUsrIdWxoAppToken,
+} from "/gen/wx/wxo_app_token/wxo_app_token.dao.ts";
+
+import {
+  syncUsrLblByUsrIdWxoUsr,
+} from "/gen/wx/wxo_usr/wxo_usr.dao.ts";
+
+import {
+  syncUsrLblByUsrIdWxPay,
+} from "/gen/wx/wx_pay/wx_pay.dao.ts";
+
+import {
+  syncUsrLblByUsrIdPayTransactionsJsapi,
+} from "/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.dao.ts";
+
 /** 根据 usr_id 同步所有表中的创建人/更新人/删除人标签 */
 export async function syncUsrLblByUsrId(
   usr_id: UsrId,
@@ -244,6 +276,46 @@ export async function syncUsrLblByUsrId(
   );
   
   affectedRows += await syncUsrLblByUsrIdDynPageData(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdWxApp(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdWxAppToken(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdWxUsr(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdWxoApp(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdWxoAppToken(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdWxoUsr(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdWxPay(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdPayTransactionsJsapi(
     usr_id,
     syncOptions,
   );

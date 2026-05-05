@@ -1127,7 +1127,7 @@ export async function existWxRefund(
 // MARK: existByIdWxRefund
 /** 根据id判断微信退款申请是否存在 */
 export async function existByIdWxRefund(
-  id?: Readonly<WxRefundId | null>,
+  id?: WxRefundId | null,
   options?: {
     is_debug?: boolean;
   },
@@ -1656,7 +1656,7 @@ async function _creates(
 /** 微信退款申请 根据 id 修改 租户id */
 export async function updateTenantByIdWxRefund(
   id: WxRefundId,
-  tenant_id: Readonly<TenantId>,
+  tenant_id: TenantId,
   options?: {
     is_debug?: boolean;
   },

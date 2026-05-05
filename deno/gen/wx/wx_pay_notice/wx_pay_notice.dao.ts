@@ -1084,7 +1084,7 @@ export async function existWxPayNotice(
 // MARK: existByIdWxPayNotice
 /** 根据id判断微信支付通知是否存在 */
 export async function existByIdWxPayNotice(
-  id?: Readonly<WxPayNoticeId | null>,
+  id?: WxPayNoticeId | null,
   options?: {
     is_debug?: boolean;
   },
@@ -1590,7 +1590,7 @@ async function _creates(
 /** 微信支付通知 根据 id 修改 租户id */
 export async function updateTenantByIdWxPayNotice(
   id: WxPayNoticeId,
-  tenant_id: Readonly<TenantId>,
+  tenant_id: TenantId,
   options?: {
     is_debug?: boolean;
   },
