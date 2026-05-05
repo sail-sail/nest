@@ -99,6 +99,22 @@ import {
   syncUsrLblByUsrIdDynPageData,
 } from "/gen/base/dyn_page_data/dyn_page_data.dao.ts";
 
+import {
+  syncUsrLblByUsrIdJob,
+} from "/gen/cron/job/job.dao.ts";
+
+import {
+  syncUsrLblByUsrIdCronJob,
+} from "/gen/cron/cron_job/cron_job.dao.ts";
+
+import {
+  syncUsrLblByUsrIdCronJobLog,
+} from "/gen/cron/cron_job_log/cron_job_log.dao.ts";
+
+import {
+  syncUsrLblByUsrIdCronJobLogDetail,
+} from "/gen/cron/cron_job_log_detail/cron_job_log_detail.dao.ts";
+
 /** 根据 usr_id 同步所有表中的创建人/更新人/删除人标签 */
 export async function syncUsrLblByUsrId(
   usr_id: UsrId,
@@ -244,6 +260,26 @@ export async function syncUsrLblByUsrId(
   );
   
   affectedRows += await syncUsrLblByUsrIdDynPageData(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdJob(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdCronJob(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdCronJobLog(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdCronJobLogDetail(
     usr_id,
     syncOptions,
   );

@@ -853,7 +853,7 @@ export async function existCronJobLogDetail(
 // MARK: existByIdCronJobLogDetail
 /** 根据id判断定时任务日志明细是否存在 */
 export async function existByIdCronJobLogDetail(
-  id?: Readonly<CronJobLogDetailId | null>,
+  id?: CronJobLogDetailId | null,
   options?: {
     is_debug?: boolean;
   },
@@ -1286,7 +1286,7 @@ async function _creates(
 /** 定时任务日志明细 根据 id 修改 租户id */
 export async function updateTenantByIdCronJobLogDetail(
   id: CronJobLogDetailId,
-  tenant_id: Readonly<TenantId>,
+  tenant_id: TenantId,
   options?: {
     is_debug?: boolean;
   },
@@ -1322,6 +1322,69 @@ export async function updateTenantByIdCronJobLogDetail(
   const sql = `update cron_cron_job_log_detail set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
+  return affectedRows;
+}
+
+// MARK: syncUsrLblByUsrIdCronJobLogDetail
+/** 根据 usr_id 同步创建人/更新人/删除人标签 */
+export async function syncUsrLblByUsrIdCronJobLogDetail(
+  usr_id: UsrId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<number> {
+  
+  const table = getTableNameCronJobLogDetail();
+  const method = "syncUsrLblByUsrIdCronJobLogDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (usr_id) {
+      msg += ` usr_id:${ usr_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
+  if (!usr_id) {
+    return 0;
+  }
+  
+  const findOptions = {
+    ...(options ?? { }),
+    is_debug: false,
+  };
+  const usr_model = await findByIdUsr(usr_id, findOptions);
+  if (!usr_model) {
+    return 0;
+  }
+  
+  const usr_lbl = usr_model.lbl;
+  const sqlFields = [ ];
+  const whereQuerys = [ ];
+  const args = new QueryArgs();
+  
+  sqlFields.push(`create_usr_id_lbl=case when create_usr_id=${ args.push(usr_id) } then ${ args.push(usr_lbl) } else create_usr_id_lbl end`);
+  whereQuerys.push(`create_usr_id=${ args.push(usr_id) }`);
+  
+  sqlFields.push(`update_usr_id_lbl=case when update_usr_id=${ args.push(usr_id) } then ${ args.push(usr_lbl) } else update_usr_id_lbl end`);
+  whereQuerys.push(`update_usr_id=${ args.push(usr_id) }`);
+  
+  sqlFields.push(`delete_usr_id_lbl=case when delete_usr_id=${ args.push(usr_id) } then ${ args.push(usr_lbl) } else delete_usr_id_lbl end`);
+  whereQuerys.push(`delete_usr_id=${ args.push(usr_id) }`);
+  
+  if (sqlFields.length === 0 || whereQuerys.length === 0) {
+    return 0;
+  }
+  
+  const sql = `update cron_cron_job_log_detail set ${ sqlFields.join(",") } where ${ whereQuerys.join(" or ") }`;
+  const res = await execute(sql, args);
+  const affectedRows = res.affectedRows;
+  
   return affectedRows;
 }
 
