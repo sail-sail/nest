@@ -2131,6 +2131,86 @@ pub async fn update_tenant_by_id_dictbiz_detail(
   Ok(num)
 }
 
+// MARK: sync_usr_lbl_by_usr_id_dictbiz_detail
+/// 根据 usr_id 同步创建人/更新人标签
+pub async fn sync_usr_lbl_by_usr_id_dictbiz_detail(
+  usr_id: UsrId,
+  options: Option<Options>,
+) -> Result<u64> {
+  let table = get_table_name_dictbiz_detail();
+  let method = "sync_usr_lbl_by_usr_id_dictbiz_detail";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" usr_id: {usr_id:?}");
+    if let Some(options) = &options {
+      msg += &format!(" options: {options:?}");
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if usr_id.is_empty() {
+    return Ok(0);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let usr_model = find_by_id_usr(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  let Some(usr_model) = usr_model else {
+    return Ok(0);
+  };
+  
+  let usr_lbl = usr_model.lbl;
+  let mut sql_fields = String::with_capacity(120);
+  let mut where_query = String::with_capacity(80);
+  let mut args = QueryArgs::new();
+  
+  sql_fields += "create_usr_id_lbl=case when create_usr_id=? then ? else create_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_query += "create_usr_id=?";
+  where_query += " or ";
+  
+  sql_fields += "update_usr_id_lbl=case when update_usr_id=? then ? else update_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_query += "update_usr_id=?";
+  
+  if sql_fields.ends_with(',') {
+    sql_fields.pop();
+  }
+  
+  args.push(usr_id.clone().into());
+  args.push(usr_id.clone().into());
+  
+  let sql = format!("update {table} set {sql_fields} where {where_query}");
+  
+  let args: Vec<_> = args.into();
+  
+  let num = execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  if num > 0 {
+    del_cache_dictbiz_detail().await?;
+  }
+  
+  Ok(num)
+}
+
 // MARK: update_by_id_dictbiz_detail
 /// 根据 id 修改业务字典明细
 #[allow(unused_mut)]
