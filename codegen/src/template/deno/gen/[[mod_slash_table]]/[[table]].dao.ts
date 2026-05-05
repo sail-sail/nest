@@ -3873,7 +3873,7 @@ export async function exist<#=Table_Up#>(
 // MARK: existById<#=Table_Up#>
 /** 根据id判断<#=table_comment#>是否存在 */
 export async function existById<#=Table_Up#>(
-  id?: Readonly<<#=Table_Up#>Id | null>,
+  id?: <#=Table_Up#>Id | null,
   options?: {
     is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -5401,7 +5401,7 @@ if (hasTenant_id) {
 /** <#=table_comment#> 根据 id 修改 租户id */
 export async function updateTenantById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
-  tenant_id: Readonly<TenantId>,
+  tenant_id: TenantId,
   options?: {
     is_debug?: boolean;
   },
@@ -5449,6 +5449,97 @@ export async function updateTenantById<#=Table_Up#>(
   await refreshCronJobs();<#
   }
   #>
+  return affectedRows;
+}<#
+}
+#><#
+if (
+  (hasCreateUsrId && hasCreateUsrIdLbl)
+  || (hasUpdateUsrId && hasUpdateUsrIdLbl)
+) {
+#>
+
+// MARK: syncUsrLblByUsrId<#=Table_Up#>
+/** 根据 usr_id 同步创建人/更新人标签 */
+export async function syncUsrLblByUsrId<#=Table_Up#>(
+  usr_id: UsrId,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<number> {
+  
+  const table = getTableName<#=Table_Up#>();
+  const method = "syncUsrLblByUsrId<#=Table_Up#>";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (usr_id) {
+      msg += ` usr_id:${ usr_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+  }
+  
+  if (!usr_id) {
+    return 0;
+  }
+  
+  const findOptions = {
+    ...(options ?? { }),
+    is_debug: false,
+  };
+  const usr_model = await findByIdUsr(usr_id, findOptions);
+  if (!usr_model) {
+    return 0;
+  }
+  
+  const usr_lbl = usr_model.lbl;
+  const sqlFields = [ ];
+  const whereQuerys = [ ];
+  const args = new QueryArgs();<#
+  if (hasCreateUsrId && hasCreateUsrIdLbl) {
+  #>
+  
+  sqlFields.push(`create_usr_id_lbl=case when create_usr_id=${ args.push(usr_id) } then ${ args.push(usr_lbl) } else create_usr_id_lbl end`);
+  whereQuerys.push(`create_usr_id=${ args.push(usr_id) }`);<#
+  }
+  #><#
+  if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
+  #>
+  
+  sqlFields.push(`update_usr_id_lbl=case when update_usr_id=${ args.push(usr_id) } then ${ args.push(usr_lbl) } else update_usr_id_lbl end`);
+  whereQuerys.push(`update_usr_id=${ args.push(usr_id) }`);<#
+  }
+  #>
+  
+  if (sqlFields.length === 0 || whereQuerys.length === 0) {
+    return 0;
+  }
+  
+  const sql = `update <#=mod#>_<#=table#> set ${ sqlFields.join(",") } where ${ whereQuerys.join(" or ") }`;
+  const res = await execute(sql, args);
+  const affectedRows = res.affectedRows;<#
+  if (cache) {
+  #>
+  
+  if (affectedRows > 0) {
+    await delCache<#=Table_Up#>();
+  }<#
+  }
+  #><#
+  if (mod === "cron" && table === "cron_job") {
+  #>
+  
+  if (affectedRows > 0) {
+    await refreshCronJobs();
+  }<#
+  }
+  #>
+  
   return affectedRows;
 }<#
 }

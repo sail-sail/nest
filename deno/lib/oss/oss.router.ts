@@ -337,7 +337,7 @@ router.get("img", async function(ctx) {
       resize,
     } = await import("/lib/image/mod.ts");
     
-    const content2 = resize(
+    const content2 = await resize(
       content,
       format,
       width,

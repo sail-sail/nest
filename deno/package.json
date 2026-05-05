@@ -18,6 +18,8 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "@img/sharp-linuxmusl-x64": "0.34.5",
+    "@img/sharp-win32-x64": "0.34.5",
     "dayjs": "1.11.20",
     "decimal.js": "10.6.0",
     "graphql": "16.13.2",
@@ -27,6 +29,7 @@
     "mnemonist": "0.40.3",
     "mysql2": "3.22.3",
     "path-to-regexp": "6.3.0",
+    "sharp": "0.34.5",
     "sqlstring": "2.3.3",
     "wechatpay-node-v3": "2.2.1"
   },
@@ -45,6 +48,7 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "cpu-features",
+      "sharp",
       "ssh2"
     ]
   }
