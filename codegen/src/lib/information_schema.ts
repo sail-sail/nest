@@ -71,13 +71,9 @@ export async function getTableComment(context: Context, table_name: string) {
 
 let allTableSchemaRecords: TableColumn[] = undefined;
 
-async function getSchema0(
+async function getAllTableSchemaRecords(
   context: Context,
-  table_name: string,
 ): Promise<TableColumn[]> {
-  if (!table_name) {
-    return [ ];
-  }
   if (!allTableSchemaRecords) {
     let sql = `
       select
@@ -90,6 +86,91 @@ async function getSchema0(
     const result = await context.conn.query(sql);
     allTableSchemaRecords = result[0] as TableColumn[];
   }
+  return allTableSchemaRecords;
+}
+
+export type UsrLblSyncTable = {
+  table_name: string;
+  mod: string;
+  table: string;
+  tableUp: string;
+  Table_Up: string;
+  hasCreateUsrId: boolean;
+  hasCreateUsrIdLbl: boolean;
+  hasUpdateUsrId: boolean;
+  hasUpdateUsrIdLbl: boolean;
+  hasDeleteUsrId: boolean;
+  hasDeleteUsrIdLbl: boolean;
+};
+
+export async function getUsrLblSyncTables(
+  context: Context,
+  table_names?: string[],
+): Promise<UsrLblSyncTable[]> {
+  const records = await getAllTableSchemaRecords(context);
+  const targetTableNames = (table_names ?? Object.keys(tables))
+    .filter((table_name) => !!tables[table_name]);
+  const targetTableNameSet = new Set(targetTableNames);
+  const tableColumnNameSetMap = new Map<string, Set<string>>();
+  for (const record of records) {
+    const table_name = record.TABLE_NAME;
+    if (!targetTableNameSet.has(table_name)) {
+      continue;
+    }
+    let columnNameSet = tableColumnNameSetMap.get(table_name);
+    if (!columnNameSet) {
+      columnNameSet = new Set<string>();
+      tableColumnNameSetMap.set(table_name, columnNameSet);
+    }
+    columnNameSet.add(record.COLUMN_NAME);
+  }
+  const result: UsrLblSyncTable[] = [ ];
+  for (const table_name of targetTableNames) {
+    const columnNameSet = tableColumnNameSetMap.get(table_name) ?? new Set<string>();
+    const hasCreateUsrId = columnNameSet.has("create_usr_id");
+    const hasCreateUsrIdLbl = columnNameSet.has("create_usr_id_lbl");
+    const hasUpdateUsrId = columnNameSet.has("update_usr_id");
+    const hasUpdateUsrIdLbl = columnNameSet.has("update_usr_id_lbl");
+    const hasDeleteUsrId = columnNameSet.has("delete_usr_id");
+    const hasDeleteUsrIdLbl = columnNameSet.has("delete_usr_id_lbl");
+    if (
+      !(hasCreateUsrId && hasCreateUsrIdLbl)
+      && !(hasUpdateUsrId && hasUpdateUsrIdLbl)
+      && !(hasDeleteUsrId && hasDeleteUsrIdLbl)
+    ) {
+      continue;
+    }
+    const mod = table_name.substring(0, table_name.indexOf("_"));
+    const table = table_name.substring(table_name.indexOf("_") + 1);
+    const tableUp = table.substring(0, 1).toUpperCase() + table.substring(1);
+    const Table_Up = tableUp.split("_").map((item) => {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    result.push({
+      table_name,
+      mod,
+      table,
+      tableUp,
+      Table_Up,
+      hasCreateUsrId,
+      hasCreateUsrIdLbl,
+      hasUpdateUsrId,
+      hasUpdateUsrIdLbl,
+      hasDeleteUsrId,
+      hasDeleteUsrIdLbl,
+    });
+  }
+  return result;
+}
+
+async function getSchema0(
+  context: Context,
+  table_name: string,
+): Promise<TableColumn[]> {
+  if (!table_name) {
+    return [ ];
+  }
+  const allTableSchemaRecords = await getAllTableSchemaRecords(context);
   const records = allTableSchemaRecords.filter((item: TableColumn) => item.TABLE_NAME === table_name);
   if (!tables[table_name]) {
     throw `数据库中, 表: ${ table_name } 不存在!`;
