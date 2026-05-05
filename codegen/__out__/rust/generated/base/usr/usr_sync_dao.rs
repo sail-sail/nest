@@ -59,6 +59,14 @@ use crate::base::dyn_page_val::dyn_page_val_dao::sync_usr_lbl_by_usr_id_dyn_page
 
 use crate::base::dyn_page_data::dyn_page_data_dao::sync_usr_lbl_by_usr_id_dyn_page_data;
 
+use crate::cron::job::job_dao::sync_usr_lbl_by_usr_id_job;
+
+use crate::cron::cron_job::cron_job_dao::sync_usr_lbl_by_usr_id_cron_job;
+
+use crate::cron::cron_job_log::cron_job_log_dao::sync_usr_lbl_by_usr_id_cron_job_log;
+
+use crate::cron::cron_job_log_detail::cron_job_log_detail_dao::sync_usr_lbl_by_usr_id_cron_job_log_detail;
+
 /// 根据 usr_id 同步所有表中的创建人/更新人/删除人标签
 pub async fn sync_usr_lbl_by_usr_id(
   usr_id: UsrId,
@@ -201,6 +209,26 @@ pub async fn sync_usr_lbl_by_usr_id(
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dyn_page_data(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_job(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_cron_job(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_cron_job_log(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_cron_job_log_detail(
     usr_id.clone(),
     options,
   ).await?;
