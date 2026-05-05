@@ -858,7 +858,7 @@ export async function existServerLog(
 // MARK: existByIdServerLog
 /** 根据id判断系统日志是否存在 */
 export async function existByIdServerLog(
-  id?: Readonly<ServerLogId | null>,
+  id?: ServerLogId | null,
   options?: {
     is_debug?: boolean;
   },
