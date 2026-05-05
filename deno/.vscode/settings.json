@@ -23,7 +23,8 @@
     "**/.npmrc": true,
     "**/.husky": true,
     "**/.oxlintrc.json": true,
-    "graphql.config.js": true
+    "graphql.config.js": true,
+    "pnpm-workspace.yaml": true
   },
   "search.exclude": {
     "**/.git": true,
