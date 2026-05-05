@@ -18,8 +18,6 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "@img/sharp-linuxmusl-x64": "0.34.5",
-    "@img/sharp-win32-x64": "0.34.5",
     "dayjs": "1.11.20",
     "decimal.js": "10.6.0",
     "graphql": "16.13.2",
