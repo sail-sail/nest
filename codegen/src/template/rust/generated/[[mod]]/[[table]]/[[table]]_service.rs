@@ -122,6 +122,12 @@ use crate::base::usr::usr_dao::{
 };<#
 }
 #><#
+if (mod === "base" && table === "usr") {
+#>
+
+use super::usr_sync_dao::sync_usr_lbl_by_usr_id;<#
+}
+#><#
 if (mod === "base" && table === "i18n") {
 #>
 use crate::common::options::options_dao::update_i18n_version;<#
@@ -616,6 +622,12 @@ pub async fn update_by_id_<#=table#>(
     return Err(eyre!(err_msg));
   }<#
   }
+  #><#
+  if (mod === "base" && table === "usr") {
+  #>
+  
+  let is_sync_usr_lbl = <#=table#>_input.lbl.is_some();<#
+  }
   #>
   
   let <#=table#>_id = <#=table#>_dao::update_by_id_<#=table#>(
@@ -623,6 +635,17 @@ pub async fn update_by_id_<#=table#>(
     <#=table#>_input,
     options,
   ).await?;<#
+  if (mod === "base" && table === "usr") {
+  #>
+  
+  if is_sync_usr_lbl {
+    sync_usr_lbl_by_usr_id(
+      <#=table#>_id.clone(),
+      options,
+    ).await?;
+  }<#
+  }
+  #><#
   if (mod === "base" && table === "i18n") {
   #>
   
