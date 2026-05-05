@@ -5456,11 +5456,12 @@ export async function updateTenantById<#=Table_Up#>(
 if (
   (hasCreateUsrId && hasCreateUsrIdLbl)
   || (hasUpdateUsrId && hasUpdateUsrIdLbl)
+  || (hasDeleteUsrId && hasDeleteUsrIdLbl)
 ) {
 #>
 
 // MARK: syncUsrLblByUsrId<#=Table_Up#>
-/** 根据 usr_id 同步创建人/更新人标签 */
+/** 根据 usr_id 同步创建人/更新人/删除人标签 */
 export async function syncUsrLblByUsrId<#=Table_Up#>(
   usr_id: UsrId,
   options?: {
@@ -5513,6 +5514,13 @@ export async function syncUsrLblByUsrId<#=Table_Up#>(
   
   sqlFields.push(`update_usr_id_lbl=case when update_usr_id=${ args.push(usr_id) } then ${ args.push(usr_lbl) } else update_usr_id_lbl end`);
   whereQuerys.push(`update_usr_id=${ args.push(usr_id) }`);<#
+  }
+  #><#
+  if (hasDeleteUsrId && hasDeleteUsrIdLbl) {
+  #>
+  
+  sqlFields.push(`delete_usr_id_lbl=case when delete_usr_id=${ args.push(usr_id) } then ${ args.push(usr_lbl) } else delete_usr_id_lbl end`);
+  whereQuerys.push(`delete_usr_id=${ args.push(usr_id) }`);<#
   }
   #>
   
