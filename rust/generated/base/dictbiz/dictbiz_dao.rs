@@ -2235,7 +2235,7 @@ pub async fn update_tenant_by_id_dictbiz(
 }
 
 // MARK: sync_usr_lbl_by_usr_id_dictbiz
-/// 根据 usr_id 同步创建人/更新人标签
+/// 根据 usr_id 同步创建人/更新人/删除人标签
 pub async fn sync_usr_lbl_by_usr_id_dictbiz(
   usr_id: UsrId,
   options: Option<Options>,
@@ -2275,20 +2275,24 @@ pub async fn sync_usr_lbl_by_usr_id_dictbiz(
   };
   
   let usr_lbl = usr_model.lbl;
-  let mut sql_fields = String::with_capacity(120);
-  let mut where_query = String::with_capacity(80);
+  let mut sql_fields = String::with_capacity(180);
+  let mut where_querys = Vec::with_capacity(3);
   let mut args = QueryArgs::new();
   
   sql_fields += "create_usr_id_lbl=case when create_usr_id=? then ? else create_usr_id_lbl end,";
   args.push(usr_id.clone().into());
   args.push(usr_lbl.clone().into());
-  where_query += "create_usr_id=?";
-  where_query += " or ";
+  where_querys.push("create_usr_id=?");
   
   sql_fields += "update_usr_id_lbl=case when update_usr_id=? then ? else update_usr_id_lbl end,";
   args.push(usr_id.clone().into());
   args.push(usr_lbl.clone().into());
-  where_query += "update_usr_id=?";
+  where_querys.push("update_usr_id=?");
+  
+  sql_fields += "delete_usr_id_lbl=case when delete_usr_id=? then ? else delete_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_querys.push("delete_usr_id=?");
   
   if sql_fields.ends_with(',') {
     sql_fields.pop();
@@ -2296,6 +2300,8 @@ pub async fn sync_usr_lbl_by_usr_id_dictbiz(
   
   args.push(usr_id.clone().into());
   args.push(usr_id.clone().into());
+  args.push(usr_id.clone().into());
+  let where_query = where_querys.join(" or ");
   
   let sql = format!("update {table} set {sql_fields} where {where_query}");
   

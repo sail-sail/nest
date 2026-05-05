@@ -1,7 +1,7 @@
 import fsExtraPkg from "fs-extra";
 import type { Stats } from "fs-extra";
 import * as ejsexcel from "ejsexcel";
-import { Context, getAllTables, getDictModels, getDictbizModels } from "./information_schema.ts";
+import { Context, getAllTables, getDictModels, getDictbizModels, getUsrLblSyncTables } from "./information_schema.ts";
 import { includeFtl, isEmpty as isEmpty0, uniqueID as uniqueID0, formatMsg as formatMsg0 } from "./StringUitl.ts";
 import { basename, dirname, resolve, normalize } from "path";
 import { fileURLToPath } from "url";
@@ -138,6 +138,9 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
   const allTables = await getAllTables(context);
   const dictModels = await getDictModels(context);
   const dictbizModels = await getDictbizModels(context);
+  const usrLblSyncTables = (mod === "base" && table === "usr")
+    ? await getUsrLblSyncTables(context, table_names)
+    : [ ];
   
   async function treeDir(dir: string, writeFnArr: Function[]) {
 		if(dir.endsWith(".bak")) return;
@@ -159,6 +162,11 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     }
     if (dir === "/rust/generated/common/script/graphql_pc_ids.ts") {
       return;
+    }
+    if (dir === "/rust/generated/[[mod]]/[[table]]/usr_sync_dao.rs") {
+      if (!(mod === "base" && table === "usr")) {
+        return;
+      }
     }
     if (dir === "/pc/src/router/gen.ts") {
       return;
