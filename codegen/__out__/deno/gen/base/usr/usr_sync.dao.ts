@@ -99,6 +99,10 @@ import {
   syncUsrLblByUsrIdDynPageData,
 } from "/gen/base/dyn_page_data/dyn_page_data.dao.ts";
 
+import {
+  syncUsrLblByUsrIdSeo,
+} from "/gen/nuxt/seo/seo.dao.ts";
+
 /** 根据 usr_id 同步所有表中的创建人/更新人/删除人标签 */
 export async function syncUsrLblByUsrId(
   usr_id: UsrId,
@@ -244,6 +248,11 @@ export async function syncUsrLblByUsrId(
   );
   
   affectedRows += await syncUsrLblByUsrIdDynPageData(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdSeo(
     usr_id,
     syncOptions,
   );
