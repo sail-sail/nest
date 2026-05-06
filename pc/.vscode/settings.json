@@ -23,7 +23,8 @@
     "public/ejsexcel.min.js": true,
     "**/.husky": true,
     "graphql.config.js": true,
-    "uno.config.ts": true
+    "uno.config.ts": true,
+    "pnpm-workspace.yaml": true
   },
   "search.exclude": {
     "**/.git": true,
