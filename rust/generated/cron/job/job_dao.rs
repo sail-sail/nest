@@ -1414,6 +1414,7 @@ pub async fn find_by_unique_job(
     vec![]
   } else {
     let search = JobSearch {
+      tenant_id: search.tenant_id,
       code: search.code.clone(),
       ..Default::default()
     };
@@ -1433,6 +1434,7 @@ pub async fn find_by_unique_job(
     vec![]
   } else {
     let search = JobSearch {
+      tenant_id: search.tenant_id,
       lbl: search.lbl.clone(),
       ..Default::default()
     };

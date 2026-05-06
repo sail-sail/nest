@@ -1616,6 +1616,7 @@ pub async fn find_by_unique_cron_job(
     vec![]
   } else {
     let search = CronJobSearch {
+      tenant_id: search.tenant_id,
       job_id: search.job_id.clone(),
       cron: search.cron.clone(),
       ..Default::default()
