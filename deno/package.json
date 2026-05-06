@@ -42,12 +42,5 @@
     "dotenv": "17.4.2",
     "ssh2-promise": "1.0.3",
     "typescript": "6.0.3"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "cpu-features",
-      "sharp",
-      "ssh2"
-    ]
   }
 }
