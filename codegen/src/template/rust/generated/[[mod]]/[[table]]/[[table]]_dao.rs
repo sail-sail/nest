@@ -3852,6 +3852,11 @@ pub async fn find_by_unique_<#=table#>(
     vec![]
   } else {
     let search = <#=tableUP#>Search {<#
+    if (hasTenantId && !uniques.includes("tenant_id")) {
+    #>
+      tenant_id: search.tenant_id,<#
+    }
+    #><#
     for (let k = 0; k < uniques.length; k++) {
       const unique = uniques[k];
       const column = columns.find((item) => item.COLUMN_NAME === unique);

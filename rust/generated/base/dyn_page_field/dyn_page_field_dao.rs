@@ -1808,6 +1808,7 @@ pub async fn find_by_unique_dyn_page_field(
     vec![]
   } else {
     let search = DynPageFieldSearch {
+      tenant_id: search.tenant_id,
       dyn_page_id: search.dyn_page_id.clone(),
       lbl: search.lbl.clone(),
       ..Default::default()
@@ -1828,6 +1829,7 @@ pub async fn find_by_unique_dyn_page_field(
     vec![]
   } else {
     let search = DynPageFieldSearch {
+      tenant_id: search.tenant_id,
       code: search.code.clone(),
       ..Default::default()
     };

@@ -1995,6 +1995,7 @@ pub async fn find_by_unique_usr(
     vec![]
   } else {
     let search = UsrSearch {
+      tenant_id: search.tenant_id,
       lbl: search.lbl.clone(),
       ..Default::default()
     };
@@ -2014,6 +2015,7 @@ pub async fn find_by_unique_usr(
     vec![]
   } else {
     let search = UsrSearch {
+      tenant_id: search.tenant_id,
       username: search.username.clone(),
       ..Default::default()
     };

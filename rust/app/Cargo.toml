@@ -77,7 +77,6 @@ percent-encoding.workspace = true
 qrcode.workspace = true
 
 generated = { path = "../generated" }
-wx_pay_sdk = { path = "../wx_pay_sdk" }
 
 [lib]
 path = "lib.rs"

@@ -13,7 +13,6 @@ reqwest.workspace = true
 uuid.workspace = true
 rsa.workspace = true
 aes-gcm.workspace = true
-pkcs8.workspace = true
 serde_with.workspace = true
 
 [lib]
