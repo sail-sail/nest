@@ -68,7 +68,6 @@ color-eyre = "0.6.5"
 rand = "0.10.1"
 rsa = { version = "0.9.10", features = ["sha2"] }
 aes-gcm = "0.10.3"
-pkcs8 = "0.10.2"
 serde_with = "3.18.0"
 csv = "1.4.0"
 docx-handlebars = "0.3.3"
@@ -162,12 +161,15 @@ qrcode.workspace = true
 generated = { path = "./generated" }
 app = { path = "./app" }
 
+wx_pay_sdk = { path = "./wx_pay_sdk" }
+aliyun_sdk = { path = "./aliyun_sdk" }
+
 [workspace]
 members = [
-  "aliyun_sdk",
   "generated",
   "app",
-  "wx_pay_sdk"
+  "wx_pay_sdk",
+  "aliyun_sdk"
 ]
 resolver = "2"
 
