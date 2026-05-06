@@ -1574,6 +1574,7 @@ pub async fn find_by_unique_wx_pay(
     vec![]
   } else {
     let search = WxPaySearch {
+      tenant_id: search.tenant_id,
       appid: search.appid.clone(),
       ..Default::default()
     };
@@ -1593,6 +1594,7 @@ pub async fn find_by_unique_wx_pay(
     vec![]
   } else {
     let search = WxPaySearch {
+      tenant_id: search.tenant_id,
       notify_url: search.notify_url.clone(),
       ..Default::default()
     };
@@ -1612,6 +1614,7 @@ pub async fn find_by_unique_wx_pay(
     vec![]
   } else {
     let search = WxPaySearch {
+      tenant_id: search.tenant_id,
       refund_notify_url: search.refund_notify_url.clone(),
       ..Default::default()
     };

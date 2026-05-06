@@ -1560,6 +1560,7 @@ pub async fn find_by_unique_wxo_usr(
     vec![]
   } else {
     let search = WxoUsrSearch {
+      tenant_id: search.tenant_id,
       openid: search.openid.clone(),
       ..Default::default()
     };

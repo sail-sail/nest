@@ -1514,6 +1514,7 @@ pub async fn find_by_unique_wx_app(
     vec![]
   } else {
     let search = WxAppSearch {
+      tenant_id: search.tenant_id,
       code: search.code.clone(),
       ..Default::default()
     };
@@ -1533,6 +1534,7 @@ pub async fn find_by_unique_wx_app(
     vec![]
   } else {
     let search = WxAppSearch {
+      tenant_id: search.tenant_id,
       lbl: search.lbl.clone(),
       ..Default::default()
     };
@@ -1552,6 +1554,7 @@ pub async fn find_by_unique_wx_app(
     vec![]
   } else {
     let search = WxAppSearch {
+      tenant_id: search.tenant_id,
       appid: search.appid.clone(),
       ..Default::default()
     };
