@@ -1,3 +1,7 @@
+allowBuilds:
+  "cpu-features": true
+  "sharp": true
+  "ssh2": true
 supportedArchitectures:
   os:
     - linux
