@@ -824,7 +824,7 @@ export async function existFieldPermit(
 // MARK: existByIdFieldPermit
 /** 根据id判断字段权限是否存在 */
 export async function existByIdFieldPermit(
-  id?: Readonly<FieldPermitId | null>,
+  id?: FieldPermitId | null,
   options?: {
     is_debug?: boolean;
   },
