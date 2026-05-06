@@ -1213,6 +1213,7 @@ pub async fn find_by_unique_dyn_page_val(
     vec![]
   } else {
     let search = DynPageValSearch {
+      tenant_id: search.tenant_id,
       ref_code: search.ref_code.clone(),
       ref_id: search.ref_id.clone(),
       code: search.code.clone(),

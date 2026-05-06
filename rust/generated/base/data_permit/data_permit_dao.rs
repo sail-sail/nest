@@ -1458,6 +1458,7 @@ pub async fn find_by_unique_data_permit(
     vec![]
   } else {
     let search = DataPermitSearch {
+      tenant_id: search.tenant_id,
       menu_id: search.menu_id.clone(),
       scope: search.scope.clone(),
       ..Default::default()

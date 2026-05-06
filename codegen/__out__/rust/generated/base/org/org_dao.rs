@@ -1394,6 +1394,7 @@ pub async fn find_by_unique_org(
     vec![]
   } else {
     let search = OrgSearch {
+      tenant_id: search.tenant_id,
       lbl: search.lbl.clone(),
       ..Default::default()
     };

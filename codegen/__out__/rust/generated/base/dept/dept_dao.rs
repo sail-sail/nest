@@ -1717,6 +1717,7 @@ pub async fn find_by_unique_dept(
     vec![]
   } else {
     let search = DeptSearch {
+      tenant_id: search.tenant_id,
       parent_id: search.parent_id.clone(),
       lbl: search.lbl.clone(),
       ..Default::default()

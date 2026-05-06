@@ -1459,6 +1459,7 @@ pub async fn find_by_unique_optbiz(
     vec![]
   } else {
     let search = OptbizSearch {
+      tenant_id: search.tenant_id,
       lbl: search.lbl.clone(),
       ky: search.ky.clone(),
       ..Default::default()
