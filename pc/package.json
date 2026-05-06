@@ -90,19 +90,5 @@
     "vite-plus": "latest",
     "vitest": "npm:@voidzero-dev/vite-plus-test@latest",
     "vue-tsc": "3.2.8"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "@vue-office/docx",
-      "@vue-office/excel",
-      "esbuild",
-      "vue-demi"
-    ],
-    "overrides": {
-      "vite": "npm:@voidzero-dev/vite-plus-core@latest",
-      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
-    }
-  },
-  "packageManager": "pnpm@10.33.0"
+  }
 }
