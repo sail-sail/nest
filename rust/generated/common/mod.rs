@@ -25,7 +25,6 @@ pub mod dictbiz_detail;
 pub mod field_permit;
 pub mod optbiz;
 pub mod org;
-pub mod wx_pay;
 pub mod id;
 pub mod aliyun;
 
