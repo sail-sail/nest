@@ -1491,13 +1491,11 @@ pub async fn find_by_unique_dictbiz(
   
   let mut models: Vec<DictbizModel> = vec![];
   
-  let mut models_tmp = {
-    if
-      search.code.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.code.is_none()
+  {
+    vec![]
+  } else {
     let search = DictbizSearch {
       code: search.code.clone(),
       ..Default::default()
@@ -1512,13 +1510,11 @@ pub async fn find_by_unique_dictbiz(
   };
   models.append(&mut models_tmp);
   
-  let mut models_tmp = {
-    if
-      search.lbl.is_none()
-    {
-      return Ok(vec![]);
-    }
-    
+  let mut models_tmp = if
+    search.lbl.is_none()
+  {
+    vec![]
+  } else {
     let search = DictbizSearch {
       lbl: search.lbl.clone(),
       ..Default::default()
@@ -2238,6 +2234,92 @@ pub async fn update_tenant_by_id_dictbiz(
   Ok(num)
 }
 
+// MARK: sync_usr_lbl_by_usr_id_dictbiz
+/// 根据 usr_id 同步创建人/更新人/删除人标签
+pub async fn sync_usr_lbl_by_usr_id_dictbiz(
+  usr_id: UsrId,
+  options: Option<Options>,
+) -> Result<u64> {
+  let table = get_table_name_dictbiz();
+  let method = "sync_usr_lbl_by_usr_id_dictbiz";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" usr_id: {usr_id:?}");
+    if let Some(options) = &options {
+      msg += &format!(" options: {options:?}");
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if usr_id.is_empty() {
+    return Ok(0);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let usr_model = find_by_id_usr(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  let Some(usr_model) = usr_model else {
+    return Ok(0);
+  };
+  
+  let usr_lbl = usr_model.lbl;
+  let mut sql_fields = String::with_capacity(180);
+  let mut where_querys = Vec::with_capacity(3);
+  let mut args = QueryArgs::new();
+  
+  sql_fields += "create_usr_id_lbl=case when create_usr_id=? then ? else create_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_querys.push("create_usr_id=?");
+  
+  sql_fields += "update_usr_id_lbl=case when update_usr_id=? then ? else update_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_querys.push("update_usr_id=?");
+  
+  sql_fields += "delete_usr_id_lbl=case when delete_usr_id=? then ? else delete_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_querys.push("delete_usr_id=?");
+  
+  if sql_fields.ends_with(',') {
+    sql_fields.pop();
+  }
+  
+  args.push(usr_id.clone().into());
+  args.push(usr_id.clone().into());
+  args.push(usr_id.clone().into());
+  let where_query = where_querys.join(" or ");
+  
+  let sql = format!("update {table} set {sql_fields} where {where_query}");
+  
+  let args: Vec<_> = args.into();
+  
+  let num = execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  if num > 0 {
+    del_cache_dictbiz().await?;
+  }
+  
+  Ok(num)
+}
+
 // MARK: update_by_id_dictbiz
 /// 根据 id 修改业务字典
 #[allow(unused_mut)]
@@ -2505,7 +2587,7 @@ pub async fn update_by_id_dictbiz(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }

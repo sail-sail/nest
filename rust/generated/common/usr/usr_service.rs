@@ -423,7 +423,7 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
   
   let org_id_models: Vec<GetLoginInfoorgIdModel> = org_ids
     .into_iter()
-    .zip(org_ids_lbl.into_iter())
+    .zip(org_ids_lbl)
     .map(|(id, lbl)| {
       GetLoginInfoorgIdModel {
         id,

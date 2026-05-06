@@ -802,13 +802,13 @@ pub async fn creates_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
-      module_lbl: table_comment.clone().into(),
-      method: "creates".to_owned().into(),
+      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
+      module_lbl: SmolStr::new(table_comment.clone()).into(),
+      method: SmolStr::new("creates").into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: method_lbl.into(),
+      lbl: method_lbl.clone().into(),
       time: time.into(),
-      new_data: serde_json::to_string(&new_data)?.into(),
+      new_data: SmolStr::new(serde_json::to_string(&new_data)?).into(),
       ..Default::default()
     },
   ).await?;<#
@@ -951,14 +951,14 @@ pub async fn update_by_id_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
-      method: "updateById".to_owned().into(),
+      method: SmolStr::new("updateById").into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: method_lbl.into(),
+      lbl: method_lbl.clone().into(),
       time: time.into(),
-      old_data: serde_json::to_string(&old_data)?.into(),
-      new_data: serde_json::to_string(&new_data)?.into(),
+      old_data: SmolStr::new(serde_json::to_string(&old_data)?).into(),
+      new_data: SmolStr::new(serde_json::to_string(&new_data)?).into(),
       ..Default::default()
     },
   ).await?;<#
@@ -1038,11 +1038,11 @@ pub async fn audit_submit_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module: SmolStr::new(format!("<#=mod#>_<#=table#>")),
       module_lbl: table_comment.clone().into(),
-      method: "auditSubmit".to_owned().into(),
+      method: SmolStr::new("auditSubmit"),
       method_lbl: method_lbl.clone().into(),
-      lbl: method_lbl.into(),
+      lbl: method_lbl.clone().into(),
       time: time.into(),
       old_data: old_data.into(),
       ..Default::default()
@@ -1120,13 +1120,13 @@ pub async fn audit_pass_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new(&format!("<#=mod#>_<#=table#>")),
+      module: SmolStr::new(format!("<#=mod#>_<#=table#>")),
       module_lbl: table_comment.clone().into(),
       method: SmolStr::new("auditPass"),
       method_lbl: method_lbl.clone().into(),
-      lbl: method_lbl.into(),
+      lbl: method_lbl.clone().into(),
       time: time.into(),
-      old_data: old_data.into(),
+      old_data: SmolStr::new(serde_json::to_string(&old_data)?).into(),
       ..Default::default()
     },
   ).await?;<#
@@ -1204,13 +1204,13 @@ pub async fn audit_reject_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: SmolStr::new(&format!("<#=mod#>_<#=table#>")),
+      module: SmolStr::new(format!("<#=mod#>_<#=table#>")),
       module_lbl: table_comment.clone().into(),
       method: SmolStr::new("auditReject"),
       method_lbl: method_lbl.clone().into(),
-      lbl: method_lbl.into(),
+      lbl: method_lbl.clone().into(),
       time: time.into(),
-      old_data: old_data.into(),
+      old_data: SmolStr::new(serde_json::to_string(&old_data)?).into(),
       ..Default::default()
     },
   ).await?;<#
@@ -1385,13 +1385,13 @@ pub async fn delete_by_ids_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
-      module_lbl: table_comment.clone().into(),
-      method: "deleteByIds".to_owned().into(),
+      module: SmolStr::new(format!("{method_lbl}_<#=mod#>_<#=table#>")).into(),
+      module_lbl: SmolStr::new(table_comment.clone()).into(),
+      method: SmolStr::new("deleteByIds").into(),
       method_lbl: method_lbl.clone().into(),
-      lbl: method_lbl.into(),
+      lbl: method_lbl.clone().into(),
       time: time.into(),
-      old_data: serde_json::to_string(&old_data)?.into(),
+      old_data: SmolStr::new(serde_json::to_string(&old_data)?).into(),
       ..Default::default()
     },
   ).await?;<#
@@ -1547,7 +1547,7 @@ pub async fn enable_by_ids_<#=table#>(
   if (log) {
   #>
   
-  let old_data = serde_json::to_string(&ids)?;<#
+  let old_data = SmolStr::new(serde_json::to_string(&ids)?);<# 
   }
   #>
   
@@ -1573,18 +1573,18 @@ pub async fn enable_by_ids_<#=table#>(
   
   let method_lbl = {
     if is_enabled == 0 {
-      "禁用".to_owned()
+      SmolStr::new("禁用")
     } else {
-      "启用".to_owned()
+      SmolStr::new("启用")
     }
   };<#
   }
   #>
   let method = {
     if is_enabled == 0 {
-      "disableByIds".to_owned()
+      SmolStr::new("disableByIds")
     } else {
-      "enableByIds".to_owned()
+      SmolStr::new("enableByIds")
     }
   };<#
   if (isUseI18n) {
@@ -1609,7 +1609,7 @@ pub async fn enable_by_ids_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.clone().into(),
       method: method.into(),
       method_lbl: method_lbl.clone().into(),
@@ -1685,10 +1685,10 @@ pub async fn lock_by_ids_<#=table#>(
   if (log) {
   #>
   
-  let new_data = serde_json::json!({
+  let new_data = SmolStr::new(serde_json::json!({
     "ids": ids,
     "is_locked": is_locked,
-  }).to_string();<#
+  }).to_string());<#
   }
   #>
   
@@ -1733,9 +1733,9 @@ pub async fn lock_by_ids_<#=table#>(
   
   log(
     OperationRecordInput {
-      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module: SmolStr::new("<#=mod#>_<#=table#>").into(),
       module_lbl: table_comment.into(),
-      method: "lockByIds".to_owned().into(),
+      method: SmolStr::new("lockByIds").into(),
       method_lbl: method_lbl.clone().into(),
       lbl: method_lbl.into(),
       time: time.into(),
@@ -1803,7 +1803,7 @@ pub async fn revert_by_ids_<#=table#>(
   if (log) {
   #>
   
-  let new_data = serde_json::to_string(&ids)?;<#
+  let new_data = SmolStr::new(serde_json::to_string(&ids)?);<#
   }
   #>
   
@@ -1890,7 +1890,7 @@ pub async fn force_delete_by_ids_<#=table#>(
   if (log) {
   #>
   
-  let old_data = serde_json::to_string(&ids)?;<#
+  let old_data = SmolStr::new(serde_json::to_string(&ids)?);<#
   }
   #>
   

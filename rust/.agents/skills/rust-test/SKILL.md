@@ -15,6 +15,8 @@ description: Rust 测试用例编写规范.编写单元测试或数据刷新脚�
 
 测试代码放在 `*_service.rs` 文件末尾的 `#[cfg(test)] mod tests { }` 块中。
 
+同步测试（纯函数不依赖数据库）可以直接放在 service 文件顶部或测试模块中。
+
 | 目录 | Ctx 引用路径 |
 |------|-------------|
 | `generated/{mod}/{table}/` | `use crate::common::context::Ctx;` |
@@ -64,12 +66,12 @@ mod tests {
 | `.with_auth()?` | 需要登录认证（测试中一般不用） |
 | `.build()` | 构建 `Ctx` 实例 |
 
-## scope 方法
+## scope / resful_scope 方法
 
-构建完 `Ctx` 后，通过 `scope` 执行异步测试体：
+构建完 `Ctx` 后，通过 `scope` 或 `resful_scope` 执行异步测试体：
 
 ```rust
-// 方式1: scope — 传入 Future（推荐）
+// 方式1: scope — 传入 Future（推荐, GraphQL 场景）
 Ctx::test_builder()
   .with_silent_mode()
   .build()
@@ -78,13 +80,33 @@ Ctx::test_builder()
     Ok(())
   }).await
 
-// 方式2: scope_fn — 传入 AsyncFnOnce 闭包
+// 方式2: resful_scope — REST 接口测试
+Ctx::test_builder()
+  .build()
+  .resful_scope(async {
+    // REST 接口测试逻辑
+    Ok(())
+  }).await
+
+// 方式3: scope_fn — 传入 AsyncFnOnce 闭包
 Ctx::test_builder()
   .build()
   .scope_fn(async || -> Result<()> {
     // 测试逻辑
     Ok(())
   }).await
+```
+
+## 同步测试 vs 异步测试
+
+```rust
+// 异步测试 (调用 async 函数)
+#[tokio::test]
+async fn test_xxx() -> Result<()> { ... }
+
+// 同步测试 (纯函数逻辑, 不涉及数据库)
+#[test]
+fn test_split_balance_refund() -> Result<()> { ... }
 ```
 
 ## Options 传递

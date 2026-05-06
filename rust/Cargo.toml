@@ -11,22 +11,21 @@ mime = "0.3.17"
 futures-util = "0.3.32"
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter", "local-time", "parking_lot"] }
-tracing-appender = "0.2.4"
+tracing-appender = "0.2.5"
 tracing-attributes = "0.1.31"
-tokio = { version = "1.51.0", features = ["rt-multi-thread", "macros", "net", "fs"] }
+tokio = { version = "1.52.1", features = ["rt-multi-thread", "macros", "net", "fs"] }
 poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
-async-graphql = { version = "7.2.1", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing", "raw_value"] }
+async-graphql = { version = "7.2.1", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing", "raw_value"], default-features = false }
 smol_str = { version = "0.3.6", features = ["serde"] }
 slab = "0.4.12"
 chrono = { version = "0.4.44", features = ["serde"] }
-sqlx = { version = "0.8.6", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
+sqlx = { version = "0.8.6", features = ["runtime-tokio", "mysql", "chrono", "time", "bigdecimal", "rust_decimal", "json", "derive"], default-features = false }
 dotenv = "0.15.0"
 rust-s3 = { version = "0.37.1", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
 imstr = { version = "0.2.0", features = ["serde"] }
-jwt = "0.16.0"
-sha2 = "0.10.9"
-sha1 = "0.10.6"
-hmac = { version = "0.12.1", features = ["reset"] }
+jsonwebtoken = { version = "10.3.0", default-features = false, features = ["aws_lc_rs"] }
+sha2 = "0.11.0"
+hmac = "0.13.0"
 hex-literal = "1.1.0"
 hex = "0.4.3"
 base64 = "0.22.1"
@@ -38,7 +37,7 @@ url = "2.5.8"
 # sqlformat = "0.3.5"
 smallvec = { version = "1.15.1", features = ["union", "serde"] }
 # downcast-rs = "2.0.1"
-uuid = { version = "1.23.0", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "1.23.1", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.13.0"
 deadpool-redis = "0.23.0"
 redis = { version = "1.2.0", features = ["tokio-comp"], default-features = false }
@@ -57,8 +56,8 @@ num-traits = "0.2.19"
 fast_chemail = "0.9.6"
 http = "1.4.0"
 futures = "0.3.32"
-aes = "0.8.4"
-cbc = { version = "0.1.2", features = ["alloc"]}
+aes = "0.9.0"
+cbc = { version = "0.2.0", features = ["alloc"]}
 function_name = "0.3.0"
 enum-iterator = "2.3.0"
 derive_more = { version = "2.1.1", features = ["full"] }
@@ -66,7 +65,7 @@ derive_builder = "0.20.2"
 strum = { version = "0.28.0", features = ["derive"] }
 itertools = "0.14.0"
 color-eyre = "0.6.5"
-rand = "0.10.0"
+rand = "0.10.1"
 rsa = { version = "0.9.10", features = ["sha2"] }
 aes-gcm = "0.10.3"
 pkcs8 = "0.10.2"
@@ -102,9 +101,8 @@ sqlx.workspace = true
 dotenv.workspace = true
 rust-s3.workspace = true
 imstr.workspace = true
-jwt.workspace = true
+jsonwebtoken.workspace = true
 sha2.workspace = true
-sha1.workspace = true
 hmac.workspace = true
 # protobuf.workspace = true
 hex-literal.workspace = true

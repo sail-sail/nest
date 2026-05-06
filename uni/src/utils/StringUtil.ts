@@ -11,6 +11,18 @@ let UID = Date.now();
 export function uniqueID() {
   return (UID++).toString(36);
 }
+  
+let uid = "";
+
+export function getUid() {
+  uid = uni.getStorageSync("_uid");
+  if (uid) {
+    return uid;
+  }
+  uid = uniqueID();
+  uni.setStorageSync("_uid", uid);
+  return uid;
+}
 
 export function uuid() {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {

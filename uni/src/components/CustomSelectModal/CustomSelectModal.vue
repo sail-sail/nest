@@ -170,7 +170,7 @@
     >
       
       <view
-        v-if="!props.hideSearch && (options4SelectV2.length > 5 || props.height) && !isLoading"
+        v-if="!props.hideSearch && (options4SelectV2.length > 5 || props.height)"
         un-p="t-2"
         un-box-border
         un-m="x-4"
@@ -219,107 +219,83 @@
         :scroll-with-animation="true"
       >
         
-        <template
-          v-if="isLoading"
+        <slot
+          name="option"
+          :size="options4SelectV2.length"
+          :options-computed="options4SelectV2Computed"
+          :selected-value="selectedValueArr"
+          :on-select="onSelect"
         >
           
           <view
-            un-flex="~"
-            un-items="center"
-            un-justify="center"
-            un-text="[var(--color-placeholder)]"
-            un-min="h-40"
-            un-p="y-6"
-            un-box-border
+            un-flex="~ [1_0_0] col"
+            un-overflow-hidden
+            :style="{
+              flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
+            }"
           >
-            加载中...
-          </view>
           
-        </template>
-        
-        <template
-          v-else
-        >
-          
-          <slot
-            name="option"
-            :size="options4SelectV2.length"
-            :options-computed="options4SelectV2Computed"
-            :selected-value="selectedValueArr"
-            :on-select="onSelect"
-          >
-            
             <view
-              un-flex="~ [1_0_0] col"
-              un-overflow-hidden
+              v-for="item of options4SelectV2Computed"
+              :id="getOptionAnchorId(item.value)"
+              :key="item.value"
+              :title="item.label"
+              un-m="x-2"
+              un-p="y-4"
+              un-box-border
+              un-flex="~"
+              un-items="center"
+              un-gap="2"
+              un-b="0 b-1 solid #e6e6e6"
               :style="{
-                flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
+                'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
+                'border-color': selectedValueArr.includes(item.value) ? '#0579ff' : '#e6e6e6',
               }"
+              @click="onSelect(item.value)"
             >
-            
+              
               <view
-                v-for="item of options4SelectV2Computed"
-                :id="'a' + item.value"
-                :key="item.value"
-                :title="item.label"
-                un-m="x-2"
-                un-p="y-4"
-                un-box-border
-                un-flex="~"
+                un-flex="~ [1_0_0]"
+                un-overflow-hidden
                 un-items="center"
-                un-gap="2"
-                un-b="0 b-1 solid #e6e6e6"
-                :style="{
-                  'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
-                  'border-color': selectedValueArr.includes(item.value) ? '#0579ff' : '#e6e6e6',
-                }"
-                @click="onSelect(item.value)"
+                un-m="l-4"
               >
-                
-                <view
-                  un-flex="~ [1_0_0]"
-                  un-overflow-hidden
-                  un-items="center"
-                  un-m="l-4"
-                >
-                  {{ item.label }}
-                </view>
-                
-                <view
-                  style="width: 1.2rem;height: 1.2rem;"
-                  un-m="r-4"
-                >
-                  <view
-                    v-if="selectedValueArr.includes(item.value)"
-                    un-i="iconfont-check"
-                  ></view>
-                </view>
-                
+                {{ item.label }}
               </view>
               
               <view
-                v-if="inited && options4SelectV2Computed.length === 0"
-                un-flex="~"
-                un-items="center"
-                un-justify="center"
-                un-text="gray-400"
-                un-h="10"
+                style="width: 1.2rem;height: 1.2rem;"
+                un-m="r-4"
               >
-                (暂无数据)
-              </view>
-              
-              <view
-                v-else-if="options4SelectV2Computed.length > 5 || props.height"
-                un-m="y-2"
-              >
-                <CustomDivider></CustomDivider>
+                <view
+                  v-if="selectedValueArr.includes(item.value)"
+                  un-i="iconfont-check"
+                ></view>
               </view>
               
             </view>
             
-          </slot>
+            <view
+              v-if="inited && options4SelectV2Computed.length === 0"
+              un-flex="~"
+              un-items="center"
+              un-justify="center"
+              un-text="gray-400"
+              un-h="10"
+            >
+              (暂无数据)
+            </view>
+            
+            <view
+              v-else-if="options4SelectV2Computed.length > 5 || props.height"
+              un-m="y-2"
+            >
+              <CustomDivider></CustomDivider>
+            </view>
+            
+          </view>
           
-        </template>
+        </slot>
         
       </scroll-view>
       
@@ -596,34 +572,54 @@ const modelLabels = computed(() => {
 
 const scrollIntoViewId = ref("");
 
+function getOptionAnchorId(
+  value?: string,
+) {
+  if (!value) {
+    return "";
+  }
+  return [
+    "option",
+    String(value)
+      .replaceAll("_", "__")
+      .replaceAll("+", "_plus_")
+      .replaceAll("/", "_slash_")
+      .replaceAll("=", "_eq_"),
+  ].join("_");
+}
+
+async function syncScrollIntoView() {
+  scrollIntoViewId.value = "";
+  await nextTick();
+  scrollIntoViewId.value = getOptionAnchorId(selectedValueArr.value[0]);
+}
+
 async function onClick() {
   if (readonly) {
     showPicker.value = false;
     return;
   }
-  if (props.refreshWhenShowPicker) {
-    await onRefresh();
-  }
   searchStr.value = "";
   selectedValue.value = modelValue;
   showPicker.value = true;
-  scrollIntoViewId.value = "";
-  setTimeout(() => {
-    scrollIntoViewId.value = selectedValueArr.value[0] ? "a" + selectedValueArr.value[0] : "";
-  }, 500);
+  await nextTick();
+  await syncScrollIntoView();
 }
 
-const isLoading = ref(false);
+let isLoading = false;
 
 watch(
   () => [showPicker.value, props.refreshWhenShowPicker],
   async () => {
+    if (isLoading) {
+      return;
+    }
     if (showPicker.value && props.refreshWhenShowPicker) {
       try {
-        isLoading.value = true;
+        isLoading = true;
         await onRefresh();
       } finally {
-        isLoading.value = false;
+        isLoading = false;
       }
     }
   },

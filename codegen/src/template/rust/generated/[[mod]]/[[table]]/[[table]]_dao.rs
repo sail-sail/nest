@@ -1706,7 +1706,7 @@ async fn get_from_query(
     }
     #>
   left join (select json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
-    if (foreignKey.lbl && !modelLabel) {
+    if ((foreignKey.lbl && !modelLabel) || foreignKey.isForceJoinQuery) {
   #>
   json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
     }
@@ -1727,7 +1727,7 @@ async fn get_from_query(
   #>
   group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
     } else if (foreignKey && !foreignKey.multiple) {
-      if (modelLabel) {
+      if (modelLabel && !foreignKey.isForceJoinQuery) {
         continue;
       }
   #>
@@ -2075,7 +2075,16 @@ pub async fn find_all_<#=table#>(
   let is_result_limit = page.as_ref()
     .and_then(|item| item.is_result_limit)
     .unwrap_or(true);
-  let page_query = get_page_query(page);
+  let page_query = get_page_query(page);<#
+  if (opts?.isHasForUpdate) {
+  #>
+  let for_update_str = if options.as_ref().and_then(|x| x.get_is_for_update()).unwrap_or(false) {
+    " for update"
+  } else {
+    ""
+  };<#
+  }
+  #>
   
   let sql = format!(r#"select f.* from (select t.*<#
   for (let i = 0; i < columns.length; i++) {
@@ -2127,6 +2136,8 @@ pub async fn find_all_<#=table#>(
   #><#
   } else {
   #><#
+    if ((!column.modelLabel && foreignKey.lbl) || foreignKey.isForceJoinQuery) {
+  #><#
     if (!column.modelLabel && foreignKey.lbl) {
   #>
   ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=modelLabel#><#
@@ -2135,7 +2146,17 @@ pub async fn find_all_<#=table#>(
     for (let j = 0; j < cascade_fields.length; j++) {
       const cascade_field = cascade_fields[j];
   #>
+  ,max(<#=column_name#>_lbl.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
+    }
+  #><#
+    } else {
+  #><#
+    for (let j = 0; j < cascade_fields.length; j++) {
+      const cascade_field = cascade_fields[j];
+  #>
   ,max(<#=column_name#>_<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
+    }
+  #><#
     }
   #><#
   }
@@ -2147,7 +2168,11 @@ pub async fn find_all_<#=table#>(
   {lang_sql}<#
   }
   #>
-  from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
+  from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}<#
+  if (opts?.isHasForUpdate) {
+  #>{for_update_str}<#
+  }
+  #>"#);
   
   let args = args.into();<#
   if (cache) {
@@ -3808,55 +3833,53 @@ pub async fn find_by_unique_<#=table#>(
     const uniques = opts.uniques[i];
   #>
   
-  let mut models_tmp = {
-    if<#
-      for (let k = 0; k < uniques.length; k++) {
-        const unique = uniques[k];
-        const unique_rust = rustKeyEscape(unique);
-      #><#
-        if (unique !== "create_usr_id") {
-      #>
-      search.<#=unique_rust#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
-        } else {
-      #>
-      create_usr_id.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
-        }
-      #><#
+  let mut models_tmp = if<#
+    for (let k = 0; k < uniques.length; k++) {
+      const unique = uniques[k];
+      const unique_rust = rustKeyEscape(unique);
+    #><#
+      if (unique !== "create_usr_id") {
+    #>
+    search.<#=unique_rust#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
+      } else {
+    #>
+    create_usr_id.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
       }
-      #>
-    {
-      return Ok(vec![]);
+    #><#
     }
-    
+    #>
+  {
+    vec![]
+  } else {
     let search = <#=tableUP#>Search {<#
-      for (let k = 0; k < uniques.length; k++) {
-        const unique = uniques[k];
-        const column = columns.find((item) => item.COLUMN_NAME === unique);
-        if (column.ignoreCodegen) continue;
-        if (column.isVirtual) continue;
-        if (column.isPassword) continue;
-        if (column.isEncrypt) continue;
-        const data_type = column.DATA_TYPE;
-        const unique_rust = rustKeyEscape(unique);
-        let hasClone = true;
-        if ([ "int", "decimal", "tinyint", "date", "datetime" ].includes(data_type)) {
-          hasClone = false;
-        }
-      #><#
-        if (unique !== "create_usr_id") {
-      #>
-      <#=unique_rust#>: search.<#=unique_rust#><#
-        if (hasClone) {
-      #>.clone()<#
-        }
-      #>,<#
-        } else {
-      #>
-      create_usr_id,<#
-        }
-      #><#
+    for (let k = 0; k < uniques.length; k++) {
+      const unique = uniques[k];
+      const column = columns.find((item) => item.COLUMN_NAME === unique);
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      if (column.isPassword) continue;
+      if (column.isEncrypt) continue;
+      const data_type = column.DATA_TYPE;
+      const unique_rust = rustKeyEscape(unique);
+      let hasClone = true;
+      if ([ "int", "decimal", "tinyint", "date", "datetime" ].includes(data_type)) {
+        hasClone = false;
       }
-      #>
+    #><#
+      if (unique !== "create_usr_id") {
+    #>
+      <#=unique_rust#>: search.<#=unique_rust#><#
+      if (hasClone) {
+    #>.clone()<#
+      }
+    #>,<#
+      } else {
+    #>
+      create_usr_id,<#
+      }
+    #><#
+    }
+    #>
       ..Default::default()
     };
     
@@ -4781,65 +4804,64 @@ async fn _creates(
       if (!isIcon) continue;
     #>
     // <#=column_comment#>
-    if (input.<#=column_name#>.is_none() || input.<#=column_name#>.as_ref().unwrap().is_empty()) &&
-      (input.<#=column_name#>_lbl.is_some() && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty())
-    {
-      let <#=column_name#>_lbl = input.<#=column_name#>_lbl.as_ref().unwrap();
-      let mut hash = sha2::Sha256::new();
-      hash.update(<#=column_name#>_lbl.clone().as_bytes());
-      let hash = hash.finalize();
-      let bytes = hash.as_slice();
-      let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
-      let <#=column_name#> = <#=column_name#>.get(0..22).unwrap().to_string();
-      let stat = head_object(&<#=column_name#>).await?;
-      if stat.is_none() {
-        let content_type = <#=column_name#>_lbl
-          .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(<#=column_name#>_lbl.len()))
-          .unwrap_or_default();
-        if !content_type.starts_with("image/") {
-          error!(
-            "{req_id} <#=column_name#>_lbl is not image: {<#=column_name#>_lbl}",
-            req_id = get_req_id(),
-          );
-          return Err(eyre!("<#=column_name#>_lbl is not image"));
-        }<#
-        if (hasTenant_id) {
-        #>
-        let tenant_id = {
-          if input.tenant_id.is_some() {
-            input.tenant_id
-          } else {
-            get_auth_tenant_id()
-          }
-        };<#
-        }
-        #>
-        put_object(
-          &<#=column_name#>,
-          <#=column_name#>_lbl.clone().as_bytes(),
-          content_type,
-          &<#=column_name#>,<#
-          if (column.isPublicAtt) {
-          #>
-          Some("1"),<#
-          } else {
-          #>
-          Some("0"),<#
-          }
-          #><#
+    if input.<#=column_name#>.is_none() || input.<#=column_name#>.as_ref().unwrap().is_empty() {
+      if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|<#=column_name#>_lbl| !<#=column_name#>_lbl.is_empty()) {
+        let mut hash = sha2::Sha256::new();
+        hash.update(<#=column_name#>_lbl.clone().as_bytes());
+        let hash = hash.finalize();
+        let bytes = hash.as_slice();
+        let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
+        let <#=column_name#> = SmolStr::from(<#=column_name#>.get(0..22).unwrap_or_default());
+        let stat = head_object(&<#=column_name#>).await?;
+        if stat.is_none() {
+          let content_type = <#=column_name#>_lbl
+            .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(<#=column_name#>_lbl.len()))
+            .unwrap_or_default();
+          if !content_type.starts_with("image/") {
+            error!(
+              "{req_id} <#=column_name#>_lbl is not image: {<#=column_name#>_lbl}",
+              req_id = get_req_id(),
+            );
+            return Err(eyre!("<#=column_name#>_lbl is not image"));
+          }<#
           if (hasTenant_id) {
           #>
-          tenant_id,<#
-          } else {
-          #>
-          None,<#
+          let tenant_id = {
+            if input.tenant_id.is_some() {
+              input.tenant_id
+            } else {
+              get_auth_tenant_id()
+            }
+          };<#
           }
           #>
-          Some("<#=table_name#>.<#=column_name#>"),
-          Some(&<#=column_name#>),
-        ).await?;
+          put_object(
+            &<#=column_name#>,
+            <#=column_name#>_lbl.clone().as_bytes(),
+            content_type,
+            &<#=column_name#>,<#
+            if (column.isPublicAtt) {
+            #>
+            Some("1"),<#
+            } else {
+            #>
+            Some("0"),<#
+            }
+            #><#
+            if (hasTenant_id) {
+            #>
+            tenant_id,<#
+            } else {
+            #>
+            None,<#
+            }
+            #>
+            Some("<#=table_name#>.<#=column_name#>"),
+            Some(&<#=column_name#>),
+          ).await?;
+        }
+        input.<#=column_name#> = Some(<#=column_name#>);
       }
-      input.<#=column_name#> = Some(<#=column_name#>);
     }<#
     }
     #>
@@ -6021,6 +6043,128 @@ pub async fn update_tenant_by_id_<#=table#>(
 }<#
 }
 #><#
+if (
+  (hasCreateUsrId && hasCreateUsrIdLbl)
+  || (hasUpdateUsrId && hasUpdateUsrIdLbl)
+  || (hasDeleteUsrId && hasDeleteUsrIdLbl)
+) {
+#>
+
+// MARK: sync_usr_lbl_by_usr_id_<#=table#>
+/// 根据 usr_id 同步创建人/更新人/删除人标签
+pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
+  usr_id: UsrId,
+  options: Option<Options>,
+) -> Result<u64> {
+  let table = get_table_name_<#=table#>();
+  let method = "sync_usr_lbl_by_usr_id_<#=table#>";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" usr_id: {usr_id:?}");
+    if let Some(options) = &options {
+      msg += &format!(" options: {options:?}");
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if usr_id.is_empty() {
+    return Ok(0);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let usr_model = find_by_id_usr(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  let Some(usr_model) = usr_model else {
+    return Ok(0);
+  };
+  
+  let usr_lbl = usr_model.lbl;
+  let mut sql_fields = String::with_capacity(180);
+  let mut where_querys = Vec::with_capacity(3);
+  let mut args = QueryArgs::new();<#
+  if (hasCreateUsrId && hasCreateUsrIdLbl) {
+  #>
+  
+  sql_fields += "create_usr_id_lbl=case when create_usr_id=? then ? else create_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_querys.push("create_usr_id=?");<#
+  }
+  #><#
+  if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
+  #>
+  
+  sql_fields += "update_usr_id_lbl=case when update_usr_id=? then ? else update_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_querys.push("update_usr_id=?");<#
+  }
+  #><#
+  if (hasDeleteUsrId && hasDeleteUsrIdLbl) {
+  #>
+  
+  sql_fields += "delete_usr_id_lbl=case when delete_usr_id=? then ? else delete_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_querys.push("delete_usr_id=?");<#
+  }
+  #>
+  
+  if sql_fields.ends_with(',') {
+    sql_fields.pop();
+  }<#
+  if (hasCreateUsrId && hasCreateUsrIdLbl) {
+  #>
+  
+  args.push(usr_id.clone().into());<#
+  }
+  #><#
+  if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
+  #>
+  args.push(usr_id.clone().into());<#
+  }
+  #><#
+  if (hasDeleteUsrId && hasDeleteUsrIdLbl) {
+  #>
+  args.push(usr_id.clone().into());<#
+  }
+  #>
+  let where_query = where_querys.join(" or ");
+  
+  let sql = format!("update {table} set {sql_fields} where {where_query}");
+  
+  let args: Vec<_> = args.into();
+  
+  let num = execute(
+    sql,
+    args,
+    options,
+  ).await?;<#
+  if (cache) {
+  #>
+  
+  if num > 0 {
+    del_cache_<#=table#>().await?;
+  }<#
+  }
+  #>
+  
+  Ok(num)
+}<#
+}
+#><#
 if (hasVersion) {
 #>
 
@@ -6436,65 +6580,64 @@ pub async fn update_by_id_<#=table#>(
     if (!isIcon) continue;
   #>
   // <#=column_comment#>
-  if (input.<#=column_name#>.is_none() || input.<#=column_name#>.as_ref().unwrap().is_empty()) &&
-    (input.<#=column_name#>_lbl.is_some() && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty())
-  {
-    let <#=column_name#>_lbl = input.<#=column_name#>_lbl.as_ref().unwrap();
-    let mut hash = sha2::Sha256::new();
-    hash.update(<#=column_name#>_lbl.clone().as_bytes());
-    let hash = hash.finalize();
-    let bytes = hash.as_slice();
-    let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
-    let <#=column_name#> = <#=column_name#>.get(0..22).unwrap().to_string();
-    let stat = head_object(&<#=column_name#>).await?;
-    if stat.is_none() {
-      let content_type = <#=column_name#>_lbl
-        .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
-        .unwrap_or_default();
-      if !content_type.starts_with("image/") {
-        error!(
-          "{req_id} <#=column_name#>_lbl is not image: {<#=column_name#>_lbl}",
-          req_id = get_req_id(),
-        );
-        return Err(eyre!("<#=column_name#>_lbl is not image"));
-      }<#
-      if (hasTenant_id) {
-      #>
-      let tenant_id = {
-        if input.tenant_id.is_some() {
-          input.tenant_id
-        } else {
-          get_auth_tenant_id()
-        }
-      };<#
-      }
-      #>
-      put_object(
-        &<#=column_name#>,
-        <#=column_name#>_lbl.clone().as_bytes(),
-        content_type,
-        &<#=column_name#>,<#
-        if (column.isPublicAtt) {
-        #>
-        Some("1"),<#
-        } else {
-        #>
-        Some("0"),<#
-        }
-        #><#
+  if input.<#=column_name#>.is_none() || input.<#=column_name#>.as_ref().unwrap().is_empty() {
+    if let Some(<#=column_name#>_lbl) = input.<#=column_name#>_lbl.as_ref().filter(|<#=column_name#>_lbl| !<#=column_name#>_lbl.is_empty()) {
+      let mut hash = sha2::Sha256::new();
+      hash.update(<#=column_name#>_lbl.clone().as_bytes());
+      let hash = hash.finalize();
+      let bytes = hash.as_slice();
+      let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
+      let <#=column_name#> = SmolStr::from(<#=column_name#>.get(0..22).unwrap_or_default());
+      let stat = head_object(&<#=column_name#>).await?;
+      if stat.is_none() {
+        let content_type = <#=column_name#>_lbl
+          .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
+          .unwrap_or_default();
+        if !content_type.starts_with("image/") {
+          error!(
+            "{req_id} <#=column_name#>_lbl is not image: {<#=column_name#>_lbl}",
+            req_id = get_req_id(),
+          );
+          return Err(eyre!("<#=column_name#>_lbl is not image"));
+        }<#
         if (hasTenant_id) {
         #>
-        tenant_id,<#
-        } else {
-        #>
-        None,<#
+        let tenant_id = {
+          if input.tenant_id.is_some() {
+            input.tenant_id
+          } else {
+            get_auth_tenant_id()
+          }
+        };<#
         }
         #>
-        Some("<#=table_name#>.<#=column_name#>"),
-        Some(&<#=column_name#>),
-      ).await?;
+        put_object(
+          &<#=column_name#>,
+          <#=column_name#>_lbl.clone().as_bytes(),
+          content_type,
+          &<#=column_name#>,<#
+          if (column.isPublicAtt) {
+          #>
+          Some("1"),<#
+          } else {
+          #>
+          Some("0"),<#
+          }
+          #><#
+          if (hasTenant_id) {
+          #>
+          tenant_id,<#
+          } else {
+          #>
+          None,<#
+          }
+          #>
+          Some("<#=table_name#>.<#=column_name#>"),
+          Some(&<#=column_name#>),
+        ).await?;
+      }
+      input.<#=column_name#> = Some(<#=column_name#>);
     }
-    input.<#=column_name#> = Some(<#=column_name#>);
   }<#
   }
   #>
@@ -7626,7 +7769,7 @@ pub async fn update_by_id_<#=table#>(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }<#
@@ -7859,7 +8002,9 @@ pub async fn update_by_id_return_<#=table#>(
       "<#=table_comment#> update_by_id_return_<#=table#> id: {id}",
     )),
   }
-}
+}<#
+if (cache) {
+#>
 
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
@@ -7931,7 +8076,9 @@ pub async fn del_cache_<#=table#>() -> Result<()> {
   ).await?;
   
   Ok(())
+}<#
 }
+#>
 
 // MARK: delete_by_ids_<#=table#>
 /// 根据 ids 删除<#=table_comment#>

@@ -71,13 +71,9 @@ export async function getTableComment(context: Context, table_name: string) {
 
 let allTableSchemaRecords: TableColumn[] = undefined;
 
-async function getSchema0(
+async function getAllTableSchemaRecords(
   context: Context,
-  table_name: string,
 ): Promise<TableColumn[]> {
-  if (!table_name) {
-    return [ ];
-  }
   if (!allTableSchemaRecords) {
     let sql = `
       select
@@ -90,6 +86,91 @@ async function getSchema0(
     const result = await context.conn.query(sql);
     allTableSchemaRecords = result[0] as TableColumn[];
   }
+  return allTableSchemaRecords;
+}
+
+export type UsrLblSyncTable = {
+  table_name: string;
+  mod: string;
+  table: string;
+  tableUp: string;
+  Table_Up: string;
+  hasCreateUsrId: boolean;
+  hasCreateUsrIdLbl: boolean;
+  hasUpdateUsrId: boolean;
+  hasUpdateUsrIdLbl: boolean;
+  hasDeleteUsrId: boolean;
+  hasDeleteUsrIdLbl: boolean;
+};
+
+export async function getUsrLblSyncTables(
+  context: Context,
+  table_names?: string[],
+): Promise<UsrLblSyncTable[]> {
+  const records = await getAllTableSchemaRecords(context);
+  const targetTableNames = (table_names ?? Object.keys(tables))
+    .filter((table_name) => !!tables[table_name]);
+  const targetTableNameSet = new Set(targetTableNames);
+  const tableColumnNameSetMap = new Map<string, Set<string>>();
+  for (const record of records) {
+    const table_name = record.TABLE_NAME;
+    if (!targetTableNameSet.has(table_name)) {
+      continue;
+    }
+    let columnNameSet = tableColumnNameSetMap.get(table_name);
+    if (!columnNameSet) {
+      columnNameSet = new Set<string>();
+      tableColumnNameSetMap.set(table_name, columnNameSet);
+    }
+    columnNameSet.add(record.COLUMN_NAME);
+  }
+  const result: UsrLblSyncTable[] = [ ];
+  for (const table_name of targetTableNames) {
+    const columnNameSet = tableColumnNameSetMap.get(table_name) ?? new Set<string>();
+    const hasCreateUsrId = columnNameSet.has("create_usr_id");
+    const hasCreateUsrIdLbl = columnNameSet.has("create_usr_id_lbl");
+    const hasUpdateUsrId = columnNameSet.has("update_usr_id");
+    const hasUpdateUsrIdLbl = columnNameSet.has("update_usr_id_lbl");
+    const hasDeleteUsrId = columnNameSet.has("delete_usr_id");
+    const hasDeleteUsrIdLbl = columnNameSet.has("delete_usr_id_lbl");
+    if (
+      !(hasCreateUsrId && hasCreateUsrIdLbl)
+      && !(hasUpdateUsrId && hasUpdateUsrIdLbl)
+      && !(hasDeleteUsrId && hasDeleteUsrIdLbl)
+    ) {
+      continue;
+    }
+    const mod = table_name.substring(0, table_name.indexOf("_"));
+    const table = table_name.substring(table_name.indexOf("_") + 1);
+    const tableUp = table.substring(0, 1).toUpperCase() + table.substring(1);
+    const Table_Up = tableUp.split("_").map((item) => {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    result.push({
+      table_name,
+      mod,
+      table,
+      tableUp,
+      Table_Up,
+      hasCreateUsrId,
+      hasCreateUsrIdLbl,
+      hasUpdateUsrId,
+      hasUpdateUsrIdLbl,
+      hasDeleteUsrId,
+      hasDeleteUsrIdLbl,
+    });
+  }
+  return result;
+}
+
+async function getSchema0(
+  context: Context,
+  table_name: string,
+): Promise<TableColumn[]> {
+  if (!table_name) {
+    return [ ];
+  }
+  const allTableSchemaRecords = await getAllTableSchemaRecords(context);
   const records = allTableSchemaRecords.filter((item: TableColumn) => item.TABLE_NAME === table_name);
   if (!tables[table_name]) {
     throw `数据库中, 表: ${ table_name } 不存在!`;
@@ -805,6 +886,65 @@ let tablesConfigItemMap: {
   [key: string]: TablesConfigItem;
 } = { };
 
+async function applyCascadeUpdateModelLabelsByTable(
+  context: Context,
+  table_name: string,
+  table_names: string[],
+) {
+  const schema = await getSchema(context, table_name, table_names);
+  const mod = schema.opts.mod;
+  const table = schema.opts.table;
+  for (let i = 0; i < schema.columns.length; i++) {
+    const column = schema.columns[i];
+    if (!column.isCascadeUpdateModelLabel) {
+      continue;
+    }
+    if (!column.modelLabel) {
+      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但 modelLabel 未设置!`);
+    }
+    if (!column.foreignKey) {
+      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但不是外键关联字段!`);
+    }
+    const foreignTableName = column.foreignKey.mod + "_" + column.foreignKey.table;
+    const foreignTableSchema = await getSchema(context, foreignTableName, table_names);
+    if (!foreignTableSchema) {
+      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但对应的外键关联表: ${ foreignTableName } 不存在!`);
+    }
+    foreignTableSchema.opts = foreignTableSchema.opts || { };
+    foreignTableSchema.opts.cascadeUpdateFields = foreignTableSchema.opts.cascadeUpdateFields || [ ];
+    const cascadeUpdateFields = foreignTableSchema.opts.cascadeUpdateFields;
+    if (!cascadeUpdateFields.some(
+        (item) =>
+          item.watchColumn === foreignTableSchema.opts.lbl_field &&
+          item.mod === mod &&
+          item.table === table &&
+          item.idColumn === column.COLUMN_NAME &&
+          item.column === column.modelLabel
+      )
+    ) {
+      cascadeUpdateFields.push({
+        watchColumn: foreignTableSchema.opts.lbl_field,
+        mod: mod,
+        table: table,
+        idColumn: column.COLUMN_NAME,
+        column: column.modelLabel,
+      });
+    }
+  }
+}
+
+export async function applyCascadeUpdateModelLabels(
+  context: Context,
+  table_names0: string[],
+  table_names: string[],
+) {
+  for (let i = 0; i < table_names0.length; i++) {
+    const table_name = table_names0[i];
+    if (!tables[table_name]) continue;
+    await applyCascadeUpdateModelLabelsByTable(context, table_name, table_names);
+  }
+}
+
 export async function getSchema(
   context: Context,
   table_name: string,
@@ -1307,54 +1447,6 @@ export async function getSchema(
       && oldRecords.some((item0: TableColumn) => item0.COLUMN_NAME === `${ column.COLUMN_NAME }_lbl`)
     ) {
       throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 的 modelLabel 未设置, 但却存在 ${ column.COLUMN_NAME }_lbl 字段!`);
-    }
-  }
-  
-  // isCascadeUpdateModelLabel
-  for (let i = 0; i < tables[table_name].columns.length; i++) {
-    const column = tables[table_name].columns[i];
-    if (!column.isCascadeUpdateModelLabel) {
-      continue;
-    }
-    if (!column.modelLabel) {
-      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但 modelLabel 未设置!`);
-    }
-    if (!column.foreignKey) {
-      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但不是外键关联字段!`);
-    }
-    const foreignTableName = column.foreignKey.mod + "_" + column.foreignKey.table;
-    const foreignTableSchema = await getSchema(context, foreignTableName, table_names);
-    if (!foreignTableSchema) {
-      throw new Error(`表: ${ table_name } 中, 字段: ${ column.COLUMN_NAME } 设置了 isCascadeUpdateModelLabel, 但对应的外键关联表: ${ foreignTableName } 不存在!`);
-    }
-    foreignTableSchema.opts = foreignTableSchema.opts || { };
-    foreignTableSchema.opts.cascadeUpdateFields = foreignTableSchema.opts.cascadeUpdateFields || [ ];
-    const cascadeUpdateFields = foreignTableSchema.opts.cascadeUpdateFields;
-    // cascadeUpdateFields: [
-    //     {
-    //       watchColumn: "lbl",
-    //       mod: "hqe",
-    //       table: "product",
-    //       idColumn: "category_id",
-    //       column: "category_id_lbl",
-    //     },
-    //   ],
-    if (!cascadeUpdateFields.some(
-        (item) =>
-          item.watchColumn === foreignTableSchema.opts.lbl_field &&
-          item.mod === mod &&
-          item.table === table &&
-          item.idColumn === column.COLUMN_NAME &&
-          item.column === column.modelLabel
-      )
-    ) {
-      cascadeUpdateFields.push({
-        watchColumn: foreignTableSchema.opts.lbl_field,
-        mod: mod,
-        table: table,
-        idColumn: column.COLUMN_NAME,
-        column: column.modelLabel,
-      });
     }
   }
   

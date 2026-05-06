@@ -2,7 +2,7 @@ use core::str;
 use std::collections::{BTreeMap, HashMap};
 use std::time::{SystemTime, SystemTimeError};
 use chrono::DateTime;
-use hmac::{Hmac, Mac};
+use hmac::{Hmac, KeyInit, Mac};
 use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
 use rand::RngExt;
 use serde_json::{json, Value}; 
@@ -66,7 +66,7 @@ pub fn percent_code(encode_str: &str) -> Cow<'_, str> {
 pub fn sha256_hex(message: &str) -> String {
   let mut hasher = Sha256::new();
   hasher.update(message);
-  format!("{:x}", hasher.finalize()).to_lowercase()
+  hex::encode(hasher.finalize())
 }
 // HMAC SHA256
 #[allow(dead_code)]

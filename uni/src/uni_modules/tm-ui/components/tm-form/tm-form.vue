@@ -95,7 +95,13 @@ const flattenObject = (obj: Record<string, any>, prefix: string = ''): Record<st
             const newKey = prefix ? `${prefix}.${key}` : key
             const value = obj[key]
             
-            if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+            if (value !== null && typeof value === 'object' && !Array.isArray(value)
+              && !(value instanceof Date)
+              && !(value instanceof RegExp)
+              && !(value instanceof Set)
+              && !(value instanceof Map)
+              && !(value instanceof Decimal)
+            ) {
                 // 递归处理嵌套对象
                 Object.assign(flattened, flattenObject(value, newKey))
             } else {
