@@ -86,14 +86,14 @@
     "@vue/devtools-api": "8.1.1",
     "@vue/runtime-core": "3.5.33",
     "cross-env": "10.1.0",
-    "eslint": "10.2.1",
+    "eslint": "10.3.0",
     "eslint-plugin-vue": "10.9.0",
-    "globals": "17.5.0",
+    "globals": "17.6.0",
     "sass": "1.78.0",
     "svgo": "4.0.1",
     "tmui-cli": "1.3.0",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.59.1",
+    "typescript-eslint": "8.59.2",
     "unocss": "66.6.8",
     "unocss-applet": "0.12.2",
     "unplugin-auto-import": "21.0.0",
@@ -104,19 +104,6 @@
     "vite-plugin-vue-inspector": "5.4.0",
     "vitest": "4.1.5",
     "vue-router": "5.0.6",
-    "vue-tsc": "3.2.7"
-  },
-  "pnpm": {
-    "overrides": {
-      "@vue/shared": "3.5.32"
-    },
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "core-js",
-      "core-js-pure",
-      "esbuild",
-      "puppeteer",
-      "vue-demi"
-    ]
+    "vue-tsc": "3.2.8"
   }
 }

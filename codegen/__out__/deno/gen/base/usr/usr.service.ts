@@ -4,6 +4,10 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  syncUsrLblByUsrId,
+} from "./usr_sync.dao.ts";
+
 import * as usrDao from "./usr.dao.ts";
 
 async function setSearchQuery(
@@ -202,6 +206,12 @@ export async function updateByIdUsr(
   }
   
   usr_id = await usrDao.updateByIdUsr(usr_id, input);
+  
+  if (input.lbl != null) {
+    await syncUsrLblByUsrId(
+      usr_id,
+    );
+  }
   
   return usr_id;
 }

@@ -119,6 +119,14 @@ import {
 } from "/src/base/options/options.dao.ts";<#
 }
 #><#
+if (mod === "base" && table === "usr") {
+#>
+
+import {
+  syncUsrLblByUsrId,
+} from "./usr_sync.dao.ts";<#
+}
+#><#
 if (
   (hasAudit && auditTable_Up) ||
   opts.filterDataByCreateUsr ||
@@ -634,6 +642,16 @@ export async function updateById<#=Table_Up#>(
   }<#
     }
   #>);<#
+  if (mod === "base" && table === "usr") {
+  #>
+  
+  if (input.lbl != null) {
+    await syncUsrLblByUsrId(
+      <#=table#>_id,
+    );
+  }<#
+  }
+  #><#
   if (mod === "base" && table === "i18n") {
   #>
   

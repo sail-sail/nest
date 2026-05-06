@@ -824,7 +824,7 @@ export async function existPermit(
 // MARK: existByIdPermit
 /** 根据id判断按钮权限是否存在 */
 export async function existByIdPermit(
-  id?: Readonly<PermitId | null>,
+  id?: PermitId | null,
   options?: {
     is_debug?: boolean;
   },
