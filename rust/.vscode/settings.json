@@ -17,7 +17,8 @@
     "**/.oxlintrc.json": true,
     "generated/common/gql/schema.graphql": true,
     "pnpm-workspace.yaml": true,
-    "wx_pay_sdk": true
+    "wx_pay_sdk": true,
+    "aliyun_sdk": true
   },
   "search.exclude": {
     "schema.rs": true,
