@@ -19,7 +19,7 @@ pub enum WxPayError {
   Base64(base64::DecodeError),
   Utf8(std::str::Utf8Error),
   Header(reqwest::header::InvalidHeaderValue),
-  Pkcs8(pkcs8::Error),
+  Pkcs8(rsa::pkcs8::Error),
   Rsa(rsa::errors::Error),
   AesGcm(aes_gcm::Error),
 }
@@ -104,8 +104,8 @@ impl From<reqwest::header::InvalidHeaderValue> for WxPayError {
   }
 }
 
-impl From<pkcs8::Error> for WxPayError {
-  fn from(value: pkcs8::Error) -> Self {
+impl From<rsa::pkcs8::Error> for WxPayError {
+  fn from(value: rsa::pkcs8::Error) -> Self {
     Self::Pkcs8(value)
   }
 }
