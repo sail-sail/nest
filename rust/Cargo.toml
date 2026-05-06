@@ -148,8 +148,6 @@ color-eyre.workspace = true
 rand.workspace = true
 rsa.workspace = true
 aes-gcm.workspace = true
-pkcs8.workspace = true
-serde_with.workspace = true
 csv.workspace = true
 docx-handlebars.workspace = true
 xlsx-handlebars.workspace = true
@@ -167,7 +165,8 @@ app = { path = "./app" }
 [workspace]
 members = [
   "generated",
-  "app"
+  "app",
+  "wx_pay_sdk"
 ]
 resolver = "2"
 
@@ -190,6 +189,9 @@ debug = 0
 [profile.release.package.app]
 debug = 1
 
+[profile.release.package.wx_pay_sdk]
+debug = 0
+
 [profile.dev]
 debug = 0
 
@@ -198,6 +200,9 @@ debug = 0
 
 [profile.dev.package.app]
 debug = 1
+
+[profile.dev.package.wx_pay_sdk]
+debug = 0
 
 [[bin]]
 name = "schema"
