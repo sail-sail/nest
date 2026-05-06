@@ -7,18 +7,10 @@ use generated::common::context::{
   Options,
   get_req_id,
 };
+use wx_pay_sdk::decode::{WxPayNotify, WxPayResource, decode_wx_pay};
+use wx_pay_sdk::{TradeState, TradeType};
 
 use smol_str::SmolStr;
-
-use generated::common::wx_pay::decode::{
-  decode_wx_pay,
-  WxPayNotify,
-  WxPayResource,
-};
-use generated::common::wx_pay::{
-  TradeType,
-  TradeState,
-};
 
 // wx_pay
 use generated::wx::wx_pay::wx_pay_dao::{

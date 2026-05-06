@@ -5,8 +5,7 @@ use poem::Response;
 use http::status::StatusCode;
 
 use generated::common::context::get_req_id;
-
-use generated::common::wx_pay::decode::WxRefundNotify;
+use wx_pay_sdk::decode::WxRefundNotify;
 
 use super::wx_refund_notice_service;
 

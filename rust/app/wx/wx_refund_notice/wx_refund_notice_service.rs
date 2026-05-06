@@ -8,14 +8,10 @@ use generated::common::context::{
   Options,
   get_req_id,
 };
+use wx_pay_sdk::decode::{WxRefundNotify, WxRefundResource, decode_wx_refund};
+use wx_pay_sdk::RefundStatus;
 
 use smol_str::SmolStr;
-
-use generated::common::wx_pay::decode::{
-  decode_wx_refund,
-  WxRefundNotify,
-  WxRefundResource,
-};
 
 use rust_decimal::Decimal;
 
@@ -123,9 +119,9 @@ pub async fn wx_refund_notify(
   
   // refund_status (enum in resource)
   let refund_status = match wx_refund_resource.refund_status {
-    generated::common::wx_pay::RefundStatus::SUCCESS => WxRefundNoticeRefundStatus::Success,
-    generated::common::wx_pay::RefundStatus::CLOSED => WxRefundNoticeRefundStatus::Closed,
-    generated::common::wx_pay::RefundStatus::PROCESSING => WxRefundNoticeRefundStatus::Processing,
+    RefundStatus::SUCCESS => WxRefundNoticeRefundStatus::Success,
+    RefundStatus::CLOSED => WxRefundNoticeRefundStatus::Closed,
+    RefundStatus::PROCESSING => WxRefundNoticeRefundStatus::Processing,
     _ => WxRefundNoticeRefundStatus::Abnormal,
   };
 

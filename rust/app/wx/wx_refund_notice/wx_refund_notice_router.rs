@@ -8,10 +8,9 @@ use poem::{
 use http::status::StatusCode;
 
 use generated::common::context::Ctx;
+use wx_pay_sdk::decode::WxRefundNotify;
 
 use super::wx_refund_notice_resful;
-
-use generated::common::wx_pay::decode::WxRefundNotify;
 
 /// 微信退款回调通知
 #[handler]

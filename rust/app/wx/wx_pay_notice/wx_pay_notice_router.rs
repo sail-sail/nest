@@ -8,10 +8,9 @@ use poem::{
 use http::status::StatusCode;
 
 use generated::common::context::Ctx;
+use wx_pay_sdk::decode::WxPayNotify;
 
 use super::wx_pay_notice_resful;
-
-use generated::common::wx_pay::decode::WxPayNotify;
 
 /// https://pay.weixin.qq.com/doc/v3/merchant/4012791861
 /// 支付成功回调通知

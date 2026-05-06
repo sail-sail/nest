@@ -7,10 +7,9 @@ use generated::common::context::{
   get_short_uuid,
   get_auth_model_ok,
 };
+use wx_pay_sdk::{Amount, Jsapi, Payer, SceneInfo, WxPay, WxPayData};
 
 use smol_str::{SmolStr, ToSmolStr};
-
-use generated::common::wx_pay::{Amount, Jsapi, Payer, WxPayData, WxPay, SceneInfo};
 
 use super::pay_transactions_jsapi_model::RequestPaymentOptions;
 

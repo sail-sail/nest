@@ -6,15 +6,9 @@ use generated::common::context::{
   get_req_id,
   get_short_uuid,
 };
+use wx_pay_sdk::{Refund, RefundAmount, RefundStatus, WxPay};
 
 use smol_str::SmolStr;
-
-use generated::common::wx_pay::{
-  WxPay,
-  Refund,
-  RefundAmount,
-  RefundStatus,
-};
 
 // wx_pay
 use generated::wx::wx_pay::wx_pay_dao::{
