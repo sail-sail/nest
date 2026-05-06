@@ -15,7 +15,8 @@
     ".gitignore": true,
     "app/Cargo.toml": true,
     "**/.oxlintrc.json": true,
-    "generated/common/gql/schema.graphql": true
+    "generated/common/gql/schema.graphql": true,
+    "pnpm-workspace.yaml": true
   },
   "search.exclude": {
     "schema.rs": true,

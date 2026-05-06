@@ -20,7 +20,8 @@
     "**/.npmrc": true,
     "cache": true,
     "**/.oxlintrc.json": true,
-    "**/.husky": true
+    "**/.husky": true,
+    "pnpm-workspace.yaml": true
   },
   "search.exclude": {
     "**/.git": true,
