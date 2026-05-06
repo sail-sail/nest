@@ -1,0 +1,25 @@
+[package]
+name = "aliyun_sdk"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+serde_json.workspace = true
+serde.workspace = true
+tracing.workspace = true
+chrono.workspace = true
+smol_str.workspace = true
+base64.workspace = true
+reqwest.workspace = true
+sha2.workspace = true
+hmac.workspace = true
+hex.workspace = true
+percent-encoding.workspace = true
+rand.workspace = true
+color-eyre.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
+
+[lib]
+path = "lib.rs"

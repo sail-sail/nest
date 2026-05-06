@@ -164,6 +164,7 @@ app = { path = "./app" }
 
 [workspace]
 members = [
+  "aliyun_sdk",
   "generated",
   "app",
   "wx_pay_sdk"
@@ -186,6 +187,9 @@ debug = 0
 [profile.release.package.generated]
 debug = 0
 
+[profile.release.package.aliyun_sdk]
+debug = 0
+
 [profile.release.package.app]
 debug = 1
 
@@ -196,6 +200,9 @@ debug = 0
 debug = 0
 
 [profile.dev.package.generated]
+debug = 0
+
+[profile.dev.package.aliyun_sdk]
 debug = 0
 
 [profile.dev.package.app]
