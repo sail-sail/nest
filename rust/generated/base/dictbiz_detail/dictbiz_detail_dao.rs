@@ -1449,6 +1449,7 @@ pub async fn find_by_unique_dictbiz_detail(
     vec![]
   } else {
     let search = DictbizDetailSearch {
+      tenant_id: search.tenant_id,
       dictbiz_id: search.dictbiz_id.clone(),
       lbl: search.lbl.clone(),
       ..Default::default()
