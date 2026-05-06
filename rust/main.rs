@@ -536,28 +536,28 @@ async fn main() -> Result<(), std::io::Error> {
     );
     
     // 上传临时文件
-    app = app.at(
-      "/api/tmpfile/upload", 
-      post(generated::common::tmpfile::tmpfile_router::upload),
-    );
+    // app = app.at(
+    //   "/api/tmpfile/upload", 
+    //   post(generated::common::tmpfile::tmpfile_router::upload),
+    // );
     
     // 删除临时文件
-    app = app.at(
-      "/api/tmpfile/delete",
-      post(generated::common::tmpfile::tmpfile_router::delete),
-    );
+    // app = app.at(
+    //   "/api/tmpfile/delete",
+    //   post(generated::common::tmpfile::tmpfile_router::delete),
+    // );
     
     // 下载临时文件带文件名
-    app = app.at(
-      "/api/tmpfile/download/:filename",
-      get(generated::common::tmpfile::tmpfile_router::download_filename),
-    );
+    // app = app.at(
+    //   "/api/tmpfile/download/:filename",
+    //   get(generated::common::tmpfile::tmpfile_router::download_filename),
+    // );
     
     // 下载临时文件
-    app = app.at(
-      "/api/tmpfile/download/",
-      get(generated::common::tmpfile::tmpfile_router::download),
-    );
+    // app = app.at(
+    //   "/api/tmpfile/download/",
+    //   get(generated::common::tmpfile::tmpfile_router::download),
+    // );
     
     // websocket
     app = app.at(
