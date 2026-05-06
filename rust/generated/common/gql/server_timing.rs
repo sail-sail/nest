@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use poem::{
   Endpoint, IntoResponse, Middleware, Request,
@@ -6,6 +6,15 @@ use poem::{
 };
 
 use poem::http::header::HeaderValue;
+
+pub fn build_server_timing_header(
+  metric_name: &str,
+  duration: Duration,
+) -> HeaderValue {
+  let response_time = format!("{metric_name};dur={}", duration.as_millis());
+  HeaderValue::from_str(&response_time)
+    .expect("Failed to build Server-Timing header")
+}
 
 pub struct ServerTiming;
 
@@ -31,14 +40,16 @@ impl<E: Endpoint> Endpoint for ServerTimingImpl<E> {
     
     let response = self.0.call(req).await?.into_response();
     
-    let now1 = Instant::now();
-    let response_time = format!("app;dur={}", now1.saturating_duration_since(now0).as_millis());
-    let response_time = HeaderValue::from_str(&response_time).unwrap();
-    
     let mut response = response;
     response
       .headers_mut()
-      .insert("Server-Timing", response_time);
+      .append(
+        "Server-Timing",
+        build_server_timing_header(
+          "http",
+          Instant::now().saturating_duration_since(now0),
+        ),
+      );
     let response = response;
     
     Ok(response)

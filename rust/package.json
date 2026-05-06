@@ -15,9 +15,9 @@
     "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "6.3.0",
-    "@graphql-codegen/typescript": "5.0.10",
-    "@graphql-codegen/typescript-operations": "5.1.0",
+    "@graphql-codegen/cli": "7.0.0",
+    "@graphql-codegen/typescript": "6.0.0",
+    "@graphql-codegen/typescript-operations": "6.0.0",
     "@parcel/watcher": "2.5.6",
     "@types/fs-extra": "11.0.4",
     "@types/minimist": "1.2.5",
@@ -28,7 +28,7 @@
     "graphql": "16.13.2",
     "minimist": "1.2.8",
     "ssh2-promise": "1.0.3",
-    "typescript": "6.0.2"
+    "typescript": "6.0.3"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

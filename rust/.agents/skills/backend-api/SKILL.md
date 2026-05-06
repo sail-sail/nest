@@ -15,6 +15,8 @@ metadata:
 - 增加业务校验、日志、权限、事务
 - 在 `app/{mod}/{table}/` 中新增 `*_graphql.rs`、`*_resolver.rs`、`*_service.rs`、`*_model.rs`
 - 只有当 `app/` 无法承载，且能力需要被 generated 内部复用时，才扩展 `generated/`
+- 空白行代码缩进要保持和上一行一致, 方便后续添加代码
+- rust编译慢可慢慢等
 
 ## 修改决策顺序
 
@@ -51,17 +53,17 @@ app/{mod}/{table}/
 ├── {table}_graphql.rs
 ├── {table}_resolver.rs
 ├── {table}_model.rs
-├── {table}_dao.rs
+├── {table}_dao.rs        (可选, 多数情况 generated 已够)
 └── {table}_service.rs
 ```
 
 | 层 | 文件 | 职责 |
 |----|------|------|
 | GraphQL | `*_graphql.rs` | 定义接口、权限入口、构建 `Ctx` |
-| Resolver | `*_resolver.rs` | 参数解构、日志、转调 Service |
+| Resolver | `*_resolver.rs` | `#[function_name::named]` 日志、转调 Service |
 | Model | `*_model.rs` | 输入输出类型 |
 | Service | `*_service.rs` | 业务逻辑、事务内流程、调用 DAO |
-| DAO | `*_dao.rs` | 数据库查询与写入 |
+| DAO | `*_dao.rs` | 数据库查询与写入 (通常用 generated 的即可) |
 
 ## 最小实现模式
 
@@ -76,7 +78,7 @@ pub struct {Table}Mutation;
 
 #[Object(name = "{Table}Mutation")]
 impl {Table}Mutation {
-  #[graphql(name = "mutate_method")]
+  #[graphql(name = "mutateMethod")]
   async fn mutate_method(
     &self,
     ctx: &Context<'_>,
@@ -137,6 +139,7 @@ use generated::common::context::{
   get_auth_id_ok,
   get_now,
 };
+use generated::common::exceptions::service_exception::ServiceException;
 
 pub async fn method_name(
   input: ParamType,
@@ -144,7 +147,11 @@ pub async fn method_name(
 ) -> Result<ReturnType> {
   
   if input.is_empty() {
-    return Err(eyre!("参数不能为空"));
+    return Err(eyre!(ServiceException {
+      message: "参数不能为空".into(),
+      trace: true,
+      ..Default::default()
+    }));
   }
   
   let usr_id: UsrId = get_auth_id_ok()?;
@@ -196,21 +203,46 @@ use generated::common::context::{
 - `options` 和所有 `id` 类型都是 `Copy`，不要 `.clone()`
 - Input 中 `_lbl` 字段无需传递，DAO 会自动生成
 - 修改操作通常加 `.with_tran()`
+- 需要行锁时, 优先复用 generated DAO。若表在 codegen 配置里已开启 `opts.isHasForUpdate: true`, 则在事务内调用 `find_one[_ok]_*`、`find_by_id[_ok]_*`、`find_all_*` 时传 `Options::from(options).set_is_for_update(Some(true)).into()` 即可追加 `for update`, 不要为了加锁回退到手写 SQL
 - 需要登录的接口加 `.with_auth()?`
 - 函数定义和调用时，多参数统一换行
 - 如需操作附件，使用 [generated/common/oss/oss_dao.rs](../../../generated/common/oss/oss_dao.rs)
 - 不执行 `cargo fmt`
-- service 层业务开发过程中, 若表有配置 `modelLabel` 冗余字段 `xxx_id_lbl` 则create/update要传入显示名称, 否则可不传
+- service 层业务开发过程中, 若表有配置 `modelLabel` 冗余字段 `xxx_id_lbl` 则 create/update 要传入显示名称, 否则可不传
+- 业务错误使用 `ServiceException` 而非裸 `eyre!()`: `eyre!(ServiceException { message: "xxx".into(), trace: true, ..Default::default() })`
+- resolver 层必须加 `#[function_name::named]` 宏, 用于自动日志记录
 
 ## 模块注册
 
-```rust
-pub mod xxx_graphql;
-pub mod xxx_resolver;
-pub mod xxx_service;
+在 `app/lib.rs` 中注册:
 
-pub type Query = (XxxQuery,);
-pub type Mutation = (XxxMutation,);
+```rust
+// 顶层 Query/Mutation 合并
+#[derive(MergedObject, Default)]
+pub struct Query(
+  generated::common::CommonQuery,
+  generated::GenQuery,
+  crate::base::menu::menu_graphql::MenuQuery,
+  ccs::card::card_graphql::CardQuery,
+  // ... 新增模块加在这里
+);
+
+#[derive(MergedObject, Default)]
+pub struct Mutation(
+  generated::common::CommonMutation,
+  generated::GenMutation,
+  ccs::card::card_graphql::CardMutation,
+  ccs::order::order_graphql::OrderMutation,
+  // ... 新增模块加在这里
+);
+```
+
+每个 `app/{mod}/{table}/mod.rs` 只需声明:
+```rust
+pub mod {table}_graphql;
+pub mod {table}_resolver;
+pub mod {table}_service;
+// {table}_model.rs 通常在 generated 中, 手写时再加
 ```
 
 ## 接口变更后的类型生成
@@ -219,3 +251,24 @@ pub type Mutation = (XxxMutation,);
 
 - `pc/src/typings/types.ts`
 - `uni/src/typings/types.ts`
+
+## 技术栈
+
+- **Web 框架**: poem (REST) + async-graphql (GraphQL)
+- **数据库**: MySQL (sqlx)
+- **运行时**: tokio
+- **序列化**: serde_json
+- **字符串**: SmolStr (字符串优先使用)
+- **错误处理**: color-eyre
+- **日志**: tracing + tracing-subscriber
+
+## 架构要点
+
+- 允许 `app -> generated`, 不允许 `generated -> app`
+- GraphQL 接口: `app/{mod}/{table}/` 下 graphql → resolver → service → generated DAO
+- REST 接口: `app/{mod}/{table}/` 下 router → resful → service → generated DAO
+- 微信支付/退款回调: `app/wx/wx_pay_notice/` 和 `app/wx/wx_refund_notice/` 分发到业务模块
+- 回调入口在 resolver 层(支付)或 service 层(退款), 不要放错位置
+- 业务错误使用 `ServiceException`: `eyre!(ServiceException { message: "xxx".into(), trace: true, ..Default::default() })`
+- resolver 层必须加 `#[function_name::named]` 宏
+- 不执行 `cargo fmt`

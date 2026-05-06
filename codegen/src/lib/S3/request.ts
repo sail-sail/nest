@@ -79,7 +79,7 @@ async function sha256Hex(data: string | Uint8Array): Promise<string> {
   if (typeof data === "string") {
     data = encoder.encode(data);
   }
-  const hash = await crypto.subtle.digest("SHA-256", data);
+  const hash = await crypto.subtle.digest("SHA-256", data as any);
   return [...new Uint8Array(hash)]
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");

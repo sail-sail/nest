@@ -601,7 +601,7 @@ export function useDownloadImportTemplateMenu() {
     try {
       const sheetName = "菜单";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/base/menu.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/base/menu.xlsx`,
         {
           sheetName,
           data,
@@ -673,7 +673,7 @@ export function useExportExcelMenu() {
       try {
         const sheetName = "菜单";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/base/menu.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/base/menu.xlsx`,
           {
             sheetName,
             columns,
