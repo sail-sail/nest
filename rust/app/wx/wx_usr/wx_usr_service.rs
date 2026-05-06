@@ -231,6 +231,7 @@ pub async fn code2session(
     let usr_id = create_usr(
       UsrInput {
         lbl: Some(openid.clone()),
+        username: Some(openid.clone()),
         role_ids: Some(default_role_ids),
         is_hidden: Some(1),
         ..Default::default()
