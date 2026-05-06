@@ -1,0 +1,9 @@
+allowBuilds:
+  "@parcel/watcher": true
+  "@vue-office/docx": true
+  "@vue-office/excel": true
+  "esbuild": true
+  "vue-demi": true
+overrides:
+  "vite": "npm:@voidzero-dev/vite-plus-core@latest"
+  "vitest": "npm:@voidzero-dev/vite-plus-test@latest"

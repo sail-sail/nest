@@ -105,18 +105,5 @@
     "vitest": "4.1.5",
     "vue-router": "5.0.6",
     "vue-tsc": "3.2.8"
-  },
-  "pnpm": {
-    "overrides": {
-      "@vue/shared": "3.5.32"
-    },
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "core-js",
-      "core-js-pure",
-      "esbuild",
-      "puppeteer",
-      "vue-demi"
-    ]
   }
 }
