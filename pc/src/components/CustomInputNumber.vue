@@ -121,10 +121,21 @@ const props = withDefaults(
 
 let modelValue = $ref(props.modelValue);
 
+function isHiddenZeroValue(value: unknown) {
+  if (!props.isHideZero || value == null || value === "") {
+    return false;
+  }
+  if (value instanceof Decimal) {
+    return value.isZero();
+  }
+  const num = Number(value);
+  return !isNaN(num) && num === 0;
+}
+
 watch(
   () => props.modelValue,
   () => {
-    if (props.modelValue == null || (props.isHideZero && Number(props.modelValue.toString()) === 0)) {
+    if (props.modelValue == null) {
       modelValue = undefined;
       return;
     }
@@ -148,21 +159,30 @@ watch(
 const modelValueComputed = $computed({
   get() {
     if (modelValue instanceof Decimal) {
+      if (isHiddenZeroValue(modelValue)) {
+        return;
+      }
       return modelValue.toNumber();
     }
     const type = typeof modelValue;
     if (type === "string") {
       if (modelValue === "") {
+        if (props.isHideZero) {
+          return;
+        }
         return 0;
       }
       const num = Number(modelValue);
       if (isNaN(num)) {
         return modelValue;
       }
-      if (props.isHideZero && num === 0) {
+      if (isHiddenZeroValue(modelValue)) {
         return;
       }
       return num;
+    }
+    if (isHiddenZeroValue(modelValue)) {
+      return;
     }
     return modelValue;
   },
@@ -185,20 +205,20 @@ const modelLabel = $computed(() => {
   if (isNaN(Number(modelValue))) {
     return modelValue;
   }
-  if (props.precision === 0) {
-    return modelValue;
-  }
-  if (props.isHideZero && Number(modelValue) === 0) {
+  if (isHiddenZeroValue(modelValue)) {
     if (props.readonlyPlaceholder) {
       return props.readonlyPlaceholder;
     }
     return "";
   }
+  if (props.precision === 0) {
+    return modelValue;
+  }
   return Number(modelValue).toFixed(props.precision);
 });
 
 const shouldShowPlaceholder = $computed<boolean>(() => {
-  return modelValue == null || modelValue === "" || (!Number(modelValue) && props.isHideZero);
+  return modelValue == null || modelValue === "" || isHiddenZeroValue(modelValue);
 });
 
 function onChange() {

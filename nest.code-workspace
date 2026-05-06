@@ -98,7 +98,12 @@
     "chat.tools.terminal.autoApprove": {
       "cargo check": true,
       "Tee-Object": true,
-      "ForEach-Object": true
+      "ForEach-Object": true,
+      "pnpm": true,
+      "Push-Location": true,
+      "npm run gqlgen": true,
+      "npx vue-tsc": true,
+      "npx eslint": true
     },
     "git.closeDiffOnOperation": true,
     "git.alwaysShowStagedChangesResourceGroup": false,

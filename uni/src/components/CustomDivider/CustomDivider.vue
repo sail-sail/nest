@@ -18,7 +18,7 @@
     un-text="gray-300"
   >
     <slot>
-      此处是底线
+      到底部了
     </slot>
   </view>
   <view

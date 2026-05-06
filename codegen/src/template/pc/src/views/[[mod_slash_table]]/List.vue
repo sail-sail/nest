@@ -1345,6 +1345,37 @@ if (searchByKeyword) {
         }
       }
       #><#
+      for (let ii = 0; ii < columns.length; ii++) {
+        const column = columns[ii];
+        if (!column.foreignPage || column.foreignPage.linkType !== "button") {
+          continue;
+        }
+        const foreignPage = column.foreignPage;
+        const buttonLabel = foreignPage.buttonLabel;
+      #>
+      
+      <el-button
+        plain
+        @click="openForeignPageButton(
+          '<#=buttonLabel#>',
+          '<#=column.COLUMN_NAME#>',
+          <#=foreignPage.query ? JSON.stringify(foreignPage.query).replace(/\"/g, "'") : '{ }' #>,
+        )"
+      >
+        <template #icon>
+          <ElIconTickets />
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('<#=buttonLabel#>') }}</span><#
+        } else {
+        #>
+        <span><#=buttonLabel#></span><#
+        }
+        #>
+      </el-button><#
+      }
+      #><#
       if (opts.noExport !== true) {
       #>
       
@@ -1917,7 +1948,7 @@ if (searchByKeyword) {
                 >
                   <CustomIcon
                     v-model="row.<#=column_name#>"
-                    v-model:model-lbl="row.<#=column_name#>_lbl"
+                    v-model:model-label="row.<#=column_name#>_lbl"
                     :readonly="true"
                     un-w="8"
                     un-h="8"
@@ -2003,7 +2034,7 @@ if (searchByKeyword) {
                   <#=prefix#>{{ row[column.property] }}
                 </el-link>
               </template><#
-              } else if (foreignPage) {
+              } else if (foreignPage && (foreignPage.linkType === "link" || foreignPage.linkType == null)) {
                 const queryKeys = Object.keys(foreignPage.query || { });
                 if (!foreignPage.routeName) {
                   throw new Error(`表: ${ table_name } 字段: ${ column_name } 未配置 foreignPage.routeName`);
@@ -2204,7 +2235,7 @@ if (searchByKeyword) {
                   <#=prefix#>{{ row[column.property] }}
                 </el-link>
               </template><#
-              } else if (foreignPage) {
+              } else if (foreignPage && (foreignPage.linkType === "link" || foreignPage.linkType == null)) {
                 const queryKeys = Object.keys(foreignPage.query || { });
                 if (!foreignPage.routeName) {
                   throw new Error(`表: ${ table_name } 字段: ${ column_name } 未配置 foreignPage.routeName`);
@@ -2326,7 +2357,7 @@ if (searchByKeyword) {
                   <#=prefix#>{{ row[column.property] }}
                 </el-link>
               </template><#
-              } else if (foreignPage) {
+              } else if (foreignPage && (foreignPage.linkType === "link" || foreignPage.linkType == null)) {
                 const queryKeys = Object.keys(foreignPage.query || { });
                 if (!foreignPage.routeName) {
                   throw new Error(`表: ${ table_name } 字段: ${ column_name } 未配置 foreignPage.routeName`);
@@ -2439,7 +2470,7 @@ if (searchByKeyword) {
                   <#=prefix#>{{ row[column.property] }}
                 </el-link>
               </template><#
-              } else if (foreignPage) {
+              } else if (foreignPage && (foreignPage.linkType === "link" || foreignPage.linkType == null)) {
                 const queryKeys = Object.keys(foreignPage.query || { });
                 if (!foreignPage.routeName) {
                   throw new Error(`表: ${ table_name } 字段: ${ column_name } 未配置 foreignPage.routeName`);
@@ -2983,9 +3014,66 @@ if (list_tree) {
   name: "<#=optionsName#>",
 });<#
 if (hasForeignPage) {
+  let hasButtonForeignPage = false;
+  for (let ii = 0; ii < columns.length; ii++) {
+    const column = columns[ii];
+    if (!column.foreignPage || column.foreignPage.linkType !== "button") {
+      continue;
+    }
+    hasButtonForeignPage = true;
+    break;
+  }
 #>
 
 const openForeignPage = useOpenForeignPage();<#
+  if (hasButtonForeignPage) {
+#>
+
+async function openForeignPageButton(
+  routeName: string,
+  tabNameField?: string,
+  query?: { [key: string]: string; },
+) {
+  if (selectedIds.length === 0) {
+    ElMessage.warning("请选择一行");
+    return;
+  }
+  const ids = selectedIds;
+  if (ids.length > 1) {
+    ElMessage.warning("只能选择一行");
+    return;
+  }
+  const id = ids[0];
+  const rows = await findAll<#=Table_Up#>(
+    {
+      id,
+    },
+  );
+  if (rows.length === 0) {
+    ElMessage.warning("选择的数据已被删除或不存在");
+    return;
+  }
+  const row = rows[0];
+  const queryKeys = Object.keys(query || { });
+  const queryParams: { [key: string]: string } = { };
+  for (const key of queryKeys) {
+    const value = query![key];
+    if (key === "showBuildIn") {
+      queryParams.showBuildIn = value;
+    } else if (value.startsWith(`"`) || value.startsWith(`'`) || value.startsWith("`")) {
+      queryParams[key] = value.substring(1, value.length - 1);
+    } else {
+      queryParams[key] = row[value];
+    }
+  }
+  await openForeignPage(
+    routeName,
+    tabNameField ? row[tabNameField] : undefined,
+    queryParams,
+  )
+}<#
+  }
+#><#
 }
 #>
 
@@ -3522,7 +3610,7 @@ let selectedIds = $(tableSelected.selectedIds as unknown as <#=Table_Up#>Id[]);
 
 watch(
   () => selectedIds,
-  (oldVal, newVal) => {
+  (newVal, oldVal) => {
     if (!inited) {
       return;
     }
@@ -4944,7 +5032,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("forceDelete")) {<#
+  if (!permit("force_delete")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#

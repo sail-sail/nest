@@ -21,6 +21,8 @@ use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
 
+use super::usr_sync_dao::sync_usr_lbl_by_usr_id;
+
 use super::usr_model::*;
 use super::usr_dao;
 
@@ -243,11 +245,20 @@ pub async fn update_by_id_usr(
     return Err(eyre!(err_msg));
   }
   
+  let is_sync_usr_lbl = usr_input.lbl.is_some();
+  
   let usr_id = usr_dao::update_by_id_usr(
     usr_id,
     usr_input,
     options,
   ).await?;
+  
+  if is_sync_usr_lbl {
+    sync_usr_lbl_by_usr_id(
+      usr_id.clone(),
+      options,
+    ).await?;
+  }
   
   Ok(usr_id)
 }

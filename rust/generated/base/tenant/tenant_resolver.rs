@@ -22,6 +22,7 @@ use crate::common::permit::permit_service::use_permit;
 
 use super::tenant_model::*;
 use super::tenant_service;
+use super::tenant_service2;
 
 /// 根据搜索条件和分页查找租户列表
 #[function_name::named]
@@ -239,7 +240,7 @@ pub async fn creates_tenant(
     SmolStr::new("add"),
   ).await?;
   
-  let ids = tenant_service::creates_tenant(
+  let ids = tenant_service2::creates_tenant(
     inputs,
     options,
   ).await?;
@@ -303,7 +304,7 @@ pub async fn delete_by_ids_tenant(
     SmolStr::new("delete"),
   ).await?;
   
-  let num = tenant_service::delete_by_ids_tenant(
+  let num = tenant_service2::delete_by_ids_tenant(
     ids,
     options,
   ).await?;
