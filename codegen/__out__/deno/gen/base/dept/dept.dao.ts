@@ -860,6 +860,7 @@ export async function findByUniqueDept(
     if (canFind) {
       const modelTmps = await findAllDept(
         {
+          tenant_id: search0.tenant_id,
           parent_id,
           lbl,
         },

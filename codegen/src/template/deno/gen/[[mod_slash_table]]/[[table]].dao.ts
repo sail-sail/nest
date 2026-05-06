@@ -3301,6 +3301,11 @@ export async function findByUnique<#=Table_Up#>(
     if (canFind) {
       const modelTmps = await findAll<#=Table_Up#>(
         {<#
+          if (hasTenant_id && !uniques.includes("tenant_id")) {
+          #>
+          tenant_id: search0.tenant_id,<#
+          }
+          #><#
           for (let k = 0; k < uniques.length; k++) {
             const unique = uniques[k];
           #>
