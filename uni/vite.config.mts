@@ -159,6 +159,13 @@ export default defineConfig({
   define: {
     
   },
+  build: {
+    rollupOptions: {
+      external: [
+        "@vue/devtools-kit",
+      ],
+    },
+  },
   server: {
     port: 4002,
     open: false,
