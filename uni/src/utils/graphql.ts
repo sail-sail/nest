@@ -16,6 +16,10 @@ import combinedQuery from "graphql-combine-query";
 
 import useUsrStore from "@/store/usr";
 
+import type {
+  GetStatsOss,
+} from "@/typings/types";
+
 declare global {
   
   interface GqlArg {
@@ -378,5 +382,41 @@ export async function gqlQuery(
       throw errMsg;
     }
   }
+  return data;
+}
+
+/**
+ * 获取附件信息列表, 包括文件名
+ */
+export async function getStatsOss(
+  ids: string[],
+  opt?: GqlOpt,
+): Promise<{
+  id: string,
+  lbl: string,
+  contentType?: string,
+  size?: number,
+}[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const res: {
+    getStatsOss: GetStatsOss[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($ids: [String!]!) {
+        getStatsOss(ids: $ids) {
+          id
+          lbl
+          contentType
+          size
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const data = res.getStatsOss;
   return data;
 }
