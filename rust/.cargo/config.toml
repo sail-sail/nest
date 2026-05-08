@@ -1,3 +1,8 @@
+[cache]
+# Automatically prune Cargo's global cache on a regular cadence.
+# This does not remove build artifacts under target/; use `cargo clean` for that.
+auto-clean-frequency = "3 month"
+
 [target.x86_64-unknown-linux-musl]
 linker = "rust-lld"
 rustflags = ["-Clinker-flavor=ld.lld"]
