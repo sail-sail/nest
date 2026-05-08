@@ -28,7 +28,7 @@ src/pages/{table}/
 - GraphQL 请求统一走 `query()` / `mutation()`, 不要直接调用 `request({ reqType: "graphql" })`, 更不要自己写 `uni.request` 打 `/graphql`
 - 非 GraphQL 的普通接口优先走 `request()`, 只有下载原始 html、附件或第三方地址这类场景才直接用 `uni.request`
 - 默认不要在 `Api2.ts` 里包一层 `try/catch`; 当前封装已经统一处理 loading、toast、鉴权失效、token 刷新、`TenantId` 和响应头里的 `authorization`
-- `query()` 会在同一轮事件循环里合并并去重 GraphQL 查询; 多个彼此独立的查询优先一起发起, 再 `await Promise.all(...)`, 不要串行一个个等
+- `query()` 会在同一轮 microtask 里自动合并/去重 GraphQL 查询; 多个彼此独立的查询先一起发起, 再 `await Promise.all(...)`, 不要串行一个个等
 - `mutation()` 会自动补 `Request-ID`, 用于后端幂等和重复提交保护, 不要在业务代码里重复拼同类 header
 
 ## Query 模板
