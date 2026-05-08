@@ -24,6 +24,7 @@ src/views/{mod}/{table}/
 
 ## 编码规范
 - 异常无需捕获，发起Graphql请求时会自动由全局错误处理器处理
+- `query()` 会在同一轮 microtask 内自动合并/去重多个查询；彼此独立的查询尽量一起发起，再 `await Promise.all(...)`
 
 ## Query 模板
 
