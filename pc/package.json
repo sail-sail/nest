@@ -35,6 +35,7 @@
     "dayjs": "1.11.20",
     "decimal.js": "10.6.0",
     "docx-handlebars": "0.3.3",
+    "echarts": "6.0.0",
     "ejsexcel-browserify": "4.4.3",
     "element-plus": "2.13.7",
     "expr-eval": "2.0.2",

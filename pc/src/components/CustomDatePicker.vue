@@ -167,7 +167,25 @@ const shortcutsComputed = $computed(() => {
         },
       },
       {
-        text: "当月",
+        text: "近 7 天",
+        value: () => {
+          return [
+            now.subtract(6, "day").startOf("day").toDate(),
+            now.endOf("day").toDate(),
+          ];
+        },
+      },
+      {
+        text: "近 30 天",
+        value: () => {
+          return [
+            now.subtract(29, "day").startOf("day").toDate(),
+            now.endOf("day").toDate(),
+          ];
+        },
+      },
+      {
+        text: "本月",
         value: () => {
           return [
             now.startOf("month").toDate(),
