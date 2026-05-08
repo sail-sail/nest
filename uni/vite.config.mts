@@ -110,7 +110,6 @@ export default defineConfig({
             "uploadFile",
             "getDownloadUrl",
             "getDownloadUrlArr",
-            "getStatsOss",
             "getImgUrl",
             "getImgUrlArr",
             "downloadFile",
@@ -119,6 +118,7 @@ export default defineConfig({
           "@/utils/graphql.ts": [
             "query",
             "mutation",
+            "getStatsOss",
           ],
           "@/pages/index/Api.ts": [
             "checkLogin",
@@ -158,6 +158,13 @@ export default defineConfig({
   },
   define: {
     
+  },
+  build: {
+    rollupOptions: {
+      external: [
+        "@vue/devtools-kit",
+      ],
+    },
   },
   server: {
     port: 4002,
