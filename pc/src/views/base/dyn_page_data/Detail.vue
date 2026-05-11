@@ -119,7 +119,7 @@
               :readonly="field_model._attrs.readonly || isLocked || isReadonly"
               @update:model-value="(val: any) => {
                 dialogModel.dyn_page_data = dialogModel.dyn_page_data ?? { };
-                dialogModel.dyn_page_data[field_model.code] = val;
+                (dialogModel.dyn_page_data as any)[field_model.code] = val;
               }"
             ></CustomDynComp>
           </el-form-item>
@@ -398,7 +398,7 @@ watch(
             : undefined;
           if (newVal !== oldVal) {
             dialogModel.dyn_page_data = dialogModel.dyn_page_data || { };
-            dialogModel.dyn_page_data[field_model.code] = newVal;
+            (dialogModel.dyn_page_data as any)[field_model.code] = newVal;
           }
         } catch (_err) { /* empty */ }
       } catch (err) {
