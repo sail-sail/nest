@@ -16,7 +16,7 @@
     >
       
       <el-button
-        v-if="!dialogModel.readonly && urlList.length > 0"
+        v-if="!dialogModel.readonly && items.length > 0"
         plain
         type="primary"
         @click="onUpload"
@@ -28,7 +28,7 @@
       </el-button>
       
       <el-button
-        v-if="urlList[nowIndex] && !dialogModel.readonly"
+        v-if="currentItem && !dialogModel.readonly"
         plain
         type="danger"
         @click="deleteClk"
@@ -40,7 +40,7 @@
       </el-button>
       
       <el-button
-        v-if="urlList[nowIndex]"
+        v-if="currentItem"
         plain
         @click="downloadClk"
       >
@@ -51,7 +51,8 @@
       </el-button>
       
       <el-button
-        v-if="urlList[nowIndex]"
+        v-if="currentItem"
+        :disabled="!canPrintCurrent"
         @click="printClk"
       >
         <template #icon>
@@ -61,18 +62,18 @@
       </el-button>
       
       <a
-        v-if="urlList[nowIndex]"
+        v-if="currentItem"
         class="el-button"
         target="_blank"
-        :href="urlList[nowIndex]"
-        
+        rel="noopener noreferrer"
+        :href="getItemUrl(currentItem)"
         un-no-underline
       >
         {{ ns("网页中打开") }}
       </a>
       
       <el-button
-        v-if="urlList[nowIndex]"
+        v-if="currentItem"
         :disabled="nowIndex === 0"
         @click="moveLeftClk"
       >
@@ -83,8 +84,8 @@
       </el-button>
       
       <el-button
-        v-if="urlList[nowIndex]"
-        :disabled="nowIndex === urlList.length - 1"
+        v-if="currentItem"
+        :disabled="nowIndex === items.length - 1"
         @click="moveRightClk"
       >
         <template #icon>
@@ -99,7 +100,7 @@
       </div>
       
       <div
-        v-if="urlList[nowIndex]"
+        v-if="currentItem"
         un-m="r-3"
       >
         <el-color-picker
@@ -121,96 +122,99 @@
       un-pos="relative"
     >
       <template
-        v-for="(url, i) in urlList"
-        :key="url"
+        v-for="(item, i) in items"
+        :key="item.id"
       >
         <template
-          v-if="fileStats && fileStats.length > 0"
+          v-if="item.loadState === 'error'"
         >
-          
-          <!-- 判断是否为图片 -->
-          <template
-            v-if="fileStats[i]?.contentType?.startsWith('image/')"
+          <div
+            v-if="item.shown"
+            v-show="i === nowIndex"
+            un-flex="~ [1_0_0]"
+            un-overflow-auto
+            un-w="full"
+            un-justify-center
+            un-items-center
           >
-            <img
-              v-if="iframeShoweds[i]"
-              :ref="(el) => { if (el) iframeRefs[i] = el as HTMLImageElement }"
-              :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
-              object-fit="scale-down"
-              :src="url"
-            >
-          </template>
-          
-          <!-- 判断是否为xlsx文件 -->
-          <template
-            v-else-if="fileStats[i]?.contentType?.startsWith('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-              || fileStats[i]?.contentType?.startsWith('application/vnd.ms-excel.sheet')"
-          >
-            <VueOfficeExcel
-              v-if="iframeShoweds[i]"
-              v-show="i === nowIndex"
-              :src="url"
-              un-flex="~ [1_0_0]"
-              un-overflow-auto
-              un-w="full"
-            ></VueOfficeExcel>
-          </template>
-          
-          <!-- 判断是否为docx文件 -->
-          <template
-            v-else-if="fileStats[i]?.contentType?.startsWith('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-              || fileStats[i]?.contentType?.startsWith('application/msword')"
-          >
-            <VueOfficeDocx
-              v-if="iframeShoweds[i]"
-              v-show="i === nowIndex"
-              :src="url"
-              un-flex="~ [1_0_0]"
-              un-overflow-auto
-              un-w="full"
-            ></VueOfficeDocx>
-          </template>
-          
-          <!-- 是否为证书文件 application/octet-stream -->
-          <template
-            v-else-if="fileStats[i]?.contentType?.startsWith('application/octet')"
-          >
-            <div
-              v-if="iframeShoweds[i]"
-              v-show="i === nowIndex"
-              un-flex="~ [1_0_0]"
-              un-overflow-auto
-              un-w="full"
-              un-justify-center
-              un-items-center
-            >
-              {{ ns("证书文件不支持预览") }}
-            </div>
-          </template>
-          
-          <template
-            v-else
-          >
-            <iframe
-              v-if="iframeShoweds[i]"
-              :ref="(el) => { if (el) iframeRefs[i] = el as HTMLIFrameElement }"
-              :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
-              
-              un-flex="~ [1_0_0]"
-              un-overflow-hidden
-              un-w="full"
-              
-              :src="url"
-              frameborder="0"
-              @load="iframeLoad"
-            ></iframe>
-          </template>
-          
+            {{ ns("预览失败，请下载后查看") }}
+          </div>
         </template>
-        
+        <template
+          v-else-if="item.previewType === 'image'"
+        >
+          <img
+            v-if="item.shown"
+            :ref="(el) => setItemRef(item.id, el)"
+            :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
+            object-fit="scale-down"
+            :src="getItemUrl(item)"
+            @load="onPreviewLoad(item.id)"
+            @error="onPreviewError(item.id)"
+          >
+        </template>
+        <template
+          v-else-if="item.previewType === 'excel'"
+        >
+          <VueOfficeExcel
+            v-if="item.shown"
+            v-show="i === nowIndex"
+            :src="getItemUrl(item)"
+            un-flex="~ [1_0_0]"
+            un-overflow-auto
+            un-w="full"
+            @rendered="onPreviewLoad(item.id)"
+            @error="onPreviewError(item.id)"
+          ></VueOfficeExcel>
+        </template>
+        <template
+          v-else-if="item.previewType === 'docx'"
+        >
+          <VueOfficeDocx
+            v-if="item.shown"
+            v-show="i === nowIndex"
+            :src="getItemUrl(item)"
+            un-flex="~ [1_0_0]"
+            un-overflow-auto
+            un-w="full"
+            @rendered="onPreviewLoad(item.id)"
+            @error="onPreviewError(item.id)"
+          ></VueOfficeDocx>
+        </template>
+        <template
+          v-else-if="item.previewType === 'binary'"
+        >
+          <div
+            v-if="item.shown"
+            v-show="i === nowIndex"
+            un-flex="~ [1_0_0]"
+            un-overflow-auto
+            un-w="full"
+            un-justify-center
+            un-items-center
+          >
+            {{ ns("证书文件不支持预览") }}
+          </div>
+        </template>
+        <template
+          v-else
+        >
+          <iframe
+            v-if="item.shown"
+            :ref="(el) => setItemRef(item.id, el)"
+            :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            un-w="full"
+            :src="getItemUrl(item)"
+            frameborder="0"
+            @load="onPreviewLoad(item.id)"
+            @error="onPreviewError(item.id)"
+          ></iframe>
+        </template>
       </template>
       <div
-        v-if="urlList.length === 0"
+        v-if="items.length === 0"
         un-flex="~ [1_0_0]"
         un-overflow-hidden
         un-justify-center
@@ -219,7 +223,7 @@
       >
         
         <el-button
-          v-if="!dialogModel.readonly && urlList.length === 0"
+          v-if="!dialogModel.readonly && items.length === 0"
           plain
           type="primary"
           @click="onUpload"
@@ -243,7 +247,7 @@
         
       </div>
       <div
-        v-if="iframeLoading"
+        v-if="currentItem && currentItem.loadState === 'loading'"
         un-flex="~ [1_0_0]"
         un-overflow-hidden
         un-justify-center
@@ -257,7 +261,7 @@
       </div>
     </div>
     <div
-      v-if="urlList.length > 1"
+      v-if="items.length > 1"
       un-p="b-[5px]"
       un-flex="~"
       un-justify-center
@@ -283,11 +287,11 @@
           un-flex="~ col"
           un-justify-center
         >
-          {{ nowIndex + 1 }} / {{ urlList.length }}
+          {{ nowIndex + 1 }} / {{ items.length }}
         </span>
         
         <el-button
-          :disabled="nowIndex >= urlList.length - 1"
+          :disabled="nowIndex >= items.length - 1"
           size="small"
           @click="nextClk"
         >
@@ -333,8 +337,15 @@
 import { filesize } from "filesize";
 
 import {
-  getStatsOss,
-} from "./Api";
+  getAttDialogPreviewInfo,
+  getAttPreviewType,
+  splitAttIds,
+} from "./AttDialogUtil";
+
+import type {
+  AttFileStat,
+  AttPreviewType,
+} from "./AttDialogUtil";
 
 import VueOfficeExcel from "@vue-office/excel";
 import VueOfficeDocx from "@vue-office/docx";
@@ -352,18 +363,31 @@ const emit = defineEmits([
   "change",
 ]);
 
-// 文件名列表
-let fileStats = $ref<{
+type PreviewLoadState = "idle" | "loading" | "loaded" | "error";
+type PreviewRef = HTMLIFrameElement | HTMLImageElement;
+
+type AttItem = {
   id: string;
-  lbl: string;
-  contentType?: string;
-  size?: number;
-}[]>();
+  stat?: AttFileStat;
+  shown: boolean;
+  ref?: PreviewRef;
+  previewType: AttPreviewType;
+  loadState: PreviewLoadState;
+};
+
+let items = $ref<AttItem[]>([ ]);
+let nowIndex = $ref(0);
+
+const currentItem = $computed(() => items[nowIndex]);
+
+const canPrintCurrent = $computed(() => {
+  return currentItem != null && (currentItem.previewType === "image" || currentItem.previewType === "iframe");
+});
 
 // 当前弹出框的标题
 const dialogTitle = $computed(() => {
   let title = "";
-  const fileStat = fileStats?.[nowIndex];
+  const fileStat = currentItem?.stat;
   if (fileStat) {
     const fileSizeStr = filesize(fileStat.size || 0, { round: 0 });
     title = `${ fileStat.lbl } (${ fileSizeStr })`;
@@ -391,12 +415,6 @@ let dialogModel = $ref<DialogModel>({
   isPublic: false,
 });
 
-let inited = $ref(false);
-
-let nowIndex = $ref(0);
-
-let iframeLoading = $ref(false);
-
 const backgroundColor = $ref<string | undefined>("#000000");
 
 const predefineColors = $ref([
@@ -413,33 +431,9 @@ const predefineColors = $ref([
   '#c7158577',
 ]);
 
-let modelValue = $ref<string | null>();
+let modelValue = $ref("");
 
 // let tenantHost = $ref("");
-
-const urlList = $computed(() => {
-  const list: string[] = [];
-  if (!modelValue) return list;
-  const ids = modelValue.split(",").filter((x) => x);
-  
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    const fileStat = fileStats && fileStats[i];
-    let lbl = fileStat?.lbl || "";
-    if (lbl.length > 45) {
-      lbl = lbl.substring(0, 45) + "...";
-    }
-    const url = getDownloadUrl({
-      id,
-      filename: lbl,
-    });
-    list.push(url);
-  }
-  return list;
-});
-
-// 已经加载过的iframe索引
-let iframeShoweds = $ref<boolean[]>([ ]);
 
 const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
@@ -449,6 +443,89 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
+function createItem(
+  id: string,
+  index: number,
+): AttItem {
+  return {
+    id,
+    stat: undefined,
+    shown: index === 0,
+    ref: undefined,
+    previewType: "iframe",
+    loadState: "idle",
+  };
+}
+
+function mergeItems(
+  ids: string[],
+  stats?: Array<AttFileStat | undefined>,
+): AttItem[] {
+  const itemMap = new Map(items.map((item) => [item.id, item]));
+  return ids.map((id, index) => {
+    const prevItem = itemMap.get(id);
+    const stat = stats?.[index] ?? prevItem?.stat;
+    const previewType = getAttPreviewType(stat?.contentType);
+    return {
+      id,
+      stat,
+      shown: prevItem?.shown ?? index === 0,
+      ref: prevItem?.ref,
+      previewType,
+      loadState: previewType === "binary"
+        ? "loaded"
+        : prevItem?.loadState ?? "idle",
+    };
+  });
+}
+
+function syncModelValue() {
+  modelValue = items.map((item) => item.id).join(",");
+}
+
+function clampNowIndex() {
+  if (items.length === 0) {
+    nowIndex = 0;
+    return;
+  }
+  if (nowIndex > items.length - 1) {
+    nowIndex = items.length - 1;
+  }
+}
+
+function getItemFilename(item: AttItem) {
+  let lbl = item.stat?.lbl || "";
+  if (lbl.length > 45) {
+    lbl = lbl.substring(0, 45) + "...";
+  }
+  return lbl;
+}
+
+function getItemUrl(item: AttItem) {
+  return getDownloadUrl({
+    id: item.id,
+    filename: getItemFilename(item),
+  });
+}
+
+function findItem(itemId: string) {
+  return items.find((item) => item.id === itemId);
+}
+
+function setItemRef(
+  itemId: string,
+  el: unknown,
+) {
+  if (!(el instanceof HTMLIFrameElement) && !(el instanceof HTMLImageElement)) {
+    return;
+  }
+  const item = findItem(itemId);
+  if (!item) {
+    return;
+  }
+  item.ref = el;
+}
+
 // 打开对话框
 async function showDialog(
   {
@@ -457,7 +534,6 @@ async function showDialog(
     model?: typeof dialogModel,
   },
 ): Promise<void> {
-  inited = false;
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "medium",
     title: $$(dialogTitle),
@@ -467,32 +543,34 @@ async function showDialog(
   // const tenantStore = usrTenantStore();
   // const { host } = await tenantStore.getHost();
   // tenantHost = host;
-  let isChg = false;
-  if (model?.modelValue !== modelValue) {
-    isChg = true;
-  }
+  const nextModelValue = model?.modelValue || "";
+  const isChg = nextModelValue !== modelValue;
   dialogModel = {
     modelValue: "",
     ...model,
   };
-  modelValue = dialogModel.modelValue;
+  modelValue = nextModelValue;
   if (isChg) {
     nowIndex = 0;
-    iframeRefs = [ ];
-    fileStats = [ ];
-    iframeShoweds = [ true ];
+    items = mergeItems(splitAttIds(modelValue));
     await getStatsOssEfc();
   }
-  inited = true;
+  await afterSwitchPreview();
 }
 
 async function getStatsOssEfc() {
-  const ids = modelValue?.split(",").filter((x) => x) || [ ];
-  fileStats = await getStatsOss(ids);
+  const ids = items.map((item) => item.id);
+  if (ids.length === 0) {
+    items = [ ];
+    return;
+  }
+  const previewInfo = await getAttDialogPreviewInfo(modelValue);
+  const stats = previewInfo.items.map((item) => item.stat);
+  items = mergeItems(ids, stats);
 }
 
-function beforeNextIframe() {
-  const eleRef = iframeRefs[nowIndex];
+function pauseIframeMedia(item?: AttItem) {
+  const eleRef = item?.ref;
   if (eleRef instanceof HTMLIFrameElement) {
     const iframeWindow = eleRef?.contentWindow;
     const iframeDocument = iframeWindow?.document;
@@ -507,67 +585,87 @@ function beforeNextIframe() {
   }
 }
 
-async function afterNextIframe() {
-  const eleRef = iframeRefs[nowIndex];
-  if (eleRef instanceof HTMLIFrameElement) {
-    if (!iframeShoweds[nowIndex]) {
-      iframeLoading = true;
-      setTimeout(() => {
-        iframeLoading = false;
-      }, 2000);
-      iframeShoweds[nowIndex] = true;
-      return;
-    }
-    const iframeWindow = eleRef?.contentWindow;
-    const iframeDocument = iframeWindow?.document;
-    if (iframeDocument) {
-      const videoEls = iframeDocument.getElementsByTagName("video");
-      for (let i = 0; i < videoEls.length; i++) {
-        const videoEl = videoEls[i];
-        videoEl.play();
-      }
-    }
+function playIframeMedia(item?: AttItem) {
+  const eleRef = item?.ref;
+  if (!(eleRef instanceof HTMLIFrameElement)) {
     return;
+  }
+  const iframeWindow = eleRef?.contentWindow;
+  const iframeDocument = iframeWindow?.document;
+  if (!iframeDocument) {
+    return;
+  }
+  const videoEls = iframeDocument.getElementsByTagName("video");
+  for (let i = 0; i < videoEls.length; i++) {
+    const videoEl = videoEls[i];
+    videoEl.play();
+  }
+}
+
+async function afterSwitchPreview() {
+  const item = currentItem;
+  if (!item) {
+    return;
+  }
+  if (!item.shown) {
+    item.shown = true;
+  }
+  if (item.previewType === "binary") {
+    item.loadState = "loaded";
+    return;
+  }
+  if (item.loadState === "idle") {
+    item.loadState = "loading";
+    return;
+  }
+  if (item.previewType === "iframe" && item.loadState === "loaded") {
+    playIframeMedia(item);
   }
 }
 
 async function previousClk() {
-  if (nowIndex > 0) {
-    beforeNextIframe();
-    nowIndex--;
-    await afterNextIframe();
+  if (nowIndex <= 0) {
+    return;
   }
+  pauseIframeMedia(currentItem);
+  nowIndex--;
+  await afterSwitchPreview();
 }
 
 async function nextClk() {
-  if (nowIndex < urlList.length - 1) {
-    beforeNextIframe();
-    nowIndex++;
-    await afterNextIframe();
+  if (nowIndex >= items.length - 1) {
+    return;
   }
-  const eleRef = iframeRefs[nowIndex];
-  // 如果不是iframe
-  if (!(eleRef instanceof HTMLIFrameElement)) {
-    iframeShoweds[nowIndex] = true;
-  }
+  pauseIframeMedia(currentItem);
+  nowIndex++;
+  await afterSwitchPreview();
 }
 
-function iframeLoad() {
-  iframeShoweds[nowIndex] = true;
-  iframeLoading = false;
-  for (let i = 0; i < iframeRefs.length; i++) {
-    const iframeRef = iframeRefs[i];
-    if (iframeRef instanceof HTMLIFrameElement) {
-      try {
-        initIframeEl(iframeRef);
-      } catch (err) {
-        console.error(err);
+function onPreviewLoad(itemId: string) {
+  const item = findItem(itemId);
+  if (!item) {
+    return;
+  }
+  item.loadState = "loaded";
+  if (item.ref instanceof HTMLIFrameElement) {
+    try {
+      initIframeEl(item.ref);
+      if (currentItem?.id === itemId) {
+        playIframeMedia(item);
       }
+    } catch (err) {
+      console.error(err);
     }
   }
 }
 
-let iframeRefs = $ref<(HTMLIFrameElement | HTMLImageElement)[]>([ ]);
+function onPreviewError(itemId: string) {
+  const item = findItem(itemId);
+  if (!item) {
+    return;
+  }
+  item.loadState = "error";
+}
 
 function initIframeEl(iframeRef: HTMLIFrameElement) {
   const iframeWindow = iframeRef?.contentWindow;
@@ -610,33 +708,73 @@ function initIframeEl(iframeRef: HTMLIFrameElement) {
 
 // 下载
 function downloadClk() {
-  if (!modelValue) {
+  if (!currentItem) {
     return;
   }
-  const ids = modelValue.split(",").filter((x) => x);
-  const id = ids[nowIndex];
-  const url = getDownloadUrl(id);
+  const url = getItemUrl(currentItem);
   saveAs(url);
 }
 
 // 打印
 function printClk() {
-  const eleRef = iframeRefs[nowIndex];
-  if (eleRef instanceof HTMLIFrameElement) {
-    const iframeWindow = eleRef?.contentWindow;
+  if (!currentItem) {
+    return;
+  }
+  if (currentItem.previewType === "iframe") {
+    const iframeWindow = currentItem.ref instanceof HTMLIFrameElement
+      ? currentItem.ref.contentWindow
+      : undefined;
     if (iframeWindow) {
       iframeWindow.print();
     }
+    return;
   }
+  if (currentItem.previewType === "image") {
+    const printWindow = window.open("", "_blank", "noopener,noreferrer");
+    if (!printWindow) {
+      ElMessage.warning(ns("请允许弹出新窗口后重试"));
+      return;
+    }
+    const styleEl = printWindow.document.createElement("style");
+    styleEl.textContent = `
+      html, body {
+        margin: 0;
+        min-height: 100%;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #fff;
+      }
+      img {
+        max-width: 100%;
+        max-height: 100vh;
+        object-fit: contain;
+      }
+    `;
+    printWindow.document.head.appendChild(styleEl);
+    const imgEl = printWindow.document.createElement("img");
+    imgEl.src = getItemUrl(currentItem);
+    imgEl.addEventListener("load", () => {
+      printWindow.focus();
+      printWindow.print();
+    });
+    imgEl.addEventListener("error", () => {
+      printWindow.close();
+      ElMessage.error(ns("图片加载失败，无法打印"));
+    });
+    printWindow.document.body.appendChild(imgEl);
+    return;
+  }
+  ElMessage.warning(ns("当前附件类型不支持直接打印，请先在网页中打开"));
 }
 
 const fileRef = $ref<HTMLInputElement>();
 
 async function inputChg() {
   if (!fileRef) return;
-  modelValue = modelValue || "";
-  const ids = modelValue.split(",").filter((x) => x);
-  if (dialogModel.maxSize && ids.length >= dialogModel.maxSize) {
+  if (dialogModel.maxSize && items.length >= dialogModel.maxSize) {
     fileRef.value = "";
     ElMessage.error(await nsAsync(`最多只能上传 {0} 个附件`, dialogModel.maxSize));
     return;
@@ -655,22 +793,22 @@ async function inputChg() {
   if (!id) {
     return;
   }
-  if (ids.length > 0) {
-    nowIndex++;
-  }
-  ids.splice(nowIndex, 0, id);
-  modelValue = ids.join(",");
+  const insertIndex = items.length > 0 ? nowIndex + 1 : 0;
+  pauseIframeMedia(currentItem);
+  const nextItems = [ ...items ];
+  nextItems.splice(insertIndex, 0, createItem(id, insertIndex));
+  items = nextItems;
+  nowIndex = insertIndex;
+  syncModelValue();
   await getStatsOssEfc();
-  await afterNextIframe();
-  iframeShoweds[nowIndex] = true;
+  await afterSwitchPreview();
   emit("change", modelValue);
 }
 
 // 点击上传附件
 async function onUpload() {
   if (!fileRef) return;
-  const ids = modelValue?.split(",").filter((x) => x) || [];
-  if (dialogModel.maxSize && ids.length >= dialogModel.maxSize) {
+  if (dialogModel.maxSize && items.length >= dialogModel.maxSize) {
     fileRef.value = "";
     ElMessage.error(await nsAsync(`最多只能上传 {0} 个附件`, dialogModel.maxSize));
     return;
@@ -685,53 +823,59 @@ async function deleteClk() {
   } catch (err) {
     return;
   }
-  const ids = modelValue?.split(",").filter((x) => x);
-  if (!ids || ids.length === 0) {
+  if (items.length === 0) {
     return;
   }
-  const ids2 = ids.filter((_, i) => i !== nowIndex);
-  iframeShoweds = iframeShoweds.filter((_, i) => i !== nowIndex);
-  fileStats = (fileStats || [ ]).filter((_, i) => i !== nowIndex);
-  iframeRefs = iframeRefs.filter((_, i) => i !== nowIndex);
-  modelValue = ids2.join(",");
-  if (nowIndex >= ids2.length && ids2.length > 0) {
-    nowIndex = ids2.length - 1;
-    await afterNextIframe();
-  }
+  pauseIframeMedia(currentItem);
+  const nextItems = [ ...items ];
+  nextItems.splice(nowIndex, 1);
+  items = nextItems;
+  clampNowIndex();
+  syncModelValue();
+  await afterSwitchPreview();
   ElMessage.success(await nsAsync("删除成功"));
   emit("change", modelValue);
 }
 
-// 当前附件向前移动
-function moveLeftClk() {
-  const ids = modelValue?.split(",").filter((x) => x);
-  if (!ids || ids.length === 0) {
+function reorderItems(
+  fromIndex: number,
+  toIndex: number,
+) {
+  const nextItems = [ ...items ];
+  const [item] = nextItems.splice(fromIndex, 1);
+  if (!item) {
     return;
   }
-  const ids2 = ids.filter((_, i) => i !== nowIndex);
-  const id = ids[nowIndex];
-  ids2.splice(nowIndex - 1, 0, id);
-  modelValue = ids2.join(",");
-  previousClk();
+  nextItems.splice(toIndex, 0, item);
+  items = nextItems;
+  nowIndex = toIndex;
+  syncModelValue();
+}
+
+// 当前附件向前移动
+async function moveLeftClk() {
+  if (!currentItem || nowIndex === 0) {
+    return;
+  }
+  pauseIframeMedia(currentItem);
+  reorderItems(nowIndex, nowIndex - 1);
+  await afterSwitchPreview();
   emit("change", modelValue);
 }
 
 // 当前附件向后移动
-function moveRightClk() {
-  const ids = modelValue?.split(",").filter((x) => x);
-  if (!ids || ids.length === 0) {
+async function moveRightClk() {
+  if (!currentItem || nowIndex >= items.length - 1) {
     return;
   }
-  const ids2 = ids.filter((_, i) => i !== nowIndex);
-  const id = ids[nowIndex];
-  ids2.splice(nowIndex + 1, 0, id);
-  modelValue = ids2.join(",");
-  nextClk();
+  pauseIframeMedia(currentItem);
+  reorderItems(nowIndex, nowIndex + 1);
+  await afterSwitchPreview();
   emit("change", modelValue);
 }
 
 function beforeClose(done: (cancel: boolean) => void) {
-  beforeNextIframe();
+  pauseIframeMedia(currentItem);
   done(false);
   onCloseResolve({
     type: "cancel",
@@ -739,6 +883,7 @@ function beforeClose(done: (cancel: boolean) => void) {
 }
 
 async function onClose() {
+  pauseIframeMedia(currentItem);
   onCloseResolve({
     type: "cancel",
   });
