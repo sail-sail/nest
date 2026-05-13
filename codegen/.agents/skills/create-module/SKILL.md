@@ -15,9 +15,18 @@ src/tables/{mod}/
 
 ## 步骤
 
-1. 创建 `src/tables/{mod}/{mod}.sql`
-2. 创建 `src/tables/{mod}/{mod}.ts`
-3. 在 `src/tables/tables.ts` 注册：
+1. 检查模块名
+
+- 确保 `{mod}` 在 `src/tables/` 下唯一，不与现有模块重名。
+
+2. 创建文件
+
+- 创建 `src/tables/{mod}/{mod}.sql`
+- 创建 `src/tables/{mod}/{mod}.ts`
+
+3. 注册模块
+
+- 在 `src/tables/tables.ts` 注册：
 
 ```typescript
 import { defineConfig } from "../config.ts";
@@ -30,7 +39,9 @@ export default defineConfig({
 });
 ```
 
-4. 创建菜单 CSV: `src/tables/{mod}/base_menu.{mod}.sql.csv`
+4. 配置菜单
+
+- 创建菜单 CSV: `src/tables/{mod}/base_menu.{mod}.sql.csv`
 
 ```csv
 id,parent_id,lbl,route_path,is_home_hide,is_enabled,is_hidden,order_by
@@ -40,7 +51,7 @@ id,parent_id,lbl,route_path,is_home_hide,is_enabled,is_hidden,order_by
 
 - `parent_id` 为空表示根菜单
 - `is_hidden=1, is_enabled=0` 表示隐藏菜单 (通常用于被其他页面内联查看的子表)
-- **仅需创建 `base_menu.{mod}.sql.csv`**, 无需手动创建 `base_tenant_menu` 和 `base_role_menu`, 它们在 `npm run importCsv` 时自动生成
+- 不要手动创建 `base_tenant_menu` 和 `base_role_menu` 文件，它们会在 `npm run importCsv` 时自动生成
 - **无需创建 `base_menu_lang`**, 国际化菜单仅在启用 i18n 时需要, 大部分系统不需要
 
 ## 示例

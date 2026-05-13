@@ -65,10 +65,11 @@ metadata:
 ```
 
 ### 原则
-1. 相同前缀合并：`text-sm text-white` → `un-text="sm white"`
-2. 自引用用 `~`：`flex flex-col` → `un-flex="~ col"`
-3. 无参数用无值属性：`rounded` → `un-rounded`
-4. 单边边框如果同时写 `solid`/颜色, 必须先用 `0` 清零其它边框: `un-border="0 b-1 solid [#f0f2f5]"`, 不要写成 `un-border="b-1 solid [#f0f2f5]"`
+把一组 class 改写成 Attributify 属性时, 按下面顺序逐条判断, 不需要一次套用所有规则：
+1. 先看能否合并相同前缀：`text-sm text-white` → `un-text="sm white"`
+2. 如果属性名和值里有重复词, 再用自引用 `~`：`flex flex-col` → `un-flex="~ col"`
+3. 如果工具类本身没有参数, 直接改成无值属性：`rounded` → `un-rounded`
+4. 如果只保留单边边框, 且同时写 `solid` 或颜色, 先用 `0` 清零未显式定义的其它边框方向：`un-border="0 b-1 solid [#f0f2f5]"`, 不要写成 `un-border="b-1 solid [#f0f2f5]"`
 
 ## 本地静态 Icon
 - 当前 uni 仓库已在 `uno.config.ts` 和 `uno_uni.config.ts` 中通过 UnoCSS `presetIcons` 注册了 `iconfont` collection，会自动读取 `src/assets/iconfont/{icon_name}.svg`
