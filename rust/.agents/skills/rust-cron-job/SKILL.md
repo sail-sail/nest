@@ -18,9 +18,11 @@ description: Rust 定时任务规范.新增/修改定时任务使用
 
 ## 设计约定
 
-### 1) 任务逻辑放业务模块
+### 1) 任务逻辑必须放在对应业务模块
 
 不要把业务逻辑直接堆在 `app/cron/job/job_dao.rs`。
+
+这里的“对应业务模块”指与任务功能直接相关的业务目录，例如 1688 刷新 token 的任务应放在 `app/ec/alibaba_app/`，而不是放在 cron 公共目录里。
 
 正确做法：
 - 在对应业务模块里写任务函数
@@ -84,10 +86,14 @@ create_cron_job_log_detail(
 
 ## 新增定时任务步骤
 
-### 第一步：在业务模块写任务函数
+按下面顺序执行，上一项完成后再做下一项，避免先配 CSV 但代码还没注册，或者先注册分发但任务定义还没落库。
+
+### 1. 先在与功能相关的业务模块写任务函数
 
 示例位置：
 - `app/ec/alibaba_app/alibaba_app_service.rs`
+
+先完成任务函数本体和签名，再继续后面的分发注册与 CSV 配置。
 
 函数签名建议与现有 cron 任务保持一致：
 
@@ -103,16 +109,20 @@ pub async fn some_job(
 - 成功时返回摘要文本 `SmolStr`
 - 失败时返回 `Err(...)`
 
-### 第二步：在 `job_dao.rs` 注册分发
+### 2. 再在 `job_dao.rs` 注册分发
 
 在 `app/cron/job/job_dao.rs` 的 `run_job` 中加入一个新的 `match` 分支。
 
+只有当步骤 1 的函数已经存在时，才在这里加入新的分支。
+
 `job.code` 必须与 CSV 里的 `cron_job.code` 保持一致。
 
-### 第三步：配置任务主数据 CSV
+### 3. 然后配置任务主数据 CSV
 
 文件：
 - `codegen/src/tables/{mod}/cron_job.{mod}.sql.csv`
+
+这一步先定义任务主数据，下一步的调度实例会通过 `job_id` 引用这里的任务 ID。
 
 新增一条任务定义，例如：
 
@@ -126,10 +136,12 @@ V2X8nQ4mLp7sKd3rTy6HzA,refresh_alibaba_app_token,1688自动刷新Token,1,1,2,1,Z
 - `lbl`：任务名称
 - `is_sys`：系统任务通常填 `1`
 
-### 第四步：配置定时任务实例 CSV
+### 4. 最后配置定时任务实例 CSV
 
 文件：
 - `codegen/src/tables/{mod}/cron_cron_job.{mod}.sql.csv`
+
+这里的 `job_id` 必须引用步骤 3 新增的任务 ID。
 
 新增调度实例，例如：
 
