@@ -140,6 +140,12 @@ mod tests {
     find_all_booking_order,
     update_by_id_booking_order,
   };
+
+  fn print_progress(index: usize) {
+    if index % 10 == 0 {
+      println!("正在处理第 {index} 条");
+    }
+  }
   
   /// 扫描 booking_order 表, 从关联表补充缺失字段
   #[tokio::test]
@@ -161,24 +167,30 @@ mod tests {
           options,
         ).await?;
         
-        for (i, model) in models.into_iter().enumerate() {
-          if i % 10 == 0 {
-            println!("正在处理第 {i} 条");
+        for (index, model) in models.into_iter().enumerate() {
+          // 步骤1: 打印处理进度
+          print_progress(index);
+
+          // 步骤2: 跳过已经完整的记录
+          if !model.some_field.is_empty() {
+            continue;
           }
-          if model.some_field.is_empty() {
-            let related = find_by_id_ok_some_table(
-              model.some_table_id,
-              options,
-            ).await?;
-            update_by_id_booking_order(
-              model.id,
-              BookingOrderInput {
-                some_field: Some(related.value),
-                ..Default::default()
-              },
-              options,
-            ).await?;
-          }
+
+          // 步骤3: 查询关联数据
+          let related = find_by_id_ok_some_table(
+            model.some_table_id,
+            options,
+          ).await?;
+
+          // 步骤4: 回写缺失字段
+          update_by_id_booking_order(
+            model.id,
+            BookingOrderInput {
+              some_field: Some(related.value),
+              ..Default::default()
+            },
+            options,
+          ).await?;
         }
         
         Ok(())

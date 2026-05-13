@@ -42,7 +42,7 @@ app/{mod}/{table}/
 | 层 | 文件 | 职责 |
 |----|------|------|
 | Router | `*_router.rs` | `#[handler]` 构建 Ctx, 调用 resful |
-| Resful | `*_resful.rs` | 参数解析、业务逻辑、返回 Response |
+| Resful | `*_resful.rs` | 参数校验、业务逻辑、错误响应、返回 Response |
 | Model | `*_model.rs` | 类型定义 |
 
 ## Router 模板
@@ -91,6 +91,8 @@ pub async fn code2session(
     .body(serde_json::to_string(&result)?))
 }
 ```
+
+入参不合法时, 在 `*_resful.rs` 中尽早返回 `400 Bad Request`, 并给出可读的错误信息, 不要继续执行业务逻辑。
 
 ## 常用 poem 导入
 
@@ -160,7 +162,7 @@ pub async fn export(
 
 ## 注意事项
 
-- 文件名拼写为 `*_resful.rs`(不是 `*_restful.rs`)
-- REST 路由在 `main.rs` 或 `app/lib.rs` 的 `register_routes` 中注册
-- 需要认证时加 `.with_auth()?`, 不需要时直接 `.build()`
-- 微信回调等 Webhook 不需要 `.with_auth()`
+- 检查文件名: 使用 `*_resful.rs`, 不要写成 `*_restful.rs`
+- 检查路由注册: 简单入口可直接放在 `main.rs`; 业务路由统一追加到 `app/lib.rs` 的 `register_routes`
+- 检查认证: 读取当前登录用户、访问用户私有数据、发起支付/退款等用户敏感操作时加 `.with_auth()?`; 健康检查、微信回调、公开下载等匿名入口直接 `.build()`
+- 检查入参: 请求体、路径参数、Query 参数解析后, 只要发现缺失、格式错误或业务前置条件不满足, 立即返回 `400 Bad Request`

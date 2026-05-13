@@ -7,7 +7,10 @@ description: 移动端导出 Excel 时使用
 
 后端 Rust + xlsx_handlebars + rust-embed，前端 uni.downloadFile。
 
-> 注意: 此功能在项目中尚未有实际使用案例, 以下为指导性参考模式。实现时请根据实际模块路径调整, 不要照抄示例中的 `spc` 目录。
+> 注意:
+> 1. 此功能在项目中尚未有实际使用案例，以下内容是参考模式。
+> 2. 示例里的 `{mod}`、`{table}` 以及历史示例中出现过的 `spc` 都是占位符；其中 `spc` 仅表示某个业务模块名，落地时要替换成真实模块路径，例如 `app/base/usr/`。
+> 3. 开始实现前，先确认模块目录、导出路由和模板文件名，再按下面片段替换。
 
 ## 文件结构
 
@@ -31,6 +34,8 @@ pub struct ExportExcel{Table}Asset;
 ```
 
 ## 2. service.rs - 导出逻辑
+
+模板读取或渲染失败时，记录模板文件名和底层错误，并返回前端可理解的导出失败提示，不要直接把原始异常文本暴露给用户。
 
 ```rust
 use color_eyre::eyre::{Result, eyre};
