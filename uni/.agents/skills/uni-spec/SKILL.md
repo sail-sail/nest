@@ -7,14 +7,10 @@ metadata:
 ---
 
 ## 编码规范
-- 使用 Vue Macros 的 reactivity transform（`$ref`、`$computed` 等）
-- 当 `[ ]` 代表的是值时中间有空格, 例如: `const arr = [ 1, 2, 3 ];`, `const arr = [ ];`, `{ }` 也同理
-- 函数定义和调用的时候, 参数都换行, vue 组件属性也换行
-- vue 相关的类型都无需导入, 如 `ref`, `computed` 等, 直接使用即可, 因为 `vite.config.mts` 配置了自动导入 `AutoImport`
-- 空白行代码缩进要保持和上一行一致, 方便后续添加代码
-- 大块标签之间要留空行
-- 结构标签上面写上注释
-- 代码检查应该用 `pnpm typecheck`, `tsconfig_tc.json` 才是正确的类型检查配置，`tsconfig.json` 只是为了编辑器提示
+1. 响应式与自动导入：使用 Vue Macros 的 reactivity transform（`$ref`、`$computed` 等）；vue 相关的类型和 API 如 `ref`、`computed` 等都无需导入，直接使用即可，因为 `vite.config.mts` 配置了自动导入 `AutoImport`
+2. 书写格式：当 `[ ]` 代表的是值时中间有空格，例如: `const arr = [ 1, 2, 3 ];`、`const arr = [ ];`，`{ }` 也同理；函数定义和调用时参数统一换行，vue 组件属性也统一换行
+3. 模板排版：空白行代码缩进要保持和上一行一致，方便后续添加代码；大块标签之间要留空行；结构标签上面写上注释
+4. 代码检查：使用 `pnpm typecheck`；`tsconfig_tc.json` 才是正确的类型检查配置，`tsconfig.json` 只是为了编辑器提示
 
 # form表单
 
@@ -97,7 +93,7 @@ async function loadDetailHtml(
 ## 页面参数接收
 - 使用 `onLoad` 生命周期钩子接收页面跳转传递的参数，**禁止**使用 `getCurrentPages()` 方式获取参数
 - `onLoad` 的回调参数 `query` 包含页面 URL 中的查询参数
-- 页面初始化逻辑（如 `initFrame()`）应放在 `onLoad` 内部调用，而非直接在 `setup` 中调用
+- 所有页面级初始化逻辑（包括但不限于 `initFrame()`）都应放在 `onLoad` 内部调用，而非直接在 `setup` 中调用
 
 ```typescript
 onLoad(async (query?: AnyObject) => {
