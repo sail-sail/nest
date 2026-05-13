@@ -75,6 +75,7 @@ tokio-tungstenite.workspace = true
 rust-embed.workspace = true
 percent-encoding.workspace = true
 qrcode.workspace = true
+calamine.workspace = true
 
 generated = { path = "../generated" }
 
