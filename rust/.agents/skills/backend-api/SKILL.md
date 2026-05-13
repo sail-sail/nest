@@ -15,26 +15,25 @@ metadata:
 - 增加业务校验、日志、权限、事务
 - 在 `app/{mod}/{table}/` 中新增 `*_graphql.rs`、`*_resolver.rs`、`*_service.rs`、`*_model.rs`
 - 只有当 `app/` 无法承载，且能力需要被 generated 内部复用时，才扩展 `generated/`
-- 空白行代码缩进要保持和上一行一致, 方便后续添加代码
 - rust编译慢可慢慢等
 
 ## 修改决策顺序
 
-1. 默认先改 `app/{mod}/{table}/`
+1. 先判断是否属于业务接口或流程编排
 
-  新增业务接口、组合查询、业务校验、日志、事务，优先放在 `app/`。
+  如果是新增 Query、Mutation、聚合查询、业务校验、日志或事务，默认放在 `app/{mod}/{table}/`。例如：订单聚合详情、带权限校验的提交流程。
 
-2. 前端联动走手写接口文件
+2. 再判断前端调用入口
 
-  PC 写到 `src/views/{mod}/{table}/Api2.ts`，uni 写到 `src/pages/{table}/Api2.ts`，不要改生成的 `Api.ts`。
+  PC 写到 `src/views/{mod}/{table}/Api2.ts`，uni 写到 `src/pages/{table}/Api2.ts`，不要改生成的 `Api.ts`。例如：列表页新增自定义筛选接口时，前端调用放在 `Api2.ts`。
 
-3. 只有单向依赖做不到时才补 `generated/`
+3. 只有 `app/` 无法承载，且 `generated/` 内部也要复用时，才补 `generated/`
 
-  典型场景是补基础 DAO、Model、Service 能力，且该能力必须继续被 generated 内部复用。
+  典型场景是补基础 DAO、Model、Service 能力，且该能力会被多个 generated 文件继续调用。若只是单个业务接口使用，仍放在 `app/`。
 
-4. 扩展 `generated/` 时优先加同级扩展文件
+4. 必须扩展 `generated/` 时，优先加同级扩展文件
 
-  使用 `*_dao2.rs`、`*_service2.rs`、`*_resolver2.rs`、`*_model2.rs` 这类文件名，并在对应 `mod.rs` 中显式 `pub mod ...`。非必要不要在 `generated/*_graphql.rs` 中加业务接口。
+  使用 `*_dao2.rs`、`*_service2.rs`、`*_resolver2.rs`、`*_model2.rs` 这类文件名，并在对应 `mod.rs` 中显式 `pub mod ...`。仅在明确需要让 `generated/` 侧复用 GraphQL 接口时，才在 `generated/*_graphql.rs` 中添加。
 
 ## 目录边界
 
@@ -199,18 +198,36 @@ use generated::common::context::{
 
 ## 编码规则
 
+1. 类型与参数
+
 - 字符串优先使用 `SmolStr`，三方库要求时再转 `String`
 - `options` 和所有 `id` 类型都是 `Copy`，不要 `.clone()`
 - Input 中 `_lbl` 字段无需传递，DAO 会自动生成
-- 修改操作通常加 `.with_tran()`
-- 需要行锁时, 优先复用 generated DAO。若表在 codegen 配置里已开启 `opts.isHasForUpdate: true`, 则在事务内调用 `find_one[_ok]_*`、`find_by_id[_ok]_*`、`find_all_*` 时传 `Options::from(options).set_is_for_update(Some(true)).into()` 即可追加 `for update`, 不要为了加锁回退到手写 SQL
-- 需要登录的接口加 `.with_auth()?`
 - 函数定义和调用时，多参数统一换行
+
+2. 事务与鉴权
+
+- 修改操作通常加 `.with_tran()`
+- 需要登录的接口加 `.with_auth()?`
+
+3. 查询与锁
+
+- 需要行锁时，优先复用 generated DAO。若表在 codegen 配置里已开启 `opts.isHasForUpdate: true`，则在事务内调用 `find_one[_ok]_*`、`find_by_id[_ok]_*`、`find_all_*` 时传 `Options::from(options).set_is_for_update(Some(true)).into()` 追加 `for update`，不要为了加锁回退到手写 SQL
+
+4. 附件与冗余字段
+
 - 如需操作附件，使用 [generated/common/oss/oss_dao.rs](../../../generated/common/oss/oss_dao.rs)
-- 不执行 `cargo fmt`
-- service 层业务开发过程中, 若表有配置 `modelLabel` 冗余字段 `xxx_id_lbl` 则 create/update 要传入显示名称, 否则可不传
-- 业务错误使用 `ServiceException` 而非裸 `eyre!()`: `eyre!(ServiceException { message: "xxx".into(), trace: true, ..Default::default() })`
-- resolver 层必须加 `#[function_name::named]` 宏, 用于自动日志记录
+- service 层业务开发过程中，若表有配置 `modelLabel` 冗余字段 `xxx_id_lbl`，则 create/update 要传入显示名称，否则可不传
+
+5. 错误与日志
+
+- 业务错误使用 `ServiceException` 而非裸 `eyre!()`：`eyre!(ServiceException { message: "xxx".into(), trace: true, ..Default::default() })`
+- resolver 层必须加 `#[function_name::named]` 宏，用于自动日志记录
+
+6. 格式保持
+
+- 手动编辑时，空白行缩进与周围代码保持一致
+- 除非用户明确要求，不要额外执行 `cargo fmt` 做整文件格式化
 
 ## 模块注册
 
