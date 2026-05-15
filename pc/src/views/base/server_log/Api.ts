@@ -30,7 +30,7 @@ export function intoInputServerLog(
     // ID
     id: model?.id,
     // 日志日期
-    log_date: model?.log_date,
+    log_date: model?.log_date ? dayjs(model.log_date).format("YYYY-MM-DD") : model?.log_date,
     log_date_lbl: model?.log_date_lbl,
     // 日志时间
     log_time: model?.log_time,
