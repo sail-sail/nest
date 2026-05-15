@@ -647,7 +647,17 @@ export function intoInput<#=Table_Up#>(
     #>
     // <#=column_comment#>
     <#=column_name#>: model?.<#=column_name#> != null ? Number(model?.<#=column_name#> || 0) : undefined,<#
-      } else if (data_type === "datetime" || data_type === "date") {
+      } else if (data_type === "date") {
+    #>
+    // <#=column_comment#>
+    <#=column_name#>: model?.<#=column_name#> ? dayjs(model.<#=column_name#>).format("YYYY-MM-DD") : model?.<#=column_name#>,
+    <#=column_name#>_lbl: model?.<#=column_name#>_lbl,<#
+      if (is_nullable) {
+    #>
+    <#=column_name#>_save_null: model?.<#=column_name#>_save_null,<#
+      }
+    #><#
+      } else if (data_type === "datetime") {
     #>
     // <#=column_comment#>
     <#=column_name#>: model?.<#=column_name#>,

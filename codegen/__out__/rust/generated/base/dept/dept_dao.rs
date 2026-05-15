@@ -2095,7 +2095,7 @@ pub async fn creates_dept(
 }
 
 /// 批量创建部门
-#[allow(unused_variables, clippy::redundant_locals)]
+#[allow(unused_variables, clippy::redundant_locals, unused_mut)]
 async fn _creates(
   inputs: Vec<DeptInput>,
   options: Option<Options>,
@@ -2119,6 +2119,23 @@ async fn _creates(
     if input.id.is_some() {
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }
+
+    let mut input = input;
+
+    // 组织
+    if (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
+      && input.org_id.is_some()
+      && !input.org_id.as_ref().unwrap().is_empty()
+    {
+      let org_model = crate::base::org::org_dao::find_by_id_org(
+        input.org_id.clone().unwrap(),
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(org_model) = org_model {
+        input.org_id_lbl = org_model.lbl.into();
+      }
+    }
+    let input = input;
     
     let old_models = find_by_unique_dept(
       input.clone().into(),
@@ -2668,6 +2685,20 @@ pub async fn update_by_id_dept(
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
+
+  // 组织
+  if (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
+    && input.org_id.is_some()
+    && !input.org_id.as_ref().unwrap().is_empty()
+  {
+    let org_model = crate::base::org::org_dao::find_by_id_org(
+      input.org_id.clone().unwrap(),
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(org_model) = org_model {
+      input.org_id_lbl = org_model.lbl.into();
+    }
+  }
   
   let old_model = find_by_id_dept(
     id,
