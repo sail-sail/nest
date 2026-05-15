@@ -58,6 +58,16 @@ use crate::common::gql::model::{
 use crate::common::dict_detail::dict_detail_dao::get_dict;
 
 use super::lang_model::*;
+
+use crate::base::tenant::tenant_model::{
+  TenantSearch,
+  TenantInput,
+};
+
+use crate::base::tenant::tenant_dao::{
+  find_all_tenant,
+  update_by_id_tenant,
+};
 use crate::base::usr::usr_model::UsrId;
 
 use crate::base::usr::usr_dao::find_by_id_usr;
@@ -2102,6 +2112,11 @@ pub async fn update_by_id_lang(
   let mut sql_fields = String::with_capacity(80 * 12 + 20);
   
   let mut field_num: usize = 0;
+  
+  let mut sql_set_flds: Vec<SmolStr> = vec![];
+  let mut sql_set_fld_input: LangInput = LangInput {
+    ..Default::default()
+  };
   // 编码
   if let Some(code) = input.code.clone() {
     field_num += 1;
@@ -2111,6 +2126,8 @@ pub async fn update_by_id_lang(
   // 名称
   if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
+    sql_set_flds.push(SmolStr::new("lbl"));
+    sql_set_fld_input.lbl = Some(lbl.clone());
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
@@ -2234,6 +2251,36 @@ pub async fn update_by_id_lang(
       args,
       options,
     ).await?;
+    
+    if 
+      sql_set_flds.contains(&SmolStr::new("lbl"))
+    {
+      
+      let tenant_models = find_all_tenant(
+        Some(TenantSearch {
+          lang_id: Some(vec![id]),
+          ..Default::default()
+        }),
+        None,
+        None,
+        options,
+      ).await?;
+      
+      for tenant_model in tenant_models {
+        let tenant_id = tenant_model.id;
+        let mut tenant_input: TenantInput = TenantInput {
+          ..Default::default()
+        };
+        if sql_set_flds.contains(&SmolStr::new("lbl")) {
+          tenant_input.lang_id_lbl = sql_set_fld_input.lbl.clone();
+        }
+        update_by_id_tenant(
+          tenant_id,
+          tenant_input,
+          options,
+        ).await?;
+      }
+    }
     
     del_cache_lang().await?;
     
