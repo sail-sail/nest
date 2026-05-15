@@ -4742,7 +4742,7 @@ pub async fn creates_<#=table#>(
 }
 
 /// 批量创建<#=table_comment#>
-#[allow(unused_variables, clippy::redundant_locals)]
+#[allow(unused_variables, clippy::redundant_locals, unused_mut)]
 async fn _creates(
   inputs: Vec<<#=tableUP#>Input>,
   options: Option<Options>,
@@ -4906,6 +4906,59 @@ async fn _creates(
     let input = input;<#
     }
     #>
+
+    let mut input = input;<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
+      ) continue;
+      if (
+        column_name === "create_usr_id" ||
+        column_name === "create_time" ||
+        column_name === "update_usr_id" ||
+        column_name === "update_time"
+      ) continue;
+      const column_name_rust = rustKeyEscape(column_name);
+      const column_comment = column.COLUMN_COMMENT || "";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      let daoStr = "";
+      if (foreignKey && foreignTable) {
+        if (foreignTable !== table) {
+          daoStr = `crate::${ foreignKey.mod }::${ foreignTable }::${ foreignTable }_dao::`;
+        }
+      }
+      const modelLabel = column.modelLabel;
+    #><#
+      if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl && modelLabel) {
+    #>
+
+    // <#=column_comment#>
+    if (input.<#=rustKeyEscape(modelLabel)#>.is_none() || input.<#=rustKeyEscape(modelLabel)#>.as_ref().unwrap().is_empty())
+      && input.<#=column_name_rust#>.is_some()
+      && !input.<#=column_name_rust#>.as_ref().unwrap().is_empty()
+    {
+      let <#=foreignTable#>_model = <#=daoStr#>find_by_id_<#=foreignTable#>(
+        input.<#=column_name_rust#>.clone().unwrap(),
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(<#=foreignTable#>_model) = <#=foreignTable#>_model {
+        input.<#=rustKeyEscape(modelLabel)#> = <#=foreignTable#>_model.<#=rustKeyEscape(foreignKey.lbl)#>.into();
+      }
+    }<#
+      }
+    #><#
+    }
+    #>
+    let input = input;
     
     let old_models = find_by_unique_<#=table#>(
       input.clone().into(),
@@ -6644,6 +6697,61 @@ pub async fn update_by_id_<#=table#>(
       input.<#=column_name#> = Some(<#=column_name#>);
     }
   }<#
+  }
+  #><#
+
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (
+      [
+        "tenant_id",
+        "is_sys",
+        "is_deleted",
+        "is_hidden",
+      ].includes(column_name)
+    ) continue;
+    if (
+      [
+        "create_usr_id",
+        "create_time",
+        "update_usr_id",
+        "update_time",
+      ].includes(column_name)
+    ) continue;
+    const column_name_rust = rustKeyEscape(column_name);
+    const column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    let daoStr = "";
+    if (foreignKey && foreignTable) {
+      if (foreignTable !== table) {
+        daoStr = `crate::${ foreignKey.mod }::${ foreignTable }::${ foreignTable }_dao::`;
+      }
+    }
+    const modelLabel = column.modelLabel;
+  #><#
+    if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl && modelLabel) {
+  #>
+
+  // <#=column_comment#>
+  if (input.<#=rustKeyEscape(modelLabel)#>.is_none() || input.<#=rustKeyEscape(modelLabel)#>.as_ref().unwrap().is_empty())
+    && input.<#=column_name_rust#>.is_some()
+    && !input.<#=column_name_rust#>.as_ref().unwrap().is_empty()
+  {
+    let <#=foreignTable#>_model = <#=daoStr#>find_by_id_<#=foreignTable#>(
+      input.<#=column_name_rust#>.clone().unwrap(),
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(<#=foreignTable#>_model) = <#=foreignTable#>_model {
+      input.<#=rustKeyEscape(modelLabel)#> = <#=foreignTable#>_model.<#=rustKeyEscape(foreignKey.lbl)#>.into();
+    }
+  }<#
+    }
+  #><#
   }
   #>
   
