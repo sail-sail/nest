@@ -65,6 +65,11 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  findAllTenant,
+  updateByIdTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
+
+import {
   findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
@@ -1591,6 +1596,8 @@ export async function updateByIdLang(
   const args = new QueryArgs();
   let sql = `update base_lang set `;
   let updateFldNum = 0;
+  const sqlSetFlds: string[] = [ ];
+  const sqlSetFldInput: LangInput = { };
   if (input.code != null) {
     if (input.code != oldModel.code) {
       sql += `code=${ args.push(input.code) },`;
@@ -1601,6 +1608,8 @@ export async function updateByIdLang(
     if (input.lbl != oldModel.lbl) {
       sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
+      sqlSetFlds.push("lbl");
+      sqlSetFldInput.lbl = input.lbl;
     }
   }
   if (input.is_enabled != null) {
@@ -1715,6 +1724,34 @@ export async function updateByIdLang(
         },
       );
     }
+  }
+  
+  if (
+    sqlSetFlds.includes("lbl")
+  ) {
+    
+    const tenant_models = await findAllTenant(
+      {
+        lang_id: [ id ],
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    
+    for (const tenant_model of tenant_models) {
+      const tenant_id = tenant_model.id;
+      const tenant_input: TenantInput = { };
+      if (sqlSetFlds.includes("lbl")) {
+        tenant_input.lang_id_lbl = sqlSetFldInput.lbl;
+      }
+      await updateByIdTenant(
+        tenant_id,
+        tenant_input,
+        options,
+      );
+    }
+    
   }
   
   if (updateFldNum > 0) {
