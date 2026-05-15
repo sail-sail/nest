@@ -214,9 +214,12 @@
           flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
         }"
         scroll-y
+        refresher-enabled
+        :refresher-triggered="refresherTriggered"
         :rebound="false"
         :scroll-into-view="scrollIntoViewId"
         :scroll-with-animation="true"
+        @refresherrefresh="onRefresherrefresh"
       >
         
         <slot
@@ -370,7 +373,7 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    method?: () => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]; // 用于获取数据的方法
+    method?: (() => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]) | any[]; // 用于获取数据的方法
     optionsMap?: OptionsMap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
@@ -379,7 +382,6 @@ const props = withDefaults(
     height?: string;
     width?: string;
     initData?: boolean;
-    refreshWhenShowPicker?: boolean;
     pageInited?: boolean;
     clearable?: boolean;
     multiple?: boolean;
@@ -401,7 +403,7 @@ const props = withDefaults(
       };
     },
     modelValue: undefined,
-    modelLabel: undefined,
+    modelLabel: "",
     placeholder: "",
     height: undefined,
     width: undefined,
@@ -547,6 +549,8 @@ const modelValueIsEmpty = computed(() => {
 
 const showPicker = ref(false);
 
+let refresherTriggered = $ref(false);
+
 const modelLabels = computed(() => {
   if (modelValue == null) {
     return [ ];
@@ -606,21 +610,28 @@ async function onClick() {
   await syncScrollIntoView();
 }
 
-let isLoading = false;
+async function onRefresherrefresh() {
+  if (!inited.value) {
+    refresherTriggered = false;
+    return;
+  }
+  refresherTriggered = true;
+  try {
+    await onRefresh();
+    await syncScrollIntoView();
+  } finally {
+    refresherTriggered = false;
+  }
+}
 
 watch(
-  () => [showPicker.value, props.refreshWhenShowPicker],
+  () => showPicker.value,
   async () => {
-    if (isLoading) {
+    if (!inited.value) {
       return;
     }
-    if (showPicker.value && props.refreshWhenShowPicker) {
-      try {
-        isLoading = true;
-        await onRefresh();
-      } finally {
-        isLoading = false;
-      }
+    if (showPicker.value) {
+      await onRefresh();
     }
   },
 );
@@ -679,14 +690,13 @@ async function onRefresh() {
     methodWatchHandle();
     methodWatchHandle = null;
   }
-  const method = props.method;
-  const methodData = (await method?.()) || [ ];
-  if (isRef(methodData)) {
-    methodWatchHandle  = watch(
-      methodData,
-      () => {
+  if (typeof props.method !== "function") {
+    methodWatchHandle = watch(
+      () => props.method,
+      async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data.value = unref(methodData) as any[];
+        const methodData = unref(props.method) as any[];
+        data.value = methodData;
         emit("data", data.value);
         options4SelectV2.value = data.value.map(props.optionsMap);
       },
@@ -695,9 +705,25 @@ async function onRefresh() {
       },
     );
   } else {
-    data.value = methodData;
-    emit("data", data.value);
-    options4SelectV2.value = data.value.map(props.optionsMap);
+    const methodData = (await props.method?.()) || [ ];
+    if (isRef(methodData)) {
+      methodWatchHandle = watch(
+        methodData,
+        () => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data.value = unref(methodData) as any[];
+          emit("data", data.value);
+          options4SelectV2.value = data.value.map(props.optionsMap);
+        },
+        {
+          immediate: true,
+        },
+      );
+    } else {
+      data.value = methodData;
+      emit("data", data.value);
+      options4SelectV2.value = data.value.map(props.optionsMap);
+    }
   }
   inited.value = true;
 }
