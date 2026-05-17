@@ -15,13 +15,20 @@ description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取，
 
 ## 必读：最容易漏掉的规则
 
+| 检查项 | 必要动作 | 例外/备注 |
+|--------|----------|-----------|
+| `lbl` 字段 | 在 `columns` 中显式写出 | 纯中间表、日志表、或 SQL 本身没有 `lbl` 时除外 |
+| `modelLabel` | `xxx_id` 对应存在 `xxx_id_lbl` 时，给 `xxx_id` 配置 `modelLabel` | `xxx_id_lbl` 无需再单独写入 `columns` |
+| 审计字段 | 通常补齐 `create_usr_id/create_time/update_usr_id/update_time` | 按表实际用途判断 |
+| 配置换行 | `opts` 和 `columns` 维持多行结构 | 不要压成单行 |
+
 ### 1. lbl 字段必须在 columns 中显式写出
 
 ```ts
 { COLUMN_NAME: "lbl" },
 ```
 
-`lbl` 的 width/align/require/search 有默认值，但这只代表"写入 columns 后可以少配属性"，**不代表可以省略这个字段**。除非是纯中间表、日志表、或 SQL 本身没有 `lbl`。
+`lbl` 的 width/align/require/search 有默认值，但字段本身必须显式写入 `columns`，属性可以省略。除非是纯中间表、日志表、或 SQL 本身没有 `lbl`。
 
 ### 2. modelLabel 强制规则
 
