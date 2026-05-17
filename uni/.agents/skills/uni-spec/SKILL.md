@@ -6,6 +6,12 @@ metadata:
   version: "1.0"
 ---
 
+## skill 边界
+
+- `uni-spec` 负责页面开发规范、样式规范、通用页面约定
+- `tm-ui-components` 负责 tm-ui 组件参数/事件/插槽/ref 与源码映射
+- 需要查组件 API 时优先查看 `.agents/skills/tm-ui-components/references/components/*.md`, 涉及行为差异再核对 `src/uni_modules/tm-ui/components/`
+
 ## 编码规范
 1. 响应式与自动导入：使用 Vue Macros 的 reactivity transform（`$ref`、`$computed` 等）；vue 相关的类型和 API 如 `ref`、`computed` 等都无需导入，直接使用即可，因为 `vite.config.mts` 配置了自动导入 `AutoImport`
 2. 书写格式：当 `[ ]` 代表的是值时中间有空格，例如: `const arr = [ 1, 2, 3 ];`、`const arr = [ ];`，`{ }` 也同理；函数定义和调用时参数统一换行，vue 组件属性也统一换行
