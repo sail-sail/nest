@@ -2,7 +2,7 @@
   "compilerOptions": {
     "sourceMap": true,
     "module": "commonjs",
-    "strict": false,
+    "strict": true,
     "declaration": false,
     "noImplicitAny": false,
     "removeComments": false,
@@ -19,9 +19,5 @@
     "lib": [
       "esnext"
     ]
-  },
-  "ts-node": {
-    "transpileOnly": true,
-    "swc": true
   }
 }
