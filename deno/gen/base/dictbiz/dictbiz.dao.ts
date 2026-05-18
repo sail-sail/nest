@@ -659,6 +659,7 @@ export async function findByUniqueDictbiz(
     if (canFind) {
       const modelTmps = await findAllDictbiz(
         {
+          tenant_id: search0.tenant_id,
           code,
         },
         undefined,
@@ -677,6 +678,7 @@ export async function findByUniqueDictbiz(
     if (canFind) {
       const modelTmps = await findAllDictbiz(
         {
+          tenant_id: search0.tenant_id,
           lbl,
         },
         undefined,

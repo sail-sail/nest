@@ -61,3 +61,6 @@ docs/.vitepress/dist
 
 **/test.ts
 /.qoder
+
+electron/.dist/
+electron/out/

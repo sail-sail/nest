@@ -649,6 +649,7 @@ export async function findByUniqueDictbizDetail(
     if (canFind) {
       const modelTmps = await findAllDictbizDetail(
         {
+          tenant_id: search0.tenant_id,
           dictbiz_id,
           lbl,
         },

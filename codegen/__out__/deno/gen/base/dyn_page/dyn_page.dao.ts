@@ -605,6 +605,7 @@ export async function findByUniqueDynPage(
     if (canFind) {
       const modelTmps = await findAllDynPage(
         {
+          tenant_id: search0.tenant_id,
           lbl,
         },
         undefined,
@@ -623,6 +624,7 @@ export async function findByUniqueDynPage(
     if (canFind) {
       const modelTmps = await findAllDynPage(
         {
+          tenant_id: search0.tenant_id,
           code,
         },
         undefined,

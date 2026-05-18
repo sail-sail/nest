@@ -614,6 +614,7 @@ export async function findByUniqueOrg(
     if (canFind) {
       const modelTmps = await findAllOrg(
         {
+          tenant_id: search0.tenant_id,
           lbl,
         },
         undefined,

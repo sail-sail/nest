@@ -119,7 +119,7 @@
               :readonly="field_model._attrs.readonly || isLocked || isReadonly"
               @update:model-value="(val: any) => {
                 dialogModel.dyn_page_data = dialogModel.dyn_page_data ?? { };
-                dialogModel.dyn_page_data[field_model.code] = val;
+                (dialogModel.dyn_page_data as any)[field_model.code] = val;
               }"
             ></CustomDynComp>
           </el-form-item>
@@ -391,14 +391,16 @@ watch(
         );
         
         const expr = exprParser.parse(formula2);
-        const newVal = expr.evaluate(model2);
-        const oldVal = oldValue?.dyn_page_data
-          ? oldValue.dyn_page_data[field_model.code]
-          : undefined;
-        if (newVal !== oldVal) {
-          dialogModel.dyn_page_data = dialogModel.dyn_page_data || { };
-          dialogModel.dyn_page_data[field_model.code] = newVal;
-        }
+        try {
+          const newVal = expr.evaluate(model2);
+          const oldVal = oldValue?.dyn_page_data
+            ? oldValue.dyn_page_data[field_model.code]
+            : undefined;
+          if (newVal !== oldVal) {
+            dialogModel.dyn_page_data = dialogModel.dyn_page_data || { };
+            (dialogModel.dyn_page_data as any)[field_model.code] = newVal;
+          }
+        } catch (_err) { /* empty */ }
       } catch (err) {
         ElMessage.error(
           `计算字段 ${field_model.code} 的公式时出错: ${ err }`,
