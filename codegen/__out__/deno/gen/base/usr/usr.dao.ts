@@ -1074,6 +1074,7 @@ export async function findByUniqueUsr(
     if (canFind) {
       const modelTmps = await findAllUsr(
         {
+          tenant_id: search0.tenant_id,
           lbl,
         },
         undefined,
@@ -1092,6 +1093,7 @@ export async function findByUniqueUsr(
     if (canFind) {
       const modelTmps = await findAllUsr(
         {
+          tenant_id: search0.tenant_id,
           username,
         },
         undefined,

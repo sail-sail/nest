@@ -7,7 +7,6 @@ import {
 } from "./StringUtil";
 
 import type {
-  GetStatsOss,
   LoginModel,
 } from "@/typings/types";
 
@@ -329,42 +328,6 @@ export function getDownloadUrlArr(
     downloadUrlArr.push(downloadUrl);
   }
   return downloadUrlArr;
-}
-
-/**
- * 获取附件信息列表, 包括文件名
- */
-export async function getStatsOss(
-  ids: string[],
-  opt?: GqlOpt,
-): Promise<{
-  id: string,
-  lbl: string,
-  contentType?: string,
-  size?: number,
-}[]> {
-  if (ids.length === 0) {
-    return [ ];
-  }
-  const res: {
-    getStatsOss: GetStatsOss[];
-  } = await query({
-    query: /* GraphQL */ `
-      query($ids: [String!]!) {
-        getStatsOss(ids: $ids) {
-          id
-          lbl
-          contentType
-          size
-        }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const data = res.getStatsOss;
-  return data;
 }
 
 /**

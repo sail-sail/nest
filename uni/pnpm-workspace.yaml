@@ -4,4 +4,4 @@ allowBuilds:
   esbuild: true
   vue-demi: true
 overrides:
-  "@vue/shared": "3.5.33"
+  "@vue/shared": "3.5.34"
