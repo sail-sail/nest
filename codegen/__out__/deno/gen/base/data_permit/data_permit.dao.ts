@@ -678,6 +678,7 @@ export async function findByUniqueDataPermit(
     if (canFind) {
       const modelTmps = await findAllDataPermit(
         {
+          tenant_id: search0.tenant_id,
           menu_id,
           scope,
         },

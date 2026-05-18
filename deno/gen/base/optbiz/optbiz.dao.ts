@@ -643,6 +643,7 @@ export async function findByUniqueOptbiz(
     if (canFind) {
       const modelTmps = await findAllOptbiz(
         {
+          tenant_id: search0.tenant_id,
           lbl,
           ky,
         },
