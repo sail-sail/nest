@@ -44,7 +44,7 @@
             v-bind="field_model._attrs"
             @update:model-value="(val: any) => {
               search.dyn_page_data = search.dyn_page_data ?? { };
-              search.dyn_page_data[field_model.code + '_like'] = val;
+              (search.dyn_page_data as any)[field_model.code + '_like'] = val;
             }"
           ></CustomDynComp>
         </el-form-item>

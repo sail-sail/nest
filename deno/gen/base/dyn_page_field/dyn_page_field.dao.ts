@@ -922,6 +922,7 @@ export async function findByUniqueDynPageField(
     if (canFind) {
       const modelTmps = await findAllDynPageField(
         {
+          tenant_id: search0.tenant_id,
           dyn_page_id,
           lbl,
         },
@@ -941,6 +942,7 @@ export async function findByUniqueDynPageField(
     if (canFind) {
       const modelTmps = await findAllDynPageField(
         {
+          tenant_id: search0.tenant_id,
           code,
         },
         undefined,

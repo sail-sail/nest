@@ -23,7 +23,8 @@ src/views/{mod}/{table}/
 - 页面中如果需要调用手写接口, 从 `./Api2.ts` 导入, 以减少与生成代码的 git 冲突
 
 ## 编码规范
-- 异常无需捕获，发起Graphql请求时会自动由全局错误处理器处理
+- GraphQL 请求通常无需手动捕获异常；调用 `query()` / `mutation()` 时会由全局错误处理器统一处理，这条规则不适用于其他异步操作
+- `query()` 会在同一轮 microtask 内自动合并/去重多个查询；彼此独立的查询尽量一起发起，再 `await Promise.all(...)`
 
 ## Query 模板
 
@@ -97,8 +98,6 @@ export async function updateXxx(
 
 ## 核心规则
 
-| 规则 | 说明 |
-|------|------|
-| 类型导入 | 从 `#/types.ts` 导入 `Query`、`Mutation`、`XxxInput` 等,如果是标准的{Table}Model,{Table}Input,{Table}Search就不需要引入,因为已经在Model.ts全局定义了 |
-| 返回类型 | 使用 `Query["xxx"]` 或 `Mutation["xxx"]` 声明 |
-| 命名 | 函数驼峰式，参数蛇形式，与后端保持一致 |
+1. 类型导入：从 `#/types.ts` 导入 `Query`、`Mutation`、`XxxInput` 等 GraphQL 相关类型；标准的 `{Table}Model`、`{Table}Input`、`{Table}Search` 无需额外引入，因为已经在 `Model.ts` 中全局定义。
+2. 返回类型：使用 `Query["xxx"]` 或 `Mutation["xxx"]` 声明返回值。
+3. 命名：函数名用驼峰式，参数名用蛇形式，并与后端保持一致。

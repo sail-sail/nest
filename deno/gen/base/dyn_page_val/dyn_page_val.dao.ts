@@ -510,6 +510,7 @@ export async function findByUniqueDynPageVal(
     if (canFind) {
       const modelTmps = await findAllDynPageVal(
         {
+          tenant_id: search0.tenant_id,
           ref_code,
           ref_id,
           code,
