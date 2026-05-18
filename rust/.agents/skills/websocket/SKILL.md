@@ -56,7 +56,6 @@ generated::common::websocket::websocket_dao::publish(
 
 ## 注意事项
 
-- `publish()` 返回 `()`, 不返回 `Result`, 无需处理推送失败
-- 如果目标客户端未连接, `publish` 内部会静默跳过, 不会报错
-- 一个 clientId 可以连接多个 socket, 通过 connection_id 区分
-- 主题名是大小写敏感的字符串, 建议用驼峰命名
+1. 推送行为: `publish()` 返回 `()`, 不返回 `Result`; 如果目标客户端未连接, `publish` 内部会静默跳过, 不会报错。
+2. 连接模型: 一个 clientId 可以连接多个 socket, 通过 connection_id 区分。
+3. 主题约束: 主题名是大小写敏感的字符串, 建议用驼峰命名。

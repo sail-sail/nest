@@ -1,8 +1,8 @@
 use std::env;
-use color_eyre::eyre::Result;
+use color_eyre::eyre::{Result, eyre};
 use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Command};
 use s3::request::tokio_backend::ReqwestRequest;
-use s3::request::Request;
+use s3::request::{Request, ResponseData, ResponseDataStream};
 
 #[derive(Debug)]
 pub struct StatObject {
@@ -58,11 +58,14 @@ pub async fn put_object<S: AsRef<str>>(
   content: &[u8],
   content_type: &str,
   filename: &str,
-) -> Result<bool> {
+) -> Result<ResponseData> {
   let mut bucket = new_bucket()?;
   bucket.add_header("x-amz-meta-filename", urlencoding::encode(filename).as_ref());
-  bucket.put_object_with_content_type(path.as_ref(), content, content_type).await?;
-  Ok(true)
+  let res: ResponseData = bucket.put_object_with_content_type(path.as_ref(), content, content_type).await?;
+  if res.status_code() == 404 {
+    return Err(eyre!("oss bucket not found, please check .env oss_bucket"));
+  }
+  Ok(res)
 }
 
 pub async fn head_object(
@@ -110,6 +113,27 @@ pub async fn get_object(
   let bucket = new_bucket()?;
   let res = bucket.get_object(path).await?;
   Ok(res.into())
+}
+
+/// 获取对象内容流
+/// 
+/// # Arguments
+/// 
+/// * `path` - 存储路径, 通常是数据库存储的附件 id 号
+/// 
+/// # Returns
+///
+/// 返回对象的内容数据流，如果对象不存在则返回 None
+#[allow(dead_code)]
+pub async fn get_object_stream(
+  path: &str,
+) -> Result<Option<ResponseDataStream>> {
+  let bucket = new_bucket()?;
+  let res: ResponseDataStream = bucket.get_object_stream(path).await?;
+  if res.status_code == 404 {
+    return Ok(None);
+  }
+  Ok(Some(res))
 }
 
 pub async fn delete_object(

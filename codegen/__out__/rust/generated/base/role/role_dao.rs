@@ -1892,6 +1892,7 @@ pub async fn find_by_unique_role(
     vec![]
   } else {
     let search = RoleSearch {
+      tenant_id: search.tenant_id,
       lbl: search.lbl.clone(),
       ..Default::default()
     };
@@ -1911,6 +1912,7 @@ pub async fn find_by_unique_role(
     vec![]
   } else {
     let search = RoleSearch {
+      tenant_id: search.tenant_id,
       code: search.code.clone(),
       ..Default::default()
     };
@@ -2288,7 +2290,7 @@ pub async fn creates_role(
 }
 
 /// 批量创建角色
-#[allow(unused_variables, clippy::redundant_locals)]
+#[allow(unused_variables, clippy::redundant_locals, unused_mut)]
 async fn _creates(
   inputs: Vec<RoleInput>,
   options: Option<Options>,
@@ -2333,6 +2335,9 @@ async fn _creates(
         input.menu_ids.unwrap(),
       ).await?.into();
     }
+    let input = input;
+
+    let mut input = input;
     let input = input;
     
     let old_models = find_by_unique_role(

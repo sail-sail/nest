@@ -2023,7 +2023,7 @@ pub async fn creates_menu(
 }
 
 /// 批量创建菜单
-#[allow(unused_variables, clippy::redundant_locals)]
+#[allow(unused_variables, clippy::redundant_locals, unused_mut)]
 async fn _creates(
   inputs: Vec<MenuInput>,
   options: Option<Options>,
@@ -2047,6 +2047,9 @@ async fn _creates(
     if input.id.is_some() {
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }
+
+    let mut input = input;
+    let input = input;
     
     let old_models = find_by_unique_menu(
       input.clone().into(),

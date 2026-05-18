@@ -10,10 +10,12 @@ declare global {
   
   /** 国际化 */
   interface I18nModel extends I18nModelType {
+    id: I18nId;
   }
   
   /** 国际化 */
   interface I18nInput extends I18nInputType {
+    id?: I18nId;
   }
   
   /** 国际化 */

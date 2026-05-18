@@ -234,20 +234,26 @@ async fn _download(
     "1" => "inline",
     _ => "attachment",
   };
-  let stat = oss_service::head_object(&id).await
-    .ok()
-    .flatten();
-  if stat.is_none() {
-    return Response::builder().status(StatusCode::NOT_FOUND).finish();
-  }
-  let stat = stat.unwrap();
+  let stat = oss_service::head_object(&id).await;
+  let stat = match stat {
+    Ok(stat) => stat,
+    Err(err) => {
+      return Response::builder()
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body(err.to_string());
+    }
+  };
+  let stat = match stat {
+    Some(stat) => stat,
+    None => return Response::builder().status(StatusCode::NOT_FOUND).finish(),
+  };
   if stat.is_public == "0" {
     let auth_model = get_auth_model();
-    if auth_model.is_none() || stat.tenant_id.is_none() {
-      return Response::builder().status(StatusCode::NOT_FOUND).finish();
-    }
-    let auth_model = auth_model.unwrap();
-    if stat.tenant_id.unwrap() != auth_model.tenant_id.as_str() {
+    let auth_model = match auth_model {
+      Some(auth_model) => auth_model,
+      None => return Response::builder().status(StatusCode::NOT_FOUND).finish(),
+    };
+    if stat.tenant_id.as_deref() != Some(auth_model.tenant_id.as_str()) {
       return Response::builder().status(StatusCode::NOT_FOUND).finish();
     }
   }
@@ -287,34 +293,22 @@ async fn _download(
         response = response.status(StatusCode::NOT_MODIFIED);
         return response.finish();
       }
-  // let content = oss_service::get_object(&id).await;
-  // if let Err(err) = content {
-  //   return Response::builder()
-  //     .status(StatusCode::INTERNAL_SERVER_ERROR)
-  //     .body(err.to_string());
-  // }
-  // let content = content.unwrap();
-  // if content.is_none() {
-  //   return Response::builder().status(StatusCode::NOT_FOUND).finish();
-  // }
-  // let content = content.unwrap();
-  // let content: Vec<u8> = content.into();
-  // response = response.header("Content-Length", content.len().to_string());
-  // response.body(content)
   let content = oss_service::get_object_stream(&id).await;
-  if let Err(err) = content {
-    return Response::builder()
-      .status(StatusCode::INTERNAL_SERVER_ERROR)
-      .body(err.to_string());
-  }
-  let content = content.unwrap();
-  if content.is_none() {
-    return Response::builder().status(StatusCode::NOT_FOUND).finish();
-  }
-  let content = content.unwrap();
+  let content = match content {
+    Ok(content) => content,
+    Err(err) => {
+      return Response::builder()
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body(err.to_string());
+    }
+  };
+  let content = match content {
+    Some(content) => content,
+    None => return Response::builder().status(StatusCode::NOT_FOUND).finish(),
+  };
   use futures::StreamExt;
   let byte_stream = content.bytes.map(|result| {
-    result.map_err(|e| std::io::Error::other(e.to_string()))
+    result.map_err(|err| std::io::Error::other(err.to_string()))
   });
   response.body(poem::Body::from_bytes_stream(byte_stream))
 }
@@ -354,7 +348,6 @@ pub struct ImgQuery {
   f: Option<String>,
   w: Option<u32>,
   h: Option<u32>,
-  q: Option<u8>,
 }
 
 async fn _img(
@@ -364,7 +357,6 @@ async fn _img(
     f,
     w,
     h,
-    q,
   }: ImgQuery,
   req: &poem::Request,
 ) -> Response {
@@ -420,6 +412,7 @@ async fn _img(
   } else {
     filename = urlencoding::encode(filename.as_str()).to_string();
   }
+  let format = f.clone().unwrap_or("webp".to_owned());
   let cache_id = {
     let mut id = id.clone();
     if let Some(f) = &f {
@@ -434,13 +427,8 @@ async fn _img(
       id.push_str("-h");
       id.push_str(h.to_string().as_str());
     }
-    if let Some(q) = q {
-      id.push_str("-q");
-      id.push_str(q.to_string().as_str());
-    }
     id
   };
-  let format = f.unwrap_or("webp".to_owned());
   let output_format = match format.as_str() {
     "webp" => ImageFormat::WebP,
     "jpg" => ImageFormat::Jpeg,
@@ -491,20 +479,6 @@ async fn _img(
   };
   if !is_img {
     response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
-    let content = oss_service::get_object(&id).await;
-    if let Err(err) = content {
-      return Response::builder()
-        .status(StatusCode::INTERNAL_SERVER_ERROR)
-        .body(err.to_string());
-    }
-    let content = content.unwrap();
-    if content.is_none() {
-      return Response::builder().status(StatusCode::NOT_FOUND).finish();
-    }
-    let content = content.unwrap();
-    let content: Vec<u8> = content.into();
-    let len = content.len();
-    response = response.header("Content-Length", len.to_string());
     if let Some(last_modified) = &stat.last_modified
       && !last_modified.is_empty() {
         response = response.header("Last-Modified", last_modified);
@@ -513,7 +487,27 @@ async fn _img(
       && !etag.is_empty() {
         response = response.header("ETag", etag);
       }
-    return response.body(content);
+    
+    let content = oss_service::get_object_stream(&id).await;
+    let content = match content {
+      Ok(content) => content,
+      Err(err) => {
+        return Response::builder()
+          .status(StatusCode::INTERNAL_SERVER_ERROR)
+          .body(err.to_string());
+      }
+    };
+    
+    let content = match content {
+      Some(content) => content,
+      None => return Response::builder().status(StatusCode::NOT_FOUND).finish(),
+    };
+    
+    use futures::StreamExt;
+    let byte_stream = content.bytes.map(|result| {
+      result.map_err(|err| std::io::Error::other(err.to_string()))
+    });
+    return response.body(poem::Body::from_bytes_stream(byte_stream));
   }
   
   let stat = tmpfile_dao::head_object(&cache_id).await
@@ -553,17 +547,31 @@ async fn _img(
       && !etag.is_empty() {
         response = response.header("ETag", etag);
       }
-    let content = tmpfile_dao::get_object(&cache_id).await;
-    if let Err(err) = content {
-      return Response::builder()
-        .status(StatusCode::INTERNAL_SERVER_ERROR)
-        .body(err.to_string());
-    }
-    let content = content.unwrap();
-    response = response.header("Content-Length", content.len().to_string());
+    
     response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
     response = response.content_type(content_type);
-    return response.body(content);
+    
+    let content = tmpfile_dao::get_object_stream(&cache_id).await;
+    
+    let content = match content {
+      Ok(content) => content,
+      Err(err) => {
+        return Response::builder()
+          .status(StatusCode::INTERNAL_SERVER_ERROR)
+          .body(err.to_string());
+      }
+    };
+    let content = match content {
+      Some(content) => content,
+      None => return Response::builder().status(StatusCode::NOT_FOUND).finish(),
+    };
+    
+    use futures::StreamExt;
+    let byte_stream = content.bytes.map(|result| {
+      result.map_err(|err| std::io::Error::other(err.to_string()))
+    });
+    
+    return response.body(poem::Body::from_bytes_stream(byte_stream));
   }
   let content = oss_service::get_object(&id).await;
   if let Err(err) = content {
@@ -676,7 +684,6 @@ pub async fn img(
     f,
     w,
     h,
-    q,
   }): Query<ImgQuery>,
   req: &poem::Request,
 ) -> Result<Response> {
@@ -690,7 +697,6 @@ pub async fn img(
         f,
         w,
         h,
-        q,
       }, req)
     }).await
 }

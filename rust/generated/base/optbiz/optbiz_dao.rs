@@ -1459,6 +1459,7 @@ pub async fn find_by_unique_optbiz(
     vec![]
   } else {
     let search = OptbizSearch {
+      tenant_id: search.tenant_id,
       lbl: search.lbl.clone(),
       ky: search.ky.clone(),
       ..Default::default()
@@ -1730,7 +1731,7 @@ pub async fn creates_optbiz(
 }
 
 /// 批量创建业务选项
-#[allow(unused_variables, clippy::redundant_locals)]
+#[allow(unused_variables, clippy::redundant_locals, unused_mut)]
 async fn _creates(
   inputs: Vec<OptbizInput>,
   options: Option<Options>,
@@ -1754,6 +1755,9 @@ async fn _creates(
     if input.id.is_some() {
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }
+
+    let mut input = input;
+    let input = input;
     
     let old_models = find_by_unique_optbiz(
       input.clone().into(),

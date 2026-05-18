@@ -1213,6 +1213,7 @@ pub async fn find_by_unique_dyn_page_val(
     vec![]
   } else {
     let search = DynPageValSearch {
+      tenant_id: search.tenant_id,
       ref_code: search.ref_code.clone(),
       ref_id: search.ref_id.clone(),
       code: search.code.clone(),
@@ -1401,7 +1402,7 @@ pub async fn creates_dyn_page_val(
 }
 
 /// 批量创建动态页面值
-#[allow(unused_variables, clippy::redundant_locals)]
+#[allow(unused_variables, clippy::redundant_locals, unused_mut)]
 async fn _creates(
   inputs: Vec<DynPageValInput>,
   options: Option<Options>,
@@ -1425,6 +1426,9 @@ async fn _creates(
     if input.id.is_some() {
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }
+
+    let mut input = input;
+    let input = input;
     
     let old_models = find_by_unique_dyn_page_val(
       input.clone().into(),

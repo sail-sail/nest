@@ -42,21 +42,24 @@ const pluginsH5: PluginOption[] = [ ];
 const isH5 = process.env.UNI_PLATFORM === "h5";
 
 if (isH5) {
-  pluginsH5.push(
-    TurboConsole({
-      inspector: false,
-    }) as any,
-  );
-  pluginsH5.push(
-    Inspector({
-      toggleButtonPos: "top-left",
-    }) as any,
-  );
-  pluginsH5.push(
-    webUpdateNotice({
-      versionType: "build_timestamp",
-    }),
-  );
+  if (process.env.NODE_ENV === "development") {
+    pluginsH5.push(
+      TurboConsole({
+        inspector: false,
+      }),
+    );
+    pluginsH5.push(
+      Inspector({
+        toggleButtonPos: "top-left",
+      }) as any,
+    );
+  } else {
+    pluginsH5.push(
+      webUpdateNotice({
+        versionType: "build_timestamp",
+      }),
+    );
+  }
 }
 
 // https://vitejs.dev/config/
@@ -110,7 +113,6 @@ export default defineConfig({
             "uploadFile",
             "getDownloadUrl",
             "getDownloadUrlArr",
-            "getStatsOss",
             "getImgUrl",
             "getImgUrlArr",
             "downloadFile",
@@ -119,6 +121,7 @@ export default defineConfig({
           "@/utils/graphql.ts": [
             "query",
             "mutation",
+            "getStatsOss",
           ],
           "@/pages/index/Api.ts": [
             "checkLogin",
@@ -158,6 +161,13 @@ export default defineConfig({
   },
   define: {
     
+  },
+  build: {
+    rollupOptions: {
+      external: [
+        "@vue/devtools-kit",
+      ],
+    },
   },
   server: {
     port: 4002,

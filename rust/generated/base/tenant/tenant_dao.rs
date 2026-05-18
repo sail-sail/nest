@@ -2173,7 +2173,7 @@ pub async fn creates_tenant(
 }
 
 /// 批量创建租户
-#[allow(unused_variables, clippy::redundant_locals)]
+#[allow(unused_variables, clippy::redundant_locals, unused_mut)]
 async fn _creates(
   inputs: Vec<TenantInput>,
   options: Option<Options>,
@@ -2211,6 +2211,23 @@ async fn _creates(
     if input.id.is_some() {
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }
+
+    let mut input = input;
+
+    // 语言
+    if (input.lang_id_lbl.is_none() || input.lang_id_lbl.as_ref().unwrap().is_empty())
+      && input.lang_id.is_some()
+      && !input.lang_id.as_ref().unwrap().is_empty()
+    {
+      let lang_model = crate::base::lang::lang_dao::find_by_id_lang(
+        input.lang_id.clone().unwrap(),
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(lang_model) = lang_model {
+        input.lang_id_lbl = lang_model.lbl.into();
+      }
+    }
+    let input = input;
     
     let old_models = find_by_unique_tenant(
       input.clone().into(),
@@ -2821,6 +2838,20 @@ pub async fn update_by_id_tenant(
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
+
+  // 语言
+  if (input.lang_id_lbl.is_none() || input.lang_id_lbl.as_ref().unwrap().is_empty())
+    && input.lang_id.is_some()
+    && !input.lang_id.as_ref().unwrap().is_empty()
+  {
+    let lang_model = crate::base::lang::lang_dao::find_by_id_lang(
+      input.lang_id.clone().unwrap(),
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(lang_model) = lang_model {
+      input.lang_id_lbl = lang_model.lbl.into();
+    }
+  }
   
   let old_model = find_by_id_tenant(
     id,
