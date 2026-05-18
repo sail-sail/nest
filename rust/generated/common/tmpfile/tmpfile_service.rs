@@ -1,4 +1,5 @@
 use color_eyre::eyre::Result;
+use s3::request::ResponseData;
 
 use super::tmpfile_dao::{self, StatObject};
 
@@ -10,7 +11,7 @@ pub async fn put_object<S: AsRef<str>>(
   content: &[u8],
   content_type: &str,
   filename: &str,
-) -> Result<bool> {
+) -> Result<ResponseData> {
   let res = tmpfile_dao::put_object(path, content, content_type, filename).await?;
   Ok(res)
 }

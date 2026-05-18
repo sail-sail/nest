@@ -207,7 +207,7 @@ export async function createsI18n(
       unique_type,
     },
   }, opt);
-  const ids = data.createsI18n;
+  const ids = data.createsI18n as I18nId[];
   return ids;
 }
 
@@ -224,7 +224,7 @@ export async function updateByIdI18n(
     updateByIdI18n: Mutation["updateByIdI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: I18nId!, $input: I18nInput!) {
+      mutation($id: I18Nid!, $input: I18nInput!) {
         updateByIdI18n(id: $id, input: $input)
       }
     `,
@@ -233,7 +233,7 @@ export async function updateByIdI18n(
       input,
     },
   }, opt);
-  const id2: I18nId = data.updateByIdI18n;
+  const id2: I18nId = data.updateByIdI18n as I18nId;
   return id2;
 }
 
@@ -389,7 +389,7 @@ export async function deleteByIdsI18n(
     deleteByIdsI18n: Mutation["deleteByIdsI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [I18nId!]!) {
+      mutation($ids: [I18Nid!]!) {
         deleteByIdsI18n(ids: $ids)
       }
     `,
@@ -415,7 +415,7 @@ export async function revertByIdsI18n(
     revertByIdsI18n: Mutation["revertByIdsI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [I18nId!]!) {
+      mutation($ids: [I18Nid!]!) {
         revertByIdsI18n(ids: $ids)
       }
     `,
@@ -441,7 +441,7 @@ export async function forceDeleteByIdsI18n(
     forceDeleteByIdsI18n: Mutation["forceDeleteByIdsI18n"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($ids: [I18nId!]!) {
+      mutation($ids: [I18Nid!]!) {
         forceDeleteByIdsI18n(ids: $ids)
       }
     `,

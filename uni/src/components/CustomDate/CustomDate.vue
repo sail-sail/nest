@@ -2,9 +2,9 @@
 <tm-picker-date
   v-bind="$attrs"
   v-model="pickerModelValue"
-  v-model:model-str="modelValueStr"
+  v-model:model-str="modelStr"
   :format="props.format"
-  :format-sync-value="pickerFormatSyncValue"
+  :format-sync-value="props.formatSyncValue"
   class="custom_date"
   :class="{
     'custom_date_readonly': readonly,
@@ -13,7 +13,7 @@
   :disabled="readonly"
 >
   <CustomInput
-    v-model="modelValueStr"
+    v-model="modelStr"
     readonly
     :clearable="props.clearable == null ? (readonly ? false : true) : props.clearable"
     :readonly-placeholder="(readonly || !props.pageInited) ? (props.pageInited ? props.readonlyPlaceholder : '') : props.placeholder"
@@ -69,14 +69,7 @@ const readonly = $computed(() => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const modelValue = defineModel<any>();
-const modelValueStr = defineModel<string>("modelValueStr");
-
-const pickerFormatSyncValue = $computed(() => {
-  if (props.valueFormat) {
-    return false;
-  }
-  return props.formatSyncValue;
-});
+const modelStr = defineModel<string>("modelStr");
 
 const coverModelValueToPickerValue = (value?: string) => {
   if (!value || !props.valueFormat) {
