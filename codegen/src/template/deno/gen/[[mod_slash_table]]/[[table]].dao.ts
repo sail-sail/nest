@@ -3301,6 +3301,11 @@ export async function findByUnique<#=Table_Up#>(
     if (canFind) {
       const modelTmps = await findAll<#=Table_Up#>(
         {<#
+          if (hasTenant_id && !uniques.includes("tenant_id")) {
+          #>
+          tenant_id: search0.tenant_id,<#
+          }
+          #><#
           for (let k = 0; k < uniques.length; k++) {
             const unique = uniques[k];
           #>
@@ -4655,7 +4660,68 @@ async function _creates(
   
     if (input.id) {
       throw new Error(`Can not set id when create in dao: ${ table }`);
+    }<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
+      ) continue;
+      if (
+        column_name === "create_usr_id" ||
+        column_name === "create_time" ||
+        column_name === "update_usr_id" ||
+        column_name === "update_time"
+      ) continue;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const modelLabel = column.modelLabel;
+    #><#
+      if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl && modelLabel) {
+    #>
+
+    // <#=column_comment#>
+    if (isEmpty(input.<#=modelLabel#>) && isNotEmpty(input.<#=column_name#>)) {<#
+        if (foreignTable === table) {
+      #>
+      const <#=foreignTable#>_model = await findById<#=foreignTable_Up#>(
+        input.<#=column_name#>,
+        {
+          is_debug: false,
+        },
+      );<#
+        } else {
+      #>
+      const <#=foreignTable#>_model = await findOne<#=foreignTable_Up#>(
+        {
+          id: input.<#=column_name#>,
+        },
+        undefined,
+        {
+          is_debug: false,
+        },
+      );<#
+        }
+      #>
+      if (<#=foreignTable#>_model) {
+        input.<#=modelLabel#> = <#=foreignTable#>_model.<#=foreignKey.lbl#>;
+      }
+    }<#
+      }
+    #><#
     }
+    #>
     
     const oldModels = await findByUnique<#=Table_Up#>(input, options);
     if (oldModels.length > 0) {
@@ -5873,6 +5939,71 @@ export async function updateById<#=Table_Up#>(
   if (!input) {
     throw new Error("updateById<#=Table_Up#>: input cannot be null");
   }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (
+      [
+        "tenant_id",
+        "is_sys",
+        "is_deleted",
+        "is_hidden",
+      ].includes(column_name)
+    ) continue;
+    if (
+      [
+        "create_usr_id",
+        "create_time",
+        "update_usr_id",
+        "update_time",
+      ].includes(column_name)
+    ) continue;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const modelLabel = column.modelLabel;
+  #><#
+    if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl && modelLabel) {
+  #>
+
+  // <#=column_comment#>
+  if (isEmpty(input.<#=modelLabel#>) && isNotEmpty(input.<#=column_name#>)) {<#
+      if (foreignTable === table) {
+    #>
+    const <#=foreignTable#>_model = await findById<#=foreignTable_Up#>(
+      input.<#=column_name#>,
+      {
+        is_debug: false,
+      },
+    );<#
+      } else {
+    #>
+    const <#=foreignTable#>_model = await findOne<#=foreignTable_Up#>(
+      {
+        id: input.<#=column_name#>,
+      },
+      undefined,
+      {
+        is_debug: false,
+      },
+    );<#
+      }
+    #>
+    if (<#=foreignTable#>_model) {
+      input.<#=modelLabel#> = <#=foreignTable#>_model.<#=foreignKey.lbl#>;
+    }
+  }<#
+    }
+  #><#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;

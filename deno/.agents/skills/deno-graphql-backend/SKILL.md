@@ -5,6 +5,8 @@ description: Deno GraphQL 后端接口的完整开发指南. 当需要创建、�
 
 # GraphQL 接口开发
 
+按 GraphQL 定义 -> Resolver 转发 -> Service 业务处理 -> 模块注册 的顺序开发, 每次只处理当前层职责。
+
 ## 分层架构
 
 | 层 | 文件 | 职责 |
@@ -16,6 +18,8 @@ description: Deno GraphQL 后端接口的完整开发指南. 当需要创建、�
 | DAO | `{table}.dao.ts` | 数据库操作(一般无需手动改动, 已自动生成常用 DAO 函数) |
 
 ## GraphQL 层
+
+这一层只定义类型、Query/Mutation 签名, 不写业务逻辑。
 
 ```typescript
 import { defineGraphql } from "/lib/context.ts";
@@ -49,6 +53,8 @@ defineGraphql(resolver, /* GraphQL */ `
 ```
 
 ## Resolver 层
+
+这一层只做参数解构、延迟导入、事务和认证设置。
 
 ```typescript
 import {
@@ -97,6 +103,8 @@ export async function publicApi() {
 ```
 
 ## Service 层
+
+这一层只处理参数校验、DAO 调用和业务编排。
 
 ```typescript
 import {
@@ -158,20 +166,16 @@ export async function methodName(
     ], // 一般无需排序参数传入 undefined 即可, 建表时已加默认排序
   );
 
-  // 业务操作, 业务操作过程中如果不清楚表结构则可以到这里查看表结构 `codegen/src/tables/{mod}/{mod}.sql`, `codegen/src/tables/{mod}/{mod}.ts`
-  // 注意: 业务逻辑开发过程中, 不需要写太多注释, 关键位置写一点业务注释即可
+  // 业务操作, 如果不清楚表结构则查看 `codegen/src/tables/{mod}/{mod}.sql`, `codegen/src/tables/{mod}/{mod}.ts`
 
   return {table}_models;
 }
 ```
 
-- 已有表的 Model/Input/Search 不要重复定义
-- {Table}Id, {Table}Input, {Table}Search 无需import可直接使用, 自动生成在 `{table}.model.ts` 中全局 `declare global { }` 类型定义
-- 主动抛出业务异常 ServiceException(message?: string, code?: string, _rollback?: boolean, _showStack = false) `lib/exceptions/service.exception.ts`: _rollback 是否回滚事务, 默认为 true, _showStack 是否打印堆栈信息, 默认为 false
-
-- 如需操作附件, 则使用 [oss.dao.ts](../../../lib/oss/oss.dao.ts) 提供的函数进行操作
-
-- 函数定义和调用时, 多个参数时要换行
+1. 类型复用: 已有表的 Model/Input/Search 不要重复定义; `{Table}Id`, `{Table}Input`, `{Table}Search` 无需 import 可直接使用, 自动生成在 `{table}.model.ts` 的全局 `declare global { }` 类型定义中。
+2. 异常处理: 主动抛出业务异常 ServiceException(message?: string, code?: string, _rollback?: boolean, _showStack = false) `lib/exceptions/service.exception.ts`; `_rollback` 是否回滚事务, 默认为 true, `_showStack` 是否打印堆栈信息, 默认为 false。DAO 返回 `undefined`、记录数不符、更新结果异常等与预期不一致时, 先记录关键入参和返回值, 再抛出 ServiceException, 不要静默跳过。
+3. 资源操作: 如需操作附件, 则使用 [oss.dao.ts](../../../lib/oss/oss.dao.ts) 提供的函数进行操作。
+4. 代码风格: 函数定义和调用时, 多个参数时要换行; 业务逻辑开发过程中, 不需要写太多注释, 关键位置写少量业务注释即可。
 
 ## 注册模块
 

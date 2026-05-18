@@ -33,18 +33,3 @@ pay_order(
   success_time
 );
 ```
-
-## mcp 相关规范
-- 可用 utcp 查询工具
-
-## UTCP Code-Mode 规则
-
-⚠️ **命名空间直接访问**：工具通过命名空间暴露，**禁止使用 `manual.` 前缀,`manual.tool` 只是语法占位符,运行时不存在 manual 对象**
-
-```ts
-// ❌ 错误
-await manual.chrome_devtools_mcp.tool()
-
-// ✅ 正确  
-await chrome_devtools_mcp.chrome_devtools_tool()
-```
