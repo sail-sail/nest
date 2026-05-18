@@ -537,11 +537,12 @@ const onConfirm = () => {
 
 
 watch(() => props.modelValue, (newvalue: string) => {
+	emit('update:modelStr', formatTimeDate());
 	if (newvalue == '') return;
 	let isType = _getDateType.value;
 	if (new tmDate(newvalue).isBetweenOf(new tmDate(nowValueStr.value), '=', isType)) return;
 
-	defaultModelvalue(new tmDate(newvalue).format('YYYY/MM/DD HH:mm:ss'), true);
+	defaultModelvalue(new tmDate(newvalue).format('YYYY/MM/DD HH:mm:ss'), false);
 });
 
 watch(() => props.modelShow, (newValue: boolean) => {

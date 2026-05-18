@@ -1014,6 +1014,7 @@ export async function findByUniqueRole(
     if (canFind) {
       const modelTmps = await findAllRole(
         {
+          tenant_id: search0.tenant_id,
           lbl,
         },
         undefined,
@@ -1032,6 +1033,7 @@ export async function findByUniqueRole(
     if (canFind) {
       const modelTmps = await findAllRole(
         {
+          tenant_id: search0.tenant_id,
           code,
         },
         undefined,

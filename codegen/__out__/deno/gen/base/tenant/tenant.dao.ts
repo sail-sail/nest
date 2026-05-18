@@ -1711,6 +1711,22 @@ async function _creates(
     if (input.id) {
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
+
+    // 语言
+    if (isEmpty(input.lang_id_lbl) && isNotEmpty(input.lang_id)) {
+      const lang_model = await findOneLang(
+        {
+          id: input.lang_id,
+        },
+        undefined,
+        {
+          is_debug: false,
+        },
+      );
+      if (lang_model) {
+        input.lang_id_lbl = lang_model.lbl;
+      }
+    }
     
     const oldModels = await findByUniqueTenant(input, options);
     if (oldModels.length > 0) {
@@ -2061,6 +2077,22 @@ export async function updateByIdTenant(
   }
   if (!input) {
     throw new Error("updateByIdTenant: input cannot be null");
+  }
+
+  // 语言
+  if (isEmpty(input.lang_id_lbl) && isNotEmpty(input.lang_id)) {
+    const lang_model = await findOneLang(
+      {
+        id: input.lang_id,
+      },
+      undefined,
+      {
+        is_debug: false,
+      },
+    );
+    if (lang_model) {
+      input.lang_id_lbl = lang_model.lbl;
+    }
   }
   
   {

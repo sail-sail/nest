@@ -860,6 +860,7 @@ export async function findByUniqueDept(
     if (canFind) {
       const modelTmps = await findAllDept(
         {
+          tenant_id: search0.tenant_id,
           parent_id,
           lbl,
         },
@@ -1565,6 +1566,22 @@ async function _creates(
     if (input.id) {
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
+
+    // 组织
+    if (isEmpty(input.org_id_lbl) && isNotEmpty(input.org_id)) {
+      const org_model = await findOneOrg(
+        {
+          id: input.org_id,
+        },
+        undefined,
+        {
+          is_debug: false,
+        },
+      );
+      if (org_model) {
+        input.org_id_lbl = org_model.lbl;
+      }
+    }
     
     const oldModels = await findByUniqueDept(input, options);
     if (oldModels.length > 0) {
@@ -1939,6 +1956,22 @@ export async function updateByIdDept(
   }
   if (!input) {
     throw new Error("updateByIdDept: input cannot be null");
+  }
+
+  // 组织
+  if (isEmpty(input.org_id_lbl) && isNotEmpty(input.org_id)) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      {
+        is_debug: false,
+      },
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
+    }
   }
   
   // 修改租户id
