@@ -178,6 +178,7 @@ export default defineConfig({
         COLUMN_NAME: "lang_id",
         align: "center",
         modelLabel: "lang_id_lbl",
+        isCascadeUpdateModelLabel: true,
       },
       {
         COLUMN_NAME: "is_locked",

@@ -92,8 +92,9 @@
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
   "editor.quickSuggestionsDelay": 0,
-  "typescript.suggest.autoImports": false,
-  "typescript.updateImportsOnFileMove.enabled": "never",
+  "js/ts.suggest.autoImports": false,
+  "js/ts.updateImportsOnFileMove.enabled": "never",
+  "editor.autoIndent": "keep",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   }
