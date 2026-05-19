@@ -14,16 +14,15 @@ metadata:
 - 组合多个 generated DAO 做聚合查询或特殊流程
 - 增加业务校验、日志、权限、事务
 - 在 `app/{mod}/{table}/` 中新增 `*_graphql.rs`、`*_resolver.rs`、`*_service.rs`、`*_model.rs`
-- rust编译慢可慢慢等
 
 ## 修改决策顺序
 
-| 步骤 | 判断条件 | 处理动作 |
-|------|------|------|
-| 1 | 属于业务接口或流程编排（Query/Mutation/聚合查询/业务校验/日志/事务） | 默认写在 `app/{mod}/{table}/` |
-| 2 | 需要前端调用自定义 GraphQL 接口 | PC 写 `src/views/{mod}/{table}/Api2.ts`，uni 写 `src/pages/{table}/Api2.ts`，不要改生成的 `Api.ts` |
-| 3 | `app/` 在技术边界上无法承载（必须补基础 DAO/Model/Service 能力）且该能力要被多个 `generated/` 文件复用 | 才扩展 `generated/` |
-| 4 | 已确定要扩展 `generated/` | 优先新增 `*_dao2.rs`、`*_service2.rs`、`*_resolver2.rs`、`*_model2.rs` 并在 `mod.rs` 显式 `pub mod ...`；仅在确需 `generated/` 复用 GraphQL 接口时才加 `generated/*_graphql.rs` |
+1. 先判断是否为业务接口或流程编排（Query/Mutation/聚合查询/业务校验/日志/事务）：是则默认写在 `app/{mod}/{table}/`。
+2. 若需要前端调用自定义 GraphQL：PC 写 `src/views/{mod}/{table}/Api2.ts`，uni 写 `src/pages/{table}/Api2.ts`，不要改生成的 `Api.ts`。
+3. 仅当同时满足以下两个条件才扩展 `generated/`：
+  - `app/` 因技术限制无法直接完成该能力（例如必须补基础 DAO/Model/Service）；
+  - 该能力需要被多个 `generated/` 文件直接复用。
+4. 扩展 `generated/` 时，优先新增 `*_dao2.rs`、`*_service2.rs`、`*_resolver2.rs`、`*_model2.rs` 并在 `mod.rs` 显式 `pub mod ...`；仅在确需让 `generated/` 复用 GraphQL 接口时才加 `generated/*_graphql.rs`。
 
 ## 目录边界
 
