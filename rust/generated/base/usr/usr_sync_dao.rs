@@ -59,6 +59,8 @@ use crate::base::dyn_page_val::dyn_page_val_dao::sync_usr_lbl_by_usr_id_dyn_page
 
 use crate::base::dyn_page_data::dyn_page_data_dao::sync_usr_lbl_by_usr_id_dyn_page_data;
 
+use crate::nuxt::seo::seo_dao::sync_usr_lbl_by_usr_id_seo;
+
 /// 根据 usr_id 同步所有表中的创建人/更新人/删除人标签
 pub async fn sync_usr_lbl_by_usr_id(
   usr_id: UsrId,
@@ -201,6 +203,11 @@ pub async fn sync_usr_lbl_by_usr_id(
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dyn_page_data(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_seo(
     usr_id.clone(),
     options,
   ).await?;
