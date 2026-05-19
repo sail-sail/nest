@@ -1,0 +1,13 @@
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@nuxt/kit@4.4.6'
+  - '@nuxt/nitro-server@4.4.6'
+  - '@nuxt/schema@4.4.6'
+  - '@nuxt/vite-builder@4.4.6'
+  - '@types/node@25.9.0'
+  - '@vue/language-core@3.3.0'
+  - nuxt@4.4.6
+  - vue-tsc@3.3.0
