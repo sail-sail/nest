@@ -772,6 +772,22 @@ use crate::base::usr::usr_dao::find_by_id_usr;<#
 #><#
 }
 #><#
+if (
+  (hasCreateUsrId && hasCreateUsrIdLbl)
+  || (hasUpdateUsrId && hasUpdateUsrIdLbl)
+  || (hasDeleteUsrId && hasDeleteUsrIdLbl)
+  || opts?.uniques?.some((item) => item.includes("create_usr_id"))
+) {
+#><#
+if (!modelIds.includes("UsrId")) {
+  modelIds.push("UsrId");
+#>
+
+use crate::base::usr::usr_model::UsrId;<#
+}
+#><#
+}
+#><#
 if (opts?.isUseDynPageFields) {
 #>
 
