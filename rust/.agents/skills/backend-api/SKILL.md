@@ -14,26 +14,16 @@ metadata:
 - 组合多个 generated DAO 做聚合查询或特殊流程
 - 增加业务校验、日志、权限、事务
 - 在 `app/{mod}/{table}/` 中新增 `*_graphql.rs`、`*_resolver.rs`、`*_service.rs`、`*_model.rs`
-- 只有当 `app/` 无法承载，且能力需要被 generated 内部复用时，才扩展 `generated/`
 - rust编译慢可慢慢等
 
 ## 修改决策顺序
 
-1. 先判断是否属于业务接口或流程编排
-
-  如果是新增 Query、Mutation、聚合查询、业务校验、日志或事务，默认放在 `app/{mod}/{table}/`。例如：订单聚合详情、带权限校验的提交流程。
-
-2. 再判断前端调用入口
-
-  PC 写到 `src/views/{mod}/{table}/Api2.ts`，uni 写到 `src/pages/{table}/Api2.ts`，不要改生成的 `Api.ts`。例如：列表页新增自定义筛选接口时，前端调用放在 `Api2.ts`。
-
-3. 只有 `app/` 无法承载，且 `generated/` 内部也要复用时，才补 `generated/`
-
-  典型场景是补基础 DAO、Model、Service 能力，且该能力会被多个 generated 文件继续调用。若只是单个业务接口使用，仍放在 `app/`。
-
-4. 必须扩展 `generated/` 时，优先加同级扩展文件
-
-  使用 `*_dao2.rs`、`*_service2.rs`、`*_resolver2.rs`、`*_model2.rs` 这类文件名，并在对应 `mod.rs` 中显式 `pub mod ...`。仅在明确需要让 `generated/` 侧复用 GraphQL 接口时，才在 `generated/*_graphql.rs` 中添加。
+| 步骤 | 判断条件 | 处理动作 |
+|------|------|------|
+| 1 | 属于业务接口或流程编排（Query/Mutation/聚合查询/业务校验/日志/事务） | 默认写在 `app/{mod}/{table}/` |
+| 2 | 需要前端调用自定义 GraphQL 接口 | PC 写 `src/views/{mod}/{table}/Api2.ts`，uni 写 `src/pages/{table}/Api2.ts`，不要改生成的 `Api.ts` |
+| 3 | `app/` 在技术边界上无法承载（必须补基础 DAO/Model/Service 能力）且该能力要被多个 `generated/` 文件复用 | 才扩展 `generated/` |
+| 4 | 已确定要扩展 `generated/` | 优先新增 `*_dao2.rs`、`*_service2.rs`、`*_resolver2.rs`、`*_model2.rs` 并在 `mod.rs` 显式 `pub mod ...`；仅在确需 `generated/` 复用 GraphQL 接口时才加 `generated/*_graphql.rs` |
 
 ## 目录边界
 
@@ -183,6 +173,8 @@ pub async fn method_name(
 | `force_delete_by_ids_{table}` | 彻底删除 |
 | `validate_option_{table}` | 校验 `None` |
 | `validate_is_enabled_{table}` | 校验是否启用 |
+
+- 对于有逻辑删除字段 `is_deleted` 的表，只有被删除 `delete_by_ids_{table}` 的记录才能被彻底删除 `force_delete_by_ids_{table}`，否则被跳过不删除也不报错
 
 ## 常用上下文函数
 
