@@ -1,8 +1,6 @@
 
-const config: {
-  indexIsEmpty?: boolean;
-} = {
+const config = $ref({
   indexIsEmpty: true,
-};
+});
 
 export default config;
