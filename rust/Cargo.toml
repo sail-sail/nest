@@ -175,7 +175,7 @@ members = [
 resolver = "2"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
-tikv-jemallocator = "0.6.0"
+tikv-jemallocator = "0.6.1"
 
 # [build-dependencies]
 # protobuf-codegen = "3.7.1"
