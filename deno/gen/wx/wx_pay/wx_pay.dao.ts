@@ -691,44 +691,6 @@ export async function findByUniqueWxPay(
       models.push(...modelTmps);
     }
   }
-  {
-    let canFind = true;
-    if (search0.notify_url == null) {
-      canFind = false;
-    }
-    const notify_url = search0.notify_url;
-    if (canFind) {
-      const modelTmps = await findAllWxPay(
-        {
-          tenant_id: search0.tenant_id,
-          notify_url,
-        },
-        undefined,
-        undefined,
-        options,
-      );
-      models.push(...modelTmps);
-    }
-  }
-  {
-    let canFind = true;
-    if (search0.refund_notify_url == null) {
-      canFind = false;
-    }
-    const refund_notify_url = search0.refund_notify_url;
-    if (canFind) {
-      const modelTmps = await findAllWxPay(
-        {
-          tenant_id: search0.tenant_id,
-          refund_notify_url,
-        },
-        undefined,
-        undefined,
-        options,
-      );
-      models.push(...modelTmps);
-    }
-  }
   
   return models;
 }
@@ -744,16 +706,6 @@ export function equalsByUniqueWxPay(
   }
   if (
     oldModel.appid === input.appid
-  ) {
-    return true;
-  }
-  if (
-    oldModel.notify_url === input.notify_url
-  ) {
-    return true;
-  }
-  if (
-    oldModel.refund_notify_url === input.refund_notify_url
   ) {
     return true;
   }
