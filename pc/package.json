@@ -10,7 +10,7 @@
     "build-test": "set NODE_OPTIONS=--max-old-space-size=4096 && vp build --mode test --emptyOutDir && node src/utils/postbuild.js",
     "permit": "node src/utils/permit_scan.js",
     "rsw:build": "rsw && npm run build",
-    "typecheck": "set NODE_OPTIONS=--max-old-space-size=4096 && vue-tsc --noEmit --skipLibCheck && vp lint .",
+    "typecheck": "set NODE_OPTIONS=--max-old-space-size=4096 && vue-tsc --noEmit --skipLibCheck && oxlint .",
     "lint": "vp lint .",
     "lint-staged": "lint-staged",
     "codegen": "cd .. && npm run codegen",
@@ -20,12 +20,11 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.3.2",
+    "@flyfish-group/file-viewer3": "1.0.9",
     "@jsquash/resize": "2.1.1",
     "@jsquash/webp": "1.5.0",
     "@opentiny/fluent-editor": "3.25.11",
     "@qr-x/vue": "1.1.1",
-    "@vue-office/docx": "1.6.3",
-    "@vue-office/excel": "1.7.14",
     "@vue/reactivity": "3.5.34",
     "@vue/runtime-dom": "3.5.34",
     "@vue/shared": "3.5.34",
@@ -58,7 +57,7 @@
   "devDependencies": {
     "@plugin-web-update-notification/vite": "2.1.0",
     "@types/file-saver": "2.0.7",
-    "@types/node": "25.8.0",
+    "@types/node": "25.9.0",
     "@types/sortablejs": "1.15.9",
     "@unocss/preset-rem-to-px": "66.6.8",
     "@vitejs/plugin-vue": "6.0.7",
@@ -70,7 +69,7 @@
     "dotenv": "17.4.2",
     "globals": "17.6.0",
     "mysql2": "3.22.3",
-    "oxlint": "1.65.0",
+    "oxlint": "1.66.0",
     "sass": "1.99.0",
     "spark-md5": "3.0.2",
     "svgo": "4.0.1",
@@ -90,6 +89,6 @@
     "vite-plugin-wasm": "3.6.0",
     "vite-plus": "latest",
     "vitest": "npm:@voidzero-dev/vite-plus-test@latest",
-    "vue-tsc": "3.2.9"
+    "vue-tsc": "3.3.1"
   }
 }

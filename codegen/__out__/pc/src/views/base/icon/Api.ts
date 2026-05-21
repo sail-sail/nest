@@ -26,6 +26,8 @@ export async function setLblByIdIcon(
     model.img_lbl = location.origin + getImgUrl({
       id: model.img,
       height: 100,
+    }, {
+      notAuthorization: true,
     });
   }
 }

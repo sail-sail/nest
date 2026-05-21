@@ -42,20 +42,22 @@ const menuStore = useMenuStore();
 
 export default function() {
   
-  if (config.indexIsEmpty && !indexIsEmptyHandle) {
+  if (!indexIsEmptyHandle) {
     indexIsEmptyHandle = watch(
-      () => tabs.value.length,
-      async () => {
+      () => [
+        tabs.value.length,
+        config.indexIsEmpty,
+      ],
+      () => {
+        if (config.indexIsEmpty) {
+          removeIndexTab();
+          return;
+        }
         if (tabs.value.length === 0) {
           setIndexTab(true);
           return;
         }
-        await removeTab(
-          {
-            name: "首页",
-            path: "/index",
-          },
-        );
+        setIndexTab(false);
       },
     );
   }
@@ -218,7 +220,7 @@ export default function() {
           if (!router) {
             router = useRouter();
           }
-          await router.replace({ path: "/", query: { } });
+          await router?.replace({ path: "/", query: { } });
         }
       }
     }
@@ -369,6 +371,27 @@ export default function() {
     }
   }
   
+  function removeIndexTab() {
+    const tab = findTab({
+      path: "/index",
+    });
+    if (tab) {
+      const idx = tabs.value.findIndex((item: TabInf) => {
+        return tabEqual(item, tab);
+      });
+      removeFromHistory(tab);
+      setTimeout(() => {
+        if (idx !== -1) {
+          const idx2 = keepAliveNames.value.findIndex((item) => item === tab.name);
+          if (idx2 !== -1) {
+            keepAliveNames.value.splice(idx2, 1);
+          }
+          tabs.value.splice(idx, 1);
+        }
+      }, 0);
+    }
+  }
+  
   async function openPageByRouteName(
     router: Router,
     route0: RouteLocationNormalizedLoadedGeneric,
@@ -457,6 +480,7 @@ export default function() {
     closeOtherTabs,
     closeCurrentTab,
     setIndexTab,
+    removeIndexTab,
     moveTab,
     reset,
     get keepAliveNames() {
