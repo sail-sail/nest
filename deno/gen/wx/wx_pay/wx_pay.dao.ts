@@ -674,6 +674,25 @@ export async function findByUniqueWxPay(
   const models: WxPayModel[] = [ ];
   {
     let canFind = true;
+    if (search0.lbl == null) {
+      canFind = false;
+    }
+    const lbl = search0.lbl;
+    if (canFind) {
+      const modelTmps = await findAllWxPay(
+        {
+          tenant_id: search0.tenant_id,
+          lbl,
+        },
+        undefined,
+        undefined,
+        options,
+      );
+      models.push(...modelTmps);
+    }
+  }
+  {
+    let canFind = true;
     if (search0.appid == null) {
       canFind = false;
     }
@@ -703,6 +722,11 @@ export function equalsByUniqueWxPay(
   
   if (!oldModel || !input) {
     return false;
+  }
+  if (
+    oldModel.lbl === input.lbl
+  ) {
+    return true;
   }
   if (
     oldModel.appid === input.appid
