@@ -72,11 +72,13 @@ import { Pagination, A11y } from "swiper/modules";
 
 import { Swiper, SwiperSlide } from "swiper/vue";
 
-import { getComponent } from "@/router/util";
+import { getComponent } from "@/router/util.ts";
 
 import {
   getHomeUrls,
-} from "@/components/Api";
+} from "@/components/Api.ts";
+
+import config from "@/utils/config.ts";
 
 defineOptions({
   name: "首页",
@@ -94,12 +96,13 @@ const tabLen = $computed(() => tabStore.tabs.length);
 let errMsg = $ref("正在加载...");
 
 let myComponents = $shallowRef<Component[]>([ ]);
-const homeUrls = $shallowRef<string[]>([ ]);
+let homeUrls = $shallowRef<string[]>([ ]);
 
 async function onGetHomeUrls() {
-  const homeUrls = await getHomeUrls({
+  homeUrls = await getHomeUrls({
     notLoading: true,
   }) || [ ];
+  config.indexIsEmpty = homeUrls.length === 0;
   myComponents = await Promise.all(homeUrls.map((url) => getComponent(url)));
 }
 
