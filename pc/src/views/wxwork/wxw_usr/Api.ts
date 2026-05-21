@@ -523,7 +523,7 @@ export function useDownloadImportTemplateWxwUsr() {
     try {
       const sheetName = "企微用户";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/wxwork/wxw_usr.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/wxwork/wxw_usr.xlsx`,
         {
           sheetName,
           data,
@@ -590,7 +590,7 @@ export function useExportExcelWxwUsr() {
       try {
         const sheetName = "企微用户";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/wxwork/wxw_usr.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/wxwork/wxw_usr.xlsx`,
           {
             sheetName,
             columns,

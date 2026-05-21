@@ -59,6 +59,14 @@ use crate::base::dyn_page_val::dyn_page_val_dao::sync_usr_lbl_by_usr_id_dyn_page
 
 use crate::base::dyn_page_data::dyn_page_data_dao::sync_usr_lbl_by_usr_id_dyn_page_data;
 
+use crate::wxwork::wxw_app::wxw_app_dao::sync_usr_lbl_by_usr_id_wxw_app;
+
+use crate::wxwork::wxw_app_token::wxw_app_token_dao::sync_usr_lbl_by_usr_id_wxw_app_token;
+
+use crate::wxwork::wxw_usr::wxw_usr_dao::sync_usr_lbl_by_usr_id_wxw_usr;
+
+use crate::wxwork::wxw_msg::wxw_msg_dao::sync_usr_lbl_by_usr_id_wxw_msg;
+
 /// 根据 usr_id 同步所有表中的创建人/更新人/删除人标签
 pub async fn sync_usr_lbl_by_usr_id(
   usr_id: UsrId,
@@ -201,6 +209,26 @@ pub async fn sync_usr_lbl_by_usr_id(
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dyn_page_data(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_wxw_app(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_wxw_app_token(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_wxw_usr(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_wxw_msg(
     usr_id.clone(),
     options,
   ).await?;

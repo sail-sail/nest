@@ -597,7 +597,7 @@ export function useDownloadImportTemplateWxwApp() {
     try {
       const sheetName = "企微应用";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/wxwork/wxw_app.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/wxwork/wxw_app.xlsx`,
         {
           sheetName,
           data,
@@ -671,7 +671,7 @@ export function useExportExcelWxwApp() {
       try {
         const sheetName = "企微应用";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/wxwork/wxw_app.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/wxwork/wxw_app.xlsx`,
           {
             sheetName,
             columns,
