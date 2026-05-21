@@ -385,8 +385,6 @@ export default defineConfig({
       cache: true,
       uniques: [
         [ "appid" ],
-        [ "notify_url" ],
-        [ "refund_notify_url" ],
       ],
     },
     columns: [

@@ -1588,46 +1588,6 @@ pub async fn find_by_unique_wx_pay(
   };
   models.append(&mut models_tmp);
   
-  let mut models_tmp = if
-    search.notify_url.is_none()
-  {
-    vec![]
-  } else {
-    let search = WxPaySearch {
-      tenant_id: search.tenant_id,
-      notify_url: search.notify_url.clone(),
-      ..Default::default()
-    };
-    
-    find_all_wx_pay(
-      search.into(),
-      None,
-      sort.clone(),
-      options,
-    ).await?
-  };
-  models.append(&mut models_tmp);
-  
-  let mut models_tmp = if
-    search.refund_notify_url.is_none()
-  {
-    vec![]
-  } else {
-    let search = WxPaySearch {
-      tenant_id: search.tenant_id,
-      refund_notify_url: search.refund_notify_url.clone(),
-      ..Default::default()
-    };
-    
-    find_all_wx_pay(
-      search.into(),
-      None,
-      sort.clone(),
-      options,
-    ).await?
-  };
-  models.append(&mut models_tmp);
-  
   Ok(models)
 }
 
@@ -1646,18 +1606,6 @@ pub fn equals_by_unique(
   
   if
     input.appid.as_ref().is_some() && input.appid.as_ref().unwrap() == &model.appid
-  {
-    return true;
-  }
-  
-  if
-    input.notify_url.as_ref().is_some() && input.notify_url.as_ref().unwrap() == &model.notify_url
-  {
-    return true;
-  }
-  
-  if
-    input.refund_notify_url.as_ref().is_some() && input.refund_notify_url.as_ref().unwrap() == &model.refund_notify_url
   {
     return true;
   }
