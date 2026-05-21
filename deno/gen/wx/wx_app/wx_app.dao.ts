@@ -674,6 +674,7 @@ export async function findByUniqueWxApp(
     if (canFind) {
       const modelTmps = await findAllWxApp(
         {
+          tenant_id: search0.tenant_id,
           code,
         },
         undefined,
@@ -692,6 +693,7 @@ export async function findByUniqueWxApp(
     if (canFind) {
       const modelTmps = await findAllWxApp(
         {
+          tenant_id: search0.tenant_id,
           lbl,
         },
         undefined,
@@ -710,6 +712,7 @@ export async function findByUniqueWxApp(
     if (canFind) {
       const modelTmps = await findAllWxApp(
         {
+          tenant_id: search0.tenant_id,
           appid,
         },
         undefined,

@@ -676,6 +676,7 @@ export async function findByUniqueWxoUsr(
     if (canFind) {
       const modelTmps = await findAllWxoUsr(
         {
+          tenant_id: search0.tenant_id,
           openid,
         },
         undefined,

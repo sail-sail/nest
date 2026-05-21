@@ -26,6 +26,8 @@ export async function setLblByIdWxUsr(
     model.avatar_img_lbl = location.origin + getImgUrl({
       id: model.avatar_img,
       height: 100,
+    }, {
+      notAuthorization: true,
     });
   }
 }

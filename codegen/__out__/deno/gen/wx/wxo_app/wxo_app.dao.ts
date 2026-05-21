@@ -833,6 +833,7 @@ export async function findByUniqueWxoApp(
     if (canFind) {
       const modelTmps = await findAllWxoApp(
         {
+          tenant_id: search0.tenant_id,
           code,
         },
         undefined,
@@ -851,6 +852,7 @@ export async function findByUniqueWxoApp(
     if (canFind) {
       const modelTmps = await findAllWxoApp(
         {
+          tenant_id: search0.tenant_id,
           lbl,
         },
         undefined,
@@ -869,6 +871,7 @@ export async function findByUniqueWxoApp(
     if (canFind) {
       const modelTmps = await findAllWxoApp(
         {
+          tenant_id: search0.tenant_id,
           appid,
         },
         undefined,

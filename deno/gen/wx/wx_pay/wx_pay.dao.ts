@@ -681,6 +681,7 @@ export async function findByUniqueWxPay(
     if (canFind) {
       const modelTmps = await findAllWxPay(
         {
+          tenant_id: search0.tenant_id,
           appid,
         },
         undefined,
@@ -699,6 +700,7 @@ export async function findByUniqueWxPay(
     if (canFind) {
       const modelTmps = await findAllWxPay(
         {
+          tenant_id: search0.tenant_id,
           notify_url,
         },
         undefined,
@@ -717,6 +719,7 @@ export async function findByUniqueWxPay(
     if (canFind) {
       const modelTmps = await findAllWxPay(
         {
+          tenant_id: search0.tenant_id,
           refund_notify_url,
         },
         undefined,
