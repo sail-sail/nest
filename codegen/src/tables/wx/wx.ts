@@ -384,6 +384,7 @@ export default defineConfig({
     opts: {
       cache: true,
       uniques: [
+        [ "lbl" ],
         [ "appid" ],
       ],
     },

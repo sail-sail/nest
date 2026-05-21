@@ -1569,6 +1569,26 @@ pub async fn find_by_unique_wx_pay(
   let mut models: Vec<WxPayModel> = vec![];
   
   let mut models_tmp = if
+    search.lbl.is_none()
+  {
+    vec![]
+  } else {
+    let search = WxPaySearch {
+      tenant_id: search.tenant_id,
+      lbl: search.lbl.clone(),
+      ..Default::default()
+    };
+    
+    find_all_wx_pay(
+      search.into(),
+      None,
+      sort.clone(),
+      options,
+    ).await?
+  };
+  models.append(&mut models_tmp);
+  
+  let mut models_tmp = if
     search.appid.is_none()
   {
     vec![]
@@ -1603,6 +1623,12 @@ pub fn equals_by_unique(
   }
   
   let is_silent_mode = get_is_silent_mode(options);
+  
+  if
+    input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
+  {
+    return true;
+  }
   
   if
     input.appid.as_ref().is_some() && input.appid.as_ref().unwrap() == &model.appid
