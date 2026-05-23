@@ -9,7 +9,7 @@ export type AttFileStat = {
   size?: number;
 };
 
-export type AttPreviewType = "image" | "excel" | "docx" | "binary" | "iframe";
+export type AttPreviewType = "flyfish" | "iframe";
 
 export type AttDialogPreviewInfoItem = {
   id: string;
@@ -36,26 +36,100 @@ export function splitAttIds(
     .filter((x) => x);
 }
 
+const flyfishSupportedExts = new Set([
+  "docx",
+  "doc",
+  "xlsx",
+  "xlsm",
+  "xlsb",
+  "xls",
+  "csv",
+  "ods",
+  "fods",
+  "numbers",
+  "pptx",
+  "pdf",
+  "ofd",
+  "dxf",
+  "dwg",
+  "excalidraw",
+  "drawio",
+  "dio",
+  "epub",
+  "md",
+  "markdown",
+  "gif",
+  "jpg",
+  "jpeg",
+  "bmp",
+  "tiff",
+  "tif",
+  "png",
+  "svg",
+  "webp",
+  // "txt",
+  "json",
+  "js",
+  "mjs",
+  "cjs",
+  "umd",
+  "css",
+  "java",
+  "py",
+  "html",
+  "htm",
+  "jsx",
+  "ts",
+  "tsx",
+  "xml",
+  "log",
+  "vue",
+  "yaml",
+  "yml",
+  "ini",
+  "sh",
+  "bash",
+  "sql",
+  "go",
+  "rs",
+  "php",
+  "c",
+  "cpp",
+  "cc",
+  "h",
+  "hpp",
+  "cs",
+  "diff",
+  "mp3",
+  "mpeg",
+  "wav",
+  "ogg",
+  "oga",
+  "opus",
+  "m4a",
+  "aac",
+  "flac",
+  "weba",
+  "mp4",
+]);
+
+function getFileExt(
+  fileStat?: AttFileStat,
+): string {
+  const lbl = fileStat?.lbl || "";
+  const dotIndex = lbl.lastIndexOf(".");
+  if (dotIndex <= -1 || dotIndex === lbl.length - 1) {
+    return "";
+  }
+  return lbl.slice(dotIndex + 1).toLowerCase();
+}
+
 export function getAttPreviewType(
-  contentType?: string,
+  fileStat?: AttFileStat,
 ): AttPreviewType {
-  if (contentType?.startsWith("image/")) {
-    return "image";
-  }
-  if (
-    contentType?.startsWith("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    || contentType?.startsWith("application/vnd.ms-excel.sheet")
-  ) {
-    return "excel";
-  }
-  if (
-    contentType?.startsWith("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-    || contentType?.startsWith("application/msword")
-  ) {
-    return "docx";
-  }
-  if (contentType?.startsWith("application/octet")) {
-    return "binary";
+  const ext = getFileExt(fileStat);
+  if (ext && flyfishSupportedExts.has(ext)) {
+    return "flyfish";
   }
   return "iframe";
 }
@@ -63,15 +137,14 @@ export function getAttPreviewType(
 export function canAttPreviewTypePreview(
   previewType: AttPreviewType,
 ): boolean {
-  return previewType !== "binary";
+  return previewType === "flyfish"
+    || previewType === "iframe";
 }
 
 export function canAttPreviewTypeStablePreview(
   previewType: AttPreviewType,
 ): boolean {
-  return previewType === "image"
-    || previewType === "excel"
-    || previewType === "docx";
+  return previewType === "flyfish";
 }
 
 export async function getAttDialogPreviewInfo(
@@ -93,7 +166,7 @@ export async function getAttDialogPreviewInfo(
   const statMap = new Map(stats.map((stat) => [stat.id, stat]));
   const items = ids.map((id) => {
     const stat = statMap.get(id);
-    const previewType = getAttPreviewType(stat?.contentType);
+    const previewType = getAttPreviewType(stat);
     const canPreview = canAttPreviewTypePreview(previewType);
     const canStablePreview = canAttPreviewTypeStablePreview(previewType);
     return {
