@@ -198,7 +198,8 @@
 	 * @param timeStr 时间字符串
 	 * @returns true 表示包含时分秒,false 表示只有年月日
 	 */
-	function hasTimePart(timeStr: string): boolean {
+	function hasTimePart(timeStr?: string | null): boolean {
+		if (typeof timeStr !== "string") return false;
 		// 正则检测是否包含时分秒部分
 		// 匹配格式: YYYY-MM-DD HH:mm:ss 或 YYYY/MM/DD HH:mm:ss 等
 		const timePattern = /\d{1,2}:\d{2}(:\d{2})?(.\d+)?$/;
@@ -210,8 +211,12 @@
 	 * @param timeStr 时间字符串
 	 * @returns 优化后的时间字符串
 	 */
-	function optimizeStartTime(timeStr: string): string {
-		if (!timeStr || !hasTimePart(timeStr)) {
+	function optimizeStartTime(timeStr?: string | null): string {
+		if (typeof timeStr !== "string" || timeStr === "") {
+			return "";
+		}
+
+		if (!hasTimePart(timeStr)) {
 			// 提取日期部分,并添加 00:00:00
 			const datePattern = /^(\d{4}[-/]\d{1,2}[-/]\d{1,2})/;
 			const match = timeStr.match(datePattern);
@@ -227,8 +232,12 @@
 	 * @param timeStr 时间字符串
 	 * @returns 优化后的时间字符串
 	 */
-	function optimizeEndTime(timeStr: string): string {
-		if (!timeStr || !hasTimePart(timeStr)) {
+	function optimizeEndTime(timeStr?: string | null): string {
+		if (typeof timeStr !== "string" || timeStr === "") {
+			return "";
+		}
+
+		if (!hasTimePart(timeStr)) {
 			// 提取日期部分,并添加 23:59:59
 			const datePattern = /^(\d{4}[-/]\d{1,2}[-/]\d{1,2})/;
 			const match = timeStr.match(datePattern);
@@ -491,11 +500,11 @@
 	function validTimeDate(val: string[]): string[] {
 		let str = ["", ""];
 		if (val.length >= 1) {
-			// 优化开始时间:如果没有时分秒则设置为 00:00:00
+			// 优化开始时间:如果没有时分秒则设置为 00：00：00
 			str[0] = optimizeStartTime(val[0]!);
 		}
 		if (val.length >= 2) {
-			// 优化结束时间:如果没有时分秒则设置为 23:59:59
+			// 优化结束时间:如果没有时分秒则设置为 23：59：59
 			str[1] = optimizeEndTime(val[1]!);
 		}
 
