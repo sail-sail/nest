@@ -99,6 +99,14 @@ import {
   syncUsrLblByUsrIdDynPageData,
 } from "/gen/base/dyn_page_data/dyn_page_data.dao.ts";
 
+import {
+  syncUsrLblByUsrIdBaiduApp,
+} from "/gen/baidu/baidu_app/baidu_app.dao.ts";
+
+import {
+  syncUsrLblByUsrIdBaiduAppToken,
+} from "/gen/baidu/baidu_app_token/baidu_app_token.dao.ts";
+
 /** 根据 usr_id 同步所有表中的创建人/更新人/删除人标签 */
 export async function syncUsrLblByUsrId(
   usr_id: UsrId,
@@ -244,6 +252,16 @@ export async function syncUsrLblByUsrId(
   );
   
   affectedRows += await syncUsrLblByUsrIdDynPageData(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdBaiduApp(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdBaiduAppToken(
     usr_id,
     syncOptions,
   );
