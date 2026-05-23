@@ -565,7 +565,13 @@ export async function setLblById<#=Table_Up#>(
     model.<#=column_name#>_lbl = location.origin + getImgUrl({
       id: model.<#=column_name#>,
       height: 100,
-    });
+    }<#
+    if (column.isPublicAtt) {
+    #>, {
+      notAuthorization: true,
+    }<#
+    }
+    #>);
   }<#
     }
   #><#

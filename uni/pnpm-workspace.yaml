@@ -3,5 +3,19 @@ allowBuilds:
   core-js-pure: true
   esbuild: true
   vue-demi: true
+minimumReleaseAgeExclude:
+  - '@typescript-eslint/eslint-plugin@8.59.4'
+  - '@typescript-eslint/parser@8.59.4'
+  - '@typescript-eslint/project-service@8.59.4'
+  - '@typescript-eslint/scope-manager@8.59.4'
+  - '@typescript-eslint/tsconfig-utils@8.59.4'
+  - '@typescript-eslint/type-utils@8.59.4'
+  - '@typescript-eslint/types@8.59.4'
+  - '@typescript-eslint/typescript-estree@8.59.4'
+  - '@typescript-eslint/utils@8.59.4'
+  - '@typescript-eslint/visitor-keys@8.59.4'
+  - '@vue/language-core@3.3.1'
+  - typescript-eslint@8.59.4
+  - vue-tsc@3.3.1
 overrides:
   "@vue/shared": "3.5.34"

@@ -65,3 +65,8 @@ docs/.vitepress/dist
 
 electron/.dist/
 electron/out/
+
+tauri/dist
+tauri/src-tauri/gen
+tauri/src-tauri/target
+tauri/src-tauri/Cargo.lock
