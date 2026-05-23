@@ -621,6 +621,7 @@ export async function findByUniqueJob(
     if (canFind) {
       const modelTmps = await findAllJob(
         {
+          tenant_id: search0.tenant_id,
           code,
         },
         undefined,
@@ -639,6 +640,7 @@ export async function findByUniqueJob(
     if (canFind) {
       const modelTmps = await findAllJob(
         {
+          tenant_id: search0.tenant_id,
           lbl,
         },
         undefined,

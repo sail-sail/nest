@@ -774,6 +774,7 @@ export async function findByUniqueCronJob(
     if (canFind) {
       const modelTmps = await findAllCronJob(
         {
+          tenant_id: search0.tenant_id,
           job_id,
           cron,
         },
