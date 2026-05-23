@@ -572,7 +572,13 @@ export async function setLblById<#=Table_Up#>(
   if (model.<#=column_name#>) {
     model.<#=column_name#>_lbl = getImgUrl({
       id: model.<#=column_name#>,
-    }) || "";
+    }<#
+    if (column.isPublicAtt) {
+    #>, {
+      notAuthorization: true,
+    }<#
+    }
+    #>) || "";
   }<#
     }
   #><#
