@@ -329,8 +329,10 @@ export function getImgUrl(
     quality?: number;
     filename?: string;
     inline?: "0"|"1";
-    notAuthorization?: boolean;
   } | string,
+  config?: {
+    notAuthorization?: boolean;
+  },
 ) {
   const usrStore = useUsrStore();
   const params = new URLSearchParams();
@@ -359,7 +361,7 @@ export function getImgUrl(
   if (model.quality) {
     params.set("q", model.quality.toString());
   }
-  if (model.notAuthorization !== true) {
+  if (config?.notAuthorization !== true) {
     if (usrStore.authorization) {
       params.set("authorization", usrStore.authorization);
     }
@@ -379,8 +381,10 @@ export function getImgUrlArr(
     quality?: number;
     filename?: string;
     inline?: "0"|"1";
-    notAuthorization?: boolean;
   } | string,
+  config?: {
+    notAuthorization?: boolean;
+  },
 ): string[] {
   if (typeof model === "string") {
     model = {
@@ -402,8 +406,7 @@ export function getImgUrlArr(
       quality: model.quality,
       filename: model.filename,
       inline: model.inline,
-      notAuthorization: model.notAuthorization,
-    });
+    }, config);
     imgUrlArr.push(imgUrl);
   }
   return imgUrlArr;

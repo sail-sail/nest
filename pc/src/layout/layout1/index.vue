@@ -64,30 +64,36 @@
         un-h="full"
       >
         <div
-          v-if="scrollLeftVisible || scrollRightVisible"
+          v-if="hasTabOverflow"
           un-flex="~"
           un-h="full"
+          un-w="14"
           un-justify-center
           un-items-center
+          un-gap="x-1"
         >
           <el-icon
-            v-if="scrollLeftVisible"
             un-p="x-1"
             un-h="full"
             un-cursor-pointer
             un-bg="hover:gray-200"
             un-text="hover:black"
+            :class="{
+              tab_arrow_disabled: !scrollLeftVisible,
+            }"
             @click="scrollLeftClk"
           >
             <ElIconArrowLeft />
           </el-icon>
           <el-icon
-            v-if="scrollRightVisible"
             un-p="x-1"
             un-h="full"
             un-cursor-pointer
             un-bg="hover:gray-200"
             un-text="hover:black"
+            :class="{
+              tab_arrow_disabled: !scrollRightVisible,
+            }"
             @click="scrollRightClk"
           >
             <ElIconArrowRight />
@@ -407,8 +413,11 @@ watch(
     () => route.path,
     () => route.query,
   ],
-  async () => {
+  async (_newValue, oldValue) => {
     if (route.path === "/" || route.path === "") {
+      return;
+    }
+    if (route.path === "/index" && (!oldValue?.[0] || oldValue[0] === "/" || oldValue[0] === "/index")) {
       return;
     }
     const name = route.name as string;
@@ -439,6 +448,9 @@ const tab_active_lineRef = $ref<HTMLDivElement>();
 
 let scrollLeftVisible = $ref(false);
 let scrollRightVisible = $ref(false);
+const hasTabOverflow = $computed(function() {
+  return scrollLeftVisible || scrollRightVisible;
+});
 
 async function refreshScrollVisible() {
   const tabs_divRef = tabsRef?.tabs_divRef;
@@ -469,7 +481,11 @@ async function scrollLeftClk() {
   if (!tabs_divRef) {
     return;
   }
-  tabs_divRef.scrollLeft -= 228;
+  if (!scrollLeftVisible) {
+    return;
+  }
+  const step = getTabsScrollStep(tabs_divRef.clientWidth);
+  tabs_divRef.scrollLeft -= step;
   await refreshScrollVisible();
 }
 
@@ -478,8 +494,23 @@ async function scrollRightClk() {
   if (!tabs_divRef) {
     return;
   }
-  tabs_divRef.scrollLeft += 228;
+  if (!scrollRightVisible) {
+    return;
+  }
+  const step = getTabsScrollStep(tabs_divRef.clientWidth);
+  tabs_divRef.scrollLeft += step;
   await refreshScrollVisible();
+}
+
+function getTabsScrollStep(clientWidth: number) {
+  const step = Math.floor(clientWidth * 0.7);
+  if (step < 160) {
+    return 160;
+  }
+  if (step > 420) {
+    return 420;
+  }
+  return step;
 }
 
 function resetTab_active_line() {
@@ -659,6 +690,11 @@ async function initFrame() {
 
 initFrame();
 
+onMounted(async function() {
+  await nextTick();
+  await refreshScrollVisible();
+});
+
 // onMounted(async () => {
 //   await tabsStore.refreshTab();
 // });
@@ -669,5 +705,10 @@ initFrame();
   transition-property: width, left;
   transition-duration: 300ms;
   transition-timing-function: ease-in;
+}
+
+.tab_arrow_disabled {
+  opacity: 0.35;
+  pointer-events: none;
 }
 </style>
