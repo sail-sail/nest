@@ -59,6 +59,20 @@ use crate::base::dyn_page_val::dyn_page_val_dao::sync_usr_lbl_by_usr_id_dyn_page
 
 use crate::base::dyn_page_data::dyn_page_data_dao::sync_usr_lbl_by_usr_id_dyn_page_data;
 
+use crate::bpm::process_def::process_def_dao::sync_usr_lbl_by_usr_id_process_def;
+
+use crate::bpm::process_revision::process_revision_dao::sync_usr_lbl_by_usr_id_process_revision;
+
+use crate::bpm::process_inst::process_inst_dao::sync_usr_lbl_by_usr_id_process_inst;
+
+use crate::bpm::node_inst::node_inst_dao::sync_usr_lbl_by_usr_id_node_inst;
+
+use crate::bpm::task::task_dao::sync_usr_lbl_by_usr_id_task;
+
+use crate::bpm::transfer::transfer_dao::sync_usr_lbl_by_usr_id_transfer;
+
+use crate::bpm::log::log_dao::sync_usr_lbl_by_usr_id_log;
+
 /// 根据 usr_id 同步所有表中的创建人/更新人/删除人标签
 pub async fn sync_usr_lbl_by_usr_id(
   usr_id: UsrId,
@@ -201,6 +215,41 @@ pub async fn sync_usr_lbl_by_usr_id(
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dyn_page_data(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_process_def(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_process_revision(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_process_inst(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_node_inst(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_task(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_transfer(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_log(
     usr_id.clone(),
     options,
   ).await?;

@@ -690,7 +690,7 @@ export function useDownloadImportTemplateLog() {
     try {
       const sheetName = "流程日志";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/bpm/log.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/bpm/log.xlsx`,
         {
           sheetName,
           data,
@@ -772,7 +772,7 @@ export function useExportExcelLog() {
       try {
         const sheetName = "流程日志";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/bpm/log.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/bpm/log.xlsx`,
           {
             sheetName,
             columns,

@@ -548,7 +548,7 @@ export function useDownloadImportTemplateNodeInst() {
     try {
       const sheetName = "节点实例";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/bpm/node_inst.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/bpm/node_inst.xlsx`,
         {
           sheetName,
           data,
@@ -622,7 +622,7 @@ export function useExportExcelNodeInst() {
       try {
         const sheetName = "节点实例";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/bpm/node_inst.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/bpm/node_inst.xlsx`,
           {
             sheetName,
             columns,

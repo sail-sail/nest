@@ -569,7 +569,7 @@ export function useDownloadImportTemplateProcessDef() {
     try {
       const sheetName = "流程定义";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/bpm/process_def.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/bpm/process_def.xlsx`,
         {
           sheetName,
           data,
@@ -643,7 +643,7 @@ export function useExportExcelProcessDef() {
       try {
         const sheetName = "流程定义";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/bpm/process_def.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/bpm/process_def.xlsx`,
           {
             sheetName,
             columns,

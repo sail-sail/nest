@@ -570,7 +570,7 @@ export function useDownloadImportTemplateTransfer() {
     try {
       const sheetName = "转交记录";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/bpm/transfer.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/bpm/transfer.xlsx`,
         {
           sheetName,
           data,
@@ -640,7 +640,7 @@ export function useExportExcelTransfer() {
       try {
         const sheetName = "转交记录";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/bpm/transfer.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/bpm/transfer.xlsx`,
           {
             sheetName,
             columns,

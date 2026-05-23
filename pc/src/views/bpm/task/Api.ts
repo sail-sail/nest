@@ -644,7 +644,7 @@ export function useDownloadImportTemplateTask() {
     try {
       const sheetName = "审批任务";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/bpm/task.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/bpm/task.xlsx`,
         {
           sheetName,
           data,
@@ -724,7 +724,7 @@ export function useExportExcelTask() {
       try {
         const sheetName = "审批任务";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/bpm/task.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/bpm/task.xlsx`,
           {
             sheetName,
             columns,

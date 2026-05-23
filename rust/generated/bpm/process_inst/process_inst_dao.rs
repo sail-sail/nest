@@ -2138,7 +2138,7 @@ pub async fn creates_process_inst(
 }
 
 /// 批量创建流程实例
-#[allow(unused_variables, clippy::redundant_locals)]
+#[allow(unused_variables, clippy::redundant_locals, unused_mut)]
 async fn _creates(
   inputs: Vec<ProcessInstInput>,
   options: Option<Options>,
@@ -2162,6 +2162,65 @@ async fn _creates(
     if input.id.is_some() {
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }
+
+    let mut input = input;
+
+    // 流程定义
+    if (input.process_def_id_lbl.is_none() || input.process_def_id_lbl.as_ref().unwrap().is_empty())
+      && input.process_def_id.is_some()
+      && !input.process_def_id.as_ref().unwrap().is_empty()
+    {
+      let process_def_model = crate::bpm::process_def::process_def_dao::find_by_id_process_def(
+        input.process_def_id.clone().unwrap(),
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(process_def_model) = process_def_model {
+        input.process_def_id_lbl = process_def_model.lbl.into();
+      }
+    }
+
+    // 流程版本
+    if (input.process_revision_id_lbl.is_none() || input.process_revision_id_lbl.as_ref().unwrap().is_empty())
+      && input.process_revision_id.is_some()
+      && !input.process_revision_id.as_ref().unwrap().is_empty()
+    {
+      let process_revision_model = crate::bpm::process_revision::process_revision_dao::find_by_id_process_revision(
+        input.process_revision_id.clone().unwrap(),
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(process_revision_model) = process_revision_model {
+        input.process_revision_id_lbl = process_revision_model.lbl.into();
+      }
+    }
+
+    // 发起人
+    if (input.start_usr_id_lbl.is_none() || input.start_usr_id_lbl.as_ref().unwrap().is_empty())
+      && input.start_usr_id.is_some()
+      && !input.start_usr_id.as_ref().unwrap().is_empty()
+    {
+      let usr_model = crate::base::usr::usr_dao::find_by_id_usr(
+        input.start_usr_id.clone().unwrap(),
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(usr_model) = usr_model {
+        input.start_usr_id_lbl = usr_model.lbl.into();
+      }
+    }
+
+    // 发起人部门
+    if (input.start_dept_id_lbl.is_none() || input.start_dept_id_lbl.as_ref().unwrap().is_empty())
+      && input.start_dept_id.is_some()
+      && !input.start_dept_id.as_ref().unwrap().is_empty()
+    {
+      let dept_model = crate::base::dept::dept_dao::find_by_id_dept(
+        input.start_dept_id.clone().unwrap(),
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(dept_model) = dept_model {
+        input.start_dept_id_lbl = dept_model.lbl.into();
+      }
+    }
+    let input = input;
     
     let old_models = find_by_unique_process_inst(
       input.clone().into(),
@@ -2629,6 +2688,88 @@ pub async fn update_tenant_by_id_process_inst(
   Ok(num)
 }
 
+// MARK: sync_usr_lbl_by_usr_id_process_inst
+/// 根据 usr_id 同步创建人/更新人/删除人标签
+pub async fn sync_usr_lbl_by_usr_id_process_inst(
+  usr_id: UsrId,
+  options: Option<Options>,
+) -> Result<u64> {
+  let table = get_table_name_process_inst();
+  let method = "sync_usr_lbl_by_usr_id_process_inst";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" usr_id: {usr_id:?}");
+    if let Some(options) = &options {
+      msg += &format!(" options: {options:?}");
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if usr_id.is_empty() {
+    return Ok(0);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let usr_model = find_by_id_usr(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  let Some(usr_model) = usr_model else {
+    return Ok(0);
+  };
+  
+  let usr_lbl = usr_model.lbl;
+  let mut sql_fields = String::with_capacity(180);
+  let mut where_querys = Vec::with_capacity(3);
+  let mut args = QueryArgs::new();
+  
+  sql_fields += "create_usr_id_lbl=case when create_usr_id=? then ? else create_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_querys.push("create_usr_id=?");
+  
+  sql_fields += "update_usr_id_lbl=case when update_usr_id=? then ? else update_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_querys.push("update_usr_id=?");
+  
+  sql_fields += "delete_usr_id_lbl=case when delete_usr_id=? then ? else delete_usr_id_lbl end,";
+  args.push(usr_id.clone().into());
+  args.push(usr_lbl.clone().into());
+  where_querys.push("delete_usr_id=?");
+  
+  if sql_fields.ends_with(',') {
+    sql_fields.pop();
+  }
+  
+  args.push(usr_id.clone().into());
+  args.push(usr_id.clone().into());
+  args.push(usr_id.clone().into());
+  let where_query = where_querys.join(" or ");
+  
+  let sql = format!("update {table} set {sql_fields} where {where_query}");
+  
+  let args: Vec<_> = args.into();
+  
+  let num = execute(
+    sql,
+    args,
+    options,
+  ).await?;
+  
+  Ok(num)
+}
+
 // MARK: update_by_id_process_inst
 /// 根据 id 修改流程实例
 #[allow(unused_mut)]
@@ -2663,6 +2804,62 @@ pub async fn update_by_id_process_inst(
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
+
+  // 流程定义
+  if (input.process_def_id_lbl.is_none() || input.process_def_id_lbl.as_ref().unwrap().is_empty())
+    && input.process_def_id.is_some()
+    && !input.process_def_id.as_ref().unwrap().is_empty()
+  {
+    let process_def_model = crate::bpm::process_def::process_def_dao::find_by_id_process_def(
+      input.process_def_id.clone().unwrap(),
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(process_def_model) = process_def_model {
+      input.process_def_id_lbl = process_def_model.lbl.into();
+    }
+  }
+
+  // 流程版本
+  if (input.process_revision_id_lbl.is_none() || input.process_revision_id_lbl.as_ref().unwrap().is_empty())
+    && input.process_revision_id.is_some()
+    && !input.process_revision_id.as_ref().unwrap().is_empty()
+  {
+    let process_revision_model = crate::bpm::process_revision::process_revision_dao::find_by_id_process_revision(
+      input.process_revision_id.clone().unwrap(),
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(process_revision_model) = process_revision_model {
+      input.process_revision_id_lbl = process_revision_model.lbl.into();
+    }
+  }
+
+  // 发起人
+  if (input.start_usr_id_lbl.is_none() || input.start_usr_id_lbl.as_ref().unwrap().is_empty())
+    && input.start_usr_id.is_some()
+    && !input.start_usr_id.as_ref().unwrap().is_empty()
+  {
+    let usr_model = crate::base::usr::usr_dao::find_by_id_usr(
+      input.start_usr_id.clone().unwrap(),
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(usr_model) = usr_model {
+      input.start_usr_id_lbl = usr_model.lbl.into();
+    }
+  }
+
+  // 发起人部门
+  if (input.start_dept_id_lbl.is_none() || input.start_dept_id_lbl.as_ref().unwrap().is_empty())
+    && input.start_dept_id.is_some()
+    && !input.start_dept_id.as_ref().unwrap().is_empty()
+  {
+    let dept_model = crate::base::dept::dept_dao::find_by_id_dept(
+      input.start_dept_id.clone().unwrap(),
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(dept_model) = dept_model {
+      input.start_dept_id_lbl = dept_model.lbl.into();
+    }
+  }
   
   let old_model = find_by_id_process_inst(
     id,
@@ -2879,7 +3076,7 @@ pub async fn update_by_id_process_inst(
         }
       }
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
-        sql_fields += "update_usr_id=?,";
+        sql_fields += "update_usr_id_lbl=?,";
         args.push(update_usr_id_lbl.into());
       }
     }
@@ -2944,44 +3141,6 @@ pub async fn update_by_id_return_process_inst(
       "流程实例 update_by_id_return_process_inst id: {id}",
     )),
   }
-}
-
-/// 获取需要清空缓存的表名
-#[allow(dead_code)]
-fn get_cache_tables() -> Vec<&'static str> {
-  let table = get_table_name_process_inst();
-  vec![
-    table,
-    "bpm_process_def",
-    "bpm_process_revision",
-    "base_dept",
-  ]
-}
-
-// MARK: del_cache_process_inst
-/// 清空缓存
-#[allow(dead_code)]
-pub async fn del_cache_process_inst() -> Result<()> {
-  
-  let cache_key1s = get_cache_tables();
-  
-  let cache_key1s = cache_key1s
-    .into_iter()
-    .map(|x|
-      SmolStr::new(format!("dao.sql.{x}"))
-    )
-    .collect::<Vec<SmolStr>>();
-  
-  let cache_key1s_str = cache_key1s
-    .iter()
-    .map(|item| item.as_str())
-    .collect::<Vec<&str>>();
-  
-  del_caches(
-    cache_key1s_str.as_slice(),
-  ).await?;
-  
-  Ok(())
 }
 
 // MARK: delete_by_ids_process_inst

@@ -906,7 +906,7 @@ let selectedIds = $(tableSelected.selectedIds as unknown as NodeInstId[]);
 
 watch(
   () => selectedIds,
-  (oldVal, newVal) => {
+  (newVal, oldVal) => {
     if (!inited) {
       return;
     }
@@ -1522,7 +1522,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("forceDelete")) {
+  if (!permit("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }

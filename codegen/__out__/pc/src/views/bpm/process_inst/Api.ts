@@ -724,7 +724,7 @@ export function useDownloadImportTemplateProcessInst() {
     try {
       const sheetName = "流程实例";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/bpm/process_inst.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/bpm/process_inst.xlsx`,
         {
           sheetName,
           data,
@@ -807,7 +807,7 @@ export function useExportExcelProcessInst() {
       try {
         const sheetName = "流程实例";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/bpm/process_inst.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/bpm/process_inst.xlsx`,
           {
             sheetName,
             columns,

@@ -574,7 +574,7 @@ export function useDownloadImportTemplateProcessRevision() {
     try {
       const sheetName = "流程版本";
       const buffer = await workerFn(
-        `${ location.origin }/import_template/bpm/process_revision.xlsx`,
+        `${ location.origin }${ location.pathname }/import_template/bpm/process_revision.xlsx`,
         {
           sheetName,
           data,
@@ -644,7 +644,7 @@ export function useExportExcelProcessRevision() {
       try {
         const sheetName = "流程版本";
         const buffer = await workerFn(
-          `${ location.origin }/excel_template/bpm/process_revision.xlsx`,
+          `${ location.origin }${ location.pathname }/excel_template/bpm/process_revision.xlsx`,
           {
             sheetName,
             columns,
