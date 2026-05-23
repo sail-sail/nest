@@ -94,7 +94,6 @@
   "editor.quickSuggestionsDelay": 0,
   "js/ts.suggest.autoImports": false,
   "js/ts.updateImportsOnFileMove.enabled": "never",
-  "editor.autoIndent": "keep",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   }
