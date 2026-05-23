@@ -99,6 +99,22 @@ import {
   syncUsrLblByUsrIdDynPageData,
 } from "/gen/base/dyn_page_data/dyn_page_data.dao.ts";
 
+import {
+  syncUsrLblByUsrIdWxwApp,
+} from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
+
+import {
+  syncUsrLblByUsrIdWxwAppToken,
+} from "/gen/wxwork/wxw_app_token/wxw_app_token.dao.ts";
+
+import {
+  syncUsrLblByUsrIdWxwUsr,
+} from "/gen/wxwork/wxw_usr/wxw_usr.dao.ts";
+
+import {
+  syncUsrLblByUsrIdWxwMsg,
+} from "/gen/wxwork/wxw_msg/wxw_msg.dao.ts";
+
 /** 根据 usr_id 同步所有表中的创建人/更新人/删除人标签 */
 export async function syncUsrLblByUsrId(
   usr_id: UsrId,
@@ -244,6 +260,26 @@ export async function syncUsrLblByUsrId(
   );
   
   affectedRows += await syncUsrLblByUsrIdDynPageData(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdWxwApp(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdWxwAppToken(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdWxwUsr(
+    usr_id,
+    syncOptions,
+  );
+  
+  affectedRows += await syncUsrLblByUsrIdWxwMsg(
     usr_id,
     syncOptions,
   );
