@@ -26,6 +26,8 @@ export async function setLblByIdSeo(
     model.ico_lbl = location.origin + getImgUrl({
       id: model.ico,
       height: 100,
+    }, {
+      notAuthorization: true,
     });
   }
   
@@ -34,6 +36,8 @@ export async function setLblByIdSeo(
     model.og_image_lbl = location.origin + getImgUrl({
       id: model.og_image,
       height: 100,
+    }, {
+      notAuthorization: true,
     });
   }
 }
