@@ -2,7 +2,7 @@
 <tm-picker
   v-bind="$attrs"
   v-model="modelValueComp"
-  v-model:model-str="modelValueStrRaw"
+  v-model:model-str="modelStrRaw"
   class="custom_city_picker"
   :class="{
     'custom_city_picker_readonly': readonly,
@@ -13,7 +13,7 @@
   :disabled="pickerDisabled"
 >
   <CustomInput
-    :model-value="modelValueStr"
+    :model-value="modelStr"
     readonly
     :clearable="clearable"
     :readonly-placeholder="inputPlaceholder"
@@ -102,14 +102,14 @@ const modelValueComp = computed<string[]>({
 const options = ref<PcaItem[]>([ ]);
 const isLoading = ref(false);
 const hasLoadError = ref(false);
-const modelValueStrRaw = ref("");
+const modelStrRaw = ref("");
 
-const modelValueStr = computed<string>(() => {
+const modelStr = computed<string>(() => {
   const labels = modelLabel.value?.filter((item) => item) ?? [ ];
   if (labels.length > 0) {
     return labels.join(props.separator);
   }
-  return modelValueStrRaw.value.split(",").filter((item) => item).join(props.separator);
+  return modelStrRaw.value.split(",").filter((item) => item).join(props.separator);
 });
 
 const pickerDisabled = computed<boolean>(() => {
@@ -134,9 +134,9 @@ const inputPlaceholder = computed<string>(() => {
 
 const inputFontColor = computed<string>(() => {
   if (readonly.value) {
-    return modelValueStr.value ? "var(--color-readonly)" : "var(--color-placeholder)";
+    return modelStr.value ? "var(--color-readonly)" : "var(--color-placeholder)";
   }
-  return modelValueStr.value ? props.fontColor || "var(--font-color)" : "var(--color-placeholder)";
+  return modelStr.value ? props.fontColor || "var(--font-color)" : "var(--color-placeholder)";
 });
 
 const showArrow = computed<boolean>(() => {
@@ -146,11 +146,11 @@ const showArrow = computed<boolean>(() => {
   if (!clearable.value) {
     return true;
   }
-  return !modelValueStr.value;
+  return !modelStr.value;
 });
 
 watch(
-  () => modelValueStrRaw.value,
+  () => modelStrRaw.value,
   (value) => {
     if (!value) {
       if (!modelValue.value || modelValue.value.length === 0) {
@@ -171,7 +171,7 @@ watch(
     if (value) {
       return;
     }
-    modelValueStrRaw.value = "";
+    modelStrRaw.value = "";
     modelLabel.value = undefined;
   },
   {
@@ -198,7 +198,7 @@ async function initFrame() {
 
 function onClear() {
   modelValueComp.value = [ ];
-  modelValueStrRaw.value = "";
+  modelStrRaw.value = "";
   modelLabel.value = undefined;
 }
 

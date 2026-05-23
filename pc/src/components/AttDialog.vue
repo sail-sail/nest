@@ -2,7 +2,6 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
-  :close-on-click-modal="true"
 >
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
@@ -10,9 +9,10 @@
   >
     <div
       un-p="y-2.5 x-4"
+      un-box-border
       un-flex
-      un-justify-center
-      un-items-center
+      un-justify="center-safe"
+      un-items="center-safe"
     >
       
       <el-button
@@ -48,17 +48,6 @@
           <ElIconDownload />
         </template>
         <span>{{ ns("下载") }}</span>
-      </el-button>
-      
-      <el-button
-        v-if="currentItem"
-        :disabled="!canPrintCurrent"
-        @click="printClk"
-      >
-        <template #icon>
-          <ElIconPrinter />
-        </template>
-        <span>{{ ns("打印") }}</span>
       </el-button>
       
       <a
@@ -99,24 +88,12 @@
       >
       </div>
       
-      <div
-        v-if="currentItem"
-        un-m="r-3"
-      >
-        <el-color-picker
-          v-model="backgroundColor"
-          show-alpha
-          :predefine="predefineColors"
-          @active-change="backgroundColor = ($event ?? undefined)"
-        />
-      </div>
-      
     </div>
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-justify-center
-      un-items-center
+      un-justify="center-safe"
+      un-items="center-safe"
       un-p="x-5"
       un-box-border
       un-pos="relative"
@@ -125,6 +102,8 @@
         v-for="(item, i) in items"
         :key="item.id"
       >
+        
+        <!-- 加载失败 -->
         <template
           v-if="item.loadState === 'error'"
         >
@@ -134,55 +113,16 @@
             un-flex="~ [1_0_0]"
             un-overflow-auto
             un-w="full"
-            un-justify-center
-            un-items-center
+            un-justify="center-safe"
+            un-items="center-safe"
           >
             {{ ns("预览失败，请下载后查看") }}
           </div>
         </template>
+        
+        <!-- flyfish -->
         <template
-          v-else-if="item.previewType === 'image'"
-        >
-          <img
-            v-if="item.shown"
-            :ref="(el) => setItemRef(item.id, el)"
-            :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
-            object-fit="scale-down"
-            :src="getItemUrl(item)"
-            @load="onPreviewLoad(item.id)"
-            @error="onPreviewError(item.id)"
-          >
-        </template>
-        <template
-          v-else-if="item.previewType === 'excel'"
-        >
-          <VueOfficeExcel
-            v-if="item.shown"
-            v-show="i === nowIndex"
-            :src="getItemUrl(item)"
-            un-flex="~ [1_0_0]"
-            un-overflow-auto
-            un-w="full"
-            @rendered="onPreviewLoad(item.id)"
-            @error="onPreviewError(item.id)"
-          ></VueOfficeExcel>
-        </template>
-        <template
-          v-else-if="item.previewType === 'docx'"
-        >
-          <VueOfficeDocx
-            v-if="item.shown"
-            v-show="i === nowIndex"
-            :src="getItemUrl(item)"
-            un-flex="~ [1_0_0]"
-            un-overflow-auto
-            un-w="full"
-            @rendered="onPreviewLoad(item.id)"
-            @error="onPreviewError(item.id)"
-          ></VueOfficeDocx>
-        </template>
-        <template
-          v-else-if="item.previewType === 'binary'"
+          v-else-if="item.previewType === 'flyfish'"
         >
           <div
             v-if="item.shown"
@@ -190,19 +130,24 @@
             un-flex="~ [1_0_0]"
             un-overflow-auto
             un-w="full"
-            un-justify-center
-            un-items-center
+            un-h="full"
           >
-            {{ ns("证书文件不支持预览") }}
+            <FileViewer
+              un-w="full"
+              un-h="full"
+              :file="fileCache.get(item.id)"
+            />
           </div>
         </template>
+        
+        <!-- iframe -->
         <template
           v-else
         >
           <iframe
             v-if="item.shown"
             :ref="(el) => setItemRef(item.id, el)"
-            :style="{ display: i === nowIndex ? '' : 'none', backgroundColor: backgroundColor || '' }"
+            :style="{ display: i === nowIndex ? '' : 'none' }"
             un-flex="~ [1_0_0]"
             un-overflow-hidden
             un-w="full"
@@ -212,6 +157,7 @@
             @error="onPreviewError(item.id)"
           ></iframe>
         </template>
+        
       </template>
       <div
         v-if="items.length === 0"
@@ -347,8 +293,9 @@ import type {
   AttPreviewType,
 } from "./AttDialogUtil";
 
-import VueOfficeExcel from "@vue-office/excel";
-import VueOfficeDocx from "@vue-office/docx";
+import {
+  FileViewer,
+} from "@flyfish-group/file-viewer3";
 
 import {
   saveAs,
@@ -358,6 +305,8 @@ const {
   ns,
   nsAsync,
 } = useI18n();
+
+const isDark = useDark();
 
 const emit = defineEmits([
   "change",
@@ -379,10 +328,6 @@ let items = $ref<AttItem[]>([ ]);
 let nowIndex = $ref(0);
 
 const currentItem = $computed(() => items[nowIndex]);
-
-const canPrintCurrent = $computed(() => {
-  return currentItem != null && (currentItem.previewType === "image" || currentItem.previewType === "iframe");
-});
 
 // 当前弹出框的标题
 const dialogTitle = $computed(() => {
@@ -414,22 +359,6 @@ let dialogModel = $ref<DialogModel>({
   db: undefined,
   isPublic: false,
 });
-
-const backgroundColor = $ref<string | undefined>("#000000");
-
-const predefineColors = $ref([
-  '#ff4500',
-  '#ff8c00',
-  '#ffd700',
-  '#90ee90',
-  '#00ced1',
-  '#1e90ff',
-  '#c71585',
-  '#FFFFFF',
-  '#CCCCCC',
-  '#000000',
-  '#c7158577',
-]);
 
 let modelValue = $ref("");
 
@@ -465,14 +394,14 @@ function mergeItems(
   return ids.map((id, index) => {
     const prevItem = itemMap.get(id);
     const stat = stats?.[index] ?? prevItem?.stat;
-    const previewType = getAttPreviewType(stat?.contentType);
+    const previewType = getAttPreviewType(stat);
     return {
       id,
       stat,
       shown: prevItem?.shown ?? index === 0,
       ref: prevItem?.ref,
       previewType,
-      loadState: previewType === "binary"
+      loadState: previewType === "flyfish"
         ? "loaded"
         : prevItem?.loadState ?? "idle",
     };
@@ -494,18 +423,54 @@ function clampNowIndex() {
 }
 
 function getItemFilename(item: AttItem) {
-  let lbl = item.stat?.lbl || "";
-  if (lbl.length > 45) {
-    lbl = lbl.substring(0, 45) + "...";
+  return item.stat?.lbl || "";
+}
+
+let fileCache = $ref(new Map<string, File>());
+
+watch(
+  () => currentItem,
+  async () => {
+    if (!currentItem) {
+      return;
+    }
+    if (currentItem.previewType !== "flyfish") {
+      return;
+    }
+    let file = fileCache.get(currentItem.id);
+    if (!file) {
+      file = await getItemFile(currentItem);
+      fileCache.set(currentItem.id, file);
+    }
+  },
+  {
+    immediate: true,
+    deep: true,
+  },
+);
+
+async function getItemFile(item: AttItem) {
+  const url = getItemUrl(item);
+  const response = await fetch(url);
+  if (!response.ok) {
+    ElMessage.error(await nsAsync("获取文件失败"));
+    throw new Error(`Failed to fetch file: ${ response.status } ${ response.statusText }`);
   }
-  return lbl;
+  const blob = await response.blob();
+  const file = new File([blob], getItemFilename(item));
+  return file;
 }
 
 function getItemUrl(item: AttItem) {
-  return getDownloadUrl({
+  let url = location.origin + location.pathname;
+  if (url.endsWith("/")) {
+    url = url.slice(0, -1);
+  }
+  url += getDownloadUrl({
     id: item.id,
     filename: getItemFilename(item),
   });
+  return url;
 }
 
 function findItem(itemId: string) {
@@ -610,7 +575,7 @@ async function afterSwitchPreview() {
   if (!item.shown) {
     item.shown = true;
   }
-  if (item.previewType === "binary") {
+  if (item.previewType === "flyfish") {
     item.loadState = "loaded";
     return;
   }
@@ -693,8 +658,8 @@ function initIframeEl(iframeRef: HTMLIFrameElement) {
   iframeDocument.getElementsByTagName("head")[0]?.appendChild(styleEl);
   const body = iframeDocument.body as HTMLBodyElement;
   body.style.display = "flex";
-  body.style.justifyContent = "center";
-  body.style.alignItems = "center";
+  body.style.justifyContent = "safe center";
+  body.style.alignItems = "safe center";
   const imgs = iframeDocument.getElementsByTagName("img");
   if (imgs.length > 0) {
     const clientWidth = body.clientWidth;
@@ -713,61 +678,6 @@ function downloadClk() {
   }
   const url = getItemUrl(currentItem);
   saveAs(url);
-}
-
-// 打印
-function printClk() {
-  if (!currentItem) {
-    return;
-  }
-  if (currentItem.previewType === "iframe") {
-    const iframeWindow = currentItem.ref instanceof HTMLIFrameElement
-      ? currentItem.ref.contentWindow
-      : undefined;
-    if (iframeWindow) {
-      iframeWindow.print();
-    }
-    return;
-  }
-  if (currentItem.previewType === "image") {
-    const printWindow = window.open("", "_blank", "noopener,noreferrer");
-    if (!printWindow) {
-      ElMessage.warning(ns("请允许弹出新窗口后重试"));
-      return;
-    }
-    const styleEl = printWindow.document.createElement("style");
-    styleEl.textContent = `
-      html, body {
-        margin: 0;
-        min-height: 100%;
-      }
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #fff;
-      }
-      img {
-        max-width: 100%;
-        max-height: 100vh;
-        object-fit: contain;
-      }
-    `;
-    printWindow.document.head.appendChild(styleEl);
-    const imgEl = printWindow.document.createElement("img");
-    imgEl.src = getItemUrl(currentItem);
-    imgEl.addEventListener("load", () => {
-      printWindow.focus();
-      printWindow.print();
-    });
-    imgEl.addEventListener("error", () => {
-      printWindow.close();
-      ElMessage.error(ns("图片加载失败，无法打印"));
-    });
-    printWindow.document.body.appendChild(imgEl);
-    return;
-  }
-  ElMessage.warning(ns("当前附件类型不支持直接打印，请先在网页中打开"));
 }
 
 const fileRef = $ref<HTMLInputElement>();

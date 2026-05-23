@@ -1,6 +1,8 @@
 <template>
 <div
   ref="tabs_divRef"
+  class="tabs_scroller"
+  @wheel.passive="onWheel"
 >
   <div
     v-for="(item, i) in tabs"
@@ -127,6 +129,20 @@ const tabs_divRef = $ref<HTMLDivElement>();
 
 const tabs = $ref(toRef(props, "tabs"));
 
+function onWheel(event: WheelEvent) {
+  if (!tabs_divRef) {
+    return;
+  }
+  const absDeltaX = Math.abs(event.deltaX);
+  const absDeltaY = Math.abs(event.deltaY);
+  const offset = absDeltaX > absDeltaY ? event.deltaX : event.deltaY;
+  if (offset === 0) {
+    return;
+  }
+  tabs_divRef.scrollLeft += offset;
+  emit("refreshScrollVisible");
+}
+
 async function activeTab(tab: TabInf) {
   tabsStore.activeTab(tab);
   await router.push({
@@ -221,6 +237,15 @@ defineExpose({ tabs_divRef: $$(tabs_divRef) });
 </script>
 
 <style lang="scss" scoped>
+.tabs_scroller {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.tabs_scroller::-webkit-scrollbar {
+  display: none;
+}
 .tab_div {
   display: flex;
   position: relative;

@@ -699,7 +699,6 @@ export async function uniLogin() {
   // #ifdef H5
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWxwork || userAgent.isWechat) {
-    // @ts-expect-error @ts-nocheck
     if (typeof wxwGetAppid === "undefined") {
       await redirectToLogin();
       return false;
@@ -710,7 +709,6 @@ export async function uniLogin() {
       const state = uniqueID();
       localStorage.setItem("oauth2_state", state);
       const redirect_uri = location.href;
-      // @ts-expect-error @ts-nocheck
       const res = await wxwGetAppid();
       const appid = res?.appid;
       const agentid = res?.agentid;
