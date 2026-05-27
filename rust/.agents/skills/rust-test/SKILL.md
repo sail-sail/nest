@@ -15,7 +15,7 @@ description: Rust 测试用例编写规范.编写单元测试或数据刷新脚�
 
 测试代码放在 `*_service.rs` 文件末尾的 `#[cfg(test)] mod tests { }` 块中。
 
-同步测试（纯函数不依赖数据库）可以直接放在 service 文件顶部或测试模块中。
+同步测试（纯函数不依赖数据库）可以与业务代码放在同一文件中，但必须用单个 `#[test]` 宏标记，或集中放在文件顶部的 `#[cfg(test)] mod tests { }` 块中。
 
 | 目录 | Ctx 引用路径 |
 |------|-------------|
@@ -134,6 +134,7 @@ mod tests {
   
   use super::*;
   use crate::common::context::Ctx;
+  use crate::common::gql::model::PageInput;
   
   use crate::exh::some_table::some_table_dao::find_by_id_ok_some_table;
   use crate::exh::booking_order::booking_order_dao::{
@@ -160,37 +161,56 @@ mod tests {
           .set_is_silent_mode(Some(true));
         let options = Some(options);
         
-        let models = find_all_booking_order(
-          None,
-          None,
-          None,
-          options,
-        ).await?;
-        
-        for (index, model) in models.into_iter().enumerate() {
-          // 步骤1: 打印处理进度
-          print_progress(index);
+        let mut pg_offset = 0_i64;
+        let pg_size = 500_i64;
 
-          // 步骤2: 跳过已经完整的记录
-          if !model.some_field.is_empty() {
-            continue;
+        loop {
+          let page = Some(PageInput {
+            pg_offset: Some(pg_offset),
+            pg_size: Some(pg_size),
+            ..Default::default()
+          });
+
+          let models = find_all_booking_order(
+            None,
+            page,
+            None,
+            options,
+          ).await?;
+
+          if models.is_empty() {
+            break;
           }
 
-          // 步骤3: 查询关联数据
-          let related = find_by_id_ok_some_table(
-            model.some_table_id,
-            options,
-          ).await?;
+          for (index, model) in models.into_iter().enumerate() {
+            let processed = pg_offset as usize + index + 1;
 
-          // 步骤4: 回写缺失字段
-          update_by_id_booking_order(
-            model.id,
-            BookingOrderInput {
-              some_field: Some(related.value),
-              ..Default::default()
-            },
-            options,
-          ).await?;
+            // 步骤1: 打印处理进度
+            print_progress(processed);
+
+            // 步骤2: 跳过已经完整的记录
+            if !model.some_field.is_empty() {
+              continue;
+            }
+
+            // 步骤3: 查询关联数据
+            let related = find_by_id_ok_some_table(
+              model.some_table_id,
+              options,
+            ).await?;
+
+            // 步骤4: 回写缺失字段
+            update_by_id_booking_order(
+              model.id,
+              BookingOrderInput {
+                some_field: Some(related.value),
+                ..Default::default()
+              },
+              options,
+            ).await?;
+          }
+
+          pg_offset += pg_size;
         }
         
         Ok(())
@@ -204,7 +224,8 @@ mod tests {
 ## 编码约定
 
 - 测试函数返回 `Result<()>`，使用 `?` 传播错误
-- 大批量处理加 `println!` 打印进度
+- 数据刷新脚本查询时：如果表数据量较大，必须构造 `Page` 参数进行分页或分批次迭代查询，严禁使用 `None` 一次性拉取全表数据
+- 当预期处理数据超过 1000 条的大批量处理任务时，需加 `println!` 打印进度
 - `imports` 按需引入，使用完整路径
 
 ## 运行测试

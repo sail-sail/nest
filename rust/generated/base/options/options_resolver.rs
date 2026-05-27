@@ -206,7 +206,7 @@ pub async fn find_by_ids_ok_options(
 }
 
 /// 创建系统选项
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_options(
   inputs: Vec<OptionsInput>,
@@ -227,7 +227,7 @@ pub async fn creates_options(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = options_service::set_id_by_lbl_options(
+    let mut input = options_service::set_id_by_lbl_options(
       input,
     ).await?;
     inputs2.push(input);
