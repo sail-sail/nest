@@ -118,6 +118,17 @@ export async function execCsvFile(context: Context, item: string) {
       row[keys.indexOf("id")] = id;
     }
   }
+  const ids = new Set<string>();
+  for (let k = 1; k < rows.length; k++) {
+    const row = rows[k];
+    if (isEmpty(row[keys.indexOf("id")])) {
+      continue;
+    }
+    if (ids.has(row[keys.indexOf("id")])) {
+      throw `错误: ${ item }: id重复: ${ row[keys.indexOf("id")] }`;
+    }
+    ids.add(row[keys.indexOf("id")]);
+  }
   for (let k = 1; k < rows.length; k++) {
     const row = rows[k];
     if (isEmpty(row[keys.indexOf("id")])) {

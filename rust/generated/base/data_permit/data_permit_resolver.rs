@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_data_permit(
 }
 
 /// 创建数据权限
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_data_permit(
   inputs: Vec<DataPermitInput>,
@@ -229,7 +229,7 @@ pub async fn creates_data_permit(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = data_permit_service::set_id_by_lbl_data_permit(
+    let mut input = data_permit_service::set_id_by_lbl_data_permit(
       input,
     ).await?;
     inputs2.push(input);

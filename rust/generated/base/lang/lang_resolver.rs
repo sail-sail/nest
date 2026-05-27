@@ -206,7 +206,7 @@ pub async fn find_by_ids_ok_lang(
 }
 
 /// 创建语言
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_lang(
   inputs: Vec<LangInput>,
@@ -227,7 +227,7 @@ pub async fn creates_lang(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = lang_service::set_id_by_lbl_lang(
+    let mut input = lang_service::set_id_by_lbl_lang(
       input,
     ).await?;
     inputs2.push(input);

@@ -206,7 +206,7 @@ pub async fn find_by_ids_ok_dict_detail(
 }
 
 /// 创建系统字典明细
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_dict_detail(
   inputs: Vec<DictDetailInput>,
@@ -227,7 +227,7 @@ pub async fn creates_dict_detail(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = dict_detail_service::set_id_by_lbl_dict_detail(
+    let mut input = dict_detail_service::set_id_by_lbl_dict_detail(
       input,
     ).await?;
     inputs2.push(input);

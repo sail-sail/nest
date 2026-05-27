@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.3.2",
-    "@flyfish-group/file-viewer3": "1.0.9",
+    "@flyfish-group/file-viewer3": "1.0.12",
     "@jsquash/resize": "2.1.1",
     "@jsquash/webp": "1.5.0",
     "@opentiny/fluent-editor": "3.25.11",
@@ -31,7 +31,7 @@
     "@vueuse/core": "14.3.0",
     "cronstrue": "3.14.0",
     "danmu": "0.20.0",
-    "dayjs": "1.11.20",
+    "dayjs": "1.11.21",
     "decimal.js": "10.6.0",
     "docx-handlebars": "0.3.3",
     "echarts": "6.1.0",
@@ -68,8 +68,8 @@
     "@vue/runtime-core": "3.5.34",
     "dotenv": "17.4.2",
     "globals": "17.6.0",
-    "mysql2": "3.22.3",
-    "oxlint": "1.66.0",
+    "mysql2": "3.22.4",
+    "oxlint": "1.67.0",
     "sass": "1.100.0",
     "spark-md5": "3.0.2",
     "svgo": "4.0.1",
@@ -89,6 +89,6 @@
     "vite-plugin-wasm": "3.6.0",
     "vite-plus": "latest",
     "vitest": "npm:@voidzero-dev/vite-plus-test@latest",
-    "vue-tsc": "3.3.1"
+    "vue-tsc": "3.3.2"
   }
 }

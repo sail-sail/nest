@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_optbiz(
 }
 
 /// 创建业务选项
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_optbiz(
   inputs: Vec<OptbizInput>,
@@ -229,7 +229,7 @@ pub async fn creates_optbiz(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = optbiz_service::set_id_by_lbl_optbiz(
+    let mut input = optbiz_service::set_id_by_lbl_optbiz(
       input,
     ).await?;
     inputs2.push(input);
