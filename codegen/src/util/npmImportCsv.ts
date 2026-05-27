@@ -156,4 +156,5 @@ async function exec() {
 
 exec().catch((err) => {
   console.error(err);
+  process.exit(0);
 });

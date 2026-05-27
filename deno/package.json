@@ -18,14 +18,14 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "dayjs": "1.11.20",
+    "dayjs": "1.11.21",
     "decimal.js": "10.6.0",
     "graphql": "16.14.0",
     "js-md5": "0.8.3",
     "lru-cache": "11.5.0",
     "mime": "4.1.0",
     "mnemonist": "0.40.4",
-    "mysql2": "3.22.3",
+    "mysql2": "3.22.4",
     "path-to-regexp": "6.3.0",
     "sharp": "0.34.5",
     "sqlstring": "2.3.3",

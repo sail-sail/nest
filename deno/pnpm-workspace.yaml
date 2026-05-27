@@ -10,3 +10,6 @@ supportedArchitectures:
   cpu:
     - x64
     - current
+minimumReleaseAgeExclude:
+  - dayjs@1.11.21
+  - mysql2@3.22.4

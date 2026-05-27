@@ -95,6 +95,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
 
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
 
 // 审核
 const hasAudit = !!opts?.audit;
@@ -3868,6 +3870,30 @@ for (let i = 0; i < columns.length; i++) {
       </el-button><#
       }
       #><#
+      if (hasBpm && !opts.noAdd) {
+      #>
+      
+      <el-button
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        :disabled="is_form_hydrating"
+        @click="onSaveAndStart"
+      >
+        <template #icon>
+          <ElIconPromotion />
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('保存并提交') }}</span><#
+        } else {
+        #>
+        <span>保存并提交</span><#
+        }
+        #>
+      </el-button><#
+      }
+      #><#
       if (!opts.noEdit) {
       #>
       
@@ -4231,7 +4257,12 @@ import {<#
   }
   #>
   getPagePath<#=Table_Up#>,
-  intoInput<#=Table_Up#>,
+  intoInput<#=Table_Up#>,<#
+  if (hasBpm && !opts.noAdd) {
+  #>
+  startProcess<#=Table_Up#>,<#
+  }
+  #>
 } from "./Api.ts";<#
 if (hasAudit) {
 #>
@@ -6247,8 +6278,30 @@ async function showDialog(
           if (!column.readonly) {
             continue;
           }
+          const bpm = opts?.bpm;
+        #><#
+        if (
+          bpm?.bpm_status_field === column_name ||
+          bpm?.apply_usr_id_field === column_name ||
+          bpm?.apply_usr_id_lbl_field === column_name ||
+          bpm?.apply_time_field === column_name
+        ) {
+        #>
+        <#=column_name#>: undefined,<#
+        if (
+          bpm?.bpm_status_field === column_name ||
+          bpm?.apply_usr_id_field === column_name ||
+          bpm?.apply_time_field === column_name
+        ) {
+        #>
+        <#=column_name#>_lbl: undefined,<#
+        }
+        #><#
+        } else {
         #>
         <#=column_name#>: defaultInput.<#=column_name#>,<#
+        }
+        #><#
         }
         #><#
         if (hasDefault) {
@@ -7755,6 +7808,35 @@ async function save() {
   }
   return id;
 }<#
+if (hasBpm && opts.noAdd !== true) {
+#>
+
+/** 保存并提交 */
+async function onSaveAndStart() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+
+  await startProcess<#=Table_Up#>(
+    id,
+  );<#
+  if (isUseI18n) {
+  #>
+  ElMessage.success(await nsAsync("保存并提交成功"));<#
+  } else {
+  #>
+  ElMessage.success("保存并提交成功");<#
+  }
+  #>
+
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
+}<#
+}
+#><#
 if (opts.hideSaveAndCopy === false) {
 #>
 

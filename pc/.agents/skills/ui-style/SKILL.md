@@ -11,7 +11,7 @@ metadata:
 ## 编码规范
 - 使用 Vue Macros 的 reactivity transform（`$ref`、`$computed` 等）
 - vue 相关的类型都无需导入, 如 `ref`, `computed` 等, 直接使用即可, 因为 `vite.config.mts` 配置了自动导入 `AutoImport`
-- 函数定义和调用的时候, 参数都换行, vue 组件属性也换行
+- 函数定义和调用时, 有 2 个及以上参数的, 每个参数单独换行; Vue 组件有 2 个及以上属性时, 每个属性单独换行
 - 空白行代码缩进要保持和上一行一致, 方便后续添加代码
 - 大块标签之间要留空行
 - 结构标签上面写上注释
@@ -69,13 +69,16 @@ metadata:
 1. 先看能否合并相同前缀：`text-sm text-white` → `un-text="sm white"`
 2. 如果属性名和值里有重复词, 再用自引用 `~`：`flex flex-col` → `un-flex="~ col"`
 3. 如果工具类本身没有参数, 直接改成无值属性：`rounded` → `un-rounded`
-4. 如果只保留单边边框, 且同时写 `solid` 或颜色, 先用 `0` 清零未显式定义的其它边框方向：`un-border="0 b-1 solid [#f0f2f5]"`, 不要写成 `un-border="b-1 solid [#f0f2f5]"`
+
+### 特殊情况：单边/部分边框
+如果只有部分边（而非全部四边）显式设置了边框，始终在 `un-border` 值的最前面加 `0` 清零其余方向，例如：`un-border="0 b-1 solid [#f0f2f5]"`，不要写成 `un-border="b-1 solid [#f0f2f5]"`
 
 ## 本地静态 Icon
 - 当前 uni 仓库已在 `uno.config.ts` 和 `uno_uni.config.ts` 中通过 UnoCSS `presetIcons` 注册了 `iconfont` collection，会自动读取 `src/assets/iconfont/{icon_name}.svg`
 - 对这类本地单色 svg 图标, 优先使用 `un-i="iconfont-图标名"` 挂在 `view` / `text` 等普通节点上，不要再写成 `image + src`，也不要用 `new URL(...svg, import.meta.url)` 去手动引资源
 - 图标颜色、尺寸直接用 UnoCSS 原子属性控制，例如 `un-text="[#f08b6a]"`、`un-w="5"`、`un-h="5"`
 - 仅当资源本身需要保留原始多色效果、渐变、位图展示时，才继续使用 `image` 标签
+- 若所需图标 SVG 文件不存在于 `src/assets/iconfont/`，在代码中留下注释 `<!-- TODO: 需添加图标 {icon_name}.svg 到 src/assets/iconfont/ -->`，暂不使用 `image` 替代
 - 可参考 `src/pages/product/Detail.vue` 的收藏按钮写法
 
 ```vue
@@ -108,6 +111,7 @@ const now = dayjs().format('YYYY-MM-DD');
 ## 弹窗规范 — CustomDialog
 
 禁止在页面中内联 `el-dialog`，所有弹窗必须使用 `CustomDialog` 组件，抽离为独立的 `XxxDialog.vue` 文件。
+对于简单的确认/删除操作, 使用 `ElMessageBox.confirm(...)` 而非 `el-dialog` 或 `CustomDialog`。只有需要自定义表单或复杂内容的弹窗才抽离为 `XxxDialog.vue`。
 
 ### 核心规则
 - **一个弹窗一个文件**：`XxxDialog.vue` 放在同目录下
@@ -129,7 +133,9 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 async function showDialog(arg: { action: DialogAction; row: XxxModel }) {
-  const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
+  // 调用前确保已挂载, 防止 ref 为空导致运行时报错
+  if (!customDialogRef) return;
+  const dialogRes = customDialogRef.showDialog<OnCloseResolveType>({
     type: "auto",
     title: "弹窗标题",
   });
