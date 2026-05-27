@@ -206,7 +206,7 @@ pub async fn find_by_ids_ok_wx_app_token(
 }
 
 /// 创建小程序接口凭据
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_wx_app_token(
   inputs: Vec<WxAppTokenInput>,
@@ -227,7 +227,7 @@ pub async fn creates_wx_app_token(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = wx_app_token_service::set_id_by_lbl_wx_app_token(
+    let mut input = wx_app_token_service::set_id_by_lbl_wx_app_token(
       input,
     ).await?;
     inputs2.push(input);

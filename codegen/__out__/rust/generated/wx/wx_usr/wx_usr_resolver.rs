@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_wx_usr(
 }
 
 /// 创建小程序用户
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_wx_usr(
   inputs: Vec<WxUsrInput>,
@@ -229,7 +229,7 @@ pub async fn creates_wx_usr(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = wx_usr_service::set_id_by_lbl_wx_usr(
+    let mut input = wx_usr_service::set_id_by_lbl_wx_usr(
       input,
     ).await?;
     inputs2.push(input);
