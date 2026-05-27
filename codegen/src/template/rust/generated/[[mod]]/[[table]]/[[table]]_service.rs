@@ -66,6 +66,15 @@ if (hasAudit) {
 const hasSummary = columns.some((column) => column.showSummary);
 
 const is_with_auth_optional = opts?.is_with_auth_optional;
+
+
+// bpm
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
+const bpmStatusField = opts?.bpm?.bpm_status_field;
+const bpmStatusFieldUp = bpmStatusField
+  ? bpmStatusField.split("_").map((item) => item.substring(0, 1).toUpperCase() + item.substring(1)).join("")
+  : "";
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -108,6 +117,19 @@ if (hasOrgId) {
 #>
 
 use crate::base::org::org_model::OrgId;<#
+}
+#><#
+if (hasBpm) {
+#>
+
+use crate::bpm::process_def::process_def_model::{
+  ProcessDefBizCode,
+  ProcessDefSearch,
+};
+use crate::bpm::process_def::process_def_service::find_one_ok_process_def;
+use crate::bpm::process_inst::process_inst_model::ProcessInstId;
+use crate::bpm::process_inst::process_inst_service2::start_process;
+<#
 }
 #><#
 if (
@@ -427,6 +449,67 @@ pub async fn find_by_ids_ok_<#=table#>(
   
   Ok(<#=table#>_models)
 }<#
+if (hasBpm) {
+#>
+
+/// 发起 <#=table_comment#> 流程
+pub async fn start_process_<#=table#>(
+  <#=table#>_id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<ProcessInstId> {
+  let <#=table#>_model = find_by_id_ok_<#=table#>(
+    <#=table#>_id,
+    options,
+  ).await?;
+
+  let <#=table#>_id = <#=table#>_model.id;
+  let <#=table#>_lbl = <#=table#>_model.lbl;
+
+  if <#=table#>_model.<#=bpmStatusField#> != <#=tableUP#><#=bpmStatusFieldUp#>::Draft {
+    color_eyre::eyre::bail!(
+      "仅未提交状态可提交",
+    )
+  }
+
+  let biz_code = "<#=bpmBizCode#>".parse::<ProcessDefBizCode>()?;
+
+  let process_def_model = find_one_ok_process_def(
+    Some(ProcessDefSearch {
+      biz_code: Some(vec![biz_code]),
+      ..Default::default()
+    }),
+    None,
+    options,
+  ).await?;
+
+  let process_def_id = process_def_model.id;
+  let process_def_is_enabled = process_def_model.is_enabled;
+
+  if process_def_is_enabled == 0 {
+    color_eyre::eyre::bail!("流程未启用")
+  }
+
+  let process_inst_id = start_process(
+    process_def_id,
+    <#=table#>_id.into(),
+    <#=table#>_lbl.into(),
+    options,
+  ).await?;
+
+  update_by_id_<#=table#>(
+    <#=table#>_id,
+    <#=tableUP#>Input {
+      <#=bpmStatusField#>: Some(<#=tableUP#><#=bpmStatusFieldUp#>::Running),
+      ..Default::default()
+    },
+    options,
+  ).await?;
+
+  Ok(process_inst_id)
+}
+<#
+}
+#><#
 if (hasDataPermit() && hasCreateUsrId) {
 #>
 
