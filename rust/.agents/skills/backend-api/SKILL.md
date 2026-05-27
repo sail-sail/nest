@@ -13,16 +13,17 @@ metadata:
 - 新增或修改自定义 Query、Mutation
 - 组合多个 generated DAO 做聚合查询或特殊流程
 - 增加业务校验、日志、权限、事务
-- 在 `app/{mod}/{table}/` 中新增 `*_graphql.rs`、`*_resolver.rs`、`*_service.rs`、`*_model.rs`
+- 在 `app/{mod}/{table}/` 中新增 `*_graphql.rs`、`*_resolver.rs`、`*_service.rs`（`*_model.rs` 按需新增）
 
-## 修改决策顺序
+## 放置映射
 
-1. 先判断是否为业务接口或流程编排（Query/Mutation/聚合查询/业务校验/日志/事务）：是则默认写在 `app/{mod}/{table}/`。
-2. 若需要前端调用自定义 GraphQL：PC 写 `src/views/{mod}/{table}/Api2.ts`，uni 写 `src/pages/{table}/Api2.ts`，不要改生成的 `Api.ts`。
-3. 仅当同时满足以下两个条件才扩展 `generated/`：
-  - `app/` 因技术限制无法直接完成该能力（例如必须补基础 DAO/Model/Service）；
-  - 该能力需要被多个 `generated/` 文件直接复用。
-4. 扩展 `generated/` 时，优先新增 `*_dao2.rs`、`*_service2.rs`、`*_resolver2.rs`、`*_model2.rs` 并在 `mod.rs` 显式 `pub mod ...`；仅在确需让 `generated/` 复用 GraphQL 接口时才加 `generated/*_graphql.rs`。
+| 场景 | 放置位置 | 规则 |
+|------|------|------|
+| 业务接口/流程编排（Query、Mutation、聚合查询、业务校验、日志、事务） | `app/{mod}/{table}/` | 默认都在手写层实现 |
+| 前端调用自定义 GraphQL | PC: `src/views/{mod}/{table}/Api2.ts`；uni: `src/pages/{table}/Api2.ts` | 不要改生成的 `Api.ts` |
+| 需要补基础能力并被多个 generated 文件复用 | `generated/{mod}/{table}/` | 仅在 `app/` 无法完成且存在跨 generated 复用时放这里 |
+
+- 扩展 `generated/` 时，优先新增 `*_dao2.rs`、`*_service2.rs`、`*_resolver2.rs`、`*_model2.rs` 并在 `mod.rs` 显式 `pub mod ...`；仅在确需让 `generated/` 复用 GraphQL 接口时才加 `generated/*_graphql.rs`。
 
 ## 目录边界
 
@@ -40,7 +41,6 @@ metadata:
 app/{mod}/{table}/
 ├── {table}_graphql.rs
 ├── {table}_resolver.rs
-├── {table}_model.rs
 ├── {table}_dao.rs        (可选, 多数情况 generated 已够)
 └── {table}_service.rs
 ```
@@ -49,7 +49,7 @@ app/{mod}/{table}/
 |----|------|------|
 | GraphQL | `*_graphql.rs` | 定义接口、权限入口、构建 `Ctx` |
 | Resolver | `*_resolver.rs` | `#[function_name::named]` 日志、转调 Service |
-| Model | `*_model.rs` | 输入输出类型 |
+| Model | `*_model.rs` | 可选，仅在 app 层定义专用输入输出类型时新增 |
 | Service | `*_service.rs` | 业务逻辑、事务内流程、调用 DAO |
 | DAO | `*_dao.rs` | 数据库查询与写入 (通常用 generated 的即可) |
 
@@ -158,6 +158,82 @@ pub async fn method_name(
 }
 ```
 
+### REST
+
+文件结构（最小实现）：
+
+```text
+app/{mod}/{table}/
+├── {table}_router.rs
+├── {table}_restful.rs
+├── mod.rs
+└── {table}_service.rs
+```
+
+`{table}_router.rs`（注册路由）：
+
+```rust
+use poem::Route;
+use poem::post;
+
+pub fn create_routes() -> Route {
+  Route::new()
+    .at(
+      "/{table}/do_action",
+      post({table}_restful::do_action),
+    )
+}
+```
+
+`mod.rs`（模块内注册）：
+
+```rust
+pub mod {table}_router;
+pub mod {table}_restful;
+pub mod {table}_service;
+```
+
+`{table}_restful.rs`（入口鉴权 + 构建 Ctx + 调 service）：
+
+```rust
+use poem::web::Json;
+use poem::Result;
+use generated::common::context::Ctx;
+
+pub async fn do_action(
+  req: Json<{Table}Input>,
+) -> Result<Json<{Table}Output>> {
+  // 该示例包含写操作, 因此开启事务
+  let data = Ctx::poem_builder()
+    .with_auth()?
+    .with_tran()
+    .build()
+    .scope({
+      {table}_service::do_action(
+        req.0,
+        None,
+      )
+    }).await?;
+
+  Ok(Json(data))
+}
+```
+
+`{table}_service.rs` 保持与 GraphQL 同一套业务逻辑，统一复用 generated DAO。
+
+路由挂载（在 `app/lib.rs` 或对应聚合路由处）：
+
+```rust
+use poem::Route;
+
+pub fn app_routes() -> Route {
+  Route::new().nest(
+    "/api",
+    {mod}::{table}::{table}_router::create_routes(),
+  )
+}
+```
+
 ## 常用 DAO 函数
 
 | 函数 | 用途 |
@@ -198,7 +274,7 @@ use generated::common::context::{
 
 2. 事务与鉴权
 
-- 修改操作通常加 `.with_tran()`
+- 修改涉及多个表或多条记录的操作必须加 `.with_tran()`；仅涉及单表单条非核心记录修改时可不加
 - 需要登录的接口加 `.with_auth()?`
 
 3. 查询与锁
@@ -219,6 +295,13 @@ use generated::common::context::{
 
 - 手动编辑时，空白行缩进与周围代码保持一致
 - 除非用户明确要求，不要额外执行 `cargo fmt` 做整文件格式化
+
+7. generated service 导入风格（统一约定）
+
+- 默认优先“函数级 use 终点”写法：
+  - `use generated::{mod}::{table}::{table}_service::find_by_id_ok_{table};`
+  - 然后直接调用 `find_by_id_ok_{table}(...)`
+- 调用dao层时也同理
 
 ## 模块注册
 
@@ -250,7 +333,7 @@ pub struct Mutation(
 pub mod {table}_graphql;
 pub mod {table}_resolver;
 pub mod {table}_service;
-// {table}_model.rs 通常在 generated 中, 手写时再加
+// 若在 app 层定义了专用输入输出类型, 再加 pub mod {table}_model;
 ```
 
 ## 接口变更后的类型生成

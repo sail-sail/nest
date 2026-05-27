@@ -52,10 +52,11 @@ generated::common::websocket::websocket_dao::publish(
 
 - 升级路径: `/api/websocket/upgrade`
 - 连接参数: `?clientId=xxx&pwd=xxx`
-- 客户端支持 `subscribe`、`unSubscribe`、`ping` 三种操作
+- 客户端支持 `subscribe`、`unSubscribe`、`ping` 三种操作（`ping` 心跳维持由底层库自动处理，业务代码无需手动调用）
 
 ## 注意事项
 
 1. 推送行为: `publish()` 返回 `()`, 不返回 `Result`; 如果目标客户端未连接, `publish` 内部会静默跳过, 不会报错。
 2. 连接模型: 一个 clientId 可以连接多个 socket, 通过 connection_id 区分。
 3. 主题约束: 主题名是大小写敏感的字符串, 建议用驼峰命名。
+4. 异常处理: 如果连接断开, 底层库会自动尝试重连, 业务侧无需捕获网络错误; 如果 `subscribe` 失败, 请使用 `try/catch` 捕获 promise 异常并提供用户提示。
