@@ -277,7 +277,7 @@ pub async fn find_by_ids_ok_usr(
 }
 
 /// 创建用户
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_usr(
   inputs: Vec<UsrInput>,
@@ -298,7 +298,7 @@ pub async fn creates_usr(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = usr_service::set_id_by_lbl_usr(
+    let mut input = usr_service::set_id_by_lbl_usr(
       input,
     ).await?;
     inputs2.push(input);

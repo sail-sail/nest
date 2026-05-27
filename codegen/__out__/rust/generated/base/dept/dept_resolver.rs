@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_dept(
 }
 
 /// 创建部门
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_dept(
   inputs: Vec<DeptInput>,
@@ -229,7 +229,7 @@ pub async fn creates_dept(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = dept_service::set_id_by_lbl_dept(
+    let mut input = dept_service::set_id_by_lbl_dept(
       input,
     ).await?;
     inputs2.push(input);

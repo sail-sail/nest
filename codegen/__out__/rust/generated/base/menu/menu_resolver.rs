@@ -230,7 +230,7 @@ pub async fn find_by_ids_ok_menu(
 }
 
 /// 创建菜单
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_menu(
   inputs: Vec<MenuInput>,
@@ -251,7 +251,7 @@ pub async fn creates_menu(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = menu_service::set_id_by_lbl_menu(
+    let mut input = menu_service::set_id_by_lbl_menu(
       input,
     ).await?;
     inputs2.push(input);

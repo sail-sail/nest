@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_org(
 }
 
 /// 创建组织
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_org(
   inputs: Vec<OrgInput>,
@@ -229,7 +229,7 @@ pub async fn creates_org(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = org_service::set_id_by_lbl_org(
+    let mut input = org_service::set_id_by_lbl_org(
       input,
     ).await?;
     inputs2.push(input);

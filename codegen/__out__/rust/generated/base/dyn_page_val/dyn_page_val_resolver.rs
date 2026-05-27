@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_dyn_page_val(
 }
 
 /// 创建动态页面值
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_dyn_page_val(
   inputs: Vec<DynPageValInput>,
@@ -229,7 +229,7 @@ pub async fn creates_dyn_page_val(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = dyn_page_val_service::set_id_by_lbl_dyn_page_val(
+    let mut input = dyn_page_val_service::set_id_by_lbl_dyn_page_val(
       input,
     ).await?;
     inputs2.push(input);
