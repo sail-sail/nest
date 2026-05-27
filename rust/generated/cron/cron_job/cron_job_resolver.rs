@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_cron_job(
 }
 
 /// 创建定时任务
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_cron_job(
   inputs: Vec<CronJobInput>,
@@ -229,7 +229,7 @@ pub async fn creates_cron_job(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = cron_job_service::set_id_by_lbl_cron_job(
+    let mut input = cron_job_service::set_id_by_lbl_cron_job(
       input,
     ).await?;
     inputs2.push(input);

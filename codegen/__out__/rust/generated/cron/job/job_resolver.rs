@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_job(
 }
 
 /// 创建任务
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_job(
   inputs: Vec<JobInput>,
@@ -229,7 +229,7 @@ pub async fn creates_job(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = job_service::set_id_by_lbl_job(
+    let mut input = job_service::set_id_by_lbl_job(
       input,
     ).await?;
     inputs2.push(input);
