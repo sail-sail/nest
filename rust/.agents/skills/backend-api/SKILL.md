@@ -25,15 +25,11 @@ metadata:
 
 - 扩展 `generated/` 时，优先新增 `*_dao2.rs`、`*_service2.rs`、`*_resolver2.rs`、`*_model2.rs` 并在 `mod.rs` 显式 `pub mod ...`；仅在确需让 `generated/` 复用 GraphQL 接口时才加 `generated/*_graphql.rs`。
 
-## 目录边界
+## 依赖边界
 
-| 目录 | 角色 | 规则 |
-|------|------|------|
-| `app/{mod}/{table}/` | 手写业务层 | 默认入口 |
-| `generated/{mod}/{table}/` | 基础 CRUD 层 | 非默认编辑入口，仅在必须补基础能力时扩展 |
-
-- 允许 `app -> generated`
-- 不允许 `generated -> app`
+- `app/{mod}/{table}/` 是默认手写业务入口
+- `generated/{mod}/{table}/` 是基础 CRUD 层，扩展规则见上表
+- 只允许 `app -> generated`，不允许 `generated -> app`
 
 ## 标准分层
 
@@ -298,10 +294,7 @@ use generated::common::context::{
 
 7. generated service 导入风格（统一约定）
 
-- 默认优先“函数级 use 终点”写法：
-  - `use generated::{mod}::{table}::{table}_service::find_by_id_ok_{table};`
-  - 然后直接调用 `find_by_id_ok_{table}(...)`
-- 调用dao层时也同理
+- 默认优先“函数级 use 终点”写法，例如 `use generated::{mod}::{table}::{table}_service::find_by_id_ok_{table};`，然后直接调用 `find_by_id_ok_{table}(...)`；DAO 层同理
 
 ## 模块注册
 
@@ -352,14 +345,3 @@ pub mod {table}_service;
 - **字符串**: SmolStr (字符串优先使用)
 - **错误处理**: color-eyre
 - **日志**: tracing + tracing-subscriber
-
-## 架构要点
-
-- 允许 `app -> generated`, 不允许 `generated -> app`
-- GraphQL 接口: `app/{mod}/{table}/` 下 graphql → resolver → service → generated DAO
-- REST 接口: `app/{mod}/{table}/` 下 router → resful → service → generated DAO
-- 微信支付/退款回调: `app/wx/wx_pay_notice/` 和 `app/wx/wx_refund_notice/` 分发到业务模块
-- 回调入口在 resolver 层(支付)或 service 层(退款), 不要放错位置
-- 业务错误使用 `ServiceException`: `eyre!(ServiceException { message: "xxx".into(), trace: true, ..Default::default() })`
-- resolver 层必须加 `#[function_name::named]` 宏
-- 不执行 `cargo fmt`
