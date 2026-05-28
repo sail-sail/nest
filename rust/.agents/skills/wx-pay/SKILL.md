@@ -78,13 +78,13 @@ pub async fn pay_xxx(
 
 ### Step 2: 后端 - 支付回调处理
 
-先在 `app/wx/wx_pay_notice/wx_pay_notice_model.rs` 定义共享 action 常量，避免下单与回调两处字符串漂移:
+先在 `app/wx/wx_pay_notice/wx_pay_notice_model.rs` 定义共享 action 常量:
 
 ```rust
 pub static WX_PAY_NOTICE_ACTION_PAY_XXX: &str = "pay_xxx";
 ```
 
-**2.1** 在 `app/wx/wx_pay_notice/wx_pay_notice_service.rs` 的 action 分发区添加业务分支。项目当前文件如果只有少量 action, 沿用现有 `if / else if` 结构也可以; 分支继续增加时, 优先改成 `match action` 或抽成独立分发函数, 把 `payload` 解析收口在各自分支里:
+**2.1** 在 `app/wx/wx_pay_notice/wx_pay_notice_service.rs` 的 action 分发区添加业务分支；action 变多时再统一改成 `match` 或独立分发函数:
 
 ```rust
 match action {
@@ -385,13 +385,13 @@ pub async fn refund_xxx(
 
 ### Step 2: 后端 - 退款通知分发
 
-先在 `app/wx/wx_refund_notice/wx_refund_notice_model.rs` 定义共享 action 常量, 避免发起退款与回调分发两处字符串漂移:
+同支付流程, 先在 `app/wx/wx_refund_notice/wx_refund_notice_model.rs` 定义共享 action 常量:
 
 ```rust
 pub static WX_REFUND_NOTICE_ACTION_REFUND_XXX: &str = "refund_xxx";
 ```
 
-然后在 `app/wx/wx_refund_notice/wx_refund_notice_service.rs` 的 action 分发区添加业务分支。当前仓库已有 `if / else if` 风格示例; 如果退款 action 继续增加, 优先改成 `match action` 或独立分发函数, 让 `payload` 解析留在各自分支内:
+然后在 `app/wx/wx_refund_notice/wx_refund_notice_service.rs` 的 action 分发区添加业务分支；沿用现有结构即可, action 变多时再统一收口:
 
 ```rust
 match action {
@@ -507,42 +507,27 @@ export async function refundXxx(
 
 ## attach2 结构
 
-支付与退款共用同一套约定: `action` 用于通知分发, `payload` 放业务回调需要的数据
-
-支付示例:
+支付与退款共用同一套约定: `action` 用于通知分发, `payload` 放业务回调需要的数据。支付场景通常只放业务主键; 退款场景若存在部分退款, 再补 `refund_apply_id` 等能唯一标识“本次退款”的字段。
 
 ```json
 {
-  "action": "pay_xxx",
-  "payload": {
-    "record_id": "回调时需要的业务ID"
-  }
-}
-```
-
-退款示例:
-
-```json
-{
-  "action": "refund_xxx",
+  "action": "pay_xxx | refund_xxx",
   "payload": {
     "record_id": "业务单ID",
-    "refund_apply_id": "可选: 退款申请ID",
-    "extra": "可选: 部分退款回调还需要的数据"
+    "refund_apply_id": "可选: 部分退款时标识本次退款",
+    "extra": "可选: 回调后仍要用到的数据"
   }
 }
 ```
 
-## 文件清单
+## 常见改动落点
 
-| 端 | 文件 | 开发内容 |
-|----|------|----------|
-| Rust | `app/{mod}/{table}/{table}_service.rs` | 统一下单函数 / 业务退款函数 / 回调业务逻辑 |
-| Rust | `app/{mod}/{table}/{table}_resolver.rs` | 支付回调分发函数 (加 `#[function_name::named]`) |
-| Rust | `app/wx/wx_pay_notice/wx_pay_notice_service.rs` | 添加支付 action 分发分支 |
-| Rust | `app/wx/wx_pay_notice/wx_pay_notice_model.rs` | 支付 action 常量 |
-| Rust | `app/wx/wx_refund_notice/wx_refund_notice_service.rs` | 添加退款 action 分发分支 |
-| Rust | `app/wx/wx_refund_notice/wx_refund_notice_model.rs` | 退款 action 常量 |
-| Uni | `src/pages/{table}/Api2.ts` | 支付接口函数 |
-| PC / Uni | `Api2.ts` | 退款接口函数 |
-| PC / Uni | `*.vue` | 支付调起 / 退款状态展示 |
+| 端 | 文件 | 作用 |
+|----|------|------|
+| Rust | `app/{mod}/{table}/{table}_service.rs` | 下单 / 退款 / 业务回调 |
+| Rust | `app/{mod}/{table}/{table}_resolver.rs` | 支付回调入口 |
+| Rust | `app/wx/wx_pay_notice/{wx_pay_notice_model,wx_pay_notice_service}.rs` | 支付 action 常量与分发 |
+| Rust | `app/wx/wx_refund_notice/{wx_refund_notice_model,wx_refund_notice_service}.rs` | 退款 action 常量与分发 |
+| Uni | `src/pages/{table}/Api2.ts` | 支付接口 |
+| PC / Uni | `Api2.ts` | 退款接口 |
+| PC / Uni | `*.vue` | 支付调起 / 退款状态 |
