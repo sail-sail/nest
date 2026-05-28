@@ -3,4 +3,4 @@ allowBuilds:
   "cpu-features": true
   "ssh2": true
 minimumReleaseAgeExclude:
-  - '@types/node@25.9.1'
+  - '*'
