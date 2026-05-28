@@ -56,7 +56,7 @@ num-traits = "0.2.19"
 fast_chemail = "0.9.6"
 http = "1.4.1"
 futures = "0.3.32"
-aes = "0.9.0"
+aes = "0.9.1"
 cbc = { version = "0.2.1", features = ["alloc"]}
 function_name = "0.3.0"
 enum-iterator = "2.3.0"
@@ -175,7 +175,7 @@ members = [
 resolver = "2"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
-tikv-jemallocator = "0.6.1"
+tikv-jemallocator = "0.7.0"
 
 # [build-dependencies]
 # protobuf-codegen = "3.7.1"
