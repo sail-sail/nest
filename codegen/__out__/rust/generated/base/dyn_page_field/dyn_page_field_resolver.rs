@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_dyn_page_field(
 }
 
 /// 创建动态页面字段
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_dyn_page_field(
   inputs: Vec<DynPageFieldInput>,
@@ -229,7 +229,7 @@ pub async fn creates_dyn_page_field(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = dyn_page_field_service::set_id_by_lbl_dyn_page_field(
+    let mut input = dyn_page_field_service::set_id_by_lbl_dyn_page_field(
       input,
     ).await?;
     inputs2.push(input);

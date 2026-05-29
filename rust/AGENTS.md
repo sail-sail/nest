@@ -1,9 +1,6 @@
-# Rust - GraphQL API 后端
+# GraphQL API 后端
 
-## 目录约定
+## 核心约束
 
-| 目录 | 说明 |
-|------|------|
-| `generated/common/` | 基础设施(Ctx、auth、websocket、oss、tmpfile 等) |
-| `generated/{mod}/{table}/` | codegen 生成的基础 CRUD 层, 不是默认编辑入口 |
-| `app/{mod}/{table}/` | 手写业务代码, 默认从这里新增和扩展后端能力 |
+1. 手写业务逻辑优先放在 `app/`
+2. `generated/` 为生成代码，可改但新接口必须放在 `app/`

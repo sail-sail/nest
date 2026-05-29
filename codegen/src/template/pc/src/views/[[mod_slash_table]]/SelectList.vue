@@ -270,20 +270,25 @@ async function onSave() {
       return;
     }
   }
+  if (onBeforeChange) {
+    const isCloseChange = await onBeforeChange(selectedModels);
+    if (isCloseChange === false) {
+      onCloseResolve({
+        type: "ok",
+        selectedIds,
+        selectedModels,
+      });
+      return;
+    }
+  }
+  nextTick(() => nextTick(() => {
+    emit("change", selectedModels);
+  }));
   onCloseResolve({
     type: "ok",
     selectedIds,
     selectedModels,
   });
-  if (onBeforeChange) {
-    const isCloseChange = await onBeforeChange(selectedModels);
-    if (isCloseChange === false) {
-      return;
-    }
-  }
-  await nextTick();
-  await nextTick();
-  emit("change", selectedModels);
 }
 
 /** 点击取消关闭按钮 */

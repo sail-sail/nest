@@ -10,13 +10,14 @@
   "ignorePatterns": [
     "src/typings/**",
     "src/assets/**",
-    "src/typings/**",
     "*.d.ts"
   ],
   "rules": {
     "unicorn/no-single-promise-in-promise-methods": "allow",
     "unicorn/no-useless-spread": "allow",
-    "@typescript-eslint/no-unused-vars": "allow",
-    "eslint/no-debugger": "allow"
+    "no-unused-vars": "allow",
+    "no-useless-assignment": "allow",
+    "no-debugger": "allow",
+    "no-dupe-keys": "allow"
   }
 }

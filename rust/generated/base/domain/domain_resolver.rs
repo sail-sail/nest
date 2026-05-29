@@ -206,7 +206,7 @@ pub async fn find_by_ids_ok_domain(
 }
 
 /// 创建域名
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_domain(
   inputs: Vec<DomainInput>,
@@ -227,7 +227,7 @@ pub async fn creates_domain(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = domain_service::set_id_by_lbl_domain(
+    let mut input = domain_service::set_id_by_lbl_domain(
       input,
     ).await?;
     inputs2.push(input);

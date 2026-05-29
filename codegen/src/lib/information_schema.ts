@@ -735,6 +735,75 @@ async function getSchema0(
       }
     }
     
+    // bpm工作流
+    if (tables[table_name]?.opts?.bpm && tables[table_name]?.opts?.bpm?.biz_code) {
+      const bpm = tables[table_name].opts.bpm;
+      if (!bpm.bpm_status_field) {
+        bpm.bpm_status_field = "bpm_status";
+      }
+      if (!bpm.apply_usr_id_field) {
+        bpm.apply_usr_id_field = "apply_usr_id";
+      }
+      if (!bpm.apply_usr_id_lbl_field) {
+        bpm.apply_usr_id_lbl_field = "apply_usr_id_lbl";
+      }
+      if (!bpm.apply_time_field) {
+        bpm.apply_time_field = "apply_time";
+      }
+    }
+    
+  }
+  
+  // bpm工作流
+  if (tables[table_name]?.opts?.bpm && tables[table_name]?.opts?.bpm?.biz_code) {
+    for (let i = 0; i < records2.length; i++) {
+      const record = records2[i];
+      const bpm = tables[table_name].opts.bpm;
+      if (record.COLUMN_NAME === bpm.bpm_status_field) {
+        if (record.search === undefined) {
+          record.search = true;
+        }
+        if (record.width === undefined) {
+          record.width = 100;
+        }
+        if (record.readonly === undefined) {
+          record.readonly = true;
+        }
+        if (record.noAdd === undefined) {
+          record.noAdd = true;
+        }
+      } else if (record.COLUMN_NAME === bpm.apply_usr_id_field) {
+        const apply_usr_id_lbl_field = bpm.apply_usr_id_lbl_field;
+        if (!record.modelLabel && apply_usr_id_lbl_field) {
+          record.modelLabel = apply_usr_id_lbl_field;
+        }
+        if (!record.foreignKey) {
+          record.foreignKey = {
+            mod: "base",
+            table: "usr",
+          };
+        }
+        if (record.search === undefined) {
+          record.search = true;
+        }
+        if (record.readonly === undefined) {
+          record.readonly = true;
+        }
+        if (record.noAdd === undefined) {
+          record.noAdd = true;
+        }
+      } else if (record.COLUMN_NAME === bpm.apply_time_field) {
+        if (record.COLUMN_DEFAULT === undefined) {
+          record.COLUMN_DEFAULT = "CURRENT_DATETIME";
+        }
+        if (record.readonly === undefined) {
+          record.readonly = true;
+        }
+        if (record.noAdd === undefined) {
+          record.noAdd = true;
+        }
+      }
+    }
   }
   
   // 校验
@@ -1057,32 +1126,37 @@ export async function getSchema(
         }
       }
       let defaultValue = record.COLUMN_DEFAULT;
-      // 如果 enumItems 跟 enumItemsDict 不一致, 则报错并给出正确的 enum 数据类型
-      let isMatch = true;
-      if (!enumItemsDict.includes(defaultValue)) {
-        isMatch = false;
-      } else if (enumItems.length !== enumItemsDict.length) {
-        isMatch = false;
-      } else {
-        for (let i = 0; i < enumItems.length; i++) {
-          if (!enumItemsDict.includes(enumItems[i])) {
-            isMatch = false;
-            break;
+      
+      if (record.isDictEnum !== false) {
+        
+        // 如果 enumItems 跟 enumItemsDict 不一致, 则报错并给出正确的 enum 数据类型
+        let isMatch = true;
+        if (!enumItemsDict.includes(defaultValue)) {
+          isMatch = false;
+        } else if (enumItems.length !== enumItemsDict.length) {
+          isMatch = false;
+        } else {
+          for (let i = 0; i < enumItems.length; i++) {
+            if (!enumItemsDict.includes(enumItems[i])) {
+              isMatch = false;
+              break;
+            }
           }
         }
-      }
-      if (!isMatch) {
-        if (!enumItemsDict.includes(defaultValue)) {
-          defaultValue = enumItemsDict[0];
-        }
+        if (!isMatch) {
+          if (!enumItemsDict.includes(defaultValue)) {
+            defaultValue = enumItemsDict[0];
+          }
 //         let errMsg = `
 // 错误: 表: ${ table_name }, 列: ${ record.COLUMN_NAME }, 数据类型应该为:`;
         let errMsg = `ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
 \`${ record.COLUMN_NAME }\` ENUM('${ enumItemsDict.join("', '") }') NOT NULL DEFAULT '${ defaultValue }' COMMENT '${ oldComment }';`;
-        // throw chalk.red(errMsg);
-        pushEnumMsg(errMsg);
+          // throw chalk.red(errMsg);
+          pushEnumMsg(errMsg);
+        }
       }
     }
+    
     if (data_type === "enum") {
       record.DATA_TYPE = "varchar";
       record.COLUMN_TYPE = `varchar(${ record.CHARACTER_MAXIMUM_LENGTH })`;

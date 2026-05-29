@@ -69,6 +69,14 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         additionalData: `@use "@/assets/style/uni.scss";`,
+        silenceDeprecations: [
+          "legacy-js-api",
+        ],
+      },
+      sass: {
+        silenceDeprecations: [
+          "legacy-js-api",
+        ],
       },
     },
   },

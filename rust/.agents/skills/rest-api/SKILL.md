@@ -14,7 +14,7 @@ description: Poem REST 接口开发规范. 创建非 GraphQL 接口(如微信回
 
 ## 路由注册位置
 
-REST 路由统一在 `main.rs` 的 `app` 变量中注册:
+REST 路由在 `main.rs` 的 `app` 构建阶段汇总注册, 其中业务路由通过 `app/lib.rs` 的 `register_routes` 注入:
 
 ```rust
 // 在 main() 的 app 构建区域
@@ -27,7 +27,7 @@ app = app.at(
 app = app::register_routes(app);
 ```
 
-新增路由可以在 `app/lib.rs` 的 `register_routes` 函数中追加。
+新增业务路由请优先在 `app/lib.rs` 的 `register_routes` 函数中追加。
 
 ## 标准四层结构
 
@@ -59,11 +59,13 @@ pub async fn code2session(
   req: &Request,
   Json(input): Json<Code2sessionInput>,
 ) -> Result<Response> {
+  let ip = req.real_ip().unwrap_or_default().into();
+
   Ctx::resful_builder(Some(req))
     .with_auth()?          // 需要认证时加
     .build()
     .resful_scope({
-      wx_usr_resful::code2session(input, None)
+      wx_usr_resful::code2session(input, ip, None)
     }).await
 }
 ```
@@ -93,6 +95,13 @@ pub async fn code2session(
 ```
 
 入参不合法时, 在 `*_resful.rs` 中尽早返回 `400 Bad Request`, 并给出可读的错误信息, 不要继续执行业务逻辑。
+例如:
+
+```rust
+return Ok(Response::builder()
+  .status(StatusCode::BAD_REQUEST)
+  .body("无效的入参"));
+```
 
 ## 常用 poem 导入
 
@@ -163,6 +172,6 @@ pub async fn export(
 ## 注意事项
 
 - 检查文件名: 使用 `*_resful.rs`, 不要写成 `*_restful.rs`
-- 检查路由注册: 简单入口可直接放在 `main.rs`; 业务路由统一追加到 `app/lib.rs` 的 `register_routes`
+- 检查路由注册: 不涉及具体数据表操作的接口(如健康检查、公开外链下载)放在 `main.rs`; 与特定数据表或认证相关的业务处理统一追加到 `app/lib.rs` 的 `register_routes`
 - 检查认证: 读取当前登录用户、访问用户私有数据、发起支付/退款等用户敏感操作时加 `.with_auth()?`; 健康检查、微信回调、公开下载等匿名入口直接 `.build()`
 - 检查入参: 请求体、路径参数、Query 参数解析后, 只要发现缺失、格式错误或业务前置条件不满足, 立即返回 `400 Bad Request`

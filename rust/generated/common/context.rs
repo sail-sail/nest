@@ -546,7 +546,9 @@ impl Ctx {
     }
     
     if is_tran {
-      let mut query = sqlx::query(&sql);
+      let mut query = sqlx::query(
+        sqlx::AssertSqlSafe(sql.as_str())
+      );
       for arg in &args {
         match arg {
           ArgType::Bool(s) => {
@@ -634,7 +636,9 @@ impl Ctx {
       let rows_affected = res.rows_affected();
       return Ok(rows_affected);
     }
-    let mut query = sqlx::query(&sql);
+    let mut query = sqlx::query(
+      sqlx::AssertSqlSafe(sql.as_str())
+    );
     for arg in &args {
       match arg {
         ArgType::Bool(s) => {
@@ -747,7 +751,9 @@ impl Ctx {
     }
     
     if is_tran {
-      let mut query = sqlx::query_as::<_, R>(&sql);
+      let mut query = sqlx::query_as::<_, R>(
+        sqlx::AssertSqlSafe(sql.as_str())
+      );
       for arg in &args {
         match arg {
           ArgType::Bool(s) => {
@@ -835,7 +841,9 @@ impl Ctx {
       
       return Ok(res);
     }
-    let mut query = sqlx::query_as::<_, R>(&sql);
+    let mut query = sqlx::query_as::<_, R>(
+      sqlx::AssertSqlSafe(sql.as_str())
+    );
     for arg in &args {
       match arg {
         ArgType::Bool(s) => {
@@ -950,7 +958,9 @@ impl Ctx {
       }
     
     if is_tran {
-      let mut query = sqlx::query_as::<_, R>(&sql);
+      let mut query = sqlx::query_as::<_, R>(
+        sqlx::AssertSqlSafe(sql.as_str())
+      );
       for arg in &args {
         match arg {
           ArgType::Bool(s) => {
@@ -1037,7 +1047,9 @@ impl Ctx {
       };
       return Ok(res);
     }
-    let mut query = sqlx::query_as::<_, R>(&sql);
+    let mut query = sqlx::query_as::<_, R>(
+      sqlx::AssertSqlSafe(sql.as_str())
+    );
     for arg in &args {
       match arg {
         ArgType::Bool(s) => {

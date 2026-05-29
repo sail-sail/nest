@@ -24,7 +24,21 @@ src/views/{mod}/{table}/
 
 ## 编码规范
 - GraphQL 请求通常无需手动捕获异常；调用 `query()` / `mutation()` 时会由全局错误处理器统一处理，这条规则不适用于其他异步操作
-- `query()` 会在同一轮 microtask 内自动合并/去重多个查询；彼此独立的查询尽量一起发起，再 `await Promise.all(...)`
+- 如果某个接口需要在本地处理异常（例如静默失败），优先通过 `opt` 覆盖错误处理行为；仅在该接口明确要求本地兜底时，允许在函数内部使用 `try-catch`
+- `query()` 会在同一轮 microtask 内自动合并/去重多个查询；彼此独立的查询尽量在同一个业务函数中并发发起，再 `await Promise.all(...)`，例如：
+
+```typescript
+const [userRes, statRes] = await Promise.all([
+  query({
+    query: /* GraphQL */ `query($id: UserId!) { getUser(id: $id) { id name } }`,
+    variables: { id },
+  }, opt),
+  query({
+    query: /* GraphQL */ `query($id: UserId!) { getUserStat(id: $id) { score } }`,
+    variables: { id },
+  }, opt),
+]);
+```
 
 ## Query 模板
 
@@ -98,6 +112,7 @@ export async function updateXxx(
 
 ## 核心规则
 
-1. 类型导入：从 `#/types.ts` 导入 `Query`、`Mutation`、`XxxInput` 等 GraphQL 相关类型；标准的 `{Table}Model`、`{Table}Input`、`{Table}Search` 无需额外引入，因为已经在 `Model.ts` 中全局定义。
+1. 类型导入：从 `#/types.ts` 导入 `Query`、`Mutation`、`XxxInput`、`XxxId` 等 GraphQL 相关类型；标准的 `{Table}Model`、`{Table}Input`、`{Table}Search` 无需额外引入，因为已经在 `Model.ts` 中全局定义。
 2. 返回类型：使用 `Query["xxx"]` 或 `Mutation["xxx"]` 声明返回值。
 3. 命名：函数名用驼峰式，参数名用蛇形式，并与后端保持一致。
+4. 变量映射：若 TS 参数使用蛇形命名、但后端 GraphQL schema 要求驼峰参数名，在 `variables` 组装时显式映射（例如 `variables: { bookingOrderId: booking_order_id }`）。

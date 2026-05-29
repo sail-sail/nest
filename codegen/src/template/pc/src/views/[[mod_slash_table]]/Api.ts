@@ -58,6 +58,10 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
+
+// bpm
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
 #><#
 let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
@@ -2565,6 +2569,35 @@ export async function findLastOrderBy<#=Table_Up#>(
   const order_by = data.findLastOrderBy<#=Table_Up2#>;
   
   return order_by;
+}<#
+}
+#><#
+if (hasBpm) {
+#>
+
+/** 提交 */
+export async function startProcess<#=Table_Up2#>(
+  id: <#=Table_Up2#>Id,
+  opt?: GqlOpt,
+): Promise<ProcessInstId> {
+  const res: {
+    startProcess<#=Table_Up2#>: ProcessInstId;
+  } = await mutation({
+    query: `
+      mutation($id: <#=Table_Up2#>Id!) {
+        startProcess<#=Table_Up2#>(
+          id: $id,
+        )
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+
+  const data = res.startProcess<#=Table_Up2#>;
+  
+  return data;
 }<#
 }
 #>

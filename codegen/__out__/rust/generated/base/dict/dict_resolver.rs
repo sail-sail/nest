@@ -206,7 +206,7 @@ pub async fn find_by_ids_ok_dict(
 }
 
 /// 创建系统字典
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_dict(
   inputs: Vec<DictInput>,
@@ -227,7 +227,7 @@ pub async fn creates_dict(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = dict_service::set_id_by_lbl_dict(
+    let mut input = dict_service::set_id_by_lbl_dict(
       input,
     ).await?;
     inputs2.push(input);

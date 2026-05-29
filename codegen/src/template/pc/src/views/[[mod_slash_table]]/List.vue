@@ -62,6 +62,8 @@ const hasIsSwitch = columns.some((item) => item.isSwitch && !item.onlyCodegenDen
 );
 const hasForeignKeyShowTypeDialog = columns.some((item) => item.foreignKey?.showType === "dialog" && !item.onlyCodegenDeno);
 const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !item.readonly && !item.onlyCodegenDeno);
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
 
 // 审核
 const hasAudit = !!opts?.audit;
@@ -1218,6 +1220,28 @@ if (searchByKeyword) {
         } else {
         #>
         <span>编辑</span><#
+        }
+        #>
+      </el-button><#
+      }
+      #><#
+      if (hasBpm) {
+      #>
+      
+      <el-button
+        plain
+        type="primary"
+        @click="onStartProcess"
+      >
+        <template #icon>
+          <ElIconPromotion />
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('提交') }}</span><#
+        } else {
+        #>
+        <span>提交</span><#
         }
         #>
       </el-button><#
@@ -2855,6 +2879,11 @@ import {
     if (hasSummary) {
   #>
   findSummary<#=Table_Up#>,<#
+    }
+  #><#
+    if (hasBpm) {
+  #>
+  startProcess<#=Table_Up#>,<#
     }
   #>
 } from "./Api.ts";<#
@@ -4733,6 +4762,95 @@ async function openEdit() {
   dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
+}<#
+}
+#><#
+if (hasBpm) {
+#>
+
+/** 提交 */
+async function onStartProcess() {
+  tableFocus();
+
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要提交的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要提交的 <#=table_comment#>");<#
+    }
+    #>
+    return;
+  }
+
+  if (selectedIds.length > 1) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("每次仅支持对一条 {0} 提交", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("每次仅支持对一条 <#=table_comment#> 提交");<#
+    }
+    #>
+    return;
+  }
+
+  const id = selectedIds[0];
+  const model = tableData.find((item) => item.id === id);
+  if (!model) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("未找到对应 {0} 数据", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("未找到对应 <#=table_comment#> 数据");<#
+    }
+    #>
+    return;
+  }
+
+  try {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("确定提交吗"),<#
+      } else {
+      #>
+      "确定提交吗",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
+        confirmButtonText: await nsAsync("确定"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",<#
+        }
+        #>
+        type: "warning",
+      },
+    );
+  } catch (err) {
+    tableFocus();
+    return;
+  }
+
+  await startProcess<#=Table_Up#>(
+    id,
+  );<#
+  if (isUseI18n) {
+  #>
+  ElMessage.success(await nsAsync("提交成功"));<#
+  } else {
+  #>
+  ElMessage.success("提交成功");<#
+  }
+  #>
+  await onRefresh();
 }<#
 }
 #><#
