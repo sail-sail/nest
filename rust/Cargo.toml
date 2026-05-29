@@ -56,6 +56,7 @@ num-traits = "0.2.19"
 fast_chemail = "0.9.6"
 http = "1.4.1"
 futures = "0.3.32"
+sha1 = "0.11.0"
 aes = "0.9.1"
 cbc = { version = "0.2.1", features = ["alloc"]}
 function_name = "0.3.0"
@@ -136,6 +137,7 @@ num-traits.workspace = true
 fast_chemail.workspace = true
 http.workspace = true
 futures.workspace = true
+sha1.workspace = true
 aes.workspace = true
 cbc.workspace = true
 function_name.workspace = true
