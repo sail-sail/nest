@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_wxw_app(
 }
 
 /// 创建企微应用
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_wxw_app(
   inputs: Vec<WxwAppInput>,
@@ -229,7 +229,7 @@ pub async fn creates_wxw_app(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = wxw_app_service::set_id_by_lbl_wxw_app(
+    let mut input = wxw_app_service::set_id_by_lbl_wxw_app(
       input,
     ).await?;
     inputs2.push(input);

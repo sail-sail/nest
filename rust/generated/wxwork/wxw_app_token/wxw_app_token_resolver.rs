@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_wxw_app_token(
 }
 
 /// 创建企微应用接口凭据
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_wxw_app_token(
   inputs: Vec<WxwAppTokenInput>,
@@ -229,7 +229,7 @@ pub async fn creates_wxw_app_token(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = wxw_app_token_service::set_id_by_lbl_wxw_app_token(
+    let mut input = wxw_app_token_service::set_id_by_lbl_wxw_app_token(
       input,
     ).await?;
     inputs2.push(input);
