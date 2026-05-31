@@ -1462,7 +1462,7 @@ if (hasEnabled && opts.noEdit !== true) {
  */
 export async function enableByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -1494,7 +1494,7 @@ if (hasLocked && opts.noEdit !== true) {
  */
 export async function lockByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

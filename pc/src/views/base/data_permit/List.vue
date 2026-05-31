@@ -475,6 +475,7 @@
           
           <!-- 菜单 -->
           <template v-if="'menu_id_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_id == null)">
+            <!-- @vue-generic {DataPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -484,6 +485,7 @@
           
           <!-- 范围 -->
           <template v-else-if="'scope_lbl' === col.prop && (showBuildIn || builtInSearch?.scope == null)">
+            <!-- @vue-generic {DataPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -493,6 +495,7 @@
           
           <!-- 类型 -->
           <template v-else-if="'type_lbl' === col.prop">
+            <!-- @vue-generic {DataPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -502,6 +505,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {DataPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -511,6 +515,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {DataPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -520,6 +525,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {DataPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -529,6 +535,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {DataPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -538,6 +545,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {DataPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1106,7 +1114,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<DataPermitModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<DataPermitModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1363,9 +1375,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: DataPermitModel,
-  column: TableColumnCtx<DataPermitModel>,
+  column: TableColumnCtx<DataPermitModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1508,10 +1520,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1520,10 +1533,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

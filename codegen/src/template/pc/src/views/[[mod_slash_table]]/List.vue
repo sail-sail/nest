@@ -1960,6 +1960,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1990,6 +1991,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2022,6 +2024,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2040,12 +2043,14 @@ if (searchByKeyword) {
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             ><#
               if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
               #>
+              <!-- @vue-generic {<#=modelName#>} -->
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
@@ -2115,6 +2120,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2167,6 +2173,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2217,6 +2224,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2241,6 +2249,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2354,6 +2363,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2453,6 +2463,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -4177,7 +4188,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<<#=modelName#>> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<<#=modelName#>>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -4629,7 +4644,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: number) {
   if (isLocked) {
     return;
   }
@@ -4653,7 +4668,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: number) {
   if (isLocked) {
     return;
   }
@@ -4677,7 +4692,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: number) {
   if (isLocked) {
     return;
   }
@@ -4994,9 +5009,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: <#=modelName#>,
-  column: TableColumnCtx<<#=modelName#>>,
+  column: TableColumnCtx<<#=modelName#>> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -5224,7 +5239,7 @@ async function onForceDeleteByIds() {
 #>
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
@@ -5297,7 +5312,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 #>
 
 /** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
+async function onLockByIds(is_locked: number) {
   tableFocus();
   if (isLocked) {
     return;
@@ -5574,10 +5589,11 @@ async function initI18nsEfc() {
 #>
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -5586,10 +5602,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

@@ -357,6 +357,7 @@
           
           <!-- 类型 -->
           <template v-if="'type_lbl' === col.prop && (showBuildIn || builtInSearch?.type == null)">
+            <!-- @vue-generic {LoginLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -366,6 +367,7 @@
           
           <!-- 用户名 -->
           <template v-else-if="'username' === col.prop && (showBuildIn || builtInSearch?.username == null)">
+            <!-- @vue-generic {LoginLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -375,6 +377,7 @@
           
           <!-- 登录成功 -->
           <template v-else-if="'is_succ_lbl' === col.prop && (showBuildIn || builtInSearch?.is_succ == null)">
+            <!-- @vue-generic {LoginLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -384,6 +387,7 @@
           
           <!-- IP -->
           <template v-else-if="'ip' === col.prop && (showBuildIn || builtInSearch?.ip == null)">
+            <!-- @vue-generic {LoginLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -393,6 +397,7 @@
           
           <!-- 登录时间 -->
           <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+            <!-- @vue-generic {LoginLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -930,7 +935,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<LoginLogModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<LoginLogModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -962,9 +971,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: LoginLogModel,
-  column: TableColumnCtx<LoginLogModel>,
+  column: TableColumnCtx<LoginLogModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1107,10 +1116,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1119,10 +1129,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

@@ -296,6 +296,7 @@
           
           <!-- 菜单 -->
           <template v-if="'menu_id_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_id == null)">
+            <!-- @vue-generic {FieldPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -305,6 +306,7 @@
           
           <!-- 编码 -->
           <template v-else-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
+            <!-- @vue-generic {FieldPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -314,6 +316,7 @@
           
           <!-- 名称 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {FieldPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -323,6 +326,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {FieldPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -332,6 +336,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {FieldPermitModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -830,7 +835,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<FieldPermitModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<FieldPermitModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -905,9 +914,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: FieldPermitModel,
-  column: TableColumnCtx<FieldPermitModel>,
+  column: TableColumnCtx<FieldPermitModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -951,10 +960,11 @@ async function openView() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -963,10 +973,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

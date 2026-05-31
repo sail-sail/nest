@@ -404,7 +404,7 @@ export async function deleteByIdsDomain(
  */
 export async function enableByIdsDomain(
   ids: DomainId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -432,7 +432,7 @@ export async function enableByIdsDomain(
  */
 export async function lockByIdsDomain(
   ids: DomainId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
