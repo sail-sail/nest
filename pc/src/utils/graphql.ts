@@ -47,6 +47,7 @@ let queryInfos: QueryInfo[] = [ ];
 let queryInfosRepeat: QueryInfo[][] = [ ];
 let tasks: QueryInfo[][] = [ ];
 let tasksRepeat: QueryInfo[][][] = [ ];
+let mutationQueue: Promise<void> = Promise.resolve();
 
 class QueryInfo {
   gqlArg?: GqlArg = undefined;
@@ -84,6 +85,18 @@ function findQueryInfosIdx(queryInfos: QueryInfo[], queryInfo: QueryInfo) {
     return true;
   });
   return idx;
+}
+
+function enqueueMutation<T>(task: () => Promise<T>) {
+  const result = mutationQueue.catch(() => undefined).then(task);
+  mutationQueue = result.then(() => undefined, () => undefined);
+  return result;
+}
+
+async function waitForPendingRequests(indexStore: { loading: number; mutationLoading: number }) {
+  while (indexStore.loading > indexStore.mutationLoading) {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
 }
 
 /**
@@ -288,17 +301,28 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
  */
 export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   const indexStore = useIndexStore();
-  if (!opt?.notLoading && indexStore.loading > 0 && opt?.isMutation) {
-    ElMessage.warning("繁忙中，请稍后再重试");
-    throw "mutation loading";
-  }
-  opt = opt || { };
-  opt.isMutation = true;
+  opt = {
+    ...opt,
+    isMutation: true,
+  };
   gqlArg.query = gqlArg.query.trim();
   if (!gqlArg.query.startsWith("mutation") && !gqlArg.query.startsWith("fragment ")) {
     throw new Error("mutation must start with 'mutation'");
   }
-  return await gqlQuery(gqlArg, opt);
+  return await enqueueMutation(async () => {
+    if (!opt.notLoading) {
+      await waitForPendingRequests(indexStore);
+    }
+    indexStore.mutationLoading += 1;
+    try {
+      return await gqlQuery(gqlArg, opt);
+    } finally {
+      indexStore.mutationLoading -= 1;
+      if (indexStore.mutationLoading < 0) {
+        indexStore.mutationLoading = 0;
+      }
+    }
+  });
 }
 
 export function getQueryUrl(gqlArg: GqlArg, opt?: GqlOpt, authorization?: string): string {
