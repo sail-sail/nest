@@ -429,7 +429,7 @@ export async function deleteByIdsDynPageField(
  */
 export async function enableByIdsDynPageField(
   ids: DynPageFieldId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

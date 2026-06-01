@@ -434,7 +434,7 @@ export async function deleteByIdsMenu(
  */
 export async function enableByIdsMenu(
   ids: MenuId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

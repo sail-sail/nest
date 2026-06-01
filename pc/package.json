@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.3.2",
-    "@flyfish-group/file-viewer3": "1.0.15",
+    "@flyfish-group/file-viewer3": "1.0.16",
     "@jsquash/resize": "2.1.1",
     "@jsquash/webp": "1.5.0",
     "@opentiny/fluent-editor": "3.25.11",

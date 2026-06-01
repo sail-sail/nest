@@ -434,7 +434,7 @@ export async function deleteByIdsDept(
  */
 export async function enableByIdsDept(
   ids: DeptId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -462,7 +462,7 @@ export async function enableByIdsDept(
  */
 export async function lockByIdsDept(
   ids: DeptId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
