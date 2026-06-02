@@ -46,6 +46,8 @@ use tracing::info;
 use generated::common::oss::oss_dao;
 use generated::common::tmpfile::tmpfile_dao;
 
+const TOKIO_THREAD_STACK_SIZE: usize = 31_457_280;
+
 /// 使用本地时间的每日日志滚动写入器
 /// (tracing_appender::rolling::daily 内部使用 UTC, 导致文件名日期在东八区不正确)
 struct LocalDailyAppender {
@@ -288,9 +290,17 @@ pub async fn graphql_handler(
 //   )
 // }
 
-#[tokio::main]
+fn main() -> Result<(), std::io::Error> {
+  let runtime = tokio::runtime::Builder::new_multi_thread()
+    .enable_all()
+    .thread_stack_size(TOKIO_THREAD_STACK_SIZE)
+    .build()
+    .expect("Failed to build tokio runtime");
+  runtime.block_on(async_main())
+}
+
 #[allow(clippy::too_many_lines)]
-async fn main() -> Result<(), std::io::Error> {
+async fn async_main() -> Result<(), std::io::Error> {
   dotenv().ok();
   let server_title = std::env::var("server_title").expect("server_title not found in .env");
   let git_hash = std::env::var("GIT_HASH").ok();

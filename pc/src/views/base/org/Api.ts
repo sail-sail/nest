@@ -402,7 +402,7 @@ export async function deleteByIdsOrg(
  */
 export async function enableByIdsOrg(
   ids: OrgId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -430,7 +430,7 @@ export async function enableByIdsOrg(
  */
 export async function lockByIdsOrg(
   ids: OrgId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

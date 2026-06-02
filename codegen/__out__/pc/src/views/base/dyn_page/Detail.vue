@@ -201,6 +201,7 @@
               class="tr_border_none"
             >
               
+              <!-- @vue-generic {DynPageFieldModel} -->
               <el-table-column
                 prop="_seq"
                 label="序号"
@@ -409,6 +410,7 @@
                 </template>
               </el-table-column>
               
+              <!-- @vue-generic {DynPageFieldModel & { _type: string }} -->
               <el-table-column
                 v-if="!isLocked &&
                   !isReadonly &&

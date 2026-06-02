@@ -58,6 +58,7 @@ num-traits.workspace = true
 fast_chemail.workspace = true
 http.workspace = true
 futures.workspace = true
+sha1.workspace = true
 aes.workspace = true
 cbc.workspace = true
 function_name.workspace = true

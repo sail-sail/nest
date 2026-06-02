@@ -423,7 +423,7 @@ export async function deleteByIdsDynPage(
  */
 export async function enableByIdsDynPage(
   ids: DynPageId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

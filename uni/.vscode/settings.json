@@ -94,6 +94,8 @@
   "editor.quickSuggestionsDelay": 0,
   "js/ts.suggest.autoImports": false,
   "js/ts.updateImportsOnFileMove.enabled": "never",
+  "files.eol": "\n",
+  "editor.autoIndent": "brackets",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   }

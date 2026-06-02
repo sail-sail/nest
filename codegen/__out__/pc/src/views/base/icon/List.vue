@@ -496,6 +496,7 @@
           
           <!-- 图标 -->
           <template v-if="'img' === col.prop">
+            <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -512,6 +513,7 @@
           
           <!-- 编码 -->
           <template v-else-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
+            <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -521,6 +523,7 @@
           
           <!-- 名称 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -530,6 +533,7 @@
           
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -546,6 +550,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -572,6 +577,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -581,6 +587,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -590,6 +597,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -599,6 +607,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -608,6 +617,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1176,7 +1186,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<IconModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<IconModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1381,7 +1395,7 @@ async function stopImport() {
 }
 
 /** 启用 */
-async function onIs_enabled(id: IconId, is_enabled: 0 | 1) {
+async function onIs_enabled(id: IconId, is_enabled: number) {
   if (isLocked) {
     return;
   }
@@ -1459,9 +1473,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: IconModel,
-  column: TableColumnCtx<IconModel>,
+  column: TableColumnCtx<IconModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1571,7 +1585,7 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
@@ -1638,10 +1652,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1650,10 +1665,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 
