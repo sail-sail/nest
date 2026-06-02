@@ -420,7 +420,7 @@ export async function deleteByIdsWxPay(
  */
 export async function enableByIdsWxPay(
   ids: WxPayId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -448,7 +448,7 @@ export async function enableByIdsWxPay(
  */
 export async function lockByIdsWxPay(
   ids: WxPayId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

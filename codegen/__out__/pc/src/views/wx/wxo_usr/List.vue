@@ -478,6 +478,7 @@
           
           <!-- 昵称 -->
           <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -487,6 +488,7 @@
           
           <!-- 头像 -->
           <template v-else-if="'head_img' === col.prop">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -503,6 +505,7 @@
           
           <!-- 绑定用户 -->
           <template v-else-if="'usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.usr_id == null)">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -512,6 +515,7 @@
           
           <!-- 开发者ID -->
           <template v-else-if="'appid' === col.prop && (showBuildIn || builtInSearch?.appid == null)">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -521,6 +525,7 @@
           
           <!-- 公众号用户唯一标识 -->
           <template v-else-if="'openid' === col.prop">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -530,6 +535,7 @@
           
           <!-- 用户统一标识 -->
           <template v-else-if="'unionid' === col.prop">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -539,6 +545,7 @@
           
           <!-- 性别 -->
           <template v-else-if="'sex_lbl' === col.prop">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -548,6 +555,7 @@
           
           <!-- 省份 -->
           <template v-else-if="'province' === col.prop">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -557,6 +565,7 @@
           
           <!-- 城市 -->
           <template v-else-if="'city' === col.prop">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -566,6 +575,7 @@
           
           <!-- 国家 -->
           <template v-else-if="'country' === col.prop">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -575,6 +585,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -584,6 +595,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -593,6 +605,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -602,6 +615,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -611,6 +625,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {WxoUsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1217,7 +1232,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<WxoUsrModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<WxoUsrModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1488,9 +1507,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: WxoUsrModel,
-  column: TableColumnCtx<WxoUsrModel>,
+  column: TableColumnCtx<WxoUsrModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1633,10 +1652,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1645,10 +1665,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

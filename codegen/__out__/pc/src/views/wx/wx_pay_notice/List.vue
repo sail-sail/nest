@@ -388,6 +388,7 @@
           
           <!-- 开发者ID -->
           <template v-if="'appid' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -397,6 +398,7 @@
           
           <!-- 商户号 -->
           <template v-else-if="'mchid' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -406,6 +408,7 @@
           
           <!-- 用户标识 -->
           <template v-else-if="'openid' === col.prop && (showBuildIn || builtInSearch?.openid == null)">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -415,6 +418,7 @@
           
           <!-- 商户订单号 -->
           <template v-else-if="'out_trade_no' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -424,6 +428,7 @@
           
           <!-- 微信支付订单号 -->
           <template v-else-if="'transaction_id' === col.prop && (showBuildIn || builtInSearch?.transaction_id == null)">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -448,6 +453,7 @@
           
           <!-- 交易类型 -->
           <template v-else-if="'trade_type_lbl' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -457,6 +463,7 @@
           
           <!-- 交易状态 -->
           <template v-else-if="'trade_state_lbl' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -466,6 +473,7 @@
           
           <!-- 交易状态描述 -->
           <template v-else-if="'trade_state_desc' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -475,6 +483,7 @@
           
           <!-- 付款银行 -->
           <template v-else-if="'bank_type' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -484,6 +493,7 @@
           
           <!-- 附加数据 -->
           <template v-else-if="'attach' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -493,6 +503,7 @@
           
           <!-- 支付完成时间 -->
           <template v-else-if="'success_time_lbl' === col.prop && (showBuildIn || builtInSearch?.success_time == null)">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -502,6 +513,7 @@
           
           <!-- 总金额(分) -->
           <template v-else-if="'total' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -511,6 +523,7 @@
           
           <!-- 用户支付金额(分) -->
           <template v-else-if="'payer_total' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -520,6 +533,7 @@
           
           <!-- 货币类型 -->
           <template v-else-if="'currency_lbl' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -529,6 +543,7 @@
           
           <!-- 用户支付币种 -->
           <template v-else-if="'payer_currency_lbl' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -538,6 +553,7 @@
           
           <!-- 商户端设备号 -->
           <template v-else-if="'device_id' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -547,6 +563,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -556,6 +573,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {WxPayNoticeModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1167,7 +1185,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<WxPayNoticeModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<WxPayNoticeModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1216,9 +1238,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: WxPayNoticeModel,
-  column: TableColumnCtx<WxPayNoticeModel>,
+  column: TableColumnCtx<WxPayNoticeModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1262,10 +1284,11 @@ async function openView() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1274,10 +1297,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

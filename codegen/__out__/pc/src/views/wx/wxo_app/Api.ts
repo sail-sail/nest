@@ -428,7 +428,7 @@ export async function deleteByIdsWxoApp(
  */
 export async function enableByIdsWxoApp(
   ids: WxoAppId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -456,7 +456,7 @@ export async function enableByIdsWxoApp(
  */
 export async function lockByIdsWxoApp(
   ids: WxoAppId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
