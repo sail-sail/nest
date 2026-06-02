@@ -185,9 +185,9 @@ export function useSelect(
   );
   
   function getRowKey(row?: any) {
-    const rowKey = tableRef.value?.context?.ctx?.rowKey;
+    const rowKey = tableRef.value?.context.store.states.rowKey.value as any;
     if (!rowKey) {
-      return "";
+      throw new Error("rowKey is required");
     }
     if (typeof rowKey === "string") {
       return rowKey;
@@ -195,7 +195,7 @@ export function useSelect(
     if (typeof rowKey === "function") {
       return rowKey(row);
     }
-    return "";
+    throw new Error("rowKey is required");
   }
   
   /** 当前多行选中的数据 */
@@ -213,14 +213,14 @@ export function useSelect(
   }
   
   function useSelectedIds() {
-    if (!tableRef.value || !tableRef.value.context?.ctx?.data) {
+    if (!tableRef.value || !tableRef.value?.context.store.states.data.value) {
       return;
     }
     
     const newSelectList: any[] = [ ];
     const select2falseList: any[] = [ ];
-    for (let i = 0; i < tableRef.value.context.ctx.data.length; i++) {
-      const item = tableRef.value.context.ctx.data[i];
+    for (let i = 0; i < (tableRef.value.context.store.states.data.value as any).length; i++) {
+      const item = tableRef.value.context.store.states.data.value[i];
       const rowKey = getRowKey(item);
       if (selectedIds.includes(item[rowKey])) {
         newSelectList.push(item);
@@ -250,9 +250,9 @@ export function useSelect(
   }
   
   const watch1Stop = watch(
-    () => tableRef.value?.context?.ctx?.data,
+    () => tableRef.value?.context.store.states.data.value,
     () => {
-      if (!tableRef.value?.context?.ctx?.data) return;
+      if (!tableRef.value?.context.store.states.data.value) return;
       useSelectedIds();
     },
     {
@@ -263,7 +263,7 @@ export function useSelect(
   const watch2Stop = watch(
     () => selectedIds,
     (_newSelectIds, oldSelectIds) => {
-      if (!tableRef.value?.context?.ctx?.data) return;
+      if (!tableRef.value?.context.store.states.data.value) return;
       prevSelectedIds = oldSelectIds;
       useSelectedIds();
     },
@@ -283,7 +283,7 @@ export function useSelect(
     }
     if (!row) {
       if (list.length === 0) {
-        const data = tableRef.value?.context?.ctx?.data;
+        const data = tableRef.value?.context.store.states.data.value as unknown as any[];
         if (data) {
           selectedIds = [
             ...selectedIds.filter((item) => !data.some((item2) => item2[rowKey] === item)),
@@ -363,7 +363,7 @@ export function useSelect(
     if (!rowKey) {
       return;
     }
-    const data = tableRef.value?.context?.ctx?.data;
+    const data = tableRef.value?.context.store.states.data.value as unknown as any[];
     if (!data || data.length === 0) {
       return;
     }
@@ -404,7 +404,7 @@ export function useSelect(
     if (!rowKey) {
       return;
     }
-    const data = tableRef.value?.context?.ctx?.data;
+    const data = tableRef.value?.context.store.states.data.value as unknown as any[];
     if (!data || data.length === 0) {
       return;
     }
@@ -439,7 +439,7 @@ export function useSelect(
     if (!rowKey) {
       return;
     }
-    const data = tableRef.value?.context?.ctx?.data;
+    const data = tableRef.value?.context.store.states.data.value as unknown as any[];
     if (!data || data.length === 0) {
       return;
     }
@@ -522,7 +522,7 @@ export function useSelect(
     if (!rowKey) {
       return;
     }
-    const data = tableRef.value?.context?.ctx?.data;
+    const data = tableRef.value?.context.store.states.data.value as unknown as any[];
     if (!data || data.length === 0) {
       return;
     }
@@ -673,7 +673,7 @@ export function useSelect(
     if (!rowKey) {
       return;
     }
-    const data = tableRef.value?.context?.ctx?.data;
+    const data = tableRef.value?.context.store.states.data.value as unknown as any[];
     if (!data || data.length === 0) {
       return;
     }
@@ -708,7 +708,7 @@ export function useSelect(
     if (!rowKey) {
       return;
     }
-    const data = tableRef.value?.context?.ctx?.data;
+    const data = tableRef.value?.context.store.states.data.value as unknown as any[];
     if (!data || data.length === 0) {
       return;
     }
@@ -773,7 +773,8 @@ export function useSelect(
       multiple = false;
     }
     const tableSelectable = opts?.tableSelectable;
-    if (tableSelectable && !tableSelectable(row, tableRef.value?.context?.ctx?.data?.findIndex((item: any) => item[rowKey] === (row as any)[rowKey]) ?? 0)) {
+    const tableData = tableRef.value?.context.store.states.data.value as unknown as any[];
+    if (tableSelectable && !tableSelectable(row, tableData?.findIndex((item: any) => item[rowKey] === (row as any)[rowKey]) ?? 0)) {
       if (column && column.type !== "selection" && selectedIds.length > 0) {
         selectedIds = [ ];
       }
@@ -845,7 +846,8 @@ export function useSelect(
       multiple = false;
     }
     const tableSelectable = opts?.tableSelectable;
-    if (tableSelectable && !tableSelectable(row, tableRef.value?.context?.ctx?.data?.findIndex((item: any) => item[rowKey] === (row as any)[rowKey]) ?? 0)) {
+    const tableData = tableRef.value?.context.store.states.data.value as unknown as any[];
+    if (tableSelectable && !tableSelectable(row, tableData?.findIndex((item: any) => item[rowKey] === (row as any)[rowKey]) ?? 0)) {
       return;
     }
     const id = (row as any)[rowKey];
@@ -881,7 +883,7 @@ export function useSelect(
     if (isRef(opts?.multiple) && opts?.multiple.value === false) {
       multiple = false;
     }
-    const tableData = tableRef.value?.context?.ctx?.data;
+    const tableData = tableRef.value?.context.store.states.data.value as unknown as any[];
     if (!tableData || tableData.length === 0) {
       return;
     }
@@ -976,15 +978,18 @@ export function useSelectOne(
     },
   );
   
-  function getRowKey() {
-    const rowKey = tableRef.value?.rowKey;
+  function getRowKey(row?: any) {
+    const rowKey = tableRef.value?.context.store.states.rowKey as any;
     if (!rowKey) {
-      return;
+      throw new Error("rowKey is required");
     }
     if (typeof rowKey === "string") {
       return rowKey;
     }
-    throw new Error("暂不支持 function 类型的 rowKey");
+    if (typeof rowKey === "function") {
+      return rowKey(row);
+    }
+    throw new Error("rowKey is required");
   }
   
   /** 当前多行选中的数据 */
@@ -992,7 +997,7 @@ export function useSelectOne(
   let prevSelectedIds = $ref<string[]>([ ]);
   
   function useSelectedIds() {
-    if (!tableRef.value || !tableRef.value.context?.ctx?.data) {
+    if (!tableRef.value || !tableRef.value?.context.store.states.data.value) {
       return;
     }
     const rowKey = getRowKey();
@@ -1001,7 +1006,7 @@ export function useSelectOne(
     }
     const newSelectList: any[] = [ ];
     const select2falseList: any[] = [ ];
-    const data = tableRef.value.context.ctx.data as any[];
+    const data = tableRef.value.context.store.states.data.value as unknown as any[];
     for (let i = 0; i < data.length; i++) {
       const item = data[i];
       if (selectedIds.includes(item[rowKey])) {
@@ -1025,9 +1030,9 @@ export function useSelectOne(
   }
   
   const watch1Stop = watch(
-    () => tableRef.value?.context?.ctx?.data,
+    () => tableRef.value?.context.store.states.data.value,
     () => {
-      if (!tableRef.value?.context?.ctx?.data) return;
+      if (!tableRef.value?.context.store.states.data.value) return;
       useSelectedIds();
     },
     {
@@ -1038,7 +1043,7 @@ export function useSelectOne(
   const watch2Stop = watch(
     () => selectedIds,
     (_newSelectIds: string[], oldSelectIds: string[]) => {
-      if (!tableRef.value?.context?.ctx?.data) return;
+      if (!tableRef.value?.context.store.states.data.value) return;
       prevSelectedIds = oldSelectIds;
       useSelectedIds();
     },
