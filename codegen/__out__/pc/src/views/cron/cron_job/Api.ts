@@ -410,7 +410,7 @@ export async function deleteByIdsCronJob(
  */
 export async function enableByIdsCronJob(
   ids: CronJobId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -438,7 +438,7 @@ export async function enableByIdsCronJob(
  */
 export async function lockByIdsCronJob(
   ids: CronJobId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

@@ -446,6 +446,7 @@
           
           <!-- 定时任务 -->
           <template v-if="'cron_job_id_lbl' === col.prop && (showBuildIn || builtInSearch?.cron_job_id == null)">
+            <!-- @vue-generic {CronJobLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -455,6 +456,7 @@
           
           <!-- 执行状态 -->
           <template v-else-if="'exec_state_lbl' === col.prop && (showBuildIn || builtInSearch?.exec_state == null)">
+            <!-- @vue-generic {CronJobLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -472,6 +474,7 @@
           
           <!-- 执行结果 -->
           <template v-else-if="'exec_result' === col.prop">
+            <!-- @vue-generic {CronJobLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -481,6 +484,7 @@
           
           <!-- 开始时间 -->
           <template v-else-if="'begin_time_lbl' === col.prop && (showBuildIn || builtInSearch?.begin_time == null)">
+            <!-- @vue-generic {CronJobLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -490,6 +494,7 @@
           
           <!-- 结束时间 -->
           <template v-else-if="'end_time_lbl' === col.prop">
+            <!-- @vue-generic {CronJobLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -499,6 +504,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {CronJobLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -508,6 +514,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {CronJobLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1072,7 +1079,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<CronJobLogModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<CronJobLogModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1121,9 +1132,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: CronJobLogModel,
-  column: TableColumnCtx<CronJobLogModel>,
+  column: TableColumnCtx<CronJobLogModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1288,10 +1299,11 @@ async function openForeignTabs(
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1300,10 +1312,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

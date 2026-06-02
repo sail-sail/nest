@@ -404,7 +404,7 @@ export async function deleteByIdsJob(
  */
 export async function enableByIdsJob(
   ids: JobId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -432,7 +432,7 @@ export async function enableByIdsJob(
  */
 export async function lockByIdsJob(
   ids: JobId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

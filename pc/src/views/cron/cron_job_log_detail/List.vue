@@ -423,6 +423,7 @@
           
           <!-- 定时任务日志 -->
           <template v-if="'cron_job_log_id_lbl' === col.prop && (showBuildIn || builtInSearch?.cron_job_log_id == null)">
+            <!-- @vue-generic {CronJobLogDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -432,6 +433,7 @@
           
           <!-- 日志明细 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {CronJobLogDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -441,6 +443,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+            <!-- @vue-generic {CronJobLogDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -930,7 +933,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<CronJobLogDetailModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<CronJobLogDetailModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -979,9 +986,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: CronJobLogDetailModel,
-  column: TableColumnCtx<CronJobLogDetailModel>,
+  column: TableColumnCtx<CronJobLogDetailModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1124,10 +1131,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1136,10 +1144,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 
