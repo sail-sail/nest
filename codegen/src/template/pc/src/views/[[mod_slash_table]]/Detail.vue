@@ -1426,6 +1426,11 @@ for (let i = 0; i < columns.length; i++) {
             const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
             const table = inlineForeignTab.table;
             const mod = inlineForeignTab.mod;
+            const tableUp = table.substring(0, 1).toUpperCase() + table.substring(1);
+            const TableUp = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            const modelName = TableUp + "Model";
             if (!inlineForeignSchema) {
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
@@ -1452,6 +1457,7 @@ for (let i = 0; i < columns.length; i++) {
               class="tr_border_none"
             >
               
+              <!-- @vue-generic {<#=modelName#>} -->
               <el-table-column
                 prop="_seq"<#
                 if (isUseI18n) {
@@ -2193,6 +2199,7 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
               
+              <!-- @vue-generic {<#=modelName#> & { _type: string }} -->
               <el-table-column
                 v-if="!isLocked &&
                   !isReadonly &&
@@ -3209,6 +3216,7 @@ for (let i = 0; i < columns.length; i++) {
                 if (many2many.column2 !== column_name) {
               #>
               
+              <!-- @vue-generic {<#=foreignTableUp#>Model} -->
               <el-table-column<#
                 if (column.noAdd === true) {
                 #>

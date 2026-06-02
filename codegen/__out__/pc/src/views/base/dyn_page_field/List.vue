@@ -509,6 +509,7 @@
           
           <!-- 编码 -->
           <template v-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -518,6 +519,7 @@
           
           <!-- 动态页面 -->
           <template v-else-if="'dyn_page_id_lbl' === col.prop && (showBuildIn || builtInSearch?.dyn_page_id == null)">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -527,6 +529,7 @@
           
           <!-- 名称 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -536,6 +539,7 @@
           
           <!-- 类型 -->
           <template v-else-if="'type' === col.prop">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -545,6 +549,7 @@
           
           <!-- 属性 -->
           <template v-else-if="'attrs' === col.prop">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -554,6 +559,7 @@
           
           <!-- 计算公式 -->
           <template v-else-if="'formula' === col.prop">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -563,6 +569,7 @@
           
           <!-- 必填 -->
           <template v-else-if="'is_required_lbl' === col.prop">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -579,6 +586,7 @@
           
           <!-- 查询条件 -->
           <template v-else-if="'is_search_lbl' === col.prop">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -595,6 +603,7 @@
           
           <!-- 宽度 -->
           <template v-else-if="'width' === col.prop">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -604,6 +613,7 @@
           
           <!-- 对齐方式 -->
           <template v-else-if="'align_lbl' === col.prop">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -613,6 +623,7 @@
           
           <!-- 手机列表显示 -->
           <template v-else-if="'is_mobile_list_lbl' === col.prop">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -629,6 +640,7 @@
           
           <!-- 手机列表查询 -->
           <template v-else-if="'is_mobile_search_lbl' === col.prop">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -645,6 +657,7 @@
           
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -661,6 +674,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {DynPageFieldModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1293,7 +1307,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<DynPageFieldModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<DynPageFieldModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1514,7 +1532,7 @@ async function stopImport() {
 }
 
 /** 必填 */
-async function onIs_required(id: DynPageFieldId, is_required: 0 | 1) {
+async function onIs_required(id: DynPageFieldId, is_required: number) {
   if (isLocked) {
     return;
   }
@@ -1538,7 +1556,7 @@ async function onIs_required(id: DynPageFieldId, is_required: 0 | 1) {
 }
 
 /** 查询条件 */
-async function onIs_search(id: DynPageFieldId, is_search: 0 | 1) {
+async function onIs_search(id: DynPageFieldId, is_search: number) {
   if (isLocked) {
     return;
   }
@@ -1562,7 +1580,7 @@ async function onIs_search(id: DynPageFieldId, is_search: 0 | 1) {
 }
 
 /** 手机列表显示 */
-async function onIs_mobile_list(id: DynPageFieldId, is_mobile_list: 0 | 1) {
+async function onIs_mobile_list(id: DynPageFieldId, is_mobile_list: number) {
   if (isLocked) {
     return;
   }
@@ -1586,7 +1604,7 @@ async function onIs_mobile_list(id: DynPageFieldId, is_mobile_list: 0 | 1) {
 }
 
 /** 手机列表查询 */
-async function onIs_mobile_search(id: DynPageFieldId, is_mobile_search: 0 | 1) {
+async function onIs_mobile_search(id: DynPageFieldId, is_mobile_search: number) {
   if (isLocked) {
     return;
   }
@@ -1610,7 +1628,7 @@ async function onIs_mobile_search(id: DynPageFieldId, is_mobile_search: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: DynPageFieldId, is_enabled: 0 | 1) {
+async function onIs_enabled(id: DynPageFieldId, is_enabled: number) {
   if (isLocked) {
     return;
   }
@@ -1688,9 +1706,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: DynPageFieldModel,
-  column: TableColumnCtx<DynPageFieldModel>,
+  column: TableColumnCtx<DynPageFieldModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1800,7 +1818,7 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
@@ -1867,10 +1885,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1879,10 +1898,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 
