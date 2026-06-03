@@ -19,8 +19,8 @@
     "postinstall": "node src/utils/postinstall.js"
   },
   "dependencies": {
-    "@eigenpal/docx-editor-i18n": "1.1.0",
-    "@eigenpal/docx-editor-vue": "1.1.0",
+    "@eigenpal/docx-editor-i18n": "1.2.0",
+    "@eigenpal/docx-editor-vue": "1.2.0",
     "@element-plus/icons-vue": "2.3.2",
     "@flyfish-group/file-viewer3": "1.0.16",
     "@jsquash/resize": "2.1.1",
@@ -42,7 +42,7 @@
     "expr-eval": "2.0.2",
     "file-saver": "2.0.5",
     "filesize": "11.0.17",
-    "graphql": "16.14.0",
+    "graphql": "16.14.1",
     "graphql-combine-query": "1.2.4",
     "jszip": "3.10.1",
     "numeral": "2.0.6",
