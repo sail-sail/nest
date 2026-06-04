@@ -1,100 +1,88 @@
 {
-  "folders": [
-    {
-      "path": "./deno",
-      "deno": true
-    },
-    {
-      "path": "./pc",
-      "deno": false
-    },
-    {
-      "path": "./uni",
-      "deno": false
-    },
-    {
-      "path": "./codegen",
-      "deno": false
-    }
-  ],
-  "settings": {
-    "diffEditor.useInlineViewWhenSpaceIsLimited": false,
-    "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
-    "git.openRepositoryInParentFolders": "never",
-    "git.repositoryScanMaxDepth": 1,
-    "git.autoRepositoryDetection": false,
-    "git.autofetch": false,
-    "git.autorefresh": true,
-    "git.detectSubmodules": false,
-    "terminal.integrated.defaultProfile.windows": "Command Prompt",
-    "npm.registry": "https://registry.npmmirror.com",
-    "npm.updateStrategy": "LATEST",
-    "npm.autoDetect": "off",
-    "npm.fetchOnlinePackageInfo": false,
-    "deno.enable": true,
-    "deno.lint": true,
-    "unocss.root": [
-      "pc",
-      "uni"
-    ],
-    "unocss.colorPreview": false,
-    "references.preferredLocation": "peek",
-    "rust-analyzer.inlayHints.parameterHints.enable": false,
-    "diffEditor.wordWrap": "off",
-    "editor.formatOnSave": false,
-    "editor.inlineSuggest.syntaxHighlightingEnabled": true,
-    "deno.codeLens.references": false,
-    "deno.codeLens.referencesAllFunctions": false,
-    "git.timeline.showUncommitted": true,
-    "scm.defaultViewMode": "tree",
-    "scm.diffDecorationsGutterPattern": {
-      "added": true
-    },
-    "scm.diffDecorationsIgnoreTrimWhitespace": "true",
-    "diffEditor.ignoreTrimWhitespace": true,
-    "explorer.copyRelativePathSeparator": "/",
-    "vue.autoInsert.dotValue": true,
-    "vue.inlayHints.destructuredProps": true,
-    "vue.inlayHints.inlineHandlerLeading": false,
-    "vue.inlayHints.missingProps": true,
-    "vue.codeActions.askNewComponentName": false,
-    "vue.editor.reactivityVisualization": false,
-    "vue.editor.templateInterpolationDecorators": false,
-    "vue.format.template.initialIndent": false,
-    "vue.format.wrapAttributes": "force",
-    "mcp": {
-      "servers": {
-        "utcp-codemode": {
-          "args": [
-            "-y",
-            "@utcp/code-mode-mcp@latest"
-          ],
-          "env": {
-            "UTCP_CONFIG_FILE": "${workspaceFolder:codegen}/../.utcp_config.json"
-          },
-          "command": "npx",
-          "type": "stdio"
-        }
-      },
-      "inputs": []
-    },
-    "chat.useAgentSkills": true,
-    "chat.useAgentsMdFile": true,
-    "chat.useNestedAgentsMdFiles": true,
-    "chat.tools.terminal.autoApprove": {
-      "cargo check": true,
-      "Tee-Object": true,
-      "ForEach-Object": true,
-      "pnpm": true,
-      "Push-Location": true,
-      "npm run gqlgen": true,
-      "npx vue-tsc": true,
-      "npx eslint": true
-    },
-    "git.closeDiffOnOperation": true,
-    "git.alwaysShowStagedChangesResourceGroup": false,
-    "git.enableSmartCommit": true,
-    "diffEditor.experimental.showMoves": true,
-    "diffEditor.experimental.useTrueInlineView": true
-  }
+	"folders": [
+		{
+			"path": "./deno",
+			"deno": true
+		},
+		{
+			"path": "./pc",
+			"deno": false
+		},
+		{
+			"path": "./uni",
+			"deno": false
+		},
+		{
+			"path": "./codegen",
+			"deno": false
+		}
+	],
+	"settings": {
+		"diffEditor.useInlineViewWhenSpaceIsLimited": false,
+		"git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
+		"git.openRepositoryInParentFolders": "always",
+		"git.repositoryScanMaxDepth": 1,
+		"git.autoRepositoryDetection": false,
+		"git.autofetch": false,
+		"git.autorefresh": true,
+		"git.detectSubmodules": false,
+		"terminal.integrated.defaultProfile.windows": "Command Prompt",
+		"npm.registry": "https://registry.npmmirror.com",
+		"npm.updateStrategy": "LATEST",
+		"npm.autoDetect": "off",
+		"npm.fetchOnlinePackageInfo": false,
+		"deno.enable": true,
+		"deno.lint": true,
+		"unocss.root": [
+			"pc",
+			"uni"
+		],
+		"unocss.colorPreview": false,
+		"references.preferredLocation": "peek",
+		"rust-analyzer.inlayHints.parameterHints.enable": false,
+		"diffEditor.wordWrap": "off",
+		"editor.formatOnSave": false,
+		"editor.inlineSuggest.syntaxHighlightingEnabled": true,
+		"deno.codeLens.references": false,
+		"deno.codeLens.referencesAllFunctions": false,
+		"git.timeline.showUncommitted": true,
+		"scm.defaultViewMode": "tree",
+		"scm.diffDecorationsGutterPattern": {
+			"added": true
+		},
+		"scm.diffDecorationsIgnoreTrimWhitespace": "true",
+		"diffEditor.ignoreTrimWhitespace": true,
+		"explorer.copyRelativePathSeparator": "/",
+		"vue.autoInsert.dotValue": true,
+		"vue.inlayHints.destructuredProps": true,
+		"vue.inlayHints.inlineHandlerLeading": false,
+		"vue.inlayHints.missingProps": true,
+		"vue.codeActions.askNewComponentName": false,
+		"vue.editor.reactivityVisualization": false,
+		"vue.editor.templateInterpolationDecorators": false,
+		"vue.format.template.initialIndent": false,
+		"vue.format.wrapAttributes": "force",
+		"mcp": {
+			"inputs": [],
+			"servers": {}
+		},
+		"chat.useAgentSkills": true,
+		"chat.useAgentsMdFile": true,
+		"chat.useNestedAgentsMdFiles": true,
+		"chat.tools.terminal.autoApprove": {
+			"cargo check": true,
+			"Tee-Object": true,
+			"ForEach-Object": true,
+			"pnpm": true,
+			"Push-Location": true,
+			"npm run gqlgen": true,
+			"npx vue-tsc": true,
+			"npx eslint": true
+		},
+		"git.closeDiffOnOperation": true,
+		"git.alwaysShowStagedChangesResourceGroup": false,
+		"git.enableSmartCommit": true,
+		"diffEditor.experimental.showMoves": true,
+		"diffEditor.experimental.useTrueInlineView": true
+	}
 }
