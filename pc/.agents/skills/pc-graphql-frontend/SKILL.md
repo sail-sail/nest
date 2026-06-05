@@ -112,7 +112,8 @@ export async function updateXxx(
 
 ## 核心规则
 
-1. 类型导入：从 `#/types.ts` 导入 `Query`、`Mutation`、`XxxInput`、`XxxId` 等 GraphQL 相关类型；标准的 `{Table}Model`、`{Table}Input`、`{Table}Search` 无需额外引入，因为已经在 `Model.ts` 中全局定义。
-2. 返回类型：使用 `Query["xxx"]` 或 `Mutation["xxx"]` 声明返回值。
-3. 命名：函数名用驼峰式，参数名用蛇形式，并与后端保持一致。
-4. 变量映射：若 TS 参数使用蛇形命名、但后端 GraphQL schema 要求驼峰参数名，在 `variables` 组装时显式映射（例如 `variables: { bookingOrderId: booking_order_id }`）。
+1. 类型导入：从 `#/types.ts` 导入 `Query`、`Mutation`、`XxxInput`、`XxxId` 等 GraphQL 相关类型；标准的 `{Table}Model`、`{Table}Input`、`{Table}Search` 无需额外引入，因为已经在 `Model.ts` 中全局定义
+2. 返回类型：使用 `Query["xxx"]` 或 `Mutation["xxx"]` 声明返回值
+3. 命名：函数名用驼峰式，参数名用蛇形式，并与后端保持一致
+4. 变量映射：若 TS 参数使用蛇形命名、但后端 GraphQL schema 要求驼峰参数名，在 `variables` 组装时显式映射（例如 `variables: { bookingOrderId: booking_order_id }`）
+5. 字典查询优先级：业务字典 / 系统字典统一使用全局通用函数 `getDict()` / `getDictbiz()`（全局自动注入，无需手动引入）
