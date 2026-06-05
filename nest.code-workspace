@@ -20,7 +20,7 @@
   "settings": {
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
     "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
-    "git.openRepositoryInParentFolders": "never",
+    "git.openRepositoryInParentFolders": "always",
     "git.repositoryScanMaxDepth": 1,
     "git.autoRepositoryDetection": false,
     "git.autofetch": false,
@@ -72,19 +72,7 @@
     "vue.format.template.initialIndent": false,
     "vue.format.wrapAttributes": "force",
     "mcp": {
-      "servers": {
-        "utcp-codemode": {
-          "args": [
-            "-y",
-            "@utcp/code-mode-mcp@latest"
-          ],
-          "env": {
-            "UTCP_CONFIG_FILE": "${workspaceFolder:codegen}/../.utcp_config.json"
-          },
-          "command": "npx",
-          "type": "stdio"
-        }
-      },
+      "servers": { },
       "inputs": []
     },
     "chat.useAgentSkills": true,
