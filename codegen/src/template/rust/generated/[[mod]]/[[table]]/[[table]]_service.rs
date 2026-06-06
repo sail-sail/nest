@@ -565,6 +565,16 @@ pub async fn creates_<#=table#>(
   }
   let <#=table#>_inputs = <#=table#>_inputs;<#
   }
+  #><#
+  if (hasBpm) {
+  #>
+  
+  let mut <#=table#>_inputs = <#=table#>_inputs;
+  for <#=table#>_input in <#=table#>_inputs.iter_mut() {
+    <#=table#>_input.<#=bpmStatusField#> = Some(<#=Table_Up#><#=bpmStatusFieldUp#>::Draft);
+  }
+  let <#=table#>_inputs = <#=table#>_inputs;<#
+  }
   #>
   
   let <#=table#>_ids = <#=table#>_dao::creates_<#=table#>(
@@ -632,7 +642,7 @@ pub async fn update_by_id_<#=table#>(
   }
   #><#
   if (
-    hasAudit
+    hasAudit || hasBpm
   ) {
   #>
   
@@ -642,6 +652,18 @@ pub async fn update_by_id_<#=table#>(
       options,
     ).await?,
   ).await?;<#
+  }
+  #><#
+  if (hasBpm) {
+  #>
+  
+  if matches!(
+    old_model.<#=bpmStatusField#>,
+    <#=tableUP#><#=bpmStatusFieldUp#>::Running |
+      <#=tableUP#><#=bpmStatusFieldUp#>::Approved
+  ) {
+    return Err(eyre!("审批中或已通过的单据不允许修改"));
+  }<#
   }
   #><#
   if (hasAudit) {
@@ -1173,7 +1195,7 @@ pub async fn delete_by_ids_<#=table#>(
   let options = Some(options);<#
   }
   #><#
-  if (hasLocked || hasAudit) {
+  if (hasLocked || hasAudit || hasBpm) {
   #>
   
   let old_models = <#=table#>_dao::find_all_<#=table#>(
@@ -1211,6 +1233,16 @@ pub async fn delete_by_ids_<#=table#>(
       }
       #>
       return Err(eyre!(err_msg));
+    }
+  }<#
+  }
+  #><#
+  if (hasBpm) {
+  #>
+  
+  for old_model in &old_models {
+    if old_model.<#=bpmStatusField#> == <#=tableUP#><#=bpmStatusFieldUp#>::Running {
+      return Err(eyre!("审批中的单据不允许删除"));
     }
   }<#
   }
