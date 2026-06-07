@@ -95,8 +95,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
 
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
+// bpm
 const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
 const bpmBizCode = opts?.bpm?.biz_code;
+const bpmStatusField = opts?.bpm?.bpm_status_field;
+const bpmStatusFieldUp = bpmStatusField
+  ? bpmStatusField.split("_").map((item) => item.substring(0, 1).toUpperCase() + item.substring(1)).join("")
+  : "";
 
 // 审核
 const hasAudit = !!opts?.audit;
@@ -8434,6 +8439,21 @@ async function onDynPageFields() {
   await refreshDynPageFields();
   
 }<#
+}
+#><#
+if (hasBpm) {
+#>
+
+watch(
+  () => dialogModel.<#=bpmStatusField#>,
+  (val) => {
+    if (val === "draft") {
+      isLocked = false;
+    } else {
+      isLocked = true;
+    }
+  },
+);<#
 }
 #>
 
