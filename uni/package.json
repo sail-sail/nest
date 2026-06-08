@@ -78,7 +78,7 @@
     "@dcloudio/uni-stacktracey": "3.0.0-5000720260410001",
     "@dcloudio/vite-plugin-uni": "3.0.0-5000720260410001",
     "@eslint/js": "10.0.1",
-    "@types/node": "25.9.1",
+    "@types/node": "25.9.2",
     "@uni-helper/uni-app-types": "1.0.1",
     "@unocss/preset-attributify": "66.7.0",
     "@vue-macros/eslint-config": "3.1.2",
@@ -87,7 +87,7 @@
     "@vue/runtime-core": "3.5.35",
     "cross-env": "10.1.0",
     "eslint": "10.4.1",
-    "eslint-plugin-vue": "10.9.1",
+    "eslint-plugin-vue": "10.9.2",
     "globals": "17.6.0",
     "sass": "1.100.0",
     "svgo": "4.0.1",
@@ -101,8 +101,8 @@
     "unplugin-vue-components": "32.1.0",
     "vite": "7.3.1",
     "vite-plugin-inspect": "11.4.1",
-    "vite-plugin-vue-inspector": "6.0.0",
+    "vite-plugin-vue-inspector": "7.0.0",
     "vitest": "4.1.8",
-    "vue-tsc": "3.3.3"
+    "vue-tsc": "3.3.4"
   }
 }
