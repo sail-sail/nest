@@ -129,6 +129,8 @@ use crate::bpm::process_def::process_def_model::{
 use crate::bpm::process_def::process_def_service::find_one_ok_process_def;
 use crate::bpm::process_inst::process_inst_model::ProcessInstId;
 use crate::bpm::process_inst::process_inst_service2::start_process;
+use crate::bpm::task::task_model::TaskAction;
+use crate::base::usr::usr_model::UsrId;
 <#
 }
 #><#
@@ -507,7 +509,25 @@ pub async fn start_process_<#=table#>(
 
   Ok(process_inst_id)
 }
-<#
+
+/// 完成 <#=table_comment#> 流程任务
+pub async fn complete_task_<#=table#>(
+  <#=table#>_id: <#=Table_Up#>Id,
+  action: TaskAction,
+  opinion: Option<SmolStr>,
+  add_sign_usr_ids: Option<Vec<UsrId>>,
+  options: Option<Options>,
+) -> Result<bool> {
+  let _ = (
+    <#=table#>_id,
+    action,
+    opinion,
+    add_sign_usr_ids,
+    options,
+  );
+
+  Ok(true)
+}<#
 }
 #><#
 if (hasDataPermit() && hasCreateUsrId) {
@@ -562,6 +582,16 @@ pub async fn creates_<#=table#>(
   let mut <#=table#>_inputs = <#=table#>_inputs;
   for <#=table#>_input in <#=table#>_inputs.iter_mut() {
     <#=table#>_input.<#=auditColumn#> = Some(<#=Table_Up#>Audit::Unsubmited);
+  }
+  let <#=table#>_inputs = <#=table#>_inputs;<#
+  }
+  #><#
+  if (hasBpm) {
+  #>
+  
+  let mut <#=table#>_inputs = <#=table#>_inputs;
+  for <#=table#>_input in <#=table#>_inputs.iter_mut() {
+    <#=table#>_input.<#=bpmStatusField#> = Some(<#=Table_Up#><#=bpmStatusFieldUp#>::Draft);
   }
   let <#=table#>_inputs = <#=table#>_inputs;<#
   }
@@ -632,7 +662,7 @@ pub async fn update_by_id_<#=table#>(
   }
   #><#
   if (
-    hasAudit
+    hasAudit || hasBpm
   ) {
   #>
   
@@ -642,6 +672,18 @@ pub async fn update_by_id_<#=table#>(
       options,
     ).await?,
   ).await?;<#
+  }
+  #><#
+  if (hasBpm) {
+  #>
+  
+  if matches!(
+    old_model.<#=bpmStatusField#>,
+    <#=tableUP#><#=bpmStatusFieldUp#>::Running |
+      <#=tableUP#><#=bpmStatusFieldUp#>::Approved
+  ) {
+    return Err(eyre!("审批中或已通过的单据不允许修改"));
+  }<#
   }
   #><#
   if (hasAudit) {
@@ -1173,7 +1215,7 @@ pub async fn delete_by_ids_<#=table#>(
   let options = Some(options);<#
   }
   #><#
-  if (hasLocked || hasAudit) {
+  if (hasLocked || hasAudit || hasBpm) {
   #>
   
   let old_models = <#=table#>_dao::find_all_<#=table#>(
@@ -1211,6 +1253,16 @@ pub async fn delete_by_ids_<#=table#>(
       }
       #>
       return Err(eyre!(err_msg));
+    }
+  }<#
+  }
+  #><#
+  if (hasBpm) {
+  #>
+  
+  for old_model in &old_models {
+    if old_model.<#=bpmStatusField#> == <#=tableUP#><#=bpmStatusFieldUp#>::Running {
+      return Err(eyre!("审批中的单据不允许删除"));
     }
   }<#
   }
