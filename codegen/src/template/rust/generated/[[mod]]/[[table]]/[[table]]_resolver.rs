@@ -149,7 +149,9 @@ use crate::base::tenant::tenant_model::TenantId;<#
 if (hasBpm) {
 #>
 
-use crate::bpm::process_inst::process_inst_model::ProcessInstId;<#
+use crate::bpm::process_inst::process_inst_model::ProcessInstId;
+use crate::bpm::task::task_model::TaskAction;
+use crate::base::usr::usr_model::UsrId;<#
 }
 #>
 
@@ -702,6 +704,33 @@ pub async fn start_process_<#=table#>(
   ).await?;
 
   Ok(process_inst_id)
+}
+
+/// 完成 <#=table_comment#> 流程任务
+#[function_name::named]
+pub async fn complete_task_<#=table#>(
+  id: <#=Table_Up#>Id,
+  action: TaskAction,
+  opinion: Option<SmolStr>,
+  add_sign_usr_ids: Option<Vec<UsrId>>,
+  options: Option<Options>,
+) -> Result<bool> {
+
+  info!(
+    "{req_id} {function_name}: id: {id:?} action: {action:?} opinion: {opinion:?} add_sign_usr_ids: {add_sign_usr_ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+
+  let res = <#=table#>_service::complete_task_<#=table#>(
+    id,
+    action,
+    opinion,
+    add_sign_usr_ids,
+    options,
+  ).await?;
+
+  Ok(res)
 }
 <#
 }
