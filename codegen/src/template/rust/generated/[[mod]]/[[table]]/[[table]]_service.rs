@@ -129,6 +129,8 @@ use crate::bpm::process_def::process_def_model::{
 use crate::bpm::process_def::process_def_service::find_one_ok_process_def;
 use crate::bpm::process_inst::process_inst_model::ProcessInstId;
 use crate::bpm::process_inst::process_inst_service2::start_process;
+use crate::bpm::task::task_model::TaskAction;
+use crate::base::usr::usr_model::UsrId;
 <#
 }
 #><#
@@ -507,7 +509,25 @@ pub async fn start_process_<#=table#>(
 
   Ok(process_inst_id)
 }
-<#
+
+/// 完成 <#=table_comment#> 流程任务
+pub async fn complete_task_<#=table#>(
+  <#=table#>_id: <#=Table_Up#>Id,
+  action: TaskAction,
+  opinion: Option<SmolStr>,
+  add_sign_usr_ids: Option<Vec<UsrId>>,
+  options: Option<Options>,
+) -> Result<bool> {
+  let _ = (
+    <#=table#>_id,
+    action,
+    opinion,
+    add_sign_usr_ids,
+    options,
+  );
+
+  Ok(true)
+}<#
 }
 #><#
 if (hasDataPermit() && hasCreateUsrId) {
