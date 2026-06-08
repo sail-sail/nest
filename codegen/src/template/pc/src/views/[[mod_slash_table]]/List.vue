@@ -62,8 +62,10 @@ const hasIsSwitch = columns.some((item) => item.isSwitch && !item.onlyCodegenDen
 );
 const hasForeignKeyShowTypeDialog = columns.some((item) => item.foreignKey?.showType === "dialog" && !item.onlyCodegenDeno);
 const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !item.readonly && !item.onlyCodegenDeno);
+// bpm
 const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
 const bpmBizCode = opts?.bpm?.biz_code;
+const bpmStatusField = opts?.bpm?.status_field || "bpm_status";
 
 // 审核
 const hasAudit = !!opts?.audit;
@@ -1244,6 +1246,17 @@ if (searchByKeyword) {
         <span>提交</span><#
         }
         #>
+      </el-button>
+      
+      <el-button
+        plain
+        type="primary"
+        @click="onApprove"
+      >
+        <template #icon>
+          <ElIconStamp />
+        </template>
+        <span>审批</span>
       </el-button><#
       }
       #><#
@@ -1979,6 +1992,30 @@ if (searchByKeyword) {
                     un-h="8"
                   ></CustomIcon>
                 </div>
+              </template>
+            </el-table-column>
+          </template><#
+          } else if (hasBpm && column_name === bpmStatusField) {
+          #>
+          
+          <!-- <#=table_comment#> -->
+          <template v-else-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+            <!-- @vue-generic {<#=modelName#>} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <el-link
+                  v-if="row.<#=column_name#> !== 'draft'"
+                  type="primary"
+                  @click.stop="onOpenProcessFlow(row)"
+                >
+                  {{ row.<#=column_name#>_lbl }}
+                </el-link>
+                <span v-else>
+                  {{ row.<#=column_name#>_lbl }}
+                </span>
               </template>
             </el-table-column>
           </template><#
@@ -2768,6 +2805,18 @@ if (searchByKeyword) {
     ref="dynPageDetailRef"
   ></DynPageDetail><#
   }
+  #><#
+  if (hasBpm) {
+  #>
+
+  <ProcessFlowDialog
+    ref="processFlowDialogRef"
+  ></ProcessFlowDialog>
+
+  <ApprovalDialog
+    ref="approvalDialogRef"
+  ></ApprovalDialog><#
+  }
   #>
   
 </div>
@@ -3042,6 +3091,12 @@ if (opts?.isUseDynPageFields) {
 #>
 
 import DynPageDetail from "@/views/base/dyn_page/Detail.vue";<#
+}
+#><#
+if (hasBpm) {
+#>
+
+import ApprovalDialog from "./ApprovalDialog.vue";<#
 }
 #>
 
@@ -4027,7 +4082,14 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef("detailRef"));
+const detailRef = $(useTemplateRef("detailRef"));<#
+if (hasBpm) {
+#>
+
+const approvalDialogRef = $(useTemplateRef("approvalDialogRef"));
+const processFlowDialogRef = $(useTemplateRef("processFlowDialogRef"));<#
+}
+#>
 
 /** 刷新表格 */
 async function dataGrid(
@@ -4866,6 +4928,65 @@ async function onStartProcess() {
   }
   #>
   await onRefresh();
+}
+
+/** 审批 */
+async function onApprove() {
+  tableFocus();
+
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(`请选择需要审批的 ${ await nsAsync("<#=table_comment#>") }`);<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要审批的 <#=table_comment#>");<#
+    }
+    #>
+    return;
+  }
+
+  if (selectedIds.length > 1) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(`每次仅支持对一条 ${ await nsAsync("<#=table_comment#>") } 审批`);<#
+    } else {
+    #>
+    ElMessage.warning("每次仅支持对一条 <#=table_comment#> 审批");<#
+    }
+    #>
+    return;
+  }
+
+  if (!approvalDialogRef) {
+    return;
+  }
+
+  const result = await approvalDialogRef.showDialog({
+    id: selectedIds[0],
+  });
+  
+  if (result.type === "cancel") {
+    tableFocus();
+    return;
+  }
+
+  await onRefresh();
+}
+
+/** 查看流程状态 */
+async function onOpenProcessFlow(row: <#=modelName#>) {
+  tableFocus();
+  if (!processFlowDialogRef) {
+    return;
+  }
+  await processFlowDialogRef.showDialog(
+    {
+      biz_id: row.id,
+      title: `${ row.lbl } - 流程状态`,
+    },
+  );
+  tableFocus();
 }<#
 }
 #><#
