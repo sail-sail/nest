@@ -192,7 +192,12 @@ if (!(hasDataPermit() && hasCreateUsrId)) {
 import {
   get_is_debug,
   get_is_silent_mode,
-  get_is_creating,
+  get_is_creating,<#
+  if (cache) {
+  #>
+  getCacheEnabled,<#
+  }
+  #>
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -1501,8 +1506,15 @@ export async function findCount<#=Table_Up#>(
   if (cache) {
   #>
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }<#
   }
   #>
   
@@ -1890,16 +1902,21 @@ export async function findAll<#=Table_Up#>(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }<#
   if (cache) {
   #>
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));<#
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }<#
   }
   #>
   
@@ -3477,8 +3494,15 @@ export async function findSummary<#=Table_Up#>(
   if (cache) {
   #>
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = JSON.stringify({ sql, args });<#
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = JSON.stringify({ sql, args });
+  }<#
   }
   #>
   
@@ -3917,8 +3941,15 @@ export async function existById<#=Table_Up#>(
   if (cache) {
   #>
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
