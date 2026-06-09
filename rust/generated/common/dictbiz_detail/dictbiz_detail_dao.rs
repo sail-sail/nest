@@ -4,6 +4,7 @@ use crate::common::context::{
   query,
   QueryArgs,
   Options,
+  get_auth_tenant_id,
 };
 
 use crate::common::cache::cache_dao;
@@ -25,13 +26,15 @@ pub async fn get_dictbiz<T: AsRef<str>>(
   
   let table = "base_dictbiz";
   
-  let mut args = QueryArgs::new();
+  let tenant_id = get_auth_tenant_id().unwrap_or_default();
   
-  let code  = codes
-    .iter()
-    .map(|x| args.push(x.as_ref().into()))
-    .collect::<Vec<_>>()
-    .join(",");
+  let mut args = QueryArgs::new();
+  args.push(tenant_id.into());
+  
+  for x in codes.iter() {
+    args.push(x.as_ref().into());
+  }
+  let code = vec!["?"; codes.len()].join(",");
   
   let sql = format!(r#"
     select
@@ -49,6 +52,7 @@ pub async fn get_dictbiz<T: AsRef<str>>(
     where
       t.is_deleted = 0
       and t.is_enabled = 1
+      and t.tenant_id = ?
       and base_dictbiz.code in ({code})
     order by
       t.order_by asc
