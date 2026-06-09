@@ -13,7 +13,7 @@ fn default_lang() -> Option<SmolStr> {
   Some("zh-CN".into())
 }
 
-#[derive(Deserialize, Serialize, Clone, Default)]
+#[derive(Deserialize, Serialize, Clone, Default, Debug)]
 pub struct AuthModel {
   
   pub id: UsrId,
