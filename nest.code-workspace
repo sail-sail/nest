@@ -23,19 +23,12 @@
   ],
   "settings": {
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
-    "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
-    "git.openRepositoryInParentFolders": "never",
-    "git.repositoryScanMaxDepth": 1,
-    "git.autoRepositoryDetection": false,
-    "git.autofetch": false,
-    "git.autorefresh": true,
-    "git.detectSubmodules": false,
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
     "npm.registry": "https://registry.npmmirror.com",
     "npm.updateStrategy": "LATEST",
     "npm.autoDetect": "off",
     "npm.fetchOnlinePackageInfo": false,
-    "deno.enable": false,
+    "deno.enable": true,
     "deno.lint": true,
     "unocss.root": [
       "pc",
@@ -49,6 +42,11 @@
     "editor.formatOnSave": false,
     "rust-analyzer.showUnlinkedFileNotification": false,
     "editor.inlineSuggest.syntaxHighlightingEnabled": true,
+    "editor.minimap.scale": 2,
+    "editor.minimap.showSlider": "mouseover",
+    "editor.stickyScroll.enabled": true,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
     "deno.codeLens.references": false,
     "deno.codeLens.referencesAllFunctions": false,
     "git.timeline.showUncommitted": true,
@@ -59,6 +57,8 @@
       "added": true
     },
     "scm.diffDecorationsIgnoreTrimWhitespace": "true",
+    "js/ts.preferences.quoteStyle": "double",
+    "js/ts.preferences.importModuleSpecifier": "relative",
     "diffEditor.ignoreTrimWhitespace": true,
     "explorer.copyRelativePathSeparator": "/",
     "vue.autoInsert.dotValue": true,
@@ -77,20 +77,8 @@
     "vue.format.template.initialIndent": false,
     "vue.format.wrapAttributes": "force",
     "mcp": {
-      "servers": {
-        "utcp-codemode": {
-          "args": [
-            "-y",
-            "@utcp/code-mode-mcp@latest"
-          ],
-          "env": {
-            "UTCP_CONFIG_FILE": "${workspaceFolder:codegen}/../.utcp_config.json"
-          },
-          "command": "npx",
-          "type": "stdio"
-        }
-      },
-      "inputs": []
+      "inputs": [],
+      "servers": {}
     },
     "chat.useAgentSkills": true,
     "chat.useAgentsMdFile": true,
@@ -105,8 +93,6 @@
       "npx vue-tsc": true,
       "npx eslint": true
     },
-    "git.closeDiffOnOperation": true,
-    "git.alwaysShowStagedChangesResourceGroup": false,
     "git.enableSmartCommit": true,
     "diffEditor.experimental.showMoves": true,
     "diffEditor.experimental.useTrueInlineView": true

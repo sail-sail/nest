@@ -206,7 +206,7 @@ pub async fn find_by_ids_ok_icon(
 }
 
 /// 创建图标库
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_icon(
   inputs: Vec<IconInput>,
@@ -227,7 +227,7 @@ pub async fn creates_icon(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = icon_service::set_id_by_lbl_icon(
+    let mut input = icon_service::set_id_by_lbl_icon(
       input,
     ).await?;
     inputs2.push(input);

@@ -47,6 +47,7 @@ let queryInfos: QueryInfo[] = [ ];
 let queryInfosRepeat: QueryInfo[][] = [ ];
 let tasks: QueryInfo[][] = [ ];
 let tasksRepeat: QueryInfo[][][] = [ ];
+let mutationQueue: Promise<void> = Promise.resolve();
 
 class QueryInfo {
   gqlArg?: GqlArg = undefined;
@@ -84,6 +85,18 @@ function findQueryInfosIdx(queryInfos: QueryInfo[], queryInfo: QueryInfo) {
     return true;
   });
   return idx;
+}
+
+function enqueueMutation<T>(task: () => Promise<T>) {
+  const result = mutationQueue.catch(() => undefined).then(task);
+  mutationQueue = result.then(() => undefined, () => undefined);
+  return result;
+}
+
+async function waitForPendingRequests(indexStore: { loading: number; mutationLoading: number }) {
+  while (indexStore.loading > indexStore.mutationLoading) {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
 }
 
 /**
@@ -125,120 +138,136 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     tasks.push(queryInfos2);
     tasksRepeat.push(queryInfosRepeat2);
     (async function() {
-      const queryBuilder = combinedQuery("");
-      let queryBuilderAdd: ReturnType<typeof queryBuilder.add> | undefined;
-      for (let i = 0; i < queryInfos2.length; i++) {
-        const queryInfo = queryInfos2[i];
-        const queryTmp = queryInfo.gqlArg!.query!;
-        const variablesTmp = queryInfo.gqlArg?.variables;
-        const queryDoc = parse(queryTmp);
-        let operationDefinitionNode: OperationDefinitionNode | FragmentDefinitionNode | undefined = undefined;
-        for (const definition of queryDoc.definitions) {
-          if (definition.kind !== Kind.OPERATION_DEFINITION) {
-            continue;
+      try {
+        const queryBuilder = combinedQuery("");
+        let queryBuilderAdd: ReturnType<typeof queryBuilder.add> | undefined;
+        for (let i = 0; i < queryInfos2.length; i++) {
+          const queryInfo = queryInfos2[i];
+          const queryTmp = queryInfo.gqlArg!.query!;
+          const variablesTmp = queryInfo.gqlArg?.variables;
+          const queryDoc = parse(queryTmp);
+          let operationDefinitionNode: OperationDefinitionNode | FragmentDefinitionNode | undefined = undefined;
+          for (const definition of queryDoc.definitions) {
+            if (definition.kind !== Kind.OPERATION_DEFINITION) {
+              continue;
+            }
+            operationDefinitionNode = definition;
+            break;
           }
-          operationDefinitionNode = definition;
-          break;
-        }
-        if (!operationDefinitionNode) {
-          throw new Error("operationDefinitionNode is undefined");
-        }
-        const selections = operationDefinitionNode.selectionSet.selections as FieldNode[];
-        const variableDefinitions = operationDefinitionNode.variableDefinitions;
-        if (variableDefinitions) {
-          for (const variableDefinition of variableDefinitions) {
-            (variableDefinition.variable.name as any).value = `${ variableDefinition.variable.name.value }${ i }`;
+          if (!operationDefinitionNode) {
+            throw new Error("operationDefinitionNode is undefined");
           }
-        }
-        for (let kk = 0; kk < selections.length; kk++) {
-          const selection = selections[kk];
-          let alias = selection.alias;
-          if (!alias) {
-            alias = {
-              kind: Kind.NAME,
-              value: "",
-            };
-            (selection as any).alias = alias;
-          }
-          (alias as any).value = `${ queryInfo.hash! }_${ alias.value || selection.name.value }`;
-          if (selection.arguments) {
-            for (const arg of selection.arguments) {
-              if (!(arg.value as any).name) {
-                continue;
-              }
-              (arg.value as any).name.value = `${ (arg.value as any).name.value }${ i }`;
+          const selections = operationDefinitionNode.selectionSet.selections as FieldNode[];
+          const variableDefinitions = operationDefinitionNode.variableDefinitions;
+          if (variableDefinitions) {
+            for (const variableDefinition of variableDefinitions) {
+              (variableDefinition.variable.name as any).value = `${ variableDefinition.variable.name.value }${ i }`;
             }
           }
-        }
-        let newVariables: any;
-        if (variablesTmp) {
-          newVariables = { };
-          for (const key of Object.keys(variablesTmp)) {
-            newVariables[`${ key }${ i }`] = variablesTmp[key];
-          }
-        }
-        if (queryBuilderAdd) {
-          queryBuilderAdd = queryBuilderAdd.add(queryDoc, newVariables)
-        } else {
-          queryBuilderAdd = queryBuilder.add(queryDoc, newVariables);
-        }
-      }
-      const newQuery = print(queryBuilderAdd!.document!);
-      const newVariables = queryBuilderAdd?.variables as any;
-      const newResult = await gqlQuery(
-        {
-          query: newQuery,
-          variables: newVariables,
-        },
-        opt,
-      );
-      const results: { [key: string]: any } = { };
-      const hashs: string[] = [ ];
-      const keys = Object.keys(newResult || { });
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        const val = newResult[key];
-        const idx = key.indexOf("_");
-        const hash = key.substring(0, idx);
-        const name = key.substring(idx + 1);
-        results[hash] = results[hash] || { };
-        results[hash][name] = val;
-        if (!hashs.includes(hash)) {
-          hashs.push(hash);
-        }
-      }
-      
-      // 从 tasks 中查找 hash 对应的 QueryInfo
-      const willRemoves: number[] = [ ];
-      for (let l = 0; l < hashs.length; l++) {
-        const hash = hashs[l];
-        for (let i = 0; i < tasks.length; i++) {
-          const task = tasks[i];
-          let isTaskEq = false;
-          for (let k = 0; k < task.length; k++) {
-            const item = task[k];
-            if (item.hash === hash) {
-              item.resolve!(results[hash]);
-              const itemRepeat = queryInfosRepeat2[queryInfos2.indexOf(item)];
-              if (itemRepeat && itemRepeat.length > 0) {
-                for (let m = 0; m < itemRepeat.length; m++) {
-                  const itemRepeatTmp = itemRepeat[m];
-                  itemRepeatTmp.resolve!(results[hash]);
+          for (let kk = 0; kk < selections.length; kk++) {
+            const selection = selections[kk];
+            let alias = selection.alias;
+            if (!alias) {
+              alias = {
+                kind: Kind.NAME,
+                value: "",
+              };
+              (selection as any).alias = alias;
+            }
+            (alias as any).value = `${ queryInfo.hash! }_${ alias.value || selection.name.value }`;
+            if (selection.arguments) {
+              for (const arg of selection.arguments) {
+                if (!(arg.value as any).name) {
+                  continue;
                 }
+                (arg.value as any).name.value = `${ (arg.value as any).name.value }${ i }`;
               }
-              isTaskEq = true;
-              break;
             }
           }
-          if (isTaskEq) {
-            if (!willRemoves.includes(i)) {
-              willRemoves.push(i);
+          let newVariables: any;
+          if (variablesTmp) {
+            newVariables = { };
+            for (const key of Object.keys(variablesTmp)) {
+              newVariables[`${ key }${ i }`] = variablesTmp[key];
+            }
+          }
+          if (queryBuilderAdd) {
+            queryBuilderAdd = queryBuilderAdd.add(queryDoc, newVariables)
+          } else {
+            queryBuilderAdd = queryBuilder.add(queryDoc, newVariables);
+          }
+        }
+        const newQuery = print(queryBuilderAdd!.document!);
+        const newVariables = queryBuilderAdd?.variables as any;
+        const newResult = await gqlQuery(
+          {
+            query: newQuery,
+            variables: newVariables,
+          },
+          opt,
+        );
+        const results: { [key: string]: any } = { };
+        const hashs: string[] = [ ];
+        const keys = Object.keys(newResult || { });
+        for (let i = 0; i < keys.length; i++) {
+          const key = keys[i];
+          const val = newResult[key];
+          const idx = key.indexOf("_");
+          const hash = key.substring(0, idx);
+          const name = key.substring(idx + 1);
+          results[hash] = results[hash] || { };
+          results[hash][name] = val;
+          if (!hashs.includes(hash)) {
+            hashs.push(hash);
+          }
+        }
+        
+        // 从 tasks 中查找 hash 对应的 QueryInfo
+        const willRemoves: number[] = [ ];
+        for (let l = 0; l < hashs.length; l++) {
+          const hash = hashs[l];
+          for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i];
+            let isTaskEq = false;
+            for (let k = 0; k < task.length; k++) {
+              const item = task[k];
+              if (item.hash === hash) {
+                item.resolve!(results[hash]);
+                const itemRepeat = queryInfosRepeat2[queryInfos2.indexOf(item)];
+                if (itemRepeat && itemRepeat.length > 0) {
+                  for (let m = 0; m < itemRepeat.length; m++) {
+                    const itemRepeatTmp = itemRepeat[m];
+                    itemRepeatTmp.resolve!(results[hash]);
+                  }
+                }
+                isTaskEq = true;
+                break;
+              }
+            }
+            if (isTaskEq) {
+              if (!willRemoves.includes(i)) {
+                willRemoves.push(i);
+              }
             }
           }
         }
+        tasks = tasks.filter((_, i) => !willRemoves.includes(i));
+        tasksRepeat = tasksRepeat.filter((_, i) => !willRemoves.includes(i));
+      } catch (err) {
+        // 通知所有等待的调用方，避免永久挂起
+        for (const queryInfo of queryInfos2) {
+          queryInfo.reject?.(err);
+        }
+        for (const repeats of queryInfosRepeat2) {
+          if (repeats) {
+            for (const repeat of repeats) {
+              repeat.reject?.(err);
+            }
+          }
+        }
+        tasks = tasks.filter((t) => t !== queryInfos2);
+        tasksRepeat = tasksRepeat.filter((t) => t !== queryInfosRepeat2);
       }
-      tasks = tasks.filter((_, i) => !willRemoves.includes(i));
-      tasksRepeat = tasksRepeat.filter((_, i) => !willRemoves.includes(i));
     })();
   }
   for (let i = 0; i < tasks.length; i++) {
@@ -272,17 +301,28 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
  */
 export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   const indexStore = useIndexStore();
-  if (!opt?.notLoading && indexStore.loading > 0 && opt?.isMutation) {
-    ElMessage.warning("繁忙中，请稍后再重试");
-    throw "mutation loading";
-  }
-  opt = opt || { };
-  opt.isMutation = true;
+  opt = {
+    ...opt,
+    isMutation: true,
+  };
   gqlArg.query = gqlArg.query.trim();
   if (!gqlArg.query.startsWith("mutation") && !gqlArg.query.startsWith("fragment ")) {
     throw new Error("mutation must start with 'mutation'");
   }
-  return await gqlQuery(gqlArg, opt);
+  return await enqueueMutation(async () => {
+    if (!opt.notLoading) {
+      await waitForPendingRequests(indexStore);
+    }
+    indexStore.mutationLoading += 1;
+    try {
+      return await gqlQuery(gqlArg, opt);
+    } finally {
+      indexStore.mutationLoading -= 1;
+      if (indexStore.mutationLoading < 0) {
+        indexStore.mutationLoading = 0;
+      }
+    }
+  });
 }
 
 export function getQueryUrl(gqlArg: GqlArg, opt?: GqlOpt, authorization?: string): string {

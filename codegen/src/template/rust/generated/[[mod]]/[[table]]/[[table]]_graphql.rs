@@ -63,6 +63,10 @@ if (hasAudit) {
 
 const hasSummary = columns.some((column) => column.showSummary);
 const is_with_auth_optional = opts.is_with_auth_optional;
+
+// bpm
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -98,6 +102,14 @@ if (hasTenant_id) {
 #>
 
 use crate::base::tenant::tenant_model::TenantId;<#
+}
+#><#
+if (hasBpm) {
+#>
+
+use crate::bpm::process_inst::process_inst_model::ProcessInstId;
+use crate::bpm::task::task_model::TaskAction;
+use crate::base::usr::usr_model::UsrId;<#
 }
 #>
 
@@ -899,6 +911,75 @@ impl <#=tableUP#>GenMutation {<#
       }).await
   }<#
     }
+  #><#
+  if (hasBpm) {
+  #>
+
+  /// 发起 <#=table_comment#> 流程
+  #[graphql(name = "startProcess<#=Table_Up#>")]
+  async fn start_process_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "id")]
+    id: <#=Table_Up#>Id,
+  ) -> Result<ProcessInstId> {
+
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
+      .with_tran()
+      .build()
+      .scope({
+        <#=table#>_resolver::start_process_<#=table#>(
+          id,
+          None,
+        )
+      }).await
+  }
+
+  /// 完成 <#=table_comment#> 流程任务
+  #[graphql(name = "completeTask<#=Table_Up#>")]
+  async fn complete_task_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "id")]
+    id: <#=Table_Up#>Id,
+    #[graphql(name = "action")]
+    action: TaskAction,
+    #[graphql(name = "opinion")]
+    opinion: Option<SmolStr>,
+    #[graphql(name = "add_sign_usr_ids")]
+    add_sign_usr_ids: Option<Vec<UsrId>>,
+  ) -> Result<bool> {
+
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
+      .with_tran()
+      .build()
+      .scope({
+        <#=table#>_resolver::complete_task_<#=table#>(
+          id,
+          action,
+          opinion,
+          add_sign_usr_ids,
+          None,
+        )
+      }).await
+  }<#
+  }
   #><#
   if (opts.noDelete !== true) {
   #><#

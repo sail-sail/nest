@@ -710,10 +710,24 @@ pub async fn find_all_menu(
   
   let args = args.into();
   
-  let cache_key1 = format!("dao.sql.{table}");
-  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  let cache_enabled = cache_dao::get_cache_enabled();
   
-  let res = {
+  let (
+    cache_key1,
+    cache_key2,
+  ) = if cache_enabled {
+    (
+      format!("dao.sql.{table}"),
+      crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes()),
+    )
+  } else {
+    (
+      String::new(),
+      String::new(),
+    )
+  };
+  
+  let res = if cache_enabled {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: Vec<MenuModel>;
@@ -728,6 +742,8 @@ pub async fn find_all_menu(
     } else {
       None
     }
+  } else {
+    None
   };
   
   let mut res: Vec<MenuModel> = if let Some(res) = res {
@@ -738,8 +754,10 @@ pub async fn find_all_menu(
       args,
       options,
     ).await?;
-    let str = serde_json::to_string(&res)?;
-    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+    if cache_enabled {
+      let str = serde_json::to_string(&res)?;
+      cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+    }
     res
   };
   
@@ -950,10 +968,24 @@ pub async fn find_count_menu(
   
   let args = args.into();
   
-  let cache_key1 = format!("dao.sql.{table}");
-  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  let cache_enabled = cache_dao::get_cache_enabled();
   
-  let total = {
+  let (
+    cache_key1,
+    cache_key2,
+  ) = if cache_enabled {
+    (
+      format!("dao.sql.{table}"),
+      crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes()),
+    )
+  } else {
+    (
+      String::new(),
+      String::new(),
+    )
+  };
+  
+  let total = if cache_enabled {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: u64;
@@ -968,6 +1000,8 @@ pub async fn find_count_menu(
     } else {
       None
     }
+  } else {
+    None
   };
   
   let total: u64 = if let Some(total) = total {
@@ -985,8 +1019,10 @@ pub async fn find_count_menu(
     let total = res
       .map(|item| item.total)
       .unwrap_or_default();
-    let str = serde_json::to_string(&total)?;
-    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+    if cache_enabled {
+      let str = serde_json::to_string(&total)?;
+      cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+    }
     total
   };
   
@@ -1522,10 +1558,24 @@ pub async fn exists_menu(
   
   let args = args.into();
   
-  let cache_key1 = format!("dao.sql.{table}");
-  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  let cache_enabled = cache_dao::get_cache_enabled();
   
-  let exists_res = {
+  let (
+    cache_key1,
+    cache_key2,
+  ) = if cache_enabled {
+    (
+      format!("dao.sql.{table}"),
+      crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes()),
+    )
+  } else {
+    (
+      String::new(),
+      String::new(),
+    )
+  };
+  
+  let exists_res = if cache_enabled {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: bool;
@@ -1540,6 +1590,8 @@ pub async fn exists_menu(
     } else {
       None
     }
+  } else {
+    None
   };
   
   let exists_res: bool = if let Some(exists_res) = exists_res {
@@ -1557,8 +1609,10 @@ pub async fn exists_menu(
     let exists_res = res
       .map(|item| item.0)
       .unwrap_or_default();
-    let str = serde_json::to_string(&exists_res)?;
-    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+    if cache_enabled {
+      let str = serde_json::to_string(&exists_res)?;
+      cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+    }
     exists_res
   };
   
@@ -3278,10 +3332,24 @@ pub async fn find_last_order_by_menu(
   
   let args: Vec<_> = args.into();
   
-  let cache_key1 = format!("dao.sql.{table}");
-  let cache_key2 = crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  let cache_enabled = cache_dao::get_cache_enabled();
   
-  let order_by = {
+  let (
+    cache_key1,
+    cache_key2,
+  ) = if cache_enabled {
+    (
+      format!("dao.sql.{table}"),
+      crate::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes()),
+    )
+  } else {
+    (
+      String::new(),
+      String::new(),
+    )
+  };
+  
+  let order_by = if cache_enabled {
     let str = cache_dao::get_cache(&cache_key1, &cache_key2).await?;
     if let Some(str) = str {
       let res2: u32;
@@ -3296,6 +3364,8 @@ pub async fn find_last_order_by_menu(
     } else {
       None
     }
+  } else {
+    None
   };
   
   let order_by: u32 = if let Some(order_by) = order_by {
@@ -3313,8 +3383,10 @@ pub async fn find_last_order_by_menu(
         0
       }
     };
-    let str = serde_json::to_string(&order_by)?;
-    cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+    if cache_enabled {
+      let str = serde_json::to_string(&order_by)?;
+      cache_dao::set_cache(&cache_key1, &cache_key2, &str).await?;
+    }
     order_by
   };
   

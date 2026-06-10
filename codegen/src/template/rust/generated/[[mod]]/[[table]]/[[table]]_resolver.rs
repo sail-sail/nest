@@ -84,6 +84,10 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
 const hasSummary = columns.some((column) => column.showSummary);
 
 const is_with_auth_optional = opts?.is_with_auth_optional;
+
+// bpm
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -140,6 +144,14 @@ if (hasTenant_id) {
 #>
 
 use crate::base::tenant::tenant_model::TenantId;<#
+}
+#><#
+if (hasBpm) {
+#>
+
+use crate::bpm::process_inst::process_inst_model::ProcessInstId;
+use crate::bpm::task::task_model::TaskAction;
+use crate::base::usr::usr_model::UsrId;<#
 }
 #>
 
@@ -670,6 +682,59 @@ pub async fn find_by_ids_ok_<#=table#>(
   
   Ok(models)
 }<#
+if (hasBpm) {
+#>
+
+/// 发起 <#=table_comment#> 流程
+#[function_name::named]
+pub async fn start_process_<#=table#>(
+  id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<ProcessInstId> {
+
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+
+  let process_inst_id = <#=table#>_service::start_process_<#=table#>(
+    id,
+    options,
+  ).await?;
+
+  Ok(process_inst_id)
+}
+
+/// 完成 <#=table_comment#> 流程任务
+#[function_name::named]
+pub async fn complete_task_<#=table#>(
+  id: <#=Table_Up#>Id,
+  action: TaskAction,
+  opinion: Option<SmolStr>,
+  add_sign_usr_ids: Option<Vec<UsrId>>,
+  options: Option<Options>,
+) -> Result<bool> {
+
+  info!(
+    "{req_id} {function_name}: id: {id:?} action: {action:?} opinion: {opinion:?} add_sign_usr_ids: {add_sign_usr_ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+
+  let res = <#=table#>_service::complete_task_<#=table#>(
+    id,
+    action,
+    opinion,
+    add_sign_usr_ids,
+    options,
+  ).await?;
+
+  Ok(res)
+}
+<#
+}
+#><#
 if (hasDataPermit() && hasCreateUsrId) {
 #>
 
@@ -699,7 +764,7 @@ if (opts.noAdd !== true) {
 #>
 
 /// 创建<#=table_comment#>
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_<#=table#>(
   inputs: Vec<<#=tableUP#>Input>,
@@ -726,9 +791,23 @@ pub async fn creates_<#=table#>(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = <#=table#>_service::set_id_by_lbl_<#=table#>(
+    let mut input = <#=table#>_service::set_id_by_lbl_<#=table#>(
       input,
-    ).await?;
+    ).await?;<#
+    if (hasBpm) {
+    #><#
+    if (opts?.bpm?.apply_usr_id_field) {
+    #>
+    input.<#=opts?.bpm?.apply_usr_id_field#> = Some(crate::common::context::get_auth_id_ok()?);<#
+    }
+    #><#
+    if (opts?.bpm?.apply_time_field) {
+    #>
+    input.<#=opts?.bpm?.apply_time_field#> = Some(crate::common::context::get_now());<#
+    }
+    #><#
+    }
+    #>
     inputs2.push(input);
   }
   let inputs = inputs2;<#

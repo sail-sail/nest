@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_dictbiz(
 }
 
 /// 创建业务字典
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_dictbiz(
   inputs: Vec<DictbizInput>,
@@ -229,7 +229,7 @@ pub async fn creates_dictbiz(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = dictbiz_service::set_id_by_lbl_dictbiz(
+    let mut input = dictbiz_service::set_id_by_lbl_dictbiz(
       input,
     ).await?;
     inputs2.push(input);

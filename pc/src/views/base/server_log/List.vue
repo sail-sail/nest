@@ -328,6 +328,7 @@
           
           <!-- 日志日期 -->
           <template v-if="'log_date_lbl' === col.prop && (showBuildIn || builtInSearch?.log_date == null)">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -337,6 +338,7 @@
           
           <!-- 日志时间 -->
           <template v-else-if="'log_time_lbl' === col.prop">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -346,6 +348,7 @@
           
           <!-- 日志级别 -->
           <template v-else-if="'level_lbl' === col.prop && (showBuildIn || builtInSearch?.level == null)">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -355,6 +358,7 @@
           
           <!-- 模块 -->
           <template v-else-if="'module' === col.prop && (showBuildIn || builtInSearch?.module == null)">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -364,6 +368,7 @@
           
           <!-- 请求ID -->
           <template v-else-if="'req_id' === col.prop && (showBuildIn || builtInSearch?.req_id == null)">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -373,6 +378,7 @@
           
           <!-- 日志内容 -->
           <template v-else-if="'content' === col.prop && (showBuildIn || builtInSearch?.content == null)">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -928,7 +934,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<ServerLogModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<ServerLogModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -960,9 +970,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: ServerLogModel,
-  column: TableColumnCtx<ServerLogModel>,
+  column: TableColumnCtx<ServerLogModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1007,10 +1017,11 @@ async function openView() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1019,10 +1030,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

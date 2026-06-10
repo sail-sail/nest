@@ -58,6 +58,10 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
+
+// bpm
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
 #><#
 let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
@@ -120,6 +124,14 @@ if (opts.noAdd !== true || opts.noEdit !== true) {
 #>
 import {
   UniqueType,
+} from "#/types.ts";<#
+}
+#><#
+if (hasBpm) {
+#>
+
+import {
+  TaskAction,
 } from "#/types.ts";<#
 }
 #><#
@@ -1455,7 +1467,7 @@ if (hasEnabled && opts.noEdit !== true) {
  */
 export async function enableByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -1487,7 +1499,7 @@ if (hasLocked && opts.noEdit !== true) {
  */
 export async function lockByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -2565,6 +2577,67 @@ export async function findLastOrderBy<#=Table_Up#>(
   const order_by = data.findLastOrderBy<#=Table_Up2#>;
   
   return order_by;
+}<#
+}
+#><#
+if (hasBpm) {
+#>
+
+/** 提交 */
+export async function startProcess<#=Table_Up2#>(
+  id: <#=Table_Up2#>Id,
+  opt?: GqlOpt,
+): Promise<ProcessInstId> {
+  const res: {
+    startProcess<#=Table_Up2#>: ProcessInstId;
+  } = await mutation({
+    query: `
+      mutation($id: <#=Table_Up2#>Id!) {
+        startProcess<#=Table_Up2#>(
+          id: $id,
+        )
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+
+  const data = res.startProcess<#=Table_Up2#>;
+  
+  return data;
+}
+
+/** 完成 <#=table_comment#> 流程任务 */
+export async function completeTask<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  action: TaskAction,
+  opinion?: string | null,
+  add_sign_usr_ids?: UsrId[] | null,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  const res: {
+    completeTask<#=Table_Up#>: Mutation["completeTask<#=Table_Up#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!, $action: TaskAction!, $opinion: SmolStr, $add_sign_usr_ids: [UsrId!]) {
+        completeTask<#=Table_Up#>(
+          id: $id,
+          action: $action,
+          opinion: $opinion,
+          add_sign_usr_ids: $add_sign_usr_ids,
+        )
+      }
+    `,
+    variables: {
+      id,
+      action,
+      opinion,
+      add_sign_usr_ids,
+    },
+  }, opt);
+
+  return !!res.completeTask<#=Table_Up#>;
 }<#
 }
 #>

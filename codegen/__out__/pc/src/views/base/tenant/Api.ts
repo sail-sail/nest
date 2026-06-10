@@ -421,7 +421,7 @@ export async function deleteByIdsTenant(
  */
 export async function enableByIdsTenant(
   ids: TenantId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -449,7 +449,7 @@ export async function enableByIdsTenant(
  */
 export async function lockByIdsTenant(
   ids: TenantId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

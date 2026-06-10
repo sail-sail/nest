@@ -206,7 +206,7 @@ pub async fn find_by_ids_ok_i18n(
 }
 
 /// 创建国际化
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_i18n(
   inputs: Vec<I18nInput>,
@@ -227,7 +227,7 @@ pub async fn creates_i18n(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = i18n_service::set_id_by_lbl_i18n(
+    let mut input = i18n_service::set_id_by_lbl_i18n(
       input,
     ).await?;
     inputs2.push(input);

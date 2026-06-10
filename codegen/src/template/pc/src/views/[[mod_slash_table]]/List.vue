@@ -62,6 +62,10 @@ const hasIsSwitch = columns.some((item) => item.isSwitch && !item.onlyCodegenDen
 );
 const hasForeignKeyShowTypeDialog = columns.some((item) => item.foreignKey?.showType === "dialog" && !item.onlyCodegenDeno);
 const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !item.readonly && !item.onlyCodegenDeno);
+// bpm
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
+const bpmStatusField = opts?.bpm?.status_field || "bpm_status";
 
 // 审核
 const hasAudit = !!opts?.audit;
@@ -1223,6 +1227,39 @@ if (searchByKeyword) {
       </el-button><#
       }
       #><#
+      if (hasBpm) {
+      #>
+      
+      <el-button
+        plain
+        type="primary"
+        @click="onStartProcess"
+      >
+        <template #icon>
+          <ElIconPromotion />
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('提交') }}</span><#
+        } else {
+        #>
+        <span>提交</span><#
+        }
+        #>
+      </el-button>
+      
+      <el-button
+        plain
+        type="primary"
+        @click="onApprove"
+      >
+        <template #icon>
+          <ElIconStamp />
+        </template>
+        <span>审批</span>
+      </el-button><#
+      }
+      #><#
       if (hasAudit) {
       #>
       
@@ -1936,6 +1973,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1957,6 +1995,30 @@ if (searchByKeyword) {
               </template>
             </el-table-column>
           </template><#
+          } else if (hasBpm && column_name === bpmStatusField) {
+          #>
+          
+          <!-- <#=table_comment#> -->
+          <template v-else-if="'<#=column_name#>_lbl' === col.prop && (showBuildIn || builtInSearch?.<#=column_name#> == null)">
+            <!-- @vue-generic {<#=modelName#>} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <el-link
+                  v-if="row.<#=column_name#> !== 'draft'"
+                  type="primary"
+                  @click.stop="onOpenProcessFlow(row)"
+                >
+                  {{ row.<#=column_name#>_lbl }}
+                </el-link>
+                <span v-else>
+                  {{ row.<#=column_name#>_lbl }}
+                </span>
+              </template>
+            </el-table-column>
+          </template><#
           } else if (column.isImg) {
           #>
           
@@ -1966,6 +2028,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1998,6 +2061,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2016,12 +2080,14 @@ if (searchByKeyword) {
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             ><#
               if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
               #>
+              <!-- @vue-generic {<#=modelName#>} -->
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
@@ -2091,6 +2157,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2143,6 +2210,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2193,6 +2261,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2217,6 +2286,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2330,6 +2400,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2429,6 +2500,7 @@ if (searchByKeyword) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
+            <!-- @vue-generic {<#=modelName#>} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -2733,6 +2805,18 @@ if (searchByKeyword) {
     ref="dynPageDetailRef"
   ></DynPageDetail><#
   }
+  #><#
+  if (hasBpm) {
+  #>
+
+  <ProcessFlowDialog
+    ref="processFlowDialogRef"
+  ></ProcessFlowDialog>
+
+  <ApprovalDialog
+    ref="approvalDialogRef"
+  ></ApprovalDialog><#
+  }
   #>
   
 </div>
@@ -2855,6 +2939,11 @@ import {
     if (hasSummary) {
   #>
   findSummary<#=Table_Up#>,<#
+    }
+  #><#
+    if (hasBpm) {
+  #>
+  startProcess<#=Table_Up#>,<#
     }
   #>
 } from "./Api.ts";<#
@@ -3002,6 +3091,12 @@ if (opts?.isUseDynPageFields) {
 #>
 
 import DynPageDetail from "@/views/base/dyn_page/Detail.vue";<#
+}
+#><#
+if (hasBpm) {
+#>
+
+import ApprovalDialog from "./ApprovalDialog.vue";<#
 }
 #>
 
@@ -3987,7 +4082,14 @@ const {
   },
 ));
 
-const detailRef = $(useTemplateRef("detailRef"));
+const detailRef = $(useTemplateRef("detailRef"));<#
+if (hasBpm) {
+#>
+
+const approvalDialogRef = $(useTemplateRef("approvalDialogRef"));
+const processFlowDialogRef = $(useTemplateRef("processFlowDialogRef"));<#
+}
+#>
 
 /** 刷新表格 */
 async function dataGrid(
@@ -4148,7 +4250,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<<#=modelName#>> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<<#=modelName#>>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -4600,7 +4706,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: number) {
   if (isLocked) {
     return;
   }
@@ -4624,7 +4730,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: number) {
   if (isLocked) {
     return;
   }
@@ -4648,7 +4754,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
 #>
 
 /** <#=column_comment#> */
-async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: 0 | 1) {
+async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(id: <#=Table_Up#>Id, <#=column_name#>: number) {
   if (isLocked) {
     return;
   }
@@ -4733,6 +4839,154 @@ async function openEdit() {
   dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
+}<#
+}
+#><#
+if (hasBpm) {
+#>
+
+/** 提交 */
+async function onStartProcess() {
+  tableFocus();
+
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要提交的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要提交的 <#=table_comment#>");<#
+    }
+    #>
+    return;
+  }
+
+  if (selectedIds.length > 1) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("每次仅支持对一条 {0} 提交", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("每次仅支持对一条 <#=table_comment#> 提交");<#
+    }
+    #>
+    return;
+  }
+
+  const id = selectedIds[0];
+  const model = tableData.find((item) => item.id === id);
+  if (!model) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("未找到对应 {0} 数据", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("未找到对应 <#=table_comment#> 数据");<#
+    }
+    #>
+    return;
+  }
+
+  try {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("确定提交吗"),<#
+      } else {
+      #>
+      "确定提交吗",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
+        confirmButtonText: await nsAsync("确定"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",<#
+        }
+        #>
+        type: "warning",
+      },
+    );
+  } catch (err) {
+    tableFocus();
+    return;
+  }
+
+  await startProcess<#=Table_Up#>(
+    id,
+  );<#
+  if (isUseI18n) {
+  #>
+  ElMessage.success(await nsAsync("提交成功"));<#
+  } else {
+  #>
+  ElMessage.success("提交成功");<#
+  }
+  #>
+  await onRefresh();
+}
+
+/** 审批 */
+async function onApprove() {
+  tableFocus();
+
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(`请选择需要审批的 ${ await nsAsync("<#=table_comment#>") }`);<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要审批的 <#=table_comment#>");<#
+    }
+    #>
+    return;
+  }
+
+  if (selectedIds.length > 1) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(`每次仅支持对一条 ${ await nsAsync("<#=table_comment#>") } 审批`);<#
+    } else {
+    #>
+    ElMessage.warning("每次仅支持对一条 <#=table_comment#> 审批");<#
+    }
+    #>
+    return;
+  }
+
+  if (!approvalDialogRef) {
+    return;
+  }
+
+  const result = await approvalDialogRef.showDialog({
+    id: selectedIds[0],
+  });
+  
+  if (result.type === "cancel") {
+    tableFocus();
+    return;
+  }
+
+  await onRefresh();
+}
+
+/** 查看流程状态 */
+async function onOpenProcessFlow(row: <#=modelName#>) {
+  tableFocus();
+  if (!processFlowDialogRef) {
+    return;
+  }
+  await processFlowDialogRef.showDialog(
+    {
+      biz_id: row.id,
+      title: `${ row.lbl } - 流程状态`,
+    },
+  );
+  tableFocus();
 }<#
 }
 #><#
@@ -4876,9 +5130,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: <#=modelName#>,
-  column: TableColumnCtx<<#=modelName#>>,
+  column: TableColumnCtx<<#=modelName#>> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -5106,7 +5360,7 @@ async function onForceDeleteByIds() {
 #>
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
@@ -5179,7 +5433,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 #>
 
 /** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
+async function onLockByIds(is_locked: number) {
   tableFocus();
   if (isLocked) {
     return;
@@ -5456,10 +5710,11 @@ async function initI18nsEfc() {
 #>
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -5468,10 +5723,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

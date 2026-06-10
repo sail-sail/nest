@@ -404,7 +404,7 @@ export async function deleteByIdsDictDetail(
  */
 export async function enableByIdsDictDetail(
   ids: DictDetailId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

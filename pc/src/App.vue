@@ -28,7 +28,7 @@
             @click="goHome"
           >
             <span un-text="4.5">
-              {{ ns("返回首页") }}
+              {{ ns("返回") }}
             </span>
           </el-button>
         </el-empty>

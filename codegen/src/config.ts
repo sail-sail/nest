@@ -612,9 +612,14 @@ export interface TableColumn {
   dict?: string,
   
   /**
+   * is_sys的系统字典,业务字典是否强制ENUM类型, 默认为true
+   */
+  isDictEnum?: boolean;
+   
+  /**
    * 业务字典
    */
-  dictbiz?: string,
+  dictbiz?: string;
   
   /**
    * 系统字典 或 业务字典 的下拉框是否有增加按钮
@@ -1156,6 +1161,36 @@ export interface TablesConfigItem {
      * sql 查询是否启用 for update, 默认为 false
      */
     isHasForUpdate?: boolean;
+  
+    /**
+     * 此表是否启用bpm工作流
+     */
+    bpm?: {
+      /**
+       * 工作流业务编码, 一般为: [模块]_[表名]
+       */
+      biz_code: string;
+      /**
+       * 默认值为 bpm_status
+       * 此字段默认只读
+       */
+      bpm_status_field?: string;
+      /**
+       * 申请人字段, 默认为 apply_usr_id
+       * 此字段默认只读, 前端默认值为当前登录用户
+       */
+      apply_usr_id_field?: string;
+      /**
+       * 申请人字段lbl, 默认为 apply_usr_id_lbl
+       * 此字段默认只读, 前端默认值为当前登录用户
+       */
+      apply_usr_id_lbl_field?: string;
+      /**
+       * 申请时间字段, 默认为 apply_time
+       * 此字段默认只读, 默认值为当前时间 CURRENT_DATETIME
+       */
+      apply_time_field?: string;
+    };
     
   },
   columns: TableColumn[];

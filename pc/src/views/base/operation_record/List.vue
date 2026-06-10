@@ -340,6 +340,7 @@
           
           <!-- 模块名称 -->
           <template v-if="'module_lbl' === col.prop && (showBuildIn || builtInSearch?.module_lbl == null)">
+            <!-- @vue-generic {OperationRecordModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -349,6 +350,7 @@
           
           <!-- 方法名称 -->
           <template v-else-if="'method_lbl' === col.prop && (showBuildIn || builtInSearch?.method_lbl == null)">
+            <!-- @vue-generic {OperationRecordModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -358,6 +360,7 @@
           
           <!-- 操作 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {OperationRecordModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -367,6 +370,7 @@
           
           <!-- 耗时(毫秒) -->
           <template v-else-if="'time' === col.prop">
+            <!-- @vue-generic {OperationRecordModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -376,6 +380,7 @@
           
           <!-- 操作前数据 -->
           <template v-else-if="'old_data' === col.prop">
+            <!-- @vue-generic {OperationRecordModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -394,6 +399,7 @@
           
           <!-- 操作后数据 -->
           <template v-else-if="'new_data' === col.prop">
+            <!-- @vue-generic {OperationRecordModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -412,6 +418,7 @@
           
           <!-- 操作人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {OperationRecordModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -421,6 +428,7 @@
           
           <!-- 操作时间 -->
           <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+            <!-- @vue-generic {OperationRecordModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -964,7 +972,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<OperationRecordModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<OperationRecordModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -996,9 +1008,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: OperationRecordModel,
-  column: TableColumnCtx<OperationRecordModel>,
+  column: TableColumnCtx<OperationRecordModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1266,10 +1278,11 @@ async function getDetailByModule(
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1278,10 +1291,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

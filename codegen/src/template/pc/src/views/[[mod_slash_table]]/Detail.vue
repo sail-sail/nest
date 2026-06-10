@@ -95,6 +95,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
 
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
+// bpm
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
+const bpmStatusField = opts?.bpm?.bpm_status_field;
+const bpmStatusFieldUp = bpmStatusField
+  ? bpmStatusField.split("_").map((item) => item.substring(0, 1).toUpperCase() + item.substring(1)).join("")
+  : "";
 
 // 审核
 const hasAudit = !!opts?.audit;
@@ -1424,6 +1431,11 @@ for (let i = 0; i < columns.length; i++) {
             const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
             const table = inlineForeignTab.table;
             const mod = inlineForeignTab.mod;
+            const tableUp = table.substring(0, 1).toUpperCase() + table.substring(1);
+            const TableUp = tableUp.split("_").map(function(item) {
+              return item.substring(0, 1).toUpperCase() + item.substring(1);
+            }).join("");
+            const modelName = TableUp + "Model";
             if (!inlineForeignSchema) {
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
@@ -1450,6 +1462,7 @@ for (let i = 0; i < columns.length; i++) {
               class="tr_border_none"
             >
               
+              <!-- @vue-generic {<#=modelName#>} -->
               <el-table-column
                 prop="_seq"<#
                 if (isUseI18n) {
@@ -2191,6 +2204,7 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
               
+              <!-- @vue-generic {<#=modelName#> & { _type: string }} -->
               <el-table-column
                 v-if="!isLocked &&
                   !isReadonly &&
@@ -3207,6 +3221,7 @@ for (let i = 0; i < columns.length; i++) {
                 if (many2many.column2 !== column_name) {
               #>
               
+              <!-- @vue-generic {<#=foreignTableUp#>Model} -->
               <el-table-column<#
                 if (column.noAdd === true) {
                 #>
@@ -3868,6 +3883,30 @@ for (let i = 0; i < columns.length; i++) {
       </el-button><#
       }
       #><#
+      if (hasBpm && !opts.noAdd) {
+      #>
+      
+      <el-button
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
+        plain
+        type="primary"
+        :disabled="is_form_hydrating"
+        @click="onSaveAndStart"
+      >
+        <template #icon>
+          <ElIconPromotion />
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('保存并提交') }}</span><#
+        } else {
+        #>
+        <span>保存并提交</span><#
+        }
+        #>
+      </el-button><#
+      }
+      #><#
       if (!opts.noEdit) {
       #>
       
@@ -4231,7 +4270,12 @@ import {<#
   }
   #>
   getPagePath<#=Table_Up#>,
-  intoInput<#=Table_Up#>,
+  intoInput<#=Table_Up#>,<#
+  if (hasBpm && !opts.noAdd) {
+  #>
+  startProcess<#=Table_Up#>,<#
+  }
+  #>
 } from "./Api.ts";<#
 if (hasAudit) {
 #>
@@ -6247,8 +6291,30 @@ async function showDialog(
           if (!column.readonly) {
             continue;
           }
+          const bpm = opts?.bpm;
+        #><#
+        if (
+          bpm?.bpm_status_field === column_name ||
+          bpm?.apply_usr_id_field === column_name ||
+          bpm?.apply_usr_id_lbl_field === column_name ||
+          bpm?.apply_time_field === column_name
+        ) {
+        #>
+        <#=column_name#>: undefined,<#
+        if (
+          bpm?.bpm_status_field === column_name ||
+          bpm?.apply_usr_id_field === column_name ||
+          bpm?.apply_time_field === column_name
+        ) {
+        #>
+        <#=column_name#>_lbl: undefined,<#
+        }
+        #><#
+        } else {
         #>
         <#=column_name#>: defaultInput.<#=column_name#>,<#
+        }
+        #><#
         }
         #><#
         if (hasDefault) {
@@ -7755,6 +7821,35 @@ async function save() {
   }
   return id;
 }<#
+if (hasBpm && opts.noAdd !== true) {
+#>
+
+/** 保存并提交 */
+async function onSaveAndStart() {
+  const id = await save();
+  if (!id) {
+    return;
+  }
+
+  await startProcess<#=Table_Up#>(
+    id,
+  );<#
+  if (isUseI18n) {
+  #>
+  ElMessage.success(await nsAsync("保存并提交成功"));<#
+  } else {
+  #>
+  ElMessage.success("保存并提交成功");<#
+  }
+  #>
+
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
+}<#
+}
+#><#
 if (opts.hideSaveAndCopy === false) {
 #>
 
@@ -8344,6 +8439,21 @@ async function onDynPageFields() {
   await refreshDynPageFields();
   
 }<#
+}
+#><#
+if (hasBpm) {
+#>
+
+watch(
+  () => dialogModel.<#=bpmStatusField#>,
+  (val) => {
+    if (val === "draft") {
+      isLocked = false;
+    } else {
+      isLocked = true;
+    }
+  },
+);<#
 }
 #>
 

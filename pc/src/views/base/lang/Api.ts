@@ -401,7 +401,7 @@ export async function deleteByIdsLang(
  */
 export async function enableByIdsLang(
   ids: LangId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "ms-ceintl.vscode-language-pack-zh-hans",
     "janisdd.vscode-edit-csv",
     "graphql.vscode-graphql-execution",
     "graphql.vscode-graphql-syntax",
@@ -15,7 +14,6 @@
     "redhat.vscode-xml",
     "usernamehw.errorlens",
     "denoland.vscode-deno",
-    "ponetto.vscode-diff-viewer",
     "johnsoncodehk.vscode-tsconfig-helper",
     "jacobpfeifer.pfeifer-hurl",
     "hongyan-prettyjson.pretty-json-vscode",

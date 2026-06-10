@@ -195,6 +195,8 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     
     const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
     const hasAudit = !!opts?.audit;
+    // bpm
+    const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
     
     if (dir === "/pc/src/views/[[mod_slash_table]]/ForeignTabs.vue") {
       if (!hasForeignTabs) {
@@ -216,6 +218,14 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       dir === "/pc/src/views/[[mod_slash_table]]/AuditListDialog.vue"
     ) {
       if (!hasAudit) {
+        return;
+      }
+    }
+    // bpm
+    if (
+      dir === "/pc/src/views/[[mod_slash_table]]/ApprovalDialog.vue"
+    ) {
+      if (!hasBpm) {
         return;
       }
     }

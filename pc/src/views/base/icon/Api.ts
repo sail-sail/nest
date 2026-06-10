@@ -415,7 +415,7 @@ export async function deleteByIdsIcon(
  */
 export async function enableByIdsIcon(
   ids: IconId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
