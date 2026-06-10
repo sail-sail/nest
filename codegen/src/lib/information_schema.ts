@@ -8,12 +8,50 @@ import { isEmpty, pushEnumMsg } from "./StringUitl.ts";
 
 // const chalk = new Chalk();
 
+import { createInterface } from "node:readline";
+
 export class Context {
   pool: Pool;
   conn: PoolConnection;
 }
 
-function getPool(): Pool {
+async function confirmDatabaseTarget(db: typeof nestConfig.database) {
+  if (!process.stdin.isTTY || process.env.CI) {
+    return;
+  }
+
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  try {
+    while (true) {
+      const answer = await new Promise<string>((resolve) => {
+        rl.question(
+          `即将连接数据库 ${ db.database || "<未设置>" }@${ db.host || "<未设置>" }:${ Number(db.port) || 3306 } 是否继续？(yes/no，默认 no): `,
+          resolve,
+        );
+      });
+
+      const normalized = answer.trim().toLowerCase();
+      if (!normalized || normalized === "n" || normalized === "no") {
+        console.log();
+        throw "已取消执行，未连接数据库";
+      }
+      if (normalized === "y" || normalized === "yes") {
+        return;
+      }
+      console.log("请输入 yes 或 no。");
+    }
+  } finally {
+    rl.close();
+  }
+}
+
+async function getPool(
+  isConfirm = false,
+): Promise<Pool> {
   const db = nestConfig.database;
   console.log({
     host: db.host,
@@ -21,6 +59,11 @@ function getPool(): Pool {
     database: db.database,
     port: Number(db.port) || 3306,
   });
+  
+  if (isConfirm) {
+    await confirmDatabaseTarget(db);
+  }
+  
   const pool0 = mysql.createPool({
     host: db.host,
     user: db.username,
@@ -33,9 +76,11 @@ function getPool(): Pool {
   return pool;
 }
 
-export async function initContext() {
+export async function initContext(
+  isConfirm = false,
+) {
   const context = new Context();
-  const pool = getPool();
+  const pool = await getPool(isConfirm);
   context.pool = pool;
   const conn = await pool.getConnection();
   context.conn = conn;
