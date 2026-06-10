@@ -452,6 +452,7 @@
           
           <!-- 图标 -->
           <template v-if="'ico' === col.prop">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -467,6 +468,7 @@
           
           <!-- 标题 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -476,6 +478,7 @@
           
           <!-- 描述 -->
           <template v-else-if="'description' === col.prop">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -485,6 +488,7 @@
           
           <!-- 关键词 -->
           <template v-else-if="'keywords' === col.prop">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -494,6 +498,7 @@
           
           <!-- 分享图片 -->
           <template v-else-if="'og_image' === col.prop">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -509,6 +514,7 @@
           
           <!-- 分享标题 -->
           <template v-else-if="'og_title' === col.prop">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -518,6 +524,7 @@
           
           <!-- 分享描述 -->
           <template v-else-if="'og_description' === col.prop">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -527,6 +534,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -553,6 +561,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -562,6 +571,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -571,6 +581,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -580,6 +591,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -589,6 +601,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {SeoModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1157,7 +1170,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<SeoModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<SeoModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1424,9 +1441,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: SeoModel,
-  column: TableColumnCtx<SeoModel>,
+  column: TableColumnCtx<SeoModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1569,10 +1586,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1581,10 +1599,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

@@ -208,7 +208,7 @@ pub async fn find_by_ids_ok_seo(
 }
 
 /// 创建SEO优化
-#[allow(dead_code)]
+#[allow(dead_code, unused_mut)]
 #[function_name::named]
 pub async fn creates_seo(
   inputs: Vec<SeoInput>,
@@ -229,7 +229,7 @@ pub async fn creates_seo(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = seo_service::set_id_by_lbl_seo(
+    let mut input = seo_service::set_id_by_lbl_seo(
       input,
     ).await?;
     inputs2.push(input);
