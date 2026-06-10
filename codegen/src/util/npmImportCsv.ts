@@ -80,6 +80,9 @@ fileArr.forEach((file, i) => {
 fileArr = fileArr2;
 
 async function exec() {
+  
+  const context = await initContext(true);
+  
   console.time("csv");
   
   const csvFiles = [
@@ -143,8 +146,6 @@ async function exec() {
       }
     }
   }
-  
-  const context = await initContext();
   for (let i = 0; i < csvFiles.length; i++) {
     const item = csvFiles[i];
     await execCsvFile(context, item);
