@@ -50,13 +50,13 @@
     "dayjs": "npm:dayjs@1.11.21",
     "js-md5": "npm:js-md5@0.8.3",
     "decimal.js": "https://esm.sh/decimal.js@10.6.0",
-    "graphql": "npm:graphql@16.14.1",
+    "graphql": "npm:graphql@16.14.2",
     "mime": "npm:mime@4.1.0",
     "jose": "jsr:@panva/jose@6.2.2",
     "mnemonist": "npm:mnemonist@0.40.4",
     "redis": "jsr:@db/redis@0.41.0",
     "sqlstring": "npm:sqlstring@2.3.3",
-    "sharp": "npm:sharp@0.34.5",
+    "sharp": "npm:sharp@0.35.1",
     "mqtt": "jsr:@ymjacky/mqtt5@0.0.22",
     "wechatpay-node-v3": "npm:wechatpay-node-v3@2.2.1"
   }
