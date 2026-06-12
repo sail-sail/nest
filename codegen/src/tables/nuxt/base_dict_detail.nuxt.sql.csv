@@ -1,0 +1,5 @@
+id,dict_id,_dict_lbl,lbl,val,order_by,is_sys
+6SVPBGIIRy2jMjjiky7MDw,R0YLS5YyQli96BoiyzHgbg,组件配置-类型,文本,text,1,0
+mJ1HMKjJSOuKXlYMhpHjbg,R0YLS5YyQli96BoiyzHgbg,,多行文本,textarea,2,0
+SI2LuPzJQFmgS8M+6gqVaA,R0YLS5YyQli96BoiyzHgbg,,图片,image,3,0
+KzmejVzBQ/a3x0tXfTWMuA,R0YLS5YyQli96BoiyzHgbg,,富文本,richtext,4,0

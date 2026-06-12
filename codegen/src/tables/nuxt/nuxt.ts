@@ -63,4 +63,54 @@ export default defineConfig({
       },
     ],
   },
+  // 组件配置
+  nuxt_comp_cnf: {
+    opts: {
+      uniques: [
+        [ "group", "lbl" ],
+      ],
+      noImport: true,
+      noExport: true,
+      cache: true,
+      is_with_auth_optional: true,
+    },
+    columns: [
+      {
+        COLUMN_NAME: "group",
+        width: 180,
+        require: true,
+      },
+      {
+        COLUMN_NAME: "lbl",
+        fixed: false,
+      },
+      {
+        COLUMN_NAME: "type",
+        width: 180,
+      },
+      {
+        COLUMN_NAME: "order_by",
+      },
+      {
+        COLUMN_NAME: "rem",
+        isTextarea: false,
+      },
+      {
+        COLUMN_NAME: "val",
+        noList: true,
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
 });

@@ -366,6 +366,16 @@ export function getImgUrl(
   return `${ baseURL }/api/oss/img?${ params.toString() }`;
 }
 
+export function getImageUrlByIds(ids: string[]) {
+  if (!ids || ids.length === 0) {
+    return [ ];
+  }
+  if (!Array.isArray(ids)) {
+    ids = [ ids ];
+  }
+  return ids.map(id => getImgUrl(id));
+}
+
 /**
  * 下载文件
  * @export

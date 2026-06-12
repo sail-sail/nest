@@ -103,6 +103,10 @@ declare const usrId: unique symbol;
 /** 用户 */
 type UsrId = Distinct<string, typeof usrId>;
 
+declare const comp_cnfId: unique symbol;
+/** 组件配置 */
+type CompCnfId = Distinct<string, typeof comp_cnfId>;
+
 declare const seoId: unique symbol;
 /** SEO优化 */
 type SeoId = Distinct<string, typeof seoId>;

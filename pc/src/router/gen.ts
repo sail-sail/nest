@@ -378,6 +378,21 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/nuxt/comp_cnf",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "组件配置",
+        component: () => import("@/views/nuxt/comp_cnf/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "组件配置",
+        },
+      },
+    ],
+  },
+  {
     path: "/nuxt/seo",
     component: Layout1,
     children: [

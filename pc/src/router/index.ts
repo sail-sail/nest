@@ -34,6 +34,20 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/comp_cnf",
+    component: Layout1,
+    children: [
+      {
+        path: "website_edit",
+        name: "网站编辑",
+        component: () => import("@/views/nuxt/comp_cnf/WebsiteEdit.vue"),
+        meta: {
+          name: "网站编辑",
+        },
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

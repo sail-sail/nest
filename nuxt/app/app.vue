@@ -62,14 +62,46 @@ import {
   useMySeoMeta,
 } from "./Api.ts";
 
+import {
+  initClientAuthorization,
+} from "./composables/usr/index.ts";
+
+import {
+  initClientIsWebsiteEdit,
+  initCompCnfs,
+} from "./composables/comp_cnf/index.ts";
+
 const {
   msgs,
   pauseMsg,
   resumeMsg,
 } = $(useMsgs());
 
+initClientIsWebsiteEdit();
+initClientAuthorization();
 await initClientTenantId();
 await useMySeoMeta();
+await initCompCnfs();
+
+async function onMessage(event: MessageEvent) {
+  const url = new URL(event.origin);
+  if (url.hostname !== location.hostname) {
+    return;
+  }
+  const data = event.data;
+  const action = data?.action;
+  if (action === "compCnfUpdated") {
+    await initCompCnfs();
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("message", onMessage);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("message", onMessage);
+});
 </script>
 
 <style lang="scss">

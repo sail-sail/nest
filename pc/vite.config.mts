@@ -290,7 +290,7 @@ export default defineConfig({
       "#": fileURLToPath(new URL("./src/typings", import.meta.url)),
     },
   },
-  base: "/",
+  base: "/admin",
   build: {
     outDir: "../build/pc",
     chunkSizeWarningLimit: 3000,
@@ -335,6 +335,7 @@ export default defineConfig({
         target: "http://localhost:4001",
         changeOrigin: true,
         secure: false,
+        ws: true,
       },
     },
   },

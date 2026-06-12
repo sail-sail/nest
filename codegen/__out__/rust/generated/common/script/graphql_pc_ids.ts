@@ -158,6 +158,12 @@ export function getScalars() {
       "output": "UsrId",
     },
     
+    // 组件配置
+    "CompCnfId": {
+      "input": "CompCnfId",
+      "output": "CompCnfId",
+    },
+    
     // SEO优化
     "SeoId": {
       "input": "SeoId",
