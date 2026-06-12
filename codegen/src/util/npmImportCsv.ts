@@ -81,7 +81,7 @@ fileArr = fileArr2;
 
 async function exec() {
   
-  const context = await initContext(true);
+  const context = await initContext();
   
   console.time("csv");
   
