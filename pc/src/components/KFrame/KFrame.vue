@@ -103,9 +103,47 @@ const createFrame = () => {
   )
 }
 const handleLoaded = (e: Event) => {
+  try {
+    initIframeEl();
+  } catch (err) {
+    // console.error(err);
+  }
   isLoading.value = false
   emits('loaded', e)
 }
+
+// iframe加载完毕之后的后续处理, 固定表头
+function initIframeEl() {
+  const iframeRef = IFrameManager.getFrame(uid)?.instance as HTMLIFrameElement | undefined;
+  if (!iframeRef) {
+    return;
+  }
+  const iframeWindow = iframeRef.contentWindow;
+  if (!iframeWindow) {
+    return;
+  }
+  const iframeDocument = iframeWindow.document;
+  // 处理滚动条样式
+  iframeDocument.styleSheets[0].insertRule(`
+    ::-webkit-scrollbar-track-piece {
+      background-color: transparent;
+    }
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+      background-color: transparent;
+      cursor: pointer;
+    }
+    ::-webkit-scrollbar-thumb {
+      border-radius: 5px;
+      background-color: rgba(144, 146, 152, 0.3);
+    }
+    html {
+      overflow: auto;
+    }
+  `);
+}
+
 const handleError = (e: string | Event) => {
   isLoading.value = false
   isError.value = true
