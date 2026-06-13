@@ -50,7 +50,7 @@ async function onMessage(event: MessageEvent) {
       return;
     }
     const id = payload?.id;
-    const allow_types = payload?.allow_types as string[] | undefined;
+    const allow_types = payload?.allow_types as ("text" | "textarea" | "richtext" | "image")[] | undefined;
     
     const {
       type,

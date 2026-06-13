@@ -494,6 +494,7 @@ async function showDialog(
         ...model.input,
       };
     }
+    dialogModel.type = allow_types?.[0] ?? dialogModel.type;
   } else if (dialogAction === "copy") {
     const id = model?.ids?.[0];
     if (!id) {

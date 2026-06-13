@@ -45,7 +45,7 @@ const props = withDefaults(
   defineProps<{
     group?: string;
     lbl?: string;
-    allow_types?: string[];
+    allow_types?: ("text" | "textarea" | "richtext" | "image")[];
   }>(),
   {
     group: undefined,
@@ -113,13 +113,14 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .website-editable-block {
-  cursor: default;
   display: inline-block;
 }
 
 .website-editable-block--editing {
   cursor: context-menu;
-  box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.5);
+  /* box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.5); */
+  outline: 1px dashed #409eff;
+  outline-offset: -1px;
 }
 
 .website-editable-block-menu {
