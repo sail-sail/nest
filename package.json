@@ -21,7 +21,7 @@
     "permit": "cd pc && node src/utils/permit_scan.js",
     "build-prod": "cd rust && npm run build-prod",
     "build-test": "cd rust && npm run build-test",
-    "publish": "cd rust && npm run publish",
+    "publish": "cd rust && node ./generated/common/script/publish.js",
     "field_permit": "cd codegen && node --experimental-strip-types src/util/npmFieldPermit.ts",
     "upgrade": "cd codegen && npm run upgrade && npm run codegen",
     "upgrade_all": "cd codegen && npm run upgrade_all",
