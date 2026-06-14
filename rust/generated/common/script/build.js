@@ -106,6 +106,7 @@ async function nuxt() {
     stdio: "inherit",
   });
   
+  await remove(`${ nuxtDir }/.output/server/node_modules/`);
   await copy(`${ nuxtDir }/.output/`, `${ buildDir }/nuxt/`, {
     dereference: true,
   });
@@ -116,6 +117,14 @@ async function nuxt() {
     .replaceAll("{env}", env)
     .replaceAll("{NUXT_PORT}", parsedEnv.NUXT_PORT);
   await writeFile(`${ buildDir }/nuxt/ecosystem.config.json`, ecosystemStr2);
+  
+  child_process.execSync(
+    `npm install --omit=dev --no-package-lock --prefer-offline --legacy-peer-deps`,
+    {
+      cwd: `${ buildDir }/nuxt/server/`,
+      stdio: "inherit",
+    },
+  );
   
 }
 
