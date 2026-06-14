@@ -32,7 +32,7 @@ const projectName = ecosystem.apps[0].name.replaceAll("{env}", env);
 const publishBase = publish_cnf[projectName]?.publishBase;
 
 if (!publishBase) {
-  console.error(`错误: 未找到项目 ${ projectName } 的发布配置`);
+  console.error(`错误: 未找到项目 ${ projectName } 的发布配置: generated/common/script/publish_cnf.js`);
   process.exit(1);
 }
 
