@@ -507,6 +507,7 @@
           
           <!-- 语言 -->
           <template v-if="'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
+            <!-- @vue-generic {I18nModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -516,6 +517,7 @@
           
           <!-- 菜单 -->
           <template v-else-if="'menu_id_lbl' === col.prop && (showBuildIn || builtInSearch?.menu_id == null)">
+            <!-- @vue-generic {I18nModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -525,6 +527,7 @@
           
           <!-- 编码 -->
           <template v-else-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
+            <!-- @vue-generic {I18nModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -534,6 +537,7 @@
           
           <!-- 名称 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {I18nModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -543,6 +547,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {I18nModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -552,6 +557,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {I18nModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -561,6 +567,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {I18nModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -570,6 +577,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {I18nModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -579,6 +587,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {I18nModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1165,7 +1174,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<I18nModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<I18nModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1424,9 +1437,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: I18nModel,
-  column: TableColumnCtx<I18nModel>,
+  column: TableColumnCtx<I18nModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1569,10 +1582,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1581,10 +1595,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

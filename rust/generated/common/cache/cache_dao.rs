@@ -44,6 +44,10 @@ fn init_cache_pool() -> Option<Pool> {
   cache_pool.into()
 }
 
+pub fn get_cache_enabled() -> bool {
+  cache_pool().is_some()
+}
+
 pub async fn get_cache(
   cache_key1: &str,
   cache_key2: &str,

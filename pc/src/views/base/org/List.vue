@@ -499,6 +499,7 @@
           
           <!-- 名称 -->
           <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {OrgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -508,6 +509,7 @@
           
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
+            <!-- @vue-generic {OrgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -524,6 +526,7 @@
           
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <!-- @vue-generic {OrgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -540,6 +543,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {OrgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -566,6 +570,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {OrgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -575,6 +580,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {OrgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -584,6 +590,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {OrgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -593,6 +600,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {OrgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -602,6 +610,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {OrgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1162,7 +1171,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<OrgModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<OrgModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1365,7 +1378,7 @@ async function stopImport() {
 }
 
 /** 锁定 */
-async function onIs_locked(id: OrgId, is_locked: 0 | 1) {
+async function onIs_locked(id: OrgId, is_locked: number) {
   if (isLocked) {
     return;
   }
@@ -1387,7 +1400,7 @@ async function onIs_locked(id: OrgId, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: OrgId, is_enabled: 0 | 1) {
+async function onIs_enabled(id: OrgId, is_enabled: number) {
   if (isLocked) {
     return;
   }
@@ -1465,9 +1478,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: OrgModel,
-  column: TableColumnCtx<OrgModel>,
+  column: TableColumnCtx<OrgModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1577,7 +1590,7 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
@@ -1611,7 +1624,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 }
 
 /** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
+async function onLockByIds(is_locked: number) {
   tableFocus();
   if (isLocked) {
     return;
@@ -1678,10 +1691,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1690,10 +1704,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

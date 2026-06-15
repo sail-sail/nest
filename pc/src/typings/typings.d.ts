@@ -4,6 +4,7 @@ import type {
   AutocompleteFetchSuggestionsCallback as AutocompleteFetchSuggestionsCallback2,
   UploadProps as UploadProps2,
   Sort as Sort2,
+  TableSortOrder as TableSortOrder2,
   TableColumnCtx as TableColumnCtx2,
   FormItemRule as FormItemRule2,
 } from "element-plus";
@@ -71,6 +72,8 @@ declare global {
   
   interface Sort extends Sort2 {
   }
+  
+  type TableSortOrder = TableSortOrder2;
   
   interface SortableOptions extends SortableOptions2 {
   }

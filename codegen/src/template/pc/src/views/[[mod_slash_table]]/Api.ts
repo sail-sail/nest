@@ -127,6 +127,14 @@ import {
 } from "#/types.ts";<#
 }
 #><#
+if (hasBpm) {
+#>
+
+import {
+  TaskAction,
+} from "#/types.ts";<#
+}
+#><#
 let hasDefaultValue = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -1459,7 +1467,7 @@ if (hasEnabled && opts.noEdit !== true) {
  */
 export async function enableByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -1491,7 +1499,7 @@ if (hasLocked && opts.noEdit !== true) {
  */
 export async function lockByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -2598,6 +2606,38 @@ export async function startProcess<#=Table_Up2#>(
   const data = res.startProcess<#=Table_Up2#>;
   
   return data;
+}
+
+/** 完成 <#=table_comment#> 流程任务 */
+export async function completeTask<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  action: TaskAction,
+  opinion?: string | null,
+  add_sign_usr_ids?: UsrId[] | null,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  const res: {
+    completeTask<#=Table_Up#>: Mutation["completeTask<#=Table_Up#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!, $action: TaskAction!, $opinion: SmolStr, $add_sign_usr_ids: [UsrId!]) {
+        completeTask<#=Table_Up#>(
+          id: $id,
+          action: $action,
+          opinion: $opinion,
+          add_sign_usr_ids: $add_sign_usr_ids,
+        )
+      }
+    `,
+    variables: {
+      id,
+      action,
+      opinion,
+      add_sign_usr_ids,
+    },
+  }, opt);
+
+  return !!res.completeTask<#=Table_Up#>;
 }<#
 }
 #>

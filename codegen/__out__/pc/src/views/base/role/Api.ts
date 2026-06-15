@@ -421,7 +421,7 @@ export async function deleteByIdsRole(
  */
 export async function enableByIdsRole(
   ids: RoleId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -449,7 +449,7 @@ export async function enableByIdsRole(
  */
 export async function lockByIdsRole(
   ids: RoleId[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {

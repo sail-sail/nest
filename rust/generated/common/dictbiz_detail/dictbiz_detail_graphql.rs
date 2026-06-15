@@ -18,6 +18,7 @@ impl DictbizDetailQuery {
     codes: Vec<String>,
   ) -> Result<Vec<Vec<GetDictbiz>>> {
     Ctx::builder(ctx)
+      .with_auth()?
       .build()
       .scope({
         dictbiz_detail_resolver::get_dictbiz(codes)

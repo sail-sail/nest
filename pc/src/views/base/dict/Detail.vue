@@ -177,6 +177,7 @@
               class="tr_border_none"
             >
               
+              <!-- @vue-generic {DictDetailModel} -->
               <el-table-column
                 prop="_seq"
                 label="序号"
@@ -236,6 +237,7 @@
                 </template>
               </el-table-column>
               
+              <!-- @vue-generic {DictDetailModel & { _type: string }} -->
               <el-table-column
                 v-if="!isLocked &&
                   !isReadonly &&

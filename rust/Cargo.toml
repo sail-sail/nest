@@ -211,7 +211,7 @@ debug = 0
 debug = 0
 
 [profile.dev.package.app]
-debug = 1
+debug = 2
 
 [profile.dev.package.wx_pay_sdk]
 debug = 0
