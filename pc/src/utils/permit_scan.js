@@ -362,7 +362,7 @@ async function exec(context) {
 }
 
 (async function() {
-  const context = await initContext();
+  const context = await initContext(true);
   try {
     await exec(context);
   } catch (err) {

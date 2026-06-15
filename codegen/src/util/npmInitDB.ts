@@ -85,7 +85,7 @@ async function execSqlFile(context: Context, sqlFile: string) {
 
 async function exec() {
   console.time("sql");
-  const context = await initContext();
+  const context = await initContext(true);
   
   const sqlFiles = [];
   const csvFiles = [];
