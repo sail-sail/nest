@@ -17,7 +17,7 @@ export class Context {
 
 async function confirmDatabaseTarget(db: typeof nestConfig.database) {
   if (!process.stdin.isTTY || process.env.CI) {
-    return;
+    throw new Error("需要人工确认，当前环境不支持交互式确认");
   }
 
   const rl = createInterface({
@@ -29,20 +29,17 @@ async function confirmDatabaseTarget(db: typeof nestConfig.database) {
     while (true) {
       const answer = await new Promise<string>((resolve) => {
         rl.question(
-          `即将连接数据库 ${ db.database || "<未设置>" }@${ db.host || "<未设置>" }:${ Number(db.port) || 3306 } 是否继续？(yes/no，默认 no): `,
+          `即将连接数据库 ${ db.database || "<未设置>" }@${ db.host || "<未设置>" }:${ Number(db.port) || 3306 }，请输入 yes 才继续；其他输入将取消执行： `,
           resolve,
         );
       });
 
       const normalized = answer.trim().toLowerCase();
-      if (!normalized || normalized === "n" || normalized === "no") {
+      if (!normalized || (normalized !== "yes" && normalized !== "y")) {
         console.log();
-        throw "已取消执行，未连接数据库";
+        throw new Error("已取消执行，未连接数据库");
       }
-      if (normalized === "y" || normalized === "yes") {
-        return;
-      }
-      console.log("请输入 yes 或 no。");
+      return;
     }
   } finally {
     rl.close();
