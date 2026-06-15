@@ -1,4 +1,4 @@
------------------------------------------------------------------------- 小程序设置
+-- ---------------------------------------------------------------------- 小程序设置
 drop table if exists `wx_wx_app`;
 CREATE TABLE `wx_wx_app` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -28,7 +28,7 @@ CREATE TABLE `wx_wx_app` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序设置';
 
------------------------------------------------------------------------- 小程序接口凭据
+-- ---------------------------------------------------------------------- 小程序接口凭据
 drop table if exists `wx_wx_app_token`;
 CREATE TABLE `wx_wx_app_token` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -52,7 +52,7 @@ CREATE TABLE `wx_wx_app_token` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序接口凭据';
 
------------------------------------------------------------------- 小程序用户
+-- ---------------------------------------------------------------------- 小程序用户
 drop table if exists `wx_wx_usr`;
 CREATE TABLE if not exists `wx_wx_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -85,7 +85,7 @@ CREATE TABLE if not exists `wx_wx_usr` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序用户';
 
------------------------------------------------------------------------- 公众号设置
+-- ---------------------------------------------------------------------- 公众号设置
 drop table if exists `wx_wxo_app`;
 CREATE TABLE `wx_wxo_app` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -120,7 +120,7 @@ CREATE TABLE `wx_wxo_app` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='公众号设置';
 
------------------------------------------------------------------- 公众号用户
+-- ---------------------------------------------------------------------- 公众号用户
 drop table if exists `wx_wxo_usr`;
 CREATE TABLE if not exists `wx_wxo_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -152,7 +152,7 @@ CREATE TABLE if not exists `wx_wxo_usr` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='公众号用户';
 
------------------------------------------------------------------------- 公众号接口凭据
+-- ---------------------------------------------------------------------- 公众号接口凭据
 drop table if exists `wx_wxo_app_token`;
 CREATE TABLE `wx_wxo_app_token` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -176,7 +176,7 @@ CREATE TABLE `wx_wxo_app_token` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='小程序接口凭据';
 
------------------------------------------------------------------------- 微信支付设置
+-- ---------------------------------------------------------------------- 微信支付设置
 drop table if exists `wx_wx_pay`;
 CREATE TABLE `wx_wx_pay` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -211,7 +211,7 @@ CREATE TABLE `wx_wx_pay` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信支付设置';
 
------------------------------------------------------------------------- 微信JSAPI下单
+-- ---------------------------------------------------------------------- 微信JSAPI下单
 drop table if exists `wx_pay_transactions_jsapi`;
 CREATE TABLE if not exists `wx_pay_transactions_jsapi` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -248,7 +248,7 @@ CREATE TABLE if not exists `wx_pay_transactions_jsapi` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信JSAPI下单';
 
------------------------------------------------------------------------- 微信支付通知
+-- ---------------------------------------------------------------------- 微信支付通知
 drop table if exists `wx_wx_pay_notice`;
 CREATE TABLE if not exists `wx_wx_pay_notice` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -275,7 +275,7 @@ CREATE TABLE if not exists `wx_wx_pay_notice` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信支付通知';
 
------------------------------------------------------------------------- 微信退款申请
+-- ---------------------------------------------------------------------- 微信退款申请
 drop table if exists `wx_wx_refund`;
 CREATE TABLE if not exists `wx_wx_refund` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -310,7 +310,7 @@ CREATE TABLE if not exists `wx_wx_refund` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='微信退款申请';
 
------------------------------------------------------------------------- 微信退款通知
+-- ---------------------------------------------------------------------- 微信退款通知
 drop table if exists `wx_wx_refund_notice`;
 CREATE TABLE if not exists `wx_wx_refund_notice` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
