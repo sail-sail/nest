@@ -1,4 +1,4 @@
------------------------------------------------------------------------- 企微应用
+-- ---------------------------------------------------------------------- 企微应用
 drop table if exists `wxwork_wxw_app`;
 CREATE TABLE if not exists `wxwork_wxw_app` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -29,7 +29,7 @@ CREATE TABLE if not exists `wxwork_wxw_app` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='企微应用';
 
------------------------------------------------------------------------- 企微应用接口凭据
+-- ---------------------------------------------------------------------- 企微应用接口凭据
 drop table if exists `wxwork_wxw_app_token`;
 CREATE TABLE `wxwork_wxw_app_token` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -63,7 +63,7 @@ CREATE TABLE `wxwork_wxw_app_token` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='企微应用接口凭据';
 
------------------------------------------------------------------------- 企微用户
+-- ---------------------------------------------------------------------- 企微用户
 drop table if exists `wxwork_wxw_usr`;
 CREATE TABLE `wxwork_wxw_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -98,7 +98,7 @@ CREATE TABLE `wxwork_wxw_usr` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='企微用户';
 
------------------------------------------------------------------------- 企微消息
+-- ---------------------------------------------------------------------- 企微消息
 drop table if exists `wxwork_wxw_msg`;
 CREATE TABLE `wxwork_wxw_msg` (
   `id` varchar(22) NOT NULL COMMENT 'ID',

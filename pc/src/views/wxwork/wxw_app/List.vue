@@ -525,6 +525,7 @@
           
           <!-- 名称 -->
           <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -534,6 +535,7 @@
           
           <!-- 企业ID -->
           <template v-else-if="'corpid' === col.prop && (showBuildIn || builtInSearch?.corpid == null)">
+            <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -543,6 +545,7 @@
           
           <!-- 应用ID -->
           <template v-else-if="'agentid' === col.prop && (showBuildIn || builtInSearch?.agentid == null)">
+            <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -552,6 +555,7 @@
           
           <!-- 可信域名 -->
           <template v-else-if="'domain_id_lbl' === col.prop && (showBuildIn || builtInSearch?.domain_id == null)">
+            <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -561,6 +565,7 @@
           
           <!-- 应用密钥 -->
           <template v-else-if="'corpsecret' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -570,6 +575,7 @@
           
           <!-- 通讯录密钥 -->
           <template v-else-if="'contactsecret' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -579,6 +585,7 @@
           
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -595,6 +602,7 @@
           
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -611,6 +619,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -637,6 +646,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1204,7 +1214,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<WxwAppModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<WxwAppModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1417,7 +1431,7 @@ async function stopImport() {
 }
 
 /** 锁定 */
-async function onIs_locked(id: WxwAppId, is_locked: 0 | 1) {
+async function onIs_locked(id: WxwAppId, is_locked: number) {
   if (isLocked) {
     return;
   }
@@ -1439,7 +1453,7 @@ async function onIs_locked(id: WxwAppId, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: WxwAppId, is_enabled: 0 | 1) {
+async function onIs_enabled(id: WxwAppId, is_enabled: number) {
   if (isLocked) {
     return;
   }
@@ -1517,9 +1531,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: WxwAppModel,
-  column: TableColumnCtx<WxwAppModel>,
+  column: TableColumnCtx<WxwAppModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1629,7 +1643,7 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
@@ -1663,7 +1677,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 }
 
 /** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
+async function onLockByIds(is_locked: number) {
   tableFocus();
   if (isLocked) {
     return;
@@ -1730,10 +1744,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1742,10 +1757,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

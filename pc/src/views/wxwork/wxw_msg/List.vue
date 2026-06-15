@@ -446,6 +446,7 @@
           
           <!-- 企微应用 -->
           <template v-if="'wxw_app_id_lbl' === col.prop && (showBuildIn || builtInSearch?.wxw_app_id == null)">
+            <!-- @vue-generic {WxwMsgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -455,6 +456,7 @@
           
           <!-- 发送状态 -->
           <template v-else-if="'errcode_lbl' === col.prop && (showBuildIn || builtInSearch?.errcode == null)">
+            <!-- @vue-generic {WxwMsgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -464,6 +466,7 @@
           
           <!-- 成员ID -->
           <template v-else-if="'touser' === col.prop">
+            <!-- @vue-generic {WxwMsgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -473,6 +476,7 @@
           
           <!-- 标题 -->
           <template v-else-if="'title' === col.prop">
+            <!-- @vue-generic {WxwMsgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -482,6 +486,7 @@
           
           <!-- 描述 -->
           <template v-else-if="'description' === col.prop">
+            <!-- @vue-generic {WxwMsgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -491,6 +496,7 @@
           
           <!-- 按钮文字 -->
           <template v-else-if="'btntxt' === col.prop">
+            <!-- @vue-generic {WxwMsgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -500,6 +506,7 @@
           
           <!-- 发送时间 -->
           <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+            <!-- @vue-generic {WxwMsgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -509,6 +516,7 @@
           
           <!-- 错误信息 -->
           <template v-else-if="'errmsg' === col.prop">
+            <!-- @vue-generic {WxwMsgModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1072,7 +1080,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<WxwMsgModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<WxwMsgModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1121,9 +1133,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: WxwMsgModel,
-  column: TableColumnCtx<WxwMsgModel>,
+  column: TableColumnCtx<WxwMsgModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1266,10 +1278,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1278,10 +1291,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 
