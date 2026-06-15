@@ -1,5 +1,9 @@
 
 
+import {
+  CronJobLogExecState,
+} from "#/types.ts";
+
 import type {
   Query,
   Mutation,
@@ -552,7 +556,7 @@ export function getPagePathCronJobLog() {
 /** 新增时的默认值 */
 export async function getDefaultInputCronJobLog() {
   const defaultInput: CronJobLogInput = {
-    exec_state: "running",
+    exec_state: CronJobLogExecState.Running,
   };
   return defaultInput;
 }
