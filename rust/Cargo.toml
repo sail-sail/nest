@@ -78,6 +78,7 @@ rust-embed = { version = "8.11.0", features = ["include-exclude"] }
 percent-encoding = "2.3.2"
 qrcode = { version = "0.14.1", default-features = false }
 calamine = { version = "0.35.0", features = ["chrono", "picture"] }
+mimalloc = "0.1.52"
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.2.0"
@@ -158,6 +159,7 @@ rust-embed.workspace = true
 percent-encoding.workspace = true
 qrcode.workspace = true
 calamine.workspace = true
+mimalloc.workspace = true
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"
 
@@ -175,9 +177,6 @@ members = [
   "aliyun_sdk"
 ]
 resolver = "2"
-
-[target.'cfg(not(target_env = "msvc"))'.dependencies]
-mimalloc = "0.1.52"
 
 # [build-dependencies]
 # protobuf-codegen = "3.7.1"
