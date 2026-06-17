@@ -1,6 +1,6 @@
 
 const config = $ref({
-  indexIsEmpty: true,
+  indexIsEmpty: false,
 });
 
 export default config;

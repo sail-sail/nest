@@ -31,7 +31,7 @@
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 const route = useRoute();
 const tabs = useTabsStore();
 

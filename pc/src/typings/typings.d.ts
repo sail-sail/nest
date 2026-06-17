@@ -25,6 +25,8 @@ declare module 'vue-router' {
 }
 
 declare global {
+  type CustomDialogType = "auto" | "medium" | "large" | "default";
+  
   type PartialNull<T> = { [P in keyof T]?: T[P] | null | undefined; }
   
   type InputMaybe<T> = Maybe<T>;

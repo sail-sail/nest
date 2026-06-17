@@ -113,7 +113,7 @@
 </template>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import {
   useFormItem,
 } from "element-plus";

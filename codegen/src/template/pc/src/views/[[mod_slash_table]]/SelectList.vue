@@ -117,7 +117,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 </CustomDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -154,13 +154,13 @@ let inited = $ref(false);
 
 let dialogAction = $ref("select");
 
-export type OnCloseResolveType = {
+type OnCloseResolveType = {
   type: "ok" | "cancel";
   selectedIds?: <#=Table_Up#>Id[];
   selectedModels?: <#=modelName#>[];
 };
-export type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
-export type OnBeforeChangeFnType = (value: <#=modelName#>[]) => Promise<boolean | undefined>;
+type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
+type OnBeforeChangeFnType = (value: <#=modelName#>[]) => Promise<boolean | undefined>;
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 

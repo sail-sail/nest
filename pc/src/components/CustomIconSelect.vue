@@ -265,7 +265,7 @@ const {
   initSysI18ns,
 } = useI18n();
 
-const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 let inited = $ref(false);
 let dialogTitle = $ref("");
@@ -308,8 +308,8 @@ const icon_models_filtered = $computed<IconModel[]>(() => {
   return icon_models2;
 });
 
-const wrapDivRef = $(useTemplateRef<InstanceType<typeof HTMLInputElement>>("wrapDivRef"));
-const searchRef = $(useTemplateRef<InstanceType<typeof HTMLInputElement>>("searchRef"));
+const wrapDivRef = $(useTemplateRef("wrapDivRef"));
+const searchRef = $(useTemplateRef("searchRef"));
 
 function onSearchEnter(e: MouseEvent) {
   e.stopImmediatePropagation();
@@ -430,7 +430,7 @@ function onSelectIcon(icon_model: IconModel) {
   selectedId = icon_model.img;
 }
 
-const svgInputRef = $(useTemplateRef<HTMLInputElement>("svgInputRef"));
+const svgInputRef = $(useTemplateRef("svgInputRef"));
 
 function openAddSvg() {
   selectedId = "add";

@@ -20,6 +20,16 @@ const routes: Array<RouteRecordRaw> = [
     redirect: "/index",
   },
   {
+    path: "/empty",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        component: () => import("@/layout/Empty.vue"),
+      },
+    ],
+  },
+  {
     path: "/index",
     component: Layout1,
     children: [
@@ -30,6 +40,20 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           closeable: true,
           icon: "iconfont-home-fill",
+        },
+      },
+    ],
+  },
+  {
+    path: "/base",
+    component: Layout1,
+    children: [
+      {
+        path: "intro",
+        name: "企业级全栈开发平台",
+        component: () => import("@/views/base/Intro.vue"),
+        meta: {
+          isIndex: true,
         },
       },
     ],
