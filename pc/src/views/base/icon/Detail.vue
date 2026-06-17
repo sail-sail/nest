@@ -84,7 +84,7 @@
           >
             <CustomIcon
               v-model="dialogModel.img"
-              v-model:model-lbl="dialogModel.img_lbl_svg"
+              v-model:model-label="dialogModel.img_lbl_svg"
               :readonly="isLocked || isReadonly"
               :page-inited="inited"
               @change="onImg"

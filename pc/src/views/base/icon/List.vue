@@ -504,7 +504,7 @@
               <template #default="{ row }">
                 <CustomIcon
                   :model-value="row.img"
-                  :model-lbl="row.img_lbl_svg"
+                  :model-label="row.img_lbl_svg"
                   :readonly="true"
                   un-justify-center
                   un-items-center
