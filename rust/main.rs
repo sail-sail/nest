@@ -1,9 +1,8 @@
 #![forbid(unsafe_code)]
 #![recursion_limit="512"]
 
-#[cfg(not(target_env = "msvc"))]
 #[global_allocator]
-static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 use std::time::Instant;
 
