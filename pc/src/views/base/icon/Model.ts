@@ -38,8 +38,8 @@ export const iconFields = [
   "id",
   // 图标
   "img",
-  // svg
-  "img_lbl_svg",
+  // 图标
+  "img_lbl",
   // 编码
   "code",
   // 名称

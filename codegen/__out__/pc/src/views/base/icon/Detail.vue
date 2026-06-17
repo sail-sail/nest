@@ -80,16 +80,14 @@
         <template v-if="(showBuildIn || builtInModel?.img == null)">
           <el-form-item
             label="图标"
-            prop="img"
+            prop="img_lbl"
           >
-            <UploadImage
+            <CustomIcon
               v-model="dialogModel.img"
-              db="base_icon.img"
-              accept="image/svg+xml,image/png,image/jpeg,image/webp"
-              :is-public="true"
+              v-model:model-label="dialogModel.img_lbl"
               :readonly="isLocked || isReadonly"
               :page-inited="inited"
-            ></UploadImage>
+            ></CustomIcon>
           </el-form-item>
         </template>
         
@@ -306,15 +304,10 @@ watchEffect(async () => {
   await nextTick();
   form_rules = {
     // 图标
-    img: [
+    img_lbl: [
       {
         required: true,
-        message: "请输入 图标",
-      },
-      {
-        type: "string",
-        max: 22,
-        message: "图标 长度不能超过 22",
+        message: "请选择 图标",
       },
     ],
     // 编码

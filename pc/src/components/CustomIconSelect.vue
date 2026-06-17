@@ -142,10 +142,10 @@
             >
               
               <div
-                v-if="icon_model.img_lbl_svg && shouldMaskSvg(icon_model.img_lbl_svg)"
+                v-if="icon_model.img_lbl && shouldMaskSvg(icon_model.img_lbl)"
                 :style="{
-                  'mask-image': `url(${ icon_model.img_lbl_svg })`,
-                  '-webkit-mask-image': `url(${ icon_model.img_lbl_svg })`,
+                  'mask-image': `url(${ icon_model.img_lbl })`,
+                  '-webkit-mask-image': `url(${ icon_model.img_lbl })`,
                 }"
                 class="iconfont"
                 un-h="16"
@@ -161,7 +161,7 @@
                 un-w="full"
               >
                 <img
-                  :src="icon_model.img_lbl_svg"
+                  :src="icon_model.img_lbl"
                   un-h="full"
                   un-w="full"
                   un-aspect="square"
@@ -282,13 +282,13 @@ const icon_models_filtered = $computed<IconModel[]>(() => {
   let icon_models2: IconModel[];
   if (!searchStr) {
     icon_models2 = [ ...icon_models ];
-    if (selectedLbl && !icon_models2.some((item) => item.img_lbl_svg === selectedLbl)) {
+    if (selectedLbl && !icon_models2.some((item) => item.img_lbl === selectedLbl)) {
       icon_models2.unshift({
         id: (oldSelectedId || "custom") as unknown as IconId,
         img: (oldSelectedId || "custom") as unknown as IconId,
         code: "",
         lbl: "",
-        img_lbl_svg: selectedLbl,
+        img_lbl: selectedLbl,
       // oxlint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
     }
@@ -303,7 +303,7 @@ const icon_models_filtered = $computed<IconModel[]>(() => {
     img: "add",
     code: "",
     lbl: "",
-    img_lbl_svg: "",
+    img_lbl: "",
   } as unknown as IconModel);
   return icon_models2;
 });
@@ -377,7 +377,7 @@ async function showDialog(
   }
   
   if (!selectedId && selectedLbl) {
-    const icon_model = icon_models_filtered.find((item) => item.img_lbl_svg === selectedLbl);
+    const icon_model = icon_models_filtered.find((item) => item.img_lbl === selectedLbl);
     if (icon_model) {
       selectedId = icon_model.img;
     }
@@ -413,7 +413,7 @@ async function onRefresh() {
     },
   );
   // if (!selectedId && selectedLbl) {
-  //   const icon_model = icon_models.find((item) => item.img_lbl_svg === selectedLbl);
+  //   const icon_model = icon_models.find((item) => item.img_lbl === selectedLbl);
   //   if (icon_model) {
   //     selectedId = icon_model.img;
   //   }
@@ -487,17 +487,17 @@ async function onSvgChange(e: Event) {
       return;
     }
     // let changedId: string | undefined;
-    let img_lbl_svg = result as string;
-    if (img_lbl_svg.startsWith("data:image/svg+xml;base64,")) {
-      const img_lbl_svg_base64 = img_lbl_svg.replace("data:image/svg+xml;base64,", "");
-      img_lbl_svg = `data:image/svg+xml;utf8,${ encodeURIComponent(atob(img_lbl_svg_base64)) }`;
-      // const buffer = await crypto.subtle.digest("SHA-256", textEncoder.encode(img_lbl_svg));
+    let img_lbl = result as string;
+    if (img_lbl.startsWith("data:image/svg+xml;base64,")) {
+      const img_lbl_base64 = img_lbl.replace("data:image/svg+xml;base64,", "");
+      img_lbl = `data:image/svg+xml;utf8,${ encodeURIComponent(atob(img_lbl_base64)) }`;
+      // const buffer = await crypto.subtle.digest("SHA-256", textEncoder.encode(img_lbl));
       // changedId = arrayBufferToBase64(buffer).substring(0, 22);
     }
     onCloseResolve({
       type: "ok",
       changedId: undefined,
-      changedIdLbl: img_lbl_svg,
+      changedIdLbl: img_lbl,
     });
   };
   reader.readAsDataURL(file);
@@ -629,7 +629,7 @@ function onEnter() {
   onCloseResolve({
     type: "ok",
     changedId: selectedId,
-    changedIdLbl: icon_model?.img_lbl_svg,
+    changedIdLbl: icon_model?.img_lbl,
   });
 }
 
