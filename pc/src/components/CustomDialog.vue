@@ -64,7 +64,7 @@
 </el-dialog>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" vapor>
 import type {
   Ref,
   WatchStopHandle,
@@ -74,8 +74,6 @@ const {
   fullscreen: isFullscreen,
   setFullscreen,
 } = useFullscreenEfc();
-
-export type CustomDialogType = "auto" | "medium" | "large" | "default";
 
 let dialogVisible = $ref(false);
 let dialogTitle = $ref("");

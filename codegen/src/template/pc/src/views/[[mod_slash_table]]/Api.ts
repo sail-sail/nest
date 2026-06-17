@@ -569,7 +569,7 @@ export async function setLblById<#=Table_Up#>(
   } else {
     model.<#=column_name#>_lbl = new Decimal(model.<#=column_name#> ?? 0).toFixed(<#=precision#>);
   }<#
-    } else if (column.isImg) {
+    } else if (column.isImg && !column.isIcon) {
   #>
   
   // <#=column_comment#>

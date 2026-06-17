@@ -114,7 +114,7 @@ export async function getMenus(
             name,
             component: async () => {
               const com = await import("@/views/base/dyn_page_data/List.vue");
-              com.default.name = name;
+              (com.default as any).name = name;
               return com;
             },
             props: (route) => {

@@ -495,18 +495,26 @@
         >
           
           <!-- 图标 -->
-          <template v-if="'img' === col.prop">
+          <template v-if="'img_lbl' === col.prop">
             <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
-                <LinkImage
-                  v-model="row[column.property]"
-                  un-h="8"
-                  un-justify="center"
-                ></LinkImage>
+              <template #default="{ row }">
+                <div
+                  un-flex="~ nowrap"
+                  un-items-center
+                  un-justify-center
+                >
+                  <CustomIcon
+                    v-model="row.img"
+                    v-model:model-label="row.img_lbl"
+                    :readonly="true"
+                    un-w="8"
+                    un-h="8"
+                  ></CustomIcon>
+                </div>
               </template>
             </el-table-column>
           </template>
@@ -679,7 +687,7 @@
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import Detail from "./Detail.vue";
 
 import {
@@ -982,7 +990,7 @@ function getTableColumns(): ColumnType[] {
   return [
     {
       label: "图标",
-      prop: "img",
+      prop: "img_lbl",
       width: 100,
       align: "center",
       headerAlign: "center",

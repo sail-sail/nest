@@ -356,7 +356,7 @@
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import LeftMenu from "./Menu.vue";
 import Top from "./Top.vue";
 import Tabs from "./Tabs.vue";
@@ -413,13 +413,7 @@ watch(
     () => route.path,
     () => route.query,
   ],
-  async (_newValue, oldValue) => {
-    if (route.path === "/" || route.path === "") {
-      return;
-    }
-    if (route.path === "/index" && (!oldValue?.[0] || oldValue[0] === "/" || oldValue[0] === "/index")) {
-      return;
-    }
+  () => {
     const name = route.name as string;
     const menuLbl = menuStore.getLblByPath(route.path);
     const lbl = menuLbl || (route.meta?.name as string) || name || "";
@@ -443,7 +437,7 @@ watch(
 let inited = $ref(false);
 
 const tabs_divRef = $ref<HTMLDivElement>();
-const tabsRef = $ref<InstanceType<typeof Tabs>>();
+const tabsRef = $(useTemplateRef("tabsRef"));
 const tab_active_lineRef = $ref<HTMLDivElement>();
 
 let scrollLeftVisible = $ref(false);

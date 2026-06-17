@@ -18,6 +18,8 @@
     "no-unused-vars": "allow",
     "no-useless-assignment": "allow",
     "no-debugger": "allow",
-    "no-dupe-keys": "allow"
+    "no-dupe-keys": "allow",
+    "vue/no-dupe-keys": "allow",
+    "vue/prop-name-casing": "allow"
   }
 }

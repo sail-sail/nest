@@ -611,7 +611,7 @@
 ></AttrsDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -1285,7 +1285,7 @@ async function onEditAttrs(row: DynPageFieldInput) {
   }
 }
 
-const menu_idsListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("menu_idsListSelectDialogRef"));
+const menu_idsListSelectDialogRef = $(useTemplateRef("menu_idsListSelectDialogRef"));
 
 /** 选择路由 */
 async function onCodeSelect() {

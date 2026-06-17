@@ -36,31 +36,9 @@ const TAB_HISTORY_LIMIT = 15;
 type TabHistoryItem = Pick<TabInf, "path" | "query">;
 const tabHistory = useStorage<TabHistoryItem[]>("store.tabs.tabHistory", [ ]);
 
-let indexIsEmptyHandle: ReturnType<typeof watch> | undefined = undefined;
-
 const menuStore = useMenuStore();
 
 export default function() {
-  
-  if (!indexIsEmptyHandle) {
-    indexIsEmptyHandle = watch(
-      () => [
-        tabs.value.length,
-        config.indexIsEmpty,
-      ],
-      () => {
-        if (config.indexIsEmpty) {
-          removeIndexTab();
-          return;
-        }
-        if (tabs.value.length === 0) {
-          setIndexTab(true);
-          return;
-        }
-        setIndexTab(false);
-      },
-    );
-  }
   
   function clearKeepAliveNames() {
     keepAliveNames.value = [ ];
@@ -220,7 +198,7 @@ export default function() {
           if (!router) {
             router = useRouter();
           }
-          await router?.replace({ path: "/", query: { } });
+          await router?.replace("/empty");
         }
       }
     }

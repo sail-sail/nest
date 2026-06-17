@@ -34,6 +34,8 @@ export const iconFields = [
   "id",
   // 图标
   "img",
+  // 图标
+  "img_lbl",
   // 编码
   "code",
   // 名称

@@ -271,7 +271,7 @@ for (let i = 0; i < columns.length; i++) {
 </CustomDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import {
   TaskAction,
 } from "#/types.ts";
