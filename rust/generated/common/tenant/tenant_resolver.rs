@@ -1,4 +1,7 @@
 use color_eyre::eyre::Result;
+use tracing::info;
+
+use crate::common::context::get_req_id;
 
 use smol_str::SmolStr;
 
@@ -10,9 +13,16 @@ use super::tenant_model::SetTenantAdminPwdInput;
 use crate::base::tenant::tenant_model::TenantId;
 
 /// 根据 当前网址的域名+端口 获取 租户列表
+#[function_name::named]
 pub async fn get_login_tenants(
   domain: SmolStr,
 ) -> Result<Vec<GetLoginTenants>> {
+  
+  info!(
+    "{req_id} {function_name}: domain: {domain:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   let res = tenant_service::get_login_tenants(
     domain,
@@ -34,9 +44,17 @@ pub async fn get_login_tenant_by_ids(
 }
 
 /// 设置租户管理员密码
+#[function_name::named]
 pub async fn set_tenant_admin_pwd(
   input: SetTenantAdminPwdInput,
 ) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: input: {input:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+    input = input,
+  );
   
   let res = tenant_service::set_tenant_admin_pwd(
     input
