@@ -40,7 +40,7 @@
 </template>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" vapor>
 import type {
   MenuModel as MenuModel0,
 } from "#/types";

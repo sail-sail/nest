@@ -33,7 +33,7 @@
 </template>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 const {
   ns,
   initSysI18ns,

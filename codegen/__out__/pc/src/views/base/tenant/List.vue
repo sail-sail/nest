@@ -793,7 +793,7 @@
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import Detail from "./Detail.vue";
 
 import MenuTreeList from "../menu/TreeList.vue";

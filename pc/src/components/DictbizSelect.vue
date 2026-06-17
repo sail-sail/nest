@@ -240,7 +240,7 @@
 ></DictbizDetailDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import type {
   GetDictbiz,
 } from "@/typings/types";
@@ -702,7 +702,7 @@ watch(
   },
 );
 
-const dictbizDetailDialogRef = $(useTemplateRef<InstanceType<typeof DictbizDetailDialog>>("dictbizDetailDialogRef"));
+const dictbizDetailDialogRef = $(useTemplateRef("dictbizDetailDialogRef"));
 
 /**
  * 打开新增选项对话框

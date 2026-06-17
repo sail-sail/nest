@@ -9,7 +9,7 @@
     <template v-if="Component">
       <component :is="Component"></component>
     </template>
-    <template v-else-if="$route.fullPath === '/'">
+    <template v-else-if="$route.fullPath === '/' || $route.fullPath === ''">
     </template>
     <template v-else>
       <div
@@ -38,7 +38,7 @@
 </el-config-provider>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" vapor>
 import locale from "@/locales";
 
 const {
@@ -55,7 +55,7 @@ async function goHome() {
   if (tabsStore.actTab) {
     tabsStore.closeCurrentTab(tabsStore.actTab, false, router);
   }
-  window.location.href = "/";
+  window.location.href = window.location.origin + window.location.pathname;
 }
 
 // const warn = console.warn;

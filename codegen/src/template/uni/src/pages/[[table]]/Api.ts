@@ -565,7 +565,7 @@ export async function setLblById<#=Table_Up#>(
   // <#=column_comment#>
   model.<#=column_name#> = new Decimal(model.<#=column_name#> || 0);
   model.<#=column_name#>_lbl = model.<#=column_name#>.toFixed(<#=precision#>);<#
-    } else if (column.isImg) {
+    } else if (column.isImg && !column.isIcon) {
   #>
   
   // <#=column_comment#>

@@ -10,7 +10,7 @@
     class="tab_div"
     :class="{ tab_active: item.active, tab_fixed: item.fixed }"
     @click="activeTab(item)"
-    @dblclick="onClose(item)"
+    @dblclick="onClose(item, router)"
   >
     <el-dropdown
       ref="dropdownRef"
@@ -85,13 +85,14 @@
       <ElIconClose
         class="tab_close"
         @click.stop="onClose(item, router)"
+        @dblclick.stop="onClose(item, router)"
       />
     </div>
   </div>
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import type {
   TabInf,
 } from "@/store/tabs";
@@ -155,6 +156,9 @@ async function onClose(
   tab: TabInf,
   router?: Router,
 ) {
+  if (!router) {
+    router = useRouter();
+  }
   await tabsStore.removeTab(tab, false, router);
   if (tabsStore.actTab) {
     await activeTab(tabsStore.actTab);
