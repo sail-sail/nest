@@ -65,7 +65,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 
 import CronJobLogDetailList from "@/views/cron/cron_job_log_detail/List.vue";
 
