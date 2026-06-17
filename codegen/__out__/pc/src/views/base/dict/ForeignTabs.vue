@@ -65,7 +65,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 
 import DictDetailList from "@/views/base/dict_detail/List.vue";
 

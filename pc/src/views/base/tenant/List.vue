@@ -809,7 +809,7 @@
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import Detail from "./Detail.vue";
 
 // 设置租户管理员密码

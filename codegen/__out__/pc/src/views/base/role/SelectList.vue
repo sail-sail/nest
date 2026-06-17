@@ -60,7 +60,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -80,13 +80,13 @@ let inited = $ref(false);
 
 let dialogAction = $ref("select");
 
-export type OnCloseResolveType = {
+type OnCloseResolveType = {
   type: "ok" | "cancel";
   selectedIds?: RoleId[];
   selectedModels?: RoleModel[];
 };
-export type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
-export type OnBeforeChangeFnType = (value: RoleModel[]) => Promise<boolean | undefined>;
+type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
+type OnBeforeChangeFnType = (value: RoleModel[]) => Promise<boolean | undefined>;
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 

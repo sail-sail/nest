@@ -436,7 +436,7 @@
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import Detail from "./Detail.vue";
 
 import {
@@ -1040,9 +1040,7 @@ watch(
 
 async function initFrame() {
   initColumns(tableColumns);
-  await Promise.all([
-    dataGrid(true),
-  ]);
+  await dataGrid(true);
   inited = true;
 }
 

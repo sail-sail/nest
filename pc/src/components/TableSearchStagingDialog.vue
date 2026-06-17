@@ -115,7 +115,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 
 const {
   ns,
@@ -160,7 +160,7 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 const inputRef = $ref<InstanceType<typeof ElInput>>();
 
@@ -220,7 +220,7 @@ function onOpened() {
   inputRef?.focus();
 }
 
-export type SearchStagingType = {
+type SearchStagingType = {
   name: string;
   // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;

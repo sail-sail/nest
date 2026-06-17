@@ -126,7 +126,7 @@ if (typeof list_tree === "string") {
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import List from "./List.vue";<#
 const old_Table_Up = Table_Up;
 if (list_tree === true) {

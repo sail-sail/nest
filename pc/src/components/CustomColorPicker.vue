@@ -50,10 +50,7 @@
 </template>
 </template>
 
-<script lang="ts" setup>
-import type {
-  ColorPickerProps,
-} from "element-plus";
+<script lang="ts" setup vapor>
 
 const props = withDefaults(
   defineProps<{

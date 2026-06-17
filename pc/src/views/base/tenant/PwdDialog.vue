@@ -249,7 +249,7 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 /** 打开对话框 */
 async function showDialog(

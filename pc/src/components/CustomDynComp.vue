@@ -6,7 +6,7 @@
 ></component>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import componentMap from "./ComponentMap.ts";
 
 const props = withDefaults(

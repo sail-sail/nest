@@ -45,7 +45,7 @@
 </el-dropdown>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" vapor>
 const {
   ns,
   // nsAsync,

@@ -32,7 +32,7 @@
 </el-date-picker>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import type {
   DatePickerProps,
 } from "element-plus";
