@@ -50,6 +50,16 @@ use crate::common::context::{
 };
 use crate::common::exceptions::service_exception::ServiceException;
 
+use sha2::Digest;
+use base64::Engine;
+use base64::engine::general_purpose;
+
+use crate::common::oss::oss_dao::{
+  head_object,
+  get_object,
+  put_object,
+};
+
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -606,14 +616,15 @@ pub async fn find_all_icon(
   #[allow(unused_variables)]
   for model in &mut res {
     
-    // svg
-    if !model.img.is_empty() {
-      let res = crate::common::oss::oss_dao::get_object(&model.img).await?;
+    // 图标
+    model.img_lbl = {
+      let res = get_object(&model.img).await?;
       if let Some(res) = res {
-        let content = res.to_string()?;
-        model.img_lbl_svg = content.into();
+        SmolStr::new(String::from_utf8(res.to_vec())?)
+      } else {
+        SmolStr::new("")
       }
-    }
+    };
     
     // 启用
     model.is_enabled_lbl = {
@@ -1670,6 +1681,46 @@ async fn _creates(
     )
     .unwrap_or_default();
   
+  // 设置图标
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    // 图标
+    if input.img.is_none() || input.img.as_ref().unwrap().is_empty() {
+      if let Some(img_lbl) = input.img_lbl.as_ref().filter(|img_lbl| !img_lbl.is_empty()) {
+        let mut hash = sha2::Sha256::new();
+        hash.update(img_lbl.clone().as_bytes());
+        let hash = hash.finalize();
+        let bytes = hash.as_slice();
+        let img = general_purpose::STANDARD.encode(bytes);
+        let img = SmolStr::from(img.get(0..22).unwrap_or_default());
+        let stat = head_object(&img).await?;
+        if stat.is_none() {
+          let content_type = img_lbl
+            .get(img_lbl.find("data:").unwrap_or_default() + 5..img_lbl.find(";").unwrap_or(img_lbl.len()))
+            .unwrap_or_default();
+          if !content_type.starts_with("image/") {
+            error!(
+              "{req_id} img_lbl is not image: {img_lbl}",
+              req_id = get_req_id(),
+            );
+            return Err(eyre!("img_lbl is not image"));
+          }
+          put_object(
+            &img,
+            img_lbl.clone().as_bytes(),
+            content_type,
+            &img,
+            Some("1"),
+            None,
+            Some("base_icon.img"),
+            Some(&img),
+          ).await?;
+        }
+        input.img = Some(img);
+      }
+    }
+  }
+  
   let mut ids2: Vec<IconId> = vec![];
   let mut inputs2: Vec<IconInput> = vec![];
   
@@ -2126,6 +2177,41 @@ pub async fn update_by_id_icon(
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
+  // 图标
+  if input.img.is_none() || input.img.as_ref().unwrap().is_empty() {
+    if let Some(img_lbl) = input.img_lbl.as_ref().filter(|img_lbl| !img_lbl.is_empty()) {
+      let mut hash = sha2::Sha256::new();
+      hash.update(img_lbl.clone().as_bytes());
+      let hash = hash.finalize();
+      let bytes = hash.as_slice();
+      let img = general_purpose::STANDARD.encode(bytes);
+      let img = SmolStr::from(img.get(0..22).unwrap_or_default());
+      let stat = head_object(&img).await?;
+      if stat.is_none() {
+        let content_type = img_lbl
+          .get(img_lbl.find("data:").unwrap_or_default() + 5..img_lbl.find(";").unwrap_or(img.len()))
+          .unwrap_or_default();
+        if !content_type.starts_with("image/") {
+          error!(
+            "{req_id} img_lbl is not image: {img_lbl}",
+            req_id = get_req_id(),
+          );
+          return Err(eyre!("img_lbl is not image"));
+        }
+        put_object(
+          &img,
+          img_lbl.clone().as_bytes(),
+          content_type,
+          &img,
+          Some("1"),
+          None,
+          Some("base_icon.img"),
+          Some(&img),
+        ).await?;
+      }
+      input.img = Some(img);
+    }
+  }
   
   let old_model = find_by_id_icon(
     id,
