@@ -1,10 +1,12 @@
 <template>
 <div
+  class="intro-container"
   un-flex="~ [1_0_0] col"
   un-overflow-auto
   un-w="full"
   un-h="full"
   un-bg="gray-50 dark:gray-900"
+  un-relative
 >
   <!-- Hero Section -->
   <section
@@ -1005,6 +1007,12 @@
   >
     全栈开发平台 · 智能代码生成 · 企业级安全 · 多端覆盖
   </footer>
+  
+  <el-backtop
+    target=".intro-container"
+    :right="100"
+    :bottom="100"
+  />
 </div>
 </template>
 
