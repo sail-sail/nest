@@ -680,7 +680,6 @@ export function useDownloadImportTemplateDept() {
             lbl
             usr_ids_lbl
             order_by
-            org_id_lbl
             rem
           }
           findAllDept {
@@ -688,10 +687,6 @@ export function useDownloadImportTemplateDept() {
             lbl
           }
           findAllUsr {
-            id
-            lbl
-          }
-          findAllOrg {
             id
             lbl
           }

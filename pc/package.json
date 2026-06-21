@@ -19,10 +19,10 @@
     "postinstall": "node src/utils/postinstall.js"
   },
   "dependencies": {
-    "@eigenpal/docx-editor-i18n": "1.6.2",
-    "@eigenpal/docx-editor-vue": "1.6.2",
+    "@eigenpal/docx-editor-i18n": "1.9.0",
+    "@eigenpal/docx-editor-vue": "1.9.0",
     "@element-plus/icons-vue": "2.3.2",
-    "@flyfish-group/file-viewer3": "1.0.26",
+    "@flyfish-group/file-viewer3": "2.0.8",
     "@jsquash/resize": "2.1.1",
     "@jsquash/webp": "1.5.0",
     "@opentiny/fluent-editor": "3.25.11",
@@ -31,7 +31,7 @@
     "@vue/runtime-dom": "3.5.38",
     "@vue/shared": "3.5.38",
     "@vueuse/core": "14.3.0",
-    "cronstrue": "3.14.0",
+    "cronstrue": "3.20.0",
     "danmu": "0.20.0",
     "dayjs": "1.11.21",
     "decimal.js": "10.6.0",
@@ -59,7 +59,7 @@
   "devDependencies": {
     "@plugin-web-update-notification/vite": "2.1.0",
     "@types/file-saver": "2.0.7",
-    "@types/node": "25.9.3",
+    "@types/node": "26.0.0",
     "@types/sortablejs": "1.15.9",
     "@unocss/preset-rem-to-px": "66.7.2",
     "@vitejs/plugin-vue": "6.0.7",

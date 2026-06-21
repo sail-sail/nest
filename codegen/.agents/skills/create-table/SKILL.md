@@ -1,6 +1,6 @@
 ---
 name: create-table
-description: 数据库建表规范。创建新表 SQL 时必须遵循；SQL 建完后必须继续阅读 table-config skill 来生成 {mod}.ts 配置
+description: 数据库建表规范。创建新表 SQL 时必须遵循
 ---
 
 # 建表规范

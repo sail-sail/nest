@@ -390,8 +390,11 @@ for (let i = 0; i < columns.length; i++) {
             }
             #><#
             if (
-              (column.isTextarea && detailFormCols > 1) ||
-              (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+              column.isSpanFull !== false &&
+              (
+                (column.isTextarea && detailFormCols > 1) ||
+                (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+              )
             ) {
             #>
             un-grid="col-span-full"<#
@@ -2410,8 +2413,11 @@ for (let i = 0; i < columns.length; i++) {
                   #>
                   prop="<#=inline_column_name#>.<#=column_name#>"<#
                   if (
-                    (column.isTextarea && detailFormCols > 1) ||
-                    (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+                    column.isSpanFull !== false &&
+                    (
+                      (column.isTextarea && detailFormCols > 1) ||
+                      (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+                    )
                   ) {
                   #>
                   un-grid="col-span-full"<#

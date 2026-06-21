@@ -427,6 +427,8 @@ export interface TableColumn {
    */
   isImg?: boolean,
   
+  isSpanFull?: boolean;
+  
   /**
    * 是否图标
    * 如果字段名是icon或者_icon结尾, 并且isIcon == null，则认isIcon默认为true,并且此时width默认为80
