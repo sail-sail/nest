@@ -1152,6 +1152,8 @@ watch(
 
 const detailRef = $(useTemplateRef("detailRef"));
 
+let dict_model = $ref<DictModel>();
+
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
@@ -1159,6 +1161,15 @@ async function dataGrid(
 ) {
   clearDirty();
   const search = getDataSearch();
+  const dict_id = search.dict_id?.[0];
+  if (dict_id) {
+    dict_model = await findOneDict({
+      id: dict_id,
+      is_deleted: search.is_deleted,
+    });
+  } else {
+    dict_model = undefined;
+  }
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
@@ -1713,24 +1724,9 @@ watch(
   },
 );
 
-let dict_model = $ref<DictModel>();
-
-const dict_id = $computed(() => {
-  return search.dict_id as unknown as DictId | undefined;
-});
-
 async function initFrame() {
   initColumns(tableColumns);
-  [
-    ,
-    dict_model,
-  ] = await Promise.all([
-    dataGrid(true),
-    findOneDict({
-      id: dict_id,
-      is_deleted: search.is_deleted,
-    }),
-  ]);
+  await dataGrid(true);
   inited = true;
 }
 
