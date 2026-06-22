@@ -198,7 +198,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('add', '新增') && !isLocked"
+        v-if="dictbiz_model && dictbiz_model.is_add && permit('add', '新增') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -210,7 +210,7 @@
       </el-button>
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('add', '复制') && !isLocked"
+        v-if="dictbiz_model && dictbiz_model.is_add && permit('add', '复制') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -352,7 +352,7 @@
     <template v-else>
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('delete') && !isLocked"
+        v-if="dictbiz_model && dictbiz_model.is_add && permit('delete') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -1151,6 +1151,8 @@ watch(
 
 const detailRef = $(useTemplateRef("detailRef"));
 
+let dictbiz_model = $ref<DictbizModel>();
+
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
@@ -1158,6 +1160,15 @@ async function dataGrid(
 ) {
   clearDirty();
   const search = getDataSearch();
+  const dictbiz_id = search.dictbiz_id?.[0];
+  if (dictbiz_id) {
+    dictbiz_model = await findOneDictbiz({
+      id: dictbiz_id,
+      is_deleted: search.is_deleted,
+    });
+  } else {
+    dictbiz_model = undefined;
+  }
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
@@ -1712,24 +1723,9 @@ watch(
   },
 );
 
-let dictbiz_model = $ref<DictbizModel>();
-
-const dict_id = $computed(() => {
-  return search.dictbiz_id as unknown as DictbizId | undefined;
-});
-
 async function initFrame() {
   initColumns(tableColumns);
-  [
-    ,
-    dictbiz_model,
-  ] = await Promise.all([
-    dataGrid(true),
-    findOneDictbiz({
-      id: dict_id,
-      is_deleted: search.is_deleted,
-    }),
-  ]);
+  await dataGrid(true);
   inited = true;
 }
 

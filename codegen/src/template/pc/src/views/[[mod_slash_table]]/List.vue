@@ -2164,9 +2164,9 @@ if (searchByKeyword) {
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
+              <template #default="{ row }">
                 <LinkAtt
-                  v-model="row[column.property]"<#
+                  v-model="row.<#=column_name#>"<#
                   if (column.attMaxSize > 1) {
                   #>
                   :max-size="<#=column.attMaxSize#>"<#
@@ -2198,7 +2198,7 @@ if (searchByKeyword) {
                   :readonly="isLocked"<#
                   }
                   #>
-                  @change="onLinkAtt(row, column.property)"
+                  @change="onLinkAtt(row, '<#=column_name#>')"
                 ></LinkAtt>
               </template>
             </el-table-column>
