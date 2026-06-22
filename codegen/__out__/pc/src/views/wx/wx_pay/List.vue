@@ -549,12 +549,12 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
+              <template #default="{ row }">
                 <LinkAtt
-                  v-model="row[column.property]"
+                  v-model="row.public_key"
                   :is-public="false"
                   :readonly="isLocked"
-                  @change="onLinkAtt(row, column.property)"
+                  @change="onLinkAtt(row, 'public_key')"
                 ></LinkAtt>
               </template>
             </el-table-column>
@@ -567,12 +567,12 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
+              <template #default="{ row }">
                 <LinkAtt
-                  v-model="row[column.property]"
+                  v-model="row.private_key"
                   :is-public="false"
                   :readonly="isLocked"
-                  @change="onLinkAtt(row, column.property)"
+                  @change="onLinkAtt(row, 'private_key')"
                 ></LinkAtt>
               </template>
             </el-table-column>
