@@ -22,7 +22,7 @@
     "@eigenpal/docx-editor-i18n": "1.9.0",
     "@eigenpal/docx-editor-vue": "1.9.0",
     "@element-plus/icons-vue": "2.3.2",
-    "@flyfish-group/file-viewer3": "2.0.8",
+    "@flyfish-group/file-viewer3": "2.0.11",
     "@jsquash/resize": "2.1.1",
     "@jsquash/webp": "1.5.0",
     "@opentiny/fluent-editor": "3.25.11",
@@ -57,7 +57,7 @@
     "xlsx-handlebars": "0.2.2"
   },
   "devDependencies": {
-    "@plugin-web-update-notification/vite": "2.1.0",
+    "@plugin-web-update-notification/vite": "2.1.2",
     "@types/file-saver": "2.0.7",
     "@types/node": "26.0.0",
     "@types/sortablejs": "1.15.9",
