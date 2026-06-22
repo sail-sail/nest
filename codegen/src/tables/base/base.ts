@@ -1006,6 +1006,7 @@ export default defineConfig({
         order: "ascending",
       },
       list_tree: true,
+      hasSelectInput: true,
     },
     columns: [
       {
@@ -1379,9 +1380,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "img",
-        attAccept: "image/svg+xml,image/png,image/jpeg,image/webp",
-        isPublicAtt: true,
-        require: true,
+        isIcon: true,
       },
       {
         COLUMN_NAME: "code",

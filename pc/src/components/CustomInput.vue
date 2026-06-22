@@ -102,7 +102,7 @@
 </template>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 
 const emit = defineEmits<{
   // oxlint-disable-next-line @typescript-eslint/no-explicit-any
@@ -205,11 +205,17 @@ defineExpose({
   box-shadow: 0 0 0 1px var(--el-border-color) inset;
   border-radius: 4px;
 }
+.custom_input_readonly_border:hover {
+  box-shadow: 0 0 0 1px var(--el-border-color-hover) inset;
+}
 .custom_input_readonly_no_border {
   .custom_input_readonly_content {
     padding-top: calc(var(--spacing) * 1.5);
     padding-bottom: calc(var(--spacing) * 1.5);
   }
+}
+.custom_input_readonly_no_border:hover {
+  box-shadow: none;
 }
 .custom_input_align_center {
   :deep(.el-input__wrapper) {

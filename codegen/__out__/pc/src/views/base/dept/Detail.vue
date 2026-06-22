@@ -143,7 +143,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.org_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.org_id == null) && dialogAction !== 'add' && dialogAction !== 'copy'">
           <el-form-item
             label="组织"
             prop="org_id"
@@ -160,7 +160,7 @@
                 };
               })"
               placeholder="请选择 组织"
-              :readonly="isLocked || isReadonly"
+              :readonly="true"
               :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
@@ -275,7 +275,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -373,13 +373,6 @@ watchEffect(async () => {
       {
         required: true,
         message: "请输入 排序",
-      },
-    ],
-    // 组织
-    org_id: [
-      {
-        required: true,
-        message: "请选择 组织",
       },
     ],
   };
@@ -506,9 +499,11 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
+      defaultInput,
       data,
       order_by,
     ] = await Promise.all([
+      getDefaultInputDept(),
       findOneModel({
         id,
         is_deleted,
@@ -524,6 +519,7 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
+        org_id: defaultInput.org_id,
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
@@ -748,7 +744,6 @@ watch(
   () => [
     dialogModel.parent_id,
     dialogModel.usr_ids,
-    dialogModel.org_id,
   ],
   () => {
     if (!inited || is_form_hydrating) {
@@ -759,9 +754,6 @@ watch(
     }
     if (!dialogModel.usr_ids || dialogModel.usr_ids.length === 0) {
       dialogModel.usr_ids_lbl = [ ];
-    }
-    if (!dialogModel.org_id) {
-      dialogModel.org_id_lbl = "";
     }
   },
 );

@@ -1,10 +1,12 @@
 <template>
 <div
+  class="intro-container"
   un-flex="~ [1_0_0] col"
   un-overflow-auto
   un-w="full"
   un-h="full"
   un-bg="gray-50 dark:gray-900"
+  un-relative
 >
   <!-- Hero Section -->
   <section
@@ -72,9 +74,9 @@
         un-mb="8"
         un-leading-relaxed
       >
-        从数据库设计到上线部署，智能代码生成 + 低代码引擎 + 企业级安全体系
+        从数据库设计到上线部署，智能代码生成 + AI 协同开发 + 企业级安全体系
         <br>
-        让团队专注于业务，而非重复造轮子
+        让 AI 负责提速，让架构负责稳定、正确、可落地
       </p>
       <div
         un-flex="~ wrap"
@@ -131,6 +133,149 @@
     </div>
   </section>
 
+  <!-- AI 价值说明 -->
+  <section
+    un-p="x-8 y-16"
+    un-bg="gradient-to-b from-white to-sky-50 dark:from-gray-800 dark:to-slate-900"
+  >
+    <div
+      un-max-w="6xl"
+      un-mx="auto"
+    >
+      <div un-text-center un-mb="12">
+        <h2
+          un-text="3xl gray-800 dark:gray-100"
+          un-font-bold
+          un-mb="3"
+        >
+          为什么有了 AI，仍然需要这套架构？
+        </h2>
+        <p un-text="lg gray-500 dark:gray-400">
+          AI 会写代码，但真正决定项目能不能稳定交付的，还是底层架构和规则体系。
+        </p>
+      </div>
+
+      <div
+        un-grid="~ cols-1 lg:cols-2"
+        un-gap="6"
+      >
+        <div
+          un-bg="white dark:gray-800"
+          un-rounded-xl
+          un-p="6"
+          un-border="gray-100 dark:gray-700"
+          un-shadow="sm"
+        >
+          <div
+            un-flex="~ items-center"
+            un-gap="3"
+            un-mb="5"
+          >
+            <div
+              un-w="12"
+              un-h="12"
+              un-rounded-lg
+              un-flex="~ items-center justify-center"
+              un-bg="amber-100 dark:amber-900/40"
+              un-text="2xl"
+            >
+              🤖
+            </div>
+            <div>
+              <h3
+                un-text="xl gray-800 dark:gray-100"
+                un-font-semibold
+              >
+                AI 很强，但不会替你兜底
+              </h3>
+              <p un-text="sm gray-500 dark:gray-400">
+                AI 能写得快，但不天然保证系统长期稳定。
+              </p>
+            </div>
+          </div>
+
+          <ul un-space-y-3>
+            <li
+              v-for="item in aiLimits"
+              :key="item"
+              un-flex="~ items-start"
+              un-gap="2"
+              un-text="sm gray-600 dark:gray-300"
+            >
+              <span un-text="amber-500" un-font-bold un-shrink-0>•</span>
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div
+          un-bg="white dark:gray-800"
+          un-rounded-xl
+          un-p="6"
+          un-border="gray-100 dark:gray-700"
+          un-shadow="sm"
+        >
+          <div
+            un-flex="~ items-center"
+            un-gap="3"
+            un-mb="5"
+          >
+            <div
+              un-w="12"
+              un-h="12"
+              un-rounded-lg
+              un-flex="~ items-center justify-center"
+              un-bg="sky-100 dark:sky-900/40"
+              un-text="2xl"
+            >
+              🏗️
+            </div>
+            <div>
+              <h3
+                un-text="xl gray-800 dark:gray-100"
+                un-font-semibold
+              >
+                我的架构，就是 AI 的放大器
+              </h3>
+              <p un-text="sm gray-500 dark:gray-400">
+                让 AI 输出更标准、更可控、更容易复用。
+              </p>
+            </div>
+          </div>
+
+          <ul un-space-y-3>
+            <li
+              v-for="item in aiBoosts"
+              :key="item"
+              un-flex="~ items-start"
+              un-gap="2"
+              un-text="sm gray-600 dark:gray-300"
+            >
+              <span un-text="sky-500" un-font-bold un-shrink-0>•</span>
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        un-mt="8"
+        un-bg="gradient-to-r from-sky-600 to-cyan-600"
+        un-rounded="2xl"
+        un-p="6"
+        un-text="white center"
+        un-shadow="lg"
+      >
+        <div un-text="2xl" un-font-bold un-mb="2">
+          简单说：AI 让开发更快，我的架构让 AI 不乱来。
+        </div>
+        <p un-text="sm sky-100 md:base">
+          没有架构，AI 生成的是一堆代码；有了架构，AI 生成的是可持续迭代的系统资产。
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- 核心优势 -->
   <section
     un-p="x-8 y-16"
@@ -147,7 +292,7 @@
         为什么选择这套架构？
       </h2>
       <p un-text="lg gray-500 dark:gray-400">
-        六大核心优势，让开发更快、更安全、更省心
+        七大核心优势，让开发更快、更安全、更省心
       </p>
     </div>
 
@@ -862,30 +1007,48 @@
   >
     全栈开发平台 · 智能代码生成 · 企业级安全 · 多端覆盖
   </footer>
+  
+  <el-backtop
+    target=".intro-container"
+    :right="100"
+    :bottom="100"
+  />
 </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" vapor>
 
 const isDark = useDark();
 
 const heroTags = [
   "🧠 智能代码生成",
+  "🤖 AI 协同开发",
   "🛡️ 数据安全保障",
   "📱 多端覆盖",
   "🔐 四层权限体系",
   "📋 操作审计追踪",
-  "🌍 国际化支持",
 ];
 
 const stats = [
   { value: "5~10x", label: "开发效率提升" },
+  { value: "更稳", label: "AI 输出更可控" },
   { value: "4 层", label: "权限防护深度" },
   { value: "3 端", label: "PC + 小程序 + App" },
-  { value: "100%", label: "操作可审计追溯" },
 ];
 
 const features = [
+  {
+    icon: "🤖",
+    title: "AI 协同开发更高效",
+    desc: "AI 不是替代架构，而是建立在架构之上的加速器。标准化越强，AI 产出越稳定。",
+    bgColor: "sky-100",
+    bgColorDark: "sky-900/40",
+    points: [
+      "统一目录、接口、字段命名，AI 更容易理解项目",
+      "重复代码有模板和规则，AI 不必每次从零猜",
+      "输出更一致，返工更少，维护成本更低",
+    ],
+  },
   {
     icon: "⚡",
     title: "智能代码生成",
@@ -976,7 +1139,21 @@ const modern = [
   { task: "前端页面 (自动生成)", time: "≈ 0" },
   { task: "权限配置 (自动生成)", time: "≈ 0" },
   { task: "搜索/排序/分页 (内置)", time: "≈ 0" },
-  { task: "业务逻辑定制", time: "0.5 天" },
+  { task: "AI + 业务逻辑定制", time: "0.5 天" },
+];
+
+const aiLimits = [
+  "AI 擅长生成代码，但不会天然理解你的权限边界、数据口径和业务责任。",
+  "没有统一规范时，AI 每次都可能写出不同结构，后期维护会越来越乱。",
+  "涉及删除恢复、审计追踪、租户隔离、字段权限时，不能靠 AI 临场发挥。",
+  "老板买的不是一段代码，而是可持续交付、可控风险和长期复用能力。",
+];
+
+const aiBoosts = [
+  "代码生成规则、目录结构、接口规范都固定，AI 更容易按标准输出。",
+  "常见 CRUD、权限、表单、列表都已沉淀，AI 只需要补业务差异，速度更快。",
+  "AI 写出来的内容能直接挂进现有体系，而不是变成一堆孤岛代码。",
+  "团队多人一起用 AI 开发时，这套架构能保证最终结果仍然统一、可维护、可审计。",
 ];
 
 const backendModules = [
@@ -1024,6 +1201,11 @@ const reasons = [
     icon: "📈",
     title: "快速响应业务",
     desc: "新需求从周级缩短到小时级交付",
+  },
+  {
+    icon: "🤖",
+    title: "把 AI 真正变成生产力",
+    desc: "不是让 AI 随便写，而是让 AI 按你的规则稳定产出",
   },
   {
     icon: "🔄",

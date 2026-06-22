@@ -1,6 +1,6 @@
 ---
 name: excel-export
-description: 移动端导出 Excel 时使用
+description: 移动端导出Excel时使用
 ---
 
 # Excel 导出

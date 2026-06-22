@@ -88,7 +88,7 @@
 </div>
 </template>
 
-<script lang="ts" setup generic="T">
+<script lang="ts" setup generic="T" vapor>
 import TableSearchStagingDialog from "./TableSearchStagingDialog.vue";
 
 const emit = defineEmits<{
@@ -111,7 +111,7 @@ const {
   nsAsync,
 } = useI18n();
 
-const tableSearchStagingDialogRef = $ref<InstanceType<typeof TableSearchStagingDialog>>();
+const tableSearchStagingDialogRef = $(useTemplateRef("tableSearchStagingDialogRef"));
 
 let searchList = $ref<SearchStagingType[]>([ ]);
 

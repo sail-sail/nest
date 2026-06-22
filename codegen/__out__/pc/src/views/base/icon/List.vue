@@ -269,7 +269,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -495,18 +497,26 @@
         >
           
           <!-- 图标 -->
-          <template v-if="'img' === col.prop">
+          <template v-if="'img_lbl' === col.prop">
             <!-- @vue-generic {IconModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
-                <LinkImage
-                  v-model="row[column.property]"
-                  un-h="8"
-                  un-justify="center"
-                ></LinkImage>
+              <template #default="{ row }">
+                <div
+                  un-flex="~ nowrap"
+                  un-items-center
+                  un-justify-center
+                >
+                  <CustomIcon
+                    v-model="row.img"
+                    v-model:model-label="row.img_lbl"
+                    :readonly="true"
+                    un-w="8"
+                    un-h="8"
+                  ></CustomIcon>
+                </div>
               </template>
             </el-table-column>
           </template>
@@ -679,7 +689,7 @@
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import Detail from "./Detail.vue";
 
 import {
@@ -982,7 +992,7 @@ function getTableColumns(): ColumnType[] {
   return [
     {
       label: "图标",
-      prop: "img",
+      prop: "img_lbl",
       width: 100,
       align: "center",
       headerAlign: "center",
@@ -1073,7 +1083,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1087,6 +1097,30 @@ const {
     persistKey: __filename,
   },
 ));
+
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 const detailRef = $(useTemplateRef("detailRef"));
 

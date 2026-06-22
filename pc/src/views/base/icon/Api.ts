@@ -20,16 +20,6 @@ export async function setLblByIdIcon(
   if (!model) {
     return;
   }
-  
-  // 图标
-  if (model.img) {
-    model.img_lbl = location.origin + getImgUrl({
-      id: model.img,
-      height: 100,
-    }, {
-      notAuthorization: true,
-    });
-  }
 }
 
 export function intoInputIcon(
@@ -40,8 +30,8 @@ export function intoInputIcon(
     id: model?.id,
     // 图标
     img: model?.img,
-    // svg
-    img_lbl_svg: model?.img_lbl_svg,
+    // 图标
+    img_lbl: model?.img_lbl,
     // 编码
     code: model?.code,
     // 名称

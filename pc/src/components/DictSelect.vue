@@ -240,7 +240,7 @@
 ></DictDetailDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";
@@ -701,7 +701,7 @@ watch(
   },
 );
 
-const dictDetailDialogRef = $(useTemplateRef<InstanceType<typeof DictDetailDialog>>("dictDetailDialogRef"));
+const dictDetailDialogRef = $(useTemplateRef("dictDetailDialogRef"));
 
 /**
  * 打开新增选项对话框

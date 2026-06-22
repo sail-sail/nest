@@ -181,7 +181,7 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 function cloneDefaultValue<T>(value: T): T {
   if (Array.isArray(value)) {

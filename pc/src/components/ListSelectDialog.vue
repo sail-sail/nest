@@ -113,8 +113,6 @@ let inited = $ref(false);
 
 const dialogRef = $ref<InstanceType<typeof ElDialog>>();
 
-export type CustomDialogType = "auto" | "medium" | "large" | "default";
-
 let dialogTitle = $ref("");
 let dialogVisible = $ref(false);
 let dialogAction = $ref<"select" | "close" | "cancel">("select");
