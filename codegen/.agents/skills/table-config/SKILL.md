@@ -1,6 +1,6 @@
 ---
 name: table-config
-description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取，尤其要检查 lbl、*_id_lbl/modelLabel、审计字段等容易漏掉的配置
+description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取
 ---
 
 # 表配置规范
@@ -21,6 +21,8 @@ description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取，
 | `modelLabel` | `xxx_id` 对应存在 `xxx_id_lbl` 时，给 `xxx_id` 配置 `modelLabel` | `xxx_id_lbl` 无需再单独写入 `columns` |
 | 审计字段 | 通常补齐 `create_usr_id/create_time/update_usr_id/update_time` | 按表实际用途判断 |
 | 配置换行 | `opts` 和 `columns` 维持多行结构 | 不要压成单行 |
+
+尤其要检查 lbl、*_id_lbl/modelLabel、审计字段等容易漏掉的配置
 
 ### 1. lbl 字段必须在 columns 中显式写出
 

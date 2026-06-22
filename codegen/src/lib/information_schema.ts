@@ -365,6 +365,12 @@ async function getSchema0(
       if (item.require == null) {
         item.require = true;
       }
+      if (item.noAdd == null) {
+        item.noAdd = true;
+      }
+      if (item.readonly == null) {
+        item.readonly = true;
+      }
     }
     if ([ "tenant_id", "is_deleted" ].includes(column_name)) {
       item.isVirtual = true;
@@ -718,9 +724,6 @@ async function getSchema0(
       }
       if (item.align == null) {
         item.align = "left";
-      }
-      if (item.isTextarea == null) {
-        item.isTextarea = true;
       }
     }
     

@@ -32,11 +32,11 @@
     "fs-extra": "11.3.5",
     "mysql2": "3.22.5",
     "shelljs": "0.10.0",
-    "uuid": "14.0.0"
+    "uuid": "14.0.1"
   },
   "devDependencies": {
     "@types/fs-extra": "11.0.4",
-    "@types/node": "25.9.3",
+    "@types/node": "26.0.0",
     "@types/shelljs": "0.10.0",
     "@types/uuid": "11.0.0",
     "typescript": "6.0.3"

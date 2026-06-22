@@ -3,357 +3,401 @@
   v-if="!usrStore.authorization || usrStore.isLogining"
 ></Login>
 
-<div
+<el-splitter
   v-else
+  class="splitter-bar__dragger-hidden"
   un-w="full"
   un-h="full"
-  un-overflow-hidden
-  un-flex
-  un-pos-relative
+  @resize-end="(_index: number, sizes: number[]) => {
+    const size = sizes[0];
+    if (!menuStore.isCollapse) {
+      menuStore.size = size;
+    }
+  }"
 >
   
-  <!-- 左侧菜单 -->
   <div
-    un-flex="~ col"
+    un-w="full"
+    un-h="full"
     un-overflow-hidden
-    :style="{ width: menuStore.isCollapse ? '60px': '250px' }"
+    un-flex
+    un-pos-relative
   >
     
-    <div
-      un-h="10"
-      un-text="gray-500 dark:gray-300"
+    <!-- 左侧菜单 -->
+    <el-splitter-panel
       un-flex="~ col"
-      un-pos-relative
-      un-bg="[var(--el-fill-color-extra-light)]"
-    >
-      <Top></Top>
-    </div>
-    
-    <LeftMenu
-      un-flex="~ [1_0_0] col"
       un-overflow-hidden
-    ></LeftMenu>
-    
-  </div>
-  
-  <div
-    un-flex="~ [1_0_0] col"
-    un-overflow-hidden
-  >
-    
-    <!-- 顶部选项卡 -->
-    <div
-      ref="tabs_divRef"
-      un-h="10"
-      un-text="gray-500 dark:gray-300"
-      un-flex="~ row"
-      un-pos-relative
+      un-w="full"
+      :min="60"
+      :size="menuStore.isCollapse ? 60 : menuStore.size"
+      @update:size="(size) => {
+        if (typeof size === 'string') {
+          return;
+        }
+        if (menuStore.isCollapse) {
+          if (size > 120) {
+            menuStore.isCollapse = false;
+          }
+        } else {
+          if (size <= 120) {
+            menuStore.isCollapse = true;
+          }
+        }
+      }"
     >
-      
-      <Tabs
-        ref="tabsRef"
-        un-flex="~ [1_0_0]"
-        un-overflow-hidden
-        :tabs="tabsStore.tabs"
-        @refresh-active_line="refreshTab_active_line"
-        @refresh-scroll-visible="refreshScrollVisible"
-      ></Tabs>
       
       <div
-        un-flex="~"
+        un-flex="~ col"
+        un-overflow-hidden
+        un-w="full"
         un-h="full"
       >
-        <div
-          v-if="hasTabOverflow"
-          un-flex="~"
-          un-h="full"
-          un-w="14"
-          un-justify-center
-          un-items-center
-          un-gap="x-1"
-        >
-          <el-icon
-            un-p="x-1"
-            un-h="full"
-            un-cursor-pointer
-            un-bg="hover:gray-200"
-            un-text="hover:black"
-            :class="{
-              tab_arrow_disabled: !scrollLeftVisible,
-            }"
-            @click="scrollLeftClk"
-          >
-            <ElIconArrowLeft />
-          </el-icon>
-          <el-icon
-            un-p="x-1"
-            un-h="full"
-            un-cursor-pointer
-            un-bg="hover:gray-200"
-            un-text="hover:black"
-            :class="{
-              tab_arrow_disabled: !scrollRightVisible,
-            }"
-            @click="scrollRightClk"
-          >
-            <ElIconArrowRight />
-          </el-icon>
-        </div>
-      </div>
-      
-      <div
-        un-flex="~"
-        un-items-center
-        un-gap="x-3"
-        un-m="r-4"
-      >
-        <template
-          v-if="
-            loginInfo &&
-              loginInfo.org_id_models &&
-              loginInfo.org_id_models.length > 0 &&
-              !(loginInfo.org_id_models.length === 1 && loginInfo.org_id_models[0].lbl === '默认组织')
-          "
-        >
-          <el-dropdown
-            trigger="click"
-          >
-            <span
-              un-text="white hover:[var(--el-color-primary)]"
-              un-cursor-pointer
-              un-whitespace-nowrap
-            >
-              <template
-                v-if="loginInfo?.org_id"
-              >
-                {{ loginInfo.org_id_models.find(item => item.id === loginInfo?.org_id)?.lbl || '' }}
-              </template>
-              <template
-                v-else
-              >
-                ({{ ns('全部') }})
-              </template>
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu
-                un-whitespace-nowrap
-              >
-                <el-dropdown-item
-                  @click="onDeptSelect()"
-                >
-                  <div
-                    :style="{
-                      color: !loginInfo?.org_id ? 'var(--el-color-primary)' : ''
-                    }"
-                    un-flex="~"
-                    un-items-center
-                  >
-                    <div
-                      un-w="3.5"
-                      un-h="3.5"
-                      un-m="r-1"
-                    >
-                      <el-icon
-                        v-if="!loginInfo?.org_id"
-                        :size="14"
-                      >
-                        <ElIconCheck />
-                      </el-icon>
-                    </div>
-                    <span>
-                      {{ ns('(全部)') }}
-                    </span>
-                  </div>
-                </el-dropdown-item>
-                
-                <template
-                  v-for="item of loginInfo.org_id_models"
-                  :key="item.id"
-                >
-                  <el-dropdown-item
-                    @click="onDeptSelect(item.id)"
-                  >
-                    <div
-                      :style="{
-                        color: item.id === loginInfo?.org_id ? 'var(--el-color-primary)' : ''
-                      }"
-                      un-flex="~"
-                      un-items-center
-                    >
-                      <div
-                        un-w="3.5"
-                        un-h="3.5"
-                        un-m="r-1"
-                      >
-                        <el-icon
-                          v-if="item.id === loginInfo?.org_id"
-                          :size="14"
-                        >
-                          <ElIconCheck />
-                        </el-icon>
-                      </div>
-                      <span>
-                        {{ item.lbl }}
-                      </span>
-                    </div>
-                  </el-dropdown-item>
-                </template>
-                
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </template>
-        <div
-          un-pos-relative
-          un-top="[1px]"
-          un-border-1px
-          un-border-transparent
-          un-cursor-pointer
-          un-flex="~ col"
-          un-items-center
-          un-justify-center
-        >
-          <el-dropdown
-            trigger="click"
-          >
-            <div
-              un-flex="~"
-              un-text="3 gray-500 dark:gray-300 hover:[var(--el-color-primary)]"
-            >
-              <div>
-                {{ loginInfo?.lbl }}
-              </div>
-              <el-icon
-                :size="14"
-              >
-                <ElIconCaretBottom />
-              </el-icon>
-            </div>
-            <template #dropdown>
-              <el-dropdown-menu
-                un-whitespace-nowrap
-              >
-                
-                <el-dropdown-item @click="onToggleDark(!isDark)">
-                  <template v-if="!isDark">
-                    <ElIcon>
-                      <div un-i="iconfont-moon-fill"></div>
-                    </ElIcon>
-                    <span>{{ ns('黑暗模式') }}</span>
-                  </template>
-                  <template v-else>
-                    <ElIcon>
-                      <div un-i="iconfont-sun"></div>
-                    </ElIcon>
-                    <span>{{ ns('明亮模式') }}</span>
-                  </template>
-                </el-dropdown-item>
-                
-                <el-dropdown-item @click="closeOtherTabs">
-                  <ElIcon>
-                    <ElIconCircleClose />
-                  </ElIcon>
-                  <span>{{ ns('关闭其它') }}</span>
-                </el-dropdown-item>
-                
-                <el-dropdown-item
-                  v-if="usrStore.isAdmin()"
-                  @click="onClearCache"
-                >
-                  <ElIcon>
-                    <ElIconDelete />
-                  </ElIcon>
-                  <span>{{ ns('清空缓存') }}</span>
-                </el-dropdown-item>
-                
-                <el-dropdown-item
-                  v-if="!config.indexIsEmpty"
-                  divided
-                  @click="goIndex"
-                >
-                  <ElIcon>
-                    <ElIconHomeFilled />
-                  </ElIcon>
-                  <span>{{ ns('打开首页') }}</span>
-                </el-dropdown-item>
-                
-                <el-dropdown-item
-                  @click="onChangePassword"
-                >
-                  <ElIcon>
-                    <ElIconLock />
-                  </ElIcon>
-                  <span>{{ ns('修改密码') }}</span>
-                </el-dropdown-item>
-                
-                <el-dropdown-item
-                  divided
-                  @click="onLogout"
-                >
-                  <ElIcon>
-                    <div un-i="iconfont-logout"></div>
-                  </ElIcon>
-                  <span>{{ ns('退出登录') }}</span>
-                </el-dropdown-item>
-                
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-      </div>
-      
-    </div>
-    
-    <!-- 选项卡下划线 -->
-    <div
-      un-h="0.5"
-      un-w="full"
-      un-pos-relative
-      un-top="-.5"
-    >
-      <div
-        ref="tab_active_lineRef"
         
-        :class="{
-          tab_active_line: inited,
-        }"
-        un-hidden
-        un-pos-absolute
-        un-bottom-0
-        un-left="[23px]"
-        un-bg="[var(--el-menu-active-color)]"
-        un-h="0.5"
-        un-border-rounded
-        un-ease-in
-      ></div>
-    </div>
+        <div
+          un-h="10"
+          un-text="gray-500 dark:gray-300"
+          un-flex="~ col"
+          un-pos-relative
+          un-bg="[var(--el-fill-color-extra-light)]"
+        >
+          <Top></Top>
+        </div>
+        
+        <LeftMenu
+          un-flex="~ [1_0_0] col"
+          un-overflow-hidden
+        ></LeftMenu>
+        
+      </div>
+    </el-splitter-panel>
     
-    <!-- 主体内容 -->
-    <div
+    <el-splitter-panel
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
-      un-box-border
-      un-m="t--.5"
+      :min="400"
     >
-      <router-view v-slot="{ Component }">
-        <KeepAlive
-          :include="tabsStore.keepAliveNames"
+      <div
+        un-flex="~ [1_0_0] col"
+        un-overflow-hidden
+      >
+        
+        <!-- 顶部选项卡 -->
+        <div
+          ref="tabs_divRef"
+          un-h="10"
+          un-text="gray-500 dark:gray-300"
+          un-flex="~ row"
+          un-pos-relative
         >
-          <component
-            :is="Component"
-          ></component>
-        </KeepAlive>
-      </router-view>
-    </div>
+          
+          <Tabs
+            ref="tabsRef"
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            :tabs="tabsStore.tabs"
+            @refresh-active_line="refreshTab_active_line"
+            @refresh-scroll-visible="refreshScrollVisible"
+          ></Tabs>
+          
+          <div
+            un-flex="~"
+            un-h="full"
+          >
+            <div
+              v-if="hasTabOverflow"
+              un-flex="~"
+              un-h="full"
+              un-w="14"
+              un-justify-center
+              un-items-center
+              un-gap="x-1"
+            >
+              <el-icon
+                un-p="x-1"
+                un-h="full"
+                un-cursor-pointer
+                un-bg="hover:gray-200"
+                un-text="hover:black"
+                :class="{
+                  tab_arrow_disabled: !scrollLeftVisible,
+                }"
+                @click="scrollLeftClk"
+              >
+                <ElIconArrowLeft />
+              </el-icon>
+              <el-icon
+                un-p="x-1"
+                un-h="full"
+                un-cursor-pointer
+                un-bg="hover:gray-200"
+                un-text="hover:black"
+                :class="{
+                  tab_arrow_disabled: !scrollRightVisible,
+                }"
+                @click="scrollRightClk"
+              >
+                <ElIconArrowRight />
+              </el-icon>
+            </div>
+          </div>
+          
+          <div
+            un-flex="~"
+            un-items-center
+            un-gap="x-3"
+            un-m="r-4"
+          >
+            <template
+              v-if="
+                loginInfo &&
+                  loginInfo.org_id_models &&
+                  loginInfo.org_id_models.length > 0 &&
+                  !(loginInfo.org_id_models.length === 1 && loginInfo.org_id_models[0].lbl === '默认组织')
+              "
+            >
+              <el-dropdown
+                trigger="click"
+              >
+                <span
+                  un-text="white hover:[var(--el-color-primary)]"
+                  un-cursor-pointer
+                  un-whitespace-nowrap
+                >
+                  <template
+                    v-if="loginInfo?.org_id"
+                  >
+                    {{ loginInfo.org_id_models.find(item => item.id === loginInfo?.org_id)?.lbl || '' }}
+                  </template>
+                  <template
+                    v-else
+                  >
+                    ({{ ns('全部') }})
+                  </template>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu
+                    un-whitespace-nowrap
+                  >
+                    <el-dropdown-item
+                      @click="onDeptSelect()"
+                    >
+                      <div
+                        :style="{
+                          color: !loginInfo?.org_id ? 'var(--el-color-primary)' : ''
+                        }"
+                        un-flex="~"
+                        un-items-center
+                      >
+                        <div
+                          un-w="3.5"
+                          un-h="3.5"
+                          un-m="r-1"
+                        >
+                          <el-icon
+                            v-if="!loginInfo?.org_id"
+                            :size="14"
+                          >
+                            <ElIconCheck />
+                          </el-icon>
+                        </div>
+                        <span>
+                          {{ ns('(全部)') }}
+                        </span>
+                      </div>
+                    </el-dropdown-item>
+                    
+                    <template
+                      v-for="item of loginInfo.org_id_models"
+                      :key="item.id"
+                    >
+                      <el-dropdown-item
+                        @click="onDeptSelect(item.id)"
+                      >
+                        <div
+                          :style="{
+                            color: item.id === loginInfo?.org_id ? 'var(--el-color-primary)' : ''
+                          }"
+                          un-flex="~"
+                          un-items-center
+                        >
+                          <div
+                            un-w="3.5"
+                            un-h="3.5"
+                            un-m="r-1"
+                          >
+                            <el-icon
+                              v-if="item.id === loginInfo?.org_id"
+                              :size="14"
+                            >
+                              <ElIconCheck />
+                            </el-icon>
+                          </div>
+                          <span>
+                            {{ item.lbl }}
+                          </span>
+                        </div>
+                      </el-dropdown-item>
+                    </template>
+                    
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+            <div
+              un-pos-relative
+              un-top="[1px]"
+              un-border-1px
+              un-border-transparent
+              un-cursor-pointer
+              un-flex="~ col"
+              un-items-center
+              un-justify-center
+            >
+              <el-dropdown
+                trigger="click"
+              >
+                <div
+                  un-flex="~"
+                  un-text="3 gray-500 dark:gray-300 hover:[var(--el-color-primary)]"
+                >
+                  <div>
+                    {{ loginInfo?.lbl }}
+                  </div>
+                  <el-icon
+                    :size="14"
+                  >
+                    <ElIconCaretBottom />
+                  </el-icon>
+                </div>
+                <template #dropdown>
+                  <el-dropdown-menu
+                    un-whitespace-nowrap
+                  >
+                    
+                    <el-dropdown-item @click="onToggleDark(!isDark)">
+                      <template v-if="!isDark">
+                        <ElIcon>
+                          <div un-i="iconfont-moon-fill"></div>
+                        </ElIcon>
+                        <span>{{ ns('黑暗模式') }}</span>
+                      </template>
+                      <template v-else>
+                        <ElIcon>
+                          <div un-i="iconfont-sun"></div>
+                        </ElIcon>
+                        <span>{{ ns('明亮模式') }}</span>
+                      </template>
+                    </el-dropdown-item>
+                    
+                    <el-dropdown-item @click="closeOtherTabs">
+                      <ElIcon>
+                        <ElIconCircleClose />
+                      </ElIcon>
+                      <span>{{ ns('关闭其它') }}</span>
+                    </el-dropdown-item>
+                    
+                    <el-dropdown-item
+                      v-if="usrStore.isAdmin()"
+                      @click="onClearCache"
+                    >
+                      <ElIcon>
+                        <ElIconDelete />
+                      </ElIcon>
+                      <span>{{ ns('清空缓存') }}</span>
+                    </el-dropdown-item>
+                    
+                    <el-dropdown-item
+                      v-if="!config.indexIsEmpty"
+                      divided
+                      @click="goIndex"
+                    >
+                      <ElIcon>
+                        <ElIconHomeFilled />
+                      </ElIcon>
+                      <span>{{ ns('打开首页') }}</span>
+                    </el-dropdown-item>
+                    
+                    <el-dropdown-item
+                      @click="onChangePassword"
+                    >
+                      <ElIcon>
+                        <ElIconLock />
+                      </ElIcon>
+                      <span>{{ ns('修改密码') }}</span>
+                    </el-dropdown-item>
+                    
+                    <el-dropdown-item
+                      divided
+                      @click="onLogout"
+                    >
+                      <ElIcon>
+                        <div un-i="iconfont-logout"></div>
+                      </ElIcon>
+                      <span>{{ ns('退出登录') }}</span>
+                    </el-dropdown-item>
+                    
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- 选项卡下划线 -->
+        <div
+          un-h="0.5"
+          un-w="full"
+          un-pos-relative
+          un-top="-.5"
+        >
+          <div
+            ref="tab_active_lineRef"
+            
+            :class="{
+              tab_active_line: inited,
+            }"
+            un-hidden
+            un-pos-absolute
+            un-bottom-0
+            un-left="[23px]"
+            un-bg="[var(--el-menu-active-color)]"
+            un-h="0.5"
+            un-border-rounded
+            un-ease-in
+          ></div>
+        </div>
+        
+        <!-- 主体内容 -->
+        <div
+          un-flex="~ [1_0_0] col"
+          un-overflow-hidden
+          un-box-border
+          un-m="t--.5"
+        >
+          <router-view v-slot="{ Component }">
+            <KeepAlive
+              :include="tabsStore.keepAliveNames"
+            >
+              <component
+                :is="Component"
+              ></component>
+            </KeepAlive>
+          </router-view>
+        </div>
+        
+      </div>
+    </el-splitter-panel>
     
   </div>
-  
+    
   <!-- 修改密码 -->
   <ChangePassword
     ref="changePasswordRef"
   ></ChangePassword>
   
-</div>
+</el-splitter>
 </template>
 
 <script lang="ts" setup vapor>

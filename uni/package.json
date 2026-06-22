@@ -78,7 +78,7 @@
     "@dcloudio/uni-stacktracey": "3.0.0-5000720260410001",
     "@dcloudio/vite-plugin-uni": "3.0.0-5000720260410001",
     "@eslint/js": "10.0.1",
-    "@types/node": "25.9.3",
+    "@types/node": "26.0.0",
     "@uni-helper/uni-app-types": "1.0.1",
     "@unocss/preset-attributify": "66.7.2",
     "@vue-macros/eslint-config": "3.1.2",

@@ -1,9 +1,9 @@
 ---
 name: rest-api
-description: Poem REST 接口开发规范. 创建非 GraphQL 接口(如微信回调、登录、文件下载)时使用
+description: REST 接口开发规范. 创建非 GraphQL 接口(如微信回调、登录、文件下载)时使用
 ---
 
-# Poem REST 接口开发
+# REST 接口开发
 
 ## 何时使用
 

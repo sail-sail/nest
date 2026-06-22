@@ -1006,6 +1006,7 @@ export default defineConfig({
         order: "ascending",
       },
       list_tree: true,
+      hasSelectInput: true,
     },
     columns: [
       {
