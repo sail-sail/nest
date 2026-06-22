@@ -299,7 +299,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -1179,7 +1181,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1193,6 +1195,30 @@ const {
     persistKey: __filename,
   },
 ));
+
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 const detailRef = $(useTemplateRef("detailRef"));
 

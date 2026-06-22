@@ -1,6 +1,6 @@
 ---
 name: tm-ui-components
-description: tm-ui 组件 API 与源码定位。仅在需要核对某个 tm 组件的 props、events、slots、ref 方法或源码路径时使用；不要用于通用页面开发、样式规范或业务逻辑问题
+description: tm-ui 组件 API 与源码定位
 compatibility: Uni-app + tm-ui
 metadata:
   version: "1.0"

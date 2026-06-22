@@ -638,3 +638,14 @@ html .ql-toolbar span.ql-picker-label path {
   }
 }
 // 月范围选择, 日范围选择 -- end
+
+.splitter-bar__dragger-hidden {
+  .el-splitter-bar__dragger-horizontal:before, .el-splitter-bar__dragger-horizontal:after {
+    width: 1px;
+    background-color: transparent;
+  }
+
+  .el-splitter-bar__dragger:hover:not(.is-disabled):before {
+    background-color: transparent;
+  }
+}

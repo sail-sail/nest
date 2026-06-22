@@ -85,9 +85,9 @@ defineOptions({
 });
 
 // const route = useRoute();
-// const router = useRouter();
+const router = useRouter();
 // const usrStore = useUsrStore();
-// const tabStore = useTabsStore();
+const tabStore = useTabsStore();
 
 let inited = $ref(false);
 
@@ -103,6 +103,10 @@ async function onGetHomeUrls() {
     notLoading: true,
   }) || [ ];
   config.indexIsEmpty = homeUrls.length === 0;
+  if (config.indexIsEmpty) {
+    tabStore.removeIndexTab();
+    router.replace("/empty");
+  }
   myComponents = await Promise.all(homeUrls.map((url) => getComponent(url)));
 }
 
