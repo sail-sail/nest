@@ -363,13 +363,22 @@ async function getSchema0(
         item.modelLabel = "org_id_lbl";
       }
       if (item.require == null) {
-        item.require = true;
-      }
-      if (item.noAdd == null) {
-        item.noAdd = true;
+        item.require = false;
       }
       if (item.readonly == null) {
         item.readonly = true;
+      }
+      if (item.foreignKey == null) {
+        item.foreignKey = { };
+      }
+      if (item.foreignKey.mod == null) {
+        item.foreignKey.mod = "base";
+      }
+      if (item.foreignKey.table == null) {
+        item.foreignKey.table = "org";
+      }
+      if (item.foreignKey.selectType == null) {
+        item.foreignKey.selectType = "selectInput";
       }
     }
     if ([ "tenant_id", "is_deleted" ].includes(column_name)) {
