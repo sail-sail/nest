@@ -115,14 +115,8 @@ for (let i = 0; i < columns.length; i++) {
   }
 }
 #><#
-if (hasUsrStore) {
-#>import cfg from "@/utils/config.ts";
-<#
-}
-#><#
 if (opts.noAdd !== true || opts.noEdit !== true) {
-#>
-import {
+#>import {
   UniqueType,
 } from "#/types.ts";<#
 }
