@@ -88,6 +88,16 @@ import {
 } from "/gen/base/org/org.dao.ts";
 
 import {
+  findAllMessage,
+  updateByIdMessage,
+} from "/gen/base/message/message.dao.ts";
+
+import {
+  findAllMessageReceiver,
+  updateByIdMessageReceiver,
+} from "/gen/base/message_receiver/message_receiver.dao.ts";
+
+import {
   getPagePathUsr,
   getTableNameUsr,
 } from "./usr.model.ts";
@@ -2282,6 +2292,8 @@ export async function updateByIdUsr(
   const args = new QueryArgs();
   let sql = `update base_usr set `;
   let updateFldNum = 0;
+  const sqlSetFlds: string[] = [ ];
+  const sqlSetFldInput: UsrInput = { };
   if (input.img != null) {
     if (input.img != oldModel.img) {
       sql += `img=${ args.push(input.img) },`;
@@ -2292,6 +2304,8 @@ export async function updateByIdUsr(
     if (input.lbl != oldModel.lbl) {
       sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
+      sqlSetFlds.push("lbl");
+      sqlSetFldInput.lbl = input.lbl;
     }
   }
   if (input.username != null) {
@@ -2486,6 +2500,56 @@ export async function updateByIdUsr(
         },
       );
     }
+  }
+  
+  if (
+    sqlSetFlds.includes("lbl")
+  ) {
+    
+    const message_models = await findAllMessage(
+      {
+        sender_usr_id: [ id ],
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    
+    for (const message_model of message_models) {
+      const message_id = message_model.id;
+      const message_input: MessageInput = { };
+      if (sqlSetFlds.includes("lbl")) {
+        message_input.sender_usr_id_lbl = sqlSetFldInput.lbl;
+      }
+      await updateByIdMessage(
+        message_id,
+        message_input,
+        options,
+      );
+    }
+    
+    const message_receiver_models = await findAllMessageReceiver(
+      {
+        receiver_usr_id: [ id ],
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    
+    for (const message_receiver_model of message_receiver_models) {
+      const message_receiver_id = message_receiver_model.id;
+      const message_receiver_input: MessageReceiverInput = { };
+      if (sqlSetFlds.includes("lbl")) {
+        message_receiver_input.receiver_usr_id_lbl = sqlSetFldInput.lbl;
+      }
+      await updateByIdMessageReceiver(
+        message_receiver_id,
+        message_receiver_input,
+        options,
+      );
+    }
+    
   }
   
   if (updateFldNum > 0) {

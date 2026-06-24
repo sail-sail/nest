@@ -143,26 +143,18 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.org_id == null) && dialogAction !== 'add' && dialogAction !== 'copy'">
+        <template v-if="(showBuildIn || builtInModel?.org_id == null)">
           <el-form-item
             label="组织"
             prop="org_id"
           >
-            <CustomSelect
+            <SelectInputOrg
               v-model="dialogModel.org_id"
               v-model:model-label="dialogModel.org_id_lbl"
-              :method="getListOrg"
-              :find-by-values="findByIdsOrg"
-              :options-map="((item: OrgModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
               placeholder="请选择 组织"
               :readonly="true"
               :page-inited="inited"
-            ></CustomSelect>
+            ></SelectInputOrg>
           </el-form-item>
         </template>
         
@@ -293,7 +285,6 @@ import {
 
 import {
   getListUsr,
-  getListOrg,
 } from "./Api.ts";
 
 import {
@@ -301,12 +292,10 @@ import {
 } from "@/views/base/usr/Api.ts";
 
 import {
-  findByIdsOrg,
-} from "@/views/base/org/Api.ts";
-
-import {
   getTreeDept,
 } from "@/views/base/dept/Api.ts";
+
+import SelectInputOrg from "@/views/base/org/SelectInput.vue";
 
 const emit = defineEmits<{
   nextId: [

@@ -244,5 +244,23 @@ export async function syncUsrLblByUsrId(
     syncOptions,
   );
   
+  const {
+    syncUsrLblByUsrIdMessage,
+  } = await import.defer("/gen/base/message/message.dao.ts");
+  
+  affectedRows += await syncUsrLblByUsrIdMessage(
+    usr_id,
+    syncOptions,
+  );
+  
+  const {
+    syncUsrLblByUsrIdMessageReceiver,
+  } = await import.defer("/gen/base/message_receiver/message_receiver.dao.ts");
+  
+  affectedRows += await syncUsrLblByUsrIdMessageReceiver(
+    usr_id,
+    syncOptions,
+  );
+  
   return affectedRows;
 }
