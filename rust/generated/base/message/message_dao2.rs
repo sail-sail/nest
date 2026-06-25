@@ -16,7 +16,6 @@ use crate::base::message_receiver::message_receiver_model::{
 };
 use crate::common::context::{
   Options,
-  get_auth_id,
   get_auth_id_ok,
 };
 use crate::common::websocket::websocket_dao::publish;
@@ -42,15 +41,15 @@ pub async fn send_message(
   input: MessageInput,
   receiver_usr_ids: Vec<UsrId>,
 ) -> Result<MessageModel> {
-  let sender_usr_id = get_auth_id();
+  let sender_usr_id = get_auth_id_ok()?;
   let mut receiver_inputs = Vec::with_capacity(receiver_usr_ids.len());
 
   let mut message_input = input;
-  message_input.sender_usr_id = sender_usr_id.clone().map(Into::into);
+  message_input.sender_usr_id = Some(sender_usr_id.clone());
   message_input.route_path = message_input.route_path.or_else(|| Some("/base/message".into()));
   message_input.route_query = message_input.route_query.or_else(|| Some("".into()));
-  message_input.is_sys_msg = message_input.is_sys_msg.or_else(|| Some(0));
-  message_input.is_pinned = message_input.is_pinned.or_else(|| Some(0));
+  message_input.is_sys_msg = message_input.is_sys_msg.or(Some(0));
+  message_input.is_pinned = message_input.is_pinned.or(Some(0));
 
   let title = message_input.title.clone().unwrap_or_default().to_string();
   let content = message_input.content.clone().unwrap_or_default().to_string();
@@ -63,7 +62,7 @@ pub async fn send_message(
   for receiver_usr_id in &receiver_usr_ids {
     receiver_inputs.push(MessageReceiverInput {
       message_id: Some(message.id.clone()),
-      receiver_usr_id: Some(receiver_usr_id.clone().into()),
+      receiver_usr_id: Some(receiver_usr_id.clone()),
       is_read: Some(0),
       tenant_id,
       ..Default::default()
@@ -82,7 +81,7 @@ pub async fn send_message(
     "routeQuery": route_query,
     "receiverUsrIds": receiver_usr_ids,
   });
-  publish("message".to_string(), Some(payload)).await;
+  publish(format!("{sender_usr_id}/message"), Some(payload)).await;
 
   Ok(message)
 }

@@ -12,7 +12,7 @@ use crate::base::org::org_model::OrgId;
 #[function_name::named]
 pub async fn org_login_select(
   ctx: &mut Ctx,
-  org_id: OrgId,
+  org_id: Option<OrgId>,
 ) -> Result<SmolStr> {
   
   info!(

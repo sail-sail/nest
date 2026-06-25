@@ -20,7 +20,7 @@ impl OrgMutation {
   async fn org_login_select(
     &self,
     ctx: &Context<'_>,
-    org_id: OrgId,
+    org_id: Option<OrgId>,
   ) -> Result<SmolStr> {
     
     let mut ctx = Ctx::builder(ctx)

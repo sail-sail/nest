@@ -16,8 +16,14 @@ use crate::base::org::org_model::OrgId;
 
 pub async fn org_login_select(
   ctx: &mut Ctx,
-  org_id: OrgId,
+  org_id: Option<OrgId>,
 ) -> Result<SmolStr> {
+  
+  let org_id = match org_id {
+    Some(org_id) => org_id,
+    None => return Ok(SmolStr::new("")),
+  };
+  
   let org_id2 = get_auth_org_id();
   if let Some(org_id2) = org_id2 && org_id == org_id2 {
     return Ok(SmolStr::new(""));
