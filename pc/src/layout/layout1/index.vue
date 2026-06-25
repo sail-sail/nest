@@ -868,12 +868,18 @@ initFrame();
 onMounted(async function() {
   await nextTick();
   await refreshScrollVisible();
-  await subscribe("message", handleMessageTopic);
+  const usr_id = usrStore?.usr_id;
+  if (usr_id) {
+    await subscribe(`${ usr_id }/message`, handleMessageTopic);
+  }
   window.addEventListener("message-count-changed", refreshUnreadMessageCount);
 });
 
 onBeforeUnmount(async function() {
-  await unSubscribe("message", handleMessageTopic);
+  const usr_id = usrStore?.usr_id;
+  if (usr_id) {
+    await unSubscribe(`${ usr_id }/message`, handleMessageTopic);
+  }
   window.removeEventListener("message-count-changed", refreshUnreadMessageCount);
 });
 
