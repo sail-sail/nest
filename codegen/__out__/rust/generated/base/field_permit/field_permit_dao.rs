@@ -110,7 +110,7 @@ async fn get_where_query(
     if let Some(menu_id) = menu_id {
       let arg = {
         if menu_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(menu_id.len());
           for item in menu_id {
@@ -142,7 +142,7 @@ async fn get_where_query(
     if let Some(menu_id_lbl) = menu_id_lbl {
       let arg = {
         if menu_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(menu_id_lbl.len());
           for item in menu_id_lbl {

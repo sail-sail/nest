@@ -262,7 +262,7 @@ async fn get_where_query(
     if let Some(sender_usr_id) = sender_usr_id {
       let arg = {
         if sender_usr_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(sender_usr_id.len());
           for item in sender_usr_id {
@@ -294,7 +294,7 @@ async fn get_where_query(
     if let Some(sender_usr_id_lbl) = sender_usr_id_lbl {
       let arg = {
         if sender_usr_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(sender_usr_id_lbl.len());
           for item in sender_usr_id_lbl {
@@ -378,7 +378,7 @@ async fn get_where_query(
     if let Some(org_id) = org_id {
       let arg = {
         if org_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(org_id.len());
           for item in org_id {
@@ -410,7 +410,7 @@ async fn get_where_query(
     if let Some(org_id_lbl) = org_id_lbl {
       let arg = {
         if org_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(org_id_lbl.len());
           for item in org_id_lbl {
@@ -444,7 +444,7 @@ async fn get_where_query(
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
@@ -476,7 +476,7 @@ async fn get_where_query(
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
@@ -529,7 +529,7 @@ async fn get_where_query(
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
@@ -561,7 +561,7 @@ async fn get_where_query(
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
@@ -2373,12 +2373,8 @@ async fn _creates(
     }
     // 发送人
     if let Some(sender_usr_id_lbl) = input.sender_usr_id_lbl {
-      if !sender_usr_id_lbl.is_empty() {
-        sql_values += ",?";
-        args.push(sender_usr_id_lbl.into());
-      } else {
-        sql_values += ",default";
-      }
+      sql_values += ",?";
+      args.push(sender_usr_id_lbl.into());
     } else {
       sql_values += ",default";
     }
@@ -2790,11 +2786,9 @@ pub async fn update_by_id_message(
   }
   // 发送人
   if let Some(sender_usr_id_lbl) = input.sender_usr_id_lbl {
-    if !sender_usr_id_lbl.is_empty() {
-      field_num += 1;
-      sql_fields += "sender_usr_id_lbl=?,";
-      args.push(sender_usr_id_lbl.into());
-    }
+    field_num += 1;
+    sql_fields += "sender_usr_id_lbl=?,";
+    args.push(sender_usr_id_lbl.into());
   }
   // 发送人
   if let Some(sender_usr_id) = input.sender_usr_id {

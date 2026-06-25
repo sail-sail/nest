@@ -580,7 +580,7 @@ watch(
     dialogModel.level,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.log_date) {

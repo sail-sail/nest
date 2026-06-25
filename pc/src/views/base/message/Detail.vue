@@ -760,7 +760,7 @@ watch(
     dialogModel.is_pinned,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.category) {

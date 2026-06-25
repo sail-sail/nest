@@ -725,7 +725,7 @@ watch(
     dialogModel.is_dyn_page,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.parent_id) {

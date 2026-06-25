@@ -630,7 +630,7 @@ watch(
     dialogModel.menu_id,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.menu_id) {

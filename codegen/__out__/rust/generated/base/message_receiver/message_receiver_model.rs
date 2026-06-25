@@ -264,7 +264,7 @@ pub struct MessageReceiverSearch {
   #[graphql(name = "message_id")]
   pub message_id: Option<Vec<MessageId>>,
   /// 消息
-  #[graphql(name = "message_id_save_null")]
+  #[graphql(name = "message_id_is_null")]
   pub message_id_is_null: Option<bool>,
   /// 消息
   #[graphql(name = "message_id_content")]
@@ -276,7 +276,7 @@ pub struct MessageReceiverSearch {
   #[graphql(name = "receiver_usr_id")]
   pub receiver_usr_id: Option<Vec<UsrId>>,
   /// 接收人
-  #[graphql(name = "receiver_usr_id_save_null")]
+  #[graphql(name = "receiver_usr_id_is_null")]
   pub receiver_usr_id_is_null: Option<bool>,
   /// 接收人
   #[graphql(name = "receiver_usr_id_lbl")]
@@ -294,7 +294,7 @@ pub struct MessageReceiverSearch {
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
   /// 组织
-  #[graphql(name = "org_id_save_null")]
+  #[graphql(name = "org_id_is_null")]
   pub org_id_is_null: Option<bool>,
   /// 组织
   #[graphql(name = "org_id_lbl")]
@@ -306,7 +306,7 @@ pub struct MessageReceiverSearch {
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
-  #[graphql(name = "create_usr_id_save_null")]
+  #[graphql(name = "create_usr_id_is_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
@@ -321,7 +321,7 @@ pub struct MessageReceiverSearch {
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
-  #[graphql(name = "update_usr_id_save_null")]
+  #[graphql(name = "update_usr_id_is_null")]
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]

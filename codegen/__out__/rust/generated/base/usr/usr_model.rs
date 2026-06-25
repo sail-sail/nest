@@ -498,7 +498,7 @@ pub struct UsrSearch {
   #[graphql(name = "role_ids")]
   pub role_ids: Option<Vec<RoleId>>,
   /// 所属角色
-  #[graphql(name = "role_ids_save_null")]
+  #[graphql(name = "role_ids_is_null")]
   pub role_ids_is_null: Option<bool>,
   /// 所属角色
   #[graphql(name = "role_ids_lbl_like")]
@@ -507,7 +507,7 @@ pub struct UsrSearch {
   #[graphql(name = "dept_ids")]
   pub dept_ids: Option<Vec<DeptId>>,
   /// 所属部门
-  #[graphql(name = "dept_ids_save_null")]
+  #[graphql(name = "dept_ids_is_null")]
   pub dept_ids_is_null: Option<bool>,
   /// 所属部门
   #[graphql(name = "dept_ids_lbl_like")]
@@ -516,7 +516,7 @@ pub struct UsrSearch {
   #[graphql(name = "org_ids")]
   pub org_ids: Option<Vec<OrgId>>,
   /// 所属组织
-  #[graphql(name = "org_ids_save_null")]
+  #[graphql(name = "org_ids_is_null")]
   pub org_ids_is_null: Option<bool>,
   /// 所属组织
   #[graphql(name = "org_ids_lbl_like")]
@@ -525,7 +525,7 @@ pub struct UsrSearch {
   #[graphql(name = "default_org_id")]
   pub default_org_id: Option<Vec<OrgId>>,
   /// 默认组织
-  #[graphql(name = "default_org_id_save_null")]
+  #[graphql(name = "default_org_id_is_null")]
   pub default_org_id_is_null: Option<bool>,
   /// 默认组织
   #[graphql(name = "default_org_id_lbl")]
@@ -555,7 +555,7 @@ pub struct UsrSearch {
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
-  #[graphql(name = "create_usr_id_save_null")]
+  #[graphql(name = "create_usr_id_is_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
@@ -570,7 +570,7 @@ pub struct UsrSearch {
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
-  #[graphql(name = "update_usr_id_save_null")]
+  #[graphql(name = "update_usr_id_is_null")]
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]

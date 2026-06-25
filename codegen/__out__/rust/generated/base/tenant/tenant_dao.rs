@@ -322,7 +322,7 @@ async fn get_where_query(
     if let Some(lang_id) = lang_id {
       let arg = {
         if lang_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(lang_id.len());
           for item in lang_id {
@@ -354,7 +354,7 @@ async fn get_where_query(
     if let Some(lang_id_lbl) = lang_id_lbl {
       let arg = {
         if lang_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(lang_id_lbl.len());
           for item in lang_id_lbl {
@@ -474,7 +474,7 @@ async fn get_where_query(
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
@@ -506,7 +506,7 @@ async fn get_where_query(
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
@@ -559,7 +559,7 @@ async fn get_where_query(
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
@@ -591,7 +591,7 @@ async fn get_where_query(
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
@@ -2510,12 +2510,8 @@ async fn _creates(
     }
     // 语言
     if let Some(lang_id_lbl) = input.lang_id_lbl {
-      if !lang_id_lbl.is_empty() {
-        sql_values += ",?";
-        args.push(lang_id_lbl.into());
-      } else {
-        sql_values += ",default";
-      }
+      sql_values += ",?";
+      args.push(lang_id_lbl.into());
     } else {
       sql_values += ",default";
     }
@@ -2997,11 +2993,9 @@ pub async fn update_by_id_tenant(
   }
   // 语言
   if let Some(lang_id_lbl) = input.lang_id_lbl {
-    if !lang_id_lbl.is_empty() {
-      field_num += 1;
-      sql_fields += "lang_id_lbl=?,";
-      args.push(lang_id_lbl.into());
-    }
+    field_num += 1;
+    sql_fields += "lang_id_lbl=?,";
+    args.push(lang_id_lbl.into());
   }
   // 语言
   if let Some(lang_id) = input.lang_id {

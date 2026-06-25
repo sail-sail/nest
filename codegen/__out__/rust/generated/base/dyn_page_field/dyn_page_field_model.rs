@@ -361,7 +361,7 @@ pub struct DynPageFieldSearch {
   #[graphql(name = "dyn_page_id")]
   pub dyn_page_id: Option<Vec<DynPageId>>,
   /// 动态页面
-  #[graphql(name = "dyn_page_id_save_null")]
+  #[graphql(name = "dyn_page_id_is_null")]
   pub dyn_page_id_is_null: Option<bool>,
   /// 动态页面
   #[graphql(name = "dyn_page_id_lbl")]

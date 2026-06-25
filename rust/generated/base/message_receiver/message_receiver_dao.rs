@@ -139,7 +139,7 @@ async fn get_where_query(
     if let Some(message_id) = message_id {
       let arg = {
         if message_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(message_id.len());
           for item in message_id {
@@ -171,7 +171,7 @@ async fn get_where_query(
     if let Some(message_id_content) = message_id_content {
       let arg = {
         if message_id_content.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(message_id_content.len());
           for item in message_id_content {
@@ -205,7 +205,7 @@ async fn get_where_query(
     if let Some(receiver_usr_id) = receiver_usr_id {
       let arg = {
         if receiver_usr_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(receiver_usr_id.len());
           for item in receiver_usr_id {
@@ -237,7 +237,7 @@ async fn get_where_query(
     if let Some(receiver_usr_id_lbl) = receiver_usr_id_lbl {
       let arg = {
         if receiver_usr_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(receiver_usr_id_lbl.len());
           for item in receiver_usr_id_lbl {
@@ -314,7 +314,7 @@ async fn get_where_query(
     if let Some(org_id) = org_id {
       let arg = {
         if org_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(org_id.len());
           for item in org_id {
@@ -346,7 +346,7 @@ async fn get_where_query(
     if let Some(org_id_lbl) = org_id_lbl {
       let arg = {
         if org_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(org_id_lbl.len());
           for item in org_id_lbl {
@@ -380,7 +380,7 @@ async fn get_where_query(
     if let Some(create_usr_id) = create_usr_id {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
@@ -412,7 +412,7 @@ async fn get_where_query(
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
@@ -465,7 +465,7 @@ async fn get_where_query(
     if let Some(update_usr_id) = update_usr_id {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
@@ -497,7 +497,7 @@ async fn get_where_query(
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
@@ -2081,12 +2081,8 @@ async fn _creates(
     }
     // 接收人
     if let Some(receiver_usr_id_lbl) = input.receiver_usr_id_lbl {
-      if !receiver_usr_id_lbl.is_empty() {
-        sql_values += ",?";
-        args.push(receiver_usr_id_lbl.into());
-      } else {
-        sql_values += ",default";
-      }
+      sql_values += ",?";
+      args.push(receiver_usr_id_lbl.into());
     } else {
       sql_values += ",default";
     }
@@ -2470,11 +2466,9 @@ pub async fn update_by_id_message_receiver(
   }
   // 接收人
   if let Some(receiver_usr_id_lbl) = input.receiver_usr_id_lbl {
-    if !receiver_usr_id_lbl.is_empty() {
-      field_num += 1;
-      sql_fields += "receiver_usr_id_lbl=?,";
-      args.push(receiver_usr_id_lbl.into());
-    }
+    field_num += 1;
+    sql_fields += "receiver_usr_id_lbl=?,";
+    args.push(receiver_usr_id_lbl.into());
   }
   // 接收人
   if let Some(receiver_usr_id) = input.receiver_usr_id {

@@ -844,7 +844,7 @@ watch(
     dialogModel.lang_id,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.domain_ids || dialogModel.domain_ids.length === 0) {

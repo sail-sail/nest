@@ -702,7 +702,7 @@ watch(
     dialogModel.field_permit_ids,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.menu_ids || dialogModel.menu_ids.length === 0) {

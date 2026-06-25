@@ -126,7 +126,7 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: UsrId | UsrId[]): void,
+  (e: "update:modelValue", value?: UsrId | UsrId[] | ""): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: UsrModel | UsrModel[]): void,
   (e: "clear"): void,
@@ -310,7 +310,7 @@ async function refreshInputValue() {
 
 async function onClear(e?: PointerEvent) {
   e?.stopPropagation();
-  modelValue = undefined;
+  modelValue = "";
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);

@@ -821,7 +821,7 @@ watch(
     dialogModel.is_mobile_search,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.dyn_page_id) {
