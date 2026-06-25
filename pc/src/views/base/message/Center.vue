@@ -156,9 +156,6 @@
           <div un-text="xl font-semibold">
             {{ selectedItem.message?.title || selectedItem.message?.content || selectedItem.receiver.message_id_content || '系统消息' }}
           </div>
-          <el-tag :type="selectedItem.receiver.is_read ? 'info' : 'danger'">
-            {{ selectedItem.receiver.is_read ? '已读' : '未读' }}
-          </el-tag>
         </div>
 
         <div un-m="t-3" un-text="gray-500">
@@ -372,6 +369,14 @@ async function initFrame() {
 }
 
 initFrame();
+
+onActivated(() => {
+  refreshMessages();
+});
+
+onMounted(() => {
+  window.addEventListener("message-count-changed", refreshMessages);
+});
 </script>
 
 <style scoped>
