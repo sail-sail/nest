@@ -326,6 +326,11 @@ export interface TableColumn {
      */
     isForceJoinQuery?: boolean;
     
+    /**
+     * 在dao层sql查询中, 是否有 is not null 的查询条件, 默认为 false
+     */
+    is_where_query_not_null?: boolean;
+    
   },
   
   /** foreignTabs 弹出框的大小, 默认为 medium */

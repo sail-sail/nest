@@ -1108,7 +1108,7 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
@@ -1132,6 +1132,19 @@ async fn get_where_query(
       where_query.push_str(" and t.<#=column_name#> is null");
     }
   }<#
+    if (foreignKey.is_where_query_not_null) {
+  #>
+  {
+    let <#=column_name#>_is_not_null: bool = match search {
+      Some(item) => item.<#=column_name#>_is_not_null.unwrap_or(false),
+      None => false,
+    };
+    if <#=column_name#>_is_not_null {
+      where_query.push_str(" and t.<#=column_name#> is not null");
+    }
+  }<#
+    }
+  #><#
     if (modelLabel) {
   #>
   {<#
@@ -1144,7 +1157,7 @@ async fn get_where_query(
     if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
       let arg = {
         if <#=modelLabel_rust#>.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
           for item in <#=modelLabel_rust#> {
@@ -1167,7 +1180,7 @@ async fn get_where_query(
     if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
       let arg = {
         if <#=modelLabel_rust#>.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
           for item in <#=modelLabel_rust#> {
@@ -1242,7 +1255,7 @@ async fn get_where_query(
     if let Some(<#=column_name#>_<#=foreignKey.lbl#>) = <#=column_name#>_<#=foreignKey.lbl#> {
       let arg = {
         if <#=column_name#>_<#=foreignKey.lbl#>.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(<#=column_name#>_<#=foreignKey.lbl#>.len());
           for item in <#=column_name#>_<#=foreignKey.lbl#> {
@@ -1314,6 +1327,19 @@ async fn get_where_query(
       where_query.push_str(" and t.<#=column_name#> is null");
     }
   }<#
+    if (foreignKey.is_where_query_not_null) {
+  #>
+  {
+    let <#=column_name#>_is_not_null: bool = match search {
+      Some(item) => item.<#=column_name#>_is_not_null.unwrap_or(false),
+      None => false,
+    };
+    if <#=column_name#>_is_not_null {
+      where_query.push_str(" and t.<#=column_name#> is not null");
+    }
+  }<#
+    }
+  #><#
   if (foreignKey.lbl) {
   #>
   {
@@ -5394,12 +5420,8 @@ async fn _creates(
     #>
     // <#=column_comment#>
     if let Some(<#=modelLabel#>) = input.<#=modelLabel#> {
-      if !<#=modelLabel#>.is_empty() {
-        sql_values += ",?";
-        args.push(<#=modelLabel#>.into());
-      } else {
-        sql_values += ",default";
-      }
+      sql_values += ",?";
+      args.push(<#=modelLabel#>.into());
     } else {
       sql_values += ",default";
     }<#
@@ -7107,35 +7129,33 @@ pub async fn update_by_id_<#=table#>(
   #>.clone()<#
     }
   #> {
-    if !<#=modelLabel#>.is_empty() {
-      field_num += 1;<#
-      if (cascadeUpdateFieldWatchColumns.includes(modelLabel)) {
-      #>
-      sql_set_flds.push(SmolStr::new("<#=modelLabel#>"));
-      sql_set_fld_input.<#=modelLabel#> = Some(<#=modelLabel#>.clone());<#
-      }
-      #><#
-      if (!langTableRecords.some((item) => item.COLUMN_NAME === modelLabel)) {
-      #>
-      sql_fields += "<#=modelLabel#>=?,";
-      args.push(<#=modelLabel#>.into());<#
-      } else {
-      #><#
-      if (isUseI18n) {
-      #>
-      if !server_i18n_enable {
-        sql_fields += "<#=modelLabel#>=?,";
-        args.push(<#=modelLabel#>.into());
-      }<#
-      } else {
-      #>
-      sql_fields += "<#=modelLabel#>=?,";
-      args.push(<#=modelLabel#>.into());<#
-      }
-      #><#
-      }
-      #>
+    field_num += 1;<#
+    if (cascadeUpdateFieldWatchColumns.includes(modelLabel)) {
+    #>
+    sql_set_flds.push(SmolStr::new("<#=modelLabel#>"));
+    sql_set_fld_input.<#=modelLabel#> = Some(<#=modelLabel#>.clone());<#
     }
+    #><#
+    if (!langTableRecords.some((item) => item.COLUMN_NAME === modelLabel)) {
+    #>
+    sql_fields += "<#=modelLabel#>=?,";
+    args.push(<#=modelLabel#>.into());<#
+    } else {
+    #><#
+    if (isUseI18n) {
+    #>
+    if !server_i18n_enable {
+      sql_fields += "<#=modelLabel#>=?,";
+      args.push(<#=modelLabel#>.into());
+    }<#
+    } else {
+    #>
+    sql_fields += "<#=modelLabel#>=?,";
+    args.push(<#=modelLabel#>.into());<#
+    }
+    #><#
+    }
+    #>
   }<#
     }
   #><#

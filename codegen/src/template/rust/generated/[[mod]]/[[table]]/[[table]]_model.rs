@@ -1936,10 +1936,24 @@ pub struct <#=tableUP#>Search {
   #[graphql(skip)]<#
   } else {
   #>
-  #[graphql(name = "<#=column_name#>_save_null")]<#
+  #[graphql(name = "<#=column_name#>_is_null")]<#
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
+  if (foreignKey.is_where_query_not_null) {
+  #>
+  /// <#=column_comment#><#
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_is_not_null")]<#
+  }
+  #>
+  pub <#=column_name#>_is_not_null: Option<bool>,<#
+  }
+  #><#
     if (modelLabel) {
   #>
   /// <#=column_comment#><#
@@ -2004,10 +2018,24 @@ pub struct <#=tableUP#>Search {
   #[graphql(skip)]<#
   } else {
   #>
-  #[graphql(name = "<#=column_name#>_save_null")]<#
+  #[graphql(name = "<#=column_name#>_is_null")]<#
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
+  if (foreignKey.is_where_query_not_null) {
+  #>
+  /// <#=column_comment#><#
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_is_not_null")]<#
+  }
+  #>
+  pub <#=column_name#>_is_not_null: Option<bool>,<#
+  }
+  #><#
   if (foreignKey.lbl) {
   #>
   /// <#=column_comment#><#
