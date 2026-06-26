@@ -369,7 +369,7 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
-  // 组织
+  // 所属组织
   {
     let org_id: Option<Vec<OrgId>> = match search {
       Some(item) => item.org_id.clone(),
@@ -420,19 +420,21 @@ async fn get_where_query(
           SmolStr::new(items.join(","))
         }
       };
-      where_query.push_str(" and org_id_lbl.lbl in (");
+      where_query.push_str(" and t.org_id_lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
-  }
-  {
-    let org_id_lbl_like = match search {
-      Some(item) => item.org_id_lbl_like.clone(),
-      None => None,
-    };
-    if let Some(org_id_lbl_like) = org_id_lbl_like {
-      where_query.push_str(" and org_id_lbl.lbl like ?");
-      args.push(format!("%{}%", sql_like(&org_id_lbl_like)).into());
+    {
+      let org_id_lbl_like = match search {
+        Some(item) => item.org_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(org_id_lbl_like) = org_id_lbl_like {
+        if !org_id_lbl_like.is_empty() {
+          where_query.push_str(" and org_id_lbl like ?");
+          args.push(format!("%{}%", sql_like(&org_id_lbl_like)).into());
+        }
+      }
     }
   }
   // 创建人
@@ -615,8 +617,7 @@ async fn get_from_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let from_query = r#"base_message t
-  left join base_org org_id_lbl on org_id_lbl.id=t.org_id"#.to_owned();
+  let from_query = r#"base_message t"#.to_owned();
   Ok(from_query)
 }
 
@@ -718,7 +719,7 @@ pub async fn find_all_message(
       return Err(eyre!("search.is_pinned.length > {ids_limit}"));
     }
   }
-  // 组织
+  // 所属组织
   if let Some(search) = &search && let Some(org_id) = &search.org_id {
     let len = org_id.len();
     if len == 0 {
@@ -778,7 +779,6 @@ pub async fn find_all_message(
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
-  ,org_id_lbl.lbl org_id_lbl
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -965,7 +965,7 @@ pub async fn find_count_message(
       return Err(eyre!("search.is_pinned.length > {ids_limit}"));
     }
   }
-  // 组织
+  // 所属组织
   if let Some(search) = &search && search.org_id.is_some() {
     let len = search.org_id.as_ref().unwrap().len();
     if len == 0 {
@@ -1065,8 +1065,8 @@ pub async fn get_field_comments_message(
     is_sys_msg_lbl: "系统消息".into(),
     is_pinned: "置顶".into(),
     is_pinned_lbl: "置顶".into(),
-    org_id: "组织".into(),
-    org_id_lbl: "组织".into(),
+    org_id: "所属组织".into(),
+    org_id_lbl: "所属组织".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
     create_time: "创建时间".into(),
@@ -1528,7 +1528,7 @@ pub async fn exists_message(
       return Err(eyre!("search.is_pinned.length > {ids_limit}"));
     }
   }
-  // 组织
+  // 所属组织
   if let Some(search) = &search && search.org_id.is_some() {
     let len = search.org_id.as_ref().unwrap().len();
     if len == 0 {
@@ -1978,7 +1978,7 @@ pub async fn set_id_by_lbl_message(
     input.is_pinned_lbl = lbl;
   }
   
-  // 组织
+  // 所属组织
   if input.org_id_lbl.is_some()
     && !input.org_id_lbl.as_ref().unwrap().is_empty()
     && input.org_id.is_none()
@@ -2128,6 +2128,20 @@ async fn _creates(
         input.sender_usr_id_lbl = usr_model.lbl.into();
       }
     }
+
+    // 所属组织
+    if (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
+      && input.org_id.is_some()
+      && !input.org_id.as_ref().unwrap().is_empty()
+    {
+      let org_model = crate::base::org::org_dao::find_by_id_org(
+        input.org_id.clone().unwrap(),
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(org_model) = org_model {
+        input.org_id_lbl = org_model.lbl.into();
+      }
+    }
     let input = input;
     
     let old_models = find_by_unique_message(
@@ -2199,7 +2213,9 @@ async fn _creates(
   sql_fields += ",is_sys_msg";
   // 置顶
   sql_fields += ",is_pinned";
-  // 组织
+  // 所属组织
+  sql_fields += ",org_id_lbl";
+  // 所属组织
   sql_fields += ",org_id";
   
   let inputs2_len = inputs2.len();
@@ -2399,7 +2415,14 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 组织
+    // 所属组织
+    if let Some(org_id_lbl) = input.org_id_lbl {
+      sql_values += ",?";
+      args.push(org_id_lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 所属组织
     if let Some(org_id) = input.org_id {
       sql_values += ",?";
       args.push(org_id.into());
@@ -2683,6 +2706,20 @@ pub async fn update_by_id_message(
       input.sender_usr_id_lbl = usr_model.lbl.into();
     }
   }
+
+  // 所属组织
+  if (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
+    && input.org_id.is_some()
+    && !input.org_id.as_ref().unwrap().is_empty()
+  {
+    let org_model = crate::base::org::org_dao::find_by_id_org(
+      input.org_id.clone().unwrap(),
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(org_model) = org_model {
+      input.org_id_lbl = org_model.lbl.into();
+    }
+  }
   
   let old_model = find_by_id_message(
     id,
@@ -2808,7 +2845,13 @@ pub async fn update_by_id_message(
     sql_fields += "is_pinned=?,";
     args.push(is_pinned.into());
   }
-  // 组织
+  // 所属组织
+  if let Some(org_id_lbl) = input.org_id_lbl {
+    field_num += 1;
+    sql_fields += "org_id_lbl=?,";
+    args.push(org_id_lbl.into());
+  }
+  // 所属组织
   if let Some(org_id) = input.org_id {
     field_num += 1;
     sql_fields += "org_id=?,";

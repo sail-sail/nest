@@ -99,10 +99,10 @@ pub struct MessageModel {
   /// 置顶
   #[graphql(name = "is_pinned_lbl")]
   pub is_pinned_lbl: SmolStr,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: OrgId,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_lbl")]
   pub org_id_lbl: SmolStr,
   /// 是否已删除
@@ -161,7 +161,7 @@ impl FromRow<'_, MySqlRow> for MessageModel {
     // 置顶
     let is_pinned: u8 = row.try_get("is_pinned")?;
     let is_pinned_lbl = SmolStr::new(is_pinned.to_string());
-    // 组织
+    // 所属组织
     let org_id: OrgId = row.try_get("org_id")?;
     let org_id_lbl: Option<&str> = row.try_get("org_id_lbl")?;
     let org_id_lbl = SmolStr::new(org_id_lbl.unwrap_or_default());
@@ -271,10 +271,10 @@ pub struct MessageFieldComment {
   /// 置顶
   #[graphql(name = "is_pinned_lbl")]
   pub is_pinned_lbl: SmolStr,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: SmolStr,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_lbl")]
   pub org_id_lbl: SmolStr,
   /// 创建人
@@ -362,16 +362,16 @@ pub struct MessageSearch {
   /// 置顶
   #[graphql(skip)]
   pub is_pinned: Option<Vec<u8>>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_is_null")]
   pub org_id_is_null: Option<bool>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_lbl")]
   pub org_id_lbl: Option<Vec<SmolStr>>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_lbl_like")]
   pub org_id_lbl_like: Option<SmolStr>,
   /// 创建人
@@ -480,7 +480,7 @@ impl std::fmt::Debug for MessageSearch {
     if let Some(ref is_pinned) = self.is_pinned {
       item = item.field("is_pinned", is_pinned);
     }
-    // 组织
+    // 所属组织
     if let Some(ref org_id) = self.org_id {
       item = item.field("org_id", org_id);
     }
@@ -585,10 +585,10 @@ pub struct MessageInput {
   /// 置顶
   #[graphql(name = "is_pinned_lbl")]
   pub is_pinned_lbl: Option<SmolStr>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: Option<OrgId>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_lbl")]
   pub org_id_lbl: Option<SmolStr>,
   /// 创建人
@@ -670,6 +670,9 @@ impl std::fmt::Debug for MessageInput {
     if let Some(ref org_id) = self.org_id {
       item = item.field("org_id", org_id);
     }
+    if let Some(ref org_id_lbl) = self.org_id_lbl {
+      item = item.field("org_id_lbl", org_id_lbl);
+    }
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
@@ -721,7 +724,7 @@ impl From<MessageModel> for MessageInput {
       // 置顶
       is_pinned: model.is_pinned.into(),
       is_pinned_lbl: model.is_pinned_lbl.into(),
-      // 组织
+      // 所属组织
       org_id: model.org_id.into(),
       org_id_lbl: model.org_id_lbl.into(),
       // 创建人
@@ -770,8 +773,10 @@ impl From<MessageInput> for MessageSearch {
       is_sys_msg: input.is_sys_msg.map(|x| vec![x]),
       // 置顶
       is_pinned: input.is_pinned.map(|x| vec![x]),
-      // 组织
+      // 所属组织
       org_id: input.org_id.map(|x| vec![x]),
+      // 所属组织
+      org_id_lbl: input.org_id_lbl.map(|x| vec![x]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建人

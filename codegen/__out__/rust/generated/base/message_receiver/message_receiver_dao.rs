@@ -305,7 +305,7 @@ async fn get_where_query(
       args.push(read_time_lt.into());
     }
   }
-  // 组织
+  // 所属组织
   {
     let org_id: Option<Vec<OrgId>> = match search {
       Some(item) => item.org_id.clone(),
@@ -356,19 +356,21 @@ async fn get_where_query(
           SmolStr::new(items.join(","))
         }
       };
-      where_query.push_str(" and org_id_lbl.lbl in (");
+      where_query.push_str(" and t.org_id_lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
-  }
-  {
-    let org_id_lbl_like = match search {
-      Some(item) => item.org_id_lbl_like.clone(),
-      None => None,
-    };
-    if let Some(org_id_lbl_like) = org_id_lbl_like {
-      where_query.push_str(" and org_id_lbl.lbl like ?");
-      args.push(format!("%{}%", sql_like(&org_id_lbl_like)).into());
+    {
+      let org_id_lbl_like = match search {
+        Some(item) => item.org_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(org_id_lbl_like) = org_id_lbl_like {
+        if !org_id_lbl_like.is_empty() {
+          where_query.push_str(" and org_id_lbl like ?");
+          args.push(format!("%{}%", sql_like(&org_id_lbl_like)).into());
+        }
+      }
     }
   }
   // 创建人
@@ -552,8 +554,7 @@ async fn get_from_query(
 ) -> Result<String> {
   
   let from_query = r#"base_message_receiver t
-  left join base_message message_id_lbl on message_id_lbl.id=t.message_id
-  left join base_org org_id_lbl on org_id_lbl.id=t.org_id"#.to_owned();
+  left join base_message message_id_lbl on message_id_lbl.id=t.message_id"#.to_owned();
   Ok(from_query)
 }
 
@@ -635,7 +636,7 @@ pub async fn find_all_message_receiver(
       return Err(eyre!("search.is_read.length > {ids_limit}"));
     }
   }
-  // 组织
+  // 所属组织
   if let Some(search) = &search && let Some(org_id) = &search.org_id {
     let len = org_id.len();
     if len == 0 {
@@ -696,7 +697,6 @@ pub async fn find_all_message_receiver(
   
   let sql = format!(r#"select f.* from (select t.*
   ,message_id_lbl.content message_id_content
-  ,org_id_lbl.lbl org_id_lbl
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -822,7 +822,7 @@ pub async fn find_count_message_receiver(
       return Err(eyre!("search.is_read.length > {ids_limit}"));
     }
   }
-  // 组织
+  // 所属组织
   if let Some(search) = &search && search.org_id.is_some() {
     let len = search.org_id.as_ref().unwrap().len();
     if len == 0 {
@@ -916,8 +916,8 @@ pub async fn get_field_comments_message_receiver(
     is_read_lbl: "已读".into(),
     read_time: "阅读时间".into(),
     read_time_lbl: "阅读时间".into(),
-    org_id: "组织".into(),
-    org_id_lbl: "组织".into(),
+    org_id: "所属组织".into(),
+    org_id_lbl: "所属组织".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
     create_time: "创建时间".into(),
@@ -1351,7 +1351,7 @@ pub async fn exists_message_receiver(
       return Err(eyre!("search.is_read.length > {ids_limit}"));
     }
   }
-  // 组织
+  // 所属组织
   if let Some(search) = &search && search.org_id.is_some() {
     let len = search.org_id.as_ref().unwrap().len();
     if len == 0 {
@@ -1731,7 +1731,7 @@ pub async fn set_id_by_lbl_message_receiver(
     input.is_read_lbl = lbl;
   }
   
-  // 组织
+  // 所属组织
   if input.org_id_lbl.is_some()
     && !input.org_id_lbl.as_ref().unwrap().is_empty()
     && input.org_id.is_none()
@@ -1881,6 +1881,20 @@ async fn _creates(
         input.receiver_usr_id_lbl = usr_model.lbl.into();
       }
     }
+
+    // 所属组织
+    if (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
+      && input.org_id.is_some()
+      && !input.org_id.as_ref().unwrap().is_empty()
+    {
+      let org_model = crate::base::org::org_dao::find_by_id_org(
+        input.org_id.clone().unwrap(),
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(org_model) = org_model {
+        input.org_id_lbl = org_model.lbl.into();
+      }
+    }
     let input = input;
     
     let old_models = find_by_unique_message_receiver(
@@ -1942,7 +1956,9 @@ async fn _creates(
   sql_fields += ",is_read";
   // 阅读时间
   sql_fields += ",read_time";
-  // 组织
+  // 所属组织
+  sql_fields += ",org_id_lbl";
+  // 所属组织
   sql_fields += ",org_id";
   
   let inputs2_len = inputs2.len();
@@ -2109,7 +2125,14 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 组织
+    // 所属组织
+    if let Some(org_id_lbl) = input.org_id_lbl {
+      sql_values += ",?";
+      args.push(org_id_lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 所属组织
     if let Some(org_id) = input.org_id {
       sql_values += ",?";
       args.push(org_id.into());
@@ -2393,6 +2416,20 @@ pub async fn update_by_id_message_receiver(
       input.receiver_usr_id_lbl = usr_model.lbl.into();
     }
   }
+
+  // 所属组织
+  if (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
+    && input.org_id.is_some()
+    && !input.org_id.as_ref().unwrap().is_empty()
+  {
+    let org_model = crate::base::org::org_dao::find_by_id_org(
+      input.org_id.clone().unwrap(),
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(org_model) = org_model {
+      input.org_id_lbl = org_model.lbl.into();
+    }
+  }
   
   let old_model = find_by_id_message_receiver(
     id,
@@ -2491,7 +2528,13 @@ pub async fn update_by_id_message_receiver(
     field_num += 1;
     sql_fields += "read_time=null,";
   }
-  // 组织
+  // 所属组织
+  if let Some(org_id_lbl) = input.org_id_lbl {
+    field_num += 1;
+    sql_fields += "org_id_lbl=?,";
+    args.push(org_id_lbl.into());
+  }
+  // 所属组织
   if let Some(org_id) = input.org_id {
     field_num += 1;
     sql_fields += "org_id=?,";

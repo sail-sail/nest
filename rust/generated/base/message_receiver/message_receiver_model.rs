@@ -82,10 +82,10 @@ pub struct MessageReceiverModel {
   /// 阅读时间
   #[graphql(name = "read_time_lbl")]
   pub read_time_lbl: SmolStr,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: OrgId,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_lbl")]
   pub org_id_lbl: SmolStr,
   /// 是否已删除
@@ -131,7 +131,7 @@ impl FromRow<'_, MySqlRow> for MessageReceiverModel {
       Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
       None => SmolStr::new(""),
     };
-    // 组织
+    // 所属组织
     let org_id: OrgId = row.try_get("org_id")?;
     let org_id_lbl: Option<&str> = row.try_get("org_id_lbl")?;
     let org_id_lbl = SmolStr::new(org_id_lbl.unwrap_or_default());
@@ -217,10 +217,10 @@ pub struct MessageReceiverFieldComment {
   /// 阅读时间
   #[graphql(name = "read_time_lbl")]
   pub read_time_lbl: SmolStr,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: SmolStr,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_lbl")]
   pub org_id_lbl: SmolStr,
   /// 创建人
@@ -290,16 +290,16 @@ pub struct MessageReceiverSearch {
   /// 阅读时间
   #[graphql(name = "read_time")]
   pub read_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_is_null")]
   pub org_id_is_null: Option<bool>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_lbl")]
   pub org_id_lbl: Option<Vec<SmolStr>>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_lbl_like")]
   pub org_id_lbl_like: Option<SmolStr>,
   /// 创建人
@@ -385,7 +385,7 @@ impl std::fmt::Debug for MessageReceiverSearch {
     if let Some(ref read_time) = self.read_time {
       item = item.field("read_time", read_time);
     }
-    // 组织
+    // 所属组织
     if let Some(ref org_id) = self.org_id {
       item = item.field("org_id", org_id);
     }
@@ -475,10 +475,10 @@ pub struct MessageReceiverInput {
   /// 阅读时间
   #[graphql(name = "read_time_save_null")]
   pub read_time_save_null: Option<bool>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: Option<OrgId>,
-  /// 组织
+  /// 所属组织
   #[graphql(name = "org_id_lbl")]
   pub org_id_lbl: Option<SmolStr>,
   /// 创建人
@@ -545,6 +545,9 @@ impl std::fmt::Debug for MessageReceiverInput {
     if let Some(ref org_id) = self.org_id {
       item = item.field("org_id", org_id);
     }
+    if let Some(ref org_id_lbl) = self.org_id_lbl {
+      item = item.field("org_id_lbl", org_id_lbl);
+    }
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
@@ -586,7 +589,7 @@ impl From<MessageReceiverModel> for MessageReceiverInput {
       read_time: model.read_time,
       read_time_lbl: model.read_time_lbl.into(),
       read_time_save_null: Some(true),
-      // 组织
+      // 所属组织
       org_id: model.org_id.into(),
       org_id_lbl: model.org_id_lbl.into(),
       // 创建人
@@ -625,8 +628,10 @@ impl From<MessageReceiverInput> for MessageReceiverSearch {
       is_read: input.is_read.map(|x| vec![x]),
       // 阅读时间
       read_time: input.read_time.map(|x| [Some(x), Some(x)]),
-      // 组织
+      // 所属组织
       org_id: input.org_id.map(|x| vec![x]),
+      // 所属组织
+      org_id_lbl: input.org_id_lbl.map(|x| vec![x]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建人
