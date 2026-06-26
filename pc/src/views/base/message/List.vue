@@ -587,7 +587,7 @@
             </el-table-column>
           </template>
           
-          <!-- 组织 -->
+          <!-- 所属组织 -->
           <template v-else-if="'org_id_lbl' === col.prop && (showBuildIn || builtInSearch?.org_id == null)">
             <!-- @vue-generic {MessageModel} -->
             <el-table-column
@@ -758,8 +758,8 @@ const props = defineProps<{
   route_path_like?: string; // 跳转路由
   sender_usr_id?: string|string[]; // 发送人
   sender_usr_id_lbl?: string; // 发送人
-  org_id?: string|string[]; // 组织
-  org_id_lbl?: string; // 组织
+  org_id?: string|string[]; // 所属组织
+  org_id_lbl?: string; // 所属组织
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -1095,7 +1095,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
-      label: "组织",
+      label: "所属组织",
       prop: "org_id_lbl",
       sortBy: "org_id_lbl",
       width: 280,

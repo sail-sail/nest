@@ -42,7 +42,7 @@ export const messageReceiverFields = [
   // 阅读时间
   "read_time",
   "read_time_lbl",
-  // 组织
+  // 所属组织
   "org_id",
   "org_id_lbl",
   // 创建人

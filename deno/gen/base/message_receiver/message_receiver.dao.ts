@@ -158,10 +158,10 @@ async function getWhereQuery(
     whereQuery += ` and t.org_id is null`;
   }
   if (search?.org_id_lbl != null) {
-    whereQuery += ` and org_id_lbl.lbl in (${ args.push(search.org_id_lbl) })`;
+    whereQuery += ` and t.org_id_lbl in (${ args.push(search.org_id_lbl) })`;
   }
   if (isNotEmpty(search?.org_id_lbl_like)) {
-    whereQuery += ` and org_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.org_id_lbl_like) + "%") }`;
+    whereQuery += ` and t.org_id_lbl like ${ args.push("%" + sqlLike(search.org_id_lbl_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
@@ -214,8 +214,7 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_message_receiver t
-  left join base_message message_id_lbl on message_id_lbl.id=t.message_id
-  left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
+  left join base_message message_id_lbl on message_id_lbl.id=t.message_id`;
   return fromQuery;
 }
 
@@ -286,7 +285,7 @@ export async function findCountMessageReceiver(
       throw new Error(`search.is_read.length > ${ ids_limit }`);
     }
   }
-  // 组织
+  // 所属组织
   if (search && search.org_id != null) {
     const len = search.org_id.length;
     if (len === 0) {
@@ -412,7 +411,7 @@ export async function findAllMessageReceiver(
       throw new Error(`search.is_read.length > ${ ids_limit }`);
     }
   }
-  // 组织
+  // 所属组织
   if (search && search.org_id != null) {
     const len = search.org_id.length;
     if (len === 0) {
@@ -449,7 +448,6 @@ export async function findAllMessageReceiver(
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
       ,message_id_lbl.content message_id_lbl
-      ,org_id_lbl.lbl org_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -510,6 +508,7 @@ export async function findAllMessageReceiver(
     
     // 消息
     model.message_id_lbl = model.message_id_lbl || "";
+    model.message_id_content = model.message_id_lbl;
     
     // 已读
     let is_read_lbl = model.is_read?.toString() || "";
@@ -533,9 +532,6 @@ export async function findAllMessageReceiver(
     } else {
       model.read_time_lbl = "";
     }
-    
-    // 组织
-    model.org_id_lbl = model.org_id_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -670,7 +666,7 @@ export async function setIdByLblMessageReceiver(
     input.read_time = input.read_time_lbl;
   }
   
-  // 组织
+  // 所属组织
   if (isNotEmpty(input.org_id_lbl) && input.org_id == null) {
     input.org_id_lbl = String(input.org_id_lbl).trim();
     const orgModel = await findOneOrg(
@@ -710,8 +706,8 @@ export async function getFieldCommentsMessageReceiver(): Promise<MessageReceiver
     is_read_lbl: "已读",
     read_time: "阅读时间",
     read_time_lbl: "阅读时间",
-    org_id: "组织",
-    org_id_lbl: "组织",
+    org_id: "所属组织",
+    org_id_lbl: "所属组织",
     create_usr_id: "创建人",
     create_usr_id_lbl: "创建人",
     create_time: "创建时间",
@@ -1216,7 +1212,7 @@ export async function validateMessageReceiver(
     fieldComments.receiver_usr_id,
   );
   
-  // 组织
+  // 所属组织
   await validators.chars_max_length(
     input.org_id,
     22,
@@ -1445,6 +1441,22 @@ async function _creates(
         input.receiver_usr_id_lbl = usr_model.lbl;
       }
     }
+
+    // 所属组织
+    if (isEmpty(input.org_id_lbl) && isNotEmpty(input.org_id)) {
+      const org_model = await findOneOrg(
+        {
+          id: input.org_id,
+        },
+        undefined,
+        {
+          is_debug: false,
+        },
+      );
+      if (org_model) {
+        input.org_id_lbl = org_model.lbl;
+      }
+    }
     
     const oldModels = await findByUniqueMessageReceiver(input, options);
     if (oldModels.length > 0) {
@@ -1481,7 +1493,7 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into base_message_receiver(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,message_id,receiver_usr_id_lbl,receiver_usr_id,is_read,read_time,org_id)values";
+  let sql = "insert into base_message_receiver(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,message_id,receiver_usr_id_lbl,receiver_usr_id,is_read,read_time,org_id_lbl,org_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1601,6 +1613,11 @@ async function _creates(
       }
       if (input.read_time != null || input.read_time_save_null) {
         sql += `,${ args.push(input.read_time) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.org_id_lbl != null) {
+        sql += `,${ args.push(input.org_id_lbl) }`;
       } else {
         sql += ",default";
       }
@@ -1792,6 +1809,22 @@ export async function updateByIdMessageReceiver(
       input.receiver_usr_id_lbl = usr_model.lbl;
     }
   }
+
+  // 所属组织
+  if (isEmpty(input.org_id_lbl) && isNotEmpty(input.org_id)) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      {
+        is_debug: false,
+      },
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
+    }
+  }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
@@ -1856,6 +1889,11 @@ export async function updateByIdMessageReceiver(
       sql += `read_time=${ args.push(input.read_time) },`;
       updateFldNum++;
     }
+  }
+  if (isNotEmpty(input.org_id_lbl)) {
+    sql += `org_id_lbl=?,`;
+    args.push(input.org_id_lbl);
+    updateFldNum++;
   }
   if (input.org_id != null) {
     if (input.org_id != oldModel.org_id) {

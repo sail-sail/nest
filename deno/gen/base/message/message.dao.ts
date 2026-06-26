@@ -167,10 +167,10 @@ async function getWhereQuery(
     whereQuery += ` and t.org_id is null`;
   }
   if (search?.org_id_lbl != null) {
-    whereQuery += ` and org_id_lbl.lbl in (${ args.push(search.org_id_lbl) })`;
+    whereQuery += ` and t.org_id_lbl in (${ args.push(search.org_id_lbl) })`;
   }
   if (isNotEmpty(search?.org_id_lbl_like)) {
-    whereQuery += ` and org_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.org_id_lbl_like) + "%") }`;
+    whereQuery += ` and t.org_id_lbl like ${ args.push("%" + sqlLike(search.org_id_lbl_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
@@ -222,8 +222,7 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  let fromQuery = `base_message t
-  left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
+  let fromQuery = `base_message t`;
   return fromQuery;
 }
 
@@ -316,7 +315,7 @@ export async function findCountMessage(
       throw new Error(`search.is_pinned.length > ${ ids_limit }`);
     }
   }
-  // 组织
+  // 所属组织
   if (search && search.org_id != null) {
     const len = search.org_id.length;
     if (len === 0) {
@@ -464,7 +463,7 @@ export async function findAllMessage(
       throw new Error(`search.is_pinned.length > ${ ids_limit }`);
     }
   }
-  // 组织
+  // 所属组织
   if (search && search.org_id != null) {
     const len = search.org_id.length;
     if (len === 0) {
@@ -500,7 +499,6 @@ export async function findAllMessage(
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
-      ,org_id_lbl.lbl org_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -604,9 +602,6 @@ export async function findAllMessage(
       }
     }
     model.is_pinned_lbl = is_pinned_lbl || "";
-    
-    // 组织
-    model.org_id_lbl = model.org_id_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -730,7 +725,7 @@ export async function setIdByLblMessage(
     input.is_pinned_lbl = lbl;
   }
   
-  // 组织
+  // 所属组织
   if (isNotEmpty(input.org_id_lbl) && input.org_id == null) {
     input.org_id_lbl = String(input.org_id_lbl).trim();
     const orgModel = await findOneOrg(
@@ -776,8 +771,8 @@ export async function getFieldCommentsMessage(): Promise<MessageFieldComment> {
     is_sys_msg_lbl: "系统消息",
     is_pinned: "置顶",
     is_pinned_lbl: "置顶",
-    org_id: "组织",
-    org_id_lbl: "组织",
+    org_id: "所属组织",
+    org_id_lbl: "所属组织",
     create_usr_id: "创建人",
     create_usr_id_lbl: "创建人",
     create_time: "创建时间",
@@ -1317,7 +1312,7 @@ export async function validateMessage(
     fieldComments.sender_usr_id,
   );
   
-  // 组织
+  // 所属组织
   await validators.chars_max_length(
     input.org_id,
     22,
@@ -1546,6 +1541,22 @@ async function _creates(
         input.sender_usr_id_lbl = usr_model.lbl;
       }
     }
+
+    // 所属组织
+    if (isEmpty(input.org_id_lbl) && isNotEmpty(input.org_id)) {
+      const org_model = await findOneOrg(
+        {
+          id: input.org_id,
+        },
+        undefined,
+        {
+          is_debug: false,
+        },
+      );
+      if (org_model) {
+        input.org_id_lbl = org_model.lbl;
+      }
+    }
     
     const oldModels = await findByUniqueMessage(input, options);
     if (oldModels.length > 0) {
@@ -1582,7 +1593,7 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into base_message(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,category,channel,title,content,route_path,route_query,sender_usr_id_lbl,sender_usr_id,is_sys_msg,is_pinned,org_id)values";
+  let sql = "insert into base_message(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,category,channel,title,content,route_path,route_query,sender_usr_id_lbl,sender_usr_id,is_sys_msg,is_pinned,org_id_lbl,org_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1727,6 +1738,11 @@ async function _creates(
       }
       if (input.is_pinned != null) {
         sql += `,${ args.push(input.is_pinned) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.org_id_lbl != null) {
+        sql += `,${ args.push(input.org_id_lbl) }`;
       } else {
         sql += ",default";
       }
@@ -1918,6 +1934,22 @@ export async function updateByIdMessage(
       input.sender_usr_id_lbl = usr_model.lbl;
     }
   }
+
+  // 所属组织
+  if (isEmpty(input.org_id_lbl) && isNotEmpty(input.org_id)) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      {
+        is_debug: false,
+      },
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
+    }
+  }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
@@ -2012,6 +2044,11 @@ export async function updateByIdMessage(
       sql += `is_pinned=${ args.push(input.is_pinned) },`;
       updateFldNum++;
     }
+  }
+  if (isNotEmpty(input.org_id_lbl)) {
+    sql += `org_id_lbl=?,`;
+    args.push(input.org_id_lbl);
+    updateFldNum++;
   }
   if (input.org_id != null) {
     if (input.org_id != oldModel.org_id) {

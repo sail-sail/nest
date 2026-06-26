@@ -37,9 +37,9 @@ type MessageModel {
   is_pinned: Int!
   "置顶"
   is_pinned_lbl: String!
-  "组织"
+  "所属组织"
   org_id: OrgId!
-  "组织"
+  "所属组织"
   org_id_lbl: String!
   "创建人"
   create_usr_id: UsrId!
@@ -91,9 +91,9 @@ type MessageFieldComment {
   is_pinned: String!
   "置顶"
   is_pinned_lbl: String!
-  "组织"
+  "所属组织"
   org_id: String!
-  "组织"
+  "所属组织"
   org_id_lbl: String!
   "创建人"
   create_usr_id: String!
@@ -143,9 +143,9 @@ input MessageInput {
   is_pinned: Int
   "置顶"
   is_pinned_lbl: String
-  "组织"
+  "所属组织"
   org_id: OrgId
-  "组织"
+  "所属组织"
   org_id_lbl: String
 }
 input MessageSearch {
@@ -171,13 +171,13 @@ input MessageSearch {
   sender_usr_id_lbl: [String!]
   "发送人"
   sender_usr_id_lbl_like: String
-  "组织"
+  "所属组织"
   org_id: [OrgId!]
-  "组织"
+  "所属组织"
   org_id_is_null: Boolean
-  "组织"
+  "所属组织"
   org_id_lbl: [String!]
-  "组织"
+  "所属组织"
   org_id_lbl_like: String
   "创建人"
   create_usr_id: [UsrId!]

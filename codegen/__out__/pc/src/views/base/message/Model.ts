@@ -53,7 +53,7 @@ export const messageFields = [
   // 置顶
   "is_pinned",
   "is_pinned_lbl",
-  // 组织
+  // 所属组织
   "org_id",
   "org_id_lbl",
   // 创建人
