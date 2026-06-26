@@ -359,6 +359,9 @@ async function getSchema0(
       if (!item.COLUMN_DEFAULT) {
         item.COLUMN_DEFAULT = "CURRENT_ORG_ID";
       }
+      if (item.noAdd == null) {
+        item.noAdd = true;
+      }
       if (hasOrgIdLbl) {
         item.modelLabel = "org_id_lbl";
       }

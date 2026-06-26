@@ -40,7 +40,7 @@ export function intoInputMessageReceiver(
     read_time: model?.read_time,
     read_time_lbl: model?.read_time_lbl,
     read_time_save_null: model?.read_time_save_null,
-    // 组织
+    // 所属组织
     org_id: model?.org_id,
     org_id_lbl: model?.org_id_lbl,
   };

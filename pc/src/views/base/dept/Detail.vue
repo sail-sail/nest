@@ -143,7 +143,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.org_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.org_id == null) && dialogAction !== 'add' && dialogAction !== 'copy'">
           <el-form-item
             label="组织"
             prop="org_id"

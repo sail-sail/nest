@@ -13,6 +13,7 @@ type MessageReceiverModel {
   message_id: MessageId!
   "消息"
   message_id_lbl: String!
+  message_id_content: String!
   "接收人"
   receiver_usr_id: UsrId!
   "接收人"
@@ -25,9 +26,9 @@ type MessageReceiverModel {
   read_time: NaiveDateTime
   "阅读时间"
   read_time_lbl: String!
-  "组织"
+  "所属组织"
   org_id: OrgId!
-  "组织"
+  "所属组织"
   org_id_lbl: String!
   "创建人"
   create_usr_id: UsrId!
@@ -67,9 +68,9 @@ type MessageReceiverFieldComment {
   read_time: String!
   "阅读时间"
   read_time_lbl: String!
-  "组织"
+  "所属组织"
   org_id: String!
-  "组织"
+  "所属组织"
   org_id_lbl: String!
   "创建人"
   create_usr_id: String!
@@ -109,9 +110,9 @@ input MessageReceiverInput {
   read_time_lbl: String
   "阅读时间"
   read_time_save_null: Boolean
-  "组织"
+  "所属组织"
   org_id: OrgId
-  "组织"
+  "所属组织"
   org_id_lbl: String
 }
 input MessageReceiverSearch {
@@ -141,13 +142,13 @@ input MessageReceiverSearch {
   is_read: [Int!]
   "阅读时间"
   read_time: [NaiveDateTime]
-  "组织"
+  "所属组织"
   org_id: [OrgId!]
-  "组织"
+  "所属组织"
   org_id_is_null: Boolean
-  "组织"
+  "所属组织"
   org_id_lbl: [String!]
-  "组织"
+  "所属组织"
   org_id_lbl_like: String
   "创建人"
   create_usr_id: [UsrId!]

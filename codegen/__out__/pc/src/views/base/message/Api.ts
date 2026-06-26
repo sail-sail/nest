@@ -50,7 +50,7 @@ export function intoInputMessage(
     // 置顶
     is_pinned: model?.is_pinned,
     is_pinned_lbl: model?.is_pinned_lbl,
-    // 组织
+    // 所属组织
     org_id: model?.org_id,
     org_id_lbl: model?.org_id_lbl,
   };

@@ -153,14 +153,15 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.org_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.org_id == null) && dialogAction !== 'add' && dialogAction !== 'copy'">
           <el-form-item
-            label="组织"
+            label="所属组织"
             prop="org_id"
           >
             <SelectInputOrg
               v-model="dialogModel.org_id"
-              placeholder="请选择 组织"
+              v-model:model-label="dialogModel.org_id_lbl"
+              placeholder="请选择 所属组织"
               :readonly="true"
               :page-inited="inited"
             ></SelectInputOrg>
