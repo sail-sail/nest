@@ -38,6 +38,7 @@ const hasSummary = columns.some((column) => column.showSummary);
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -48,9 +49,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -1053,6 +1054,12 @@ type Mutation {<#
   auditPass<#=Table_Up2#>(id: <#=Table_Up#>Id!): Boolean!
   "<#=table_comment#> 审核拒绝"
   auditReject<#=Table_Up2#>(id: <#=Table_Up#>Id!, input: <#=auditTable_Up#>Input!): Boolean!<#
+  if (opts?.audit?.hasReverse) {
+  #>
+  "<#=table_comment#> 反审核"
+  auditReverse<#=Table_Up2#>(id: <#=Table_Up#>Id!): Boolean!<#
+  }
+  #><#
   if (hasReviewed) {
   #>
   "<#=table_comment#> 复核通过"

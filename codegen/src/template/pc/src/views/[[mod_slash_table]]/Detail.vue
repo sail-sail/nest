@@ -105,6 +105,7 @@ const bpmStatusFieldUp = bpmStatusField
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -112,9 +113,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts.audit.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -3946,7 +3947,42 @@ for (let i = 0; i < columns.length; i++) {
       
       <template
         v-if="dialogAction === 'audit' && !isLocked"
-      >
+      ><#
+        if (opts?.audit?.hasReverse) {
+        #>
+
+        <el-button
+          v-if="permit('audit_reverse', '反审核') &&
+            (
+              dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
+              dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
+              if (hasReviewed) {
+              #> ||
+              dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
+              }
+              #>
+            )
+          "
+          plain
+          type="warning"
+          @click="onAuditReverse"
+        >
+          <template #icon>
+            <ElIcon>
+              <div un-i="iconfont-undo"></div>
+            </ElIcon>
+          </template><#
+          if (isUseI18n) {
+          #>
+          <span>{{ ns('反审核') }}</span><#
+          } else {
+          #>
+          <span>反审核</span><#
+          }
+          #>
+        </el-button><#
+        }
+        #>
         
         <el-button
           v-if="permit('audit_reject') &&
@@ -4062,7 +4098,8 @@ for (let i = 0; i < columns.length; i++) {
         
         <el-button
           v-if="permit('audit_review') &&
-            dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed
+            dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
+            !permit('audit_reverse')
           "
           plain
           type="primary"
@@ -4261,10 +4298,11 @@ import {<#
   if (hasAudit) {
   #>
   auditSubmit<#=Table_Up#>,
-  auditPass<#=Table_Up#>,<#
+  auditPass<#=Table_Up#>,
+  auditReverse<#=Table_Up#>,<#
   if (hasReviewed) {
   #>
-  auditReview,<#
+  auditReview<#=Table_Up#>,<#
   }
   #><#
   }
@@ -7349,6 +7387,67 @@ async function onAuditSubmit() {
   });
 }
 
+/** 反审核 */
+async function onAuditReverse() {
+  const id = dialogModel.id;
+  if (!id) {
+    return;
+  }
+  if (!permit("audit_reverse")) {
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("确认要反审核吗"),<#
+      } else {
+      #>
+      "确认要反审核吗",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
+        confirmButtonText: await nsAsync("确定"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",<#
+        }
+        #>
+        type: "warning",
+      },
+    );
+  } catch (err) {
+    return;
+  }
+  await auditReverse<#=Table_Up#>(id);
+  ElMessage({<#
+    if (isUseI18n) {
+    #>
+    message: await nsAsync("反审核成功"),<#
+    } else {
+    #>
+    message: "反审核成功",<#
+    }
+    #>
+    type: "success",
+  });
+  if (!changedIds.includes(id)) {
+    changedIds.push(id);
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
+}
+
 /** 审核通过 */
 async function onAuditPass() {
   const id = dialogModel.id;
@@ -7508,7 +7607,7 @@ async function onAuditReview() {
   } catch (err) {
     return;
   }
-  await auditReview(id);
+  await auditReview<#=Table_Up#>(id);
   ElMessage({<#
     if (isUseI18n) {
     #>

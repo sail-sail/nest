@@ -28,6 +28,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -38,10 +39,10 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
 const auditColumnUp = auditColumn.substring(0,1).toUpperCase() + auditColumn.substring(1);
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -219,7 +220,44 @@ async function setSearchQuery(<#
   }
   #>
   
+}<#
+if (hasAudit) {
+#>
+
+function getReverse<#=auditColumnUp#>Status(
+  audit: <#=Table_Up#><#=auditColumnUp#>,
+): [<#=Table_Up#><#=auditColumnUp#>, <#=auditTable_Up#>Audit] {<#
+  if (hasReviewed) {
+  #>
+  switch (audit) {
+    case <#=Table_Up#><#=auditColumnUp#>.Reviewed:
+      return [<#=Table_Up#><#=auditColumnUp#>.Audited, <#=auditTable_Up#>Audit.Audited];
+    case <#=Table_Up#><#=auditColumnUp#>.Audited:
+      return [<#=Table_Up#><#=auditColumnUp#>.Unaudited, <#=auditTable_Up#>Audit.Unaudited];
+    case <#=Table_Up#><#=auditColumnUp#>.Unaudited:
+      return [<#=Table_Up#><#=auditColumnUp#>.Unsubmited, <#=auditTable_Up#>Audit.Unsubmited];
+    case <#=Table_Up#><#=auditColumnUp#>.Unsubmited:
+    case <#=Table_Up#><#=auditColumnUp#>.Rejected:
+      throw "只有待审核、已审核、已复核的 <#=table_comment#> 才能 反审核";
+  }
+<#
+  } else {
+  #>
+  switch (audit) {
+    case <#=Table_Up#><#=auditColumnUp#>.Audited:
+      return [<#=Table_Up#><#=auditColumnUp#>.Unaudited, <#=auditTable_Up#>Audit.Unaudited];
+    case <#=Table_Up#><#=auditColumnUp#>.Unaudited:
+      return [<#=Table_Up#><#=auditColumnUp#>.Unsubmited, <#=auditTable_Up#>Audit.Unsubmited];
+    case <#=Table_Up#><#=auditColumnUp#>.Unsubmited:
+    case <#=Table_Up#><#=auditColumnUp#>.Rejected:
+      throw "只有待审核、已审核的 <#=table_comment#> 才能 反审核";
+  }
+<#
+  }
+  #>
+}<#
 }
+#>
 
 /**
  * 根据条件查找<#=table_comment#>总数
@@ -710,8 +748,8 @@ export async function auditSubmit<#=Table_Up#>(
   }
   #>
   
-  await <#=table#>Dao.updateById(
-    id,
+  await <#=table#>Dao.updateById<#=Table_Up#>(
+    <#=table#>_id,
     {
       <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Unaudited,
     },
@@ -781,8 +819,8 @@ export async function auditPass<#=Table_Up#>(
   }
   #>
   
-  await <#=table#>Dao.updateById(
-    id,
+  await <#=table#>Dao.updateById<#=Table_Up#>(
+    <#=table#>_id,
     {
       <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Audited,
     },
@@ -861,7 +899,7 @@ export async function auditReject<#=Table_Up#>(
   #>
   
   await <#=table#>Dao.updateById<#=Table_Up#>(
-    id,
+    <#=table#>_id,
     {
       <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Rejected,
     },
@@ -896,6 +934,72 @@ export async function auditReject<#=Table_Up#>(
   
   return true;
 }<#
+if (opts?.audit?.hasReverse) {
+#>
+
+/** <#=table_comment#> 反审核 */
+export async function auditReverse<#=Table_Up#>(
+  <#=table#>_id: <#=Table_Up#>Id,
+) {
+  
+  const old_model = await <#=table#>Dao.validateOption<#=Table_Up#>(
+    await <#=table#>Dao.findById<#=Table_Up#>(<#=table#>_id),
+  );
+  
+  const [audit, audit_log] = getReverse<#=auditColumnUp#>Status(old_model.<#=auditColumn#>);<#
+  if (auditTable_Up) {
+  #><#
+  if (opts?.lbl_field) {
+  #>
+  
+  const <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#> ?? "";<#
+  } else {
+  #>
+  
+  const <#=auditModelLabel#> = "";<#
+  }
+  #><#
+  }
+  #>
+  
+  await <#=table#>Dao.updateById<#=Table_Up#>(
+    <#=table#>_id,
+    {
+      <#=auditColumn#>: audit,
+    },
+  );<#
+  if (auditTable_Up) {
+  #>
+  
+  const audit_usr_id = await get_usr_id();
+  const audit_time = dayjs(reqDate()).format("YYYY-MM-DD HH:mm:ss");
+  
+  const audit_usr_model = await validateOptionUsr(
+    await findByIdUsr(audit_usr_id),
+  );
+  
+  const audit_usr_id_lbl = audit_usr_model.lbl;
+  
+  await create<#=auditTable_Up#>({
+    <#=table#>_id,<#
+    if (auditModelLabel) {
+    #>
+    <#=auditModelLabel#>,<#
+    }
+    #>
+    audit: audit_log,
+    audit_usr_id,
+    audit_usr_id_lbl,
+    audit_time,
+    rem: "反审核",
+  });<#
+  }
+  #>
+  
+  return true;
+}<#
+}
+#><#
 if (hasReviewed) {
 #>
 
@@ -935,7 +1039,7 @@ export async function auditReview<#=Table_Up#>(
   #>
   
   await <#=table#>Dao.updateById<#=Table_Up#>(
-    id,
+    <#=table#>_id,
     {
       <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Reviewed,
     },

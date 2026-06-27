@@ -33,6 +33,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -43,9 +44,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -896,6 +897,67 @@ export async function auditReject<#=Table_Up2#>(
   
   return res;
 }<#
+if (opts?.audit?.hasReverse) {
+#>
+
+/** <#=table_comment#> 反审核 */
+export async function auditReverse<#=Table_Up2#>(
+  id: <#=Table_Up#>Id,
+) {
+  
+  const {
+    auditReverse<#=Table_Up2#>,
+  } = await import("./<#=table#>.service.ts");
+  
+  const {
+    getPagePath<#=Table_Up#>,
+  } = await import("./<#=table#>.model.ts");<#
+  if (is_with_auth_optional) {
+  #>
+  
+  setNotVerifyToken(true);<#
+  }
+  #>
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    getPagePath<#=Table_Up#>(),
+    "audit_reverse",
+  );<#
+  if (log) {
+  #>
+  
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();
+  const old_data = id;<#
+  }
+  #>
+  
+  const res = await auditReverse<#=Table_Up2#>(id);<#
+  if (log) {
+  #>
+  
+  const end_time = new Date();
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "auditReverse<#=Table_Up2#>",
+    method_lbl: "反审核",
+    lbl: "反审核",
+    time: end_time.getTime() - begin_time.getTime(),
+    old_data,
+  });<#
+  }
+  #>
+  
+  return res;
+}<#
+}
+#><#
 if (hasReviewed) {
 #>
 

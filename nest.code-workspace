@@ -38,7 +38,7 @@
     "editor.inlineSuggest.syntaxHighlightingEnabled": true,
     "editor.minimap.scale": 2,
     "editor.minimap.showSlider": "mouseover",
-    "editor.stickyScroll.enabled": true,
+    "editor.stickyScroll.enabled": false,
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": true,
     "deno.codeLens.references": false,

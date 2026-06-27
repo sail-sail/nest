@@ -15,3 +15,4 @@ A/v8mhT1SESIUUqj2mT7ZA,dyn_page_field_align,动态页面字段-对齐方式,stri
 a9FSi16IQ+2csaMAV4aTRA,server_log_level,系统日志-日志级别,string,17,1,0
 h9NdZwzeSD2lfNEZY9u5fg,message_category,消息-分类,string,18,0,1
 GAHanVsXRbSOVurTIHywVA,message_channel,消息-发送渠道,string,19,0,0
+v7sK2mN4pR9tL6qW3xY5zA,audit,审核,string,20,1,0
