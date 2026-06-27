@@ -144,6 +144,7 @@ const autoCodeColumn = columns.find((item) => item.autoCode);
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -151,9 +152,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -180,6 +181,17 @@ for (const inlineForeignTab of inlineForeignTabs) {
 const searchByKeyword = opts?.searchByKeyword;
 
 const hasSummary = columns.some((column) => column.showSummary);
+
+const findByIdTableUps = [ ];
+const findOneTableUps = [ ];
+const findAllTableUps = [ ];
+const createTableUps = [ ];
+const deleteByIdsTableUps = [ ];
+const revertByIdsTableUps = [ ];
+const updateByIdTableUps = [ ];
+const forceDeleteByIdsUps = [ ];
+const equalsByUniqueTableUps = [ ];
+const searchTableUps = [ ];
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -334,11 +346,23 @@ use crate::common::gql::model::{
   PageInput,
   SortInput,
 };<#
-if (hasAudit && auditTable_Up) {
+if (hasAudit && auditTable_Up && !findAllTableUps.includes(auditTable_Up)) {
+#><#
+const hasFindByIdTableUps = findAllTableUps.includes(auditTable_Up);
+if (!hasFindByIdTableUps) {
+  findAllTableUps.push(auditTable_Up);
 #>
 
-use crate::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_dao::find_all_<#=auditTable#>;
+use crate::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_dao::find_all_<#=auditTable#>;<#
+}
+#><#
+const hasSearchTableUps = searchTableUps.includes(auditTable_Up);
+if (!hasSearchTableUps) {
+  searchTableUps.push(auditTable_Up);
+#>
 use crate::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::<#=auditTable_Up#>Search;<#
+}
+#><#
 }
 #><#
   if (hasDict) {
@@ -367,15 +391,6 @@ use crate::common::i18n::i18n_dao::get_server_i18n_enable;<#
 #>
 
 use super::<#=table#>_model::*;<#
-const findByIdTableUps = [ ];
-const findOneTableUps = [ ];
-const findAllTableUps = [ ];
-const createTableUps = [ ];
-const deleteByIdsTableUps = [ ];
-const revertByIdsTableUps = [ ];
-const updateByIdTableUps = [ ];
-const forceDeleteByIdsUps = [ ];
-const equalsByUniqueTableUps = [ ];
 for (const inlineForeignTab of inlineForeignTabs) {
   const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
   const table = inlineForeignTab.table;
@@ -611,10 +626,18 @@ for (const item of cascadeUpdateFieldTables) {
   if (!hasUpdateByIdTableUps) {
     updateByIdTableUps.push(tableUP);
   }
+  const hasSearchTableUps = searchTableUps.includes(tableUP);
+  if (!hasSearchTableUps) {
+    searchTableUps.push(tableUP);
+  }
 #>
 
-use crate::<#=mod#>::<#=table#>::<#=table#>_model::{
-  <#=tableUP#>Search,
+use crate::<#=mod#>::<#=table#>::<#=table#>_model::{<#
+  if (!hasSearchTableUps) {
+  #>
+  <#=tableUP#>Search,<#
+  }
+  #>
   <#=tableUP#>Input,
 };
 
