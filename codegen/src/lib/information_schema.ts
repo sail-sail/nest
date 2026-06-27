@@ -1560,6 +1560,9 @@ export async function getSchema(
     // 复核
     const auditColumnName = audit.column;
     const auditColumn = tables[table_name].columns.find((item) => item.COLUMN_NAME === auditColumnName);
+    if (!auditColumn) {
+      throw new Error(`表: ${ table_name }, 审核字段: ${ auditColumnName } 不存在!`);
+    }
     const dict_models = auditColumn.dict_models;
     if (dict_models && dict_models.some((item) => item.val === "reviewed")) {
       audit.hasReviewed = true;

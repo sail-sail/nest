@@ -63,6 +63,84 @@ description: 数据库建表规范。创建新表 SQL 时必须遵循
 - 有 `dict:` 或 `dictbiz:` 标注的字段，若字典配置了 `is_sys=1`，则该字段必定是 `ENUM` 类型（codegen 会自动生成枚举类型）
 - 字典的详细配置规则见 [dict/SKILL.md](../dict/SKILL.md)
 
+## 审核型表设计
+
+如果某个业务主表需要标准“审核/复核/反审核”能力，SQL 层不要只加一个 `audit` 字段，而是要同时设计：
+
+1. 主业务表的审核状态字段
+2. 配套的审核流水表 `{mod}_{table}_audit`
+
+### 主业务表
+
+标准字段：
+
+```sql
+`audit` ENUM('unsubmited', 'unaudited', 'audited', 'reviewed', 'rejected') NOT NULL DEFAULT 'unsubmited' COMMENT '审核,dict:audit',
+```
+
+- `unsubmited`: 待提交
+- `unaudited`: 待审核
+- `audited`: 已审核
+- `reviewed`: 已复核
+- `rejected`: 审核拒绝
+
+如果业务没有“复核”环节，可以去掉 `reviewed`，只保留：
+
+```sql
+`audit` ENUM('unsubmited', 'unaudited', 'audited', 'rejected') NOT NULL DEFAULT 'unsubmited' COMMENT '审核,dict:audit',
+```
+
+- `audit` 字段属于系统字典字段，必须保持 `dict:audit`
+- 标准反审核不需要新增新的枚举值；反审核只是把状态回退到上一步
+- 标准反审核规则建议固定为：
+  - `reviewed -> audited`
+  - `audited -> unaudited`
+  - `unaudited -> unsubmited`
+  - `unsubmited`、`rejected` 不允许反审核
+
+### 审核流水表
+
+表名固定建议：`{mod}_{table}_audit`
+
+标准结构：
+
+```sql
+CREATE TABLE if not exists `{mod}_{table}_audit` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `{table}_id` varchar(22) NOT NULL DEFAULT '' COMMENT '{主表中文名}',
+  `{table}_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '{主表中文名}',
+  `audit` ENUM('unsubmited', 'unaudited', 'audited', 'reviewed', 'rejected') NOT NULL DEFAULT 'unsubmited' COMMENT '审核,dict:audit',
+  `audit_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '审核人',
+  `audit_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '审核人',
+  `audit_time` datetime DEFAULT NULL COMMENT '审核时间',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '所属组织',
+  `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '所属组织',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`tenant_id`, `is_deleted`, `{table}_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='{主表中文名}审核';
+```
+
+- 审核流水表的 `audit` 枚举必须和主表 `audit` 枚举保持一致
+- `{table}_id_lbl` 必须保留，供 codegen 自动写入审核对象名称
+- `audit_usr_id` / `audit_usr_id_lbl` / `audit_time` / `rem` 是标准字段，不要省略
+- 如果主表启用了租户、组织、软删除，审核流水表通常也要保持同一套通用字段
+
+### 必做串联
+
+SQL 建好后，必须继续阅读 [table-config/SKILL.md](../table-config/SKILL.md) 的“审核流 (audit)”小节，把 `opts.audit` 和审核流水表 `columns` 配齐，否则 codegen 只能识别 SQL，不能正确生成前后端审核能力。
+
 ## 可选系统字段
 
 | 字段 | 用途 |
