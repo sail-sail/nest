@@ -1269,8 +1269,12 @@ if (searchByKeyword) {
           (
             permit('audit_submit', '审核提交') ||
             permit('audit_pass', '审核通过') ||
-            permit('audit_reject', '审核拒绝') ||
+            permit('audit_reject', '审核拒绝')<#
+            if (opts?.audit?.hasReverse) {
+            #> ||
             permit('audit_reverse', '反审核')<#
+            }
+            #><#
             if (hasReviewed) {
             #> ||
             permit('audit_review', '复核通过')<#
