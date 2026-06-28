@@ -140,7 +140,7 @@ const pagePath = getPagePathUsr();
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: UsrId | UsrId[] | null;
+    modelValue?: UsrId | UsrId[] | null | "";
     modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;

@@ -1103,7 +1103,7 @@ export default defineConfig({
         COLUMN_NAME: "code",
         align: "left",
         require: true,
-        search: false,
+        search: true,
         width: 240,
         foreignTabs: [
           {
@@ -1119,7 +1119,7 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         align: "left",
         require: true,
-        search: false,
+        search: true,
         width: 240,
         fixed: "left",
       },
@@ -1253,7 +1253,7 @@ export default defineConfig({
         COLUMN_NAME: "code",
         align: "left",
         require: true,
-        search: false,
+        search: true,
         width: 240,
         foreignTabs: [
           {
@@ -1268,7 +1268,7 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         align: "left",
         require: true,
-        search: false,
+        search: true,
         width: 240,
       },
       {

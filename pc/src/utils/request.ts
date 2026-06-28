@@ -2,7 +2,7 @@
 import { ElMessage } from "element-plus";
 import useUsrStore from "../store/usr.ts";
 import useIndexStore from "../store/index.ts";
-import { saveAs } from "file-saver";
+import { saveAs } from "../compositions/download.ts";
 
 export const baseURL = "";
 

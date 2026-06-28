@@ -140,7 +140,7 @@ const pagePath = getPagePathDept();
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: DeptId | DeptId[] | null;
+    modelValue?: DeptId | DeptId[] | null | "";
     modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;

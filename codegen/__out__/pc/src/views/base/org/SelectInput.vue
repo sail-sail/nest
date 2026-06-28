@@ -140,7 +140,7 @@ const pagePath = getPagePathOrg();
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: OrgId | OrgId[] | null;
+    modelValue?: OrgId | OrgId[] | null | "";
     modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;
