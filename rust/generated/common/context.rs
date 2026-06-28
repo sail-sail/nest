@@ -173,9 +173,9 @@ pub fn get_server_tokentimeout() -> i64 {
 
 /// 获取当前请求id, 不保证唯一, 仅用于日志
 pub fn get_req_id() -> Arc<SmolStr> {
-  CTX.with(|ctx| {
+  CTX.try_with(|ctx| {
     ctx.req_id.clone()
-  })
+  }).unwrap_or_else(|_| Arc::new(SmolStr::new("outside-context")))
 }
 
 /// 获取当前请求的时间点
@@ -195,9 +195,10 @@ pub fn get_auth_model() -> Option<AuthModel> {
 
 #[allow(dead_code)]
 pub fn has_auth_model() -> bool {
-  CTX.with(|ctx| {
+  CTX.try_with(|ctx| {
     ctx.auth_model.is_some()
   })
+  .unwrap_or(false)
 }
 
 /// 获取当前登录用户, 如果不存在则返回错误
