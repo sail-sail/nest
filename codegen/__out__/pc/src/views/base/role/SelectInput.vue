@@ -140,7 +140,7 @@ const pagePath = getPagePathRole();
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: RoleId | RoleId[] | null;
+    modelValue?: RoleId | RoleId[] | null | "";
     modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;

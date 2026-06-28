@@ -172,7 +172,7 @@ const {
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null;
+    modelValue?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null | "";
     modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;

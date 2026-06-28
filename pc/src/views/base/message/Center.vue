@@ -22,7 +22,7 @@
       </div>
       <el-button
         plain
-        @click="refreshMessages"
+        @click="refreshMessages()"
       >
         <template #icon>
           <ElIconRefresh />
@@ -145,6 +145,23 @@
       </el-tabs>
     </el-card>
 
+    <div
+      v-if="page.total > 0"
+      un-flex="~ justify-end"
+      un-m="t-4"
+    >
+      <el-pagination
+        background
+        :page-sizes="pageSizes"
+        :page-size="page.size"
+        layout="total, sizes, prev, pager, next, jumper"
+        :current-page="page.current"
+        :total="page.total"
+        @size-change="pgSizeChg"
+        @current-change="pgCurrentChg"
+      />
+    </div>
+
     <el-dialog
       v-model="detailVisible"
       title=" "
@@ -182,6 +199,7 @@
 </template>
 
 <script lang="ts" setup vapor>
+import { usePage } from "@/compositions/List";
 import { query } from "@/utils/graphql";
 import { updateByIdMessageReceiver } from "@/views/base/message_receiver/Api";
 
@@ -202,7 +220,13 @@ let detailVisible = $ref(false);
 let selectedItem = $ref<MessageCenterItem | null>(null);
 let items = $ref<MessageCenterItem[]>([]);
 
-const totalCount = $computed(() => items.length);
+const { page, pageSizes, pgSizeChg, pgCurrentChg } = $(usePage(async (isCount = true) => {
+  await refreshMessages(isCount);
+}, {
+  isPagination: true,
+}));
+
+const totalCount = $computed(() => page.total);
 const unreadItems = $computed(() => items.filter((item) => !isRead(item.receiver)));
 const readItems = $computed(() => items.filter((item) => isRead(item.receiver)));
 const unreadCount = $computed(() => unreadItems.length);
@@ -242,17 +266,24 @@ function getRouteQuery(routeQuery?: string | Record<string, unknown> | null) {
   return routeQuery as Record<string, unknown>;
 }
 
-async function refreshMessages() {
+async function refreshMessages(isCount = true) {
+  const shouldCount = isCount !== false;
+
   if (!usrStore.usr_id) {
     items = [];
+    if (shouldCount) {
+      page.total = 0;
+    }
+    inited = true;
     return;
   }
+
   const data: {
     findAllMessageReceiver: MessageReceiverModel[];
   } = await query({
     query: /* GraphQL */ `
-      query($search: MessageReceiverSearch) {
-        findAllMessageReceiver(search: $search) {
+      query($search: MessageReceiverSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllMessageReceiver(search: $search, page: $page, sort: $sort) {
           id
           message_id
           receiver_usr_id
@@ -267,6 +298,17 @@ async function refreshMessages() {
       search: {
         receiver_usr_id: usrStore.usr_id,
       },
+      page: {
+        pgOffset: (page.current - 1) * page.size,
+        pgSize: page.size,
+        isResultLimit: true,
+      },
+      sort: [
+        {
+          prop: "create_time",
+          order: "descending",
+        },
+      ],
     },
   }, {
     notLoading: true,
@@ -275,7 +317,31 @@ async function refreshMessages() {
   const receivers = data.findAllMessageReceiver || [];
   if (receivers.length === 0) {
     items = [];
+    if (shouldCount) {
+      page.total = 0;
+    }
+    inited = true;
     return;
+  }
+
+  if (shouldCount) {
+    const countData: {
+      findCountMessageReceiver: number;
+    } = await query({
+      query: /* GraphQL */ `
+        query($search: MessageReceiverSearch) {
+          findCountMessageReceiver(search: $search)
+        }
+      `,
+      variables: {
+        search: {
+          receiver_usr_id: usrStore.usr_id,
+        },
+      },
+    }, {
+      notLoading: true,
+    });
+    page.total = countData.findCountMessageReceiver || 0;
   }
 
   const messageIds = receivers
@@ -323,6 +389,8 @@ async function refreshMessages() {
       const bTime = b.receiver.create_time || "";
       return bTime.localeCompare(aTime);
     });
+
+  inited = true;
 }
 
 async function markAsRead(item: MessageCenterItem) {
@@ -375,7 +443,9 @@ onActivated(() => {
 });
 
 onMounted(() => {
-  window.addEventListener("message-count-changed", refreshMessages);
+  window.addEventListener("message-count-changed", () => {
+    refreshMessages();
+  });
 });
 </script>
 

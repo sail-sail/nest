@@ -140,7 +140,7 @@ const pagePath = getPagePathDynPage();
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: DynPageId | DynPageId[] | null;
+    modelValue?: DynPageId | DynPageId[] | null | "";
     modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;
