@@ -1782,7 +1782,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "sender_usr_id",
         modelLabel: "sender_usr_id_lbl",
-        isCascadeUpdateModelLabel: true,
         foreignKey: {
           mod: "base",
           table: "usr",
@@ -1837,7 +1836,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "receiver_usr_id",
         modelLabel: "receiver_usr_id_lbl",
-        isCascadeUpdateModelLabel: true,
         require: true,
         search: true,
         foreignKey: {

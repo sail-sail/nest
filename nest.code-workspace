@@ -36,7 +36,7 @@
     "diffEditor.wordWrap": "off",
     "editor.formatOnSave": false,
     "editor.inlineSuggest.syntaxHighlightingEnabled": true,
-    "editor.minimap.scale": 2,
+    "editor.minimap.scale": 1,
     "editor.minimap.showSlider": "mouseover",
     "editor.stickyScroll.enabled": false,
     "editor.bracketPairColorization.enabled": true,
