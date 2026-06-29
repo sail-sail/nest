@@ -1424,11 +1424,7 @@ pub async fn delete_by_ids_<#=table#>(
     #>.clone()<#
     }
     #>,
-    options<#
-    if (hasAudit) {
-    #>.clone()<#
-    }
-    #>,
+    options,
   ).await?;<#
   if (mod === "base" && table === "i18n") {
   #>
@@ -1648,11 +1644,7 @@ pub async fn revert_by_ids_<#=table#>(
     #>.clone()<#
     }
     #>,
-    options<#
-    if (hasAudit) {
-    #>.clone()<#
-    }
-    #>,
+    options,
   ).await?;<#
   if (mod === "base" && table === "i18n") {
   #>
@@ -1715,11 +1707,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     #>.clone()<#
     }
     #>,
-    options<#
-    if (hasAudit) {
-    #>.clone()<#
-    }
-    #>,
+    options,
   ).await?;<#
   if (hasAudit && auditTable_Up) {
   #>
