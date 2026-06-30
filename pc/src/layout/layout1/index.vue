@@ -802,6 +802,7 @@ async function onDeptSelect(org_id?: OrgId) {
       usrStore.loginInfo.org_id = org_id;
     }
     await usrStore.login(token);
+    globalThis.location.reload();
   }
 }
 
