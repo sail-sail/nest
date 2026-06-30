@@ -130,8 +130,7 @@ import {
 #><#
 if (
   (hasAudit && auditTable_Up) ||
-  opts.filterDataByCreateUsr ||
-  hasOrgId
+  opts.filterDataByCreateUsr
 ) {
 #>
 
@@ -214,9 +213,7 @@ async function setSearchQuery(<#
   } else if (hasOrgId) {
   #>
   
-  if (!await isAdmin(usr_id)) {
-    search.org_id = org_ids;
-  }<#
+  search.org_id = org_ids;<#
   }
   #>
   

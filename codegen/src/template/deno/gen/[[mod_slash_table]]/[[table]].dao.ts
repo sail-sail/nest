@@ -13,6 +13,9 @@ const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.
 const hasRedundLbl = columns.some((column) => column.redundLbl && Object.keys(column.redundLbl).length > 0);
 const hasIsIcon = columns.some((column) => column.isIcon);
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
+const orgIdColumn = columns.find((column) => column.COLUMN_NAME === "org_id");
+const hasOrgId = !!orgIdColumn;
+const orgIdModelLabel = orgIdColumn?.modelLabel;
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -4677,6 +4680,47 @@ async function _creates(
     }<#
     }
     #>
+  }<#
+  }
+  #><#
+  if (hasInlineForeignTabs && hasOrgId) {
+  #>
+  
+  for (const input of inputs) {<#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      if (!inlineForeignSchema) continue;
+      const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+      const inlineForeignOrgIdColumn = inlineForeignSchema.columns.find((item) => item.COLUMN_NAME === "org_id");
+      const inlineForeignOrgIdModelLabel = inlineForeignOrgIdColumn?.modelLabel;
+      if (!inlineForeignOrgIdColumn) continue;
+    #>
+    if (input.<#=inline_column_name#>) {<#
+      if (inline_foreign_type === "one2many") {
+      #>
+      for (const model of input.<#=inline_column_name#>) {
+        model.org_id = input.org_id;<#
+        if (orgIdModelLabel && inlineForeignOrgIdModelLabel) {
+        #>
+        model.<#=inlineForeignOrgIdModelLabel#> = input.<#=orgIdModelLabel#>;<#
+        }
+        #>
+      }<#
+      } else if (inline_foreign_type === "one2one") {
+      #>
+      input.<#=inline_column_name#>.org_id = input.org_id;<#
+        if (orgIdModelLabel && inlineForeignOrgIdModelLabel) {
+        #>
+      input.<#=inline_column_name#>.<#=inlineForeignOrgIdModelLabel#> = input.<#=orgIdModelLabel#>;<#
+        }
+        #>
+    }<#
+      }
+    #>
+    }<#
+    }
+  #>
   }<#
   }
   #>

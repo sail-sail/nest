@@ -289,9 +289,11 @@ async function getSchema0(
     tables[table_name].columns.push({
       COLUMN_NAME: "org_id",
       COLUMN_TYPE: "varchar(22)",
+      COLUMN_DEFAULT: "CURRENT_ORG_ID",
+      modelLabel: hasOrgIdLbl ? "org_id_lbl" : undefined,
+      require: true,
       DATA_TYPE: "varchar",
-      COLUMN_COMMENT: "组织",
-      onlyCodegenDeno: true,
+      COLUMN_COMMENT: "所属组织",
       canSearch: true,
       foreignKey: {
         mod: "base",
@@ -305,6 +307,7 @@ async function getSchema0(
   if (hasCreateUsrId && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "create_usr_id")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "create_usr_id",
+      modelLabel: hasCreateUsrIdLbl ? "create_usr_id_lbl" : undefined,
       COLUMN_TYPE: "varchar(22)",
       DATA_TYPE: "varchar",
       COLUMN_COMMENT: "创建人",
@@ -326,6 +329,7 @@ async function getSchema0(
   if (hasUpdateUsrId && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "update_usr_id")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "update_usr_id",
+      modelLabel: hasUpdateUsrIdLbl ? "update_usr_id_lbl" : undefined,
       COLUMN_TYPE: "varchar(22)",
       DATA_TYPE: "varchar",
       COLUMN_COMMENT: "更新人",
@@ -359,17 +363,14 @@ async function getSchema0(
       if (!item.COLUMN_DEFAULT) {
         item.COLUMN_DEFAULT = "CURRENT_ORG_ID";
       }
-      if (item.noAdd == null) {
-        item.noAdd = true;
-      }
       if (hasOrgIdLbl) {
         item.modelLabel = "org_id_lbl";
       }
       if (item.require == null) {
-        item.require = false;
+        item.require = true;
       }
-      if (item.readonly == null) {
-        item.readonly = true;
+      if (item.canSearch == null) {
+        item.canSearch = true;
       }
       if (item.foreignKey == null) {
         item.foreignKey = { };
@@ -379,9 +380,6 @@ async function getSchema0(
       }
       if (item.foreignKey.table == null) {
         item.foreignKey.table = "org";
-      }
-      if (item.foreignKey.selectType == null) {
-        item.foreignKey.selectType = "selectInput";
       }
     }
     if ([ "tenant_id", "is_deleted" ].includes(column_name)) {

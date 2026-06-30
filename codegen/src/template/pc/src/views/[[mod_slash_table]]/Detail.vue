@@ -1494,6 +1494,7 @@ for (let i = 0; i < columns.length; i++) {
                 if (column_name === "version") continue;
                 if (column_name === "order_by") continue;
                 if (column_name === "tenant_id") continue;
+                if (column_name === "org_id") continue;
                 const data_type = column.DATA_TYPE;
                 let column_type = column.COLUMN_TYPE;
                 const column_comment = column.COLUMN_COMMENT || "";
@@ -4125,43 +4126,44 @@ for (let i = 0; i < columns.length; i++) {
       #>
       
       <div
+        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
         un-flex="~"
         un-gap="x-1"
       >
-        <template v-if="(ids && ids.length > 1)">
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-            @click="onPrevId"
-          >
-            <ElIconArrowLeft
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowLeft>
-          </el-button>
-          
-          <div>
-            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-          </div>
-          
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-            @click="onNextId"
-          >
-            <ElIconArrowRight
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowRight>
-          </el-button>
-        </template>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+          @click="onPrevId"
+        >
+          <ElIconArrowLeft
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowLeft>
+        </el-button>
+        
+        <div>
+          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+        </div>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+          @click="onNextId"
+        >
+          <ElIconArrowRight
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowRight>
+        </el-button>
         
         <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
         </div>
+        
       </div>
       
     </div>
@@ -8192,8 +8194,12 @@ for (const inlineForeignTab of inlineForeignTabs) {
   const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
   const inline_column_name = inlineForeignTab.column_name;
   const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  const inlineForeignColumns = inlineForeignSchema.columns;
+  const inlineForeignOrgIdColumn = inlineForeignColumns.find((item) => item.COLUMN_NAME === "org_id");
+  const inlineForeignHasOrgId = !!inlineForeignOrgIdColumn;
+  const inlineForeignHasOrgIdLbl = !!inlineForeignOrgIdColumn?.modelLabel;
 #><#
-  if (inline_foreign_type === "one2many") {
+if (inline_foreign_type === "one2many") {
 #>
 
 // <#=inlineForeignTab.label#>
@@ -8234,7 +8240,6 @@ function <#=inline_column_name#>Remove(row: <#=Table_Up#>Model) {
 
 watch(
   () => [
-    dialogModel.<#=inline_column_name#>,
     dialogModel.<#=inline_column_name#>?.length,
   ],
   () => {
@@ -8248,7 +8253,39 @@ watch(
     }
   },
 );<#
-  }
+if (hasOrgId && inlineForeignHasOrgId) {
+#>
+
+watch(
+  () => [
+    dialogModel.org_id,<#
+    if (hasOrgIdLbl && inlineForeignHasOrgIdLbl) {
+    #>
+    dialogModel.org_id_lbl,<#
+    }
+    #>
+    dialogModel.<#=inline_column_name#>?.length,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.<#=inline_column_name#>) {
+      return;
+    }
+    for (const item of dialogModel.<#=inline_column_name#>) {
+      item.org_id = dialogModel.org_id;<#
+      if (hasOrgIdLbl && inlineForeignHasOrgIdLbl) {
+      #>
+      item.org_id_lbl = dialogModel.org_id_lbl;<#
+      }
+      #>
+    }
+  },
+);<#
+}
+#><#
+}
 #><#
 }
 #><#

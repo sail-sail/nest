@@ -606,12 +606,17 @@ export function useDownloadImportTemplateMessageReceiver() {
             receiver_usr_id_lbl
             is_read_lbl
             read_time_lbl
+            org_id_lbl
           }
           findAllMessage {
             id
             content
           }
           findAllUsr {
+            id
+            lbl
+          }
+          findAllOrg {
             id
             lbl
           }

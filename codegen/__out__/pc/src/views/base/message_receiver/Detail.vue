@@ -153,18 +153,26 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.org_id == null) && dialogAction !== 'add' && dialogAction !== 'copy'">
+        <template v-if="(showBuildIn || builtInModel?.org_id == null)">
           <el-form-item
             label="所属组织"
             prop="org_id"
           >
-            <SelectInputOrg
+            <CustomSelect
               v-model="dialogModel.org_id"
               v-model:model-label="dialogModel.org_id_lbl"
+              :method="getListOrg"
+              :find-by-values="findByIdsOrg"
+              :options-map="((item: OrgModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
               placeholder="请选择 所属组织"
-              :readonly="true"
+              :readonly="isLocked || isReadonly"
               :page-inited="inited"
-            ></SelectInputOrg>
+            ></CustomSelect>
           </el-form-item>
         </template>
         
@@ -215,43 +223,44 @@
       </el-button>
       
       <div
+        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
         un-flex="~"
         un-gap="x-1"
       >
-        <template v-if="(ids && ids.length > 1)">
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-            @click="onPrevId"
-          >
-            <ElIconArrowLeft
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowLeft>
-          </el-button>
-          
-          <div>
-            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-          </div>
-          
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-            @click="onNextId"
-          >
-            <ElIconArrowRight
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowRight>
-          </el-button>
-        </template>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+          @click="onPrevId"
+        >
+          <ElIconArrowLeft
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowLeft>
+        </el-button>
+        
+        <div>
+          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+        </div>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+          @click="onNextId"
+        >
+          <ElIconArrowRight
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowRight>
+        </el-button>
         
         <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
         </div>
+        
       </div>
       
     </div>
@@ -278,6 +287,7 @@ import {
 import {
   getListMessage,
   getListUsr,
+  getListOrg,
 } from "./Api.ts";
 
 import {
@@ -288,7 +298,9 @@ import {
   findByIdsUsr,
 } from "@/views/base/usr/Api.ts";
 
-import SelectInputOrg from "@/views/base/org/SelectInput.vue";
+import {
+  findByIdsOrg,
+} from "@/views/base/org/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -356,6 +368,13 @@ watchEffect(async () => {
       {
         required: true,
         message: "请选择 已读",
+      },
+    ],
+    // 所属组织
+    org_id: [
+      {
+        required: true,
+        message: "请选择 所属组织",
       },
     ],
   };
@@ -469,10 +488,8 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
-      defaultInput,
       data,
     ] = await Promise.all([
-      getDefaultInputMessageReceiver(),
       findOneModel({
         id,
         is_deleted,
@@ -482,7 +499,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        org_id: defaultInput.org_id,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
     }
@@ -676,6 +692,7 @@ watch(
     dialogModel.receiver_usr_id,
     dialogModel.is_read,
     dialogModel.read_time,
+    dialogModel.org_id,
   ],
   () => {
     if (!inited || is_form_hydrating) {
@@ -693,6 +710,9 @@ watch(
     if (!dialogModel.read_time) {
       dialogModel.read_time_lbl = "";
       dialogModel.read_time_save_null = true;
+    }
+    if (!dialogModel.org_id) {
+      dialogModel.org_id_lbl = "";
     }
   },
 );

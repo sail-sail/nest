@@ -14,10 +14,6 @@ import {
   validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-import {
-  isAdmin,
-} from "/src/base/usr/usr.dao.ts";
-
 import * as messageDao from "./message.dao.ts";
 
 async function setSearchQuery(
@@ -37,9 +33,7 @@ async function setSearchQuery(
     org_ids.push("" as OrgId);
   }
   
-  if (!await isAdmin(usr_id)) {
-    search.org_id = org_ids;
-  }
+  search.org_id = org_ids;
   
 }
 
