@@ -28,8 +28,6 @@ use crate::base::usr::usr_dao::{
   validate_option_usr,
 };
 
-use crate::common::usr::usr_dao::is_admin;
-
 use super::message_model::*;
 use super::message_dao;
 
@@ -56,9 +54,8 @@ async fn set_search_query(
     org_ids.push(OrgId::default());
   }
   
-  if !is_admin(usr_id, options).await? {
-    search.org_id = Some(org_ids);
-  }
+  search.org_id = Some(org_ids);
+  
   Ok(())
 }
 

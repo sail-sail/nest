@@ -31,6 +31,7 @@ async fn set_search_query(
   search: &mut UsrSearch,
   options: Option<Options>,
 ) -> Result<()> {
+  
   Ok(())
 }
 

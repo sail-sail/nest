@@ -28,6 +28,7 @@ async fn set_search_query(
   search: &mut I18nSearch,
   options: Option<Options>,
 ) -> Result<()> {
+  
   Ok(())
 }
 
