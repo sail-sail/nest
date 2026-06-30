@@ -175,7 +175,7 @@ pub fn get_server_tokentimeout() -> i64 {
 pub fn get_req_id() -> Arc<SmolStr> {
   CTX.try_with(|ctx| {
     ctx.req_id.clone()
-  }).unwrap_or_else(|_| Arc::new(SmolStr::new("outside-context")))
+  }).unwrap_or_else(|_| Arc::new(SmolStr::new("")))
 }
 
 /// 获取当前请求的时间点
@@ -520,7 +520,7 @@ impl Ctx {
   }
   
   /// 执行sql
-  async fn execute(
+  pub async fn execute(
     &self,
     sql: String,
     args: Vec<ArgType>,
@@ -722,7 +722,7 @@ impl Ctx {
   }
   
   /// 查询多条记录
-  async fn query<R>(
+  pub async fn query<R>(
     &self,
     sql: String,
     args: Vec<ArgType>,
@@ -1194,6 +1194,18 @@ pub struct Ctx {
 }
 
 impl Ctx {
+  
+  pub fn get_req_id(&self) -> Arc<SmolStr> {
+    self.req_id.clone()
+  }
+  
+  pub fn get_auth_model(&self) -> Option<AuthModel> {
+    self.auth_model.clone()
+  }
+  
+  pub fn get_auth_model_as_mut(&mut self) -> Option<&mut AuthModel> {
+    self.auth_model.as_mut()
+  }
   
   pub async fn scope<F, T>(self, f: F) -> Result<T>
     where

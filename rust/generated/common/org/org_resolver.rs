@@ -16,7 +16,7 @@ pub async fn org_login_select(
 ) -> Result<SmolStr> {
   
   info!(
-    "{req_id} {function_name}",
+    "{req_id} {function_name}: org_id: {org_id:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );

@@ -4991,6 +4991,50 @@ async fn _creates(
     #>
   }<#
   }
+  #><#
+  if (hasInlineForeignTabs && hasOrgId) {
+  #>
+  
+  // org_id
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    let org_id = input.org_id;<#
+    if (hasOrgIdLbl) {
+    #>
+    let org_id_lbl = input.org_id_lbl.clone();<#
+    }
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+      const inlineForeignColumns = inlineForeignSchema.columns;
+      const inlineForeignOrgIdColumn = inlineForeignColumns.find((item) => item.COLUMN_NAME === "org_id");
+      const inlineForeignHasOrgId = !!inlineForeignOrgIdColumn;
+      const inlineForeignHasOrgIdLbl = !!inlineForeignOrgIdColumn?.modelLabel;
+    #>
+    
+    input.<#=inline_column_name#>.iter_mut().for_each(|items| {
+      for item in items {
+        item.org_id = org_id;<#
+        if (hasOrgIdLbl) {
+        #>
+        item.org_id_lbl = org_id_lbl.clone();<#
+        }
+        #>
+      }
+    });<#
+    }
+    #>
+    
+  }<#
+  }
   #>
   
   let mut ids2: Vec<<#=Table_Up#>Id> = vec![];

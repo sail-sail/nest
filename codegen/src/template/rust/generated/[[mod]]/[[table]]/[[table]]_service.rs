@@ -160,8 +160,7 @@ use crate::common::options::options_dao::update_i18n_version;<#
 #><#
 if (
   (hasAudit && auditTable_Up) ||
-  opts.filterDataByCreateUsr ||
-  hasOrgId
+  opts.filterDataByCreateUsr
 ) {
 #>
 
@@ -233,11 +232,10 @@ async fn set_search_query(
   } else if (hasOrgId) {
   #>
   
-  if !is_admin(usr_id, options).await? {
-    search.org_id = Some(org_ids);
-  }<#
+  search.org_id = Some(org_ids);<#
   }
   #>
+  
   Ok(())
 }<#
 if (hasAudit) {
