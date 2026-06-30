@@ -65,26 +65,6 @@ use crate::common::dict_detail::dict_detail_dao::get_dict;
 
 use super::usr_model::*;
 
-use crate::base::message::message_model::{
-  MessageSearch,
-  MessageInput,
-};
-
-use crate::base::message::message_dao::{
-  find_all_message,
-  update_by_id_message,
-};
-
-use crate::base::message_receiver::message_receiver_model::{
-  MessageReceiverSearch,
-  MessageReceiverInput,
-};
-
-use crate::base::message_receiver::message_receiver_dao::{
-  find_all_message_receiver,
-  update_by_id_message_receiver,
-};
-
 use crate::base::tenant::tenant_model::TenantId;
 use crate::base::role::role_model::RoleId;
 use crate::base::dept::dept_model::DeptId;
@@ -3217,11 +3197,6 @@ pub async fn update_by_id_usr(
   
   let mut field_num: usize = 0;
   
-  let mut sql_set_flds: Vec<SmolStr> = vec![];
-  let mut sql_set_fld_input: UsrInput = UsrInput {
-    ..Default::default()
-  };
-  
   if let Some(tenant_id) = input.tenant_id {
     field_num += 1;
     sql_fields += "tenant_id=?,";
@@ -3236,8 +3211,6 @@ pub async fn update_by_id_usr(
   // 名称
   if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
-    sql_set_flds.push(SmolStr::new("lbl"));
-    sql_set_fld_input.lbl = Some(lbl.clone());
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
@@ -3408,61 +3381,6 @@ pub async fn update_by_id_usr(
       args,
       options,
     ).await?;
-    
-    if 
-      sql_set_flds.contains(&SmolStr::new("lbl"))
-    {
-      
-      let message_models = find_all_message(
-        Some(MessageSearch {
-          sender_usr_id: Some(vec![id]),
-          ..Default::default()
-        }),
-        None,
-        None,
-        options,
-      ).await?;
-      
-      for message_model in message_models {
-        let message_id = message_model.id;
-        let mut message_input: MessageInput = MessageInput {
-          ..Default::default()
-        };
-        if sql_set_flds.contains(&SmolStr::new("lbl")) {
-          message_input.sender_usr_id_lbl = sql_set_fld_input.lbl.clone();
-        }
-        update_by_id_message(
-          message_id,
-          message_input,
-          options,
-        ).await?;
-      }
-      
-      let message_receiver_models = find_all_message_receiver(
-        Some(MessageReceiverSearch {
-          receiver_usr_id: Some(vec![id]),
-          ..Default::default()
-        }),
-        None,
-        None,
-        options,
-      ).await?;
-      
-      for message_receiver_model in message_receiver_models {
-        let message_receiver_id = message_receiver_model.id;
-        let mut message_receiver_input: MessageReceiverInput = MessageReceiverInput {
-          ..Default::default()
-        };
-        if sql_set_flds.contains(&SmolStr::new("lbl")) {
-          message_receiver_input.receiver_usr_id_lbl = sql_set_fld_input.lbl.clone();
-        }
-        update_by_id_message_receiver(
-          message_receiver_id,
-          message_receiver_input,
-          options,
-        ).await?;
-      }
-    }
     
     del_cache_usr().await?;
     

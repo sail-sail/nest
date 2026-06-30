@@ -577,8 +577,13 @@ export function useDownloadImportTemplateMessage() {
             sender_usr_id_lbl
             is_sys_msg_lbl
             is_pinned_lbl
+            org_id_lbl
           }
           findAllUsr {
+            id
+            lbl
+          }
+          findAllOrg {
             id
             lbl
           }

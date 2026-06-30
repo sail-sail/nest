@@ -2,7 +2,6 @@
 const componentMapSelectInput: Record<string, () => Promise<Component>> = {
   "DeptSelectInput": () => import("@/views/base/dept/SelectInput.vue"),
   "DynPageSelectInput": () => import("@/views/base/dyn_page/SelectInput.vue"),
-  "OrgSelectInput": () => import("@/views/base/org/SelectInput.vue"),
   "RoleSelectInput": () => import("@/views/base/role/SelectInput.vue"),
   "UsrSelectInput": () => import("@/views/base/usr/SelectInput.vue"),
 };
@@ -15,10 +14,6 @@ const componentKeysSelectInput = [
   {
     value: "DynPageSelectInput",
     label: "动态页面选择框",
-  },
-  {
-    value: "OrgSelectInput",
-    label: "组织选择框",
   },
   {
     value: "RoleSelectInput",

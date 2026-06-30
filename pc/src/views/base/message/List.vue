@@ -1435,6 +1435,7 @@ async function onImportExcel() {
     [ "发送人" ]: "sender_usr_id_lbl",
     [ "系统消息" ]: "is_sys_msg_lbl",
     [ "置顶" ]: "is_pinned_lbl",
+    [ "所属组织" ]: "org_id_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入",
@@ -1463,6 +1464,7 @@ async function onImportExcel() {
           "sender_usr_id_lbl": "string",
           "is_sys_msg_lbl": "string",
           "is_pinned_lbl": "string",
+          "org_id_lbl": "string",
         },
       },
     );

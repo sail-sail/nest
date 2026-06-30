@@ -1421,6 +1421,7 @@ async function onImportExcel() {
     [ "接收人" ]: "receiver_usr_id_lbl",
     [ "已读" ]: "is_read_lbl",
     [ "阅读时间" ]: "read_time_lbl",
+    [ "所属组织" ]: "org_id_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: "批量导入",
@@ -1446,6 +1447,7 @@ async function onImportExcel() {
           "receiver_usr_id_lbl": "string",
           "is_read_lbl": "string",
           "read_time_lbl": "date",
+          "org_id_lbl": "string",
         },
       },
     );
