@@ -459,7 +459,9 @@ async function showDialog(
     ] = await Promise.all([
       getDefaultInputDictbizDetail(),
       findLastOrderByDictbizDetail(
-        undefined,
+        {
+          dictbiz_id: builtInModel?.dictbiz_id ? [ builtInModel.dictbiz_id ] : undefined,
+        },
         {
           notLoading: !inited,
         },
@@ -485,7 +487,9 @@ async function showDialog(
         is_deleted,
       }),
       findLastOrderByDictbizDetail(
-        undefined,
+        {
+          dictbiz_id: builtInModel?.dictbiz_id ? [ builtInModel.dictbiz_id ] : undefined,
+        },
         {
           notLoading: !inited,
         },
@@ -697,7 +701,7 @@ watch(
     dialogModel.dictbiz_id,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.dictbiz_id) {

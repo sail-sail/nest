@@ -6596,7 +6596,7 @@ const cron_lbl = $computed(() => {
 watch(
   () => [ inited, job_lbl, cron_lbl ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!job_lbl || !cron_lbl) {
@@ -7195,7 +7195,7 @@ watch(
     #>
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }<#
     for (let i = 0; i < columns.length; i++) {
