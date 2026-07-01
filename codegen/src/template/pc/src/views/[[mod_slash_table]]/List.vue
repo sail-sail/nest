@@ -2125,7 +2125,7 @@ if (searchByKeyword) {
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
@@ -2330,7 +2330,7 @@ if (searchByKeyword) {
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
@@ -2453,7 +2453,7 @@ if (searchByKeyword) {
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
@@ -2567,7 +2567,7 @@ if (searchByKeyword) {
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
