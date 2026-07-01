@@ -590,7 +590,7 @@ watch(
     dialogModel.is_succ,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.type) {

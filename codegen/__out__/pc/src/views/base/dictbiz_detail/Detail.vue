@@ -697,7 +697,7 @@ watch(
     dialogModel.dictbiz_id,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.dictbiz_id) {

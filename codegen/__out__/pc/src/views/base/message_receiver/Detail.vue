@@ -695,7 +695,7 @@ watch(
     dialogModel.org_id,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.message_id) {

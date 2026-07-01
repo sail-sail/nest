@@ -988,7 +988,7 @@ watch(
     dialogModel.role_ids,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.parent_menu_id) {

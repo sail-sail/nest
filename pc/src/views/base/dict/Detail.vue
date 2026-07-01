@@ -819,7 +819,7 @@ watch(
     dialogModel.type,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.type) {
