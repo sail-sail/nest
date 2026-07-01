@@ -459,7 +459,9 @@ async function showDialog(
     ] = await Promise.all([
       getDefaultInputDictDetail(),
       findLastOrderByDictDetail(
-        undefined,
+        {
+          dict_id: builtInModel?.dict_id ? [ builtInModel.dict_id ] : undefined,
+        },
         {
           notLoading: !inited,
         },
@@ -485,7 +487,9 @@ async function showDialog(
         is_deleted,
       }),
       findLastOrderByDictDetail(
-        undefined,
+        {
+          dict_id: builtInModel?.dict_id ? [ builtInModel.dict_id ] : undefined,
+        },
         {
           notLoading: !inited,
         },
