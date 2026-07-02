@@ -1,5 +1,3 @@
-import cfg from "@/utils/config.ts";
-
 import {
   UniqueType,
 } from "#/types.ts";

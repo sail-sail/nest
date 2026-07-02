@@ -59,6 +59,10 @@ use crate::base::dyn_page_val::dyn_page_val_dao::sync_usr_lbl_by_usr_id_dyn_page
 
 use crate::base::dyn_page_data::dyn_page_data_dao::sync_usr_lbl_by_usr_id_dyn_page_data;
 
+use crate::base::message::message_dao::sync_usr_lbl_by_usr_id_message;
+
+use crate::base::message_receiver::message_receiver_dao::sync_usr_lbl_by_usr_id_message_receiver;
+
 use crate::nuxt::seo::seo_dao::sync_usr_lbl_by_usr_id_seo;
 
 use crate::nuxt::comp_cnf::comp_cnf_dao::sync_usr_lbl_by_usr_id_comp_cnf;
@@ -95,127 +99,137 @@ pub async fn sync_usr_lbl_by_usr_id(
   let mut num = 0;
   
   num += sync_usr_lbl_by_usr_id_role(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_tenant(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_domain(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_usr(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_login_log(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_menu(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_lang(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_i18n(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_data_permit(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_options(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_optbiz(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_operation_record(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_org(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dept(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dict(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dict_detail(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dictbiz(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dictbiz_detail(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_icon(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dyn_page(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dyn_page_field(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dyn_page_val(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_dyn_page_data(
-    usr_id.clone(),
+    usr_id,
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_message(
+    usr_id,
+    options,
+  ).await?;
+  
+  num += sync_usr_lbl_by_usr_id_message_receiver(
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_seo(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
   num += sync_usr_lbl_by_usr_id_comp_cnf(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   

@@ -27,25 +27,30 @@
           {{ ns("还原") }}
         </span>
       </el-dropdown-item>
-      <el-dropdown-item
+      
+      <template
         v-for="(item, i) in props.tableColumns"
         :key="item.prop"
-        :divided="i === 0"
-        :command="{ action: 'item', item }"
       >
-        <el-icon>
-          <ElIconSelect
-            v-if="!item.hide"
-          />
-        </el-icon>
-        {{ item.label }}
-      </el-dropdown-item>
+        <el-dropdown-item
+          v-if="!item.forceHide"
+          :divided="i === 0"
+          :command="{ action: 'item', item }"
+        >
+          <el-icon>
+            <ElIconSelect
+              v-if="!item.hide"
+            />
+          </el-icon>
+          {{ item.label }}
+        </el-dropdown-item>
+      </template>
     </el-dropdown-menu>
   </template>
 </el-dropdown>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" vapor>
 const {
   ns,
   // nsAsync,
@@ -55,6 +60,7 @@ interface ColumnType {
   prop: string,
   label: string,
   hide?: boolean,
+  forceHide?: boolean,
   width?: string|number,
 }
 

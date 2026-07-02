@@ -65,7 +65,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 
 import DictbizDetailList from "@/views/base/dictbiz_detail/List.vue";
 
@@ -136,6 +136,7 @@ async function showDialog(
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "medium",
     title,
+    pointerPierce: true,
   });
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;

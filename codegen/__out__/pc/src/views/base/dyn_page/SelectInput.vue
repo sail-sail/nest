@@ -113,7 +113,7 @@
 </template>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import {
   useFormItem,
 } from "element-plus";
@@ -126,7 +126,7 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: DynPageId | DynPageId[]): void,
+  (e: "update:modelValue", value?: DynPageId | DynPageId[] | ""): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: DynPageModel | DynPageModel[]): void,
   (e: "clear"): void,
@@ -140,7 +140,7 @@ const pagePath = getPagePathDynPage();
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: DynPageId | DynPageId[] | null;
+    modelValue?: DynPageId | DynPageId[] | null | "";
     modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;
@@ -310,7 +310,7 @@ async function refreshInputValue() {
 
 async function onClear(e?: PointerEvent) {
   e?.stopPropagation();
-  modelValue = undefined;
+  modelValue = "";
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);

@@ -62,7 +62,7 @@
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 
 const props = withDefaults(
   defineProps<{

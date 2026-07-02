@@ -1006,6 +1006,7 @@ export default defineConfig({
         order: "ascending",
       },
       list_tree: true,
+      hasSelectInput: true,
     },
     columns: [
       {
@@ -1102,7 +1103,7 @@ export default defineConfig({
         COLUMN_NAME: "code",
         align: "left",
         require: true,
-        search: false,
+        search: true,
         width: 240,
         foreignTabs: [
           {
@@ -1118,7 +1119,7 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         align: "left",
         require: true,
-        search: false,
+        search: true,
         width: 240,
         fixed: "left",
       },
@@ -1252,7 +1253,7 @@ export default defineConfig({
         COLUMN_NAME: "code",
         align: "left",
         require: true,
-        search: false,
+        search: true,
         width: 240,
         foreignTabs: [
           {
@@ -1267,7 +1268,7 @@ export default defineConfig({
         COLUMN_NAME: "lbl",
         align: "left",
         require: true,
-        search: false,
+        search: true,
         width: 240,
       },
       {
@@ -1379,9 +1380,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "img",
-        attAccept: "image/svg+xml,image/png,image/jpeg,image/webp",
-        isPublicAtt: true,
-        require: true,
+        isIcon: true,
       },
       {
         COLUMN_NAME: "code",
@@ -1730,6 +1729,147 @@ export default defineConfig({
         align: "left",
         whitespacePre: true,
         showOverflowTooltip: true,
+      },
+    ],
+  },
+  // 消息
+  base_message: {
+    opts: {
+      defaultSort: {
+        prop: "create_time",
+        order: "descending",
+      },
+      lbl_field: "content",
+    },
+    columns: [
+      {
+        COLUMN_NAME: "category",
+        align: "center",
+        search: true,
+        width: 120,
+        dictHasSelectAdd: true,
+      },
+      {
+        COLUMN_NAME: "channel",
+        align: "center",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "title",
+        require: true,
+        search: true,
+        width: 240,
+        align: "left",
+      },
+      {
+        COLUMN_NAME: "content",
+        align: "left",
+        width: 320,
+        noList: true,
+      },
+      {
+        COLUMN_NAME: "route_path",
+        align: "left",
+        width: 240,
+        search: true,
+      },
+      {
+        COLUMN_NAME: "route_query",
+        align: "left",
+        width: 240,
+        noList: true,
+      },
+      {
+        COLUMN_NAME: "sender_usr_id",
+        modelLabel: "sender_usr_id_lbl",
+        foreignKey: {
+          mod: "base",
+          table: "usr",
+          column: "id",
+          lbl: "lbl",
+        },
+        search: true,
+      },
+      {
+        COLUMN_NAME: "is_sys_msg",
+        isSwitch: false,
+      },
+      {
+        COLUMN_NAME: "is_pinned",
+        isSwitch: false,
+      },
+      {
+        COLUMN_NAME: "org_id",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+        search: true,
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
+  // 消息接收人
+  base_message_receiver: {
+    opts: {
+      defaultSort: {
+        prop: "create_time",
+        order: "descending",
+      },
+    },
+    columns: [
+      {
+        COLUMN_NAME: "message_id",
+        require: true,
+        search: true,
+        foreignKey: {
+          lbl: "content",
+        },
+      },
+      {
+        COLUMN_NAME: "receiver_usr_id",
+        modelLabel: "receiver_usr_id_lbl",
+        require: true,
+        search: true,
+        foreignKey: {
+          mod: "base",
+          table: "usr",
+          column: "id",
+          lbl: "lbl",
+        },
+      },
+      {
+        COLUMN_NAME: "is_read",
+        isSwitch: false,
+        search: true,
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "read_time",
+        search: true,
+      },
+      {
+        COLUMN_NAME: "org_id",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+        search: true,
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ],
   },

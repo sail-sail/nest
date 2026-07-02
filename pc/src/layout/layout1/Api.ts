@@ -114,7 +114,7 @@ export async function getMenus(
             name,
             component: async () => {
               const com = await import("@/views/base/dyn_page_data/List.vue");
-              com.default.name = name;
+              (com.default as any).name = name;
               return com;
             },
             props: (route) => {
@@ -233,6 +233,21 @@ export async function getUsrPermits(
   }, opt);
   const data = res.getUsrPermits;
   return data;
+}
+
+export async function getMyUnreadMessageCount(
+  opt?: GqlOpt,
+) {
+  const res: {
+    getMyUnreadMessageCount: number;
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getMyUnreadMessageCount
+      }
+    `,
+  }, opt);
+  return res.getMyUnreadMessageCount || 0;
 }
 
 export async function deptLoginSelect(

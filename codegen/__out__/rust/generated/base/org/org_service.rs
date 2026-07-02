@@ -29,6 +29,7 @@ async fn set_search_query(
   search: &mut OrgSearch,
   options: Option<Options>,
 ) -> Result<()> {
+  
   Ok(())
 }
 

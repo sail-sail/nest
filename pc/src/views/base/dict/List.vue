@@ -28,6 +28,32 @@
       @keydown.enter="onSearch(true)"
     >
       
+      <template v-if="(builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null))">
+        <el-form-item
+          label="编码"
+          prop="code_like"
+        >
+          <CustomInput
+            v-model="search.code_like"
+            placeholder="请输入 编码"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
+        <el-form-item
+          label="名称"
+          prop="lbl_like"
+        >
+          <CustomInput
+            v-model="search.lbl_like"
+            placeholder="请输入 名称"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <template v-if="(showBuildIn || builtInSearch?.is_enabled == null)">
         <el-form-item
           label="启用"
@@ -243,7 +269,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -651,7 +679,7 @@
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import Detail from "./Detail.vue";
 
 import {
@@ -1051,7 +1079,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1065,6 +1093,30 @@ const {
     persistKey: __filename,
   },
 ));
+
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 const detailRef = $(useTemplateRef("detailRef"));
 

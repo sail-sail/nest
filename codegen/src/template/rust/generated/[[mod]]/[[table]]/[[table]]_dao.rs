@@ -144,6 +144,7 @@ const autoCodeColumn = columns.find((item) => item.autoCode);
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -151,9 +152,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -180,6 +181,17 @@ for (const inlineForeignTab of inlineForeignTabs) {
 const searchByKeyword = opts?.searchByKeyword;
 
 const hasSummary = columns.some((column) => column.showSummary);
+
+const findByIdTableUps = [ ];
+const findOneTableUps = [ ];
+const findAllTableUps = [ ];
+const createTableUps = [ ];
+const deleteByIdsTableUps = [ ];
+const revertByIdsTableUps = [ ];
+const updateByIdTableUps = [ ];
+const forceDeleteByIdsUps = [ ];
+const equalsByUniqueTableUps = [ ];
+const searchTableUps = [ ];
 #>
 #![allow(clippy::clone_on_copy)]
 #![allow(clippy::redundant_clone)]
@@ -334,11 +346,23 @@ use crate::common::gql::model::{
   PageInput,
   SortInput,
 };<#
-if (hasAudit && auditTable_Up) {
+if (hasAudit && auditTable_Up && !findAllTableUps.includes(auditTable_Up)) {
+#><#
+const hasFindByIdTableUps = findAllTableUps.includes(auditTable_Up);
+if (!hasFindByIdTableUps) {
+  findAllTableUps.push(auditTable_Up);
 #>
 
-use crate::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_dao::find_all_<#=auditTable#>;
+use crate::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_dao::find_all_<#=auditTable#>;<#
+}
+#><#
+const hasSearchTableUps = searchTableUps.includes(auditTable_Up);
+if (!hasSearchTableUps) {
+  searchTableUps.push(auditTable_Up);
+#>
 use crate::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::<#=auditTable_Up#>Search;<#
+}
+#><#
 }
 #><#
   if (hasDict) {
@@ -367,15 +391,6 @@ use crate::common::i18n::i18n_dao::get_server_i18n_enable;<#
 #>
 
 use super::<#=table#>_model::*;<#
-const findByIdTableUps = [ ];
-const findOneTableUps = [ ];
-const findAllTableUps = [ ];
-const createTableUps = [ ];
-const deleteByIdsTableUps = [ ];
-const revertByIdsTableUps = [ ];
-const updateByIdTableUps = [ ];
-const forceDeleteByIdsUps = [ ];
-const equalsByUniqueTableUps = [ ];
 for (const inlineForeignTab of inlineForeignTabs) {
   const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
   const table = inlineForeignTab.table;
@@ -611,10 +626,18 @@ for (const item of cascadeUpdateFieldTables) {
   if (!hasUpdateByIdTableUps) {
     updateByIdTableUps.push(tableUP);
   }
+  const hasSearchTableUps = searchTableUps.includes(tableUP);
+  if (!hasSearchTableUps) {
+    searchTableUps.push(tableUP);
+  }
 #>
 
-use crate::<#=mod#>::<#=table#>::<#=table#>_model::{
-  <#=tableUP#>Search,
+use crate::<#=mod#>::<#=table#>::<#=table#>_model::{<#
+  if (!hasSearchTableUps) {
+  #>
+  <#=tableUP#>Search,<#
+  }
+  #>
   <#=tableUP#>Input,
 };
 
@@ -1108,7 +1131,7 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
@@ -1132,6 +1155,19 @@ async fn get_where_query(
       where_query.push_str(" and t.<#=column_name#> is null");
     }
   }<#
+    if (foreignKey.is_where_query_not_null) {
+  #>
+  {
+    let <#=column_name#>_is_not_null: bool = match search {
+      Some(item) => item.<#=column_name#>_is_not_null.unwrap_or(false),
+      None => false,
+    };
+    if <#=column_name#>_is_not_null {
+      where_query.push_str(" and t.<#=column_name#> is not null");
+    }
+  }<#
+    }
+  #><#
     if (modelLabel) {
   #>
   {<#
@@ -1144,7 +1180,7 @@ async fn get_where_query(
     if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
       let arg = {
         if <#=modelLabel_rust#>.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
           for item in <#=modelLabel_rust#> {
@@ -1167,7 +1203,7 @@ async fn get_where_query(
     if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
       let arg = {
         if <#=modelLabel_rust#>.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
           for item in <#=modelLabel_rust#> {
@@ -1242,7 +1278,7 @@ async fn get_where_query(
     if let Some(<#=column_name#>_<#=foreignKey.lbl#>) = <#=column_name#>_<#=foreignKey.lbl#> {
       let arg = {
         if <#=column_name#>_<#=foreignKey.lbl#>.is_empty() {
-          SmolStr::new("null")
+          SmolStr::new("''")
         } else {
           let mut items = Vec::with_capacity(<#=column_name#>_<#=foreignKey.lbl#>.len());
           for item in <#=column_name#>_<#=foreignKey.lbl#> {
@@ -1314,6 +1350,19 @@ async fn get_where_query(
       where_query.push_str(" and t.<#=column_name#> is null");
     }
   }<#
+    if (foreignKey.is_where_query_not_null) {
+  #>
+  {
+    let <#=column_name#>_is_not_null: bool = match search {
+      Some(item) => item.<#=column_name#>_is_not_null.unwrap_or(false),
+      None => false,
+    };
+    if <#=column_name#>_is_not_null {
+      where_query.push_str(" and t.<#=column_name#> is not null");
+    }
+  }<#
+    }
+  #><#
   if (foreignKey.lbl) {
   #>
   {
@@ -4942,6 +4991,50 @@ async fn _creates(
     #>
   }<#
   }
+  #><#
+  if (hasInlineForeignTabs && hasOrgId) {
+  #>
+  
+  // org_id
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    let org_id = input.org_id;<#
+    if (hasOrgIdLbl) {
+    #>
+    let org_id_lbl = input.org_id_lbl.clone();<#
+    }
+    #><#
+    for (const inlineForeignTab of inlineForeignTabs) {
+      const table = inlineForeignTab.table;
+      const mod = inlineForeignTab.mod;
+      const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+      const Table_Up = tableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+      const inline_column_name = inlineForeignTab.column_name;
+      const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+      const inlineForeignColumns = inlineForeignSchema.columns;
+      const inlineForeignOrgIdColumn = inlineForeignColumns.find((item) => item.COLUMN_NAME === "org_id");
+      const inlineForeignHasOrgId = !!inlineForeignOrgIdColumn;
+      const inlineForeignHasOrgIdLbl = !!inlineForeignOrgIdColumn?.modelLabel;
+    #>
+    
+    input.<#=inline_column_name#>.iter_mut().for_each(|items| {
+      for item in items {
+        item.org_id = org_id;<#
+        if (hasOrgIdLbl) {
+        #>
+        item.org_id_lbl = org_id_lbl.clone();<#
+        }
+        #>
+      }
+    });<#
+    }
+    #>
+    
+  }<#
+  }
   #>
   
   let mut ids2: Vec<<#=Table_Up#>Id> = vec![];
@@ -5394,12 +5487,8 @@ async fn _creates(
     #>
     // <#=column_comment#>
     if let Some(<#=modelLabel#>) = input.<#=modelLabel#> {
-      if !<#=modelLabel#>.is_empty() {
-        sql_values += ",?";
-        args.push(<#=modelLabel#>.into());
-      } else {
-        sql_values += ",default";
-      }
+      sql_values += ",?";
+      args.push(<#=modelLabel#>.into());
     } else {
       sql_values += ",default";
     }<#
@@ -6719,7 +6808,7 @@ pub async fn update_by_id_<#=table#>(
       let stat = head_object(&<#=column_name#>).await?;
       if stat.is_none() {
         let content_type = <#=column_name#>_lbl
-          .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
+          .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(<#=column_name#>.len()))
           .unwrap_or_default();
         if !content_type.starts_with("image/") {
           error!(
@@ -7107,35 +7196,33 @@ pub async fn update_by_id_<#=table#>(
   #>.clone()<#
     }
   #> {
-    if !<#=modelLabel#>.is_empty() {
-      field_num += 1;<#
-      if (cascadeUpdateFieldWatchColumns.includes(modelLabel)) {
-      #>
-      sql_set_flds.push(SmolStr::new("<#=modelLabel#>"));
-      sql_set_fld_input.<#=modelLabel#> = Some(<#=modelLabel#>.clone());<#
-      }
-      #><#
-      if (!langTableRecords.some((item) => item.COLUMN_NAME === modelLabel)) {
-      #>
-      sql_fields += "<#=modelLabel#>=?,";
-      args.push(<#=modelLabel#>.into());<#
-      } else {
-      #><#
-      if (isUseI18n) {
-      #>
-      if !server_i18n_enable {
-        sql_fields += "<#=modelLabel#>=?,";
-        args.push(<#=modelLabel#>.into());
-      }<#
-      } else {
-      #>
-      sql_fields += "<#=modelLabel#>=?,";
-      args.push(<#=modelLabel#>.into());<#
-      }
-      #><#
-      }
-      #>
+    field_num += 1;<#
+    if (cascadeUpdateFieldWatchColumns.includes(modelLabel)) {
+    #>
+    sql_set_flds.push(SmolStr::new("<#=modelLabel#>"));
+    sql_set_fld_input.<#=modelLabel#> = Some(<#=modelLabel#>.clone());<#
     }
+    #><#
+    if (!langTableRecords.some((item) => item.COLUMN_NAME === modelLabel)) {
+    #>
+    sql_fields += "<#=modelLabel#>=?,";
+    args.push(<#=modelLabel#>.into());<#
+    } else {
+    #><#
+    if (isUseI18n) {
+    #>
+    if !server_i18n_enable {
+      sql_fields += "<#=modelLabel#>=?,";
+      args.push(<#=modelLabel#>.into());
+    }<#
+    } else {
+    #>
+    sql_fields += "<#=modelLabel#>=?,";
+    args.push(<#=modelLabel#>.into());<#
+    }
+    #><#
+    }
+    #>
   }<#
     }
   #><#

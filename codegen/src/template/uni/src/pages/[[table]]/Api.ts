@@ -43,6 +43,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 }
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -50,9 +51,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -565,7 +566,7 @@ export async function setLblById<#=Table_Up#>(
   // <#=column_comment#>
   model.<#=column_name#> = new Decimal(model.<#=column_name#> || 0);
   model.<#=column_name#>_lbl = model.<#=column_name#>.toFixed(<#=precision#>);<#
-    } else if (column.isImg) {
+    } else if (column.isImg && !column.isIcon) {
   #>
   
   // <#=column_comment#>

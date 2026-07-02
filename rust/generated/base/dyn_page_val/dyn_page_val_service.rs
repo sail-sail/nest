@@ -29,6 +29,7 @@ async fn set_search_query(
   search: &mut DynPageValSearch,
   options: Option<Options>,
 ) -> Result<()> {
+  
   Ok(())
 }
 

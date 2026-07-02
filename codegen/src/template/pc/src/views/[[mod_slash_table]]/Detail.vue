@@ -105,6 +105,7 @@ const bpmStatusFieldUp = bpmStatusField
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -112,9 +113,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts.audit.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -390,8 +391,11 @@ for (let i = 0; i < columns.length; i++) {
             }
             #><#
             if (
-              (column.isTextarea && detailFormCols > 1) ||
-              (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+              column.isSpanFull !== false &&
+              (
+                (column.isTextarea && detailFormCols > 1) ||
+                (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+              )
             ) {
             #>
             un-grid="col-span-full"<#
@@ -1490,6 +1494,7 @@ for (let i = 0; i < columns.length; i++) {
                 if (column_name === "version") continue;
                 if (column_name === "order_by") continue;
                 if (column_name === "tenant_id") continue;
+                if (column_name === "org_id") continue;
                 const data_type = column.DATA_TYPE;
                 let column_type = column.COLUMN_TYPE;
                 const column_comment = column.COLUMN_COMMENT || "";
@@ -2410,8 +2415,11 @@ for (let i = 0; i < columns.length; i++) {
                   #>
                   prop="<#=inline_column_name#>.<#=column_name#>"<#
                   if (
-                    (column.isTextarea && detailFormCols > 1) ||
-                    (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+                    column.isSpanFull !== false &&
+                    (
+                      (column.isTextarea && detailFormCols > 1) ||
+                      (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
+                    )
                   ) {
                   #>
                   un-grid="col-span-full"<#
@@ -3940,7 +3948,42 @@ for (let i = 0; i < columns.length; i++) {
       
       <template
         v-if="dialogAction === 'audit' && !isLocked"
-      >
+      ><#
+        if (opts?.audit?.hasReverse) {
+        #>
+
+        <el-button
+          v-if="permit('audit_reverse', '反审核') &&
+            (
+              dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
+              dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
+              if (hasReviewed) {
+              #> ||
+              dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
+              }
+              #>
+            )
+          "
+          plain
+          type="warning"
+          @click="onAuditReverse"
+        >
+          <template #icon>
+            <ElIcon>
+              <div un-i="iconfont-undo"></div>
+            </ElIcon>
+          </template><#
+          if (isUseI18n) {
+          #>
+          <span>{{ ns('反审核') }}</span><#
+          } else {
+          #>
+          <span>反审核</span><#
+          }
+          #>
+        </el-button><#
+        }
+        #>
         
         <el-button
           v-if="permit('audit_reject') &&
@@ -4056,7 +4099,8 @@ for (let i = 0; i < columns.length; i++) {
         
         <el-button
           v-if="permit('audit_review') &&
-            dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed
+            dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
+            !permit('audit_reverse')
           "
           plain
           type="primary"
@@ -4082,43 +4126,44 @@ for (let i = 0; i < columns.length; i++) {
       #>
       
       <div
+        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
         un-flex="~"
         un-gap="x-1"
       >
-        <template v-if="(ids && ids.length > 1)">
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-            @click="onPrevId"
-          >
-            <ElIconArrowLeft
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowLeft>
-          </el-button>
-          
-          <div>
-            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-          </div>
-          
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-            @click="onNextId"
-          >
-            <ElIconArrowRight
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowRight>
-          </el-button>
-        </template>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+          @click="onPrevId"
+        >
+          <ElIconArrowLeft
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowLeft>
+        </el-button>
+        
+        <div>
+          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+        </div>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+          @click="onNextId"
+        >
+          <ElIconArrowRight
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowRight>
+        </el-button>
         
         <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
         </div>
+        
       </div>
       
     </div>
@@ -4229,7 +4274,7 @@ for (let i = 0; i < columns.length; i++) {
 </CustomDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -4255,10 +4300,11 @@ import {<#
   if (hasAudit) {
   #>
   auditSubmit<#=Table_Up#>,
-  auditPass<#=Table_Up#>,<#
+  auditPass<#=Table_Up#>,
+  auditReverse<#=Table_Up#>,<#
   if (hasReviewed) {
   #>
-  auditReview,<#
+  auditReview<#=Table_Up#>,<#
   }
   #><#
   }
@@ -6550,7 +6596,7 @@ const cron_lbl = $computed(() => {
 watch(
   () => [ inited, job_lbl, cron_lbl ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!job_lbl || !cron_lbl) {
@@ -7149,7 +7195,7 @@ watch(
     #>
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }<#
     for (let i = 0; i < columns.length; i++) {
@@ -7343,6 +7389,67 @@ async function onAuditSubmit() {
   });
 }
 
+/** 反审核 */
+async function onAuditReverse() {
+  const id = dialogModel.id;
+  if (!id) {
+    return;
+  }
+  if (!permit("audit_reverse")) {
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("确认要反审核吗"),<#
+      } else {
+      #>
+      "确认要反审核吗",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
+        confirmButtonText: await nsAsync("确定"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",<#
+        }
+        #>
+        type: "warning",
+      },
+    );
+  } catch (err) {
+    return;
+  }
+  await auditReverse<#=Table_Up#>(id);
+  ElMessage({<#
+    if (isUseI18n) {
+    #>
+    message: await nsAsync("反审核成功"),<#
+    } else {
+    #>
+    message: "反审核成功",<#
+    }
+    #>
+    type: "success",
+  });
+  if (!changedIds.includes(id)) {
+    changedIds.push(id);
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
+}
+
 /** 审核通过 */
 async function onAuditPass() {
   const id = dialogModel.id;
@@ -7502,7 +7609,7 @@ async function onAuditReview() {
   } catch (err) {
     return;
   }
-  await auditReview(id);
+  await auditReview<#=Table_Up#>(id);
   ElMessage({<#
     if (isUseI18n) {
     #>
@@ -8087,8 +8194,12 @@ for (const inlineForeignTab of inlineForeignTabs) {
   const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
   const inline_column_name = inlineForeignTab.column_name;
   const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+  const inlineForeignColumns = inlineForeignSchema.columns;
+  const inlineForeignOrgIdColumn = inlineForeignColumns.find((item) => item.COLUMN_NAME === "org_id");
+  const inlineForeignHasOrgId = !!inlineForeignOrgIdColumn;
+  const inlineForeignHasOrgIdLbl = !!inlineForeignOrgIdColumn?.modelLabel;
 #><#
-  if (inline_foreign_type === "one2many") {
+if (inline_foreign_type === "one2many") {
 #>
 
 // <#=inlineForeignTab.label#>
@@ -8129,7 +8240,6 @@ function <#=inline_column_name#>Remove(row: <#=Table_Up#>Model) {
 
 watch(
   () => [
-    dialogModel.<#=inline_column_name#>,
     dialogModel.<#=inline_column_name#>?.length,
   ],
   () => {
@@ -8143,7 +8253,39 @@ watch(
     }
   },
 );<#
-  }
+if (hasOrgId && inlineForeignHasOrgId) {
+#>
+
+watch(
+  () => [
+    dialogModel.org_id,<#
+    if (hasOrgIdLbl && inlineForeignHasOrgIdLbl) {
+    #>
+    dialogModel.org_id_lbl,<#
+    }
+    #>
+    dialogModel.<#=inline_column_name#>?.length,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.<#=inline_column_name#>) {
+      return;
+    }
+    for (const item of dialogModel.<#=inline_column_name#>) {
+      item.org_id = dialogModel.org_id;<#
+      if (hasOrgIdLbl && inlineForeignHasOrgIdLbl) {
+      #>
+      item.org_id_lbl = dialogModel.org_id_lbl;<#
+      }
+      #>
+    }
+  },
+);<#
+}
+#><#
+}
 #><#
 }
 #><#

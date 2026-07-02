@@ -55,9 +55,9 @@ pub struct IconModel {
   /// 图标
   #[graphql(name = "img")]
   pub img: SmolStr,
-  /// 图标svg
-  #[graphql(name = "img_lbl_svg")]
-  pub img_lbl_svg: SmolStr,
+  /// 图标
+  #[graphql(name = "img_lbl")]
+  pub img_lbl: SmolStr,
   /// 编码
   #[graphql(name = "code")]
   pub code: SmolStr,
@@ -144,7 +144,7 @@ impl FromRow<'_, MySqlRow> for IconModel {
       is_deleted,
       id,
       img,
-      img_lbl_svg: SmolStr::new(""),
+      img_lbl: SmolStr::new(""),
       code,
       lbl,
       is_enabled,
@@ -262,7 +262,7 @@ pub struct IconSearch {
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
-  #[graphql(name = "create_usr_id_save_null")]
+  #[graphql(name = "create_usr_id_is_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
@@ -277,7 +277,7 @@ pub struct IconSearch {
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
-  #[graphql(name = "update_usr_id_save_null")]
+  #[graphql(name = "update_usr_id_is_null")]
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
@@ -390,6 +390,9 @@ pub struct IconInput {
   /// 图标
   #[graphql(name = "img")]
   pub img: Option<SmolStr>,
+  /// 图标
+  #[graphql(name = "img_lbl")]
+  pub img_lbl: Option<SmolStr>,
   /// 编码
   #[graphql(name = "code")]
   pub code: Option<SmolStr>,
@@ -498,6 +501,8 @@ impl From<IconModel> for IconInput {
       is_deleted: model.is_deleted.into(),
       // 图标
       img: model.img.into(),
+      // 图标
+      img_lbl: model.img_lbl.into(),
       // 编码
       code: model.code.into(),
       // 名称

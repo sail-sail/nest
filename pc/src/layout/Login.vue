@@ -36,6 +36,10 @@
           style="width: 100%;"
           filterable
           default-first-option
+          :placeholder="`${ ns('请选择') } ${ n('租户') }`"
+          :input-style="inputStyle"
+          clearable
+          :popper-style="{ zIndex: 10000 }"
         >
           <template #prefix>
             <el-icon>
@@ -104,7 +108,7 @@
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import {
   lang,
 } from "@/locales/index";
@@ -322,9 +326,7 @@ async function onLogin() {
   usrStore.tenant_id = loginModel.tenant_id;
   usrStore.lang = loginModel.lang ?? "";
   tabsStore.clearKeepAliveNames();
-  await Promise.all([
-    indexStore.initI18nVersion(),
-  ]);
+  await indexStore.initI18nVersion();
   if (old_username !== model.username || old_tenant_id !== model.tenant_id) {
     tabsStore.tabs = [ ];
     location.href = location.pathname;

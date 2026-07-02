@@ -96,7 +96,12 @@ async function exec() {
         const rows = [ ];
         const stream = parse({ headers: true })
           .on("error", (error) => reject(error))
-          .on("data", (row) => rows.push(row))
+          .on("data", (row) => {
+            if (isEmpty(row.id)) {
+              return;
+            }
+            rows.push(row);
+          })
           .on("end", () => resolve(rows));
         stream.write(str);
         stream.end();

@@ -15,7 +15,6 @@
     ".gitignore": true,
     "app/Cargo.toml": true,
     "**/.oxlintrc.json": true,
-    "generated/common/gql/schema.graphql": true,
     "pnpm-workspace.yaml": true,
     "wx_pay_sdk": true,
     "aliyun_sdk": true
@@ -35,7 +34,6 @@
     "**/.npmrc": true,
     ".gitignore": true,
     "**/.oxlintrc.json": true,
-    "generated/common/gql/schema.graphql": true
   },
   "files.watcherExclude": {
     "**/node_modules/**": true,
@@ -50,7 +48,6 @@
     ".temp/**": true,
     ".tmp/**": true,
     "**/*.log": true,
-    "generated/common/gql/schema.graphql": true,
     "**/.pnpm-store/**": true,
     "**/.oxlintrc.json": true,
     "**/*.rs.bk": true

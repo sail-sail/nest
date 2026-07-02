@@ -824,3 +824,63 @@ CREATE TABLE if not exists `base_server_log` (
   `content` text COMMENT '日志内容',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='系统日志';
+
+-- 消息
+drop table if exists `base_message`;
+CREATE TABLE if not exists `base_message` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `category` varchar(20) NOT NULL DEFAULT '' COMMENT '分类,dict:message_category',
+  -- 系统 sys, 邮件 email, 短信 sms, 企业微信 wecom, 钉钉 dingtalk, 飞书 feishu (is_sys=0, is_add=0, 多选项, 逗号分隔)
+  `channel` varchar(20) NOT NULL DEFAULT 'sys' COMMENT '发送通道,dict:message_channel',
+  `title` varchar(100) NOT NULL DEFAULT '' COMMENT '标题',
+  `content` varchar(2000) NOT NULL DEFAULT '' COMMENT '内容',
+  `route_path` varchar(200) NOT NULL DEFAULT '' COMMENT '跳转路由',
+  `route_query` varchar(1000) NOT NULL DEFAULT '' COMMENT '跳转参数',
+  `sender_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '发送人',
+  `sender_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '发送人名称',
+  `is_sys_msg` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '系统消息,dict:yes_no',
+  `is_pinned` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '置顶,dict:yes_no',
+  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '所属组织',
+  `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '所属组织',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`tenant_id`, `is_deleted`, `create_time`),
+  INDEX (`tenant_id`, `is_deleted`, `is_pinned`, `create_time`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='消息';
+
+-- 消息接收人
+drop table if exists `base_message_receiver`;
+CREATE TABLE if not exists `base_message_receiver` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `message_id` varchar(22) NOT NULL DEFAULT '' COMMENT '消息',
+  `receiver_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '接收人',
+  `receiver_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '接收人名称',
+  `is_read` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '已读,dict:yes_no',
+  `read_time` datetime DEFAULT NULL COMMENT '阅读时间',
+  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '所属组织',
+  `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '所属组织',
+  `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`tenant_id`, `is_deleted`, `receiver_usr_id`, `is_read`),
+  INDEX (`tenant_id`, `is_deleted`, `message_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='消息接收人';

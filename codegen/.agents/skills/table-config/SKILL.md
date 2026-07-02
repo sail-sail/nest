@@ -1,6 +1,6 @@
 ---
 name: table-config
-description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取，尤其要检查 lbl、*_id_lbl/modelLabel、审计字段等容易漏掉的配置
+description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取
 ---
 
 # 表配置规范
@@ -21,6 +21,8 @@ description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取，
 | `modelLabel` | `xxx_id` 对应存在 `xxx_id_lbl` 时，给 `xxx_id` 配置 `modelLabel` | `xxx_id_lbl` 无需再单独写入 `columns` |
 | 审计字段 | 通常补齐 `create_usr_id/create_time/update_usr_id/update_time` | 按表实际用途判断 |
 | 配置换行 | `opts` 和 `columns` 维持多行结构 | 不要压成单行 |
+
+尤其要检查 lbl、*_id_lbl/modelLabel、审计字段等容易漏掉的配置
 
 ### 1. lbl 字段必须在 columns 中显式写出
 
@@ -129,14 +131,120 @@ opts: {
     column: "audit",           // 审核字段，默认 audit
     auditMod: "base",          // 审核模块，默认当前模块
     auditTable: "usr_audit",   // 审核表名，默认 [表名]_audit
-    hasReviewed: true,         // 是否启用复核（第4种状态 Reviewed）
+    hasReviewed: true,          // 是否启用复核（存在 reviewed 状态时显式写 true）
+    hasReverse: true,           // 是否生成反审核能力，建议需要审核时显式写 true
   },
 }
 ```
 
-- 新增记录时审核字段自动设为 `Unsubmited`（未提交）
+推荐不要省略 `hasReviewed` / `hasReverse`，而是按业务显式写出，避免未来阅读配置时误判。
+
+### 标准状态设计
+
+如果业务有“复核”环节，主表和审核流水表的 `audit` 枚举建议统一为：
+
+```sql
+ENUM('unsubmited', 'unaudited', 'audited', 'reviewed', 'rejected')
+```
+
+对应配置：
+
+```ts
+audit: {
+  column: "audit",
+  auditMod: "scrm",
+  auditTable: "clue_audit",
+  hasReviewed: true,
+  hasReverse: true,
+}
+```
+
+如果业务没有“复核”环节，建议枚举改为：
+
+```sql
+ENUM('unsubmited', 'unaudited', 'audited', 'rejected')
+```
+
+对应配置：
+
+```ts
+audit: {
+  column: "audit",
+  auditMod: "base",
+  auditTable: "example_audit",
+  hasReviewed: false,
+  hasReverse: true,
+}
+```
+
+### 标准行为约定
+
+- 新增记录时审核字段默认是 `Unsubmited`
+- `audit_submit`: `unsubmited` / `rejected` -> `unaudited`
+- `audit_pass`: `unaudited` -> `audited`
+- `audit_reject`: `unaudited`，以及有复核时的 `audited` -> `rejected`
+- `audit_review`: `audited` -> `reviewed`（仅 `hasReviewed: true`）
+- `audit_reverse`: 回退到上一状态，不新增新枚举值
+  - `reviewed -> audited`
+  - `audited -> unaudited`
+  - `unaudited -> unsubmited`
+  - `unsubmited`、`rejected` 不允许反审核
 - `audit_reject` 操作接收 `auditTableInput` 类型，记录拒绝原因
 - 删除/还原/彻底删除时会级联处理审核记录
+
+### 审核流水表配置
+
+审核流水表 `columns` 至少保持以下结构：
+
+```ts
+scrm_clue_audit: {
+  opts: {
+    defaultSort: {
+      prop: "audit_time",
+      order: "descending",
+    },
+  },
+  columns: [
+    {
+      COLUMN_NAME: "clue_id",
+      modelLabel: "clue_id_lbl",
+      isCascadeUpdateModelLabel: true,
+      foreignKey: {
+        selectType: "selectInput",
+      },
+    },
+    {
+      COLUMN_NAME: "audit",
+    },
+    {
+      COLUMN_NAME: "audit_usr_id",
+      modelLabel: "audit_usr_id_lbl",
+      isCascadeUpdateModelLabel: true,
+      foreignKey: {
+        mod: "base",
+        table: "usr",
+        selectType: "selectInput",
+      },
+    },
+    { COLUMN_NAME: "audit_time" },
+    { COLUMN_NAME: "rem" },
+    { COLUMN_NAME: "create_usr_id" },
+    { COLUMN_NAME: "create_time" },
+    { COLUMN_NAME: "update_usr_id" },
+    { COLUMN_NAME: "update_time" },
+  ],
+}
+```
+
+- 审核流水表的外键字段必须配置 `modelLabel`
+- `{table}_id` 推荐配置 `isCascadeUpdateModelLabel: true`，避免主表名称变化后流水表标签不更新
+- `audit_usr_id` 也推荐按标准用户外键去配置
+
+### 当前仓库约定
+
+- 如果决定启用标准审核能力，建议在 `opts.audit` 中显式写出 `hasReverse: true`
+- 不要为“反审核”额外新增枚举值；标准方案就是回退到上一个已存在状态
+- 以后 AI 创建带审核的新表时，优先复用 `scrm_clue` / `scrm_clue_audit` 这一对表的设计，而不是重新发明审核字段或审核流水结构
 
 ## 系统记录保护 (sys_fields)
 

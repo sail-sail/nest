@@ -108,13 +108,29 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
       and t.is_enabled=1
       and t.is_hidden=0
       and t.is_home_hide=0
-      {where_query}"#,
+      {where_query}
+    order by t.order_by asc"#,
   );
   
   let args = args.into();
   
-  let cache_key1 = "dao.sql.base_menu._getMenus";
-  let cache_key2 = generated::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes());
+  let cache_enabled = cache_dao::get_cache_enabled();
+  
+  let (
+    cache_key1,
+    cache_key2,
+  ) = if cache_enabled {
+    (
+      "dao.sql.base_menu._getMenus",
+      generated::common::util::string::hash(serde_json::json!([ &sql, args ]).to_string().as_bytes()),
+    )
+  } else {
+    (
+      "",
+      String::new(),
+    )
+  };
+  
   {
     let str = cache_dao::get_cache(cache_key1, &cache_key2).await?;
     if let Some(str) = str {
@@ -136,7 +152,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
     options,
   ).await?;
   
-  res.sort_by_key(|a| a.order_by);
+  // res.sort_by_key(|a| a.order_by);
   
   if server_i18n_enable {
     for item in &mut res {

@@ -25,6 +25,8 @@ declare module 'vue-router' {
 }
 
 declare global {
+  type CustomDialogType = "auto" | "medium" | "large" | "default";
+  
   type PartialNull<T> = { [P in keyof T]?: T[P] | null | undefined; }
   
   type InputMaybe<T> = Maybe<T>;
@@ -46,6 +48,7 @@ declare global {
     label: string;
     sortBy?: string;
     hide?: boolean;
+    forceHide?: boolean;
     width?: string | number;
     minWidth?: string | number;
     align?: "left" | "center" | "right";

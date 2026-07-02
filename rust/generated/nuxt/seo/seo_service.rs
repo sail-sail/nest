@@ -29,6 +29,7 @@ async fn set_search_query(
   search: &mut SeoSearch,
   options: Option<Options>,
 ) -> Result<()> {
+  
   Ok(())
 }
 

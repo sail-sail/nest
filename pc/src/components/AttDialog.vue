@@ -279,7 +279,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import { filesize } from "filesize";
 
 import {
@@ -299,7 +299,7 @@ import {
 
 import {
   saveAs,
-} from "file-saver";
+} from "../compositions/download.ts";
 
 const {
   ns,
@@ -364,7 +364,7 @@ let modelValue = $ref("");
 
 // let tenantHost = $ref("");
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef("customDialogRef"));
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";

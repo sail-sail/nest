@@ -102,7 +102,7 @@ const foreignTabsDialogType = columns.find((item) => item.foreignTabs?.length > 
 </CustomDialog>
 </template>
 
-<script lang="ts" setup><#
+<script lang="ts" setup vapor><#
 for (let ic = 0; ic < columns.length; ic++) {
   const column = columns[ic];
   if (!column.foreignTabs) continue;
@@ -235,6 +235,7 @@ async function showDialog(
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "<#=foreignTabsDialogType#>",
     title,
+    pointerPierce: true,
   });
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;

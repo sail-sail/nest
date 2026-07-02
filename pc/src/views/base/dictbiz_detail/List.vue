@@ -198,7 +198,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('add', '新增') && !isLocked"
+        v-if="dictbiz_model && dictbiz_model.is_add && permit('add', '新增') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -210,7 +210,7 @@
       </el-button>
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('add', '复制') && !isLocked"
+        v-if="dictbiz_model && dictbiz_model.is_add && permit('add', '复制') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -291,7 +291,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -350,7 +352,7 @@
     <template v-else>
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('delete') && !isLocked"
+        v-if="dictbiz_model && dictbiz_model.is_add && permit('delete') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -687,7 +689,7 @@
 </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup vapor>
 import Detail from "./Detail.vue";
 
 import {
@@ -1108,7 +1110,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1123,7 +1125,33 @@ const {
   },
 ));
 
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
+
 const detailRef = $(useTemplateRef("detailRef"));
+
+let dictbiz_model = $ref<DictbizModel>();
 
 /** 刷新表格 */
 async function dataGrid(
@@ -1132,6 +1160,15 @@ async function dataGrid(
 ) {
   clearDirty();
   const search = getDataSearch();
+  const dictbiz_id = search.dictbiz_id?.[0];
+  if (dictbiz_id) {
+    dictbiz_model = await findOneDictbiz({
+      id: dictbiz_id,
+      is_deleted: search.is_deleted,
+    });
+  } else {
+    dictbiz_model = undefined;
+  }
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
@@ -1686,24 +1723,9 @@ watch(
   },
 );
 
-let dictbiz_model = $ref<DictbizModel>();
-
-const dict_id = $computed(() => {
-  return search.dictbiz_id as unknown as DictbizId | undefined;
-});
-
 async function initFrame() {
   initColumns(tableColumns);
-  [
-    ,
-    dictbiz_model,
-  ] = await Promise.all([
-    dataGrid(true),
-    findOneDictbiz({
-      id: dict_id,
-      is_deleted: search.is_deleted,
-    }),
-  ]);
+  await dataGrid(true);
   inited = true;
 }
 

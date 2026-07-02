@@ -17,7 +17,7 @@ export class Context {
 
 async function confirmDatabaseTarget(db: typeof nestConfig.database) {
   if (!process.stdin.isTTY || process.env.CI) {
-    return;
+    throw new Error("需要人工确认，当前环境不支持交互式确认");
   }
 
   const rl = createInterface({
@@ -29,20 +29,17 @@ async function confirmDatabaseTarget(db: typeof nestConfig.database) {
     while (true) {
       const answer = await new Promise<string>((resolve) => {
         rl.question(
-          `即将连接数据库 ${ db.database || "<未设置>" }@${ db.host || "<未设置>" }:${ Number(db.port) || 3306 } 是否继续？(yes/no，默认 no): `,
+          `即将连接数据库 ${ db.database || "<未设置>" }@${ db.host || "<未设置>" }:${ Number(db.port) || 3306 }，请输入 yes 才继续；其他输入将取消执行： `,
           resolve,
         );
       });
 
       const normalized = answer.trim().toLowerCase();
-      if (!normalized || normalized === "n" || normalized === "no") {
+      if (!normalized || (normalized !== "yes" && normalized !== "y")) {
         console.log();
-        throw "已取消执行，未连接数据库";
+        throw new Error("已取消执行，未连接数据库");
       }
-      if (normalized === "y" || normalized === "yes") {
-        return;
-      }
-      console.log("请输入 yes 或 no。");
+      return;
     }
   } finally {
     rl.close();
@@ -292,9 +289,11 @@ async function getSchema0(
     tables[table_name].columns.push({
       COLUMN_NAME: "org_id",
       COLUMN_TYPE: "varchar(22)",
+      COLUMN_DEFAULT: "CURRENT_ORG_ID",
+      modelLabel: hasOrgIdLbl ? "org_id_lbl" : undefined,
+      require: true,
       DATA_TYPE: "varchar",
-      COLUMN_COMMENT: "组织",
-      onlyCodegenDeno: true,
+      COLUMN_COMMENT: "所属组织",
       canSearch: true,
       foreignKey: {
         mod: "base",
@@ -308,6 +307,7 @@ async function getSchema0(
   if (hasCreateUsrId && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "create_usr_id")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "create_usr_id",
+      modelLabel: hasCreateUsrIdLbl ? "create_usr_id_lbl" : undefined,
       COLUMN_TYPE: "varchar(22)",
       DATA_TYPE: "varchar",
       COLUMN_COMMENT: "创建人",
@@ -329,6 +329,7 @@ async function getSchema0(
   if (hasUpdateUsrId && !tables[table_name].columns.some((item: TableColumn) => item.COLUMN_NAME === "update_usr_id")) {
     tables[table_name].columns.push({
       COLUMN_NAME: "update_usr_id",
+      modelLabel: hasUpdateUsrIdLbl ? "update_usr_id_lbl" : undefined,
       COLUMN_TYPE: "varchar(22)",
       DATA_TYPE: "varchar",
       COLUMN_COMMENT: "更新人",
@@ -367,6 +368,18 @@ async function getSchema0(
       }
       if (item.require == null) {
         item.require = true;
+      }
+      if (item.canSearch == null) {
+        item.canSearch = true;
+      }
+      if (item.foreignKey == null) {
+        item.foreignKey = { };
+      }
+      if (item.foreignKey.mod == null) {
+        item.foreignKey.mod = "base";
+      }
+      if (item.foreignKey.table == null) {
+        item.foreignKey.table = "org";
       }
     }
     if ([ "tenant_id", "is_deleted" ].includes(column_name)) {
@@ -582,6 +595,12 @@ async function getSchema0(
         if (item.isPublicAtt == null) {
           item.isPublicAtt = true;
         }
+        if (item.attAccept == null) {
+          item.attAccept = "image/svg+xml,image/png,image/jpeg,image/webp";
+        }
+        if (item.isImg == null) {
+          item.isImg = false;
+        }
       }
       if (item.width == null) {
         let column_comment = item.COLUMN_COMMENT || "";
@@ -715,9 +734,6 @@ async function getSchema0(
       }
       if (item.align == null) {
         item.align = "left";
-      }
-      if (item.isTextarea == null) {
-        item.isTextarea = true;
       }
     }
     
@@ -1542,6 +1558,9 @@ export async function getSchema(
     // 复核
     const auditColumnName = audit.column;
     const auditColumn = tables[table_name].columns.find((item) => item.COLUMN_NAME === auditColumnName);
+    if (!auditColumn) {
+      throw new Error(`表: ${ table_name }, 审核字段: ${ auditColumnName } 不存在!`);
+    }
     const dict_models = auditColumn.dict_models;
     if (dict_models && dict_models.some((item) => item.val === "reviewed")) {
       audit.hasReviewed = true;

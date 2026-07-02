@@ -326,6 +326,11 @@ export interface TableColumn {
      */
     isForceJoinQuery?: boolean;
     
+    /**
+     * 在dao层sql查询中, 是否有 is not null 的查询条件, 默认为 false
+     */
+    is_where_query_not_null?: boolean;
+    
   },
   
   /** foreignTabs 弹出框的大小, 默认为 medium */
@@ -426,6 +431,8 @@ export interface TableColumn {
    * 如果字段名是img或者_img结尾, 并且isImg == null，则认isImg默认为true,并且此时width默认为80
    */
   isImg?: boolean,
+  
+  isSpanFull?: boolean;
   
   /**
    * 是否图标
@@ -1080,9 +1087,17 @@ export interface TablesConfigItem {
       auditTableSchema?: TablesConfigItem;
       
       /**
-       * 是否有复核功能, 默认寻找 [表名]_audit 复核表的 audit 字段的枚举值是否有 
+       * 是否有复核功能。
+       * 建议在需要复核时显式写 true；如果主表/审核表的 audit 枚举没有 reviewed，则显式写 false。
        */
       hasReviewed?: boolean;
+      
+      /**
+       * 是否有反审核功能。
+       * 建议需要标准反审核时显式写 true，不要依赖“省略即默认 true”的口头约定。
+       * 标准反审核仅做状态回退：reviewed -> audited -> unaudited -> unsubmited，rejected / unsubmited 不允许反审核。
+       */
+      hasReverse?: boolean;
       
     };
     

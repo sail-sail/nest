@@ -63,6 +63,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -70,9 +71,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts.audit.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -1936,10 +1937,24 @@ pub struct <#=tableUP#>Search {
   #[graphql(skip)]<#
   } else {
   #>
-  #[graphql(name = "<#=column_name#>_save_null")]<#
+  #[graphql(name = "<#=column_name#>_is_null")]<#
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
+  if (foreignKey.is_where_query_not_null) {
+  #>
+  /// <#=column_comment#><#
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_is_not_null")]<#
+  }
+  #>
+  pub <#=column_name#>_is_not_null: Option<bool>,<#
+  }
+  #><#
     if (modelLabel) {
   #>
   /// <#=column_comment#><#
@@ -2004,10 +2019,24 @@ pub struct <#=tableUP#>Search {
   #[graphql(skip)]<#
   } else {
   #>
-  #[graphql(name = "<#=column_name#>_save_null")]<#
+  #[graphql(name = "<#=column_name#>_is_null")]<#
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
+  if (foreignKey.is_where_query_not_null) {
+  #>
+  /// <#=column_comment#><#
+  if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_is_not_null")]<#
+  }
+  #>
+  pub <#=column_name#>_is_not_null: Option<bool>,<#
+  }
+  #><#
   if (foreignKey.lbl) {
   #>
   /// <#=column_comment#><#

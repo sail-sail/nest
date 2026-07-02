@@ -43,6 +43,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 }
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -50,9 +51,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -115,14 +116,8 @@ for (let i = 0; i < columns.length; i++) {
   }
 }
 #><#
-if (hasUsrStore) {
-#>import cfg from "@/utils/config.ts";
-<#
-}
-#><#
 if (opts.noAdd !== true || opts.noEdit !== true) {
-#>
-import {
+#>import {
   UniqueType,
 } from "#/types.ts";<#
 }
@@ -569,7 +564,7 @@ export async function setLblById<#=Table_Up#>(
   } else {
     model.<#=column_name#>_lbl = new Decimal(model.<#=column_name#> ?? 0).toFixed(<#=precision#>);
   }<#
-    } else if (column.isImg) {
+    } else if (column.isImg && !column.isIcon) {
   #>
   
   // <#=column_comment#>
@@ -1211,6 +1206,34 @@ export async function auditReview<#=Table_Up#>(
 }<#
 }
 #><#
+}
+#><#
+if (opts?.audit?.hasReverse) {
+#>
+
+/** 反审核 */
+export async function auditReverse<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  opt?: GqlOpt,
+) {
+
+  const data: {
+    auditReverse<#=Table_Up2#>: Mutation["auditReverse<#=Table_Up2#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!) {
+        auditReverse<#=Table_Up2#>(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+
+  const res = data.auditReverse<#=Table_Up2#>;
+
+  return res;
+}<#
 }
 #>
 
