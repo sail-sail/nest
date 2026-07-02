@@ -13,7 +13,8 @@ use async_graphql::{
 pub struct Query(
   generated::common::CommonQuery,
   generated::GenQuery,
-  crate::base::menu::menu_graphql::MenuQuery,
+  
+  base::BaseAppQuery,
   
   wxwork::wxw_usr::wxw_usr_graphql::WxwUsrQuery,
   wxwork::wxw_app_token::wxw_app_token_graphql::WxwAppTokenQuery,
@@ -23,6 +24,8 @@ pub struct Query(
 pub struct Mutation(
   generated::common::CommonMutation,
   generated::GenMutation,
+  
+  base::BaseAppMutation,
   
   wxwork::wxw_usr::wxw_usr_graphql::WxwUsrMutation,
 );
