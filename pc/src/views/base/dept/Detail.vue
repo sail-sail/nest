@@ -143,7 +143,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.org_id == null) && dialogAction !== 'add' && dialogAction !== 'copy'">
+        <template v-if="(showBuildIn || builtInModel?.org_id == null)">
           <el-form-item
             label="组织"
             prop="org_id"
@@ -160,7 +160,7 @@
                 };
               })"
               placeholder="请选择 组织"
-              :readonly="true"
+              :readonly="isLocked || isReadonly"
               :page-inited="inited"
             ></CustomSelect>
           </el-form-item>
@@ -230,43 +230,44 @@
       </el-button>
       
       <div
+        v-if="(ids && ids.length > 1)"
         un-text="3 [var(--el-text-color-regular)]"
         un-pos-absolute
         un-right="2"
         un-flex="~"
         un-gap="x-1"
       >
-        <template v-if="(ids && ids.length > 1)">
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
-            @click="onPrevId"
-          >
-            <ElIconArrowLeft
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowLeft>
-          </el-button>
-          
-          <div>
-            {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
-          </div>
-          
-          <el-button
-            link
-            :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
-            @click="onNextId"
-          >
-            <ElIconArrowRight
-              un-w="1em"
-              un-h="1em"
-            ></ElIconArrowRight>
-          </el-button>
-        </template>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) <= 0"
+          @click="onPrevId"
+        >
+          <ElIconArrowLeft
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowLeft>
+        </el-button>
+        
+        <div>
+          {{ (dialogModel.id && ids.indexOf(dialogModel.id) || 0) + 1 }} / {{ ids.length }}
+        </div>
+        
+        <el-button
+          link
+          :disabled="!dialogModel.id || ids.indexOf(dialogModel.id) >= ids.length - 1"
+          @click="onNextId"
+        >
+          <ElIconArrowRight
+            un-w="1em"
+            un-h="1em"
+          ></ElIconArrowRight>
+        </el-button>
         
         <div v-if="changedIds.length > 0">
           {{ changedIds.length }}
         </div>
+        
       </div>
       
     </div>
@@ -373,6 +374,13 @@ watchEffect(async () => {
       {
         required: true,
         message: "请输入 排序",
+      },
+    ],
+    // 组织
+    org_id: [
+      {
+        required: true,
+        message: "请选择 组织",
       },
     ],
   };
@@ -499,11 +507,9 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
-      defaultInput,
       data,
       order_by,
     ] = await Promise.all([
-      getDefaultInputDept(),
       findOneModel({
         id,
         is_deleted,
@@ -519,7 +525,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        org_id: defaultInput.org_id,
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
@@ -744,9 +749,10 @@ watch(
   () => [
     dialogModel.parent_id,
     dialogModel.usr_ids,
+    dialogModel.org_id,
   ],
   () => {
-    if (!inited || is_form_hydrating) {
+    if (!inited) {
       return;
     }
     if (!dialogModel.parent_id) {
@@ -754,6 +760,9 @@ watch(
     }
     if (!dialogModel.usr_ids || dialogModel.usr_ids.length === 0) {
       dialogModel.usr_ids_lbl = [ ];
+    }
+    if (!dialogModel.org_id) {
+      dialogModel.org_id_lbl = "";
     }
   },
 );

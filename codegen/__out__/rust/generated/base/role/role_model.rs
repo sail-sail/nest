@@ -489,7 +489,7 @@ pub struct RoleSearch {
   #[graphql(name = "menu_ids")]
   pub menu_ids: Option<Vec<MenuId>>,
   /// 菜单权限
-  #[graphql(name = "menu_ids_save_null")]
+  #[graphql(name = "menu_ids_is_null")]
   pub menu_ids_is_null: Option<bool>,
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl_like")]
@@ -498,7 +498,7 @@ pub struct RoleSearch {
   #[graphql(name = "permit_ids")]
   pub permit_ids: Option<Vec<PermitId>>,
   /// 按钮权限
-  #[graphql(name = "permit_ids_save_null")]
+  #[graphql(name = "permit_ids_is_null")]
   pub permit_ids_is_null: Option<bool>,
   /// 按钮权限
   #[graphql(name = "permit_ids_lbl_like")]
@@ -507,13 +507,13 @@ pub struct RoleSearch {
   #[graphql(name = "data_permit_ids")]
   pub data_permit_ids: Option<Vec<DataPermitId>>,
   /// 数据权限
-  #[graphql(name = "data_permit_ids_save_null")]
+  #[graphql(name = "data_permit_ids_is_null")]
   pub data_permit_ids_is_null: Option<bool>,
   /// 字段权限
   #[graphql(name = "field_permit_ids")]
   pub field_permit_ids: Option<Vec<FieldPermitId>>,
   /// 字段权限
-  #[graphql(name = "field_permit_ids_save_null")]
+  #[graphql(name = "field_permit_ids_is_null")]
   pub field_permit_ids_is_null: Option<bool>,
   /// 字段权限
   #[graphql(name = "field_permit_ids_lbl_like")]
@@ -537,7 +537,7 @@ pub struct RoleSearch {
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
-  #[graphql(name = "create_usr_id_save_null")]
+  #[graphql(name = "create_usr_id_is_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
@@ -552,7 +552,7 @@ pub struct RoleSearch {
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
-  #[graphql(name = "update_usr_id_save_null")]
+  #[graphql(name = "update_usr_id_is_null")]
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]

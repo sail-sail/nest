@@ -331,7 +331,7 @@ pub struct WxwAppTokenSearch {
   #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: Option<Vec<WxwAppId>>,
   /// 企微应用
-  #[graphql(name = "wxw_app_id_save_null")]
+  #[graphql(name = "wxw_app_id_is_null")]
   pub wxw_app_id_is_null: Option<bool>,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]

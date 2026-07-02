@@ -298,7 +298,7 @@ pub struct WxwAppSearch {
   #[graphql(name = "domain_id")]
   pub domain_id: Option<Vec<DomainId>>,
   /// 可信域名
-  #[graphql(name = "domain_id_save_null")]
+  #[graphql(name = "domain_id_is_null")]
   pub domain_id_is_null: Option<bool>,
   /// 可信域名
   #[graphql(name = "domain_id_lbl")]

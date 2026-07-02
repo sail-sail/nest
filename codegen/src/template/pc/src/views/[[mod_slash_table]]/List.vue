@@ -69,6 +69,7 @@ const bpmStatusField = opts?.bpm?.status_field || "bpm_status";
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -76,9 +77,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts.audit.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -1268,8 +1269,17 @@ if (searchByKeyword) {
           (
             permit('audit_submit', '审核提交') ||
             permit('audit_pass', '审核通过') ||
-            permit('audit_reject', '审核拒绝') ||
-            permit('audit_review', '复核通过')
+            permit('audit_reject', '审核拒绝')<#
+            if (opts?.audit?.hasReverse) {
+            #> ||
+            permit('audit_reverse', '反审核')<#
+            }
+            #><#
+            if (hasReviewed) {
+            #> ||
+            permit('audit_review', '复核通过')<#
+            }
+            #>
           )
         "
         plain
@@ -1287,6 +1297,27 @@ if (searchByKeyword) {
         } else {
         #>
         <span>审核</span><#
+        }
+        #>
+      </el-button>
+
+      <el-button
+        v-if="permit('audit_reverse', '反审核') && !isLocked"
+        plain
+        type="warning"
+        @click="onAuditReverseByIds"
+      >
+        <template #icon>
+          <ElIcon>
+            <div un-i="iconfont-undo"></div>
+          </ElIcon>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('反审核') }}</span><#
+        } else {
+        #>
+        <span>反审核</span><#
         }
         #>
       </el-button><#
@@ -2094,7 +2125,7 @@ if (searchByKeyword) {
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
@@ -2164,9 +2195,9 @@ if (searchByKeyword) {
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
+              <template #default="{ row }">
                 <LinkAtt
-                  v-model="row[column.property]"<#
+                  v-model="row.<#=column_name#>"<#
                   if (column.attMaxSize > 1) {
                   #>
                   :max-size="<#=column.attMaxSize#>"<#
@@ -2198,7 +2229,7 @@ if (searchByKeyword) {
                   :readonly="isLocked"<#
                   }
                   #>
-                  @change="onLinkAtt(row, column.property)"
+                  @change="onLinkAtt(row, '<#=column_name#>')"
                 ></LinkAtt>
               </template>
             </el-table-column>
@@ -2299,7 +2330,7 @@ if (searchByKeyword) {
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
@@ -2422,7 +2453,7 @@ if (searchByKeyword) {
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
@@ -2536,7 +2567,7 @@ if (searchByKeyword) {
                 <el-link
                   type="primary"
                   @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
-                  if (opts.lbl_field) {
+                  if (opts.lbl_field && column_name !== opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
@@ -2889,6 +2920,11 @@ import {
   getPagePath<#=Table_Up#>,
   findAll<#=Table_Up#>,
   findCount<#=Table_Up#>,<#
+    if (hasAudit) {
+  #>
+  auditReverse<#=Table_Up#>,<#
+    }
+  #><#
     if (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) {
   #>
   revertByIds<#=Table_Up#>,<#
@@ -2949,6 +2985,14 @@ import {
     }
   #>
 } from "./Api.ts";<#
+if (hasAudit) {
+#>
+
+import {
+  <#=Table_Up#>Audit,
+} from "#/types.ts";<#
+}
+#><#
 const foreignTableArr = [ ];
 const column_commentArr = [ ];
 const foreignKeyArr = [ ];
@@ -5031,7 +5075,8 @@ async function openAudit() {
     !permit("audit_submit") &&
     !permit("audit_pass") &&
     !permit("audit_reject") &&
-    !permit("audit_review")
+    !permit("audit_review") &&
+    !permit("audit_reverse")
   ) {<#
     if (isUseI18n) {
     #>
@@ -5082,6 +5127,106 @@ async function openAudit() {
   dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
+}
+
+/** 反审核 */
+async function onAuditReverseByIds() {
+  tableFocus();
+
+  if (isLocked) {
+    return;
+  }
+  if (!permit("audit_reverse")) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("无权限"));<#
+    } else {
+    #>
+    ElMessage.warning("无权限");<#
+    }
+    #>
+    return;
+  }
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要反审核的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要反审核的 <#=table_comment#>");<#
+    }
+    #>
+    return;
+  }
+  if (selectedIds.length > 1) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("反审核仅支持选择一条 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("反审核仅支持选择一条 <#=table_comment#>");<#
+    }
+    #>
+    return;
+  }
+  const id = selectedIds[0];
+  const model = tableData.find((item) => item.id === id);
+  if (!model) {
+    return;
+  }
+  if (
+    model.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
+    model.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
+  ) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("当前状态不允许反审核"));<#
+    } else {
+    #>
+    ElMessage.warning("当前状态不允许反审核");<#
+    }
+    #>
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("确认要反审核吗"),<#
+      } else {
+      #>
+      "确认要反审核吗",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
+        confirmButtonText: await nsAsync("确定"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",<#
+        }
+        #>
+        type: "warning",
+      },
+    );
+  } catch (err) {
+    return;
+  }
+  await auditReverse<#=Table_Up#>(id);
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();<#
+  if (isUseI18n) {
+  #>
+  ElMessage.success(await nsAsync("反审核成功"));<#
+  } else {
+  #>
+  ElMessage.success("反审核成功");<#
+  }
+  #>
+  emit("edit", [ id ]);
 }<#
 }
 #><#

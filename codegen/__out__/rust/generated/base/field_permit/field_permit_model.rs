@@ -148,7 +148,7 @@ pub struct FieldPermitSearch {
   #[graphql(name = "menu_id")]
   pub menu_id: Option<Vec<MenuId>>,
   /// 菜单
-  #[graphql(name = "menu_id_save_null")]
+  #[graphql(name = "menu_id_is_null")]
   pub menu_id_is_null: Option<bool>,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]

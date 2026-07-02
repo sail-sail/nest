@@ -299,7 +299,7 @@ import {
 
 import {
   saveAs,
-} from "file-saver";
+} from "../compositions/download.ts";
 
 const {
   ns,

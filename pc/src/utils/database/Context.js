@@ -2,6 +2,10 @@ const mysql = require("mysql2");
 
 const nestConfig = require("./nest_config");
 
+const {
+  createInterface,
+} = require("readline");
+
 class Context {
   // pool: Pool;
   // conn: PoolConnection;

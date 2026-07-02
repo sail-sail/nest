@@ -65,6 +65,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -72,9 +73,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -1130,6 +1131,88 @@ pub async fn audit_submit_<#=table#>(
   }
   #>
   
+  Ok(res)
+}
+
+/// <#=table_comment#> 反审核
+#[function_name::named]
+pub async fn audit_reverse_<#=table#>(
+  id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<bool> {
+
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );<#
+  if (log) {
+  #>
+
+  let begin_time = Instant::now();<#
+  }
+  #><#
+  if (!is_with_auth_optional) {
+  #>
+
+  use_permit(
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("audit_reverse"),
+  ).await?;<#
+  }
+  #><#
+  if (log) {
+  #>
+
+  let old_data = id;<#
+  }
+  #>
+
+  let res = <#=table#>_service::audit_reverse_<#=table#>(
+    id,
+    options,
+  ).await?;<#
+  if (log) {
+  #><#
+  if (isUseI18n) {
+  #>
+
+  let method_lbl = ns(SmolStr::new("反审核"), options).await?;
+  let table_comment = ns(SmolStr::new("<#=table_comment#>"), options).await?;<#
+  } else {
+  #>
+
+  let method_lbl = SmolStr::new("反审核");
+  let table_comment = SmolStr::new("<#=table_comment#>");<#
+  }
+  #>
+
+  let end_time = Instant::now();
+
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+
+  log(
+    OperationRecordInput {
+      module: SmolStr::new(format!("<#=mod#>_<#=table#>")),
+      module_lbl: table_comment.clone().into(),
+      method: SmolStr::new("auditReverse"),
+      method_lbl: method_lbl.clone().into(),
+      lbl: method_lbl.clone().into(),
+      time: time.into(),
+      old_data: SmolStr::new(serde_json::to_string(&old_data)?).into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+
   Ok(res)
 }
 
