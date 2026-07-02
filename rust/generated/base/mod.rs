@@ -15,6 +15,8 @@ pub mod icon;
 pub mod lang;
 pub mod login_log;
 pub mod menu;
+pub mod message;
+pub mod message_receiver;
 pub mod operation_record;
 pub mod optbiz;
 pub mod options;
@@ -46,6 +48,8 @@ pub struct BaseGenQuery(
   self::lang::lang_graphql::LangGenQuery,
   self::login_log::login_log_graphql::LoginLogGenQuery,
   self::menu::menu_graphql::MenuGenQuery,
+  self::message::message_graphql::MessageGenQuery,
+  self::message_receiver::message_receiver_graphql::MessageReceiverGenQuery,
   self::operation_record::operation_record_graphql::OperationRecordGenQuery,
   self::optbiz::optbiz_graphql::OptbizGenQuery,
   self::options::options_graphql::OptionsGenQuery,
@@ -76,6 +80,8 @@ pub struct BaseGenMutation(
   self::lang::lang_graphql::LangGenMutation,
   self::login_log::login_log_graphql::LoginLogGenMutation,
   self::menu::menu_graphql::MenuGenMutation,
+  self::message::message_graphql::MessageGenMutation,
+  self::message_receiver::message_receiver_graphql::MessageReceiverGenMutation,
   self::operation_record::operation_record_graphql::OperationRecordGenMutation,
   self::optbiz::optbiz_graphql::OptbizGenMutation,
   self::options::options_graphql::OptionsGenMutation,

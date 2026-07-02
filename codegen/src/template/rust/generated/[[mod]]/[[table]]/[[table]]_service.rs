@@ -36,6 +36,7 @@ const hasDictbiz = columns.some((column) => {
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -46,10 +47,10 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
 const auditColumnUp = auditColumn.substring(0,1).toUpperCase() + auditColumn.substring(1);
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -159,8 +160,7 @@ use crate::common::options::options_dao::update_i18n_version;<#
 #><#
 if (
   (hasAudit && auditTable_Up) ||
-  opts.filterDataByCreateUsr ||
-  hasOrgId
+  opts.filterDataByCreateUsr
 ) {
 #>
 
@@ -232,13 +232,48 @@ async fn set_search_query(
   } else if (hasOrgId) {
   #>
   
-  if !is_admin(usr_id, options).await? {
-    search.org_id = Some(org_ids);
-  }<#
+  search.org_id = Some(org_ids);<#
   }
   #>
+  
   Ok(())
+}<#
+if (hasAudit) {
+#>
+
+fn get_reverse_<#=auditColumn#>_status(
+  audit: <#=Table_Up#><#=auditColumnUp#>,
+) -> Result<(<#=Table_Up#><#=auditColumnUp#>, <#=auditTable_Up#>Audit)> {
+  match audit {<#
+    if (hasReviewed) {
+    #>
+    <#=Table_Up#><#=auditColumnUp#>::Reviewed => {
+      Ok((<#=Table_Up#><#=auditColumnUp#>::Audited, <#=auditTable_Up#>Audit::Audited))
+    },<#
+    }
+    #>
+    <#=Table_Up#><#=auditColumnUp#>::Audited => {
+      Ok((<#=Table_Up#><#=auditColumnUp#>::Unaudited, <#=auditTable_Up#>Audit::Unaudited))
+    },
+    <#=Table_Up#><#=auditColumnUp#>::Unaudited => {
+      Ok((<#=Table_Up#><#=auditColumnUp#>::Unsubmited, <#=auditTable_Up#>Audit::Unsubmited))
+    },
+    <#=Table_Up#><#=auditColumnUp#>::Unsubmited |
+    <#=Table_Up#><#=auditColumnUp#>::Rejected => {<#
+      if (hasReviewed) {
+      #>
+      Err(eyre!("只有待审核、已审核、已复核的 <#=table_comment#> 才能 反审核"))<#
+      } else {
+      #>
+      Err(eyre!("只有待审核、已审核的 <#=table_comment#> 才能 反审核"))<#
+      }
+      #>
+    },
+  }
 }
+<#
+}
+#>
 
 /// 根据搜索条件和分页查找<#=table_comment#>列表
 pub async fn find_all_<#=table#>(
@@ -1095,6 +1130,85 @@ pub async fn audit_reject_<#=table#>(
   #>
   
   Ok(true)
+}
+
+/// <#=table_comment#> 反审核
+pub async fn audit_reverse_<#=table#>(
+  <#=table#>_id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<bool> {
+
+  let old_model = validate_option_<#=table#>(
+    <#=table#>_dao::find_by_id_<#=table#>(
+      <#=table#>_id,
+      options,
+    ).await?,
+  ).await?;<#
+  if (auditTable_Up) {
+  #><#
+  if (opts?.lbl_field) {
+  #>
+
+  let <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#>;<#
+  } else {
+  #>
+
+  let <#=auditModelLabel#> = String::new();<#
+  }
+  #><#
+  }
+  #>
+
+  let (audit, audit_log) = get_reverse_<#=auditColumn#>_status(old_model.<#=auditColumn#>.clone())?;
+
+  let <#=table#>_input = <#=tableUP#>Input {
+    <#=auditColumn#>: Some(audit),
+    ..Default::default()
+  };
+
+  <#=table#>_dao::update_by_id_<#=table#>(
+    <#=table#>_id,
+    <#=table#>_input,
+    options,
+  ).await?;<#
+  if (auditTable_Up) {
+  #>
+
+  let audit_usr_id = get_auth_id_ok()?;
+  let audit_time = get_now();
+
+  let audit_usr_model = validate_option_usr(
+    find_by_id_usr(
+      audit_usr_id,
+      options,
+    ).await?,
+  ).await?;
+
+  let audit_usr_id_lbl = audit_usr_model.lbl;
+
+  let <#=table#>_input = <#=auditTable_Up#>Input {
+    <#=table#>_id: Some(<#=table#>_id),<#
+    if (auditModelLabel) {
+    #>
+    <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
+    }
+    #>
+    audit: Some(audit_log),
+    audit_usr_id: Some(audit_usr_id),
+    audit_usr_id_lbl: Some(audit_usr_id_lbl),
+    audit_time: Some(audit_time),
+    rem: Some("反审核".into()),
+    ..Default::default()
+  };
+
+  create_<#=auditTable#>(
+    <#=table#>_input,
+    options,
+  ).await?;<#
+  }
+  #>
+
+  Ok(true)
 }<#
 if (hasReviewed) {
 #>
@@ -1308,11 +1422,7 @@ pub async fn delete_by_ids_<#=table#>(
     #>.clone()<#
     }
     #>,
-    options<#
-    if (hasAudit) {
-    #>.clone()<#
-    }
-    #>,
+    options,
   ).await?;<#
   if (mod === "base" && table === "i18n") {
   #>
@@ -1532,11 +1642,7 @@ pub async fn revert_by_ids_<#=table#>(
     #>.clone()<#
     }
     #>,
-    options<#
-    if (hasAudit) {
-    #>.clone()<#
-    }
-    #>,
+    options,
   ).await?;<#
   if (mod === "base" && table === "i18n") {
   #>
@@ -1599,11 +1705,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     #>.clone()<#
     }
     #>,
-    options<#
-    if (hasAudit) {
-    #>.clone()<#
-    }
-    #>,
+    options,
   ).await?;<#
   if (hasAudit && auditTable_Up) {
   #>

@@ -142,11 +142,12 @@
             </div>
           </div>
           
+          <!-- 右侧用户信息等 -->
           <div
             un-flex="~"
             un-items-center
             un-gap="x-3"
-            un-m="r-4"
+            un-m="r-2"
           >
             <template
               v-if="
@@ -244,6 +245,7 @@
                 </template>
               </el-dropdown>
             </template>
+            
             <div
               un-pos-relative
               un-top="[1px]"
@@ -254,6 +256,7 @@
               un-items-center
               un-justify-center
             >
+              
               <el-dropdown
                 trigger="click"
               >
@@ -341,6 +344,29 @@
                 </template>
               </el-dropdown>
             </div>
+            
+          </div>
+          
+          <!-- 消息 -->
+          <div
+            un-flex="~"
+            un-items-center
+            un-h="full"
+            un-p="r-6"
+            un-box-border
+            un-cursor-pointer
+          >
+            <el-badge
+              :hidden="unreadMessageCount <= 0"
+              :value="unreadMessageCount"
+              :max="99"
+            >
+              <el-button
+                :icon="BellFilled"
+                link
+                @click="goToMessageCenter"
+              ></el-button>
+            </el-badge>
           </div>
           
         </div>
@@ -414,9 +440,18 @@ import {
   deptLoginSelect,
   clearCache,
   getUsrPermits,
+  getMyUnreadMessageCount,
 } from "./Api";
+import {
+  subscribe,
+  unSubscribe,
+} from "@/compositions/websocket";
 
 import config from "@/utils/config";
+
+import {
+  BellFilled,
+} from "@element-plus/icons-vue";
 
 // import {
 //   clearDictbizCache,
@@ -613,6 +648,12 @@ async function goIndex() {
   }
 }
 
+async function goToMessageCenter() {
+  await router.push({
+    path: "/base/message/list",
+  });
+}
+
 // 关闭其它选项卡
 function closeOtherTabs() {
   if (tabsStore.actTab) {
@@ -654,6 +695,96 @@ async function onLogout() {
 }
 
 let loginInfo = $ref(usrStore.loginInfo);
+let unreadMessageCount = $ref(0);
+
+async function refreshUnreadMessageCount() {
+  if (!usrStore.authorization) {
+    unreadMessageCount = 0;
+    return;
+  }
+  try {
+    unreadMessageCount = await getMyUnreadMessageCount({ notLoading: true });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function openBrowserNotification(
+  title: string,
+  message: string,
+  onClick?: () => void | Promise<void>,
+) {
+  if (typeof window === "undefined" || !("Notification" in window)) {
+    return;
+  }
+
+  const showNotification = () => {
+    const notification = new Notification(title, {
+      body: message,
+    });
+    notification.onclick = () => {
+      window.focus();
+      void onClick?.();
+    };
+  };
+
+  if (Notification.permission === "granted") {
+    showNotification();
+    return;
+  }
+
+  if (Notification.permission === "default") {
+    void Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        showNotification();
+      }
+    });
+  }
+}
+
+function handleMessageTopic(payload: unknown) {
+  const data = payload as {
+    title?: string;
+    content?: string;
+    routePath?: string;
+    routeQuery?: Record<string, string>;
+    receiverUsrIds?: string[];
+  } | undefined;
+  if (!data) {
+    return;
+  }
+  const receiverUsrIds = data.receiverUsrIds || [];
+  const currentUsrId = usrStore?.usr_id;
+  if (currentUsrId && receiverUsrIds.length > 0 && !receiverUsrIds.includes(currentUsrId)) {
+    return;
+  }
+  unreadMessageCount += 1;
+  const title = data.title || ns("新消息");
+  const message = data.content || ns("您收到一条新消息");
+  ElNotification({
+    title,
+    message,
+    type: "info",
+    duration: 3000,
+    position: "bottom-right",
+    onClick: async () => {
+      const routePath = data.routePath || "/base/message/list";
+      const routeQuery = data.routeQuery || {};
+      await router.push({
+        path: routePath,
+        query: routeQuery,
+      });
+    },
+  });
+  openBrowserNotification(title, message, async () => {
+    const routePath = data.routePath || "/base/message/list";
+    const routeQuery = data.routeQuery || {};
+    await router.push({
+      path: routePath,
+      query: routeQuery,
+    });
+  });
+}
 
 async function onDeptSelect(org_id?: OrgId) {
   if (!loginInfo) {
@@ -671,6 +802,7 @@ async function onDeptSelect(org_id?: OrgId) {
       usrStore.loginInfo.org_id = org_id;
     }
     await usrStore.login(token);
+    globalThis.location.reload();
   }
 }
 
@@ -703,24 +835,30 @@ async function initFrame() {
       const [
         loginInfoTmp,
         _,
+        unreadCount,
       ] = await Promise.all([
         getLoginInfo({ notLoading: true }),
         getUsrPermitsEfc(),
+        getMyUnreadMessageCount({ notLoading: true }),
       ]);
       loginInfo = loginInfoTmp;
       usrStore.loginInfo = loginInfo;
+      unreadMessageCount = unreadCount;
     } else {
       const [
         loginInfoTmp,
         _,
+        unreadCount,
       ] = await Promise.all([
         getLoginInfo({ notLoading: true }),
         getUsrPermitsEfc(),
+        getMyUnreadMessageCount({ notLoading: true }),
       ]);
       loginInfo = loginInfoTmp;
       usrStore.loginInfo = loginInfo;
       usrStore.lang = loginInfo.lang ?? "";
       usrStore.username = loginInfo.username;
+      unreadMessageCount = unreadCount;
     }
   }
   inited = true;
@@ -731,6 +869,19 @@ initFrame();
 onMounted(async function() {
   await nextTick();
   await refreshScrollVisible();
+  const usr_id = usrStore?.usr_id;
+  if (usr_id) {
+    await subscribe(`${ usr_id }/message`, handleMessageTopic);
+  }
+  window.addEventListener("message-count-changed", refreshUnreadMessageCount);
+});
+
+onBeforeUnmount(async function() {
+  const usr_id = usrStore?.usr_id;
+  if (usr_id) {
+    await unSubscribe(`${ usr_id }/message`, handleMessageTopic);
+  }
+  window.removeEventListener("message-count-changed", refreshUnreadMessageCount);
 });
 
 // onMounted(async () => {

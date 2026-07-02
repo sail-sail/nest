@@ -173,9 +173,9 @@ pub fn get_server_tokentimeout() -> i64 {
 
 /// 获取当前请求id, 不保证唯一, 仅用于日志
 pub fn get_req_id() -> Arc<SmolStr> {
-  CTX.with(|ctx| {
+  CTX.try_with(|ctx| {
     ctx.req_id.clone()
-  })
+  }).unwrap_or_else(|_| Arc::new(SmolStr::new("")))
 }
 
 /// 获取当前请求的时间点
@@ -195,9 +195,10 @@ pub fn get_auth_model() -> Option<AuthModel> {
 
 #[allow(dead_code)]
 pub fn has_auth_model() -> bool {
-  CTX.with(|ctx| {
+  CTX.try_with(|ctx| {
     ctx.auth_model.is_some()
   })
+  .unwrap_or(false)
 }
 
 /// 获取当前登录用户, 如果不存在则返回错误
@@ -519,7 +520,7 @@ impl Ctx {
   }
   
   /// 执行sql
-  async fn execute(
+  pub async fn execute(
     &self,
     sql: String,
     args: Vec<ArgType>,
@@ -721,7 +722,7 @@ impl Ctx {
   }
   
   /// 查询多条记录
-  async fn query<R>(
+  pub async fn query<R>(
     &self,
     sql: String,
     args: Vec<ArgType>,
@@ -1193,6 +1194,18 @@ pub struct Ctx {
 }
 
 impl Ctx {
+  
+  pub fn get_req_id(&self) -> Arc<SmolStr> {
+    self.req_id.clone()
+  }
+  
+  pub fn get_auth_model(&self) -> Option<AuthModel> {
+    self.auth_model.clone()
+  }
+  
+  pub fn get_auth_model_as_mut(&mut self) -> Option<&mut AuthModel> {
+    self.auth_model.as_mut()
+  }
   
   pub async fn scope<F, T>(self, f: F) -> Result<T>
     where

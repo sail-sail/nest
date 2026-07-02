@@ -28,6 +28,32 @@
       @keydown.enter="onSearch(true)"
     >
       
+      <template v-if="(builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null))">
+        <el-form-item
+          label="编码"
+          prop="code_like"
+        >
+          <CustomInput
+            v-model="search.code_like"
+            placeholder="请输入 编码"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
+        <el-form-item
+          label="名称"
+          prop="lbl_like"
+        >
+          <CustomInput
+            v-model="search.lbl_like"
+            placeholder="请输入 名称"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <template v-if="(showBuildIn || builtInSearch?.is_enabled == null)">
         <el-form-item
           label="启用"

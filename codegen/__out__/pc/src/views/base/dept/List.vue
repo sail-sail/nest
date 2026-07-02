@@ -1424,6 +1424,7 @@ async function onImportExcel() {
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
+    [ "组织" ]: "org_id_lbl",
     [ "备注" ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
@@ -1452,6 +1453,7 @@ async function onImportExcel() {
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
+          "org_id_lbl": "string",
           "rem": "string",
         },
       },

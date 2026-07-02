@@ -29,7 +29,7 @@
     :disabled="props.disabled"
     :readonly="props.readonly"
     :placeholder="((isShowModelLabel && props.multiple) ? props.modelLabel : props.placeholder) ?? undefined"
-    @visible-change="handleVisibleChange"
+    :fit-input-width="fitInputWidth"
     @clear="onClear"
     @update:model-value="modelValueUpdate"
     @change="onValueChange"
@@ -264,8 +264,6 @@ import {
 } from "@/views/base/dict_detail/Api.ts";
 
 export type DictModel = GetDict;
-
-const t = getCurrentInstance();
 
 const emit = defineEmits<{
   (e: "data", value?: DictModel[]): void,
@@ -529,56 +527,99 @@ function getModelsByValue() {
 }
 
 let options4SelectV2 = $shallowRef<OptionType[]>([ ]);
+let fitInputWidth = $ref<number | boolean>(true);
 
-// watch(
-//   () => options4SelectV2,
-//   async () => {
-//     const oldModelValue = modelValue;
-//     modelValue = undefined;
-//     await nextTick();
-//     modelValue = oldModelValue;
-//   },
-// );
+const dropdownWidthPadding = 56;
 
-async function refreshDropdownWidth() {
-  if (!props.autoWidth) {
-    return;
+const textMeasureCanvas = typeof document === "undefined"
+  ? undefined
+  : document.createElement("canvas");
+
+const textMeasureContext = textMeasureCanvas?.getContext("2d") ?? null;
+
+function getFallbackTextWidth(textContent: string) {
+  const text = textContent.replace(/[\u0391-\uFFE5]/g, "aa");
+  const upperCaseSize = text.match(/[A-Z]/g)?.length || 0;
+  return (text.length - upperCaseSize) * 8 + upperCaseSize * 10.5;
+}
+
+function getDropdownMeasureFont() {
+  if (typeof window === "undefined" || !selectDivRef) {
+    return undefined;
   }
-  if (!t || !t.proxy || !t.proxy.$el) {
+  const wrapper = selectDivRef.querySelector(".el-select__wrapper") as HTMLDivElement | null | undefined;
+  const styleTarget = wrapper ?? selectDivRef;
+  const style = window.getComputedStyle(styleTarget);
+  if (style.font) {
+    return style.font;
+  }
+  return `${ style.fontStyle } ${ style.fontVariant } ${ style.fontWeight } ${ style.fontSize } / ${ style.lineHeight } ${ style.fontFamily }`;
+}
+
+function measureTextWidth(text: string, font?: string) {
+  if (!text) {
+    return 0;
+  }
+  if (textMeasureContext && font) {
+    textMeasureContext.font = font;
+    return Math.ceil(textMeasureContext.measureText(text).width);
+  }
+  return Math.ceil(getFallbackTextWidth(text));
+}
+
+function getFitInputWidthLimit(width: number) {
+  if (!Number.isFinite(width) || width <= 0) {
+    return undefined;
+  }
+  const normalizedWidth = Math.ceil(width);
+  if (props.maxWidth != null && props.maxWidth > 0) {
+    return Math.min(normalizedWidth, props.maxWidth);
+  }
+  return normalizedWidth;
+}
+
+function getSelectInputWidth() {
+  if (!selectDivRef) {
+    return 0;
+  }
+  const wrapper = selectDivRef.querySelector(".el-select__wrapper") as HTMLDivElement | null | undefined;
+  const width = wrapper?.getBoundingClientRect().width || selectDivRef.getBoundingClientRect().width;
+  return Math.ceil(width);
+}
+
+function getDropdownMeasureTexts() {
+  const texts = options4SelectV2
+    .map((item) => item.label == null ? "" : String(item.label))
+    .filter((item) => item);
+  if (props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 0) {
+    texts.push(`(${ ns("全选") })`);
+  }
+  if (props.hasSelectAdd && !props.disabled && !props.readonly) {
+    texts.push(ns("新增选项"));
+  }
+  return texts;
+}
+
+async function refreshFitInputWidth() {
+  if (!props.autoWidth) {
+    fitInputWidth = true;
     return;
   }
   await nextTick();
-  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
-  const selectRef = t.refs.selectRef as any;
-  if (!selectRef) {
-    return;
-  }
-  const dropdownListEl = selectRef?.$refs?.menuRef?.listRef?.windowRef;
-  if (!dropdownListEl) {
-    return;
-  }
-  dropdownListEl.style.minWidth = "unset";
-  const optionItemEls = dropdownListEl.querySelectorAll(".el-select-dropdown__item");
-  if (!optionItemEls || optionItemEls.length === 0) {
-    return;
-  }
-  
-  const popperWidth = parseInt(dropdownListEl.style.width);
-  if (!popperWidth) {
-    return;
-  }
-  let maxWidth = 0;
-  for (let i = 0; i < optionItemEls.length; i++) {
-    const item = optionItemEls[i];
-    const width = item.scrollWidth;
-    if (width > maxWidth) {
-      maxWidth = width;
+  const font = getDropdownMeasureFont();
+  const measureTexts = getDropdownMeasureTexts();
+  let maxTextWidth = 0;
+  for (const text of measureTexts) {
+    const textWidth = measureTextWidth(text, font);
+    if (textWidth > maxTextWidth) {
+      maxTextWidth = textWidth;
     }
   }
-  if (maxWidth > popperWidth) {
-    dropdownListEl.style.minWidth = `${ (maxWidth + 52) }px`;
-  }
+  const inputWidth = getSelectInputWidth();
+  const estimatedWidth = maxTextWidth > 0 ? (maxTextWidth + dropdownWidthPadding) : 0;
+  fitInputWidth = getFitInputWidthLimit(Math.max(inputWidth, estimatedWidth)) ?? true;
 }
+
 
 let data = $ref<DictModel[]>([ ]);
 
@@ -627,30 +668,12 @@ function onClear() {
   emit("clear");
 }
 
-watch(
-  () => [ selectRef?.filteredOptions.length, inited ],
-  async () => {
-    if (!inited) {
-      return;
-    }
-    if (!selectRef || selectRef.filteredOptions.length === 0) {
-      return;
-    }
-    await refreshDropdownWidth();
-  },
-);
-
-function handleVisibleChange(visible: boolean) {
-  if (visible) {
-    refreshDropdownWidth();
-  }
-}
-
 async function onRefresh() {
   const code = props.code;
   if (!code) {
     inited = false;
     data = [ ];
+    fitInputWidth = true;
     return;
   }
   inited = false;
@@ -659,6 +682,7 @@ async function onRefresh() {
   options4SelectV2 = data.map(props.optionsMap);
   inited = true;
   emit("data", data);
+  await refreshFitInputWidth();
 }
 
 async function refreshWrapperHeight() {
@@ -695,11 +719,30 @@ watch(
 );
 
 watch(
+  () => [
+    props.autoWidth,
+    props.maxWidth,
+    props.multiple,
+    props.showSelectAll,
+    props.disabled,
+    props.readonly,
+    props.hasSelectAdd,
+  ],
+  async () => {
+    await refreshFitInputWidth();
+  },
+);
+
+watch(
   () => props.code,
   async () => {
     await onRefresh();
   },
 );
+
+useResizeObserver($$(selectDivRef), async function() {
+  await refreshFitInputWidth();
+});
 
 const dictDetailDialogRef = $(useTemplateRef("dictDetailDialogRef"));
 
@@ -754,10 +797,15 @@ async function initFrame() {
     "新增选项"
   ];
   await initSysI18ns(codes);
+  await refreshFitInputWidth();
 }
 
 initFrame();
 onRefresh();
+
+onMounted(async function() {
+  await refreshFitInputWidth();
+});
 
 function focus() {
   selectRef?.focus();

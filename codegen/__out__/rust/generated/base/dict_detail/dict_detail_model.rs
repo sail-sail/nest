@@ -242,7 +242,7 @@ pub struct DictDetailSearch {
   #[graphql(name = "dict_id")]
   pub dict_id: Option<Vec<DictId>>,
   /// 系统字典
-  #[graphql(name = "dict_id_save_null")]
+  #[graphql(name = "dict_id_is_null")]
   pub dict_id_is_null: Option<bool>,
   /// 系统字典
   #[graphql(name = "dict_id_lbl")]
@@ -278,7 +278,7 @@ pub struct DictDetailSearch {
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
-  #[graphql(name = "create_usr_id_save_null")]
+  #[graphql(name = "create_usr_id_is_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
@@ -293,7 +293,7 @@ pub struct DictDetailSearch {
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
-  #[graphql(name = "update_usr_id_save_null")]
+  #[graphql(name = "update_usr_id_is_null")]
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]

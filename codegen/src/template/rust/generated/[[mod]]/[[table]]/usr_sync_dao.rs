@@ -57,7 +57,7 @@ for (let i = 0; i < syncTables.length; i++) {
 #>
   
   num += sync_usr_lbl_by_usr_id_<#=item.table#>(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;<#
 }

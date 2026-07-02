@@ -85,11 +85,11 @@
             :label="config.label"
             :prop="config.prop"
           >
-            <el-input-tag
+            <CustomInputTag
               v-model="dialogModel[config.prop]"
               :placeholder="`请输入 ${ config.label }，按回车添加`"
               un-w="full"
-            ></el-input-tag>
+            ></CustomInputTag>
           </el-form-item>
           
           <!-- 选择类型 - 从预定义选项中选择 -->
@@ -146,6 +146,8 @@
 import type {
   ComponentPropConfig,
 } from "@/components/ComponentMap";
+
+import CustomInputTag from "@/components/CustomInputTag.vue";
 
 import {
   componentPropsConfig,

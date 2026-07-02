@@ -392,7 +392,7 @@ pub struct WxoAppSearch {
   #[graphql(name = "domain_id")]
   pub domain_id: Option<Vec<DomainId>>,
   /// 网页授权域名
-  #[graphql(name = "domain_id_save_null")]
+  #[graphql(name = "domain_id_is_null")]
   pub domain_id_is_null: Option<bool>,
   /// 网页授权域名
   #[graphql(name = "domain_id_lbl")]
@@ -425,7 +425,7 @@ pub struct WxoAppSearch {
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
-  #[graphql(name = "create_usr_id_save_null")]
+  #[graphql(name = "create_usr_id_is_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
@@ -440,7 +440,7 @@ pub struct WxoAppSearch {
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
-  #[graphql(name = "update_usr_id_save_null")]
+  #[graphql(name = "update_usr_id_is_null")]
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]

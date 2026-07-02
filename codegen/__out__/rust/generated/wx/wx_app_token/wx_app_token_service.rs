@@ -27,6 +27,7 @@ async fn set_search_query(
   search: &mut WxAppTokenSearch,
   options: Option<Options>,
 ) -> Result<()> {
+  
   Ok(())
 }
 

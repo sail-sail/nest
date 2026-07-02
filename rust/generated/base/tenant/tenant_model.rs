@@ -414,7 +414,7 @@ pub struct TenantSearch {
   #[graphql(name = "domain_ids")]
   pub domain_ids: Option<Vec<DomainId>>,
   /// 所属域名
-  #[graphql(name = "domain_ids_save_null")]
+  #[graphql(name = "domain_ids_is_null")]
   pub domain_ids_is_null: Option<bool>,
   /// 所属域名
   #[graphql(name = "domain_ids_lbl_like")]
@@ -423,7 +423,7 @@ pub struct TenantSearch {
   #[graphql(name = "menu_ids")]
   pub menu_ids: Option<Vec<MenuId>>,
   /// 菜单权限
-  #[graphql(name = "menu_ids_save_null")]
+  #[graphql(name = "menu_ids_is_null")]
   pub menu_ids_is_null: Option<bool>,
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl_like")]
@@ -444,7 +444,7 @@ pub struct TenantSearch {
   #[graphql(name = "lang_id")]
   pub lang_id: Option<Vec<LangId>>,
   /// 语言
-  #[graphql(name = "lang_id_save_null")]
+  #[graphql(name = "lang_id_is_null")]
   pub lang_id_is_null: Option<bool>,
   /// 语言
   #[graphql(name = "lang_id_lbl")]
@@ -471,7 +471,7 @@ pub struct TenantSearch {
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
-  #[graphql(name = "create_usr_id_save_null")]
+  #[graphql(name = "create_usr_id_is_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
@@ -486,7 +486,7 @@ pub struct TenantSearch {
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
-  #[graphql(name = "update_usr_id_save_null")]
+  #[graphql(name = "update_usr_id_is_null")]
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]

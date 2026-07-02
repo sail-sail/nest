@@ -48,6 +48,7 @@ declare global {
     label: string;
     sortBy?: string;
     hide?: boolean;
+    forceHide?: boolean;
     width?: string | number;
     minWidth?: string | number;
     align?: "left" | "center" | "right";

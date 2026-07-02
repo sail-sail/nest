@@ -31,6 +31,7 @@ async fn set_search_query(
   search: &mut UsrSearch,
   options: Option<Options>,
 ) -> Result<()> {
+  
   Ok(())
 }
 
@@ -245,7 +246,14 @@ pub async fn update_by_id_usr(
     return Err(eyre!(err_msg));
   }
   
-  let is_sync_usr_lbl = usr_input.lbl.is_some();
+  let old_model = usr_dao::find_by_id_ok_usr(
+    usr_id,
+    options,
+  ).await?;
+  
+  let old_lbl = old_model.lbl;
+  
+  let is_sync_usr_lbl = old_lbl != usr_input.lbl.clone().unwrap_or_default();
   
   let usr_id = usr_dao::update_by_id_usr(
     usr_id,
@@ -255,7 +263,7 @@ pub async fn update_by_id_usr(
   
   if is_sync_usr_lbl {
     sync_usr_lbl_by_usr_id(
-      usr_id.clone(),
+      usr_id,
       options,
     ).await?;
   }
