@@ -256,7 +256,7 @@ pub struct CronJobLogSearch {
   #[graphql(name = "cron_job_id")]
   pub cron_job_id: Option<Vec<CronJobId>>,
   /// 定时任务
-  #[graphql(name = "cron_job_id_save_null")]
+  #[graphql(name = "cron_job_id_is_null")]
   pub cron_job_id_is_null: Option<bool>,
   /// 定时任务
   #[graphql(name = "cron_job_id_lbl")]

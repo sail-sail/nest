@@ -294,7 +294,7 @@ pub struct DynPageSearch {
   #[graphql(name = "parent_menu_id")]
   pub parent_menu_id: Option<Vec<MenuId>>,
   /// 父菜单
-  #[graphql(name = "parent_menu_id_save_null")]
+  #[graphql(name = "parent_menu_id_is_null")]
   pub parent_menu_id_is_null: Option<bool>,
   /// 父菜单
   #[graphql(name = "parent_menu_id_lbl")]
@@ -306,7 +306,7 @@ pub struct DynPageSearch {
   #[graphql(name = "role_ids")]
   pub role_ids: Option<Vec<RoleId>>,
   /// 所属角色
-  #[graphql(name = "role_ids_save_null")]
+  #[graphql(name = "role_ids_is_null")]
   pub role_ids_is_null: Option<bool>,
   /// 所属角色
   #[graphql(name = "role_ids_lbl_like")]
@@ -327,7 +327,7 @@ pub struct DynPageSearch {
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
-  #[graphql(name = "create_usr_id_save_null")]
+  #[graphql(name = "create_usr_id_is_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
@@ -342,7 +342,7 @@ pub struct DynPageSearch {
   #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
-  #[graphql(name = "update_usr_id_save_null")]
+  #[graphql(name = "update_usr_id_is_null")]
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]

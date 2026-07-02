@@ -182,7 +182,7 @@ pub struct CronJobLogDetailSearch {
   #[graphql(name = "cron_job_log_id")]
   pub cron_job_log_id: Option<Vec<CronJobLogId>>,
   /// 定时任务日志
-  #[graphql(name = "cron_job_log_id_save_null")]
+  #[graphql(name = "cron_job_log_id_is_null")]
   pub cron_job_log_id_is_null: Option<bool>,
   /// 日志明细
   #[graphql(name = "lbl")]

@@ -36,10 +36,10 @@
           style="width: 100%;"
           filterable
           default-first-option
-          :teleported="false"
           :placeholder="`${ ns('请选择') } ${ n('租户') }`"
           :input-style="inputStyle"
           clearable
+          :popper-style="{ zIndex: 10000 }"
         >
           <template #prefix>
             <el-icon>

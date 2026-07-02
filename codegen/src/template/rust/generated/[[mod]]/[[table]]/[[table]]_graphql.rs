@@ -35,6 +35,7 @@ const hasDictbiz = columns.some((column) => {
 
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -45,9 +46,9 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -740,6 +741,34 @@ impl <#=tableUP#>GenMutation {<#
         <#=table#>_resolver::audit_reject_<#=table#>(
           id,
           input,
+          None,
+        )
+      }).await
+  }
+
+  /// <#=table_comment#> 反审核
+  #[graphql(name = "auditReverse<#=Table_Up#>")]
+  async fn audit_reverse_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "id")]
+    id: <#=Table_Up#>Id,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
+      .with_tran()
+      .build()
+      .scope({
+        <#=table#>_resolver::audit_reverse_<#=table#>(
+          id,
           None,
         )
       }).await

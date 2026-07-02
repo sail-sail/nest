@@ -147,7 +147,7 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[]): void,
+  (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | ""): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: <#=modelName#> | <#=modelName#>[]): void,
   (e: "clear"): void,
@@ -172,7 +172,7 @@ const {
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null;
+    modelValue?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null | "";
     modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;
@@ -342,7 +342,7 @@ async function refreshInputValue() {
 
 async function onClear(e?: PointerEvent) {
   e?.stopPropagation();
-  modelValue = undefined;
+  modelValue = "";
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);

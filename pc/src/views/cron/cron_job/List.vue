@@ -546,7 +546,7 @@
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, 'lbl', row[column.property] + ' - ' + row.lbl)"
+                  @click="openForeignTabs(row.id, 'lbl', row[column.property])"
                 >
                   {{ row[column.property] }}
                 </el-link>

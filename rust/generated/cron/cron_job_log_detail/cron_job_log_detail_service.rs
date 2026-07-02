@@ -29,6 +29,7 @@ async fn set_search_query(
   search: &mut CronJobLogDetailSearch,
   options: Option<Options>,
 ) -> Result<()> {
+  
   Ok(())
 }
 

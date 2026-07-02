@@ -1,6 +1,6 @@
 import {
-  saveAs
-} from "file-saver";
+  saveAs,
+} from "@/compositions/download";
 
 /**
  * 获取可用的日志日期列表

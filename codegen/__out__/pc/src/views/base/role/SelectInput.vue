@@ -126,7 +126,7 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: RoleId | RoleId[]): void,
+  (e: "update:modelValue", value?: RoleId | RoleId[] | ""): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: RoleModel | RoleModel[]): void,
   (e: "clear"): void,
@@ -140,7 +140,7 @@ const pagePath = getPagePathRole();
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: RoleId | RoleId[] | null;
+    modelValue?: RoleId | RoleId[] | null | "";
     modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;
@@ -310,7 +310,7 @@ async function refreshInputValue() {
 
 async function onClear(e?: PointerEvent) {
   e?.stopPropagation();
-  modelValue = undefined;
+  modelValue = "";
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);

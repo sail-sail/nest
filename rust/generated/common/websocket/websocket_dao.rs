@@ -13,8 +13,6 @@ use poem::web::websocket::{
 };
 use tokio::sync::Mutex;
 
-use crate::common::context::get_req_id;
-
 use super::websocket_constants::{
   ClientSocketSinksType,
   client_id_topics_map,
@@ -29,7 +27,7 @@ pub async fn publish(
   payload: Option<serde_json::Value>,
 ) {
   if topic.is_empty() {
-    error!("websocket.dao.publish {} topic is empty", get_req_id());
+    error!("websocket.dao.publish topic is empty");
     return;
   }
   
@@ -63,7 +61,7 @@ pub async fn publish(
         }).to_string(),
       )).await;
       if let Err(e) = res {
-        error!("websocket.dao.publish {} send message error: {:?}", get_req_id(), e);
+        error!("websocket.dao.publish send message error: {:?}", e);
       }
     }
   }
@@ -136,14 +134,13 @@ pub async fn remove_socket_connection(
       }
   }
   if let Some(mut removed_socket) = removed_socket {
-    let err = removed_socket.close().await;
-    if let Err(e) = err {
-      error!(
-        "websocket.dao.remove_socket_connection {} close socket error: {:?}",
-        get_req_id(),
-        e,
-      );
-    }
+    let _err = removed_socket.close().await;
+    // if let Err(e) = err {
+    //   error!(
+    //     "websocket.dao.remove_socket_connection close socket error: {:?}",
+    //     e,
+    //   );
+    // }
   }
   left_len
 }

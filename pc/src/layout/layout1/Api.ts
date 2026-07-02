@@ -235,6 +235,21 @@ export async function getUsrPermits(
   return data;
 }
 
+export async function getMyUnreadMessageCount(
+  opt?: GqlOpt,
+) {
+  const res: {
+    getMyUnreadMessageCount: number;
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getMyUnreadMessageCount
+      }
+    `,
+  }, opt);
+  return res.getMyUnreadMessageCount || 0;
+}
+
 export async function deptLoginSelect(
   variables: {
     org_id?: OrgId;

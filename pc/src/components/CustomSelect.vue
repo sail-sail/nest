@@ -29,7 +29,7 @@
     :disabled="props.disabled"
     :readonly="props.readonly"
     :placeholder="((isShowModelLabel && props.multiple) ? props.modelLabel : props.placeholder) ?? undefined"
-    @visible-change="handleVisibleChange"
+    :fit-input-width="fitInputWidth"
     @change="onValueChange"
     @clear="onClear"
     @update:model-value="modelValueUpdate"
@@ -719,6 +719,65 @@ function onClear() {
 }
 
 let options4SelectV2 = $shallowRef<OptionType[]>([ ]);
+let fitInputWidth = $ref<number | boolean>(true);
+
+const dropdownWidthPadding = 56;
+
+const textMeasureCanvas = typeof document === "undefined"
+  ? undefined
+  : document.createElement("canvas");
+
+const textMeasureContext = textMeasureCanvas?.getContext("2d") ?? null;
+
+function getFallbackTextWidth(textContent: string) {
+  const text = textContent.replace(/[\u0391-\uFFE5]/g, "aa");
+  const upperCaseSize = text.match(/[A-Z]/g)?.length || 0;
+  return (text.length - upperCaseSize) * 8 + upperCaseSize * 10.5;
+}
+
+function getDropdownMeasureFont() {
+  if (typeof window === "undefined" || !selectDivRef) {
+    return undefined;
+  }
+  const wrapper = selectDivRef.querySelector(".el-select__wrapper") as HTMLDivElement | null | undefined;
+  const styleTarget = wrapper ?? selectDivRef;
+  const style = window.getComputedStyle(styleTarget);
+  if (style.font) {
+    return style.font;
+  }
+  return `${ style.fontStyle } ${ style.fontVariant } ${ style.fontWeight } ${ style.fontSize } / ${ style.lineHeight } ${ style.fontFamily }`;
+}
+
+function measureTextWidth(text: string, font?: string) {
+  if (!text) {
+    return 0;
+  }
+  if (textMeasureContext && font) {
+    textMeasureContext.font = font;
+    return Math.ceil(textMeasureContext.measureText(text).width);
+  }
+  return Math.ceil(getFallbackTextWidth(text));
+}
+
+function getFitInputWidthLimit(width: number) {
+  if (!Number.isFinite(width) || width <= 0) {
+    return undefined;
+  }
+  const normalizedWidth = Math.ceil(width);
+  if (props.maxWidth != null && props.maxWidth > 0) {
+    return Math.min(normalizedWidth, props.maxWidth);
+  }
+  return normalizedWidth;
+}
+
+function getSelectInputWidth() {
+  if (!selectDivRef) {
+    return 0;
+  }
+  const wrapper = selectDivRef.querySelector(".el-select__wrapper") as HTMLDivElement | null | undefined;
+  const width = wrapper?.getBoundingClientRect().width || selectDivRef.getBoundingClientRect().width;
+  return Math.ceil(width);
+}
 
 // watch(
 //   () => options4SelectV2,
@@ -749,64 +808,58 @@ const options4SelectV2Compt = $computed(() => {
   ];
 });
 
-async function refreshDropdownWidth() {
-  if (!props.autoWidth) {
-    return;
+function shouldMeasureBuiltInHeader() {
+  return props.multiple
+    && props.showSelectAll
+    && !props.disabled
+    && !props.readonly
+    && options4SelectV2.length > 0
+    && !t?.slots.header;
+}
+
+function getMultipleDefaultExtraWidth(font?: string) {
+  if (!props.multiple || !props.multipleSetDefault || t?.slots.default) {
+    return 0;
   }
-  if (!t || !t.proxy || !t.proxy.$el) {
+  return Math.max(
+    measureTextWidth("设为默认", font),
+    measureTextWidth("(默认)", font),
+  ) + 40;
+}
+
+function getDropdownMeasureTexts() {
+  const texts: string[] = [ ];
+  if (shouldMeasureBuiltInHeader()) {
+    texts.push(`(${ ns("全选") })`);
+  }
+  return texts;
+}
+
+async function refreshFitInputWidth() {
+  if (!props.autoWidth) {
+    fitInputWidth = true;
     return;
   }
   await nextTick();
-  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
-  const selectRef = t.refs.selectRef as any;
-  if (!selectRef) {
-    return;
-  }
-  const dropdownListEl = selectRef?.$refs?.menuRef?.listRef?.windowRef;
-  if (!dropdownListEl) {
-    return;
-  }
-  dropdownListEl.style.minWidth = "unset";
-  const optionItemEls = dropdownListEl.querySelectorAll(".el-select-dropdown__item");
-  if (!optionItemEls || optionItemEls.length === 0) {
-    return;
-  }
-  
-  const popperWidth = parseInt(dropdownListEl.style.width);
-  if (!popperWidth) {
-    return;
-  }
-  let maxWidth = 0;
-  for (let i = 0; i < optionItemEls.length; i++) {
-    const item = optionItemEls[i];
-    const width = item.scrollWidth;
-    if (width > maxWidth) {
-      maxWidth = width;
+  const font = getDropdownMeasureFont();
+  const extraWidth = getMultipleDefaultExtraWidth(font);
+  let maxTextWidth = 0;
+  for (const item of options4SelectV2Compt) {
+    const label = item.label == null ? "" : String(item.label);
+    const textWidth = measureTextWidth(label, font) + extraWidth;
+    if (textWidth > maxTextWidth) {
+      maxTextWidth = textWidth;
     }
   }
-  if (maxWidth > popperWidth) {
-    dropdownListEl.closest(".el-select-dropdown").style.minWidth = `${ (maxWidth + 56) }px`;
-    dropdownListEl.style.minWidth = `${ (maxWidth + 56) }px`;
-  }
-}
-
-watch(
-  () => [ selectRef?.filteredOptions.length, inited ],
-  async () => {
-    if (!inited) {
-      return;
+  for (const text of getDropdownMeasureTexts()) {
+    const textWidth = measureTextWidth(text, font);
+    if (textWidth > maxTextWidth) {
+      maxTextWidth = textWidth;
     }
-    if (!selectRef || selectRef.filteredOptions.length === 0) {
-      return;
-    }
-    await refreshDropdownWidth();
-  },
-);
-
-function handleVisibleChange(visible: boolean) {
-  if (visible) {
-    refreshDropdownWidth();
   }
+  const inputWidth = getSelectInputWidth();
+  const estimatedWidth = maxTextWidth > 0 ? (maxTextWidth + dropdownWidthPadding) : 0;
+  fitInputWidth = getFitInputWidthLimit(Math.max(inputWidth, estimatedWidth)) ?? true;
 }
 
 let methodWatchHandle: WatchHandle | null = null;
@@ -837,6 +890,7 @@ async function onRefresh() {
   }
   inited = true;
   emit("data", data);
+  await refreshFitInputWidth();
 }
 
 function onValueChange() {
@@ -898,6 +952,35 @@ watch(
   },
 );
 
+watch(
+  () => options4SelectV2Compt,
+  async () => {
+    await refreshFitInputWidth();
+  },
+  {
+    deep: true,
+  },
+);
+
+watch(
+  () => [
+    props.autoWidth,
+    props.maxWidth,
+    props.multiple,
+    props.multipleSetDefault,
+    props.showSelectAll,
+    props.disabled,
+    props.readonly,
+  ],
+  async () => {
+    await refreshFitInputWidth();
+  },
+);
+
+useResizeObserver($$(selectDivRef), async function() {
+  await refreshFitInputWidth();
+});
+
 if (props.init) {
   onRefresh();
 }
@@ -907,12 +990,14 @@ async function initFrame() {
     "全选",
   ];
   await initSysI18ns(codes);
+  await refreshFitInputWidth();
 }
 
 initFrame();
 
 onMounted(() => {
   refreshWrapperHeight();
+  refreshFitInputWidth();
 });
 
 onUnmounted(() => {
