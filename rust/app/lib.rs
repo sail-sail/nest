@@ -13,7 +13,8 @@ use async_graphql::{
 pub struct Query(
   generated::common::CommonQuery,
   generated::GenQuery,
-  crate::base::menu::menu_graphql::MenuQuery,
+  
+  base::BaseAppQuery,
   
   wx::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiQuery,
   wx::wx_refund::wx_refund_graphql::WxRefundQuery,
@@ -23,6 +24,8 @@ pub struct Query(
 pub struct Mutation(
   generated::common::CommonMutation,
   generated::GenMutation,
+  
+  base::BaseAppMutation,
   
   wx::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiMutation,
 );
