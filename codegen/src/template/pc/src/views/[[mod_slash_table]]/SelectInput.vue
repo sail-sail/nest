@@ -44,7 +44,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     :readonly-placeholder="props.placeholder"
     @update:model-value="inputValue = $event"
     @change="onInputChange"
-    @click="onInput('input')"
+    @click.stop="onInput('input')"
     @clear="onClear"
     @focus="onFocus"
     @blur="onBlur"
@@ -142,8 +142,12 @@ import {
 import SelectList from "./SelectList.vue";
 
 import {
-  findByIds<#=Table_Up#>,
-  getPagePath<#=Table_Up#>,
+  findByIds<#=Table_Up#>,<#
+  if (isUseI18n) {
+  #>
+  getPagePath<#=Table_Up#>,<#
+  }
+  #>
 } from "./Api.ts";
 
 const emit = defineEmits<{
@@ -155,11 +159,11 @@ const emit = defineEmits<{
 
 const {
   formItem,
-} = useFormItem();
-
-const pagePath = getPagePath<#=Table_Up#>();<#
+} = useFormItem();<#
 if (isUseI18n) {
 #>
+
+const pagePath = getPagePath<#=Table_Up#>();
 
 const {
   n,
@@ -182,6 +186,7 @@ const props = withDefaults(
     selectListReadonly?: boolean;
     validateEvent?: boolean;
     pageInited?: boolean;
+    beforeSelect?: (ids: <#=Table_Up#>Id[]) => Promise<boolean>;
   }>(),
   {
     modelValue: undefined,
@@ -194,6 +199,7 @@ const props = withDefaults(
     selectListReadonly: true,
     validateEvent: undefined,
     pageInited: false,
+    beforeSelect: undefined,
   },
 );
 
@@ -294,9 +300,6 @@ async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
   }
   const <#=table#>_models = await findByIds<#=Table_Up#>(
     ids,
-    {
-      notLoading: true,
-    },
   );
   return <#=table#>_models;
 }
@@ -359,6 +362,7 @@ const selectListRef = $(useTemplateRef("selectListRef"));
 async function onInput(
   clickType: "input" | "icon",
 ) {
+  formItem?.clearValidate();
   if (!selectListRef) {
     return;
   }
@@ -370,6 +374,12 @@ async function onInput(
   }
   formItem?.clearValidate();
   const modelValueArr = getModelValueArr();
+  if (props.beforeSelect) {
+    const isContinue = await props.beforeSelect(modelValueArr);
+    if (isContinue === false) {
+      return;
+    }
+  }
   const {
     type,
     selectedIds,
