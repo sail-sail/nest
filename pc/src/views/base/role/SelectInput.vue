@@ -23,7 +23,7 @@
     :readonly-placeholder="props.placeholder"
     @update:model-value="inputValue = $event"
     @change="onInputChange"
-    @click="onInput('input')"
+    @click.stop="onInput('input')"
     @clear="onClear"
     @focus="onFocus"
     @blur="onBlur"
@@ -122,7 +122,6 @@ import SelectList from "./SelectList.vue";
 
 import {
   findByIdsRole,
-  getPagePathRole,
 } from "./Api.ts";
 
 const emit = defineEmits<{
@@ -136,8 +135,6 @@ const {
   formItem,
 } = useFormItem();
 
-const pagePath = getPagePathRole();
-
 const props = withDefaults(
   defineProps<{
     modelValue?: RoleId | RoleId[] | null | "";
@@ -150,6 +147,7 @@ const props = withDefaults(
     selectListReadonly?: boolean;
     validateEvent?: boolean;
     pageInited?: boolean;
+    beforeSelect?: (ids: RoleId[]) => Promise<boolean>;
   }>(),
   {
     modelValue: undefined,
@@ -162,6 +160,7 @@ const props = withDefaults(
     selectListReadonly: true,
     validateEvent: undefined,
     pageInited: false,
+    beforeSelect: undefined,
   },
 );
 
@@ -262,9 +261,6 @@ async function getModelsByIds(ids: RoleId[]) {
   }
   const role_models = await findByIdsRole(
     ids,
-    {
-      notLoading: true,
-    },
   );
   return role_models;
 }
@@ -327,6 +323,7 @@ const selectListRef = $(useTemplateRef("selectListRef"));
 async function onInput(
   clickType: "input" | "icon",
 ) {
+  formItem?.clearValidate();
   if (!selectListRef) {
     return;
   }
@@ -338,6 +335,12 @@ async function onInput(
   }
   formItem?.clearValidate();
   const modelValueArr = getModelValueArr();
+  if (props.beforeSelect) {
+    const isContinue = await props.beforeSelect(modelValueArr);
+    if (isContinue === false) {
+      return;
+    }
+  }
   const {
     type,
     selectedIds,
