@@ -441,13 +441,14 @@ import {
   clearCache,
   getUsrPermits,
   getMyUnreadMessageCount,
-} from "./Api";
+} from "./Api.ts";
+
 import {
   subscribe,
   unSubscribe,
-} from "@/compositions/websocket";
+} from "@/compositions/websocket.ts";
 
-import config from "@/utils/config";
+import config from "@/utils/config.ts";
 
 import {
   BellFilled,
