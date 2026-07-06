@@ -79,6 +79,7 @@ percent-encoding = "2.3.2"
 qrcode = { version = "0.14.1", default-features = false }
 calamine = { version = "0.35.0", features = ["chrono", "picture"] }
 mimalloc = "0.1.52"
+wecom-crypto = "0.1.9"
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.2.0"
