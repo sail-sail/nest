@@ -77,6 +77,7 @@
           <CustomSelect
             v-model="sender_usr_id_search"
             :method="getListUsr"
+            dirty-key="用户"
             :options-map="((item: UsrModel) => {
               return {
                 label: item.lbl,

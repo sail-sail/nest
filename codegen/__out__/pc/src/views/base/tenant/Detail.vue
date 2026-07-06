@@ -114,6 +114,7 @@
               v-model="dialogModel.domain_ids"
               :set="dialogModel.domain_ids = dialogModel.domain_ids ?? [ ]"
               :method="getListDomain"
+              dirty-key="域名"
               :find-by-values="findByIdsDomain"
               :options-map="((item: DomainModel) => {
                 return {
@@ -184,6 +185,7 @@
               v-model="dialogModel.lang_id"
               v-model:model-label="dialogModel.lang_id_lbl"
               :method="getListLang"
+              dirty-key="语言"
               :find-by-values="findByIdsLang"
               :options-map="((item: LangModel) => {
                 return {

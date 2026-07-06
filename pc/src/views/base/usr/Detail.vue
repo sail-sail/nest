@@ -142,6 +142,7 @@
               v-model="dialogModel.role_ids"
               :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
               :method="getListRole"
+              dirty-key="角色"
               :find-by-values="findByIdsRole"
               :options-map="((item: RoleModel) => {
                 return {
@@ -183,6 +184,7 @@
               v-model="dialogModel.org_ids"
               :set="dialogModel.org_ids = dialogModel.org_ids ?? [ ]"
               :method="getListOrg"
+              dirty-key="组织"
               :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
@@ -208,6 +210,7 @@
               v-model="dialogModel.default_org_id"
               :init="false"
               :method="getListOrgApi"
+              dirty-key="组织"
               :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {

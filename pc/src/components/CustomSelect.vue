@@ -318,6 +318,8 @@ const {
   initSysI18ns,
 } = useI18n();
 
+const dirtyStore = useDirtyStore();
+
 let inited = $ref(false);
 
 // oxlint-disable-next-line @typescript-eslint/no-explicit-any
@@ -353,6 +355,7 @@ const props = withDefaults(
     readonlyPlaceholder?: string;
     readonlyCollapseTags?: boolean;
     readonlyMaxCollapseTags?: number;
+    dirtyKey?: string | string[];
   }>(),
   {
     findByValues: undefined,
@@ -382,6 +385,7 @@ const props = withDefaults(
     readonlyPlaceholder: undefined,
     readonlyCollapseTags: true,
     readonlyMaxCollapseTags: 1,
+    dirtyKey: undefined,
   },
 );
 
@@ -863,6 +867,42 @@ async function refreshFitInputWidth() {
 }
 
 let methodWatchHandle: WatchHandle | null = null;
+let dirtyWatchHandles: Array<() => void> = [ ];
+
+function getDirtyKeys() {
+  if (!props.dirtyKey) {
+    return [ ];
+  }
+  const dirtyKey = Array.isArray(props.dirtyKey)
+    ? props.dirtyKey
+    : [ props.dirtyKey ];
+  return dirtyKey.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+}
+
+function resetDirtyWatch() {
+  for (const stopDirtyWatch of dirtyWatchHandles) {
+    stopDirtyWatch();
+  }
+  dirtyWatchHandles = [ ];
+  for (const dirtyKey of getDirtyKeys()) {
+    dirtyWatchHandles.push(
+      dirtyStore.onDirty(async () => {
+        await onRefresh();
+      }, dirtyKey, false),
+    );
+  }
+}
+
+watch(
+  () => props.dirtyKey,
+  () => {
+    resetDirtyWatch();
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 async function onRefresh() {
   if (methodWatchHandle) {
@@ -1005,6 +1045,10 @@ onUnmounted(() => {
     methodWatchHandle();
     methodWatchHandle = null;
   }
+  for (const stopDirtyWatch of dirtyWatchHandles) {
+    stopDirtyWatch();
+  }
+  dirtyWatchHandles = [ ];
 });
 
 function focus() {

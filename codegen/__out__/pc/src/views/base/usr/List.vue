@@ -62,6 +62,7 @@
           <CustomSelect
             v-model="role_ids_search"
             :method="getListRole"
+            dirty-key="角色"
             :options-map="((item: RoleModel) => {
               return {
                 label: item.lbl,
@@ -104,6 +105,7 @@
           <CustomSelect
             v-model="org_ids_search"
             :method="getListOrg"
+            dirty-key="组织"
             :options-map="((item: OrgModel) => {
               return {
                 label: item.lbl,

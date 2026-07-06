@@ -36,6 +36,7 @@
           <CustomSelect
             v-model="lang_id_search"
             :method="getListLang"
+            dirty-key="语言"
             :options-map="((item: LangModel) => {
               return {
                 label: item.lbl,

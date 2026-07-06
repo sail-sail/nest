@@ -36,6 +36,7 @@
           <CustomSelect
             v-model="dict_id_search"
             :method="getListDict"
+            dirty-key="系统字典"
             :options-map="((item: DictModel) => {
               return {
                 label: item.lbl,
