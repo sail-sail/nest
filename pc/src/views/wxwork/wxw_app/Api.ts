@@ -38,15 +38,15 @@ export function intoInputWxwApp(
     domain_id_lbl: model?.domain_id_lbl,
     // 应用密钥
     corpsecret: model?.corpsecret,
-    // 
+    // 应用回调Token
     notify_token: model?.notify_token,
-    // 
+    // 应用回调AESKey
     notify_aeskey: model?.notify_aeskey,
     // 通讯录密钥
     contactsecret: model?.contactsecret,
-    // 
+    // 通讯录回调Token
     contact_notify_token: model?.contact_notify_token,
-    // 
+    // 通讯录回调AESKey
     contact_notify_aeskey: model?.contact_notify_aeskey,
     // 锁定
     is_locked: model?.is_locked,

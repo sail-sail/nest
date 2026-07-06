@@ -35,7 +35,7 @@ export const wxwUsrFields = [
   "wxw_app_id_lbl",
   // 姓名
   "lbl",
-  // 用户ID
+  // 企微用户
   "userid",
   // 备注
   "rem",

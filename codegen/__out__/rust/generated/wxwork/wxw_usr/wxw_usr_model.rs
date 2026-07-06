@@ -72,7 +72,7 @@ pub struct WxwUsrModel {
   /// 姓名
   #[graphql(name = "lbl")]
   pub lbl: SmolStr,
-  /// 用户ID
+  /// 企微用户
   #[graphql(name = "userid")]
   pub userid: SmolStr,
   /// 手机号
@@ -152,7 +152,7 @@ impl FromRow<'_, MySqlRow> for WxwUsrModel {
     // 姓名
     let lbl: &str = row.try_get("lbl")?;
     let lbl = SmolStr::new(lbl);
-    // 用户ID
+    // 企微用户
     let userid: &str = row.try_get("userid")?;
     let userid = SmolStr::new(userid);
     // 手机号
@@ -258,7 +258,7 @@ pub struct WxwUsrFieldComment {
   /// 姓名
   #[graphql(name = "lbl")]
   pub lbl: SmolStr,
-  /// 用户ID
+  /// 企微用户
   #[graphql(name = "userid")]
   pub userid: SmolStr,
   /// 备注
@@ -307,10 +307,10 @@ pub struct WxwUsrSearch {
   /// 姓名
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<SmolStr>,
-  /// 用户ID
+  /// 企微用户
   #[graphql(skip)]
   pub userid: Option<SmolStr>,
-  /// 用户ID
+  /// 企微用户
   #[graphql(skip)]
   pub userid_like: Option<SmolStr>,
   /// 手机号
@@ -456,7 +456,7 @@ impl std::fmt::Debug for WxwUsrSearch {
     if let Some(ref lbl_like) = self.lbl_like {
       item = item.field("lbl_like", lbl_like);
     }
-    // 用户ID
+    // 企微用户
     if let Some(ref userid) = self.userid {
       item = item.field("userid", userid);
     }
@@ -598,7 +598,7 @@ pub struct WxwUsrInput {
   /// 姓名
   #[graphql(name = "lbl")]
   pub lbl: Option<SmolStr>,
-  /// 用户ID
+  /// 企微用户
   #[graphql(name = "userid")]
   pub userid: Option<SmolStr>,
   /// 手机号
@@ -759,7 +759,7 @@ impl From<WxwUsrModel> for WxwUsrInput {
       agentid: model.agentid.into(),
       // 姓名
       lbl: model.lbl.into(),
-      // 用户ID
+      // 企微用户
       userid: model.userid.into(),
       // 手机号
       mobile: model.mobile.into(),
@@ -815,7 +815,7 @@ impl From<WxwUsrInput> for WxwUsrSearch {
       agentid: input.agentid,
       // 姓名
       lbl: input.lbl,
-      // 用户ID
+      // 企微用户
       userid: input.userid,
       // 手机号
       mobile: input.mobile,

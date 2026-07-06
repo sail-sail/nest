@@ -114,12 +114,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.userid == null)">
           <el-form-item
-            label="用户ID"
+            label="企微用户"
             prop="userid"
           >
             <CustomInput
               v-model="dialogModel.userid"
-              placeholder="请输入 用户ID"
+              placeholder="请输入 企微用户"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>

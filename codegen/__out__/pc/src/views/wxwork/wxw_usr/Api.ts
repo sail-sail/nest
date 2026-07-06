@@ -32,7 +32,7 @@ export function intoInputWxwUsr(
     wxw_app_id_lbl: model?.wxw_app_id_lbl,
     // 姓名
     lbl: model?.lbl,
-    // 用户ID
+    // 企微用户
     userid: model?.userid,
     // 备注
     rem: model?.rem,

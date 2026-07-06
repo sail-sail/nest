@@ -153,12 +153,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.notify_token == null)">
           <el-form-item
-            label=""
+            label="应用回调Token"
             prop="notify_token"
           >
             <CustomInput
               v-model="dialogModel.notify_token"
-              placeholder="请输入 "
+              placeholder="请输入 应用回调Token"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -166,12 +166,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.notify_aeskey == null)">
           <el-form-item
-            label=""
+            label="应用回调AESKey"
             prop="notify_aeskey"
           >
             <CustomInput
               v-model="dialogModel.notify_aeskey"
-              placeholder="请输入 "
+              placeholder="请输入 应用回调AESKey"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -192,12 +192,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.contact_notify_token == null)">
           <el-form-item
-            label=""
+            label="通讯录回调Token"
             prop="contact_notify_token"
           >
             <CustomInput
               v-model="dialogModel.contact_notify_token"
-              placeholder="请输入 "
+              placeholder="请输入 通讯录回调Token"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -205,12 +205,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.contact_notify_aeskey == null)">
           <el-form-item
-            label=""
+            label="通讯录回调AESKey"
             prop="contact_notify_aeskey"
           >
             <CustomInput
               v-model="dialogModel.contact_notify_aeskey"
-              placeholder="请输入 "
+              placeholder="请输入 通讯录回调AESKey"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>

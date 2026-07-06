@@ -252,7 +252,7 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
   }
-  // 用户ID
+  // 企微用户
   {
     let userid = match search {
       Some(item) => item.userid.clone(),
@@ -998,7 +998,7 @@ pub async fn get_field_comments_wxw_usr(
     wxw_app_id: "企微应用".into(),
     wxw_app_id_lbl: "企微应用".into(),
     lbl: "姓名".into(),
-    userid: "用户ID".into(),
+    userid: "企微用户".into(),
     rem: "备注".into(),
   };
   Ok(field_comments)
@@ -1931,7 +1931,7 @@ async fn _creates(
   sql_fields += ",agentid";
   // 姓名
   sql_fields += ",lbl";
-  // 用户ID
+  // 企微用户
   sql_fields += ",userid";
   // 手机号
   sql_fields += ",mobile";
@@ -2109,7 +2109,7 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 用户ID
+    // 企微用户
     if let Some(userid) = input.userid {
       sql_values += ",?";
       args.push(userid.into());
@@ -2546,7 +2546,7 @@ pub async fn update_by_id_wxw_usr(
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
-  // 用户ID
+  // 企微用户
   if let Some(userid) = input.userid.clone() {
     field_num += 1;
     sql_fields += "userid=?,";

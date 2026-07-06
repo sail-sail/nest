@@ -575,7 +575,7 @@
             </el-table-column>
           </template>
           
-          <!--  -->
+          <!-- 应用回调Token -->
           <template v-else-if="'notify_token' === col.prop">
             <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
@@ -585,7 +585,7 @@
             </el-table-column>
           </template>
           
-          <!--  -->
+          <!-- 应用回调AESKey -->
           <template v-else-if="'notify_aeskey' === col.prop">
             <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
@@ -605,7 +605,7 @@
             </el-table-column>
           </template>
           
-          <!--  -->
+          <!-- 通讯录回调Token -->
           <template v-else-if="'contact_notify_token' === col.prop">
             <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
@@ -615,7 +615,7 @@
             </el-table-column>
           </template>
           
-          <!--  -->
+          <!-- 通讯录回调AESKey -->
           <template v-else-if="'contact_notify_aeskey' === col.prop">
             <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
@@ -1097,7 +1097,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "",
+      label: "应用回调Token",
       prop: "notify_token",
       width: 220,
       align: "center",
@@ -1105,7 +1105,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "",
+      label: "应用回调AESKey",
       prop: "notify_aeskey",
       width: 220,
       align: "left",
@@ -1121,7 +1121,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "",
+      label: "通讯录回调Token",
       prop: "contact_notify_token",
       width: 220,
       align: "left",
@@ -1129,7 +1129,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "",
+      label: "通讯录回调AESKey",
       prop: "contact_notify_aeskey",
       width: 220,
       align: "left",
@@ -1463,11 +1463,11 @@ async function onImportExcel() {
     [ "应用ID" ]: "agentid",
     [ "可信域名" ]: "domain_id_lbl",
     [ "应用密钥" ]: "corpsecret",
-    [ "" ]: "notify_token",
-    [ "" ]: "notify_aeskey",
+    [ "应用回调Token" ]: "notify_token",
+    [ "应用回调AESKey" ]: "notify_aeskey",
     [ "通讯录密钥" ]: "contactsecret",
-    [ "" ]: "contact_notify_token",
-    [ "" ]: "contact_notify_aeskey",
+    [ "通讯录回调Token" ]: "contact_notify_token",
+    [ "通讯录回调AESKey" ]: "contact_notify_aeskey",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",

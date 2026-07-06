@@ -484,7 +484,7 @@
             </el-table-column>
           </template>
           
-          <!-- 用户ID -->
+          <!-- 企微用户 -->
           <template v-else-if="'userid' === col.prop">
             <!-- @vue-generic {WxwUsrModel} -->
             <el-table-column
@@ -879,7 +879,7 @@ function getTableColumns(): ColumnType[] {
       fixed: "left",
     },
     {
-      label: "用户ID",
+      label: "企微用户",
       prop: "userid",
       width: 200,
       align: "center",
@@ -1183,7 +1183,7 @@ async function onImportExcel() {
   const header: { [key: string]: string } = {
     [ "企微应用" ]: "wxw_app_id_lbl",
     [ "姓名" ]: "lbl",
-    [ "用户ID" ]: "userid",
+    [ "企微用户" ]: "userid",
     [ "备注" ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
