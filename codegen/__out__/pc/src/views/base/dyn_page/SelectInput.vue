@@ -23,7 +23,7 @@
     :readonly-placeholder="props.placeholder"
     @update:model-value="inputValue = $event"
     @change="onInputChange"
-    @click="onInput('input')"
+    @click.stop="onInput('input')"
     @clear="onClear"
     @focus="onFocus"
     @blur="onBlur"
@@ -122,7 +122,6 @@ import SelectList from "./SelectList.vue";
 
 import {
   findByIdsDynPage,
-  getPagePathDynPage,
 } from "./Api.ts";
 
 const emit = defineEmits<{
@@ -136,8 +135,6 @@ const {
   formItem,
 } = useFormItem();
 
-const pagePath = getPagePathDynPage();
-
 const props = withDefaults(
   defineProps<{
     modelValue?: DynPageId | DynPageId[] | null | "";
@@ -150,6 +147,7 @@ const props = withDefaults(
     selectListReadonly?: boolean;
     validateEvent?: boolean;
     pageInited?: boolean;
+    beforeSelect?: (ids: DynPageId[]) => Promise<boolean>;
   }>(),
   {
     modelValue: undefined,
@@ -162,6 +160,7 @@ const props = withDefaults(
     selectListReadonly: true,
     validateEvent: undefined,
     pageInited: false,
+    beforeSelect: undefined,
   },
 );
 
@@ -262,9 +261,6 @@ async function getModelsByIds(ids: DynPageId[]) {
   }
   const dyn_page_models = await findByIdsDynPage(
     ids,
-    {
-      notLoading: true,
-    },
   );
   return dyn_page_models;
 }
@@ -327,6 +323,7 @@ const selectListRef = $(useTemplateRef("selectListRef"));
 async function onInput(
   clickType: "input" | "icon",
 ) {
+  formItem?.clearValidate();
   if (!selectListRef) {
     return;
   }
@@ -338,6 +335,12 @@ async function onInput(
   }
   formItem?.clearValidate();
   const modelValueArr = getModelValueArr();
+  if (props.beforeSelect) {
+    const isContinue = await props.beforeSelect(modelValueArr);
+    if (isContinue === false) {
+      return;
+    }
+  }
   const {
     type,
     selectedIds,

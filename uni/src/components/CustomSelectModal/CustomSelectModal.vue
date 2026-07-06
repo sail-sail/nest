@@ -214,6 +214,7 @@
           flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
         }"
         scroll-y
+        enable-flex
         refresher-enabled
         :refresher-triggered="refresherTriggered"
         :rebound="false"
@@ -231,71 +232,74 @@
         >
           
           <view
-            un-flex="~ [1_0_0] col"
-            un-overflow-hidden
+            v-for="item of options4SelectV2Computed"
+            :id="getOptionAnchorId(item.value)"
+            :key="item.value"
+            :title="item.label"
+            un-m="x-2"
+            un-p="y-4"
+            un-box-border
+            un-flex="~"
+            un-items="center"
+            un-gap="2"
+            un-b="0 b-1 solid #e6e6e6"
             :style="{
-              flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
+              'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
+              'border-color': selectedValueArr.includes(item.value) ? '#0579ff' : '#e6e6e6',
             }"
+            @click="onSelect(item.value)"
           >
+            
+            <view
+              un-flex="~ [1_0_0]"
+              un-overflow-hidden
+              un-items="center"
+              un-m="l-4"
+            >
+              {{ item.label }}
+            </view>
+            
+            <view
+              style="width: 1.2rem;height: 1.2rem;"
+              un-m="r-4"
+            >
+              <view
+                v-if="selectedValueArr.includes(item.value)"
+                un-i="iconfont-check"
+              ></view>
+            </view>
+            
+          </view>
           
-            <view
-              v-for="item of options4SelectV2Computed"
-              :id="getOptionAnchorId(item.value)"
-              :key="item.value"
-              :title="item.label"
-              un-m="x-2"
-              un-p="y-4"
-              un-box-border
-              un-flex="~"
-              un-items="center"
-              un-gap="2"
-              un-b="0 b-1 solid #e6e6e6"
-              :style="{
-                'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
-                'border-color': selectedValueArr.includes(item.value) ? '#0579ff' : '#e6e6e6',
-              }"
-              @click="onSelect(item.value)"
-            >
-              
-              <view
-                un-flex="~ [1_0_0]"
-                un-overflow-hidden
-                un-items="center"
-                un-m="l-4"
-              >
-                {{ item.label }}
-              </view>
-              
-              <view
-                style="width: 1.2rem;height: 1.2rem;"
-                un-m="r-4"
-              >
-                <view
-                  v-if="selectedValueArr.includes(item.value)"
-                  un-i="iconfont-check"
-                ></view>
-              </view>
-              
-            </view>
-            
-            <view
-              v-if="inited && options4SelectV2Computed.length === 0"
-              un-flex="~"
-              un-items="center"
-              un-justify="center"
-              un-text="gray-400"
-              un-h="10"
-            >
-              (暂无数据)
-            </view>
-            
-            <view
-              v-else-if="options4SelectV2Computed.length > 5 || props.height"
-              un-m="y-2"
-            >
-              <CustomDivider></CustomDivider>
-            </view>
-            
+          <view
+            v-if="(!inited || isLoading) && options4SelectV2.length === 0"
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            un-items="center"
+            un-justify="center"
+            un-min="h-20"
+            un-text="gray-500 dark:gray-400"
+          >
+            加载中...
+          </view>
+          
+          <view
+            v-else-if="inited && options4SelectV2Computed.length === 0"
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            un-items="center"
+            un-justify="center"
+            un-text="gray-500 dark:gray-400"
+            un-min="h-20"
+          >
+            (暂无数据)
+          </view>
+          
+          <view
+            v-else-if="inited && (options4SelectV2Computed.length > 5 || props.height)"
+            un-m="y-2"
+          >
+            <CustomDivider></CustomDivider>
           </view>
           
         </slot>
@@ -488,7 +492,7 @@ const isShowModelLabel = $computed(() => {
   if (!hasModelLabel) {
     return false;
   }
-  if (modelLabel == null) {
+  if (modelLabel == null || modelLabel === "") {
     return false;
   }
   return modelLabel != modelLabels.value.join(",");
@@ -611,10 +615,6 @@ async function onClick() {
 }
 
 async function onRefresherrefresh() {
-  if (!inited.value) {
-    refresherTriggered = false;
-    return;
-  }
   refresherTriggered = true;
   try {
     await onRefresh();
@@ -627,12 +627,10 @@ async function onRefresherrefresh() {
 watch(
   () => showPicker.value,
   async () => {
-    if (!inited.value) {
+    if (!showPicker.value || isLoading.value) {
       return;
     }
-    if (showPicker.value) {
-      await onRefresh();
-    }
+    await onRefresh();
   },
 );
 
@@ -685,6 +683,8 @@ function onCancel() {
 
 let methodWatchHandle: WatchHandle | null = null;
 
+const isLoading = ref(false);
+
 async function onRefresh() {
   if (methodWatchHandle) {
     methodWatchHandle();
@@ -695,7 +695,7 @@ async function onRefresh() {
       () => props.method,
       async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const methodData = unref(props.method) as any[];
+        const methodData = (unref(props.method) || [ ]) as any[];
         data.value = methodData;
         emit("data", data.value);
         options4SelectV2.value = data.value.map(props.optionsMap);
@@ -705,13 +705,20 @@ async function onRefresh() {
       },
     );
   } else {
-    const methodData = (await props.method?.()) || [ ];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let methodData: any = [ ];
+    try {
+      isLoading.value = true;
+      methodData = (await props.method?.()) || [ ];
+    } finally {
+      isLoading.value = false;
+    }
     if (isRef(methodData)) {
       methodWatchHandle = watch(
         methodData,
         () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          data.value = unref(methodData) as any[];
+          data.value = (unref(methodData) || [ ]) as any[];
           emit("data", data.value);
           options4SelectV2.value = data.value.map(props.optionsMap);
         },
@@ -720,7 +727,8 @@ async function onRefresh() {
         },
       );
     } else {
-      data.value = methodData;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data.value = (methodData || [ ]) as any[];
       emit("data", data.value);
       options4SelectV2.value = data.value.map(props.optionsMap);
     }

@@ -228,9 +228,6 @@ function selectedIdsChg(value: <#=Table_Up#>Id[]) {
 async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
   const <#=table#>_models = await findByIds<#=Table_Up#>(
     ids,
-    {
-      notLoading: true,
-    },
   );
   return <#=table#>_models;
 }

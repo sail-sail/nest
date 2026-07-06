@@ -269,12 +269,11 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "img",
-        fixed: "left",
       },
       {
         COLUMN_NAME: "lbl",
         align: "center",
-        fixed: "left",
+        fixed: false,
       },
       {
         COLUMN_NAME: "username",

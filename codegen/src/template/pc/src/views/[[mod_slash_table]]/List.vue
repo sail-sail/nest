@@ -519,7 +519,7 @@ if (searchByKeyword) {
           ></SelectInput<#=Foreign_Table_Up#>>
         </el-form-item>
       </template><#
-      } else if (foreignKey && foreignKey.type === "many2many" && !foreignKey.isSearchBySelectInput) {
+      } else if (foreignKey && foreignKey.type === "many2many" && !foreignKey.isSearchByLbl && !foreignKey.isSearchBySelectInput) {
       #>
       <template<#
         if (fieldPermit || !isVirtual || vIfStr) {
@@ -569,7 +569,49 @@ if (searchByKeyword) {
           ></CustomSelect>
         </el-form-item>
       </template><#
-      } else if (foreignKey && foreignKey.type === "many2many" && foreignKey.isSearchBySelectInput) {
+      } else if (foreignKey && foreignKey.type === "many2many" && foreignKey.isSearchByLbl && !foreignKey.isSearchBySelectInput) {
+      #>
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
+          prop="<#=column_name#>"
+        >
+          <CustomInput
+            v-model="search.<#=column_name#>_<#=foreignKey.lbl#>_like"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请输入 <#=column_comment#>"<#
+            }
+            #>
+            @change="onSearch(false)"
+          ></CustomInput>
+        </el-form-item>
+      </template><#
+      } else if (foreignKey && foreignKey.type === "many2many" && !foreignKey.isSearchByLbl && foreignKey.isSearchBySelectInput) {
       #>
       <template<#
         if (fieldPermit || !isVirtual || vIfStr) {
