@@ -85,6 +85,7 @@
             <CustomSelect
               v-model="dialogModel.dict_id"
               :method="getListDict"
+              dirty-key="系统字典"
               :find-by-values="findByIdsDict"
               :options-map="((item: DictModel) => {
                 return {

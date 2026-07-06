@@ -85,6 +85,7 @@
             <CustomSelect
               v-model="dialogModel.lang_id"
               :method="getListLang"
+              dirty-key="语言"
               :find-by-values="findByIdsLang"
               :options-map="((item: LangModel) => {
                 return {

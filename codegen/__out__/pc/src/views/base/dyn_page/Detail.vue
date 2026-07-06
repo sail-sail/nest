@@ -127,6 +127,7 @@
               v-model="dialogModel.role_ids"
               :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
               :method="getListRole"
+              dirty-key="角色"
               :find-by-values="findByIdsRole"
               :options-map="((item: RoleModel) => {
                 return {

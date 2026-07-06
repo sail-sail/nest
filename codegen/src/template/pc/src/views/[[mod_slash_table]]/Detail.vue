@@ -516,6 +516,7 @@ for (let i = 0; i < columns.length; i++) {
               :method="getList<#=Foreign_Table_Up#>"<#
               }
               #>
+              dirty-key="<#=foreignSchema.opts.table_comment#>"
               :find-by-values="findByIds<#=Foreign_Table_Up#>"
               :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                 return {
@@ -1625,6 +1626,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       :method="getList<#=Foreign_Table_Up#>"
+                      dirty-key="<#=foreignSchema.opts.table_comment#>"
                       :find-by-values="findByIds<#=Foreign_Table_Up#>"
                       :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                         return {
@@ -2517,6 +2519,7 @@ for (let i = 0; i < columns.length; i++) {
                     :method="getList<#=Foreign_Table_Up#>"<#
                     }
                     #>
+                    dirty-key="<#=foreignSchema.opts.table_comment#>"
                     :find-by-values="findByIds<#=Foreign_Table_Up#>"
                     :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                       return {
@@ -3271,6 +3274,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       :method="getList<#=Foreign_Table_Up#>"
+                      dirty-key="<#=foreignSchema.opts.table_comment#>"
                       :find-by-values="findByIds<#=Foreign_Table_Up#>"
                       :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                         return {
