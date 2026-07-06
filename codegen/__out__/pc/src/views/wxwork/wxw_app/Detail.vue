@@ -124,6 +124,7 @@
             <CustomSelect
               v-model="dialogModel.domain_id"
               :method="getListDomain"
+              dirty-key="域名"
               :find-by-values="findByIdsDomain"
               :options-map="((item: DomainModel) => {
                 return {

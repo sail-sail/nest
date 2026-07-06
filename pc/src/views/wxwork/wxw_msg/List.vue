@@ -36,6 +36,7 @@
           <CustomSelect
             v-model="wxw_app_id_search"
             :method="getListWxwApp"
+            dirty-key="企微应用"
             :options-map="((item: WxwAppModel) => {
               return {
                 label: item.lbl,

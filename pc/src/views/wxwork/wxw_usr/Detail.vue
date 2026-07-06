@@ -85,6 +85,7 @@
             <CustomSelect
               v-model="dialogModel.wxw_app_id"
               :method="getListWxwApp"
+              dirty-key="企微应用"
               :find-by-values="findByIdsWxwApp"
               :options-map="((item: WxwAppModel) => {
                 return {
