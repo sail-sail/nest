@@ -38,8 +38,16 @@ export function intoInputWxwApp(
     domain_id_lbl: model?.domain_id_lbl,
     // 应用密钥
     corpsecret: model?.corpsecret,
+    // 
+    notify_token: model?.notify_token,
+    // 
+    notify_aeskey: model?.notify_aeskey,
     // 通讯录密钥
     contactsecret: model?.contactsecret,
+    // 
+    contact_notify_token: model?.contact_notify_token,
+    // 
+    contact_notify_aeskey: model?.contact_notify_aeskey,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -580,7 +588,11 @@ export function useDownloadImportTemplateWxwApp() {
             agentid
             domain_id_lbl
             corpsecret
+            notify_token
+            notify_aeskey
             contactsecret
+            contact_notify_token
+            contact_notify_aeskey
             order_by
             rem
           }
@@ -786,7 +798,11 @@ export async function getFieldCommentsWxwApp(
           domain_id,
           domain_id_lbl,
           corpsecret,
+          notify_token,
+          notify_aeskey,
           contactsecret,
+          contact_notify_token,
+          contact_notify_aeskey,
           is_locked,
           is_locked_lbl,
           is_enabled,

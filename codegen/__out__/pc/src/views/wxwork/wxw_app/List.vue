@@ -575,8 +575,48 @@
             </el-table-column>
           </template>
           
+          <!--  -->
+          <template v-else-if="'notify_token' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!--  -->
+          <template v-else-if="'notify_aeskey' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 通讯录密钥 -->
           <template v-else-if="'contactsecret' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!--  -->
+          <template v-else-if="'contact_notify_token' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!--  -->
+          <template v-else-if="'contact_notify_aeskey' === col.prop">
             <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
               v-if="col.hide !== true"
@@ -1057,10 +1097,42 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "",
+      prop: "notify_token",
+      width: 220,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "",
+      prop: "notify_aeskey",
+      width: 220,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "通讯录密钥",
       prop: "contactsecret",
       width: 220,
       align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "",
+      prop: "contact_notify_token",
+      width: 220,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "",
+      prop: "contact_notify_aeskey",
+      width: 220,
+      align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1391,7 +1463,11 @@ async function onImportExcel() {
     [ "应用ID" ]: "agentid",
     [ "可信域名" ]: "domain_id_lbl",
     [ "应用密钥" ]: "corpsecret",
+    [ "" ]: "notify_token",
+    [ "" ]: "notify_aeskey",
     [ "通讯录密钥" ]: "contactsecret",
+    [ "" ]: "contact_notify_token",
+    [ "" ]: "contact_notify_aeskey",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
@@ -1422,7 +1498,11 @@ async function onImportExcel() {
           "agentid": "string",
           "domain_id_lbl": "string",
           "corpsecret": "string",
+          "notify_token": "string",
+          "notify_aeskey": "string",
           "contactsecret": "string",
+          "contact_notify_token": "string",
+          "contact_notify_aeskey": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",

@@ -78,9 +78,21 @@ pub struct WxwAppModel {
   /// 应用密钥
   #[graphql(name = "corpsecret")]
   pub corpsecret: SmolStr,
+  /// 
+  #[graphql(name = "notify_token")]
+  pub notify_token: SmolStr,
+  /// 
+  #[graphql(name = "notify_aeskey")]
+  pub notify_aeskey: SmolStr,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
   pub contactsecret: SmolStr,
+  /// 
+  #[graphql(name = "contact_notify_token")]
+  pub contact_notify_token: SmolStr,
+  /// 
+  #[graphql(name = "contact_notify_aeskey")]
+  pub contact_notify_aeskey: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -149,9 +161,21 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
     // 应用密钥
     let corpsecret: &str = row.try_get("corpsecret")?;
     let corpsecret = SmolStr::new(decrypt(corpsecret));
+    // 
+    let notify_token: &str = row.try_get("notify_token")?;
+    let notify_token = SmolStr::new(notify_token);
+    // 
+    let notify_aeskey: &str = row.try_get("notify_aeskey")?;
+    let notify_aeskey = SmolStr::new(notify_aeskey);
     // 通讯录密钥
     let contactsecret: &str = row.try_get("contactsecret")?;
     let contactsecret = SmolStr::new(decrypt(contactsecret));
+    // 
+    let contact_notify_token: &str = row.try_get("contact_notify_token")?;
+    let contact_notify_token = SmolStr::new(contact_notify_token);
+    // 
+    let contact_notify_aeskey: &str = row.try_get("contact_notify_aeskey")?;
+    let contact_notify_aeskey = SmolStr::new(contact_notify_aeskey);
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl = SmolStr::new(is_locked.to_string());
@@ -196,7 +220,11 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
       domain_id,
       domain_id_lbl,
       corpsecret,
+      notify_token,
+      notify_aeskey,
       contactsecret,
+      contact_notify_token,
+      contact_notify_aeskey,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -242,9 +270,21 @@ pub struct WxwAppFieldComment {
   /// 应用密钥
   #[graphql(name = "corpsecret")]
   pub corpsecret: SmolStr,
+  /// 
+  #[graphql(name = "notify_token")]
+  pub notify_token: SmolStr,
+  /// 
+  #[graphql(name = "notify_aeskey")]
+  pub notify_aeskey: SmolStr,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
   pub contactsecret: SmolStr,
+  /// 
+  #[graphql(name = "contact_notify_token")]
+  pub contact_notify_token: SmolStr,
+  /// 
+  #[graphql(name = "contact_notify_aeskey")]
+  pub contact_notify_aeskey: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: SmolStr,
@@ -491,9 +531,21 @@ pub struct WxwAppInput {
   /// 应用密钥
   #[graphql(name = "corpsecret")]
   pub corpsecret: Option<SmolStr>,
+  /// 
+  #[graphql(name = "notify_token")]
+  pub notify_token: Option<SmolStr>,
+  /// 
+  #[graphql(name = "notify_aeskey")]
+  pub notify_aeskey: Option<SmolStr>,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
   pub contactsecret: Option<SmolStr>,
+  /// 
+  #[graphql(name = "contact_notify_token")]
+  pub contact_notify_token: Option<SmolStr>,
+  /// 
+  #[graphql(name = "contact_notify_aeskey")]
+  pub contact_notify_aeskey: Option<SmolStr>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -621,8 +673,16 @@ impl From<WxwAppModel> for WxwAppInput {
       domain_id_lbl: model.domain_id_lbl.into(),
       // 应用密钥
       corpsecret: model.corpsecret.into(),
+      // 
+      notify_token: model.notify_token.into(),
+      // 
+      notify_aeskey: model.notify_aeskey.into(),
       // 通讯录密钥
       contactsecret: model.contactsecret.into(),
+      // 
+      contact_notify_token: model.contact_notify_token.into(),
+      // 
+      contact_notify_aeskey: model.contact_notify_aeskey.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),

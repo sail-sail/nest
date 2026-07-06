@@ -65,7 +65,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(2,440px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -151,6 +151,32 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.notify_token == null)">
+          <el-form-item
+            label=""
+            prop="notify_token"
+          >
+            <CustomInput
+              v-model="dialogModel.notify_token"
+              placeholder="请输入 "
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.notify_aeskey == null)">
+          <el-form-item
+            label=""
+            prop="notify_aeskey"
+          >
+            <CustomInput
+              v-model="dialogModel.notify_aeskey"
+              placeholder="请输入 "
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.contactsecret == null)">
           <el-form-item
             label="通讯录密钥"
@@ -159,6 +185,32 @@
             <CustomInput
               v-model="dialogModel.contactsecret"
               placeholder="请输入 通讯录密钥"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.contact_notify_token == null)">
+          <el-form-item
+            label=""
+            prop="contact_notify_token"
+          >
+            <CustomInput
+              v-model="dialogModel.contact_notify_token"
+              placeholder="请输入 "
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.contact_notify_aeskey == null)">
+          <el-form-item
+            label=""
+            prop="contact_notify_aeskey"
+          >
+            <CustomInput
+              v-model="dialogModel.contact_notify_aeskey"
+              placeholder="请输入 "
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>

@@ -78,7 +78,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 17 * 2);
+  let mut where_query = String::with_capacity(80 * 21 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -965,7 +965,11 @@ pub async fn get_field_comments_wxw_app(
     domain_id: "可信域名".into(),
     domain_id_lbl: "可信域名".into(),
     corpsecret: "应用密钥".into(),
+    notify_token: "".into(),
+    notify_aeskey: "".into(),
     contactsecret: "通讯录密钥".into(),
+    contact_notify_token: "".into(),
+    contact_notify_aeskey: "".into(),
     is_locked: "锁定".into(),
     is_locked_lbl: "锁定".into(),
     is_enabled: "启用".into(),
@@ -2021,7 +2025,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 17 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2041,8 +2045,16 @@ async fn _creates(
   sql_fields += ",domain_id";
   // 应用密钥
   sql_fields += ",corpsecret";
+  // 
+  sql_fields += ",notify_token";
+  // 
+  sql_fields += ",notify_aeskey";
   // 通讯录密钥
   sql_fields += ",contactsecret";
+  // 
+  sql_fields += ",contact_notify_token";
+  // 
+  sql_fields += ",contact_notify_aeskey";
   // 锁定
   sql_fields += ",is_locked";
   // 启用
@@ -2053,7 +2065,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 17 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 21 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2214,10 +2226,38 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
+    // 
+    if let Some(notify_token) = input.notify_token {
+      sql_values += ",?";
+      args.push(notify_token.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 
+    if let Some(notify_aeskey) = input.notify_aeskey {
+      sql_values += ",?";
+      args.push(notify_aeskey.into());
+    } else {
+      sql_values += ",default";
+    }
     // 通讯录密钥
     if let Some(contactsecret) = input.contactsecret {
       sql_values += ",?";
       args.push(encrypt(&contactsecret).into());
+    } else {
+      sql_values += ",default";
+    }
+    // 
+    if let Some(contact_notify_token) = input.contact_notify_token {
+      sql_values += ",?";
+      args.push(contact_notify_token.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 
+    if let Some(contact_notify_aeskey) = input.contact_notify_aeskey {
+      sql_values += ",?";
+      args.push(contact_notify_aeskey.into());
     } else {
       sql_values += ",default";
     }
@@ -2576,7 +2616,7 @@ pub async fn update_by_id_wxw_app(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 17 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2615,11 +2655,35 @@ pub async fn update_by_id_wxw_app(
     sql_fields += "corpsecret=?,";
     args.push(encrypt(&corpsecret).into());
   }
+  // 
+  if let Some(notify_token) = input.notify_token {
+    field_num += 1;
+    sql_fields += "notify_token=?,";
+    args.push(notify_token.into());
+  }
+  // 
+  if let Some(notify_aeskey) = input.notify_aeskey {
+    field_num += 1;
+    sql_fields += "notify_aeskey=?,";
+    args.push(notify_aeskey.into());
+  }
   // 通讯录密钥
   if let Some(contactsecret) = input.contactsecret.clone() {
     field_num += 1;
     sql_fields += "contactsecret=?,";
     args.push(encrypt(&contactsecret).into());
+  }
+  // 
+  if let Some(contact_notify_token) = input.contact_notify_token {
+    field_num += 1;
+    sql_fields += "contact_notify_token=?,";
+    args.push(contact_notify_token.into());
+  }
+  // 
+  if let Some(contact_notify_aeskey) = input.contact_notify_aeskey {
+    field_num += 1;
+    sql_fields += "contact_notify_aeskey=?,";
+    args.push(contact_notify_aeskey.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {

@@ -41,8 +41,16 @@ export const wxwAppFields = [
   "domain_id_lbl",
   // 应用密钥
   "corpsecret",
+  // 
+  "notify_token",
+  // 
+  "notify_aeskey",
   // 通讯录密钥
   "contactsecret",
+  // 
+  "contact_notify_token",
+  // 
+  "contact_notify_aeskey",
   // 锁定
   "is_locked",
   "is_locked_lbl",
