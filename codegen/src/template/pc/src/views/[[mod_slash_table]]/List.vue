@@ -413,6 +413,7 @@ if (searchByKeyword) {
           <CustomSelect
             v-model="<#=column_name#>_search"
             :method="getList<#=Foreign_Table_Up#>"
+            dirty-key="<#=foreignSchema.opts.table_comment#>"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
@@ -550,6 +551,7 @@ if (searchByKeyword) {
           <CustomSelect
             v-model="<#=column_name#>_search"
             :method="getList<#=Foreign_Table_Up#>"
+            dirty-key="<#=foreignSchema.opts.table_comment#>"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,

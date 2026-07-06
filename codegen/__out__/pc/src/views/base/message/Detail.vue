@@ -169,6 +169,7 @@
               v-model="dialogModel.sender_usr_id"
               v-model:model-label="dialogModel.sender_usr_id_lbl"
               :method="getListUsr"
+              dirty-key="用户"
               :find-by-values="findByIdsUsr"
               :options-map="((item: UsrModel) => {
                 return {
@@ -222,6 +223,7 @@
               v-model="dialogModel.org_id"
               v-model:model-label="dialogModel.org_id_lbl"
               :method="getListOrg"
+              dirty-key="组织"
               :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {

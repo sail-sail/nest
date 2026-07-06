@@ -36,6 +36,7 @@
           <CustomSelect
             v-model="message_id_search"
             :method="getListMessage"
+            dirty-key="消息"
             :options-map="((item: MessageModel) => {
               return {
                 label: item.content,
@@ -57,6 +58,7 @@
           <CustomSelect
             v-model="receiver_usr_id_search"
             :method="getListUsr"
+            dirty-key="用户"
             :options-map="((item: UsrModel) => {
               return {
                 label: item.lbl,
