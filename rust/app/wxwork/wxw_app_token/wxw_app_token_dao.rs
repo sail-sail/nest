@@ -32,6 +32,7 @@ use generated::wxwork::wxw_app::wxw_app_dao::{
 
 use super::wxw_app_token_model::{
   GetuserRes,
+  GetuserDetailRes,
   GetJsapiTicketRes,
   GetuserinfoModel,
   WxwGetConfigSignature,
@@ -308,6 +309,39 @@ pub async fn get_contact_access_token(
   Ok(access_token)
 }
 
+async fn find_or_init_wxw_app_token_model(
+  wxw_app_id: WxwAppId,
+) -> Result<generated::wxwork::wxw_app_token::wxw_app_token_model::WxwAppTokenModel> {
+  let wxw_app_token_model = find_one_wxw_app_token(
+    WxwAppTokenSearch {
+      wxw_app_id: vec![wxw_app_id].into(),
+      r#type: SmolStr::new("corp").into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+  ).await?;
+  match wxw_app_token_model {
+    Some(model) => Ok(model),
+    None => {
+      let _ = get_access_token(
+        wxw_app_id,
+        Some(true),
+      ).await?;
+      let wxw_app_token_model = find_one_wxw_app_token(
+        WxwAppTokenSearch {
+          wxw_app_id: vec![wxw_app_id].into(),
+          r#type: SmolStr::new("corp").into(),
+          ..Default::default()
+        }.into(),
+        None,
+        None,
+      ).await?;
+      validate_option_wxw_app_token(wxw_app_token_model).await
+    }
+  }
+}
+
 /// 获取企业的jsapi_ticket
 async fn get_jsapi_ticket(
   wxw_app_id: WxwAppId,
@@ -327,17 +361,7 @@ async fn get_jsapi_ticket(
     &wxw_app_model,
   ).await?;
   
-  let wxw_app_token_model = validate_option_wxw_app_token(
-    find_one_wxw_app_token(
-      WxwAppTokenSearch {
-        wxw_app_id: vec![wxw_app_id].into(),
-        r#type: SmolStr::new("corp").into(),
-        ..Default::default()
-      }.into(),
-      None,
-      None,
-    ).await?,
-  ).await?;
+  let wxw_app_token_model = find_or_init_wxw_app_token_model(wxw_app_id).await?;
   
   let now = get_now();
   let now_sec = now.and_utc().timestamp_millis() / 1000;
@@ -459,17 +483,7 @@ pub async fn get_jsapi_ticket_agent_config(
     &wxw_app_model,
   ).await?;
   
-  let wxw_app_token_model = validate_option_wxw_app_token(
-    find_one_wxw_app_token(
-      WxwAppTokenSearch {
-        wxw_app_id: vec![wxw_app_id].into(),
-        r#type: SmolStr::new("corp").into(),
-        ..Default::default()
-      }.into(),
-      None,
-      None,
-    ).await?,
-  ).await?;
+  let wxw_app_token_model = find_or_init_wxw_app_token_model(wxw_app_id).await?;
   
   let now = get_now();
   let now_sec = now.and_utc().timestamp_millis() / 1000;
@@ -501,7 +515,7 @@ pub async fn get_jsapi_ticket_agent_config(
     ).await?;
     
     let url = format!(
-      "https://qyapi.weixin.qq.com/cgi-bin/ticket/get?access_token={access_token}",
+      "https://qyapi.weixin.qq.com/cgi-bin/ticket/get?access_token={access_token}&type=agent_config",
       access_token = urlencoding::encode(&access_token),
     );
     let res = reqwest::get(&url).await?;
@@ -658,6 +672,73 @@ pub async fn getuserinfo_by_code(
     userid,
     user_ticket,
   })
+}
+
+async fn fetch_getuserdetail(
+  wxw_app_id: WxwAppId,
+  user_ticket: SmolStr,
+  force: bool,
+) -> Result<GetuserDetailRes> {
+  let access_token = get_access_token(
+    wxw_app_id,
+    force.into(),
+  ).await?;
+  let url = format!(
+    "https://qyapi.weixin.qq.com/cgi-bin/auth/getuserdetail?access_token={access_token}",
+    access_token = urlencoding::encode(&access_token),
+  );
+  info!(
+    "{req_id} fetch_getuserdetail.url: {url}",
+    req_id = get_req_id(),
+  );
+  let client = reqwest::Client::new();
+  let res = client.post(&url)
+    .json(&serde_json::json!({
+      "user_ticket": user_ticket,
+    }))
+    .send()
+    .await?;
+  let data = res.text().await?;
+  info!(
+    "{req_id} fetch_getuserdetail.data: {data}",
+    req_id = get_req_id(),
+  );
+  let data: GetuserDetailRes = serde_json::from_str(&data)?;
+  Ok(data)
+}
+
+/// 获取访问用户敏感信息
+/// https://developer.work.weixin.qq.com/document/path/95833
+/// #### 参数
+/// 
+/// - `user_ticket` - 成员票据
+pub async fn getuserdetail(
+  wxw_app_id: WxwAppId,
+  user_ticket: SmolStr,
+) -> Result<GetuserDetailRes> {
+  let mut data: GetuserDetailRes = fetch_getuserdetail(
+    wxw_app_id,
+    user_ticket.clone(),
+    false,
+  ).await?;
+  if data.errcode == 42001 {
+    data = fetch_getuserdetail(
+      wxw_app_id,
+      user_ticket.clone(),
+      true,
+    ).await?;
+  }
+  let errcode = data.errcode;
+  let errmsg = data.errmsg.clone();
+  if errcode != 0 {
+    error!(
+      "{req_id} 获取访问用户敏感信息失败: {errmsg}",
+      req_id = get_req_id(),
+      errmsg = serde_json::to_string(&data)?,
+    );
+    return Err(eyre!("获取访问用户敏感信息失败: {errmsg}"));
+  }
+  Ok(data)
 }
 
 async fn fetch_getuseridlist(

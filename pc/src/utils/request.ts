@@ -3,6 +3,9 @@ import { ElMessage } from "element-plus";
 import useUsrStore from "../store/usr.ts";
 import useIndexStore from "../store/index.ts";
 import { saveAs } from "../compositions/download.ts";
+import {
+  notifyAuthExpired,
+} from "./WxWorkUtil.ts";
 
 export const baseURL = "";
 
@@ -129,6 +132,9 @@ export async function request<T>(
   const data = res!.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
     indexStore.logout();
+    if (!config.notLogin) {
+      notifyAuthExpired();
+    }
     return data;
   }
   if (data && data.code !== 0) {
@@ -163,6 +169,7 @@ export async function uploadFile(
     duration?: number;
     db?: string;
     isPublic?: boolean;
+    notLogin?: boolean;
   },
 ) {
   const indexStore = useIndexStore();
@@ -243,6 +250,9 @@ export async function uploadFile(
     const data = res;
     if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
       indexStore.logout();
+      if (!config.notLogin) {
+        notifyAuthExpired();
+      }
       return data;
     }
     if (data && data.code !== 0) {

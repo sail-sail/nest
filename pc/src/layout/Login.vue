@@ -15,95 +15,167 @@
     {{ ns("清空缓存") }}
   </div>
   <div class="login_div">
+    
     <div
-      style="margin-top: 14px;margin-left: 20px;font-size: 16px;color: white;"
+      un-relative
+      un-min="w-132 h-119"
     >
-      {{ app_title }}
-    </div>
-    <el-form
-      ref="formRef"
-      :model="model"
-      :rules="form_rules"
-      :validate-on-rule-change="false"
-      class="login_form"
-      size="large"
-      @keyup.enter.stop="onLogin"
-    >
-      <el-form-item prop="tenant_id">
-        <el-select
-          v-model="model.tenant_id"
-          class="from_input"
-          style="width: 100%;"
-          filterable
-          default-first-option
-          :placeholder="`${ ns('请选择') } ${ n('租户') }`"
-          :input-style="inputStyle"
-          clearable
-          :popper-style="{ zIndex: 10000 }"
-        >
-          <template #prefix>
-            <el-icon>
-              <ElIconUser />
-            </el-icon>
-          </template>
-          <el-option
-            v-for="item in tenants"
-            :key="item.id"
-            :label="item.lbl"
-            :value="item.id"
-          >
-          </el-option>
-        </el-select>
-      </el-form-item>
       
-      <el-form-item prop="username">
-        <el-input
-          v-model="model.username"
-          class="from_input"
-          :placeholder="`${ ns('请输入') } ${ n('用户名') }`"
-          :input-style="inputStyle"
-          clearable
-          :prefix-icon="User"
-        >
-        </el-input>
-      </el-form-item>
-      
-      <el-form-item prop="password">
-        <el-input
-          v-model="model.password" 
-          class="from_input"
-          size="large"
-          :placeholder="`${ ns('请输入') } ${ n('密码') }`"
-          type="password"
-          :input-style="inputStyle"
-          show-password
-          clearable
-          :prefix-icon="Lock"
-        >
-        </el-input>
-      </el-form-item>
-      
-      <el-button
-        size="large"
-        type="primary"
-        style="width: 100%;margin-top: 20px;opacity: .7;"
-        :loading="!usrStore.isLogining"
-        @keyup.enter.stop
-        @click="onLogin"
+      <el-tooltip
+        :visible="tooltipVisible"
+        effect="light"
+        placement="left"
       >
-        <span
-          v-if="usrStore.isLogining"
+        <template #content>
+          <span
+            v-if="loginViewType === 'password'"
+            un-text="gray"
+          >
+            企业微信扫码登录
+          </span>
+          <span
+            v-else-if="loginViewType === 'wxwork'"
+            un-text="gray"
+          >
+            用户名密码登录
+          </span>
+        </template>
+        <div
+          un-pos-absolute
+          un-right="2"
+          un-top="2"
+          un-text="gray hover:blue"
+          un-cursor-pointer
+          @click="changeLoginView"
         >
-          {{ ns("登 录") }}
-        </span>
-        <span
-          v-else
-        >
-          {{ ns("正在登录") }}...
-        </span>
-      </el-button>
+          <el-icon
+            v-if="loginViewType === 'password'"
+            size="40"
+          >
+            <i un-i="iconfont-qrcode"></i>
+          </el-icon>
+          <el-icon
+            v-else-if="loginViewType === 'wxwork'"
+            size="30"
+            un-pos-relative
+            un-right="1"
+            un-top="1"
+          >
+            <i un-i="iconfont-pc"></i>
+          </el-icon>
+        </div>
+      </el-tooltip>
       
-    </el-form>
+      <!-- 密码登录 -->
+      <template
+        v-if="loginViewType === 'password'"
+      >
+        
+        <div
+          style="margin-top: 14px;margin-left: 20px;font-size: 16px;color: white;"
+        >
+          {{ app_title }}
+        </div>
+        <el-form
+          ref="formRef"
+          :model="model"
+          :rules="form_rules"
+          :validate-on-rule-change="false"
+          class="login_form"
+          size="large"
+          @keyup.enter.stop="onLogin"
+        >
+          <el-form-item prop="tenant_id">
+            <el-select
+              v-model="model.tenant_id"
+              class="from_input"
+              style="width: 100%;"
+              filterable
+              default-first-option
+              :placeholder="`${ ns('请选择') } ${ n('租户') }`"
+              :input-style="inputStyle"
+              clearable
+              :popper-style="{ zIndex: 10000 }"
+            >
+              <template #prefix>
+                <el-icon>
+                  <ElIconUser />
+                </el-icon>
+              </template>
+              <el-option
+                v-for="item in tenants"
+                :key="item.id"
+                :label="item.lbl"
+                :value="item.id"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          
+          <el-form-item prop="username">
+            <el-input
+              v-model="model.username"
+              class="from_input"
+              :placeholder="`${ ns('请输入') } ${ n('用户名') }`"
+              :input-style="inputStyle"
+              clearable
+              :prefix-icon="User"
+            >
+            </el-input>
+          </el-form-item>
+          
+          <el-form-item prop="password">
+            <el-input
+              v-model="model.password" 
+              class="from_input"
+              size="large"
+              :placeholder="`${ ns('请输入') } ${ n('密码') }`"
+              type="password"
+              :input-style="inputStyle"
+              show-password
+              clearable
+              :prefix-icon="Lock"
+            >
+            </el-input>
+          </el-form-item>
+          
+          <el-button
+            size="large"
+            type="primary"
+            style="width: 100%;margin-top: 20px;opacity: .7;"
+            :loading="!usrStore.isLogining"
+            @keyup.enter.stop
+            @click="onLogin"
+          >
+            <span
+              v-if="usrStore.isLogining"
+            >
+              {{ ns("登 录") }}
+            </span>
+            <span
+              v-else
+            >
+              {{ ns("正在登录") }}...
+            </span>
+          </el-button>
+          
+        </el-form>
+        
+      </template>
+      
+      <!-- 企业微信登录 -->
+      <template
+        v-else-if="loginViewType === 'wxwork'"
+      >
+        
+        <div
+          class="wxwork_login_card"
+        >
+          
+        </div>
+        
+      </template>
+    
   </div>
 </div>
 </template>
@@ -414,6 +486,18 @@ async function initFrame() {
 }
 
 initFrame();
+
+async function changeLoginView() {
+  tooltipVisible = false;
+  if (loginViewType === "password") {
+    loginViewType = "wxwork";
+    await createWWLoginPanel(".wxwork_login_card");
+  } else if (loginViewType === "wxwork") {
+    loginViewType = "password";
+  }
+  await nextTick();
+  tooltipVisible = true;
+}
 
 onMounted(() => {
   loginRef?.focus();

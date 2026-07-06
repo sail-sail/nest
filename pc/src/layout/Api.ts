@@ -5,6 +5,10 @@ import type {
   GetLoginTenants,
 } from "#/types";
 
+import {
+  lang,
+} from "@/locales/index";
+
 /**
  * 根据 当前网址的域名+端口 获取 租户列表
  */
@@ -87,6 +91,63 @@ export async function login(
   }, opt);
   const data = res.login;
   return data;
+}
+
+export async function wxwGetAppid(
+  host: string,
+  opt?: GqlOpt,
+) {
+  const res: {
+    wxwGetAppid: Query["wxwGetAppid"],
+  } = await query({
+    query: /* GraphQL */ `
+      query($host: SmolStr!) {
+        wxwGetAppid(host: $host) {
+          appid
+          agentid
+          scope
+        }
+      }
+    `,
+    variables: {
+      host,
+    },
+  }, opt);
+  const data = res?.wxwGetAppid;
+  if (!data?.appid || !data?.agentid) {
+    throw new Error("请联系管理员配置企业微信 appid 和 agentid");
+  }
+  return data;
+}
+
+export async function wxwLoginByCode(
+  code: string,
+  opt?: GqlOpt,
+) {
+  const res: {
+    wxwLoginByCode: Mutation["wxwLoginByCode"],
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($input: WxwLoginByCodeInput!) {
+        wxwLoginByCode(input: $input) {
+          authorization
+          org_id
+          username
+          name
+          tenant_id
+          lang
+        }
+      }
+    `,
+    variables: {
+      input: {
+        host: window.location.host,
+        code,
+        lang,
+      },
+    },
+  }, opt);
+  return res?.wxwLoginByCode;
 }
 
 // 清空缓存

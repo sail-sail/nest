@@ -3,15 +3,19 @@ use std::sync::{Arc, OnceLock};
 use tokio::sync::Mutex;
 
 use color_eyre::eyre::{Result, eyre};
+use poem::{IntoResponse, Response, http::StatusCode};
+use tracing::error;
 
 use generated::common::context::{
   get_now,
   get_server_tokentimeout,
+  Options,
 };
 
 use smol_str::SmolStr;
 
 use super::wxw_usr_model::{
+  NotifyQuery,
   WxwGetAppid,
   WxwLoginByCodeInput,
   WxwLoginByCode,
@@ -22,6 +26,7 @@ use generated::wxwork::wxw_usr::wxw_usr_model::WxwUsrInput;
 use crate::wxwork::wxw_app_token::wxw_app_token_dao::{
   getuserinfo_by_code,
   getuser,
+  // getuserdetail,
   getuseridlist,
 };
 use crate::wxwork::wxw_app_token::wxw_app_token_model::{
@@ -32,7 +37,7 @@ use crate::wxwork::wxw_app_token::wxw_app_token_model::{
 use generated::base::usr::usr_dao::{
   find_one_usr,
   find_by_id_usr,
-  create_usr,
+  // create_usr,
   update_by_id_usr,
   validate_option_usr,
   validate_is_enabled_usr,
@@ -51,6 +56,7 @@ use generated::wxwork::wxw_usr::wxw_usr_dao::{
 use generated::wxwork::wxw_usr::wxw_usr_model::WxwUsrSearch;
 
 use generated::wxwork::wxw_app::wxw_app_dao::{
+  find_one_ok_wxw_app,
   find_one_wxw_app,
   validate_option_wxw_app,
   validate_is_enabled_wxw_app,
@@ -69,6 +75,63 @@ use generated::base::domain::domain_dao::{
 use generated::base::domain::domain_model::DomainSearch;
 
 use generated::base::org::org_model::OrgId;
+
+/// 企业微信用户回调通知
+pub async fn wxwork_usr_notify_get(
+  notify_query: NotifyQuery,
+  options: Option<Options>,
+) -> Result<Response> {
+  let NotifyQuery {
+    msg_signature: _,
+    timestamp: _,
+    nonce: _,
+    echostr,
+    corpid,
+    agentid,
+  } = notify_query;
+
+  let wxw_app_model = find_one_ok_wxw_app(
+    Some(WxwAppSearch {
+      corpid: Some(corpid),
+      agentid: Some(agentid),
+      ..Default::default()
+    }),
+    None,
+    options,
+  ).await?;
+
+  let contact_notify_token = wxw_app_model.contact_notify_token;
+  let contact_notify_aeskey = wxw_app_model.contact_notify_aeskey;
+
+  let agent = wecom_crypto::Agent::new(
+    contact_notify_token.as_str(),
+    contact_notify_aeskey.as_str(),
+  );
+  let dec = agent.decrypt(echostr.as_str());
+  let dec = match dec {
+    Ok(d) => d,
+    Err(e) => {
+      error!(
+        "wxwork_usr_notify_get: {e:#?}"
+      );
+      return Ok(
+        Response::builder()
+          .status(StatusCode::INTERNAL_SERVER_ERROR)
+          .body(e.to_string())
+          .into_response()
+      );
+    }
+  };
+
+  let str = dec.text;
+
+  Ok(
+    Response::builder()
+      .status(StatusCode::OK)
+      .body(str)
+      .into_response()
+  )
+}
 
 /// 通过host获取appid, agentid
 pub async fn wxw_get_appid(
@@ -111,6 +174,7 @@ pub async fn wxw_get_appid(
   let wxw_get_appid = WxwGetAppid {
     appid: wxw_app_model.corpid,
     agentid: wxw_app_model.agentid,
+    scope: "snsapi_base".into(),
   };
   
   Ok(wxw_get_appid)
@@ -119,6 +183,7 @@ pub async fn wxw_get_appid(
 /// 企微单点登录
 pub async fn wxw_login_by_code(
   input: WxwLoginByCodeInput,
+  options: Option<Options>,
 ) -> Result<WxwLoginByCode> {
   
   let host = input.host;
@@ -132,7 +197,7 @@ pub async fn wxw_login_by_code(
       ..Default::default()
     }.into(),
     None,
-    None,
+    options,
   ).await?;
   let domain_model = validate_option_domain(
     domain_model
@@ -149,7 +214,7 @@ pub async fn wxw_login_by_code(
       ..Default::default()
     }.into(),
     None,
-    None,
+    options,
   ).await?;
   let wxw_app_model = validate_option_wxw_app(
     wxw_app_model,
@@ -164,11 +229,16 @@ pub async fn wxw_login_by_code(
   
   let GetuserinfoModel {
     userid,
-    ..
+    user_ticket: _,
   } = getuserinfo_by_code(
     wxw_app_id,
     code,
   ).await?;
+  
+  // let get_user_detail_res = getuserdetail(
+  //   wxw_app_id,
+  //   user_ticket,
+  // ).await?;
   
   let get_user_res = getuser(
     wxw_app_id,
@@ -188,50 +258,77 @@ pub async fn wxw_login_by_code(
   // 企微用户
   let wxw_usr_model = find_one_wxw_usr(
     WxwUsrSearch {
-      lbl: name.clone().into(),
+      userid: userid.clone().into(),
+      tenant_id: tenant_id.into(),
       ..Default::default()
     }.into(),
     None,
-    None,
+    options,
   ).await?;
   if let Some(wxw_usr_model) = wxw_usr_model {
     let id = wxw_usr_model.id;
-    if wxw_usr_model.userid != userid ||
+    if wxw_app_id != wxw_usr_model.wxw_app_id ||
+      wxw_app_model.corpid != wxw_usr_model.corpid ||
+      wxw_app_model.agentid != wxw_usr_model.agentid ||
+      wxw_usr_model.userid != userid ||
       wxw_usr_model.lbl != name ||
+      // wxw_usr_model.mobile != get_user_detail_res.mobile ||
+      // wxw_usr_model.email != get_user_detail_res.email ||
+      // wxw_usr_model.qr_code != get_user_detail_res.qr_code ||
+      // wxw_usr_model.avatar != get_user_detail_res.avatar ||
+      // wxw_usr_model.gender != get_user_detail_res.gender.to_smolstr() ||
       wxw_usr_model.position != position ||
       wxw_usr_model.tenant_id.as_str() != tenant_id.as_str()
     {
       update_by_id_wxw_usr(
         id,
         WxwUsrInput {
+          wxw_app_id: Some(wxw_app_id),
+          corpid: Some(wxw_app_model.corpid.clone()),
+          agentid: Some(wxw_app_model.agentid.clone()),
           userid: userid.clone().into(),
           lbl: name.clone().into(),
+          // mobile: get_user_detail_res.mobile.clone().into(),
+          // email: get_user_detail_res.email.clone().into(),
+          // qr_code: get_user_detail_res.qr_code.clone().into(),
+          // avatar: get_user_detail_res.avatar.clone().into(),
+          // gender: get_user_detail_res.gender.to_smolstr().into(),
           position: position.clone().into(),
           tenant_id: tenant_id.into(),
           ..Default::default()
         },
-        None,
+        options,
       ).await?;
     }
   } else {
     create_wxw_usr(
       WxwUsrInput {
+        wxw_app_id: Some(wxw_app_id),
+        corpid: Some(wxw_app_model.corpid.clone()),
+        agentid: Some(wxw_app_model.agentid.clone()),
         userid: userid.clone().into(),
         lbl: name.clone().into(),
+        // mobile: get_user_detail_res.mobile.clone().into(),
+        // email: get_user_detail_res.email.clone().into(),
+        // qr_code: get_user_detail_res.qr_code.clone().into(),
+        // avatar: get_user_detail_res.avatar.clone().into(),
+        // gender: get_user_detail_res.gender.to_smolstr().into(),
         position: position.clone().into(),
         tenant_id: tenant_id.into(),
         ..Default::default()
       },
-      None,
+      options,
     ).await?;
   }
   let usr_model = find_one_usr(
     UsrSearch {
+      // mobile: get_user_detail_res.mobile.clone().into(),
       lbl: name.clone().into(),
+      tenant_id: tenant_id.into(),
       ..Default::default()
     }.into(),
     None,
-    None,
+    options,
   ).await?;
   let id;
   if let Some(usr_model) = usr_model {
@@ -241,6 +338,7 @@ pub async fn wxw_login_by_code(
     id = usr_model.id;
     if usr_model.username != name ||
       usr_model.lbl != name ||
+      // usr_model.mobile != get_user_detail_res.mobile ||
       usr_model.tenant_id.as_str() != tenant_id.as_str()
     {
       update_by_id_usr(
@@ -248,26 +346,37 @@ pub async fn wxw_login_by_code(
         UsrInput {
           username: name.clone().into(),
           lbl: name.clone().into(),
+          // mobile: get_user_detail_res.mobile.clone().into(),
           tenant_id: tenant_id.into(),
           ..Default::default()
         },
-        None,
+        options,
       ).await?;
     }
   } else {
-    id = create_usr(
-      UsrInput {
-        username: name.clone().into(),
-        lbl: name.clone().into(),
-        tenant_id: tenant_id.into(),
-        ..Default::default()
-      },
-      None,
-    ).await?;
+    
+    // id = create_usr(
+    //   UsrInput {
+    //     username: name.clone().into(),
+    //     lbl: name.clone().into(),
+    //     mobile: get_user_detail_res.mobile.clone().into(),
+    //     tenant_id: tenant_id.into(),
+    //     ..Default::default()
+    //   },
+    //   options,
+    // ).await?;
+    // return Err(eyre!(
+    //   "企微用户 {name} 的手机号 {mobile} 不存在于系统中, 请联系管理员添加",
+    //   mobile = get_user_detail_res.mobile,
+    // ));
+    
+    return Err(eyre!(
+      "企微用户 {name} 不存在于系统中, 请联系管理员添加",
+    ));
   }
   let usr_model = find_by_id_usr(
     id,
-    None,
+    options,
   ).await?;
   let usr_model = validate_option_usr(
     usr_model,

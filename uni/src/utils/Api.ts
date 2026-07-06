@@ -2,13 +2,13 @@
 import type {
   Query,
   Mutation,
-} from "#/types";
+} from "#/types.ts";
 
-import cfg from "@/utils/config";
+import cfg from "@/utils/config.ts";
 
 import {
   lang,
-} from "@/locales/index";
+} from "@/locales/index.ts";
 
 export async function wxwLoginByCode(
   code: string,
@@ -53,7 +53,7 @@ export async function wxwGetConfigSignature(
     wxwGetConfigSignature: Query["wxwGetConfigSignature"],
   } = await query({
     query: /* GraphQL */ `
-      query($appid: String!, $agentid: String!, $url: String!) {
+      query($appid: SmolStr!, $agentid: SmolStr!, $url: SmolStr!) {
         wxwGetConfigSignature(appid: $appid, agentid: $agentid, url: $url) {
           timestamp
           nonceStr
@@ -79,10 +79,10 @@ export async function wxwGetAgentConfigSignature(
   opt?: GqlOpt,
 ) {
   const res: {
-    wxwGetAgentConfigSignature: Query["wxwGetConfigSignature"],
+    wxwGetAgentConfigSignature: Query["wxwGetAgentConfigSignature"],
   } = await query({
     query: /* GraphQL */ `
-      query($appid: String!, $agentid: String!, $url: String!) {
+      query($appid: SmolStr!, $agentid: SmolStr!, $url: SmolStr!) {
         wxwGetAgentConfigSignature(appid: $appid, agentid: $agentid, url: $url) {
           timestamp
           nonceStr

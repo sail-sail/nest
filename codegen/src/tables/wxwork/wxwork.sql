@@ -1,4 +1,4 @@
--- ---------------------------------------------------------------------- 企微应用
+-- 企微应用
 drop table if exists `wxwork_wxw_app`;
 CREATE TABLE if not exists `wxwork_wxw_app` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -7,7 +7,11 @@ CREATE TABLE if not exists `wxwork_wxw_app` (
   `agentid` varchar(7) NOT NULL DEFAULT '' COMMENT '应用ID',
   `domain_id` varchar(22) NOT NULL DEFAULT '' COMMENT '可信域名',
   `corpsecret` varchar(120) NOT NULL DEFAULT '' COMMENT '应用密钥',
+  `notify_token` varchar(512) NOT NULL DEFAULT '' COMMENT '应用回调Token',
+  `notify_aeskey` varchar(512) NOT NULL DEFAULT '' COMMENT '应用回调AESKey',
   `contactsecret` varchar(120) NOT NULL DEFAULT '' COMMENT '通讯录密钥',
+  `contact_notify_token` varchar(512) NOT NULL DEFAULT '' COMMENT '通讯录回调Token',
+  `contact_notify_aeskey` varchar(512) NOT NULL DEFAULT '' COMMENT '通讯录回调AESKey',
   `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
@@ -23,21 +27,21 @@ CREATE TABLE if not exists `wxwork_wxw_app` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`lbl`),
-  INDEX (`corpid`, `agentid`),
-  INDEX (`domain_id`),
+  INDEX (`tenant_id`, `is_deleted`, `lbl`),
+  INDEX (`tenant_id`, `is_deleted`, `corpid`, `agentid`),
+  INDEX (`tenant_id`, `is_deleted`, `domain_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='企微应用';
 
--- ---------------------------------------------------------------------- 企微应用接口凭据
+-- 企微应用接口凭据
 drop table if exists `wxwork_wxw_app_token`;
 CREATE TABLE `wxwork_wxw_app_token` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `wxw_app_id` varchar(22) NOT NULL DEFAULT '' COMMENT '企微应用',
   `type` varchar(10) NOT NULL DEFAULT 'corp' COMMENT '类型corp和contact',
   `corpid` varchar(18) NOT NULL DEFAULT '' COMMENT '企业ID',
-  `corpsecret` varchar (120) NOT NULL DEFAULT '' COMMENT '密钥',
-  `contactsecret` varchar (120) NOT NULL DEFAULT '' COMMENT '通讯录密钥',
+  `corpsecret` varchar(120) NOT NULL DEFAULT '' COMMENT '密钥',
+  `contactsecret` varchar(120) NOT NULL DEFAULT '' COMMENT '通讯录密钥',
   `access_token` varchar(600) NOT NULL DEFAULT '' COMMENT '令牌',
   `token_time` datetime DEFAULT NULL COMMENT '令牌创建时间',
   `expires_in` int unsigned NOT NULL DEFAULT 7200 COMMENT '令牌超时时间',
@@ -58,12 +62,12 @@ CREATE TABLE `wxwork_wxw_app_token` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`wxw_app_id`),
-  INDEX (`access_token`),
+  INDEX (`tenant_id`, `is_deleted`, `wxw_app_id`),
+  INDEX (`tenant_id`, `is_deleted`, `access_token`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='企微应用接口凭据';
 
--- ---------------------------------------------------------------------- 企微用户
+-- 企微用户
 drop table if exists `wxwork_wxw_usr`;
 CREATE TABLE `wxwork_wxw_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
@@ -71,7 +75,7 @@ CREATE TABLE `wxwork_wxw_usr` (
   `corpid` varchar(18) NOT NULL DEFAULT '' COMMENT '企业ID',
   `agentid` varchar(7) NOT NULL DEFAULT '' COMMENT '应用ID',
   `lbl` varchar(44) NOT NULL DEFAULT '' COMMENT '姓名',
-  `userid` varchar(64) NOT NULL DEFAULT '' COMMENT '用户ID',
+  `userid` varchar(64) NOT NULL DEFAULT '' COMMENT '企微用户',
   `mobile` varchar(11) NOT NULL DEFAULT '' COMMENT '手机号',
   `gender` varchar(1) NOT NULL DEFAULT '' COMMENT '性别',
   `email` varchar(64) NOT NULL DEFAULT '' COMMENT '邮箱',
@@ -93,12 +97,12 @@ CREATE TABLE `wxwork_wxw_usr` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`userid`),
-  INDEX (`lbl`),
+  INDEX (`tenant_id`, `is_deleted`, `userid`),
+  INDEX (`tenant_id`, `is_deleted`, `lbl`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_cs COMMENT='企微用户';
 
--- ---------------------------------------------------------------------- 企微消息
+-- 企微消息
 drop table if exists `wxwork_wxw_msg`;
 CREATE TABLE `wxwork_wxw_msg` (
   `id` varchar(22) NOT NULL COMMENT 'ID',

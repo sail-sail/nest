@@ -15,6 +15,7 @@ pub struct WxwAppTokenQuery;
 impl WxwAppTokenQuery {
   
   /// 通过 appid, agentid, url 生成企业签名
+  #[graphql(name = "wxwGetConfigSignature")]
   async fn wxw_get_config_signature(
     &self,
     ctx: &Context<'_>,
@@ -34,6 +35,7 @@ impl WxwAppTokenQuery {
   }
   
   /// 通过 appid, agentid, url 生成应用签名
+  #[graphql(name = "wxwGetAgentConfigSignature")]
   async fn wxw_get_agent_config_signature(
     &self,
     ctx: &Context<'_>,

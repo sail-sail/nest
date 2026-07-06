@@ -565,6 +565,20 @@ async fn async_main() -> Result<(), std::io::Error> {
       get(generated::common::health::health_router::health),
     );
     
+    // 企业微信通讯录回调通知
+    app = app.at(
+      "/api/wxwork/wxwork_usr_notify",
+      get(app::wxwork::wxw_usr::wxw_usr_router::wxwork_usr_notify_get)
+      .post(app::wxwork::wxw_usr::wxw_usr_router::wxwork_usr_notify_post),
+    );
+    
+    // 企业微信应用回调通知
+    app = app.at(
+      "/api/wxwork/wxwork_app_notify",
+      get(app::wxwork::wxw_app::wxw_app_router::wxwork_app_notify_get)
+      .post(app::wxwork::wxw_app::wxw_app_router::wxwork_app_notify_post),
+    );
+    
     // 注册 业务路由
     app = app::register_routes(app);
     

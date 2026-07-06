@@ -20,6 +20,7 @@ pub struct WxwUsrQuery;
 impl WxwUsrQuery {
   
   /// 通过host获取appid, agentid
+  #[graphql(name = "wxwGetAppid")]
   async fn wxw_get_appid(
     &self,
     ctx: &Context<'_>,
@@ -41,6 +42,7 @@ pub struct WxwUsrMutation;
 impl WxwUsrMutation {
   
   /// 微信企业号登录
+  #[graphql(name = "wxwLoginByCode")]
   async fn wxw_login_by_code(
     &self,
     ctx: &Context<'_>,
@@ -49,11 +51,15 @@ impl WxwUsrMutation {
     Ctx::builder(ctx)
       .build()
       .scope({
-        wxw_usr_resolver::wxw_login_by_code(input)
+        wxw_usr_resolver::wxw_login_by_code(
+          input,
+          None,
+        )
       }).await
   }
   
   /// 同步企业微信用户
+  #[graphql(name = "wxwSyncUsr")]
   async fn wxw_sync_usr(
     &self,
     ctx: &Context<'_>,

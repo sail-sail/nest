@@ -10,6 +10,7 @@ export default defineConfig({
         [ "corpid", "agentid" ],
         [ "domain_id" ],
       ],
+      detailFormWidth: "440px",
     },
     columns: [
       {
@@ -37,8 +38,31 @@ export default defineConfig({
         isEncrypt: true,
       },
       {
+        COLUMN_NAME: "notify_token",
+        width: 220,
+        isEncrypt: true,
+      },
+      {
+        COLUMN_NAME: "notify_aeskey",
+        width: 220,
+        align: "left",
+        isEncrypt: true,
+      },
+      {
         COLUMN_NAME: "contactsecret",
         width: 220,
+        isEncrypt: true,
+      },
+      {
+        COLUMN_NAME: "contact_notify_token",
+        width: 220,
+        align: "left",
+        isEncrypt: true,
+      },
+      {
+        COLUMN_NAME: "contact_notify_aeskey",
+        width: 220,
+        align: "left",
         isEncrypt: true,
       },
       {
