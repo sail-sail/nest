@@ -1217,7 +1217,6 @@ function getTableColumns(): ColumnType[] {
       width: 100,
       align: "center",
       headerAlign: "center",
-      fixed: "left",
     },
     {
       label: "名称",
@@ -1226,7 +1225,6 @@ function getTableColumns(): ColumnType[] {
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
-      fixed: "left",
     },
     {
       label: "用户名",
