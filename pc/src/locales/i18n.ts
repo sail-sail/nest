@@ -1,6 +1,6 @@
 import {
   n0,
-} from "./Api";
+} from "./Api.ts";
 
 // oxlint-disable-next-line @typescript-eslint/no-explicit-any
 let i18nLblsLang: Record<string, any> | undefined = undefined;

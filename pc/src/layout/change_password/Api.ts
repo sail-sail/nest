@@ -1,7 +1,7 @@
 import type {
   GetLoginInfo,
   ChangePasswordInput,
-} from "#/types";
+} from "#/types.ts";
 
 export async function getLoginInfo(
   opt?: GqlOpt,
