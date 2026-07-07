@@ -877,10 +877,10 @@ pub async fn find_all_role(
   
   let mut sort = sort.unwrap_or_default();
   
-  if !sort.iter().any(|item| item.prop == "order_by") {
+  if !sort.iter().any(|item| item.prop == "code") {
     sort.push(SortInput {
-      prop: "order_by".into(),
-      order: SortOrderEnum::Asc,
+      prop: "code".into(),
+      order: SortOrderEnum::Desc,
     });
   }
   
@@ -2362,14 +2362,24 @@ async fn _creates(
   
   // 设置自动编码
   let mut inputs = inputs;
+  let auto_code_num = inputs.iter()
+    .filter(|input|
+      input.code.as_ref().is_none_or(|x| x.is_empty())
+    )
+    .count();
+  let auto_codes = find_auto_code_role(
+    u32::try_from(auto_code_num)?,
+    options,
+  ).await?;
+  let mut auto_codes = auto_codes.into_iter();
   for input in &mut inputs {
-    if input.code.is_some() && !input.code.as_ref().unwrap().is_empty() {
+    if input.code.as_ref().is_some_and(|x| !x.is_empty()) {
       continue;
     }
     let (
       code_seq,
       code,
-    ) = find_auto_code_role(options).await?;
+    ) = auto_codes.next().ok_or_else(|| eyre!("Not enough auto codes"))?;
     input.code_seq = Some(code_seq);
     input.code = Some(code);
   }
@@ -2759,8 +2769,9 @@ async fn _creates(
 // MARK: find_auto_code_role
 /// 获得 角色 自动编码
 pub async fn find_auto_code_role(
+  num: u32,
   options: Option<Options>,
-) -> Result<(u32, SmolStr)> {
+) -> Result<Vec<(u32, SmolStr)>> {
   
   let table = get_table_name_role();
   let method = "find_auto_code_role";
@@ -2817,9 +2828,13 @@ pub async fn find_auto_code_role(
     code_seq
   };
   
-  let code = format!("JS{code_seq:03}");
-  
-  Ok((code_seq, SmolStr::new(&code)))
+  let mut code_seq_vec = Vec::with_capacity(num as usize);
+  for i in 0..num {
+    let code_seq_seq_i = code_seq + i;
+    let code_seq = format!("JS{code_seq_seq_i:03}");
+    code_seq_vec.push((code_seq_seq_i, SmolStr::new(&code_seq)));
+  }
+  Ok(code_seq_vec)
 }
 
 // MARK: create_return_role

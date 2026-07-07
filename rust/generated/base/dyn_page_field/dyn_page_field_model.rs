@@ -38,14 +38,15 @@ use crate::base::tenant::tenant_model::TenantId;
 use crate::base::dyn_page::dyn_page_model::DynPageId;
 use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_DYN_PAGE_FIELD: [&str; 3] = [
+static CAN_SORT_IN_API_DYN_PAGE_FIELD: [&str; 4] = [
+  "code",
   "order_by",
   "create_time",
   "update_time",
 ];
 
 /// 动态页面字段 前端允许排序的字段
-fn get_can_sort_in_api_dyn_page_field() -> &'static [&'static str; 3] {
+fn get_can_sort_in_api_dyn_page_field() -> &'static [&'static str; 4] {
   &CAN_SORT_IN_API_DYN_PAGE_FIELD
 }
 

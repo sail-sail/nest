@@ -41,14 +41,15 @@ use crate::base::data_permit::data_permit_model::DataPermitId;
 use crate::base::field_permit::field_permit_model::FieldPermitId;
 use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_ROLE: [&str; 3] = [
+static CAN_SORT_IN_API_ROLE: [&str; 4] = [
+  "code",
   "order_by",
   "create_time",
   "update_time",
 ];
 
 /// 角色 前端允许排序的字段
-fn get_can_sort_in_api_role() -> &'static [&'static str; 3] {
+fn get_can_sort_in_api_role() -> &'static [&'static str; 4] {
   &CAN_SORT_IN_API_ROLE
 }
 

@@ -38,7 +38,6 @@ export default defineConfig({
     exclude: [
       "@jsquash/webp",
       "@jsquash/resize",
-      "xlsx",
     ],
   },
   plugins: [
