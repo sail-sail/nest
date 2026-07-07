@@ -318,7 +318,12 @@ use crate::common::context::{
   del_caches,
   get_is_debug,
   get_is_silent_mode,
-  get_is_creating,
+  get_is_creating,<#
+  if (hasOrgId) {
+  #>
+  get_auth_org_id,<#
+  }
+  #>
 };
 use crate::common::exceptions::service_exception::ServiceException;<#
 if (hasIsIcon) {
@@ -4882,8 +4887,18 @@ async fn _creates(
   
   // 设置自动编码
   let mut inputs = inputs;
+  let auto_code_num = inputs.iter()
+    .filter(|input|
+      input.<#=autoCodeColumn.COLUMN_NAME#>.as_ref().is_none_or(|x| x.is_empty())
+    )
+    .count();
+  let auto_codes = find_auto_code_<#=table#>(
+    u32::try_from(auto_code_num)?,
+    options,
+  ).await?;
+  let mut auto_codes = auto_codes.into_iter();
   for input in &mut inputs {
-    if input.<#=autoCodeColumn.COLUMN_NAME#>.is_some() && !input.<#=autoCodeColumn.COLUMN_NAME#>.as_ref().unwrap().is_empty() {
+    if input.<#=autoCodeColumn.COLUMN_NAME#>.as_ref().is_some_and(|x| !x.is_empty()) {
       continue;
     }
     let (<#
@@ -4894,7 +4909,7 @@ async fn _creates(
       #>
       <#=autoCodeColumn.autoCode.seq#>,
       <#=autoCodeColumn.COLUMN_NAME#>,
-    ) = find_auto_code_<#=table#>(options).await?;<#
+    ) = auto_codes.next().ok_or_else(|| eyre!("Not enough auto codes"))?;<#
     if (dateSeq) {
     #>
     input.<#=dateSeq#> = Some(<#=dateSeq#>);<#
@@ -4989,6 +5004,29 @@ async fn _creates(
     }<#
     }
     #>
+  }<#
+  }
+  #><#
+  if (hasOrgId) {
+  #>
+
+  let auth_org_id = get_auth_org_id();
+  let mut auth_org_id_lbl = SmolStr::new("");
+  if let Some(auth_org_id) = auth_org_id {
+    let org_model = crate::base::org::org_dao::find_by_id_org(
+      auth_org_id,
+      options,
+    ).await?;
+    if let Some(org_model) = org_model {
+      auth_org_id_lbl = org_model.lbl;
+    }
+  }
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    if input.org_id.is_none_or(|x| x.is_empty()) {
+      input.org_id = auth_org_id;
+      input.org_id_lbl = Some(auth_org_id_lbl.clone());
+    }
   }<#
   }
   #><#
@@ -5953,8 +5991,9 @@ if (autoCodeColumn && !dateSeq) {
 // MARK: find_auto_code_<#=table#>
 /// 获得 <#=table_comment#> 自动编码
 pub async fn find_auto_code_<#=table#>(
+  num: u32,
   options: Option<Options>,
-) -> Result<(u32, SmolStr)> {
+) -> Result<Vec<(u32, SmolStr)>> {
   
   let table = get_table_name_<#=table#>();
   let method = "find_auto_code_<#=table#>";
@@ -6015,9 +6054,13 @@ pub async fn find_auto_code_<#=table#>(
   }
   #>
   
-  let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=autoCodeColumn.autoCode.seq#>:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
-  
-  Ok((<#=autoCodeColumn.autoCode.seq#>, SmolStr::new(&<#=autoCodeColumn.COLUMN_NAME#>)))
+  let mut <#=autoCodeColumn.autoCode.seq#>_vec = Vec::with_capacity(num as usize);
+  for i in 0..num {
+    let <#=autoCodeColumn.autoCode.seq#>_seq_i = <#=autoCodeColumn.autoCode.seq#> + i;
+    let <#=autoCodeColumn.autoCode.seq#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=autoCodeColumn.autoCode.seq#>_seq_i:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
+    <#=autoCodeColumn.autoCode.seq#>_vec.push((<#=autoCodeColumn.autoCode.seq#>_seq_i, SmolStr::new(&<#=autoCodeColumn.autoCode.seq#>)));
+  }
+  Ok(<#=autoCodeColumn.autoCode.seq#>_vec)
 }<#
 } else if (autoCodeColumn && dateSeq) {
   const dateSeqColumn = columns.find(function(item) {
@@ -6028,14 +6071,15 @@ pub async fn find_auto_code_<#=table#>(
 // MARK: find_auto_code_<#=table#>
 /// 获得 <#=table_comment#> 自动编码
 pub async fn find_auto_code_<#=table#>(
+  num: u32,
   options: Option<Options>,
-) -> Result<(<#
+) -> Result<Vec<(<#
 if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
 #>chrono::NaiveDate<#
 } else if (dateSeqColumn.DATA_TYPE.toLowerCase() === "datetime") {
 #>chrono::NaiveDateTime<#
 }
-#>, u32, SmolStr)> {
+#>, u32, SmolStr)>> {
   
   let table = get_table_name_<#=table#>();
   let method = "find_auto_code_<#=table#>";
@@ -6124,13 +6168,18 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
   }
   #>
   
-  let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=dateSeq#>}{<#=autoCodeColumn.autoCode.seq#>:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
-  
-  Ok((now<#
+  let auto_code_date = now<#
   if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
   #>.date()<#
   }
-  #>, <#=autoCodeColumn.autoCode.seq#>, SmolStr::new(&<#=autoCodeColumn.COLUMN_NAME#>)))
+  #>;
+  let mut <#=autoCodeColumn.autoCode.seq#>_vec = Vec::with_capacity(num as usize);
+  for i in 0..num {
+    let <#=autoCodeColumn.autoCode.seq#>_seq_i = <#=autoCodeColumn.autoCode.seq#> + i;
+    let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=dateSeq#>}{<#=autoCodeColumn.autoCode.seq#>_seq_i:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
+    <#=autoCodeColumn.autoCode.seq#>_vec.push((auto_code_date.clone(), <#=autoCodeColumn.autoCode.seq#>_seq_i, SmolStr::new(&<#=autoCodeColumn.COLUMN_NAME#>)));
+  }
+  Ok(<#=autoCodeColumn.autoCode.seq#>_vec)
 }<#
 }
 #>
