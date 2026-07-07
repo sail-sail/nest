@@ -579,8 +579,8 @@ export async function getListRole() {
     undefined,
     [
       {
-        prop: "order_by",
-        order: "ascending",
+        prop: "code",
+        order: "descending",
       },
     ],
     {

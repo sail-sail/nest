@@ -363,6 +363,12 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+<#
+  if (hasOrgId) {
+  #>
+  getAuthModel,<#
+  }
+  #>
   get_usr_id,<#
   if (hasPassword) {
   #>
@@ -4199,7 +4205,30 @@ export async function findAutoCode<#=Table_Up#>(
   options?: {
     is_debug?: boolean;
   },
+): Promise<{
+  <#=autoCodeColumn.autoCode.seq#>: number;
+  <#=autoCodeColumn.COLUMN_NAME#>: string;
+}>;
+export async function findAutoCode<#=Table_Up#>(
+  num: number,
+  options?: {
+    is_debug?: boolean;
+  },
+) : Promise<{
+  <#=autoCodeColumn.autoCode.seq#>: number;
+  <#=autoCodeColumn.COLUMN_NAME#>: string;
+}[]>;
+export async function findAutoCode<#=Table_Up#>(
+  numOrOptions?: number | {
+    is_debug?: boolean;
+  },
+  options?: {
+    is_debug?: boolean;
+  },
 ) {
+  const legacyMode = typeof numOrOptions !== "number";
+  const num = legacyMode ? 1 : numOrOptions;
+  options = legacyMode ? numOrOptions : options;
   
   const table = getTableName<#=Table_Up#>();
   const method = "findAutoCode<#=Table_Up#>";
@@ -4214,6 +4243,10 @@ export async function findAutoCode<#=Table_Up#>(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+
+  if (num <= 0) {
+    return [ ];
   }
   
   const model = await findOne<#=Table_Up#>(
@@ -4247,42 +4280,47 @@ export async function findAutoCode<#=Table_Up#>(
     <#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>_deleted;
   }<#
   }
-  #><#
-  if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #>;<#
-  } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #>;<#
-  } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
-  } else {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
+
+  const <#=autoCodeColumn.autoCode.seq#>_list = [ ];
+  for (let i = 0; i < num; i++) {
+    const <#=autoCodeColumn.autoCode.seq#>_i = <#=autoCodeColumn.autoCode.seq#> + i;
+    const <#=autoCodeColumn.COLUMN_NAME#>_i = <#
+      if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+      #><#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #><#
+      } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+      #>"<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #><#
+      } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
+      #><#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #> + "<#=autoCodeColumn.autoCode.suffix#>"<#
+      } else {
+      #>"<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #> + "<#=autoCodeColumn.autoCode.suffix#>"<#
+      }
+      #>;
+    <#=autoCodeColumn.autoCode.seq#>_list.push({
+      <#=autoCodeColumn.autoCode.seq#>: <#=autoCodeColumn.autoCode.seq#>_i,
+      <#=autoCodeColumn.COLUMN_NAME#>: <#=autoCodeColumn.COLUMN_NAME#>_i,
+    });
   }
-  #>
-  
-  return {
-    <#=autoCodeColumn.autoCode.seq#>,
-    <#=autoCodeColumn.COLUMN_NAME#>,
-  };
+  if (legacyMode) {
+    return <#=autoCodeColumn.autoCode.seq#>_list[0];
+  }
+  return <#=autoCodeColumn.autoCode.seq#>_list;
 }<#
 } else if (autoCodeColumn && dateSeq) {
   const dateFormat = autoCodeColumn.autoCode.dateFormat || "YYYYMMDD";
@@ -4294,7 +4332,32 @@ export async function findAutoCode<#=Table_Up#>(
   options?: {
     is_debug?: boolean;
   },
+): Promise<{
+  <#=dateSeq#>: string;
+  <#=autoCodeColumn.autoCode.seq#>: number;
+  <#=autoCodeColumn.COLUMN_NAME#>: string;
+}>;
+export async function findAutoCode<#=Table_Up#>(
+  num: number,
+  options?: {
+    is_debug?: boolean;
+  },
+) : Promise<{
+  <#=dateSeq#>: string;
+  <#=autoCodeColumn.autoCode.seq#>: number;
+  <#=autoCodeColumn.COLUMN_NAME#>: string;
+}[]>;
+export async function findAutoCode<#=Table_Up#>(
+  numOrOptions?: number | {
+    is_debug?: boolean;
+  },
+  options?: {
+    is_debug?: boolean;
+  },
 ) {
+  const legacyMode = typeof numOrOptions !== "number";
+  const num = legacyMode ? 1 : numOrOptions;
+  options = legacyMode ? numOrOptions : options;
   
   const table = getTableName<#=Table_Up#>();
   const method = "findAutoCode<#=Table_Up#>";
@@ -4309,6 +4372,10 @@ export async function findAutoCode<#=Table_Up#>(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+
+  if (num <= 0) {
+    return [ ];
   }
   
   const model = await findOne<#=Table_Up#>(
@@ -4364,43 +4431,46 @@ export async function findAutoCode<#=Table_Up#>(
   const <#=autoCodeColumn.autoCode.seq#> = seq_from_normal + 1;<#
   }
   #>
-<#
-  if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #>;<#
-  } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #>;<#
-  } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
-  } else {
-  #>
-  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString()<#
-    if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
-  #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
-    }
-  #> + "<#=autoCodeColumn.autoCode.suffix#>";<#
+  const <#=autoCodeColumn.autoCode.seq#>_list = [ ];
+  for (let i = 0; i < num; i++) {
+    const <#=autoCodeColumn.autoCode.seq#>_i = <#=autoCodeColumn.autoCode.seq#> + i;
+    const <#=autoCodeColumn.COLUMN_NAME#>_i = <#
+      if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+      #><#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #><#
+      } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+      #>"<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #><#
+      } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
+      #><#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #> + "<#=autoCodeColumn.autoCode.suffix#>"<#
+      } else {
+      #>"<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>_i.toString()<#
+        if (autoCodeColumn.autoCode.seqPadStart0 && autoCodeColumn.autoCode.seqPadStart0 > 0) {
+      #>.padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0")<#
+        }
+      #> + "<#=autoCodeColumn.autoCode.suffix#>"<#
+      }
+      #>;
+    <#=autoCodeColumn.autoCode.seq#>_list.push({
+      <#=dateSeq#>,
+      <#=autoCodeColumn.autoCode.seq#>: <#=autoCodeColumn.autoCode.seq#>_i,
+      <#=autoCodeColumn.COLUMN_NAME#>: <#=autoCodeColumn.COLUMN_NAME#>_i,
+    });
   }
-  #>
-  
-  return {
-    <#=dateSeq#>,
-    <#=autoCodeColumn.autoCode.seq#>,
-    <#=autoCodeColumn.COLUMN_NAME#>,
-  };
+  if (legacyMode) {
+    return <#=autoCodeColumn.autoCode.seq#>_list[0];
+  }
+  return <#=autoCodeColumn.autoCode.seq#>_list;
 }<#
 }
 #>
@@ -4586,11 +4656,21 @@ async function _creates(
     const dateSeq = autoCodeColumn.autoCode.dateSeq;
   #>
   
-  // 设置自动编码
+  // 批量设置自动编码
+  const autoCodeNum = inputs.filter((input) => {
+    return input.<#=autoCodeColumn.COLUMN_NAME#> == null || input.<#=autoCodeColumn.COLUMN_NAME#> === "";
+  }).length;
+  const autoCodes = await findAutoCode<#=Table_Up#>(autoCodeNum, options);
+  let autoCodeIndex = 0;
   for (const input of inputs) {
-    if (input.<#=autoCodeColumn.COLUMN_NAME#>) {
+    if (input.<#=autoCodeColumn.COLUMN_NAME#> != null && input.<#=autoCodeColumn.COLUMN_NAME#> !== "") {
       continue;
     }
+    const autoCode = autoCodes[autoCodeIndex];
+    if (!autoCode) {
+      throw new Error("Not enough auto codes");
+    }
+    autoCodeIndex++;
     const {<#
       if (dateSeq) {
       #>
@@ -4599,7 +4679,7 @@ async function _creates(
       #>
       <#=autoCodeColumn.autoCode.seq#>,
       <#=autoCodeColumn.COLUMN_NAME#>,
-    } = await findAutoCode<#=Table_Up#>(options);<#
+    } = autoCode;<#
     if (dateSeq) {
     #>
     input.<#=dateSeq#> = <#=dateSeq#>;<#
@@ -4680,6 +4760,18 @@ async function _creates(
     }<#
     }
     #>
+  }<#
+  }
+  #><#
+  if (hasOrgId) {
+  #>
+
+  const authModel = await getAuthModel();
+  const auth_org_id = authModel?.org_id;
+  for (const input of inputs) {
+    if (!input.org_id || input.org_id as unknown as string === "-") {
+      input.org_id = auth_org_id;
+    }
   }<#
   }
   #><#

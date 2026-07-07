@@ -88,6 +88,8 @@ declare global {
 
 /** 租户 前端允许排序的字段 */
 export const canSortInApiTenant = {
+  // 编码
+  "code": true,
   // 排序
   "order_by": true,
   // 创建时间

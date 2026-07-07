@@ -48,6 +48,8 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
+  getAuthModel,
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -1411,6 +1413,14 @@ async function _creates(
   
   if (inputs.length === 0) {
     return [ ];
+  }
+
+  const authModel = await getAuthModel();
+  const auth_org_id = authModel?.org_id;
+  for (const input of inputs) {
+    if (!input.org_id || input.org_id as unknown as string === "-") {
+      input.org_id = auth_org_id;
+    }
   }
   
   const table = getTableNameMessageReceiver();

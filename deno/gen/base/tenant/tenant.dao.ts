@@ -51,6 +51,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -551,8 +552,8 @@ export async function findAllTenant(
   sort = sort.filter((item) => item.prop);
   
   sort.push({
-    prop: "order_by",
-    order: SortOrderEnum.Asc,
+    prop: "code",
+    order: SortOrderEnum.Desc,
   });
   
   if (!sort.some((item) => item.prop === "create_time")) {
@@ -1475,7 +1476,30 @@ export async function findAutoCodeTenant(
   options?: {
     is_debug?: boolean;
   },
+): Promise<{
+  code_seq: number;
+  code: string;
+}>;
+export async function findAutoCodeTenant(
+  num: number,
+  options?: {
+    is_debug?: boolean;
+  },
+) : Promise<{
+  code_seq: number;
+  code: string;
+}[]>;
+export async function findAutoCodeTenant(
+  numOrOptions?: number | {
+    is_debug?: boolean;
+  },
+  options?: {
+    is_debug?: boolean;
+  },
 ) {
+  const legacyMode = typeof numOrOptions !== "number";
+  const num = legacyMode ? 1 : numOrOptions;
+  options = legacyMode ? numOrOptions : options;
   
   const table = getTableNameTenant();
   const method = "findAutoCodeTenant";
@@ -1490,6 +1514,10 @@ export async function findAutoCodeTenant(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+
+  if (num <= 0) {
+    return [ ];
   }
   
   const model = await findOneTenant(
@@ -1520,12 +1548,20 @@ export async function findAutoCodeTenant(
   if (code_seq_deleted > code_seq) {
     code_seq = code_seq_deleted;
   }
-  const code = "ZH" + code_seq.toString().padStart(3, "0");
-  
-  return {
-    code_seq,
-    code,
-  };
+
+  const code_seq_list = [ ];
+  for (let i = 0; i < num; i++) {
+    const code_seq_i = code_seq + i;
+    const code_i = "ZH" + code_seq_i.toString().padStart(3, "0");
+    code_seq_list.push({
+      code_seq: code_seq_i,
+      code: code_i,
+    });
+  }
+  if (legacyMode) {
+    return code_seq_list[0];
+  }
+  return code_seq_list;
 }
 
 // MARK: createReturnTenant
@@ -1706,15 +1742,25 @@ async function _creates(
     return [ ];
   }
   
-  // 设置自动编码
+  // 批量设置自动编码
+  const autoCodeNum = inputs.filter((input) => {
+    return input.code == null || input.code === "";
+  }).length;
+  const autoCodes = await findAutoCodeTenant(autoCodeNum, options);
+  let autoCodeIndex = 0;
   for (const input of inputs) {
-    if (input.code) {
+    if (input.code != null && input.code !== "") {
       continue;
     }
+    const autoCode = autoCodes[autoCodeIndex];
+    if (!autoCode) {
+      throw new Error("Not enough auto codes");
+    }
+    autoCodeIndex++;
     const {
       code_seq,
       code,
-    } = await findAutoCodeTenant(options);
+    } = autoCode;
     input.code_seq = code_seq;
     input.code = code;
   }

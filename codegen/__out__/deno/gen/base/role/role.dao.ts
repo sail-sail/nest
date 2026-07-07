@@ -51,6 +51,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -632,8 +633,8 @@ export async function findAllRole(
   sort = sort.filter((item) => item.prop);
   
   sort.push({
-    prop: "order_by",
-    order: SortOrderEnum.Asc,
+    prop: "code",
+    order: SortOrderEnum.Desc,
   });
   
   if (!sort.some((item) => item.prop === "create_time")) {
@@ -1578,7 +1579,30 @@ export async function findAutoCodeRole(
   options?: {
     is_debug?: boolean;
   },
+): Promise<{
+  code_seq: number;
+  code: string;
+}>;
+export async function findAutoCodeRole(
+  num: number,
+  options?: {
+    is_debug?: boolean;
+  },
+) : Promise<{
+  code_seq: number;
+  code: string;
+}[]>;
+export async function findAutoCodeRole(
+  numOrOptions?: number | {
+    is_debug?: boolean;
+  },
+  options?: {
+    is_debug?: boolean;
+  },
 ) {
+  const legacyMode = typeof numOrOptions !== "number";
+  const num = legacyMode ? 1 : numOrOptions;
+  options = legacyMode ? numOrOptions : options;
   
   const table = getTableNameRole();
   const method = "findAutoCodeRole";
@@ -1593,6 +1617,10 @@ export async function findAutoCodeRole(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+
+  if (num <= 0) {
+    return [ ];
   }
   
   const model = await findOneRole(
@@ -1623,12 +1651,20 @@ export async function findAutoCodeRole(
   if (code_seq_deleted > code_seq) {
     code_seq = code_seq_deleted;
   }
-  const code = "JS" + code_seq.toString().padStart(3, "0");
-  
-  return {
-    code_seq,
-    code,
-  };
+
+  const code_seq_list = [ ];
+  for (let i = 0; i < num; i++) {
+    const code_seq_i = code_seq + i;
+    const code_i = "JS" + code_seq_i.toString().padStart(3, "0");
+    code_seq_list.push({
+      code_seq: code_seq_i,
+      code: code_i,
+    });
+  }
+  if (legacyMode) {
+    return code_seq_list[0];
+  }
+  return code_seq_list;
 }
 
 // MARK: createReturnRole
@@ -1809,15 +1845,25 @@ async function _creates(
     return [ ];
   }
   
-  // 设置自动编码
+  // 批量设置自动编码
+  const autoCodeNum = inputs.filter((input) => {
+    return input.code == null || input.code === "";
+  }).length;
+  const autoCodes = await findAutoCodeRole(autoCodeNum, options);
+  let autoCodeIndex = 0;
   for (const input of inputs) {
-    if (input.code) {
+    if (input.code != null && input.code !== "") {
       continue;
     }
+    const autoCode = autoCodes[autoCodeIndex];
+    if (!autoCode) {
+      throw new Error("Not enough auto codes");
+    }
+    autoCodeIndex++;
     const {
       code_seq,
       code,
-    } = await findAutoCodeRole(options);
+    } = autoCode;
     input.code_seq = code_seq;
     input.code = code;
   }

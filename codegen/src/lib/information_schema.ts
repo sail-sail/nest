@@ -778,6 +778,23 @@ async function getSchema0(
           tables[table_name].opts.uniques.push([ item.autoCode.dateSeq, column_name ]);
         }
       }
+      if (item.search == null) {
+        item.search = true;
+        item.canSearch = true;
+      }
+      if (item.canSearch == null) {
+        item.canSearch = true;
+      }
+      if (item.sortable == null) {
+        item.sortable = true;
+      }
+      if (tables[table_name].opts?.defaultSort == null) {
+        tables[table_name].opts = tables[table_name].opts || { };
+        tables[table_name].opts.defaultSort = {
+          prop: column_name,
+          order: "descending",
+        };
+      }
     }
     
     if (item.isFluentEditor) {
