@@ -1163,6 +1163,7 @@ function getTableColumns(): ColumnType[] {
       label: "编码",
       prop: "code",
       width: 100,
+      sortable: "custom",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1413,8 +1414,8 @@ async function useFindCount(
 }
 
 const _defaultSort: Sort = {
-  prop: "order_by",
-  order: "ascending",
+  prop: "code",
+  order: "descending",
 };
 
 const defaultSort: Sort = $computed(() => {
