@@ -1,6 +1,6 @@
 import type {
   Query,
-} from "#/types";
+} from "#/types.ts";
 
 /**
  * 国际化
