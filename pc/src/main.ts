@@ -9,6 +9,7 @@ import "@/assets/style/common.scss";
 import App from "./App.vue";
 
 import router from "./router/index";
+import { setupAssetUpdateRecovery } from "./utils/app_update";
 import "./utils/DateUtil";
 import { headerOrderDragDirective } from "./components/TableHeaderOrderDrag";
 import { draggable } from "./components/draggable";
@@ -20,6 +21,8 @@ import { searchFormItemWidthAuto } from "./components/SearchFormItemWidthAutoDir
 const app = createApp(App);
 
 // app.use<VueScanOptions>(VueScan, { });
+
+setupAssetUpdateRecovery();
 
 app.use(router);
 

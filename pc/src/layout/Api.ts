@@ -3,7 +3,7 @@ import type {
   Mutation,
   MutationLoginArgs,
   GetLoginTenants,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   lang,

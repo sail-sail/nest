@@ -120,12 +120,12 @@
 import type {
   ChangePasswordInput,
   GetLoginInfo,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   getLoginInfo,
   changePassword,
-} from "./Api";
+} from "./Api.ts";
 
 const {
   n,

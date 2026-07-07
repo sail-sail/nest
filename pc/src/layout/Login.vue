@@ -183,7 +183,7 @@
 <script lang="ts" setup vapor>
 import {
   lang,
-} from "@/locales/index";
+} from "@/locales/index.ts";
 
 import {
   User,
@@ -195,12 +195,12 @@ import {
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
   clearCache,
   getLoginTenantByIds,
-} from "./Api";
+} from "./Api.ts";
 
 import type {
   LoginModel,
   MutationLoginArgs,
-} from "#/types";
+} from "#/types.ts";
 
 const router = useRouter();
 
