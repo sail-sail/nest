@@ -16,6 +16,8 @@ let _menuModels = undefined;
 let _permitModels = undefined;
 let _menuModelMap = undefined;
 
+const debugRoute = process.env.PERMIT_SCAN_DEBUG_ROUTE?.trim();
+
 const fileContentCache = new Map();
 
 function normalizeRoutePath(route) {
@@ -128,7 +130,7 @@ async function getHelperRoutePathMap(dir) {
     }
     const ph = path.resolve(dir, file);
     const str = await readText(ph);
-    const matches = str.matchAll(/export\s+function\s+(\w+)\s*\(\s*\)\s*\{[\s\S]*?return\s+(["'`])(.*?)\2\s*;[\s\S]*?\}/g);
+    const matches = str.matchAll(/export\s+function\s+(\w+)\s*\(\s*\)\s*(?::\s*[^{]+)?\s*\{\s*return\s+(["'`])(.*?)\2\s*;\s*\}/g);
     for (const item of matches) {
       helperRoutePathMap.set(item[1], item[3]);
     }
@@ -166,14 +168,35 @@ async function getViewFilesByRoute(viewDir, viewFile, routePath) {
       return;
     }
     const pagePath = await getViewPagePath(ph);
+    if (debugRoute && routePath === debugRoute) {
+      console.log("[permit_scan][pagePath]", {
+        routePath,
+        file: path.relative(path.resolve(__dirname, ".."), ph).replace(/\\/g, "/"),
+        pagePath,
+      });
+    }
     if (pagePath === routePath) {
       viewFiles.push(ph);
     }
   });
+  if (debugRoute && routePath === debugRoute) {
+    console.log("[permit_scan][viewFiles]", {
+      routePath,
+      viewDir: path.relative(path.resolve(__dirname, ".."), viewDir).replace(/\\/g, "/"),
+      viewFile: path.relative(path.resolve(__dirname, ".."), viewFile).replace(/\\/g, "/"),
+      matchedViewFiles: viewFiles.map((ph) => path.relative(path.resolve(__dirname, ".."), ph).replace(/\\/g, "/")),
+    });
+  }
   if (viewFiles.length) {
     return viewFiles;
   }
   if (viewFile.endsWith(".vue")) {
+    if (debugRoute && routePath === debugRoute) {
+      console.log("[permit_scan][fallbackViewFile]", {
+        routePath,
+        fallbackViewFile: path.relative(path.resolve(__dirname, ".."), viewFile).replace(/\\/g, "/"),
+      });
+    }
     return [ viewFile ];
   }
   return [ ];
