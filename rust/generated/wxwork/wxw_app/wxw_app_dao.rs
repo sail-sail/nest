@@ -134,7 +134,7 @@ async fn get_where_query(
       args.push(tenant_id.into());
     }
   }
-  // 名称
+  // 应用名称
   {
     let lbl = match search {
       Some(item) => item.lbl.clone(),
@@ -959,7 +959,7 @@ pub async fn get_field_comments_wxw_app(
   
   let mut field_comments = WxwAppFieldComment {
     id: "ID".into(),
-    lbl: "名称".into(),
+    lbl: "应用名称".into(),
     corpid: "企业ID".into(),
     agentid: "应用ID".into(),
     domain_id: "可信域名".into(),
@@ -976,6 +976,14 @@ pub async fn get_field_comments_wxw_app(
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
     rem: "备注".into(),
+    create_usr_id: "创建人".into(),
+    create_usr_id_lbl: "创建人".into(),
+    create_time: "创建时间".into(),
+    create_time_lbl: "创建时间".into(),
+    update_usr_id: "更新人".into(),
+    update_usr_id_lbl: "更新人".into(),
+    update_time: "更新时间".into(),
+    update_time_lbl: "更新时间".into(),
   };
   Ok(field_comments)
 }
@@ -2035,7 +2043,7 @@ async fn _creates(
   sql_fields += ",update_usr_id";
   sql_fields += ",update_usr_id_lbl";
   sql_fields += ",tenant_id";
-  // 名称
+  // 应用名称
   sql_fields += ",lbl";
   // 企业ID
   sql_fields += ",corpid";
@@ -2191,7 +2199,7 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 名称
+    // 应用名称
     if let Some(lbl) = input.lbl {
       sql_values += ",?";
       args.push(lbl.into());
@@ -2625,7 +2633,7 @@ pub async fn update_by_id_wxw_app(
     sql_fields += "tenant_id=?,";
     args.push(tenant_id.into());
   }
-  // 名称
+  // 应用名称
   if let Some(lbl) = input.lbl.clone() {
     field_num += 1;
     sql_fields += "lbl=?,";

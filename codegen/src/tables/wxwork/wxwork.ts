@@ -16,26 +16,31 @@ export default defineConfig({
       {
         COLUMN_NAME: "lbl",
         width: 300,
+        require: true,
       },
       {
         COLUMN_NAME: "corpid",
         search: true,
         width: 180,
+        require: true,
       },
       {
         COLUMN_NAME: "agentid",
         search: true,
         width: 120,
+        require: true,
       },
       {
         COLUMN_NAME: "domain_id",
         width: 220,
         align: "left",
+        require: true,
       },
       {
         COLUMN_NAME: "corpsecret",
         width: 220,
         isEncrypt: true,
+        require: true,
       },
       {
         COLUMN_NAME: "notify_token",
@@ -76,6 +81,18 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
       },
     ],
   },

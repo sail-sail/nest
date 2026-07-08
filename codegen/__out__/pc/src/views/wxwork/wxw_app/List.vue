@@ -30,12 +30,12 @@
       
       <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
         <el-form-item
-          label="名称"
+          label="应用名称"
           prop="lbl_like"
         >
           <CustomInput
             v-model="search.lbl_like"
-            placeholder="请输入 名称"
+            placeholder="请输入 应用名称"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -525,7 +525,7 @@
           :key="col.prop"
         >
           
-          <!-- 名称 -->
+          <!-- 应用名称 -->
           <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <!-- @vue-generic {WxwAppModel} -->
             <el-table-column
@@ -696,6 +696,46 @@
             </el-table-column>
           </template>
           
+          <!-- 创建人 -->
+          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {WxwAppModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 创建时间 -->
+          <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新人 -->
+          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {WxwAppModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 更新时间 -->
+          <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <template v-else>
             <el-table-column
               v-if="col.hide !== true"
@@ -809,8 +849,8 @@ const props = defineProps<{
   selectedIds?: WxwAppId[]; //已选择行的id列表
   isMultiple?: string; //是否多选
   id?: WxwAppId; // ID
-  lbl?: string; // 名称
-  lbl_like?: string; // 名称
+  lbl?: string; // 应用名称
+  lbl_like?: string; // 应用名称
   corpid?: string; // 企业ID
   corpid_like?: string; // 企业ID
   agentid?: string; // 应用ID
@@ -833,6 +873,10 @@ const builtInSearchType: { [key: string]: string } = {
   domain_id_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
+  create_usr_id: "string[]",
+  create_usr_id_lbl: "string[]",
+  update_usr_id: "string[]",
+  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -1055,7 +1099,7 @@ let tableData = $ref<WxwAppModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "名称",
+      label: "应用名称",
       prop: "lbl",
       width: 300,
       align: "left",
@@ -1168,6 +1212,44 @@ function getTableColumns(): ColumnType[] {
       prop: "rem",
       width: 280,
       align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建人",
+      prop: "create_usr_id_lbl",
+      sortBy: "create_usr_id_lbl",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "创建时间",
+      prop: "create_time_lbl",
+      sortBy: "create_time",
+      width: 160,
+      sortable: "custom",
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新人",
+      prop: "update_usr_id_lbl",
+      sortBy: "update_usr_id_lbl",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "更新时间",
+      prop: "update_time_lbl",
+      sortBy: "update_time",
+      width: 160,
+      sortable: "custom",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1458,7 +1540,7 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ "名称" ]: "lbl",
+    [ "应用名称" ]: "lbl",
     [ "企业ID" ]: "corpid",
     [ "应用ID" ]: "agentid",
     [ "可信域名" ]: "domain_id_lbl",

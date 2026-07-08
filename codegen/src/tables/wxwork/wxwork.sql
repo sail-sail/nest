@@ -2,7 +2,7 @@
 drop table if exists `wxwork_wxw_app`;
 CREATE TABLE if not exists `wxwork_wxw_app` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
+  `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '应用名称',
   `corpid` varchar(18) NOT NULL DEFAULT '' COMMENT '企业ID',
   `agentid` varchar(7) NOT NULL DEFAULT '' COMMENT '应用ID',
   `domain_id` varchar(22) NOT NULL DEFAULT '' COMMENT '可信域名',

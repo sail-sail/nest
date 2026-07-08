@@ -27,7 +27,7 @@ export function intoInputWxwApp(
   const input: WxwAppInput = {
     // ID
     id: model?.id,
-    // 名称
+    // 应用名称
     lbl: model?.lbl,
     // 企业ID
     corpid: model?.corpid,
@@ -809,6 +809,14 @@ export async function getFieldCommentsWxwApp(
           is_enabled_lbl,
           order_by,
           rem,
+          create_usr_id,
+          create_usr_id_lbl,
+          create_time,
+          create_time_lbl,
+          update_usr_id,
+          update_usr_id_lbl,
+          update_time,
+          update_time_lbl,
         }
       }
     `,

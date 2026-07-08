@@ -79,12 +79,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
-            label="名称"
+            label="应用名称"
             prop="lbl"
           >
             <CustomInput
               v-model="dialogModel.lbl"
-              placeholder="请输入 名称"
+              placeholder="请输入 应用名称"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -412,16 +412,40 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
-    // 名称
+    // 应用名称
     lbl: [
       {
         required: true,
-        message: "请输入 名称",
+        message: "请输入 应用名称",
       },
       {
         type: "string",
         max: 45,
-        message: "名称 长度不能超过 45",
+        message: "应用名称 长度不能超过 45",
+      },
+    ],
+    // 企业ID
+    corpid: [
+      {
+        required: true,
+        message: "请输入 企业ID",
+      },
+      {
+        type: "string",
+        max: 18,
+        message: "企业ID 长度不能超过 18",
+      },
+    ],
+    // 应用ID
+    agentid: [
+      {
+        required: true,
+        message: "请输入 应用ID",
+      },
+      {
+        type: "string",
+        max: 7,
+        message: "应用ID 长度不能超过 7",
       },
     ],
     // 可信域名
@@ -429,6 +453,18 @@ watchEffect(async () => {
       {
         required: true,
         message: "请选择 可信域名",
+      },
+    ],
+    // 应用密钥
+    corpsecret: [
+      {
+        required: true,
+        message: "请输入 应用密钥",
+      },
+      {
+        type: "string",
+        max: 120,
+        message: "应用密钥 长度不能超过 120",
       },
     ],
     // 排序

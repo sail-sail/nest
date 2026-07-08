@@ -60,7 +60,7 @@ pub struct WxwAppModel {
   pub tenant_id: TenantId,
   /// ID
   pub id: WxwAppId,
-  /// 名称
+  /// 应用名称
   #[graphql(name = "lbl")]
   pub lbl: SmolStr,
   /// 企业ID
@@ -114,28 +114,20 @@ pub struct WxwAppModel {
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
-  #[graphql(skip)]
   pub create_usr_id: UsrId,
   /// 创建人
-  #[graphql(skip)]
   pub create_usr_id_lbl: SmolStr,
   /// 创建时间
-  #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  #[graphql(skip)]
   pub create_time_lbl: SmolStr,
   /// 更新人
-  #[graphql(skip)]
   pub update_usr_id: UsrId,
   /// 更新人
-  #[graphql(skip)]
   pub update_usr_id_lbl: SmolStr,
   /// 更新时间
-  #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  #[graphql(skip)]
   pub update_time_lbl: SmolStr,
 }
 
@@ -145,7 +137,7 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
     let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: WxwAppId = row.try_get("id")?;
-    // 名称
+    // 应用名称
     let lbl: &str = row.try_get("lbl")?;
     let lbl = SmolStr::new(lbl);
     // 企业ID
@@ -252,7 +244,7 @@ pub struct WxwAppFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: SmolStr,
-  /// 名称
+  /// 应用名称
   #[graphql(name = "lbl")]
   pub lbl: SmolStr,
   /// 企业ID
@@ -303,6 +295,30 @@ pub struct WxwAppFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: SmolStr,
+  /// 创建人
+  #[graphql(name = "create_usr_id")]
+  pub create_usr_id: SmolStr,
+  /// 创建人
+  #[graphql(name = "create_usr_id_lbl")]
+  pub create_usr_id_lbl: SmolStr,
+  /// 创建时间
+  #[graphql(name = "create_time")]
+  pub create_time: SmolStr,
+  /// 创建时间
+  #[graphql(name = "create_time_lbl")]
+  pub create_time_lbl: SmolStr,
+  /// 更新人
+  #[graphql(name = "update_usr_id")]
+  pub update_usr_id: SmolStr,
+  /// 更新人
+  #[graphql(name = "update_usr_id_lbl")]
+  pub update_usr_id_lbl: SmolStr,
+  /// 更新时间
+  #[graphql(name = "update_time")]
+  pub update_time: SmolStr,
+  /// 更新时间
+  #[graphql(name = "update_time_lbl")]
+  pub update_time_lbl: SmolStr,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -316,10 +332,10 @@ pub struct WxwAppSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
-  /// 名称
+  /// 应用名称
   #[graphql(name = "lbl")]
   pub lbl: Option<SmolStr>,
-  /// 名称
+  /// 应用名称
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<SmolStr>,
   /// 企业ID
@@ -362,31 +378,31 @@ pub struct WxwAppSearch {
   #[graphql(skip)]
   pub rem_like: Option<SmolStr>,
   /// 创建人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id_is_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 创建人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id_lbl_like")]
   pub create_usr_id_lbl_like: Option<SmolStr>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
-  #[graphql(skip)]
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
-  #[graphql(skip)]
+  #[graphql(name = "update_usr_id_is_null")]
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
-  #[graphql(skip)]
+  #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: Option<Vec<SmolStr>>,
   /// 更新人
-  #[graphql(skip)]
+  #[graphql(name = "update_usr_id_lbl_like")]
   pub update_usr_id_lbl_like: Option<SmolStr>,
   /// 更新时间
   #[graphql(skip)]
@@ -410,7 +426,7 @@ impl std::fmt::Debug for WxwAppSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
-    // 名称
+    // 应用名称
     if let Some(ref lbl) = self.lbl {
       item = item.field("lbl", lbl);
     }
@@ -513,7 +529,7 @@ pub struct WxwAppInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
-  /// 名称
+  /// 应用名称
   #[graphql(name = "lbl")]
   pub lbl: Option<SmolStr>,
   /// 企业ID
@@ -662,7 +678,7 @@ impl From<WxwAppModel> for WxwAppInput {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
-      // 名称
+      // 应用名称
       lbl: model.lbl.into(),
       // 企业ID
       corpid: model.corpid.into(),
@@ -719,7 +735,7 @@ impl From<WxwAppInput> for WxwAppSearch {
       // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
-      // 名称
+      // 应用名称
       lbl: input.lbl,
       // 企业ID
       corpid: input.corpid,
