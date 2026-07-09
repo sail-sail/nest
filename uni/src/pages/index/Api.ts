@@ -117,7 +117,7 @@ export async function checkClientTenantId(): Promise<boolean> {
   const indexStore = useIndexStore();
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWxwork) {
-    platform = "wechat";
+    platform = "wecom";
   } else if (userAgent.isWechat) {
     platform = "wechat";
   } else if (userAgent.isPc) {
