@@ -22,10 +22,10 @@
     "decimal.js": "10.6.0",
     "graphql": "17.0.2",
     "js-md5": "0.8.3",
-    "lru-cache": "11.5.1",
+    "lru-cache": "11.5.2",
     "mime": "4.1.0",
     "mnemonist": "0.40.4",
-    "mysql2": "3.22.5",
+    "mysql2": "3.22.6",
     "path-to-regexp": "6.3.0",
     "sharp": "0.35.3",
     "sqlstring": "2.3.3",
@@ -35,12 +35,12 @@
     "@graphql-codegen/cli": "7.2.0",
     "@graphql-codegen/typescript": "6.1.0",
     "@graphql-codegen/typescript-operations": "6.1.0",
-    "@types/node": "26.1.0",
+    "@types/node": "26.1.1",
     "@types/sqlstring": "2.3.2",
     "chokidar": "5.0.0",
     "commander": "15.0.0",
     "dotenv": "17.4.2",
     "ssh2-promise": "1.0.3",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   }
 }

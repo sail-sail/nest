@@ -52,7 +52,7 @@
     "numeral": "2.0.6",
     "pinyin-pro": "3.28.1",
     "sortablejs": "1.15.7",
-    "swiper": "14.0.1",
+    "swiper": "14.0.2",
     "vue": "3.5.39",
     "vue-countup-v3": "1.4.2",
     "vue-demi": "0.14.10",
@@ -63,9 +63,9 @@
   "devDependencies": {
     "@plugin-web-update-notification/vite": "2.1.2",
     "@types/file-saver": "2.0.7",
-    "@types/node": "26.1.0",
+    "@types/node": "26.1.1",
     "@types/sortablejs": "1.15.9",
-    "@unocss/preset-rem-to-px": "66.7.4",
+    "@unocss/preset-rem-to-px": "66.7.5",
     "@vitejs/plugin-vue": "6.0.7",
     "@vitejs/plugin-vue-jsx": "5.1.6",
     "@vue-macros/reactivity-transform": "3.1.2",
@@ -74,13 +74,13 @@
     "@vue/runtime-core": "3.5.39",
     "dotenv": "17.4.2",
     "globals": "17.7.0",
-    "mysql2": "3.22.5",
-    "oxlint": "1.72.0",
+    "mysql2": "3.22.6",
+    "oxlint": "1.73.0",
     "sass": "1.101.0",
     "spark-md5": "3.0.2",
     "svgo": "4.0.1",
-    "typescript": "6.0.3",
-    "unocss": "66.7.4",
+    "typescript": "7.0.2",
+    "unocss": "66.7.5",
     "unplugin-auto-import": "21.0.0",
     "unplugin-icons": "23.0.1",
     "unplugin-turbo-console": "2.3.2",
@@ -95,6 +95,6 @@
     "vite-plugin-wasm": "3.6.0",
     "vite-plus": "latest",
     "vitest": "npm:@voidzero-dev/vite-plus-test@latest",
-    "vue-tsc": "3.3.6"
+    "vue-tsc": "3.3.7"
   }
 }
