@@ -826,7 +826,9 @@ async function onChangePassword() {
 
 /** 获取当前用户的权限列表 */
 async function getUsrPermitsEfc() {
-  const permits = await getUsrPermits();
+  const permits = await getUsrPermits({
+    notLoading: true,
+  });
   permitStore.permits = permits;
 }
 
@@ -835,11 +837,9 @@ async function initFrame() {
     if (import.meta.env.VITE_SERVER_I18N_ENABLE !== "false") {
       const [
         loginInfoTmp,
-        _,
         unreadCount,
       ] = await Promise.all([
         getLoginInfo({ notLoading: true }),
-        getUsrPermitsEfc(),
         getMyUnreadMessageCount({ notLoading: true }),
       ]);
       loginInfo = loginInfoTmp;
@@ -848,11 +848,9 @@ async function initFrame() {
     } else {
       const [
         loginInfoTmp,
-        _,
         unreadCount,
       ] = await Promise.all([
         getLoginInfo({ notLoading: true }),
-        getUsrPermitsEfc(),
         getMyUnreadMessageCount({ notLoading: true }),
       ]);
       loginInfo = loginInfoTmp;
@@ -861,6 +859,7 @@ async function initFrame() {
       usrStore.username = loginInfo.username;
       unreadMessageCount = unreadCount;
     }
+    getUsrPermitsEfc();
   }
   inited = true;
 }
