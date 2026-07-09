@@ -172,13 +172,7 @@ for (let i = 0; i < columns.length; i++) {
   @open="onDialogOpen"
   @close="onDialogClose"
   @keydown.page-down="onPageDown"
-  @keydown.page-up="onPageUp"<#
-  if (opts?.noAdd !== true || opts?.noEdit !== true) {
-  #>
-  @keydown.insert="onInsert"
-  @keydown.ctrl.i="onInsert"<#
-  }
-  #>
+  @keydown.page-up="onPageUp"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"<#
   if ((opts.noAdd !== true || opts.noEdit !== true) && opts.hideSaveAndCopy === false) {
