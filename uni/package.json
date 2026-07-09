@@ -78,9 +78,9 @@
     "@dcloudio/uni-stacktracey": "3.0.0-5010420260703001",
     "@dcloudio/vite-plugin-uni": "3.0.0-5010420260703001",
     "@eslint/js": "10.0.1",
-    "@types/node": "26.1.0",
+    "@types/node": "26.1.1",
     "@uni-helper/uni-app-types": "1.1.0",
-    "@unocss/preset-attributify": "66.7.4",
+    "@unocss/preset-attributify": "66.7.5",
     "@vue-macros/eslint-config": "3.1.2",
     "@vue-macros/reactivity-transform": "3.1.2",
     "@vue/devtools-api": "8.1.5",
@@ -89,13 +89,13 @@
     "eslint": "10.6.0",
     "eslint-plugin-vue": "10.9.2",
     "globals": "17.7.0",
-    "rollup": "4.14.3",
+    "rollup": "4.62.2",
     "sass": "1.101.0",
     "svgo": "4.0.1",
     "tmui-cli": "1.3.0",
-    "typescript": "6.0.3",
-    "typescript-eslint": "8.62.1",
-    "unocss": "66.7.4",
+    "typescript": "7.0.2",
+    "typescript-eslint": "8.63.0",
+    "unocss": "66.7.5",
     "unocss-applet": "0.12.2",
     "unplugin-auto-import": "21.0.0",
     "unplugin-turbo-console": "2.3.2",
@@ -104,6 +104,6 @@
     "vite-plugin-inspect": "11.4.1",
     "vite-plugin-vue-inspector": "7.0.0",
     "vitest": "4.1.10",
-    "vue-tsc": "3.3.6"
+    "vue-tsc": "3.3.7"
   }
 }
