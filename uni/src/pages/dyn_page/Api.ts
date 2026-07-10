@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -525,18 +524,24 @@ export async function findAllMenu(
   return menu_models;
 }
 
-export async function getListMenu() {
+export async function getListMenu(
+  search?: MenuSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllMenu(
     {
+      ...search,
       is_enabled: [ 1 ],
     },
-    undefined,
-    [
+    page,
+    (sort || [ ]).concat([
       {
         prop: "order_by",
         order: "ascending",
       },
-    ],
+    ]),
     {
       notLoading: true,
     },
@@ -571,18 +576,24 @@ export async function findAllRole(
   return role_models;
 }
 
-export async function getListRole() {
+export async function getListRole(
+  search?: RoleSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllRole(
     {
+      ...search,
       is_enabled: [ 1 ],
     },
-    undefined,
-    [
+    page,
+    (sort || [ ]).concat([
       {
         prop: "code",
         order: "descending",
       },
-    ],
+    ]),
     {
       notLoading: true,
     },
