@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -530,18 +529,24 @@ export async function findAllDynPage(
   return dyn_page_models;
 }
 
-export async function getListDynPage() {
+export async function getListDynPage(
+  search?: DynPageSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllDynPage(
     {
+      ...search,
       is_enabled: [ 1 ],
     },
-    undefined,
-    [
+    page,
+    (sort || [ ]).concat([
       {
         prop: "code",
         order: "descending",
       },
-    ],
+    ]),
     {
       notLoading: true,
     },

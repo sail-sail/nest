@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -550,18 +549,24 @@ export async function findAllMenu(
   return menu_models;
 }
 
-export async function getListMenu() {
+export async function getListMenu(
+  search?: MenuSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllMenu(
     {
+      ...search,
       is_enabled: [ 1 ],
     },
-    undefined,
-    [
+    page,
+    (sort || [ ]).concat([
       {
         prop: "order_by",
         order: "ascending",
       },
-    ],
+    ]),
     {
       notLoading: true,
     },
@@ -596,16 +601,21 @@ export async function findAllPermit(
   return permit_models;
 }
 
-export async function getListPermit() {
+export async function getListPermit(
+  search?: PermitSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllPermit(
-    undefined,
-    undefined,
-    [
+    search,
+    page,
+    (sort || [ ]).concat([
       {
         prop: "order_by",
         order: "ascending",
       },
-    ],
+    ]),
     {
       notLoading: true,
     },
@@ -640,16 +650,21 @@ export async function findAllDataPermit(
   return data_permit_models;
 }
 
-export async function getListDataPermit() {
+export async function getListDataPermit(
+  search?: DataPermitSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllDataPermit(
-    undefined,
-    undefined,
-    [
+    search,
+    page,
+    (sort || [ ]).concat([
       {
         prop: "",
         order: "ascending",
       },
-    ],
+    ]),
     {
       notLoading: true,
     },
@@ -684,16 +699,21 @@ export async function findAllFieldPermit(
   return field_permit_models;
 }
 
-export async function getListFieldPermit() {
+export async function getListFieldPermit(
+  search?: FieldPermitSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllFieldPermit(
-    undefined,
-    undefined,
-    [
+    search,
+    page,
+    (sort || [ ]).concat([
       {
         prop: "order_by",
         order: "ascending",
       },
-    ],
+    ]),
     {
       notLoading: true,
     },

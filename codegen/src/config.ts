@@ -331,6 +331,14 @@ export interface TableColumn {
      */
     is_where_query_not_null?: boolean;
     
+    /**
+     * uni 移动端中, 如果此外键弹窗数据量很大, 需要分页, 则配置分页搜索键
+     */
+    uniCustomSelectModalPage?: {
+      searchKey: string;
+      searchIds?: string;
+    };
+    
   },
   
   /** foreignTabs 弹出框的大小, 默认为 medium */
