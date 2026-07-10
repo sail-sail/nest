@@ -326,6 +326,19 @@ export interface TableColumn {
      */
     isForceJoinQuery?: boolean;
     
+    /**
+     * 在dao层sql查询中, 是否有 is not null 的查询条件, 默认为 false
+     */
+    is_where_query_not_null?: boolean;
+    
+    /**
+     * uni 移动端中, 如果此外键弹窗数据量很大, 需要分页, 则配置分页搜索键
+     */
+    uniCustomSelectModalPage?: {
+      searchKey: string;
+      searchIds?: string;
+    };
+    
   },
   
   /** foreignTabs 弹出框的大小, 默认为 medium */

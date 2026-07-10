@@ -165,12 +165,12 @@
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
       :style="{
-        flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
+        flex: shouldUseScrollableBody ? undefined : 'none',
       }"
     >
       
       <view
-        v-if="!props.hideSearch && (options4SelectV2.length > 5 || props.height)"
+        v-if="!props.hideSearch && shouldUseScrollableBody"
         un-p="t-2"
         un-box-border
         un-m="x-4"
@@ -183,14 +183,29 @@
           un-flex="~ [1_0_0]"
           un-overflow-hidden
           un-items="center"
+          un-gap="x-2"
         >
           
-          <tm-input
-            v-model="searchStr"
-            width="100%"
-            placeholder="请输入关键字"
-            show-clear
-          ></tm-input>
+          <view
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            un-items="center"
+          >
+            <tm-input
+              v-model="searchStr"
+              width="100%"
+              placeholder="请输入关键字"
+              :show-clear="!!searchStr"
+              @confirm="onSearchConfirm"
+            ></tm-input>
+          </view>
+          
+          <view>
+            <tm-checkbox
+              v-model="isSearchIds"
+              @change="onSearchConfirm"
+            ></tm-checkbox>
+          </view>
           
         </view>
         
@@ -211,7 +226,7 @@
         un-flex="~ [1_0_0] col"
         un-overflow-hidden
         :style="{
-          flex: (options4SelectV2.length > 5 || props.height) ? undefined : 'none',
+          flex: shouldUseScrollableBody ? undefined : 'none',
         }"
         scroll-y
         enable-flex
@@ -221,6 +236,7 @@
         :scroll-into-view="scrollIntoViewId"
         :scroll-with-animation="true"
         @refresherrefresh="onRefresherrefresh"
+        @scrolltolower="onLoadMore"
       >
         
         <slot
@@ -250,14 +266,19 @@
             @click="onSelect(item.value)"
           >
             
-            <view
-              un-flex="~ [1_0_0]"
-              un-overflow-hidden
-              un-items="center"
-              un-m="l-4"
+            <slot
+              name="option-label"
+              :item="item"
             >
-              {{ item.label }}
-            </view>
+              <view
+                un-flex="~ [1_0_0]"
+                un-overflow-hidden
+                un-items="center"
+                un-m="l-4"
+              >
+                {{ item.label }}
+              </view>
+            </slot>
             
             <view
               style="width: 1.2rem;height: 1.2rem;"
@@ -296,10 +317,19 @@
           </view>
           
           <view
-            v-else-if="inited && (options4SelectV2Computed.length > 5 || props.height)"
+            v-else-if="inited && shouldUseScrollableBody"
             un-m="y-2"
           >
-            <CustomDivider></CustomDivider>
+            <CustomDivider
+              v-if="!isEnd"
+            >
+              加载更多中...
+            </CustomDivider>
+            <CustomDivider
+              v-else
+            >
+              共 {{ options4SelectV2.length }} 条
+            </CustomDivider>
           </view>
           
         </slot>
@@ -361,6 +391,13 @@ type OptionType = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type OptionsMap = (item: any) => OptionType;
 
+type SelectMethod = (...args: any[]) => Promise<any[] | MaybeRef<any[]>> | MaybeRef<any[]> | any[];
+
+type SelectPageInput = {
+  pgOffset?: number;
+  pgSize?: number;
+};
+
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
@@ -377,7 +414,7 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    method?: (() => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]) | any[]; // 用于获取数据的方法
+    method?: SelectMethod | any[]; // 用于获取数据的方法. 分页模式下约定为 (search?, page?)
     optionsMap?: OptionsMap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
@@ -394,6 +431,10 @@ const props = withDefaults(
     readonlyPlaceholder?: string | null;
     searchStr?: string | null;
     hideSearch?: boolean;
+    isPage?: boolean;
+    pageSize?: number;
+    searchKey?: string;
+    searchIds?: string;
   }>(),
   {
     method: undefined,
@@ -420,6 +461,10 @@ const props = withDefaults(
     readonlyPlaceholder: undefined,
     searchStr: "",
     hideSearch: false,
+    isPage: false,
+    pageSize: 20,
+    searchKey: "keyword",
+    searchIds: "ids",
   },
 );
 
@@ -448,10 +493,21 @@ const options4SelectV2 = ref<OptionType[]>([ ]);
 const searchStr = ref(props.searchStr || "");
 
 const options4SelectV2Computed = computed(() => {
-  if (searchStr.value) {
-    return options4SelectV2.value.filter((item) => item.label.includes(searchStr.value));
+  if (props.isPage) {
+    return options4SelectV2.value;
   }
-  return options4SelectV2.value;
+  let options4SelectV2Filtered = options4SelectV2.value;
+  if (isSearchIds) {
+    options4SelectV2Filtered = options4SelectV2Filtered.filter((item) => selectedValueArr.value.includes(item.value));
+  }
+  if (searchStr.value) {
+    options4SelectV2Filtered = options4SelectV2Filtered.filter((item) => item.label.includes(searchStr.value));
+  }
+  return options4SelectV2Filtered;
+});
+
+const shouldUseScrollableBody = computed(() => {
+  return props.isPage || options4SelectV2.value.length > 5 || !!props.height;
 });
 
 const isTagExpanded = ref(false);
@@ -529,7 +585,11 @@ function onSelect(value: string) {
       selectedValue.value = [ ...selectedValueArr.value, value ];
     }
   } else {
-    selectedValue.value = value;
+    if (selectedValue.value === value) {
+      selectedValue.value = "";
+    } else {
+      selectedValue.value = value;
+    }
   }
 }
 
@@ -554,15 +614,40 @@ const modelValueIsEmpty = computed(() => {
 const showPicker = ref(false);
 
 let refresherTriggered = $ref(false);
+let pgOffset = $ref(0);
+let isEnd = $ref(false);
+let pendingRemoteRefresh = $ref(false);
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
+
+function clearSearchTimer() {
+  if (searchTimer == null) {
+    return;
+  }
+  clearTimeout(searchTimer);
+  searchTimer = undefined;
+}
+
+function getFallbackModelLabels() {
+  if (!props.modelLabel) {
+    return [ ];
+  }
+  if (!props.multiple) {
+    return [ props.modelLabel ];
+  }
+  return props.modelLabel
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
 const modelLabels = computed(() => {
-  if (modelValue == null) {
+  if (selectedValueArr.value.length === 0) {
     return [ ];
   }
   if (!props.multiple) {
     const model = data.value.find((item) => props.optionsMap(item).value === modelValue);
     if (!model) {
-      return [ ];
+      return getFallbackModelLabels();
     }
     return [ props.optionsMap(model).label || "" ];
   }
@@ -574,6 +659,9 @@ const modelLabels = computed(() => {
       continue;
     }
     labels.push(props.optionsMap(model).label || "");
+  }
+  if (labels.length === 0) {
+    return getFallbackModelLabels();
   }
   return labels;
 });
@@ -597,6 +685,12 @@ function getOptionAnchorId(
 }
 
 async function syncScrollIntoView() {
+  if (props.multiple || selectedValueArr.value.length === 0
+    || options4SelectV2Computed.value.length === 0
+    || props.isPage
+  ) {
+    return;
+  }
   scrollIntoViewId.value = "";
   await nextTick();
   scrollIntoViewId.value = getOptionAnchorId(selectedValueArr.value[0]);
@@ -621,6 +715,96 @@ async function onRefresherrefresh() {
     await syncScrollIntoView();
   } finally {
     refresherTriggered = false;
+  }
+}
+
+function getPageInput(): SelectPageInput {
+  return {
+    pgSize: props.pageSize,
+    pgOffset,
+  };
+}
+
+function getRemoteSearch() {
+  const keyword = searchStr.value.trim();
+  if (!keyword && !isSearchIds) {
+    return undefined;
+  }
+  const search: Record<string, any> = {
+    [props.searchKey]: keyword,
+  };
+  if (isSearchIds) {
+    search[props.searchIds] = selectedValueArr.value;
+  }
+  return search;
+}
+
+function setOptionsData(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  methodData: any,
+  append = false,
+) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const nextData = (unref(methodData) || [ ]) as any[];
+  if (append) {
+    data.value = [
+      ...data.value,
+      ...nextData,
+    ];
+  } else {
+    data.value = nextData;
+  }
+  emit("data", data.value);
+  options4SelectV2.value = data.value.map(props.optionsMap);
+  return nextData.length;
+}
+
+let isSearchIds = $ref(false);
+
+async function loadPage(
+  append = false,
+) {
+  if (typeof props.method !== "function") {
+    data.value = [ ];
+    emit("data", data.value);
+    options4SelectV2.value = [ ];
+    inited.value = true;
+    isEnd = true;
+    return;
+  }
+  if (isLoading.value) {
+    if (!append) {
+      pendingRemoteRefresh = true;
+    }
+    return;
+  }
+  if (!append) {
+    pgOffset = 0;
+    isEnd = false;
+  } else if (isEnd) {
+    return;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let methodData: any = [ ];
+  try {
+    isLoading.value = true;
+    methodData = (await props.method?.(
+      getRemoteSearch(),
+      getPageInput(),
+    )) || [ ];
+  } catch {
+    inited.value = true;
+    return;
+  } finally {
+    isLoading.value = false;
+  }
+  const len = setOptionsData(methodData, append);
+  pgOffset = data.value.length;
+  isEnd = len < props.pageSize;
+  inited.value = true;
+  if (pendingRemoteRefresh) {
+    pendingRemoteRefresh = false;
+    await loadPage(false);
   }
 }
 
@@ -681,6 +865,21 @@ function onCancel() {
   showPicker.value = false;
 }
 
+function onSearchConfirm() {
+  if (!props.isPage || !showPicker.value) {
+    return;
+  }
+  clearSearchTimer();
+  void onRefresh();
+}
+
+async function onLoadMore() {
+  if (!props.isPage) {
+    return;
+  }
+  await loadPage(true);
+}
+
 let methodWatchHandle: WatchHandle | null = null;
 
 const isLoading = ref(false);
@@ -689,6 +888,10 @@ async function onRefresh() {
   if (methodWatchHandle) {
     methodWatchHandle();
     methodWatchHandle = null;
+  }
+  if (props.isPage) {
+    await loadPage(false);
+    return;
   }
   if (typeof props.method !== "function") {
     methodWatchHandle = watch(
@@ -746,7 +949,7 @@ watch(
     if (!inited.value) {
       return;
     }
-    if (options4SelectV2.value.length <= 5 && !props.height) {
+    if (!shouldUseScrollableBody.value) {
       _height = "auto";
     } else {
       _height = props.height || "90%";
@@ -754,7 +957,23 @@ watch(
   },
 );
 
+watch(
+  () => searchStr.value,
+  () => {
+    if (!props.isPage || !showPicker.value) {
+      return;
+    }
+    clearSearchTimer();
+    searchTimer = setTimeout(() => {
+      void onRefresh();
+    }, 300);
+  },
+);
+
 async function initFrame() {
+  if (props.isPage) {
+    return;
+  }
   await onRefresh();
   inited.value = true;
 }
@@ -768,6 +987,7 @@ function togglePicker() {
 }
 
 onUnmounted(() => {
+  clearSearchTimer();
   if (methodWatchHandle) {
     methodWatchHandle();
     methodWatchHandle = null;

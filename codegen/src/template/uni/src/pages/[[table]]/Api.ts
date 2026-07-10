@@ -130,14 +130,8 @@ for (let i = 0; i < columns.length; i++) {
   }
 }
 #><#
-if (hasUsrStore) {
-#>import cfg from "@/utils/config.ts";
-<#
-}
-#><#
 if (opts.noAdd !== true || opts.noEdit !== true) {
-#>
-import {
+#>import {
   UniqueType,
 } from "#/types.ts";<#
 }
@@ -1642,25 +1636,31 @@ export async function findAll<#=Foreign_Table_Up#>(
 }
 #>
 
-export async function getList<#=Foreign_Table_Up#>() {
+export async function getList<#=Foreign_Table_Up#>(
+  search?: <#=Foreign_Table_Up#>Search,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAll<#=Foreign_Table_Up#>(<#
     if (foreignHasEnabled && foreignTable !== table) {
     #>
     {
+      ...search,
       is_enabled: [ 1 ],
     },<#
     } else {
     #>
-    undefined,<#
+    search,<#
     }
     #>
-    undefined,
-    [
+    page,
+    (sort || [ ]).concat([
       {
         prop: "<#=defaultSort && defaultSort.prop || ""#>",
         order: "<#=defaultSort && defaultSort.order || "ascending"#>",
       },
-    ],
+    ]),
     {
       notLoading: true,
     },

@@ -222,6 +222,10 @@ if (right_field && !right_field_column) {
         const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
+        let foreignSchema = undefined;
+        if (foreignKey) {
+          foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+        }
         const modelLabel = column.modelLabel;
         const isImg = column.isImg;
       #><#
@@ -275,6 +279,18 @@ if (right_field && !right_field_column) {
             if (readonlyPlaceholder) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+            }
+            #><#
+            if (foreignKey.uniCustomSelectModalPage) {
+            #>
+            :init-data="false"
+            :is-page="true"
+            search-key="<#=foreignKey.uniCustomSelectModalPage.searchKey#>"<#
+            if (foreignKey.uniCustomSelectModalPage.searchIds) {
+            #>
+            search-ids="<#=foreignKey.uniCustomSelectModalPage.searchIds#>"<#
+            }
+            #><#
             }
             #>
           ></CustomSelectModal>
