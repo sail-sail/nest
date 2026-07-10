@@ -321,7 +321,7 @@
             un-m="y-2"
           >
             <CustomDivider
-              v-if="!isEnd"
+              v-if="!isEnd && props.isPage"
             >
               加载更多中...
             </CustomDivider>
