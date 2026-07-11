@@ -174,3 +174,17 @@ export function list2tree<
   treeFn("", treeData);
   return treeData as T[];
 }
+
+export function formatTimeRange(
+  range: [string | null, string | null],
+): [string | null, string | null] {
+  if (!range || !Array.isArray(range)) {
+    return [null, null];
+  }
+  const [start, end] = range;
+	return [
+		start ? dayjs(start).startOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
+		end ? dayjs(end).endOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
+	];
+}
+

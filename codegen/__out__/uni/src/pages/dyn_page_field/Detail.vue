@@ -29,7 +29,7 @@
         <tm-form-item
           label="编码"
           name="code"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
           :required="false"
         >
           <CustomInput
@@ -42,7 +42,7 @@
         <tm-form-item
           label="动态页面"
           name="dyn_page_id"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
         >
           <CustomSelectModal
             v-model="dyn_page_field_input.dyn_page_id"
@@ -55,7 +55,7 @@
         <tm-form-item
           label="名称"
           name="lbl"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
         >
           <CustomInput
             v-model="dyn_page_field_input.lbl"
@@ -67,7 +67,7 @@
         <tm-form-item
           label="类型"
           name="type"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
           :required="false"
         >
           <CustomInput
@@ -80,7 +80,7 @@
         <tm-form-item
           label="属性"
           name="attrs"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
           :required="false"
         >
           <CustomInput
@@ -93,7 +93,7 @@
         <tm-form-item
           label="计算公式"
           name="formula"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
           :required="false"
         >
           <CustomInput
@@ -106,7 +106,7 @@
         <tm-form-item
           label="必填"
           name="is_required"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
         >
           <DictSelect
             v-model="dyn_page_field_input.is_required"
@@ -119,7 +119,7 @@
         <tm-form-item
           label="查询条件"
           name="is_search"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
         >
           <DictSelect
             v-model="dyn_page_field_input.is_search"
@@ -132,7 +132,7 @@
         <tm-form-item
           label="宽度"
           name="width"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
           :required="false"
         >
           <CustomInput
@@ -146,7 +146,7 @@
         <tm-form-item
           label="对齐方式"
           name="align"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
         >
           <DictSelect
             v-model="dyn_page_field_input.align"
@@ -159,7 +159,7 @@
         <tm-form-item
           label="手机列表显示"
           name="is_mobile_list"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
         >
           <DictSelect
             v-model="dyn_page_field_input.is_mobile_list"
@@ -172,7 +172,7 @@
         <tm-form-item
           label="手机列表查询"
           name="is_mobile_search"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
         >
           <DictSelect
             v-model="dyn_page_field_input.is_mobile_search"
@@ -185,7 +185,7 @@
         <tm-form-item
           label="排序"
           name="order_by"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
         >
           <CustomInput
             v-model="dyn_page_field_input.order_by"
@@ -322,6 +322,19 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {
 
 type ActionType = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<ActionType>("add");
+let isReadonly = $ref(false);
+
+watch(
+  () => dialogAction,
+  () => {
+    if (dialogAction === "view") {
+      isReadonly = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 
 const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);

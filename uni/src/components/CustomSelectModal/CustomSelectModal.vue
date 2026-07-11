@@ -171,17 +171,23 @@
       
       <view
         v-if="!props.hideSearch && shouldUseScrollableBody"
-        un-p="t-2"
+        un-p="t-1"
         un-box-border
-        un-m="x-4"
-        un-flex="~"
-        un-items="center"
-        un-gap="x-2"
+        un-m="x-3"
+        un-flex="~ col"
+        un-gap="y-1"
       >
         
+        <slot
+          name="search-extra"
+          :search-str="searchStr"
+          :search-params="extraSearch"
+          :is-search-ids="isSearchIds"
+          :on-search="onSearchConfirm"
+        ></slot>
+        
         <view
-          un-flex="~ [1_0_0]"
-          un-overflow-hidden
+          un-flex="~"
           un-items="center"
           un-gap="x-2"
         >
@@ -190,33 +196,42 @@
             un-flex="~ [1_0_0]"
             un-overflow-hidden
             un-items="center"
+            un-gap="x-2"
           >
-            <tm-input
-              v-model="searchStr"
-              width="100%"
-              placeholder="请输入关键字"
-              :show-clear="!!searchStr"
-              @confirm="onSearchConfirm"
-            ></tm-input>
+            
+            <view
+              un-flex="~ [1_0_0]"
+              un-overflow-hidden
+              un-items="center"
+            >
+              <tm-input
+                v-model="searchStr"
+                width="100%"
+                placeholder="请输入关键字"
+                :show-clear="!!searchStr"
+                @confirm="onSearchConfirm"
+              ></tm-input>
+            </view>
+            
+            <view>
+              <tm-checkbox
+                v-model="isSearchIds"
+                @change="onSearchConfirm"
+              ></tm-checkbox>
+            </view>
+            
           </view>
           
-          <view>
+          <view
+            v-if="props.multiple && props.showSelectAll && !readonly && options4SelectV2.length > 0"
+          >
+            
             <tm-checkbox
-              v-model="isSearchIds"
-              @change="onSearchConfirm"
+              :model-value="selectedValueArr.length === options4SelectV2Computed.length"
+              @change="onSelectAll"
             ></tm-checkbox>
+            
           </view>
-          
-        </view>
-        
-        <view
-          v-if="props.multiple && props.showSelectAll && !readonly && options4SelectV2.length > 0"
-        >
-          
-          <tm-checkbox
-            :model-value="selectedValueArr.length === options4SelectV2Computed.length"
-            @change="onSelectAll"
-          ></tm-checkbox>
           
         </view>
         
@@ -253,7 +268,7 @@
             :key="item.value"
             :title="item.label"
             un-m="x-2"
-            un-p="y-4"
+            un-p="y-3"
             un-box-border
             un-flex="~"
             un-items="center"
@@ -270,14 +285,32 @@
               name="option-label"
               :item="item"
             >
+              
               <view
-                un-flex="~ [1_0_0]"
+                un-flex="~ [1_0_0] col wrap"
                 un-overflow-hidden
-                un-items="center"
+                un-justify="center"
                 un-m="l-4"
+                un-gap="y-1"
               >
-                {{ item.label }}
+                
+                <view>
+                  {{ item.label }}
+                </view>
+                
+                <view
+                  v-if="item.subLabel"
+                  un-text="[var(--color-placeholder)]"
+                  :style="{
+                    'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
+                  }"
+                >
+                  {{ item.subLabel }}
+                </view>
+                
               </view>
+              
+              
             </slot>
             
             <view
@@ -321,7 +354,7 @@
             un-m="y-2"
           >
             <CustomDivider
-              v-if="!isEnd"
+              v-if="!isEnd && props.isPage"
             >
               加载更多中...
             </CustomDivider>
@@ -383,6 +416,7 @@ import type {
 
 type OptionType = {
   label: string;
+  subLabel?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
   image?: string;
@@ -430,6 +464,7 @@ const props = withDefaults(
     readonly?: boolean | null;
     readonlyPlaceholder?: string | null;
     searchStr?: string | null;
+    searchParams?: Record<string, any> | MaybeRef<Record<string, any>>;
     hideSearch?: boolean;
     isPage?: boolean;
     pageSize?: number;
@@ -440,11 +475,11 @@ const props = withDefaults(
     method: undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     optionsMap: function(item: any) {
-      const item2 = item as { lbl: string; id: string; img_lbl?: string };
       return {
-        label: item2.lbl,
-        value: item2.id,
-        image: item2.img_lbl,
+        label: item.lbl,
+        subLabel: item.subLabel,
+        value: item.id,
+        image: item.img_lbl,
       };
     },
     modelValue: undefined,
@@ -460,6 +495,7 @@ const props = withDefaults(
     readonly: undefined,
     readonlyPlaceholder: undefined,
     searchStr: "",
+    searchParams: undefined,
     hideSearch: false,
     isPage: false,
     pageSize: 20,
@@ -491,6 +527,12 @@ const data = ref<any[]>([ ]);
 const options4SelectV2 = ref<OptionType[]>([ ]);
 
 const searchStr = ref(props.searchStr || "");
+const extraSearch = computed(() => {
+  if (props.searchParams == null) {
+    return { };
+  }
+  return unref(props.searchParams) || { };
+});
 
 const options4SelectV2Computed = computed(() => {
   if (props.isPage) {
@@ -727,14 +769,34 @@ function getPageInput(): SelectPageInput {
 
 function getRemoteSearch() {
   const keyword = searchStr.value.trim();
-  if (!keyword && !isSearchIds) {
+  const hasKeyword = !!keyword;
+  const hasExtraSearch = Object.entries(extraSearch.value || {}).some(([, value]) => {
+    if (value == null || value === "") {
+      return false;
+    }
+    if (Array.isArray(value)) {
+      return value.some((item) => item != null && item !== "");
+    }
+    return true;
+  });
+  if (!hasKeyword && !isSearchIds && !hasExtraSearch) {
     return undefined;
   }
-  const search: Record<string, any> = {
-    [props.searchKey]: keyword,
-  };
+  const search: Record<string, any> = { };
+  if (hasKeyword) {
+    search[props.searchKey] = keyword;
+  }
   if (isSearchIds) {
     search[props.searchIds] = selectedValueArr.value;
+  }
+  for (const [key, value] of Object.entries(extraSearch.value || {})) {
+    if (value == null || value === "") {
+      continue;
+    }
+    if (Array.isArray(value) && value.every((item) => item == null || item === "")) {
+      continue;
+    }
+    search[key] = value;
   }
   return search;
 }
@@ -967,6 +1029,22 @@ watch(
     searchTimer = setTimeout(() => {
       void onRefresh();
     }, 300);
+  },
+);
+
+watch(
+  () => props.searchParams,
+  () => {
+    if (!props.isPage || !showPicker.value) {
+      return;
+    }
+    clearSearchTimer();
+    searchTimer = setTimeout(() => {
+      void onRefresh();
+    }, 300);
+  },
+  {
+    deep: true,
   },
 );
 

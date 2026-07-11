@@ -105,6 +105,7 @@ export default defineConfig({
             "getDict",
             "getDictbiz",
             "list2tree",
+            "formatTimeRange",
           ],
           "@/store/usr.ts": [
             [ "default", "useUsrStore" ],
