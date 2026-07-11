@@ -127,8 +127,15 @@
                 </div>
                 <div un-flex="~ justify-between items-center" un-m="t-3">
                   <div un-text="gray-400 sm">
-                    <span v-if="item.message?.route_path">跳转 链接</span>
-                    <span v-else>无链接</span>
+                    <div v-if="item.message?.route_path" un-m="t-2">
+                      <el-button
+                        link
+                        type="primary"
+                        @click.stop="goToRoute(item)"
+                      >
+                        跳转
+                      </el-button>
+                    </div>
                   </div>
                   <div un-text="blue-500 hover:blue-600">
                     查看详情
@@ -184,7 +191,7 @@
           {{ selectedItem.message?.content || selectedItem.receiver.message_id_content || '暂无内容' }}
         </div>
 
-        <div v-if="selectedItem.message?.route_path" un-m="t-5">
+        <div v-if="selectedItem.message?.route_path" un-m="t-2">
           <el-button
             link
             type="primary"
@@ -201,7 +208,7 @@
 <script lang="ts" setup vapor>
 import { usePage } from "@/compositions/List";
 import { query } from "@/utils/graphql";
-import { updateByIdMessageReceiver } from "@/views/base/message_receiver/Api";
+import { markMessageReceiverAsRead } from "@/views/base/message/Api2";
 
 defineOptions({
   name: "消息中心",
@@ -398,11 +405,11 @@ async function markAsRead(item: MessageCenterItem) {
     return;
   }
   try {
-    await updateByIdMessageReceiver(item.receiver.id, {
-      id: item.receiver.id,
-      is_read: 1,
-      read_time: dayjs().format("YYYY-MM-DDTHH:mm:ss"),
-    } as MessageReceiverInput);
+    const ok = await markMessageReceiverAsRead(item.receiver.id);
+    if (!ok) {
+      ElMessage.error("更新消息状态失败");
+      return;
+    }
     item.receiver.is_read = 1;
     item.receiver.read_time = dayjs().format("YYYY-MM-DDTHH:mm:ss");
     window.dispatchEvent(new CustomEvent("message-count-changed"));

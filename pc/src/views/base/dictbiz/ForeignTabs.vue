@@ -71,7 +71,7 @@ import DictbizDetailList from "@/views/base/dictbiz_detail/List.vue";
 
 import {
   findCountDictbizDetail,
-} from "@/views/base/dictbiz_detail/Api";
+} from "@/views/base/dictbiz_detail/Api.ts";
 
 let inited = $ref(false);
 
