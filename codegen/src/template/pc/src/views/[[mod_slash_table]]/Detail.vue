@@ -3989,7 +3989,7 @@ for (let i = 0; i < columns.length; i++) {
         #>
         
         <el-button
-          v-if="permit('audit_reject') &&
+          v-if="permit('audit_reject', '审核拒绝') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
           "
           plain
@@ -4010,7 +4010,7 @@ for (let i = 0; i < columns.length; i++) {
         </el-button>
         
         <el-button
-          v-if="permit('audit_submit') &&
+          v-if="permit('audit_submit', '审核提交') &&
             (
               dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
               dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
@@ -4034,7 +4034,7 @@ for (let i = 0; i < columns.length; i++) {
         </el-button>
         
         <el-button
-          v-if="permit('audit_pass') &&
+          v-if="permit('audit_pass', '审核通过') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
           "
           plain
@@ -4057,7 +4057,7 @@ for (let i = 0; i < columns.length; i++) {
         #>
         
         <el-button
-          v-if="permit('audit_pass') &&
+          v-if="permit('audit_pass', '审核通过') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
           "
           plain
@@ -4080,7 +4080,7 @@ for (let i = 0; i < columns.length; i++) {
         #>
         
         <el-button
-          v-if="permit('audit_review') &&
+          v-if="permit('audit_review', '复核') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
           "
           plain
@@ -4101,9 +4101,9 @@ for (let i = 0; i < columns.length; i++) {
         </el-button>
         
         <el-button
-          v-if="permit('audit_review') &&
+          v-if="permit('audit_review', '复核') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
-            !permit('audit_reverse')
+            !permit('audit_reverse', '反审核')
           "
           plain
           type="primary"

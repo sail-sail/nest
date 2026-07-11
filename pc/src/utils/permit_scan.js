@@ -351,10 +351,44 @@ async function getMenuByPath(context, route_path) {
 const permitCallReg = /permit\s*\(\s*(["'`])(.*?)\1(?:\s*,\s*(["'`])(.*?)\3)?\s*\)/g;
 const chineseReg = /[\u4E00-\u9FA5]/g;
 
+function extractTopLevelTemplateBlock(str) {
+  const openMatch = str.match(/<template\b[^>]*>/i);
+  if (!openMatch || openMatch.index == null) {
+    return "";
+  }
+  const openTagStart = openMatch.index;
+  const openTagEnd = str.indexOf(">", openTagStart);
+  if (openTagEnd < 0) {
+    return "";
+  }
+  const tagReg = /<\/?template\b[^>]*>/ig;
+  tagReg.lastIndex = openTagEnd + 1;
+  let depth = 1;
+  while (true) {
+    const match = tagReg.exec(str);
+    if (!match || match.index == null) {
+      break;
+    }
+    const tag = match[0];
+    if (/^<\/template\b/i.test(tag)) {
+      depth--;
+      if (depth === 0) {
+        return str.substring(openTagEnd + 1, match.index);
+      }
+    } else {
+      depth++;
+    }
+  }
+  return "";
+}
+
 async function getPermits(ph) {
   const str = await readText(ph);
+  const text = ph.endsWith(".vue")
+    ? extractTopLevelTemplateBlock(str)
+    : str;
   const permits = [ ];
-  const lines = str.split(/\r?\n/);
+  const lines = text.split(/\r?\n/);
 
   let order_by = 1;
   for (let index = 0; index < lines.length; index++) {

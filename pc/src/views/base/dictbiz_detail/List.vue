@@ -235,7 +235,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         :disabled="selectedIds.length === 0 || selectedIds.map((item) => tableData.find((item2) => item2.id === item)).some((item) => item?.is_sys === 1)"
@@ -353,7 +353,7 @@
     <template v-else>
       
       <el-button
-        v-if="dictbiz_model && dictbiz_model.is_add && permit('delete') && !isLocked"
+        v-if="dictbiz_model && dictbiz_model.is_add && permit('delete', '删除') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -365,7 +365,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"

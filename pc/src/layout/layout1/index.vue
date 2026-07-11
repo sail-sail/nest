@@ -496,9 +496,13 @@ watch(
   () => {
     const name = route.name as string;
     const menuLbl = menuStore.getLblByPath(route.path);
-    const lbl = menuLbl || (route.meta?.name as string) || name || "";
+    let lbl = menuLbl || (route.meta?.name as string) || name || "";
     const closeable = route.meta?.closeable as boolean ?? true;
     const icon = route.meta?.icon as string | undefined;
+    const _tab_name = route.query?._tab_name as string | undefined;
+    if (_tab_name) {
+      lbl = lbl + " - " + _tab_name;
+    }
     tabsStore.activeTab({
       name,
       lbl,
