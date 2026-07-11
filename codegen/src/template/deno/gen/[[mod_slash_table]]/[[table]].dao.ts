@@ -7664,6 +7664,7 @@ export async function deleteByIds<#=Table_Up#>(
     const optTable = optTables[table_name];
     const hasIsDeleted = optTable.columns.some((column) => column.COLUMN_NAME === "is_deleted");
     for (const column of optTable.columns) {
+      if (column.ignoreCodegen) continue;
       if (column.inlineMany2manyTab) continue;
       if (column.isVirtual) continue;
       const foreignKey = column.foreignKey;
