@@ -1202,6 +1202,34 @@ export async function auditReview<#=Table_Up#>(
 }
 #><#
 }
+#><#
+if (opts?.audit?.hasReverse) {
+#>
+
+/** 反审核 */
+export async function auditReverse<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  opt?: GqlOpt,
+) {
+
+  const data: {
+    auditReverse<#=Table_Up2#>: Mutation["auditReverse<#=Table_Up2#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!) {
+        auditReverse<#=Table_Up2#>(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+
+  const res = data.auditReverse<#=Table_Up2#>;
+
+  return res;
+}<#
+}
 #>
 
 /**

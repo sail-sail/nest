@@ -1147,7 +1147,7 @@ if (right_field && !right_field_column) {
     ></view>
     
   </scroll-view><#
-  if (opts.noCopy !== true || opts.noEdit !== true) {
+  if (opts.noCopy !== true || opts.noEdit !== true || hasAudit) {
   #>
   
   <view
@@ -1168,36 +1168,172 @@ if (right_field && !right_field_column) {
     un-justify="center"
     un-items="center"
     un-gap="x-4"
-  ><#
-    if (opts.noCopy !== true) {
-    #>
+  >
     
-    <view
-      v-if="dialogAction === 'edit' && <#=table#>_id"
-      un-flex="1"
+    <tm-drawer
+      v-model:show="operationDrawerShow"
+      title="操作"
+      un-w="full"
+      :show-close="true"
+      :show-footer="true"
+      size="auto"
     >
-      <tm-button
-        block
-        color="info"
-        @click="onCopy"
+      
+      <template #trigger>
+        <tm-button
+          block
+          color="info"
+          @click="operationDrawerShow = true"
+        >
+          <view
+            un-flex="~"
+            un-justify="center"
+            un-items="center"
+          >
+            
+            <view>
+              操作
+            </view>
+            
+            <view
+              un-i="iconfont-caret_top"
+            ></view>
+            
+          </view>
+        </tm-button>
+      </template>
+      
+      <template #footer>
+        <tm-button
+          block
+          color="info"
+          @click="operationDrawerShow = false;"
+        >
+          <view
+            un-flex="~"
+            un-justify="center"
+            un-items="center"
+            un-gap="x-1"
+          >
+            
+            <view>
+              关闭
+            </view>
+            
+            <view
+              un-i="iconfont-caret_bottom"
+            ></view>
+            
+          </view>
+        </tm-button>
+      </template>
+      
+      <view
+        un-p="4"
+        un-box-border
+        un-w="full"
+        un-flex="~ col"
+        un-gap="y-4"
       >
-        复制
-      </tm-button>
-    </view><#
-    }
-    #>
-    
-    <view
-      un-flex="1"
-    >
-      <tm-button
-        :disabled="!inited || is_form_hydrating"
-        block
-        @click="formRef?.submit()"
-      >
-        确定
-      </tm-button>
-    </view>
+        <template
+          v-if="dialogAction === 'edit'"
+        >
+          <tm-button
+            v-if="<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited"
+            block
+            @click="operationDrawerShow = false; onAuditPass();"
+          >
+            审核通过
+          </tm-button>
+          
+          <tm-button
+            v-if="<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited"
+            block
+            color="danger"
+            @click="operationDrawerShow = false; onAuditReject();"
+          >
+            审核拒绝
+          </tm-button>
+          
+          <tm-button
+            v-if="<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited || <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected"
+            block
+            @click="operationDrawerShow = false; onAuditSubmit();"
+          >
+            审核提交
+          </tm-button>
+          
+          <tm-button
+            v-if="<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited || <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed"
+            block
+            color="warn"
+            @click="operationDrawerShow = false; onAuditReverse();"
+          >
+            反审核
+          </tm-button><#
+          if (hasReviewed) {
+          #>
+          
+          <tm-button
+            v-if="<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited && <#=hasReviewed#>"
+            block
+            @click="operationDrawerShow = false; onAuditReview();"
+          >
+            复核
+          </tm-button><#
+          }
+          #>
+          
+          <CustomDivider
+            :show-text="false"
+            un-p="y-0 x-0"
+          ></CustomDivider>
+          
+        </template>
+        
+        <template
+          v-if="dialogAction === 'edit'"
+        >
+        <#
+          if (opts.noCopy !== true) {
+          #>
+          <tm-button
+            block
+            color="info"
+            @click="onCopy"
+          >
+            复制
+          </tm-button><#
+          }
+          #>
+          
+          <tm-button
+            :disabled="!inited || is_form_hydrating"
+            block
+            @click="operationDrawerShow = false; formRef?.submit();"
+          >
+            编辑
+          </tm-button>
+          
+        </template>
+        
+        <template
+          v-if="dialogAction === 'copy' || dialogAction === 'add'"
+        >
+          
+          <tm-button
+            :disabled="!inited || is_form_hydrating"
+            block
+            @click="formRef?.submit()"
+          >
+            新增
+          </tm-button>
+          
+        </template>
+        
+      </view>
+      
+    </tm-drawer>
     
   </view><#
   }
@@ -1249,7 +1385,20 @@ import {
   }
   #>
   getDefaultInput<#=Table_Up#>,
-  intoInput<#=Table_Up#>,
+  intoInput<#=Table_Up#>,<#
+  if (hasAudit) {
+  #>
+  auditSubmit<#=Table_Up#>,
+  auditPass<#=Table_Up#>,
+  auditReverse<#=Table_Up#>,
+  auditReject<#=Table_Up#>,<#
+  if (hasReviewed) {
+  #>
+  auditReview<#=Table_Up#>,<#
+  }
+  #><#
+}
+#>
 } from "./Api.ts";<#
 if (hasAudit) {
 #>
@@ -1411,6 +1560,8 @@ watch(
 const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);
 
+let operationDrawerShow = $ref(false);
+
 /** 复制 */
 async function onCopy() {
   if (!<#=table#>_id) {
@@ -1502,6 +1653,133 @@ async function onSave(
   }
   
 }
+
+/** 审核提交 */
+async function onAuditSubmit() {
+  if (!<#=table#>_id) {
+    return;
+  }
+  const { confirm } = await uni.showModal({
+    title: "审核提交",
+    content: "确定要审核提交吗",
+    showCancel: true,
+  });
+  if (!confirm) {
+    return;
+  }
+  await auditSubmit<#=Table_Up#>(<#=table#>_id);
+  await uni.showModal({
+    content: "审核提交成功",
+    showCancel: false,
+  });
+  await onRefresh();
+  uni.$emit("/pages/<#=table#>/List:refresh");
+}
+
+/** 反审核 */
+async function onAuditReverse() {
+  if (!<#=table#>_id) {
+    return;
+  }
+  const { confirm } = await uni.showModal({
+    title: "反审核",
+    content: "确认要反审核吗",
+    showCancel: true,
+  });
+  if (!confirm) {
+    return;
+  }
+  await auditReverse<#=Table_Up#>(<#=table#>_id);
+  await uni.showModal({
+    content: "反审核成功",
+    showCancel: false,
+  });
+  await onRefresh();
+  uni.$emit("/pages/<#=table#>/List:refresh");
+}
+
+/** 审核通过 */
+async function onAuditPass() {
+  if (!<#=table#>_id) {
+    return;
+  }
+  const { confirm } = await uni.showModal({
+    title: "审核通过",
+    content: "确定要审核通过吗",
+    showCancel: true,
+  });
+  if (!confirm) {
+    return;
+  }
+  await auditPass<#=Table_Up#>(<#=table#>_id);
+  await uni.showModal({
+    content: "审核通过成功",
+    showCancel: false,
+  });
+  await onRefresh();
+  uni.$emit("/pages/<#=table#>/List:refresh");
+}
+
+/** 审核拒绝 */
+async function onAuditReject() {
+  if (!<#=table#>_id) {
+    return;
+  }
+  const { confirm, content } = await uni.showModal({
+    title: "审核拒绝",
+    content: "请输入原因",
+    editable: true,
+    placeholderText: "请输入原因",
+  });
+  if (!confirm) {
+    return;
+  }
+  const rem = (content || "").trim();
+  if (!rem) {
+    uni.showToast({
+      title: "请输入原因",
+      icon: "none",
+    });
+    return;
+  }
+  await auditReject<#=Table_Up#>(<#=table#>_id, {
+    rem,
+  } as any);
+  await uni.showModal({
+    content: "审核拒绝成功",
+    showCancel: false,
+  });
+  await onRefresh();
+  uni.$emit("/pages/<#=table#>/List:refresh");
+}
+
+<#
+if (hasReviewed) {
+#>
+/** 复核通过 */
+async function onAuditReview() {
+  if (!<#=table#>_id) {
+    return;
+  }
+  const { confirm } = await uni.showModal({
+    title: "复核",
+    content: "确定要复核通过吗",
+    showCancel: true,
+  });
+  if (!confirm) {
+    return;
+  }
+  await auditReview<#=Table_Up#>(<#=table#>_id);
+  await uni.showModal({
+    content: "复核通过成功",
+    showCancel: false,
+  });
+  await onRefresh();
+  uni.$emit("/pages/<#=table#>/List:refresh");
+}
+<#
+}
+#>
 
 /** 刷新 */
 async function onRefresh() {
