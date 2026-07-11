@@ -12,6 +12,8 @@ defineGraphql(resolver, /* GraphQL */ `
   type Mutation {
     "发送消息"
     sendMessage(input: MessageInput!, receiver_usr_ids: [UsrId!]!): MessageModel!
+    "标记消息接收记录为已读"
+    markMessageReceiverAsRead(id: MessageReceiverId!): Boolean!
   }
 
 `);

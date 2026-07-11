@@ -22,3 +22,14 @@ export async function sendMessage(
 
   return await sendMessage(input, receiver_usr_ids);
 }
+
+export async function markMessageReceiverAsRead(id: MessageReceiverId) {
+  const {
+    markMessageReceiverAsRead: markMessageReceiverAsReadService,
+  } = await import("./message.service.ts");
+
+  const context = useContext();
+  context.is_tran = true;
+
+  return await markMessageReceiverAsReadService(id);
+}
