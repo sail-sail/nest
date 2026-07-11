@@ -246,7 +246,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -312,7 +312,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -355,7 +355,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -398,7 +398,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -447,7 +447,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -499,7 +499,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -543,7 +543,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -587,7 +587,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -1250,7 +1250,15 @@ import {
   #>
   getDefaultInput<#=Table_Up#>,
   intoInput<#=Table_Up#>,
-} from "./Api.ts";
+} from "./Api.ts";<#
+if (hasAudit) {
+#>
+
+import {
+  <#=Table_Up#>Audit,
+} from "#/types.ts";<#
+}
+#>
 
 import {<#
   for (let i = 0; i < columns.length; i++) {
@@ -1386,6 +1394,19 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {<#
 
 type ActionType = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<ActionType>("add");
+let isReadonly = $ref(false);
+
+watch(
+  () => dialogAction,
+  () => {
+    if (dialogAction === "view") {
+      isReadonly = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 
 const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);
@@ -1695,6 +1716,30 @@ async function onEdit<#=Table_Up#>() {
   }
   
 }<#
+}
+#><#
+if (hasAudit) {
+#>
+
+// 已审核提交的不允许编辑
+watch(
+  () => [
+    inited,
+    dialogAction,
+    <#=table#>_model?.<#=auditColumn#>,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (
+      (dialogAction === "edit" || dialogAction === "view") &&
+      (<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited || <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited || <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed)
+    ) {
+      isReadonly = true;
+    }
+  },
+);<#
 }
 #>
 

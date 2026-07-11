@@ -1662,6 +1662,7 @@ export async function getList<#=Foreign_Table_Up#>(
       },
     ]),
     {
+      ...opt,
       notLoading: true,
     },
   );

@@ -543,6 +543,7 @@ export async function getListMenu(
       },
     ]),
     {
+      ...opt,
       notLoading: true,
     },
   );
@@ -595,6 +596,7 @@ export async function getListRole(
       },
     ]),
     {
+      ...opt,
       notLoading: true,
     },
   );

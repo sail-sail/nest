@@ -523,6 +523,7 @@ export async function getListMenu(
       },
     ]),
     {
+      ...opt,
       notLoading: true,
     },
   );
