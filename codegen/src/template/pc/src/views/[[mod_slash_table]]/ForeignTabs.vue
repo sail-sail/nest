@@ -121,7 +121,7 @@ import <#=itemTable_Up#>List from "@/views/<#=item.mod#>/<#=itemTable#>/List.vue
 
 import {
   findCount<#=itemTable_Up#>,
-} from "@/views/<#=item.mod#>/<#=itemTable#>/Api";<#
+} from "@/views/<#=item.mod#>/<#=itemTable#>/Api.ts";<#
   }
 #><#
 }
