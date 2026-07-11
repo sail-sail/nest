@@ -89,7 +89,7 @@
     "@vue/runtime-core": "3.5.39",
     "birpc": "4.0.0",
     "cross-env": "10.1.0",
-    "eslint": "10.6.0",
+    "eslint": "10.7.0",
     "eslint-plugin-vue": "10.9.2",
     "globals": "17.7.0",
     "hookable": "6.1.1",

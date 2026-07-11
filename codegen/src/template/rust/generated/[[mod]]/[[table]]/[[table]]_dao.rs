@@ -8814,6 +8814,8 @@ pub async fn delete_by_ids_<#=table#>(
     const optTable = optTables[table_name];
     const hasIsDeleted = optTable.columns.some((column) => column.COLUMN_NAME === "is_deleted");
     for (const column of optTable.columns) {
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
       if (column.inlineMany2manyTab) continue;
       const foreignKey = column.foreignKey;
       const many2many = column.many2many;

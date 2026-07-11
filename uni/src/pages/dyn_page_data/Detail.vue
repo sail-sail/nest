@@ -104,6 +104,19 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {
 
 type ActionType = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<ActionType>("add");
+let isReadonly = $ref(false);
+
+watch(
+  () => dialogAction,
+  () => {
+    if (dialogAction === "view") {
+      isReadonly = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 
 const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);

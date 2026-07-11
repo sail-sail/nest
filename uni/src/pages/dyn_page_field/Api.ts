@@ -548,6 +548,7 @@ export async function getListDynPage(
       },
     ]),
     {
+      ...opt,
       notLoading: true,
     },
   );

@@ -3698,17 +3698,6 @@ pub async fn delete_by_ids_role(
         options,
       ).await?;
     }
-    {
-      let mut args = QueryArgs::new();
-      let sql = "update base_dyn_page_role set is_deleted=1 where role_id=? and is_deleted=0".to_owned();
-      args.push(id.into());
-      let args: Vec<_> = args.into();
-      execute(
-        sql,
-        args,
-        options,
-      ).await?;
-    }
   }
   
   del_cache_role().await?;

@@ -568,6 +568,7 @@ export async function getListMenu(
       },
     ]),
     {
+      ...opt,
       notLoading: true,
     },
   );
@@ -617,6 +618,7 @@ export async function getListMenu(
 //       },
 //     ]),
 //     {
+//       ...opt,
 //       notLoading: true,
 //     },
 //   );
@@ -666,6 +668,7 @@ export async function getListMenu(
 //       },
 //     ]),
 //     {
+//       ...opt,
 //       notLoading: true,
 //     },
 //   );
@@ -715,6 +718,7 @@ export async function getListMenu(
 //       },
 //     ]),
 //     {
+//       ...opt,
 //       notLoading: true,
 //     },
 //   );

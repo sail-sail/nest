@@ -29,7 +29,7 @@
         <tm-form-item
           label="路由"
           name="code"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
           :required="false"
         >
           <CustomInput
@@ -42,7 +42,7 @@
         <tm-form-item
           label="名称"
           name="lbl"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
         >
           <CustomInput
             v-model="dyn_page_input.lbl"
@@ -54,7 +54,7 @@
         <tm-form-item
           label="父菜单"
           name="parent_menu_id"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
           :required="false"
         >
           <CustomSelectModal
@@ -68,7 +68,7 @@
         <tm-form-item
           label="所属角色"
           name="role_ids"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
           :required="false"
         >
           <CustomSelectModal
@@ -83,7 +83,7 @@
         <tm-form-item
           label="排序"
           name="order_by"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
         >
           <CustomInput
             v-model="dyn_page_input.order_by"
@@ -96,7 +96,7 @@
         <tm-form-item
           label="备注"
           name="rem"
-          :readonly="dialogAction === 'view'"
+          :readonly="isReadonly"
           :required="false"
         >
           <CustomInput
@@ -454,6 +454,19 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {
 
 type ActionType = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<ActionType>("add");
+let isReadonly = $ref(false);
+
+watch(
+  () => dialogAction,
+  () => {
+    if (dialogAction === "view") {
+      isReadonly = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 
 const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);
