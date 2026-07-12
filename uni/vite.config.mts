@@ -110,6 +110,9 @@ export default defineConfig({
           "@/store/usr.ts": [
             [ "default", "useUsrStore" ],
           ],
+          "@/store/permit.ts": [
+            [ "default", "usePermitStore" ],
+          ],
           "@/store/index.ts": [
             [ "default", "useIndexStore" ],
           ],
