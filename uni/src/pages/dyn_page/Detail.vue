@@ -439,41 +439,27 @@
         un-flex="~ col"
         un-gap="y-4"
       >
+        
         <template
           v-if="dialogAction === 'edit'"
         >
+        
           <tm-button
-            v-if="dyn_page_model?. === DynPageAudit.Unaudited"
+            v-if="permit('add', '新增')"
             block
-            @click="operationDrawerShow = false; onAuditPass();"
+            color="info"
+            @click="onCopy"
           >
-            审核通过
+            复制
           </tm-button>
           
           <tm-button
-            v-if="dyn_page_model?. === DynPageAudit.Unaudited"
+            v-if="permit('edit', '编辑')"
+            :disabled="!inited || is_form_hydrating"
             block
-            color="danger"
-            @click="operationDrawerShow = false; onAuditReject();"
+            @click="operationDrawerShow = false; formRef?.submit();"
           >
-            审核拒绝
-          </tm-button>
-          
-          <tm-button
-            v-if="dyn_page_model?. === DynPageAudit.Unsubmited || dyn_page_model?. === DynPageAudit.Rejected"
-            block
-            @click="operationDrawerShow = false; onAuditSubmit();"
-          >
-            审核提交
-          </tm-button>
-          
-          <tm-button
-            v-if="dyn_page_model?. === DynPageAudit.Audited || dyn_page_model?. === DynPageAudit.Reviewed"
-            block
-            color="warn"
-            @click="operationDrawerShow = false; onAuditReverse();"
-          >
-            反审核
+            编辑
           </tm-button>
           
           <CustomDivider
@@ -484,38 +470,22 @@
         </template>
         
         <template
-          v-if="dialogAction === 'edit'"
-        >
-        
-          <tm-button
-            block
-            color="info"
-            @click="onCopy"
-          >
-            复制
-          </tm-button>
-          
-          <tm-button
-            :disabled="!inited || is_form_hydrating"
-            block
-            @click="operationDrawerShow = false; formRef?.submit();"
-          >
-            编辑
-          </tm-button>
-          
-        </template>
-        
-        <template
           v-if="dialogAction === 'copy' || dialogAction === 'add'"
         >
           
           <tm-button
+            v-if="permit('add', '新增')"
             :disabled="!inited || is_form_hydrating"
             block
             @click="formRef?.submit()"
           >
             新增
           </tm-button>
+          
+          <CustomDivider
+            :show-text="false"
+            un-p="y-0 x-0"
+          ></CustomDivider>
           
         </template>
         
@@ -542,6 +512,7 @@ import {
   updateByIdDynPage,
   getDefaultInputDynPage,
   intoInputDynPage,
+  getPagePathDynPage,
 } from "./Api.ts";
 
 import {
@@ -566,6 +537,11 @@ function getTypeLabel(type?: string | null): string {
 
 // 动态页面字段
 import DynPageFieldDetailModal from "@/pages/dyn_page_field/DetailModal.vue";
+
+const pagePath = getPagePathDynPage();
+const permitStore = usePermitStore();
+
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -615,6 +591,13 @@ async function onCopy() {
   if (!dyn_page_id) {
     return;
   }
+  if (!permit('add')) {
+    uni.showToast({
+      title: "无新增权限",
+      icon: "none",
+    });
+    return;
+  }
   uni.redirectTo({
     url: `/pages/dyn_page/Detail?dyn_page_id=${ encodeURIComponent(dyn_page_id) }&action=copy`,
   });
@@ -629,6 +612,24 @@ async function onSave(
   }
   if (!inited || is_form_hydrating) {
     return;
+  }
+  if (dialogAction === "add" || dialogAction === "copy") {
+    if (!permit('add')) {
+      uni.showToast({
+        title: "无新增权限",
+        icon: "none",
+      });
+      return;
+    }
+  }
+  if (dialogAction === "edit") {
+    if (!permit('edit')) {
+      uni.showToast({
+        title: "无修改权限",
+        icon: "none",
+      });
+      return;
+    }
   }
   if (formSubmitResult?.isPass === false) {
     const firstValid = formSubmitResult.firstValid;
@@ -679,107 +680,6 @@ async function onSave(
   }
   
 }
-
-/** 审核提交 */
-async function onAuditSubmit() {
-  if (!dyn_page_id) {
-    return;
-  }
-  const { confirm } = await uni.showModal({
-    title: "审核提交",
-    content: "确定要审核提交吗",
-    showCancel: true,
-  });
-  if (!confirm) {
-    return;
-  }
-  await auditSubmitDynPage(dyn_page_id);
-  await uni.showModal({
-    content: "审核提交成功",
-    showCancel: false,
-  });
-  await onRefresh();
-  uni.$emit("/pages/dyn_page/List:refresh");
-}
-
-/** 反审核 */
-async function onAuditReverse() {
-  if (!dyn_page_id) {
-    return;
-  }
-  const { confirm } = await uni.showModal({
-    title: "反审核",
-    content: "确认要反审核吗",
-    showCancel: true,
-  });
-  if (!confirm) {
-    return;
-  }
-  await auditReverseDynPage(dyn_page_id);
-  await uni.showModal({
-    content: "反审核成功",
-    showCancel: false,
-  });
-  await onRefresh();
-  uni.$emit("/pages/dyn_page/List:refresh");
-}
-
-/** 审核通过 */
-async function onAuditPass() {
-  if (!dyn_page_id) {
-    return;
-  }
-  const { confirm } = await uni.showModal({
-    title: "审核通过",
-    content: "确定要审核通过吗",
-    showCancel: true,
-  });
-  if (!confirm) {
-    return;
-  }
-  await auditPassDynPage(dyn_page_id);
-  await uni.showModal({
-    content: "审核通过成功",
-    showCancel: false,
-  });
-  await onRefresh();
-  uni.$emit("/pages/dyn_page/List:refresh");
-}
-
-/** 审核拒绝 */
-async function onAuditReject() {
-  if (!dyn_page_id) {
-    return;
-  }
-  const { confirm, content } = await uni.showModal({
-    title: "审核拒绝",
-    content: "请输入原因",
-    editable: true,
-    placeholderText: "请输入原因",
-  });
-  if (!confirm) {
-    return;
-  }
-  const rem = (content || "").trim();
-  if (!rem) {
-    uni.showToast({
-      title: "请输入原因",
-      icon: "none",
-    });
-    return;
-  }
-  await auditRejectDynPage(dyn_page_id, {
-    rem,
-  } as any);
-  await uni.showModal({
-    content: "审核拒绝成功",
-    showCancel: false,
-  });
-  await onRefresh();
-  uni.$emit("/pages/dyn_page/List:refresh");
-}
-
-
 
 /** 刷新 */
 async function onRefresh() {
