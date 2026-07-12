@@ -1234,20 +1234,41 @@ if (right_field && !right_field_column) {
         un-w="full"
         un-flex="~ col"
         un-gap="y-4"
-      >
+      ><#
+        if (hasAudit) {
+        #>
+        
         <template
           v-if="dialogAction === 'edit'"
-        >
+        ><#
+          if (!hasReviewed) {
+          #>
           <tm-button
-            v-if="<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited"
+            v-if="permit('audit_pass', '审核通过') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
+            "
             block
             @click="operationDrawerShow = false; onAuditPass();"
           >
             审核通过
           </tm-button>
+
+          <tm-button
+            v-if="permit('audit_pass', '审核通过') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+            "
+            block
+            disabled
+          >
+            已审核
+          </tm-button><#
+          }
+          #>
           
           <tm-button
-            v-if="<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited"
+            v-if="permit('audit_reject', '审核拒绝') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
+            "
             block
             color="danger"
             @click="operationDrawerShow = false; onAuditReject();"
@@ -1256,30 +1277,105 @@ if (right_field && !right_field_column) {
           </tm-button>
           
           <tm-button
-            v-if="<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited || <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected"
+            v-if="permit('audit_submit', '审核提交') &&
+              (
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
+              )
+            "
             block
             @click="operationDrawerShow = false; onAuditSubmit();"
           >
             审核提交
-          </tm-button>
+          </tm-button><#
+          if (opts?.audit?.hasReverse) {
+          #>
           
           <tm-button
-            v-if="<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited || <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed"
+            v-if="permit('audit_reverse', '反审核') &&
+              (
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
+                if (hasReviewed) {
+                #> ||
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
+                }
+                #>
+              )
+            "
             block
             color="warn"
             @click="operationDrawerShow = false; onAuditReverse();"
           >
             反审核
           </tm-button><#
+          }
+          #><#
           if (hasReviewed) {
           #>
           
           <tm-button
-            v-if="<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited && <#=hasReviewed#>"
+            v-if="permit('audit_review', '复核') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+            "
             block
             @click="operationDrawerShow = false; onAuditReview();"
           >
             复核
+          </tm-button><#
+          }
+          #><#
+          if (hasReviewed) {
+          #>
+          
+          <tm-button
+            v-if="permit('audit_review', '复核') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
+              !permit('audit_reverse', '反审核')
+            "
+            block
+            disabled
+          >
+            已复核
+          </tm-button><#
+          }
+          #>
+          
+          <CustomDivider
+            :show-text="false"
+            un-p="y-0 x-0"
+          ></CustomDivider>
+          
+        </template><#
+        }
+        #>
+        
+        <template
+          v-if="dialogAction === 'edit'"
+        >
+        <#
+          if (opts.noCopy !== true) {
+          #>
+          <tm-button
+            v-if="permit('add', '新增')"
+            block
+            color="info"
+            @click="onCopy"
+          >
+            复制
+          </tm-button><#
+          }
+          #><#
+          if (!opts.noEdit) {
+          #>
+          
+          <tm-button
+            v-if="permit('edit', '编辑')"
+            :disabled="!inited || is_form_hydrating"
+            block
+            @click="operationDrawerShow = false; formRef?.submit();"
+          >
+            编辑
           </tm-button><#
           }
           #>
@@ -1292,42 +1388,26 @@ if (right_field && !right_field_column) {
         </template>
         
         <template
-          v-if="dialogAction === 'edit'"
-        >
-        <#
-          if (opts.noCopy !== true) {
-          #>
-          <tm-button
-            block
-            color="info"
-            @click="onCopy"
-          >
-            复制
-          </tm-button><#
-          }
-          #>
-          
-          <tm-button
-            :disabled="!inited || is_form_hydrating"
-            block
-            @click="operationDrawerShow = false; formRef?.submit();"
-          >
-            编辑
-          </tm-button>
-          
-        </template>
-        
-        <template
           v-if="dialogAction === 'copy' || dialogAction === 'add'"
-        >
+        ><#
+          if (!opts.noAdd) {
+          #>
           
           <tm-button
+            v-if="permit('add', '新增')"
             :disabled="!inited || is_form_hydrating"
             block
             @click="formRef?.submit()"
           >
             新增
-          </tm-button>
+          </tm-button><#
+          }
+          #>
+          
+          <CustomDivider
+            :show-text="false"
+            un-p="y-0 x-0"
+          ></CustomDivider>
           
         </template>
         
@@ -1385,7 +1465,8 @@ import {
   }
   #>
   getDefaultInput<#=Table_Up#>,
-  intoInput<#=Table_Up#>,<#
+  intoInput<#=Table_Up#>,
+  getPagePath<#=Table_Up#>,<#
   if (hasAudit) {
   #>
   auditSubmit<#=Table_Up#>,
@@ -1472,6 +1553,11 @@ for (const inlineForeignTab of inlineForeignTabs) {
 import <#=Table_Up#>DetailModal from "@/pages/<#=table#>/DetailModal.vue";<#
 }
 #>
+
+const pagePath = getPagePath<#=Table_Up#>();
+const permitStore = usePermitStore();
+
+const permit = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1567,6 +1653,13 @@ async function onCopy() {
   if (!<#=table#>_id) {
     return;
   }
+  if (!permit('add')) {
+    uni.showToast({
+      title: "无新增权限",
+      icon: "none",
+    });
+    return;
+  }
   uni.redirectTo({
     url: `/pages/<#=table#>/Detail?<#=table#>_id=${ encodeURIComponent(<#=table#>_id) }&action=copy`,
   });
@@ -1581,29 +1674,39 @@ async function onSave(
   }
   if (!inited || is_form_hydrating) {
     return;
-  }<#
-  if (opts.noAdd === true) {
-  #>
-  if (dialogAction === "add" || dialogAction === "copy") {
-    uni.showToast({
-      title: "无新增权限",
-      icon: "none",
-    });
-    return;
-  }<#
   }
-  #><#
-  if (opts.noEdit === true) {
-  #>
-  if (dialogAction === "edit") {
-    uni.showToast({
-      title: "无修改权限",
-      icon: "none",
-    });
-    return;
-  }<#
+  if (dialogAction === "add" || dialogAction === "copy") {<#
+    if (opts.noAdd !== true) {
+    #>
+    if (!permit('add')) {
+      uni.showToast({
+        title: "无新增权限",
+        icon: "none",
+      });
+      return;
+    }<#
+    } else {
+    #>
+    return;<#
+    }
+    #>
   }
-  #>
+  if (dialogAction === "edit") {<#
+    if (opts.noEdit !== true) {
+    #>
+    if (!permit('edit')) {
+      uni.showToast({
+        title: "无修改权限",
+        icon: "none",
+      });
+      return;
+    }<#
+    } else {
+    #>
+    return;<#
+    }
+    #>
+  }
   if (formSubmitResult?.isPass === false) {
     const firstValid = formSubmitResult.firstValid;
     if (firstValid) {
@@ -1652,11 +1755,16 @@ async function onSave(
     uni.$emit("/pages/<#=table#>/List:refresh");
   }
   
-}
+}<#
+if (hasAudit) {
+#>
 
 /** 审核提交 */
 async function onAuditSubmit() {
   if (!<#=table#>_id) {
+    return;
+  }
+  if (!permit('audit_submit')) {
     return;
   }
   const { confirm } = await uni.showModal({
@@ -1681,6 +1789,9 @@ async function onAuditReverse() {
   if (!<#=table#>_id) {
     return;
   }
+  if (!permit('audit_reverse')) {
+    return;
+  }
   const { confirm } = await uni.showModal({
     title: "反审核",
     content: "确认要反审核吗",
@@ -1703,6 +1814,9 @@ async function onAuditPass() {
   if (!<#=table#>_id) {
     return;
   }
+  if (!permit('audit_pass')) {
+    return;
+  }
   const { confirm } = await uni.showModal({
     title: "审核通过",
     content: "确定要审核通过吗",
@@ -1723,6 +1837,9 @@ async function onAuditPass() {
 /** 审核拒绝 */
 async function onAuditReject() {
   if (!<#=table#>_id) {
+    return;
+  }
+  if (!permit('audit_reject')) {
     return;
   }
   const { confirm, content } = await uni.showModal({
@@ -1751,14 +1868,15 @@ async function onAuditReject() {
   });
   await onRefresh();
   uni.$emit("/pages/<#=table#>/List:refresh");
-}
-
-<#
+}<#
 if (hasReviewed) {
 #>
 /** 复核通过 */
 async function onAuditReview() {
   if (!<#=table#>_id) {
+    return;
+  }
+  if (!permit('audit_review')) {
     return;
   }
   const { confirm } = await uni.showModal({
@@ -1776,8 +1894,9 @@ async function onAuditReview() {
   });
   await onRefresh();
   uni.$emit("/pages/<#=table#>/List:refresh");
+}<#
 }
-<#
+#><#
 }
 #>
 
