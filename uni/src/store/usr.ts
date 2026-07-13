@@ -2,12 +2,6 @@ import type {
   GetLoginInfo,
 } from "#/types.ts";
 
-import usePermitStore from "@/store/permit.ts";
-
-import {
-  getUsrPermits,
-} from "./Api.ts";
-  
 let authorization: string = uni.getStorageSync("authorization") || "";
 let usr_id: UsrId = uni.getStorageSync("usr_id");
 let tenant_id: TenantId = uni.getStorageSync("tenant_id");
@@ -18,22 +12,12 @@ let showAuth = false;
   
 let lang = "";
 
-const permitStore = usePermitStore();
-
 export default function() {
   
   async function setAuthorization(authorization0: string) {
     if (authorization !== authorization0) {
       authorization = authorization0;
       uni.setStorageSync("authorization", authorization0);
-      if (authorization0) {
-        permitStore.permits = [ ];
-      } else {
-        const permits = await getUsrPermits({
-          notLoading: true,
-        });
-        permitStore.permits = permits;
-      }
     }
   }
   
