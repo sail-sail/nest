@@ -1352,20 +1352,7 @@ if (right_field && !right_field_column) {
         
         <template
           v-if="dialogAction === 'edit'"
-        >
-        <#
-          if (opts.noCopy !== true) {
-          #>
-          <tm-button
-            v-if="permit('add', '新增')"
-            block
-            color="info"
-            @click="onCopy"
-          >
-            复制
-          </tm-button><#
-          }
-          #><#
+        ><#
           if (!opts.noEdit) {
           #>
           
@@ -1376,6 +1363,19 @@ if (right_field && !right_field_column) {
             @click="operationDrawerShow = false; formRef?.submit();"
           >
             编辑
+          </tm-button><#
+          }
+          #><#
+          if (opts.noCopy !== true) {
+          #>
+          
+          <tm-button
+            v-if="permit('add', '新增')"
+            block
+            color="info"
+            @click="operationDrawerShow = false; onCopy();"
+          >
+            复制
           </tm-button><#
           }
           #>
@@ -1397,7 +1397,7 @@ if (right_field && !right_field_column) {
             v-if="permit('add', '新增')"
             :disabled="!inited || is_form_hydrating"
             block
-            @click="formRef?.submit()"
+            @click="operationDrawerShow = false; formRef?.submit();"
           >
             新增
           </tm-button><#

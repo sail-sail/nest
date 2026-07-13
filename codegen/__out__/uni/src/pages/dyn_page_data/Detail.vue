@@ -115,15 +115,6 @@
         <template
           v-if="dialogAction === 'edit'"
         >
-        
-          <tm-button
-            v-if="permit('add', '新增')"
-            block
-            color="info"
-            @click="onCopy"
-          >
-            复制
-          </tm-button>
           
           <tm-button
             v-if="permit('edit', '编辑')"
@@ -132,6 +123,15 @@
             @click="operationDrawerShow = false; formRef?.submit();"
           >
             编辑
+          </tm-button>
+          
+          <tm-button
+            v-if="permit('add', '新增')"
+            block
+            color="info"
+            @click="operationDrawerShow = false; onCopy();"
+          >
+            复制
           </tm-button>
           
           <CustomDivider
@@ -149,7 +149,7 @@
             v-if="permit('add', '新增')"
             :disabled="!inited || is_form_hydrating"
             block
-            @click="formRef?.submit()"
+            @click="operationDrawerShow = false; formRef?.submit();"
           >
             新增
           </tm-button>
