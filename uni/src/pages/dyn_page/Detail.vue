@@ -365,7 +365,7 @@
   </scroll-view>
   
   <view
-    v-if="dialogAction !== 'view'"
+    v-if="dialogAction !== 'view' && hasOperationButtons"
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -585,6 +585,25 @@ const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);
 
 let operationDrawerShow = $ref(false);
+
+/** 是否有可用的操作按钮 */
+const hasOperationButtons = $computed(() => {
+  if (dialogAction === 'view') return false;
+
+  if (dialogAction === 'edit') {
+    // 复制按钮
+    if (permit('add')) return true;
+    // 编辑按钮
+    if (permit('edit')) return true;
+  }
+
+  if (dialogAction === 'add' || dialogAction === 'copy') {
+    // 新增按钮
+    if (permit('add')) return true;
+  }
+
+  return false;
+});
 
 /** 复制 */
 async function onCopy() {
