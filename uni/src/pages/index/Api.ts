@@ -5,6 +5,7 @@ import type {
   RoleSearch,
   PageInput,
   GetLoginTenants,
+  GetLoginInfo,
 } from "#/types";
 
 import {
@@ -49,9 +50,15 @@ export async function login(
       mutation($input: LoginInput!) {
         login(input: $input) {
           usr_id
+          lbl
           username
+          role_codes
           tenant_id
           org_id
+          org_id_models {
+            id
+            lbl
+          }
           authorization
           lang
         }
@@ -304,4 +311,31 @@ export async function findAllRole(
     const item = res[i];
   }
   return res;
+}
+
+export async function getLoginInfo(
+  opt?: GqlOpt,
+) {
+  const res: {
+    getLoginInfo: GetLoginInfo;
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getLoginInfo {
+          lbl
+          username
+          role_codes
+          lang
+          tenant_id
+          org_id
+          org_id_models {
+            id
+            lbl
+          }
+        }
+      }
+    `,
+  }, opt);
+  const data = res.getLoginInfo;
+  return data;
 }

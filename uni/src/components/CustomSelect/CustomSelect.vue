@@ -413,6 +413,7 @@ function onSelect(value: string) {
     }
   } else {
     selectedValue.value = value;
+    onConfirm();
   }
 }
 

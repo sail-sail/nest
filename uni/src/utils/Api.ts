@@ -1,0 +1,109 @@
+// #ifdef H5
+import type {
+  Query,
+  Mutation,
+} from "#/types.ts";
+
+import cfg from "@/utils/config.ts";
+
+import {
+  lang,
+} from "@/locales/index.ts";
+
+export async function wxwLoginByCode(
+  code: string,
+  opt?: GqlOpt,
+) {
+  const host = cfg.domain;
+  const res: {
+    wxwLoginByCode: Mutation["wxwLoginByCode"],
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($input: WxwLoginByCodeInput!) {
+        wxwLoginByCode(input: $input) {
+          authorization
+          org_id
+          usr_id
+          username
+          name
+          lbl
+          role_codes
+          org_id_models {
+            id
+            lbl
+          }
+          tenant_id
+          lang
+        }
+      }
+    `,
+    variables: {
+      input: {
+        host,
+        code,
+        lang,
+      },
+    },
+  }, opt);
+  const data = res?.wxwLoginByCode;
+  return data;
+}
+
+/** 通过 appid, agentid, url 生成企业签名 */
+export async function wxwGetConfigSignature(
+  appid: string,
+  agentid: string,
+  url: string,
+  opt?: GqlOpt,
+) {
+  const res: {
+    wxwGetConfigSignature: Query["wxwGetConfigSignature"],
+  } = await query({
+    query: /* GraphQL */ `
+      query($appid: SmolStr!, $agentid: SmolStr!, $url: SmolStr!) {
+        wxwGetConfigSignature(appid: $appid, agentid: $agentid, url: $url) {
+          timestamp
+          nonceStr
+          signature
+        }
+      }
+    `,
+    variables: {
+      appid,
+      agentid,
+      url,
+    },
+  }, opt);
+  const data = res.wxwGetConfigSignature;
+  return data;
+}
+
+/** 通过 appid, agentid, url 生成应用签名 */
+export async function wxwGetAgentConfigSignature(
+  appid: string,
+  agentid: string,
+  url: string,
+  opt?: GqlOpt,
+) {
+  const res: {
+    wxwGetAgentConfigSignature: Query["wxwGetAgentConfigSignature"],
+  } = await query({
+    query: /* GraphQL */ `
+      query($appid: SmolStr!, $agentid: SmolStr!, $url: SmolStr!) {
+        wxwGetAgentConfigSignature(appid: $appid, agentid: $agentid, url: $url) {
+          timestamp
+          nonceStr
+          signature
+        }
+      }
+    `,
+    variables: {
+      appid,
+      agentid,
+      url,
+    },
+  }, opt);
+  const data = res.wxwGetAgentConfigSignature;
+  return data;
+}
+// #endif
