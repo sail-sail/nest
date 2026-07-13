@@ -1147,7 +1147,7 @@ if (right_field && !right_field_column) {
     ></view>
     
   </scroll-view><#
-  if (opts.noCopy !== true || opts.noEdit !== true || hasAudit) {
+  if (opts.noCopy !== true || opts.noEdit !== true || opts.noAdd !== true || hasAudit) {
   #>
   
   <view
@@ -1161,7 +1161,7 @@ if (right_field && !right_field_column) {
     } else if (opts.noAdd === true) {
     #>dialogAction === 'edit'<#
     }
-    #>"
+    #> && hasOperationButtons"
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -1647,6 +1647,94 @@ const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);
 
 let operationDrawerShow = $ref(false);
+
+/** 是否有可用的操作按钮 */
+const hasOperationButtons = $computed(() => {
+  if (dialogAction === 'view') return false;
+
+  if (dialogAction === 'edit') {
+    // 复制按钮<#
+    if (opts.noCopy !== true) {
+    #>
+    if (permit('add')) return true;<#
+    }
+    #>
+    // 编辑按钮<#
+    if (!opts.noEdit) {
+    #>
+    if (permit('edit')) return true;<#
+    }
+    #><#
+    if (hasAudit) {
+      #>
+    // 审核按钮<#
+      if (!hasReviewed) {
+      #>
+    if (
+      permit('audit_pass') &&
+      (
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+      )
+    ) return true;<#
+      }
+      #>
+    if (
+      permit('audit_reject') &&
+      <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
+    ) return true;
+    if (
+      permit('audit_submit') &&
+      (
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
+      )
+    ) return true;<#
+      if (opts?.audit?.hasReverse) {
+      #>
+    if (
+      permit('audit_reverse') &&
+      (
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
+        if (hasReviewed) {
+        #> ||
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
+        }
+        #>
+      )
+    ) return true;<#
+      }
+      #><#
+      if (hasReviewed) {
+      #>
+    if (
+      permit('audit_review') &&
+      (
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited ||
+        (
+          <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
+          !permit('audit_reverse')
+        )
+      )
+    ) return true;<#
+      }
+      #><#
+    }
+    #>
+  }
+
+  if (dialogAction === 'add' || dialogAction === 'copy') {
+    // 新增按钮<#
+    if (!opts.noAdd) {
+    #>
+    if (permit('add')) return true;<#
+    }
+    #>
+  }
+
+  return false;
+});
 
 /** 复制 */
 async function onCopy() {

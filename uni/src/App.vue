@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import {
+  refreshPermits,
+} from "./utils/permit.ts";
 
 // #ifdef H5
 import {
@@ -15,6 +18,8 @@ onLaunch((async(options?: App.LaunchShowOption) => {
   // #endif
   
   await checkLogin(options);
+  
+  refreshPermits();
   
 }));
 
