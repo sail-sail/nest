@@ -98,7 +98,7 @@
     "sass": "1.101.0",
     "svgo": "4.0.2",
     "tmui-cli": "1.3.0",
-    "typescript": "7.0.2",
+    "typescript": "6.0.3",
     "typescript-eslint": "8.63.0",
     "unocss": "66.7.5",
     "unocss-applet": "0.12.2",
