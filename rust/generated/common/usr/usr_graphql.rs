@@ -81,6 +81,7 @@ pub struct UsrQuery;
 impl UsrQuery {
   
   /// 获取当前登录用户信息
+  #[graphql(name = "getLoginInfo")]
   async fn get_login_info(
     &self,
     ctx: &Context<'_>,
