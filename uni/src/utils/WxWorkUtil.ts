@@ -8,6 +8,10 @@ import {
   wxwGetAgentConfigSignature,
 } from "./Api";
 
+import type {
+  GetLoginInfo,
+} from "#/types.ts";
+
 let domain = "";
 let appid = "";
 let agentid = "";
@@ -72,9 +76,11 @@ export async function initWxWorkCfg() {
         return;
       }
       usrStore.setAuthorization(login_model.authorization);
+      usrStore.setUsrId(login_model.usr_id);
       usrStore.setUsername(login_model.username);
       usrStore.setTenantId(login_model.tenant_id);
       usrStore.setLang(login_model.lang);
+      usrStore.setLoginInfo(login_model as GetLoginInfo);
       const url = new URL(location.href);
       url.searchParams.delete("code");
       url.searchParams.delete("state");

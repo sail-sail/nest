@@ -34,6 +34,7 @@ use crate::wxwork::wxw_app_token::wxw_app_token_model::{
   GetuserinfoModel,
 };
 
+use generated::base::role::role_dao::find_by_ids_role;
 use generated::base::usr::usr_dao::{
   find_one_usr,
   find_by_id_usr,
@@ -66,6 +67,7 @@ use generated::wxwork::wxw_app::wxw_app_model::WxwAppSearch;
 use generated::common::auth::auth_dao::get_token_by_auth_model;
 
 use generated::common::auth::auth_model::AuthModel;
+use generated::common::usr::usr_model::GetLoginInfoorgIdModel;
 
 use generated::base::domain::domain_dao::{
   find_one_domain,
@@ -384,6 +386,25 @@ pub async fn wxw_login_by_code(
   validate_is_enabled_usr(
     &usr_model,
   ).await?;
+
+  let role_ids = usr_model.role_ids.clone();
+  let usr_org_ids = usr_model.org_ids.clone();
+  let usr_org_ids_lbl = usr_model.org_ids_lbl.clone();
+
+  let role_models = find_by_ids_role(role_ids, options).await?;
+  let role_codes = role_models
+    .into_iter()
+    .map(|item| item.code)
+    .collect::<Vec<_>>();
+
+  let org_id_models: Vec<GetLoginInfoorgIdModel> = usr_org_ids
+    .into_iter()
+    .zip(usr_org_ids_lbl)
+    .map(|(id, lbl)| GetLoginInfoorgIdModel {
+      id,
+      lbl,
+    })
+    .collect();
   
   let org_ids = usr_model.org_ids;
   let mut org_id = usr_model.default_org_id;
@@ -409,8 +430,12 @@ pub async fn wxw_login_by_code(
   let wxw_login_by_code = WxwLoginByCode {
     authorization,
     org_id: Some(org_id),
+    usr_id: usr_model.id,
     username: name.clone(),
     name,
+    lbl: usr_model.lbl.clone(),
+    role_codes,
+    org_id_models,
     tenant_id,
     lang,
   };

@@ -12,6 +12,8 @@ use smol_str::SmolStr;
 
 use generated::base::org::org_model::OrgId;
 use generated::base::tenant::tenant_model::TenantId;
+use generated::base::usr::usr_model::UsrId;
+use generated::common::usr::usr_model::GetLoginInfoorgIdModel;
 
 /// 通过host获取appid, agentid
 #[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
@@ -54,11 +56,23 @@ pub struct WxwLoginByCode {
   /// 组织id
   pub org_id: Option<OrgId>,
   
+  /// 用户id
+  pub usr_id: UsrId,
+  
   /// 用户名
   pub username: SmolStr,
   
   /// 姓名
   pub name: SmolStr,
+  
+  /// 用户展示名
+  pub lbl: SmolStr,
+  
+  /// 角色编码
+  pub role_codes: Vec<SmolStr>,
+  
+  /// 可用组织
+  pub org_id_models: Vec<GetLoginInfoorgIdModel>,
   
   /// 租户id
   pub tenant_id: TenantId,
