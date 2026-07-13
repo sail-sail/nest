@@ -23,10 +23,17 @@ export async function wxwLoginByCode(
         wxwLoginByCode(input: $input) {
           authorization
           org_id
-          username,
-          name,
-          tenant_id,
-          lang,
+          usr_id
+          username
+          name
+          lbl
+          role_codes
+          org_id_models {
+            id
+            lbl
+          }
+          tenant_id
+          lang
         }
       }
     `,

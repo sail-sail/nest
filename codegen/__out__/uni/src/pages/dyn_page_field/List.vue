@@ -245,6 +245,7 @@
             >
               <view
                 un-i="iconfont-right"
+                un-text="[var(--color-placeholder)]"
               ></view>
             </view>
             

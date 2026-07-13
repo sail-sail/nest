@@ -2298,6 +2298,10 @@ pub async fn creates_return_role(
     );
   }
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let ids = _creates(
     inputs.clone(),
     options,
@@ -2334,6 +2338,10 @@ pub async fn creates_role(
       req_id = get_req_id(),
     );
   }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let ids = _creates(
     inputs,
@@ -2898,6 +2906,10 @@ pub async fn create_role(
       req_id = get_req_id(),
     );
   }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let ids = _creates(
     vec![input],

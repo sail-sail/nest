@@ -485,6 +485,7 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
             >
               <view
                 un-i="iconfont-right"
+                un-text="[var(--color-placeholder)]"
               ></view>
             </view>
             

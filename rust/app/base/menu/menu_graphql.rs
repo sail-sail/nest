@@ -3,6 +3,8 @@ use async_graphql::{Context, Object};
 
 use generated::common::context::Ctx;
 use generated::base::menu::menu_model::MenuSearch;
+use generated::common::gql::model::{PageInput, SortInput};
+use generated::scrm::uni_menu::uni_menu_model::{UniMenuModel, UniMenuSearch};
 
 use super::menu_resolver;
 use super::menu_model::{GetMenus, FindMenuAndRoles};
@@ -24,6 +26,31 @@ impl MenuQuery {
       .build()
       .scope({
         menu_resolver::get_menus()
+      }).await
+  }
+  
+  /// 根据当前用户权限获取手机端首页菜单列表
+  #[graphql(name = "getUniMenus")]
+  async fn get_uni_menus(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<UniMenuSearch>,
+    #[graphql(name = "page")]
+    page: Option<PageInput>,
+    #[graphql(name = "sort")]
+    sort: Option<Vec<SortInput>>,
+  ) -> Result<Vec<UniMenuModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        menu_resolver::get_uni_menus(
+          search,
+          page,
+          sort,
+          None,
+        )
       }).await
   }
   
