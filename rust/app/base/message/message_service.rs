@@ -32,7 +32,7 @@ pub async fn send_message(
 /// 标记消息接收记录为已读
 pub async fn mark_message_receiver_as_read(id: MessageReceiverId) -> Result<bool> {
   let usr_id = get_auth_id_ok()?;
-  let receiver_model = match find_by_id_message_receiver(id.clone(), None).await? {
+  let receiver_model = match find_by_id_message_receiver(id, None).await? {
     Some(item) => item,
     None => return Ok(false),
   };
