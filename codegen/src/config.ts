@@ -421,6 +421,23 @@ export interface TableColumn {
   search?: boolean,
   
   /**
+   * 前端列表搜索条件默认值
+   * 比如: 最近3年: subtract:94608000
+   */
+  searchDefaultValue?: any,
+  
+  /**
+   * 日期和数字后端resolver层限定搜索条件跨度最大范围
+   * 时间跨度时单位为秒
+   */
+  searchRangeMax?: number,
+  
+  /**
+   * 日期和数字后端resolver层限定搜索条件跨度最大范围提示信息
+   */
+  searchRangeMaxMsg?: string,
+  
+  /**
    * 是否可以搜索
    * 默认为 false, 如果 search == true, 则默认为 true
    * 如果是外键关联字段, 则默认为 true
