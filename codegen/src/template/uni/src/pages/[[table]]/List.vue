@@ -616,11 +616,37 @@ const search = $ref<SearchType>(uni.getStorageSync(searchKey) || {<#
     const data_type = column?.DATA_TYPE;
     const column_type = column?.COLUMN_TYPE;
     const column_comment = column?.COLUMN_COMMENT || "";
+    const searchDefaultValue = column?.searchDefaultValue == null
+      ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+      : column.searchDefaultValue;
   #><#
   if (data_type === "datetime" || data_type === "date") {
+    if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+  // <#=column_comment#>
+  <#=column_name#>: [
+    dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+    dayjs().endOf("day").format("YYYY-MM-DD"),
+  ],<#
+    } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+      const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+      const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+  #>
+  // <#=column_comment#>
+  <#=column_name#>: [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ],<#
+    } else {
   #>
   // <#=column_comment#>
   <#=column_name#>: [ null, null ],<#
+    }
+  } else if (searchDefaultValue != null) {
+    const searchDefaultValueStr = String(searchDefaultValue);
+  #>
+  // <#=column_comment#>
+  <#=column_name#>: <#=JSON.stringify(searchDefaultValueStr)#>,<#
   }
   #><#
   }
@@ -636,16 +662,43 @@ for (let i = 0; i < search_fields.length; i++) {
   const data_type = column?.DATA_TYPE;
   const column_type = column?.COLUMN_TYPE;
   const column_comment = column?.COLUMN_COMMENT || "";
+  const searchDefaultValue = column?.searchDefaultValue == null
+    ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+    : column.searchDefaultValue;
   if (search_field === searchByKeyword.prop) {
     continue;
   }
-  if (data_type !== "datetime" && data_type !== "date") {
+  if (data_type !== "datetime" && data_type !== "date" && searchDefaultValue == null) {
     continue;
   }
 #>
 // <#=column_comment#>
-if (!search.<#=column_name#>) {
-  search.<#=column_name#> = [ null, null ];
+if (search.<#=column_name#> == null) {<#
+  if (data_type === "datetime" || data_type === "date") {
+    if (typeof searchDefaultValue === "string" && /^subtract:\\d+$/.test(searchDefaultValue)) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+#>
+  search.<#=column_name#> = [
+    dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+    dayjs().endOf("day").format("YYYY-MM-DD"),
+  ];<#
+    } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+      const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+      const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+#>
+  search.<#=column_name#> = [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ];<#
+    } else {
+#>
+  search.<#=column_name#> = [ null, null ];<#
+    }
+  } else if (searchDefaultValue != null) {
+    const searchDefaultValueStr = String(searchDefaultValue);
+#>
+  search.<#=column_name#> = <#=JSON.stringify(searchDefaultValueStr)#>;<#
+  }
+#>
 }<#
 }
 #>
@@ -814,13 +867,36 @@ async function onReset() {<#
     const column_type = column?.COLUMN_TYPE;
     const column_comment = column?.COLUMN_COMMENT || "";
     const prop = search_field === searchByKeyword?.prop ? searchByKeyword.prop : column_name;
+    const searchDefaultValue = column?.searchDefaultValue == null
+      ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+      : column.searchDefaultValue;
   #><#
   if (data_type === "datetime" || data_type === "date") {
+    if (typeof searchDefaultValue === "string" && /^subtract:\\d+$/.test(searchDefaultValue)) {
+      const subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+  #>
+  search.<#=prop#> = [
+    dayjs().subtract(<#=subtractSecond#>, "second").format("YYYY-MM-DD"),
+    dayjs().format("YYYY-MM-DD"),
+  ];<#
+    } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+      const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+      const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+  #>
+  search.<#=prop#> = [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ];<#
+    } else {
   #>
   search.<#=prop#> = [ null, null ];<#
+    }
   } else {
+    if (searchDefaultValue != null) {
+      const searchDefaultValueStr = String(searchDefaultValue);
+  #>
+  search.<#=prop#> = <#=JSON.stringify(searchDefaultValueStr)#>;<#
+    } else {
   #>
   search.<#=prop#> = undefined;<#
+    }
   }
   #><#
   }

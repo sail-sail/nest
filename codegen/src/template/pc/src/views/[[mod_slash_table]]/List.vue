@@ -3587,6 +3587,69 @@ useSubscribeList<<#=Table_Up#>Id>(
 /** 查询 */
 function initSearch() {
   const search = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "version") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "tenant_id") continue;
+      if (column.isPassword || column.isEncrypt) continue;
+      if (!column.search) continue;
+      const data_type = column.DATA_TYPE;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const searchDefaultValue = column.searchDefaultValue == null
+        ? (column.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+        : column.searchDefaultValue;
+      if (searchDefaultValue == null) continue;
+      if (data_type === "datetime") {
+        if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+          let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+          // 减去1天
+          subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      dayjs().endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+    ],<#
+        } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+          const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+          const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ],<#
+        }
+      } else if (data_type === "date") {
+        if (typeof searchDefaultValue === "string" && /^subtract:\\d+$/.test(searchDefaultValue)) {
+          let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+          // 减去1天
+          subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+      dayjs().endOf("day").format("YYYY-MM-DD"),
+    ],<#
+        } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+          const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+          const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ],<#
+        }
+      } else {
+        const searchDefaultValueText = typeof searchDefaultValue === "string"
+          ? searchDefaultValue
+          : JSON.stringify(searchDefaultValue);
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: <#=JSON.stringify(searchDefaultValueText)#>,<#
+      }
+    }
+    #><#
     if (hasIsDeleted) {
     #>
     is_deleted: 0,<#
@@ -3616,7 +3679,7 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
 #><#
-  if (foreignKey || column.dict || column.dictbiz) {
+  if ((foreignKey && !foreignKey.isSearchByLbl) || column.dict || column.dictbiz) {
 #>
 
 // <#=column_comment#>
