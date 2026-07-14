@@ -265,7 +265,13 @@
     </template>
     
     <CustomDivider
-      v-if="inited && total > 0"
+      v-if="!inited || isLoading"
+    >
+      加载中, 请稍后...
+    </CustomDivider>
+    
+    <CustomDivider
+      v-else-if="inited && total > 0"
     >
       共 {{ total }} 动态页面
     </CustomDivider>

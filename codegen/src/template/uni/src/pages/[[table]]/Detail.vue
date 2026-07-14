@@ -1949,6 +1949,7 @@ async function onAuditReject() {
   }
   await auditReject<#=Table_Up#>(<#=table#>_id, {
     rem,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
   await uni.showModal({
     content: "审核拒绝成功",

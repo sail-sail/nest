@@ -498,7 +498,13 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
     </template>
     
     <CustomDivider
-      v-if="inited && total > 0"
+      v-if="!inited || isLoading"
+    >
+      加载中, 请稍后...
+    </CustomDivider>
+    
+    <CustomDivider
+      v-else-if="inited && total > 0"
     >
       共 {{ total }} <#=table_comment#>
     </CustomDivider>
