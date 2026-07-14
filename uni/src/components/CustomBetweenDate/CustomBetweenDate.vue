@@ -18,55 +18,78 @@
     <view
       un-flex="~"
       un-items="center"
-      un-gap="x-1"
-      un-m="x-2"
+      un-justify="between"
+      un-w="full"
       un-h="11"
     >
-      
       <view
-        v-if="!modelValue[0] && !modelValue[1] && props.pageInited"
+        un-flex="~ [1_0_0]"
+        un-items="center"
+        un-gap="x-1"
+        un-m="x-2"
+        un-overflow-hidden
       >
-        
         <view
-          v-if="!_readonly"
-          un-text="[var(--color-placeholder)]"
+          v-if="!modelValue[0] && !modelValue[1] && props.pageInited"
         >
-          {{ props.placeholder }}
+          <view
+            v-if="!_readonly"
+            un-text="[var(--color-placeholder)]"
+          >
+            {{ props.placeholder }}
+          </view>
+
+          <view
+            v-else
+            un-text="[var(--color-placeholder)]"
+          >
+            {{ props.readonlyPlaceholder }}
+          </view>
         </view>
-        
-        <view
+
+        <template
+          v-else-if="modelValue[0] !== modelValue[1]"
+        >
+          <view>
+            {{ modelValue[0] || '以前' }}
+          </view>
+
+          <view>
+            ~
+          </view>
+
+          <view>
+            {{ modelValue[1] || '以后' }}
+          </view>
+        </template>
+
+        <template
           v-else
-          un-text="[var(--color-placeholder)]"
         >
-          {{ props.readonlyPlaceholder }}
-        </view>
-        
+          <view>
+            {{ modelValue[0] }}
+          </view>
+        </template>
       </view>
-      
-      <template
-        v-else-if="modelValue[0] !== modelValue[1]"
+
+      <view
+        v-if="showClear"
+        un-flex="~"
+        un-items="center"
+        un-m="r-2"
+        un-cursor="pointer"
+        @tap.stop=""
+        @click="onClear"
       >
-        <view>
-          {{ modelValue[0] || '以前' }}
-        </view>
-        
-        <view>
-          ~
-        </view>
-        
-        <view>
-          {{ modelValue[1] || '以后' }}
-        </view>
-      </template>
-      
-      <template
-        v-else
-      >
-        <view>
-          {{ modelValue[0] }}
-        </view>
-      </template>
-      
+        <tm-icon
+          _style="transition:color 0.24s"
+          :size="30"
+          color="#b1b1b1"
+          name="close-circle-fill"
+          @tap.stop=""
+          @click="onClear"
+        />
+      </view>
     </view>
   </slot>
 </tm-between-time>
@@ -98,6 +121,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: "change", value?: string[]): void;
   (e: "confirm", value?: string[]): void;
+  (e: "clear"): void;
 }>();
 
 const tmFormItemReadonly = inject<ComputedRef<boolean> | undefined>("tmFormItemReadonly", undefined);
@@ -138,6 +162,30 @@ const modelValue = defineModel<any[]>({
   type: Array,
   default: () => [null, null],
 });
+
+const showClear = $computed(() => {
+  if (_readonly) {
+    return false;
+  }
+  if (props.clearable != null) {
+    return props.clearable && hasValue;
+  }
+  return hasValue;
+});
+
+const hasValue = $computed(() => {
+  if (!Array.isArray(modelValue.value)) {
+    return false;
+  }
+  return modelValue.value.some((item) => item != null && item !== "");
+});
+
+function onClear() {
+  modelValue.value = [];
+  emit("change", []);
+  emit("confirm", []);
+  emit("clear");
+}
 
 function onConfirm(value: string[]) {
   emit("change", value);
