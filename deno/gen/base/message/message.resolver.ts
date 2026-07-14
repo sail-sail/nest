@@ -18,6 +18,30 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+function checkSearchRangeMessage(search?: MessageSearch) {
+  if (!search) {
+    return;
+  }
+
+  const hasId = search.id !== undefined && search.id !== null;
+  const hasIds = Array.isArray(search.ids) && search.ids.length > 0;
+
+  const createTimeRange = search.create_time;
+  if (createTimeRange) {
+    const [begin, end] = createTimeRange;
+    if (begin !== undefined && begin !== null && end !== undefined && end !== null) {
+      const beginDate = new Date(String(begin));
+      const endDate = new Date(String(end));
+      const diff = Math.abs(endDate.getTime() - beginDate.getTime()) / 1000;
+      if (Number.isFinite(diff) && diff > 86400) {
+        throw new Error("创建时间 查询范围不能超过 86400 秒");
+      }
+    } else if (!hasId && !hasIds) {
+      throw new Error("创建时间 查询范围不能超过 86400 秒");
+    }
+  }
+}
+
 /**
  * 根据条件查找消息总数
  */
@@ -28,6 +52,8 @@ export async function findCountMessage(
   const {
     findCountMessage,
   } = await import("./message.service.ts");
+  
+  checkSearchRangeMessage(search);
   
   const num = await findCountMessage(search);
   
@@ -47,6 +73,7 @@ export async function findAllMessage(
     findAllMessage,
   } = await import("./message.service.ts");
   
+  checkSearchRangeMessage(search);
   checkSortMessage(sort);
   
   const models = await findAllMessage(search, page, sort);
@@ -80,6 +107,7 @@ export async function findOneMessage(
     findOneMessage,
   } = await import("./message.service.ts");
   
+  checkSearchRangeMessage(search);
   checkSortMessage(sort);
   
   const model = await findOneMessage(search, sort);
@@ -99,6 +127,7 @@ export async function findOneOkMessage(
     findOneOkMessage,
   } = await import("./message.service.ts");
   
+  checkSearchRangeMessage(search);
   checkSortMessage(sort);
   
   const model = await findOneOkMessage(search, sort);

@@ -830,6 +830,12 @@ async function getSchema0(
       }
     }
     
+    if (item.searchDefaultValue == null) {
+      if (item.searchRangeMax) {
+        item.searchDefaultValue = "subtract:" + item.searchRangeMax;
+      }
+    }
+    
   }
   
   // bpm工作流

@@ -890,20 +890,6 @@ function initSearch() {
 
 let search = $ref<DynPageFieldSearch>(initSearch());
 
-// 动态页面
-const dyn_page_id_search = $computed({
-  get() {
-    return search.dyn_page_id || [ ];
-  },
-  set(val) {
-    if (!val || val.length === 0) {
-      search.dyn_page_id = undefined;
-    } else {
-      search.dyn_page_id = val;
-    }
-  },
-});
-
 // 启用
 const is_enabled_search = $computed({
   get() {

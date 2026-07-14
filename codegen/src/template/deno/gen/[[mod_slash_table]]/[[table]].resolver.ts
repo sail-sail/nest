@@ -4,6 +4,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasPassword = columns.some((column) => column.isPassword);
+const hasSearchRangeMax = columns.some((column) => Number(column.searchRangeMax || 0) > 0);
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -116,7 +117,64 @@ if (mod === "cron" && table === "cron_job") {
 
 import "./cron_job.service.ts";<#
 }
+#><#
+if (hasSearchRangeMax) {
 #>
+
+function checkSearchRange(search?: <#=searchName#>) {
+  if (!search) {
+    return;
+  }
+  const searchRecord = search as Record<string, unknown>;
+  const hasId = searchRecord.id !== undefined && searchRecord.id !== null;
+  const hasIds = Array.isArray(searchRecord.ids) && searchRecord.ids.length > 0;
+<#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  const data_type = (column.DATA_TYPE || "").toLowerCase();
+  if (![ "int", "double", "decimal", "datetime", "date" ].includes(data_type)) continue;
+  const searchRangeMax = Number(column.searchRangeMax || 0);
+  if (!searchRangeMax || searchRangeMax <= 0) continue;
+  const column_comment = column.COLUMN_COMMENT || column_name;
+  const searchRangeMaxMsg = column.searchRangeMaxMsg || `查询范围不能超过 ${searchRangeMax} 秒`;
+#>
+  const <#=column_name#>Value = searchRecord["<#=column_name#>"];
+  if (<#=column_name#>Value === undefined || <#=column_name#>Value === null) {
+    if (!hasId && !hasIds) {
+      throw new Error("<#=column_comment#> <#=searchRangeMaxMsg#>");
+    }
+  } else if (!Array.isArray(<#=column_name#>Value)) {
+    throw new Error("<#=column_comment#> <#=searchRangeMaxMsg#>");
+  } else {
+    const [begin, end] = <#=column_name#>Value as [unknown, unknown];
+    if (begin === undefined || begin === null || end === undefined || end === null) {
+      if (!hasId && !hasIds) {
+        throw new Error("<#=column_comment#> <#=searchRangeMaxMsg#>");
+      }
+    } else if ("<#=data_type#>" === "datetime" || "<#=data_type#>" === "date") {
+      const beginDate = new Date(String(begin));
+      const endDate = new Date(String(end));
+      const diff = Math.abs(endDate.getTime() - beginDate.getTime()) / 1000;
+      if (Number.isFinite(diff) && diff > <#=searchRangeMax#>) {
+        throw new Error("<#=column_comment#> <#=searchRangeMaxMsg#>");
+      }
+    } else {
+      const beginValue = Number(begin);
+      const endValue = Number(end);
+      const diff = Math.abs(endValue - beginValue);
+      if (Number.isFinite(diff) && diff > <#=searchRangeMax#>) {
+        throw new Error("<#=column_comment#> <#=searchRangeMaxMsg#>");
+      }
+    }
+  }<#
+}
+#>
+}
+<# } #>
 
 /**
  * 根据条件查找<#=table_comment#>总数
@@ -139,6 +197,12 @@ export async function findCount<#=Table_Up2#>(
   
   search = search || { };
   search.is_hidden = [ 0 ];<#
+  }
+  #><#
+  if (hasSearchRangeMax) {
+  #>
+  
+  checkSearchRange(search);<#
   }
   #>
   
@@ -170,6 +234,12 @@ export async function findAll<#=Table_Up2#>(
   
   search = search || { };
   search.is_hidden = [ 0 ];<#
+  }
+  #><#
+  if (hasSearchRangeMax) {
+  #>
+  
+  checkSearchRange(search);<#
   }
   #>
   
