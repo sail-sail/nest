@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
 <#
 const hasSummary = columns.some((column) => column.showSummary && !column.onlyCodegenDeno);
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');

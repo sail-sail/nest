@@ -9,30 +9,46 @@
     }
   },
   "pages": [<#
-    const uniAllTables = allTables.filter(t=>t.opts?.isUniPage);
+    const uniAllTables = allTables.filter((t) => t.opts?.isUniPage);
+    const uniPages = [ ];
     for (let i = 0; i < uniAllTables.length; i++) {
       const record = uniAllTables[i];
       let table_name = record.TABLE_NAME;
-      if (!optTables[table_name]) continue;
-      const table_nameUp = table_name.substring(0, 1).toUpperCase() + table_name.substring(1);
+      const schema = optTables[table_name];
+      if (!schema) continue;
       const table_comment = record.TABLE_COMMENT;
-      const mod = table_name.substring(0, table_name.indexOf("_"));
-      const mod_slash_table = table_name.replace("_", "/");
+      const hasForeignTabs = schema.columns.some((item) => {
+        const foreignTabs = item.foreignTabs || [ ];
+        return foreignTabs.some((foreignTab) => {
+          return !!optTables[foreignTab.mod + "_" + foreignTab.table]?.opts?.isUniPage;
+        });
+      });
       table_name = table_name.substring(table_name.indexOf("_") + 1);
+      uniPages.push({
+        path: `pages/${ table_name }/List`,
+        title: `${ table_comment }列表`,
+      });
+      uniPages.push({
+        path: `pages/${ table_name }/Detail`,
+        title: `${ table_comment }详情`,
+      });
+      if (hasForeignTabs) {
+        uniPages.push({
+          path: `pages/${ table_name }/ForeignTabs`,
+          title: `${ table_comment }详情`,
+        });
+      }
+    }
+    for (let i = 0; i < uniPages.length; i++) {
+      const page = uniPages[i];
     #>
     {
-      "path": "pages/<#=table_name#>/List",
+      "path": "<#=page.path#>",
       "style": {
-        "navigationBarTitleText": "<#=table_comment#>列表"
-      }
-    },
-    {
-      "path": "pages/<#=table_name#>/Detail",
-      "style": {
-        "navigationBarTitleText": "<#=table_comment#>详情"
+        "navigationBarTitleText": "<#=page.title#>"
       }
     }<#
-      if (i < uniAllTables.length - 1) {
+      if (i < uniPages.length - 1) {
     #>,<#
       }
     #><#

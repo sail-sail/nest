@@ -1812,18 +1812,27 @@ async function onSave(
       return;
     }
   }
+  const currentAction = dialogAction;
   
-  if (dialogAction === "copy" || dialogAction === "add") {
-    await create<#=Table_Up#>(
+  if (currentAction === "copy" || currentAction === "add") {
+    const created_id = await create<#=Table_Up#>(
       <#=table#>_input,
     );
     await uni.showModal({
       content: "新增成功",
       showCancel: false,
     });
-    await uni.navigateBack();
-    uni.$emit("/pages/<#=table#>/List:refresh");
-  } else if (dialogAction === "edit") {
+    if (backAfterSaveInner) {
+      await uni.navigateBack();
+    } else {
+      <#=table#>_id = created_id;
+      dialogAction = "edit";
+      await onRefresh();
+    }
+    uni.$emit("/pages/<#=table#>/List:refresh", {
+      action: currentAction,
+    });
+  } else if (currentAction === "edit") {
     if (!<#=table#>_id) {
       uni.showToast({
         title: "修改失败, id 不能为空",
@@ -1839,7 +1848,11 @@ async function onSave(
       content: "修改成功",
       showCancel: false,
     });
-    await uni.navigateBack();
+    if (backAfterSaveInner) {
+      await uni.navigateBack();
+    } else {
+      await onRefresh();
+    }
     uni.$emit("/pages/<#=table#>/List:refresh");
   }
   
@@ -1995,7 +2008,11 @@ async function onRefresh() {
   try {
     formRef?.resetValidation();
     if (dialogAction === "add") {
-      <#=table#>_input = await getDefaultInput<#=Table_Up#>();<#
+      <#=table#>_input = await getDefaultInput<#=Table_Up#>();
+      <#=table#>_input = {
+        ...<#=table#>_input,
+        ...getMergedInputPatch(),
+      };<#
       if (hasOrderBy) {
       #>
       if (props.order_by) {
@@ -2029,7 +2046,11 @@ async function onRefresh() {
       }
       <#=table#>_input = intoInput<#=Table_Up#>(
         <#=table#>_model,
-      );<#
+      );
+      <#=table#>_input = {
+        ...<#=table#>_input,
+        ...getMergedInputPatch(),
+      };<#
       if (hasOrderBy) {
       #>
       if (props.order_by) {
@@ -2241,7 +2262,9 @@ const props = withDefaults(
     action?: ActionType;
     <#=table#>_id?: <#=Table_Up#>Id;
     findOne?: typeof findOne<#=Table_Up#>;
-    beforeSave?: (input: <#=Table_Up#>Input) => Promise<boolean>;<#
+    beforeSave?: (input: <#=Table_Up#>Input) => Promise<boolean>;
+    inputPatch?: Partial<<#=Table_Up#>Input>;
+    backAfterSave?: boolean;<#
     if (hasOrderBy) {
     #>
     order_by?: number;<#
@@ -2253,7 +2276,9 @@ const props = withDefaults(
     action: undefined,
     <#=table#>_id: undefined,
     findOne: undefined,
-    beforeSave: undefined,<#
+    beforeSave: undefined,
+    inputPatch: undefined,
+    backAfterSave: true,<#
     if (hasOrderBy) {
     #>
     order_by: undefined,<#
@@ -2262,6 +2287,16 @@ const props = withDefaults(
   },
 );
 
+let inputPatchByQuery = $ref<Partial<<#=Table_Up#>Input>>({ });
+let backAfterSaveInner = $ref(true);
+
+function getMergedInputPatch(): Partial<<#=Table_Up#>Input> {
+  return {
+    ...inputPatchByQuery,
+    ...props.inputPatch,
+  };
+}
+
 let findOneModel: typeof findOne<#=Table_Up#> = findOne<#=Table_Up#>;
 
 watch(
@@ -2269,6 +2304,7 @@ watch(
     props.action,
     props.<#=table#>_id,
     props.findOne,
+    props.backAfterSave,
   ],
   () => {
     if (props.action) {
@@ -2282,6 +2318,7 @@ watch(
     } else {
       findOneModel = findOne<#=Table_Up#>;
     }
+    backAfterSaveInner = props.backAfterSave ?? true;
   },
   {
     immediate: true,
@@ -2291,12 +2328,27 @@ watch(
 onLoad(async function(query?: AnyObject) {
   const <#=table#>_id_str = query?.<#=table#>_id;
   const action = query?.action;
+  const input_patch = query?.input_patch;
+  const back_after_save = query?.back_after_save;
   if (action === "add") {
     dialogAction = "add";
   } else if (action === "copy") {
     dialogAction = "copy";
   } else if (action === "edit") {
     dialogAction = "edit";
+  }
+  if (back_after_save != null) {
+    backAfterSaveInner = decodeURIComponent(back_after_save) !== "0";
+  }
+  if (input_patch) {
+    try {
+      const data = JSON.parse(decodeURIComponent(input_patch));
+      if (data && typeof data === "object") {
+        inputPatchByQuery = data as Partial<<#=Table_Up#>Input>;
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
   if (<#=table#>_id_str) {
     <#=table#>_id = decodeURIComponent(<#=table#>_id_str) as <#=Table_Up#>Id | undefined;

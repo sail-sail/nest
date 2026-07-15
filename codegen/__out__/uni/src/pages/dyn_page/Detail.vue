@@ -654,18 +654,27 @@ async function onSave(
       return;
     }
   }
+  const currentAction = dialogAction;
   
-  if (dialogAction === "copy" || dialogAction === "add") {
-    await createDynPage(
+  if (currentAction === "copy" || currentAction === "add") {
+    const created_id = await createDynPage(
       dyn_page_input,
     );
     await uni.showModal({
       content: "新增成功",
       showCancel: false,
     });
-    await uni.navigateBack();
-    uni.$emit("/pages/dyn_page/List:refresh");
-  } else if (dialogAction === "edit") {
+    if (backAfterSaveInner) {
+      await uni.navigateBack();
+    } else {
+      dyn_page_id = created_id;
+      dialogAction = "edit";
+      await onRefresh();
+    }
+    uni.$emit("/pages/dyn_page/List:refresh", {
+      action: currentAction,
+    });
+  } else if (currentAction === "edit") {
     if (!dyn_page_id) {
       uni.showToast({
         title: "修改失败, id 不能为空",
@@ -681,7 +690,11 @@ async function onSave(
       content: "修改成功",
       showCancel: false,
     });
-    await uni.navigateBack();
+    if (backAfterSaveInner) {
+      await uni.navigateBack();
+    } else {
+      await onRefresh();
+    }
     uni.$emit("/pages/dyn_page/List:refresh");
   }
   
@@ -694,6 +707,10 @@ async function onRefresh() {
     formRef?.resetValidation();
     if (dialogAction === "add") {
       dyn_page_input = await getDefaultInputDynPage();
+      dyn_page_input = {
+        ...dyn_page_input,
+        ...getMergedInputPatch(),
+      };
       if (props.order_by) {
         dyn_page_input.order_by = props.order_by;
       }
@@ -724,6 +741,10 @@ async function onRefresh() {
       dyn_page_input = intoInputDynPage(
         dyn_page_model,
       );
+      dyn_page_input = {
+        ...dyn_page_input,
+        ...getMergedInputPatch(),
+      };
       if (props.order_by) {
         dyn_page_input.order_by = props.order_by;
       }
@@ -884,6 +905,8 @@ const props = withDefaults(
     dyn_page_id?: DynPageId;
     findOne?: typeof findOneDynPage;
     beforeSave?: (input: DynPageInput) => Promise<boolean>;
+    inputPatch?: Partial<DynPageInput>;
+    backAfterSave?: boolean;
     order_by?: number;
   }>(),
   {
@@ -892,9 +915,21 @@ const props = withDefaults(
     dyn_page_id: undefined,
     findOne: undefined,
     beforeSave: undefined,
+    inputPatch: undefined,
+    backAfterSave: true,
     order_by: undefined,
   },
 );
+
+let inputPatchByQuery = $ref<Partial<DynPageInput>>({ });
+let backAfterSaveInner = $ref(true);
+
+function getMergedInputPatch(): Partial<DynPageInput> {
+  return {
+    ...inputPatchByQuery,
+    ...props.inputPatch,
+  };
+}
 
 let findOneModel: typeof findOneDynPage = findOneDynPage;
 
@@ -903,6 +938,7 @@ watch(
     props.action,
     props.dyn_page_id,
     props.findOne,
+    props.backAfterSave,
   ],
   () => {
     if (props.action) {
@@ -916,6 +952,7 @@ watch(
     } else {
       findOneModel = findOneDynPage;
     }
+    backAfterSaveInner = props.backAfterSave ?? true;
   },
   {
     immediate: true,
@@ -925,12 +962,27 @@ watch(
 onLoad(async function(query?: AnyObject) {
   const dyn_page_id_str = query?.dyn_page_id;
   const action = query?.action;
+  const input_patch = query?.input_patch;
+  const back_after_save = query?.back_after_save;
   if (action === "add") {
     dialogAction = "add";
   } else if (action === "copy") {
     dialogAction = "copy";
   } else if (action === "edit") {
     dialogAction = "edit";
+  }
+  if (back_after_save != null) {
+    backAfterSaveInner = decodeURIComponent(back_after_save) !== "0";
+  }
+  if (input_patch) {
+    try {
+      const data = JSON.parse(decodeURIComponent(input_patch));
+      if (data && typeof data === "object") {
+        inputPatchByQuery = data as Partial<DynPageInput>;
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
   if (dyn_page_id_str) {
     dyn_page_id = decodeURIComponent(dyn_page_id_str) as DynPageId | undefined;

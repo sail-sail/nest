@@ -2252,7 +2252,7 @@ export async function getDefaultInput<#=Table_Up#>() {<#
         if (defaultValue === "CURRENT_USR_ID") {
           defaultValue = "usrStore.usr_id";
         } else if (defaultValue === "CURRENT_ORG_ID") {
-          defaultValue = "usrStore.loginInfo?.org_id";
+          defaultValue = "usrStore.getLoginInfo()?.org_id";
         } else if (defaultValue === "CURRENT_TENANT_ID") {
           defaultValue = "usrStore.tenant_id";
         } else if (defaultValue === "CURRENT_USERNAME") {
