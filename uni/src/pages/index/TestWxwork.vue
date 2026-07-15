@@ -17,9 +17,9 @@
       un-m="x-2"
     >
       <tm-button
-        @click="findAllRoleEfc"
         label="测试调用接口"
         block
+        @click="findAllRoleEfc"
       ></tm-button>
     </view>
   </view>
