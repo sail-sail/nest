@@ -194,7 +194,7 @@
           :style="{
             borderColor: dyn_page_field_id_selected === dyn_page_field_model.id ? 'var(--color-primary)' : undefined,
           }"
-          @click="onDynPageField(dyn_page_field_model.id)"
+          @click="onDynPageField(dyn_page_field_model.id, dyn_page_field_model.lbl)"
         >
           
           <view
@@ -331,6 +331,17 @@ type SearchType = {
   code?: string;
 };
 
+const props = withDefaults(
+  defineProps<{
+    builtInSearch?: Partial<DynPageFieldSearch>;
+    addQuery?: Record<string, string | number | boolean | null | undefined>;
+  }>(),
+  {
+    builtInSearch: undefined,
+    addQuery: undefined,
+  },
+);
+
 const searchKey = "/pages/dyn_page_field/List:search";
 const search = $ref<SearchType>(uni.getStorageSync(searchKey) || {
 });
@@ -351,6 +362,20 @@ const dyn_page_field_models_computed = computed<DynPageFieldModelComputed[]>(() 
   });
 });
 
+function buildPageQuery(
+  query?: Record<string, string | number | boolean | null | undefined>,
+) {
+  const params = Object.entries(query || { })
+    .filter(([, value]) => value != null && value !== "")
+    .map(([key, value]) => {
+      return `${ key }=${ encodeURIComponent(String(value)) }`;
+    });
+  if (params.length === 0) {
+    return "";
+  }
+  return `?${ params.join("&") }`;
+}
+
 function onRadio(
   checked: boolean,
   dyn_page_field_id: DynPageFieldId,
@@ -366,6 +391,7 @@ function onRadio(
 
 async function onDynPageField(
   dyn_page_field_id: DynPageFieldId,
+  title?: string,
 ) {
   if (isEditing) {
     if (!dyn_page_field_ids_selected.includes(dyn_page_field_id)) {
@@ -376,6 +402,7 @@ async function onDynPageField(
     return;
   }
   dyn_page_field_id_selected = dyn_page_field_id;
+  
   await uni.navigateTo({
     url: `/pages/dyn_page_field/Detail?dyn_page_field_id=${ encodeURIComponent(dyn_page_field_id) }`,
   });
@@ -386,7 +413,10 @@ async function onAddDynPageField() {
     return;
   }
   await uni.navigateTo({
-    url: "/pages/dyn_page_field/Detail",
+    url: `/pages/dyn_page_field/Detail${ buildPageQuery({
+      action: "add",
+      ...props.addQuery,
+    }) }`,
   });
 }
 
@@ -481,11 +511,14 @@ async function onSearch() {
 }
 
 function getSearchDynPageField() {
-  const search2: SearchType = {
+  const search2: DynPageFieldSearch = {
     lbl: search.lbl?.trim() || undefined,
     code: search.code?.trim() || undefined,
   };
-  return search2;
+  return {
+    ...search2,
+    ...props.builtInSearch,
+  };
 }
 
 async function onRefresh() {

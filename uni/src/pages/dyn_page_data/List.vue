@@ -106,7 +106,7 @@
             v-bind="field_model._attrs"
             @update:model-value="(val: any) => {
               search.dyn_page_data = search.dyn_page_data ?? { };
-              search.dyn_page_data[field_model.code + '_like'] = val;
+              (search.dyn_page_data as any)[field_model.code + '_like'] = val;
             }"
             @change="onSearch"
           ></CustomDynComp>
@@ -192,7 +192,7 @@
           :style="{
             borderColor: dyn_page_data_id_selected === dyn_page_data_model.id ? 'var(--color-primary)' : undefined,
           }"
-          @click="onDynPageData(dyn_page_data_model.id)"
+          @click="onDynPageData(dyn_page_data_model.id, dyn_page_data_model.ref_code)"
         >
           
           <view
@@ -334,6 +334,17 @@ type SearchType = {
   dyn_page_data?: DynPageDataSearch["dyn_page_data"];
 };
 
+const props = withDefaults(
+  defineProps<{
+    builtInSearch?: Partial<DynPageDataSearch>;
+    addQuery?: Record<string, string | number | boolean | null | undefined>;
+  }>(),
+  {
+    builtInSearch: undefined,
+    addQuery: undefined,
+  },
+);
+
 const searchKey = "/pages/dyn_page_data/List:search";
 const search = $ref<SearchType>(uni.getStorageSync(searchKey) || {
 });
@@ -363,6 +374,20 @@ const {
   refreshDynPageFields,
 } = $(useDynPageFields($$(pagePath)));
 
+function buildPageQuery(
+  query?: Record<string, string | number | boolean | null | undefined>,
+) {
+  const params = Object.entries(query || { })
+    .filter(([, value]) => value != null && value !== "")
+    .map(([key, value]) => {
+      return `${ key }=${ encodeURIComponent(String(value)) }`;
+    });
+  if (params.length === 0) {
+    return "";
+  }
+  return `?${ params.join("&") }`;
+}
+
 function onRadio(
   checked: boolean,
   dyn_page_data_id: DynPageDataId,
@@ -378,6 +403,7 @@ function onRadio(
 
 async function onDynPageData(
   dyn_page_data_id: DynPageDataId,
+  title?: string,
 ) {
   if (isEditing) {
     if (!dyn_page_data_ids_selected.includes(dyn_page_data_id)) {
@@ -388,6 +414,7 @@ async function onDynPageData(
     return;
   }
   dyn_page_data_id_selected = dyn_page_data_id;
+  
   await uni.navigateTo({
     url: `/pages/dyn_page_data/Detail?dyn_page_data_id=${ encodeURIComponent(dyn_page_data_id) }`,
   });
@@ -398,7 +425,10 @@ async function onAddDynPageData() {
     return;
   }
   await uni.navigateTo({
-    url: "/pages/dyn_page_data/Detail",
+    url: `/pages/dyn_page_data/Detail${ buildPageQuery({
+      action: "add",
+      ...props.addQuery,
+    }) }`,
   });
 }
 
@@ -493,7 +523,10 @@ function getSearchDynPageData() {
     ...search,
     ref_code: pagePath,
   };
-  return search2;
+  return {
+    ...search2,
+    ...props.builtInSearch,
+  };
 }
 
 async function onRefresh() {

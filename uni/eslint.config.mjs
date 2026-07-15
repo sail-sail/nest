@@ -51,6 +51,7 @@ export default typescriptEslint.config(
       "vue/no-dupe-keys": 0,
       "no-useless-assignment": 0,
       "prefer-const": 0,
+      "@typescript-eslint/no-empty-object-type": 0,
     },
   },
 );

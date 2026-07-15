@@ -195,6 +195,12 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     }
     
     const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
+    const hasUniForeignTabs = columns.some((item) => {
+      const foreignTabs = item.foreignTabs || [ ];
+      return foreignTabs.some((foreignTab) => {
+        return !!optTables[foreignTab.mod + "_" + foreignTab.table]?.opts?.isUniPage;
+      });
+    });
     const hasAudit = !!opts?.audit;
     // bpm
     const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
@@ -242,6 +248,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
         dir === "/uni/src/pages/[[table]]/Model.ts"
       ) {
         if (!opts.isUniApi && !opts.isUniPage) {
+          return;
+        }
+      } else if (dir === "/uni/src/pages/[[table]]/ForeignTabs.vue") {
+        if (!opts.isUniPage || !hasUniForeignTabs) {
           return;
         }
       } else if (dir === "/uni/src/pages/[[table]]/DetailModal.vue") {

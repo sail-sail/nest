@@ -464,8 +464,8 @@ export default {
 	left: 0;
 	top: 0;
 	width: 3px;
-	height: 36%;
-	transform: translateY(82%);
+	height: 100%;
+	// transform: translateY(82%);
 	border-radius: 8px;
 	background-color: currentColor;
 

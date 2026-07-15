@@ -304,18 +304,27 @@ async function onSave(
       return;
     }
   }
+  const currentAction = dialogAction;
   
-  if (dialogAction === "copy" || dialogAction === "add") {
-    await createDynPageData(
+  if (currentAction === "copy" || currentAction === "add") {
+    const created_id = await createDynPageData(
       dyn_page_data_input,
     );
     await uni.showModal({
       content: "新增成功",
       showCancel: false,
     });
-    await uni.navigateBack();
-    uni.$emit("/pages/dyn_page_data/List:refresh");
-  } else if (dialogAction === "edit") {
+    if (backAfterSaveInner) {
+      await uni.navigateBack();
+    } else {
+      dyn_page_data_id = created_id;
+      dialogAction = "edit";
+      await onRefresh();
+    }
+    uni.$emit("/pages/dyn_page_data/List:refresh", {
+      action: currentAction,
+    });
+  } else if (currentAction === "edit") {
     if (!dyn_page_data_id) {
       uni.showToast({
         title: "修改失败, id 不能为空",
@@ -331,7 +340,11 @@ async function onSave(
       content: "修改成功",
       showCancel: false,
     });
-    await uni.navigateBack();
+    if (backAfterSaveInner) {
+      await uni.navigateBack();
+    } else {
+      await onRefresh();
+    }
     uni.$emit("/pages/dyn_page_data/List:refresh");
   }
   
@@ -344,6 +357,10 @@ async function onRefresh() {
     formRef?.resetValidation();
     if (dialogAction === "add") {
       dyn_page_data_input = await getDefaultInputDynPageData();
+      dyn_page_data_input = {
+        ...dyn_page_data_input,
+        ...getMergedInputPatch(),
+      };
     } else if (dialogAction === "copy") {
       if (!dyn_page_data_id) {
         uni.showToast({
@@ -371,6 +388,10 @@ async function onRefresh() {
       dyn_page_data_input = intoInputDynPageData(
         dyn_page_data_model,
       );
+      dyn_page_data_input = {
+        ...dyn_page_data_input,
+        ...getMergedInputPatch(),
+      };
     } else if (dialogAction === "edit" || dialogAction === "view") {
       dyn_page_data_model = await findOneModel(
         {
@@ -411,6 +432,8 @@ const props = withDefaults(
     dyn_page_data_id?: DynPageDataId;
     findOne?: typeof findOneDynPageData;
     beforeSave?: (input: DynPageDataInput) => Promise<boolean>;
+    inputPatch?: Partial<DynPageDataInput>;
+    backAfterSave?: boolean;
   }>(),
   {
     init: true,
@@ -418,8 +441,20 @@ const props = withDefaults(
     dyn_page_data_id: undefined,
     findOne: undefined,
     beforeSave: undefined,
+    inputPatch: undefined,
+    backAfterSave: true,
   },
 );
+
+let inputPatchByQuery = $ref<Partial<DynPageDataInput>>({ });
+let backAfterSaveInner = $ref(true);
+
+function getMergedInputPatch(): Partial<DynPageDataInput> {
+  return {
+    ...inputPatchByQuery,
+    ...props.inputPatch,
+  };
+}
 
 let findOneModel: typeof findOneDynPageData = findOneDynPageData;
 
@@ -428,6 +463,7 @@ watch(
     props.action,
     props.dyn_page_data_id,
     props.findOne,
+    props.backAfterSave,
   ],
   () => {
     if (props.action) {
@@ -441,6 +477,7 @@ watch(
     } else {
       findOneModel = findOneDynPageData;
     }
+    backAfterSaveInner = props.backAfterSave ?? true;
   },
   {
     immediate: true,
@@ -450,12 +487,27 @@ watch(
 onLoad(async function(query?: AnyObject) {
   const dyn_page_data_id_str = query?.dyn_page_data_id;
   const action = query?.action;
+  const input_patch = query?.input_patch;
+  const back_after_save = query?.back_after_save;
   if (action === "add") {
     dialogAction = "add";
   } else if (action === "copy") {
     dialogAction = "copy";
   } else if (action === "edit") {
     dialogAction = "edit";
+  }
+  if (back_after_save != null) {
+    backAfterSaveInner = decodeURIComponent(back_after_save) !== "0";
+  }
+  if (input_patch) {
+    try {
+      const data = JSON.parse(decodeURIComponent(input_patch));
+      if (data && typeof data === "object") {
+        inputPatchByQuery = data as Partial<DynPageDataInput>;
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
   if (dyn_page_data_id_str) {
     dyn_page_data_id = decodeURIComponent(dyn_page_data_id_str) as DynPageDataId | undefined;
