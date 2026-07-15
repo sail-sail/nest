@@ -189,7 +189,34 @@ fn check_search_range_<#=table#>(
           "<#=column_comment#> <#=searchRangeMaxMsg#>",
         ));
       }
-    } else if search.id.is_none() && search.ids.is_none() {
+    } else if
+      search.id.is_none() &&
+      search.ids.is_none()<#
+      if ((opts.uniques || [ ]).length > 0) {
+      #> &&<#
+      }
+      #><#
+      for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
+        const uniques = opts.uniques[i];
+      #><#
+      if (uniques.length > 1) {
+      #>(<#
+      }
+      #><#
+      for (let k = 0; k < uniques.length; k++) {
+        const unique = uniques[k];
+        const unique_rust = rustKeyEscape(unique);
+      #>
+      search.<#=unique_rust#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
+      }
+      #><#
+      if (uniques.length > 1) {
+      #>)<#
+      }
+      #><#
+      }
+      #>
+    {
       return Err(color_eyre::eyre::eyre!(
         "<#=column_comment#> <#=searchRangeMaxMsg#>",
       ));
