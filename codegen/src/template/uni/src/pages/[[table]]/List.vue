@@ -48,6 +48,18 @@ const hasForeignTabsMore = columns.some((item) => {
     return item2.linkType === "more";
   });
 });
+const hasUniForeignTabs = columns.some((item) => {
+  const foreignTabs = item.foreignTabs || [ ];
+  return foreignTabs.some((foreignTab) => {
+    return !!optTables[foreignTab.mod + "_" + foreignTab.table]?.opts?.isUniPage;
+  });
+});
+const defaultForeignTabsGroup = columns.find((item) => {
+  const foreignTabs = item.foreignTabs || [ ];
+  return foreignTabs.some((foreignTab) => {
+    return !!optTables[foreignTab.mod + "_" + foreignTab.table]?.opts?.isUniPage;
+  });
+})?.COLUMN_NAME || "";
 const hasForeignPage = columns.some((item) => item.foreignPage);
 const hasImg = columns.some((item) => item.isImg && !item.onlyCodegenDeno);
 const hasAtt = columns.some((item) => item.isAtt && !item.onlyCodegenDeno);
@@ -408,7 +420,7 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
           :style="{
             borderColor: <#=table#>_id_selected === <#=table#>_model.id ? 'var(--color-primary)' : undefined,
           }"
-          @click="on<#=Table_Up#>(<#=table#>_model.id)"
+          @click="on<#=Table_Up#>(<#=table#>_model.id, <#=table#>_model.<#=lbl_field#>)"
         >
           
           <view
@@ -609,6 +621,17 @@ type SearchType = {<#
   }
   #>
 };
+
+const props = withDefaults(
+  defineProps<{
+    builtInSearch?: Partial<<#=Table_Up#>Search>;
+    addQuery?: Record<string, string | number | boolean | null | undefined>;
+  }>(),
+  {
+    builtInSearch: undefined,
+    addQuery: undefined,
+  },
+);
 
 const searchKey = "/pages/<#=table#>/List:search";
 const search = $ref<SearchType>(uni.getStorageSync(searchKey) || {<#
@@ -822,6 +845,20 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
   });
 });
 
+function buildPageQuery(
+  query?: Record<string, string | number | boolean | null | undefined>,
+) {
+  const params = Object.entries(query || { })
+    .filter(([, value]) => value != null && value !== "")
+    .map(([key, value]) => {
+      return `${ key }=${ encodeURIComponent(String(value)) }`;
+    });
+  if (params.length === 0) {
+    return "";
+  }
+  return `?${ params.join("&") }`;
+}
+
 function onRadio(
   checked: boolean,
   <#=table#>_id: <#=Table_Up#>Id,
@@ -837,6 +874,7 @@ function onRadio(
 
 async function on<#=Table_Up#>(
   <#=table#>_id: <#=Table_Up#>Id,
+  title?: string,
 ) {
   if (isEditing) {
     if (!<#=table#>_ids_selected.includes(<#=table#>_id)) {
@@ -846,10 +884,25 @@ async function on<#=Table_Up#>(
     }
     return;
   }
-  <#=table#>_id_selected = <#=table#>_id;
+  <#=table#>_id_selected = <#=table#>_id;<#
+if (hasUniForeignTabs) {
+#>
+  
+  await uni.navigateTo({
+    url: `/pages/<#=table#>/ForeignTabs${ buildPageQuery({
+      <#=table#>_id,
+      title,
+      tabGroup: "<#=defaultForeignTabsGroup#>",
+    }) }`,
+  });<#
+  } else {
+  #>
+  
   await uni.navigateTo({
     url: `/pages/<#=table#>/Detail?<#=table#>_id=${ encodeURIComponent(<#=table#>_id) }`,
-  });
+  });<#
+  }
+  #>
 }
 
 async function onAdd<#=Table_Up#>() {
@@ -857,7 +910,10 @@ async function onAdd<#=Table_Up#>() {
     return;
   }
   await uni.navigateTo({
-    url: "/pages/<#=table#>/Detail",
+    url: `/pages/<#=table#>/Detail${ buildPageQuery({
+      action: "add",
+      ...props.addQuery,
+    }) }`,
   });
 }
 
@@ -1020,7 +1076,7 @@ async function onSearch() {
 }
 
 function getSearch<#=Table_Up#>() {
-  const search2: SearchType = {<#
+  const search2: <#=Table_Up#>Search = {<#
   for (let i = 0; i < search_fields.length; i++) {
     const search_field = search_fields[i];
     const column = columns.find((col) => col.COLUMN_NAME === search_field);
@@ -1067,7 +1123,10 @@ function getSearch<#=Table_Up#>() {
     }
   }
   #>
-  return search2;
+  return {
+    ...search2,
+    ...props.builtInSearch,
+  };
 }
 
 async function onRefresh() {

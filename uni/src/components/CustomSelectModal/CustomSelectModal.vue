@@ -425,6 +425,7 @@ type OptionType = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type OptionsMap = (item: any) => OptionType;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SelectMethod = (...args: any[]) => Promise<any[] | MaybeRef<any[]>> | MaybeRef<any[]> | any[];
 
 type SelectPageInput = {
@@ -464,6 +465,7 @@ const props = withDefaults(
     readonly?: boolean | null;
     readonlyPlaceholder?: string | null;
     searchStr?: string | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     searchParams?: Record<string, any> | MaybeRef<Record<string, any>>;
     hideSearch?: boolean;
     isPage?: boolean;
@@ -782,6 +784,7 @@ function getRemoteSearch() {
   if (!hasKeyword && !isSearchIds && !hasExtraSearch) {
     return undefined;
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const search: Record<string, any> = { };
   if (hasKeyword) {
     search[props.searchKey] = keyword;

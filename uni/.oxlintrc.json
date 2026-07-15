@@ -16,6 +16,7 @@
     "unicorn/no-single-promise-in-promise-methods": "allow",
     "unicorn/no-useless-spread": "allow",
     "@typescript-eslint/no-unused-vars": "allow",
+    "@typescript-eslint/no-empty-object-type": "allow",
     "eslint/no-debugger": "allow",
     "no-unused-vars": "allow",
     "no-useless-assignment": "allow",

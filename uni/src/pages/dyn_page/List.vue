@@ -194,7 +194,7 @@
           :style="{
             borderColor: dyn_page_id_selected === dyn_page_model.id ? 'var(--color-primary)' : undefined,
           }"
-          @click="onDynPage(dyn_page_model.id)"
+          @click="onDynPage(dyn_page_model.id, dyn_page_model.lbl)"
         >
           
           <view
@@ -338,6 +338,17 @@ type SearchType = {
   code?: string;
 };
 
+const props = withDefaults(
+  defineProps<{
+    builtInSearch?: Partial<DynPageSearch>;
+    addQuery?: Record<string, string | number | boolean | null | undefined>;
+  }>(),
+  {
+    builtInSearch: undefined,
+    addQuery: undefined,
+  },
+);
+
 const searchKey = "/pages/dyn_page/List:search";
 const search = $ref<SearchType>(uni.getStorageSync(searchKey) || {
 });
@@ -364,6 +375,20 @@ const dyn_page_models_computed = computed<DynPageModelComputed[]>(() => {
   });
 });
 
+function buildPageQuery(
+  query?: Record<string, string | number | boolean | null | undefined>,
+) {
+  const params = Object.entries(query || { })
+    .filter(([, value]) => value != null && value !== "")
+    .map(([key, value]) => {
+      return `${ key }=${ encodeURIComponent(String(value)) }`;
+    });
+  if (params.length === 0) {
+    return "";
+  }
+  return `?${ params.join("&") }`;
+}
+
 function onRadio(
   checked: boolean,
   dyn_page_id: DynPageId,
@@ -379,6 +404,7 @@ function onRadio(
 
 async function onDynPage(
   dyn_page_id: DynPageId,
+  title?: string,
 ) {
   if (isEditing) {
     if (!dyn_page_ids_selected.includes(dyn_page_id)) {
@@ -389,6 +415,7 @@ async function onDynPage(
     return;
   }
   dyn_page_id_selected = dyn_page_id;
+  
   await uni.navigateTo({
     url: `/pages/dyn_page/Detail?dyn_page_id=${ encodeURIComponent(dyn_page_id) }`,
   });
@@ -399,7 +426,10 @@ async function onAddDynPage() {
     return;
   }
   await uni.navigateTo({
-    url: "/pages/dyn_page/Detail",
+    url: `/pages/dyn_page/Detail${ buildPageQuery({
+      action: "add",
+      ...props.addQuery,
+    }) }`,
   });
 }
 
@@ -494,11 +524,14 @@ async function onSearch() {
 }
 
 function getSearchDynPage() {
-  const search2: SearchType = {
+  const search2: DynPageSearch = {
     lbl: search.lbl?.trim() || undefined,
     code: search.code?.trim() || undefined,
   };
-  return search2;
+  return {
+    ...search2,
+    ...props.builtInSearch,
+  };
 }
 
 async function onRefresh() {
