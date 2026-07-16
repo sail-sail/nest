@@ -4,6 +4,7 @@
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
+use std::time::Duration;
 use std::time::Instant;
 
 use tracing::error;
@@ -46,6 +47,7 @@ use generated::common::oss::oss_dao;
 use generated::common::tmpfile::tmpfile_dao;
 
 const TOKIO_THREAD_STACK_SIZE: usize = 31_457_280;
+const GRACEFUL_SHUTDOWN_TIMEOUT_SECS: u64 = 5;
 
 /// 使用本地时间的每日日志滚动写入器
 /// (tracing_appender::rolling::daily 内部使用 UTC, 导致文件名日期在东八区不正确)
@@ -106,6 +108,34 @@ impl std::io::Write for LocalDailyAppender {
   fn flush(&mut self) -> std::io::Result<()> {
     self.file.flush()
   }
+}
+
+async fn wait_for_shutdown_signal() {
+  #[cfg(unix)]
+  {
+    use tokio::signal::unix::{SignalKind, signal};
+
+    let mut sigterm = signal(SignalKind::terminate())
+      .expect("Failed to register SIGTERM handler");
+    tokio::select! {
+      _ = tokio::signal::ctrl_c() => {}
+      _ = sigterm.recv() => {}
+    }
+  }
+
+  #[cfg(not(unix))]
+  {
+    let _ = tokio::signal::ctrl_c().await;
+  }
+}
+
+async fn graceful_shutdown() {
+  wait_for_shutdown_signal().await;
+  info!(
+    timeout_secs = GRACEFUL_SHUTDOWN_TIMEOUT_SECS,
+    "shutdown signal received, draining websocket connections"
+  );
+  generated::common::websocket::websocket_dao::shutdown_all_connections().await;
 }
 
 #[derive(serde::Deserialize)]
@@ -584,13 +614,7 @@ async fn async_main() -> Result<(), std::io::Error> {
   Server::new(TcpListener::bind(format!("{server_host}:{server_port}")))
     .run_with_graceful_shutdown(
       app,
-      async {
-        let _ = tokio::signal::ctrl_c().await;
-        // let res = generated::common::browser::index::destroy_browser().await;
-        // if let Err(err) = res {
-        //   error!("destroy_browser error: {err:#?}");
-        // }
-      },
-      None,
+      graceful_shutdown(),
+      Some(Duration::from_secs(GRACEFUL_SHUTDOWN_TIMEOUT_SECS)),
     ).await
 }

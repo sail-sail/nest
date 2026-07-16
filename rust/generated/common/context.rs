@@ -1603,6 +1603,12 @@ impl From<NaiveDateTime> for ArgType {
   }
 }
 
+impl From<crate::common::gql::NaiveDateTime> for ArgType {
+  fn from(value: crate::common::gql::NaiveDateTime) -> Self {
+    ArgType::DateTime(value.into())
+  }
+}
+
 impl From<NaiveTime> for ArgType {
   fn from(value: NaiveTime) -> Self {
     ArgType::Time(value)
