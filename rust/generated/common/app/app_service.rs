@@ -25,26 +25,6 @@ pub async fn get_tenant_id_by_appid(
   options: Option<Options>,
 ) -> Result<TenantId> {
   
-  let wx_app_model = crate::wxwork::wxw_app::wxw_app_dao::find_one_ok_wxw_app(
-    Some(crate::wxwork::wxw_app::wxw_app_model::WxwAppSearch {
-      corpid: Some(appid.clone()),
-      agentid: agentid.clone(),
-      ..Default::default()
-    }),
-    None,
-    options,
-  ).await?;
-  
-  crate::wxwork::wxw_app::wxw_app_dao::validate_is_enabled_wxw_app(
-    &wx_app_model,
-  ).await?;
-  
-  let tenant_id = wx_app_model.tenant_id;
-  
-  if !tenant_id.is_empty() {
-    return Ok(tenant_id);
-  }
-  
   error!("get_tenant_id_by_appid is not implemented, platform: {platform}, appid: {appid}, agentid: {agentid:?}, options: {options:?}",);
   bail!("get_tenant_id_by_appid is not implemented")
 }

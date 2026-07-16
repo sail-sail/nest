@@ -20,6 +20,8 @@ use tracing::{info, error};
 use crate::common::util::string::sql_like;
 #[allow(unused_imports)]
 use crate::common::gql::model::SortOrderEnum;
+#[allow(unused_imports)]
+use crate::common::gql::NaiveDateTime;
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -292,7 +294,7 @@ async fn get_where_query(
   // 阅读时间
   {
     let mut read_time = match search {
-      Some(item) => item.read_time.unwrap_or_default(),
+      Some(item) => item.read_time.clone().unwrap_or_default(),
       None => Default::default(),
     };
     let read_time_gt = read_time[0].take();
@@ -1601,9 +1603,9 @@ pub async fn set_id_by_lbl_message_receiver(
   
   // 阅读时间
   if input.read_time.is_none() && let Some(read_time_lbl) = input.read_time_lbl.as_ref().filter(|s| !s.is_empty()) {
-    input.read_time = chrono::NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
+    input.read_time = NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
     if input.read_time.is_none() {
-      input.read_time = chrono::NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d").ok();
+      input.read_time = NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d").ok();
     }
     if input.read_time.is_none() {
       let field_comments = get_field_comments_message_receiver(

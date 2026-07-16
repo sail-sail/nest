@@ -12,11 +12,16 @@ use uuid::Uuid;
 
 use super::websocket_dao::{
   add_socket_connection,
+  close_socket_connection,
   get_socket_connections,
   remove_client_topics,
   remove_socket_connection,
   subscribe_client_topics,
   un_subscribe_client_topics,
+};
+use super::websocket_constants::{
+  is_websocket_shutting_down,
+  websocket_shutdown_rx,
 };
 
 const PWD: &str = "0YSCBr1QQSOpOfi6GgH34A";
@@ -36,6 +41,16 @@ pub async fn ws_upgrade(
     pwd,
   }): Query<UpgradeQuery>,
 ) -> impl IntoResponse {
+  if is_websocket_shutting_down() {
+    let mut response = Response::builder();
+    return response.status(StatusCode::SERVICE_UNAVAILABLE).body(
+      json!({
+        "code": 503,
+        "data": "Server is shutting down",
+      })
+      .to_string(),
+    );
+  }
   if pwd != PWD {
     let mut response = Response::builder();
     return response.status(StatusCode::UNAUTHORIZED).body(
@@ -58,6 +73,7 @@ pub async fn ws_upgrade(
   }
   let web_socket_upgraded = ws.on_upgrade(
     |mut socket| async move {
+      let mut shutdown_rx = websocket_shutdown_rx();
       let connection_id = Uuid::new_v4().to_string();
       
       let (
@@ -70,8 +86,26 @@ pub async fn ws_upgrade(
         &connection_id,
         sink,
       ).await;
+
+      if *shutdown_rx.borrow() {
+        close_socket_connection(&client_id, &connection_id).await;
+      }
       
-      while let Some(result) = stream.next().await {
+      loop {
+        let result = tokio::select! {
+          changed = shutdown_rx.changed() => {
+            if changed.is_ok() && *shutdown_rx.borrow() {
+              close_socket_connection(&client_id, &connection_id).await;
+            }
+            break;
+          }
+          result = stream.next() => {
+            match result {
+              Some(result) => result,
+              None => break,
+            }
+          }
+        };
         match result {
           Ok(Message::Text(text)) => {
             if text.is_empty() {

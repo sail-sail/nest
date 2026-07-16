@@ -47,7 +47,7 @@ pub async fn mark_message_receiver_as_read(id: MessageReceiverId) -> Result<bool
   let input = MessageReceiverInput {
     id: Some(id),
     is_read: Some(1),
-    read_time: Some(get_now()),
+    read_time: Some(get_now().into()),
     ..Default::default()
   };
   update_by_id_message_receiver(receiver_model.id, input, None).await?;

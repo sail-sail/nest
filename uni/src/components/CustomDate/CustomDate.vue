@@ -20,8 +20,9 @@
     :color="props.color"
     :font-color="readonly ? 
       (modelValue ? 'var(--color-readonly)' :'var(--color-placeholder)') :
-      (modelValue ? props.fontColor || 'var(--font-color)' : 'var(--color-placeholder)')"
+      (modelValue ? (props.fontColor || 'var(--font-color)') : 'var(--color-placeholder)')"
     type="text"
+    @clear="onClear"
   ></CustomInput>
 </tm-picker-date>
 </template>
@@ -105,6 +106,11 @@ const pickerModelValue = computed({
     modelValue.value = coverPickerValueToModelValue(value);
   },
 });
+
+function onClear() {
+  modelValue.value = undefined;
+  modelStr.value = "";
+}
 
 </script>
 
