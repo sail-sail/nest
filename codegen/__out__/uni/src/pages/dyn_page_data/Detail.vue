@@ -112,18 +112,11 @@
         un-gap="y-4"
       >
         
-        <template
+        <view
           v-if="dialogAction === 'edit'"
+          un-flex="~"
+          un-gap="x-2"
         >
-          
-          <tm-button
-            v-if="permit('edit', '编辑')"
-            :disabled="!inited || is_form_hydrating"
-            block
-            @click="operationDrawerShow = false; formRef?.submit();"
-          >
-            编辑
-          </tm-button>
           
           <tm-button
             v-if="permit('add', '新增')"
@@ -134,12 +127,22 @@
             复制
           </tm-button>
           
-          <CustomDivider
-            :show-text="false"
-            un-p="y-0 x-0"
-          ></CustomDivider>
+          <tm-button
+            v-if="permit('edit', '编辑')"
+            :disabled="!inited || is_form_hydrating"
+            block
+            @click="operationDrawerShow = false; formRef?.submit();"
+          >
+            编辑
+          </tm-button>
           
-        </template>
+        </view>
+        
+        <CustomDivider
+          v-if="dialogAction === 'edit'"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
         
         <template
           v-if="dialogAction === 'copy' || dialogAction === 'add'"
@@ -154,12 +157,13 @@
             新增
           </tm-button>
           
-          <CustomDivider
-            :show-text="false"
-            un-p="y-0 x-0"
-          ></CustomDivider>
-          
         </template>
+          
+        <CustomDivider
+          v-if="dialogAction === 'copy' || dialogAction === 'add'"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
         
       </view>
       
@@ -281,7 +285,7 @@ async function onSave(
   if (dialogAction === "edit") {
     if (!permit('edit')) {
       uni.showToast({
-        title: "无修改权限",
+        title: "无编辑权限",
         icon: "none",
       });
       return;
@@ -327,7 +331,7 @@ async function onSave(
   } else if (currentAction === "edit") {
     if (!dyn_page_data_id) {
       uni.showToast({
-        title: "修改失败, id 不能为空",
+        title: "编辑失败, id 不能为空",
         icon: "none",
       });
       return;
@@ -337,7 +341,7 @@ async function onSave(
       dyn_page_data_input,
     );
     await uni.showModal({
-      content: "修改成功",
+      content: "编辑成功",
       showCancel: false,
     });
     if (backAfterSaveInner) {

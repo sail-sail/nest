@@ -2250,7 +2250,7 @@ export async function getDefaultInput<#=Table_Up#>() {<#
         }
       } else if (data_type === "varchar" || data_type === "text") {
         if (defaultValue === "CURRENT_USR_ID") {
-          defaultValue = "usrStore.usr_id";
+          defaultValue = "usrStore.getUsrId()";
         } else if (defaultValue === "CURRENT_ORG_ID") {
           defaultValue = "usrStore.getLoginInfo()?.org_id";
         } else if (defaultValue === "CURRENT_TENANT_ID") {

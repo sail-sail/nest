@@ -84,7 +84,7 @@
   >
     <tm-form
       v-model="search"
-      :label-width="180"
+      :label-width="130"
       
       @submit="onSearch"
     >
@@ -160,16 +160,19 @@
       (暂无动态页面)
     </view>
     
-    <template
+    <view
       v-else
+      un-flex="~ col"
+      un-gap="y-2"
+      un-m="x-2"
     >
       
       <view
         v-for="dyn_page_model of dyn_page_models_computed"
         :key="dyn_page_model.id"
         un-flex="~"
-        un-m="x-2 t-2"
         un-gap="x-2"
+        un-box-border
       >
         
         <view
@@ -262,7 +265,7 @@
         
       </view>
       
-    </template>
+    </view>
     
     <CustomDivider
       v-if="!inited || isLoading"
@@ -357,7 +360,8 @@ type DynPageModelComputed = {
   id: DynPageId;
   lbl: string;
   code: string;
-  create_time_lbl: string;
+  create_time: string | undefined | null;
+  create_time_lbl: string | undefined | null;
 };
 
 const dyn_page_models_computed = computed<DynPageModelComputed[]>(() => {
@@ -370,6 +374,7 @@ const dyn_page_models_computed = computed<DynPageModelComputed[]>(() => {
       id: dyn_page_model.id,
       lbl: dyn_page_model.lbl,
       code: dyn_page_model.code,
+      create_time: dyn_page_model.create_time,
       create_time_lbl: create_time_lbl,
     };
   });
