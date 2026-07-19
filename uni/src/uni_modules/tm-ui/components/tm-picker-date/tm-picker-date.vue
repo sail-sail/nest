@@ -194,8 +194,18 @@ const _getDateType = computed((): tmDateTypeTime => {
 });
 const _disabled = computed(() => props.disabled)
 
+const hasModelValue = (value: unknown) => value != null && String(value).trim() !== '';
 
 const defaultModelvalue = (newvalue: string, showStr: boolean) => {
+	if (!hasModelValue(newvalue)) {
+		nowValue.value = [];
+		nowValueStr.value = '';
+		_modelValueIndex.value = [];
+		if (showStr) {
+			emit('update:modelStr', '');
+		}
+		return;
+	}
 	let isType = _getDateType.value;
 	let selfnowValue = new tmDate(newvalue);
 	if (selfnowValue.isBetweenOf(_start_date.value, '<=', isType)) {
@@ -537,7 +547,7 @@ const onConfirm = () => {
 
 
 watch(() => props.modelValue, (newvalue: string) => {
-	if (newvalue == '') {
+	if (!hasModelValue(newvalue)) {
 		emit('update:modelStr', '');
 		return;
 	}
@@ -557,7 +567,7 @@ onMounted(() => {
 	yanchiDuration.value = _lazyContent.value ? false : true;
 	let nowValue = new tmDate(props.modelValue);
 
-	defaultModelvalue(nowValue.format('YYYY/MM/DD HH:mm:ss'), props.modelValue != '');
+	defaultModelvalue(nowValue.format('YYYY/MM/DD HH:mm:ss'), hasModelValue(props.modelValue));
 });
 </script>
 <template>

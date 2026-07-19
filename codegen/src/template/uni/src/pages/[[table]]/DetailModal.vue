@@ -163,18 +163,18 @@ if (right_field && !right_field_column) {
   throw new Error(`表: ${ mod }_${ table } 中配置的列表右侧显示字段 ${ right_field } 在列中不存在`);
 }
 #>
-<tm-modal
-  v-model:show="dialogVisible"
-  :closeable="true"
-  :height="height"
+<CustomDialog
+  ref="customDialogRef"
   :title="dialogTitle"
+  type="large"
   disabled-scroll
   show-close
   :show-footer="false"
   :content-padding="0"
   max-height="90%"
-  :overlay-click="true"
+  :close-on-click-modal="true"
   v-bind="$attrs"
+  @close="onClose"
 >
   
   <view
@@ -212,10 +212,11 @@ if (right_field && !right_field_column) {
     
   </view>
   
-</tm-modal>
+</CustomDialog>
 </template>
 
 <script lang="ts" setup>
+import CustomDialog from "@/components/CustomDialog/CustomDialog.vue";
 import <#=Table_Up#>Detal from "./Detail.vue";
 
 import {
@@ -225,8 +226,6 @@ import {
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
-let dialogVisible = $ref(false);
-const height = $ref<string | number>("90%");
 
 let <#=table#>_id = $ref<<#=Table_Up#>Id>();<#
 if (hasOrderBy) {
@@ -237,6 +236,7 @@ let order_by = $ref<number>();<#
 
 let inited = $ref(false);
 
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 const <#=table#>_detail_ref = $ref<InstanceType<typeof <#=Table_Up#>Detal>>();
 
 let findOneModel = findOne<#=Table_Up#>;
@@ -284,19 +284,24 @@ async function showDialog(
   dialogAction = action || "add";
   <#=table#>_id = model?.id;
   
-  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
-    onCloseResolve = function(arg: OnCloseResolveType) {
-      dialogVisible = false;
-      resolve(arg);
-    };
-  });
-  
-  dialogVisible = true;
-  
   await onRefresh();
   
   inited = true;
-  return await dialogPrm;
+  
+  return await customDialogRef!.showDialog<OnCloseResolveType>({
+    title: dialogTitle,
+    type: "large",
+    showFooter: false,
+    showClose: true,
+    showTitle: true,
+    disabledScroll: true,
+    contentPadding: 0,
+    maxHeight: "90%",
+    closeOnClickModal: true,
+    closeResult: {
+      type: "cancel",
+    },
+  });
 }
 
 /** 刷新 */
@@ -308,7 +313,7 @@ async function onRefresh() {
 async function beforeSave(
   input: <#=Table_Up#>Input,
 ) {
-  onCloseResolve({
+  customDialogRef?.resolve({
     type: "ok",
     input,
   });
@@ -316,7 +321,7 @@ async function beforeSave(
 }
 
 async function onClose() {
-  onCloseResolve({
+  customDialogRef?.resolve({
     type: "cancel",
   });
 }

@@ -158,16 +158,19 @@
       (暂无{{ menu_model?.lbl }}数据)
     </view>
     
-    <template
+    <view
       v-else
+      un-flex="~ col"
+      un-gap="y-2"
+      un-m="x-2"
     >
       
       <view
         v-for="dyn_page_data_model of dyn_page_data_models_computed"
         :key="dyn_page_data_model.id"
         un-flex="~"
-        un-m="x-2 t-2"
         un-gap="x-2"
+        un-box-border
       >
         
         <view
@@ -253,7 +256,7 @@
         
       </view>
       
-    </template>
+    </view>
     
     <CustomDivider
       v-if="!inited || isLoading"

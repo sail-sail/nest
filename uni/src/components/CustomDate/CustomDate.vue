@@ -52,7 +52,7 @@ const props = withDefaults(
     fontColor: undefined,
     format: "YYYY-MM-DD",
     formatSyncValue: false,
-    valueFormat: undefined,
+    valueFormat: "YYYY-MM-DDTHH:mm:ss",
   },
 );
 

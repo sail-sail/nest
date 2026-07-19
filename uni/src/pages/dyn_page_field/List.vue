@@ -84,7 +84,7 @@
   >
     <tm-form
       v-model="search"
-      :label-width="180"
+      :label-width="130"
       
       @submit="onSearch"
     >
@@ -160,16 +160,19 @@
       (暂无动态页面字段)
     </view>
     
-    <template
+    <view
       v-else
+      un-flex="~ col"
+      un-gap="y-2"
+      un-m="x-2"
     >
       
       <view
         v-for="dyn_page_field_model of dyn_page_field_models_computed"
         :key="dyn_page_field_model.id"
         un-flex="~"
-        un-m="x-2 t-2"
         un-gap="x-2"
+        un-box-border
       >
         
         <view
@@ -255,7 +258,7 @@
         
       </view>
       
-    </template>
+    </view>
     
     <CustomDivider
       v-if="!inited || isLoading"

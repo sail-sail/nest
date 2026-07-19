@@ -24,10 +24,20 @@
         <template
           v-if="tabGroup === 'code'"
         >
-        
-          <el-tab-pane
-            :label="'系统字典明细' + (dict_detail_total != null ? ` (${ dict_detail_total })` : '')"
-          >
+          
+          <el-tab-pane>
+            
+            <template #label>
+              <el-badge
+                :value="dict_detail_total"
+                :show-zero="false"
+                type="info"
+                :offset="[8, 0]"
+              >
+                系统字典明细
+              </el-badge>
+            </template>
+            
             <DictDetailList
               :dict_id="dialogModel.id"
               :is_deleted="dialogModel.is_deleted ? '1' : '0'"
@@ -36,6 +46,7 @@
               @remove="useAllFindDebounce"
               @revert="useAllFindDebounce"
             ></DictDetailList>
+            
           </el-tab-pane>
           
         </template>
