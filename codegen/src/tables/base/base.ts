@@ -123,6 +123,7 @@ export default defineConfig({
         lbl: "关键字",
         placeholder: "关键字",
       },
+      isUniApi: true,
     },
     columns: [
       {
@@ -213,6 +214,7 @@ export default defineConfig({
       uniques: [
         [ "lbl" ],
       ],
+      isUniApi: true,
     },
     columns: [
       {
@@ -1006,6 +1008,7 @@ export default defineConfig({
       },
       list_tree: true,
       hasSelectInput: true,
+      isUniApi: true,
     },
     columns: [
       {

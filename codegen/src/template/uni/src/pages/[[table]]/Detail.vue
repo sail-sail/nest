@@ -74,12 +74,15 @@ let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
+let auditLabelField = "";
 if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
   // 是否有复核
   hasReviewed = opts?.audit?.hasReviewed;
+  const auditStatusColumn = columns.find((item) => item.COLUMN_NAME === auditColumn);
+  auditLabelField = auditStatusColumn?.modelLabel || `${ auditColumn }_lbl`;
 }
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
@@ -406,7 +409,21 @@ if (right_field && !right_field_column) {
           :required="false"<#
           }
           #>
-        >
+        ><#
+          if (hasAudit && column_name === auditColumn) {
+          #>
+          <AuditHistoryField
+            v-model="<#=table#>_input.<#=column_name#>"
+            :model-label="<#=table#>_input.<#=auditLabelField#>"
+            title="审核历史"
+            placeholder="请选择 <#=column_comment#>"
+            readonly-placeholder="暂无审核记录"
+            :record-id="<#=table#>_id"
+            record-key="<#=table#>_id"
+            :method="findAll<#=auditTable_Up#>"
+          ></AuditHistoryField><#
+          } else {
+          #>
           <DictSelect
             v-model="<#=table#>_input.<#=column_name#>"<#
             if (modelLabel) {
@@ -428,7 +445,9 @@ if (right_field && !right_field_column) {
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
             }
             #>
-          ></DictSelect>
+          ></DictSelect><#
+          }
+          #>
         </tm-form-item><#
         } else if (column.dictbiz) {
         #>
@@ -601,7 +620,7 @@ if (right_field && !right_field_column) {
             if (column.isTextarea) {
             #>
             type="textarea"
-            height="120"<#
+            height="130"<#
             }
             #><#
             if (placeholderInForm) {
@@ -747,7 +766,7 @@ if (right_field && !right_field_column) {
             un-p="x-2 y-2"
             un-box-border
             un-cursor="pointer"
-            @click="onEditDynPageField"
+            @click="onEdit<#=Table_Up#>"
           >
             编辑
           </view>
@@ -1238,8 +1257,10 @@ if (right_field && !right_field_column) {
         if (hasAudit) {
         #>
         
-        <template
+        <view
           v-if="dialogAction === 'edit'"
+          un-flex="~"
+          un-gap="x-2"
         ><#
           if (!hasReviewed) {
           #>
@@ -1341,31 +1362,21 @@ if (right_field && !right_field_column) {
           }
           #>
           
-          <CustomDivider
-            :show-text="false"
-            un-p="y-0 x-0"
-          ></CustomDivider>
-          
-        </template><#
+        </view>
+        
+        <CustomDivider
+          v-if="dialogAction === 'edit'"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider><#
         }
         #>
         
-        <template
+        <view
           v-if="dialogAction === 'edit'"
+          un-flex="~"
+          un-gap="x-2"
         ><#
-          if (!opts.noEdit) {
-          #>
-          
-          <tm-button
-            v-if="permit('edit', '编辑')"
-            :disabled="!inited || is_form_hydrating"
-            block
-            @click="operationDrawerShow = false; formRef?.submit();"
-          >
-            编辑
-          </tm-button><#
-          }
-          #><#
           if (opts.noCopy !== true) {
           #>
           
@@ -1378,14 +1389,28 @@ if (right_field && !right_field_column) {
             复制
           </tm-button><#
           }
+          #><#
+          if (!opts.noEdit) {
           #>
           
-          <CustomDivider
-            :show-text="false"
-            un-p="y-0 x-0"
-          ></CustomDivider>
+          <tm-button
+            v-if="permit('edit', '编辑')"
+            :disabled="!inited || is_form_hydrating"
+            block
+            @click="operationDrawerShow = false; formRef?.submit();"
+          >
+            编辑
+          </tm-button><#
+          }
+          #>
           
-        </template>
+        </view>
+        
+        <CustomDivider
+          v-if="dialogAction === 'edit'"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
         
         <template
           v-if="dialogAction === 'copy' || dialogAction === 'add'"
@@ -1404,12 +1429,13 @@ if (right_field && !right_field_column) {
           }
           #>
           
-          <CustomDivider
-            :show-text="false"
-            un-p="y-0 x-0"
-          ></CustomDivider>
-          
         </template>
+          
+        <CustomDivider
+          v-if="dialogAction === 'copy' || dialogAction === 'add'"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
         
       </view>
       
@@ -1485,6 +1511,10 @@ if (hasAudit) {
 #>
 
 import {
+  findAll<#=auditTable_Up#>,
+} from "../<#=auditTable#>/Api.ts";
+
+import {
   <#=Table_Up#>Audit,
 } from "#/types.ts";<#
 }
@@ -1530,6 +1560,12 @@ import {<#
 } from "./Api.ts";
 
 import TmForm from "@/uni_modules/tm-ui/components/tm-form/tm-form.vue";<#
+if (hasAudit) {
+#>
+
+import AuditHistoryField from "@/components/AuditHistoryField/AuditHistoryField.vue";<#
+}
+#><#
 for (const inlineForeignTab of inlineForeignTabs) {
   const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
   const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
@@ -1784,7 +1820,7 @@ async function onSave(
     #>
     if (!permit('edit')) {
       uni.showToast({
-        title: "无修改权限",
+        title: "无编辑权限",
         icon: "none",
       });
       return;
@@ -1835,7 +1871,7 @@ async function onSave(
   } else if (currentAction === "edit") {
     if (!<#=table#>_id) {
       uni.showToast({
-        title: "修改失败, id 不能为空",
+        title: "编辑失败, id 不能为空",
         icon: "none",
       });
       return;
@@ -1845,7 +1881,7 @@ async function onSave(
       <#=table#>_input,
     );
     await uni.showModal({
-      content: "修改成功",
+      content: "编辑成功",
       showCancel: false,
     });
     if (backAfterSaveInner) {
@@ -2203,7 +2239,7 @@ async function onEdit<#=Table_Up#>() {
       sort?: Sort[],
       opt?: GqlOpt,
     ): Promise<<#=Table_Up#>Model | undefined> {
-      return <#=oldTable#>_model?.<#=inline_column_name#>?.[index];
+      return <#=oldTable#>_model?.<#=inline_column_name#>?.[index] as <#=Table_Up#>Model | undefined;
     },
   });
   

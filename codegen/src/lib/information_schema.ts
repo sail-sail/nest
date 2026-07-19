@@ -1592,6 +1592,16 @@ export async function getSchema(
     if (auditColumn && auditColumn.readonly == null) {
       auditColumn.readonly = true;
     }
+    // 如果有审核并且 isUniPage 或者 isUniApi 为 true, 则找到对应的审核表 isUniApi=true
+    if (tables[table_name].opts.isUniPage || tables[table_name].opts.isUniApi) {
+      const auditTableSchema = tables[table_name].opts.audit?.auditTableSchema;
+      if (auditTableSchema) {
+        auditTableSchema.opts = auditTableSchema.opts || { };
+        if (auditTableSchema.opts.isUniApi == null) {
+          auditTableSchema.opts.isUniApi = true;
+        }
+      }
+    }
   }
   
   // 校验 modelLabel 对应的字段是否在外键关联表中存在

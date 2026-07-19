@@ -273,7 +273,7 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
   >
     <tm-form
       v-model="search"
-      :label-width="180"
+      :label-width="130"
       
       @submit="onSearch"
     ><#
@@ -386,16 +386,19 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
       (暂无<#=table_comment#>)
     </view>
     
-    <template
+    <view
       v-else
+      un-flex="~ col"
+      un-gap="y-2"
+      un-m="x-2"
     >
       
       <view
         v-for="<#=table#>_model of <#=table#>_models_computed"
         :key="<#=table#>_model.id"
         un-flex="~"
-        un-m="x-2 t-2"
         un-gap="x-2"
+        un-box-border
       >
         
         <view
@@ -507,7 +510,7 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
         
       </view>
       
-    </template>
+    </view>
     
     <CustomDivider
       v-if="!inited || isLoading"
@@ -745,11 +748,17 @@ type <#=Table_Up#>ModelComputed = {
     const column_comment = column.COLUMN_COMMENT || "";
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
+    const is_nullable = column.IS_NULLABLE === "YES";
     let data_type_ts = "string";
     if (data_type === "int" || data_type === "bigint" || data_type === "float" || data_type === "double") {
       data_type_ts = "number";
     } else if (data_type === "boolean" || data_type === "tinyint(1)") {
       data_type_ts = "number";
+    } else if (data_type === "decimal") {
+      data_type_ts = "DecimalType";
+    }
+    if (is_nullable) {
+      data_type_ts = data_type_ts + " | undefined | null";
     }
     let column_name_ts = column_name;
     if (column.dict || column.dictbiz
@@ -757,6 +766,13 @@ type <#=Table_Up#>ModelComputed = {
     ) {
       column_name_ts = column_name + "_lbl";
     }
+  #><#
+  if (column.dict || column.dictbiz
+    || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+  ) {
+  #>
+  <#=column_name#>: <#=data_type_ts#>;<#
+  }
   #>
   <#=column_name_ts#>: <#=data_type_ts#>;<#
   }
@@ -769,11 +785,15 @@ type <#=Table_Up#>ModelComputed = {
     const data_type = column.DATA_TYPE;
     const column_name = column.COLUMN_NAME;
     const column_type = column.COLUMN_TYPE;
+    const is_nullable = column.IS_NULLABLE === "YES";
     let data_type_ts = "string";
     if (data_type === "int" || data_type === "bigint" || data_type === "float" || data_type === "double") {
       data_type_ts = "number";
     } else if (data_type === "boolean" || data_type === "tinyint(1)") {
       data_type_ts = "number";
+    }
+    if (is_nullable) {
+      data_type_ts = data_type_ts + " | undefined | null";
     }
     let column_name_ts = column_name;
     if (column.dict || column.dictbiz
@@ -781,6 +801,13 @@ type <#=Table_Up#>ModelComputed = {
     ) {
       column_name_ts = column_name + "_lbl";
     }
+  #><#
+  if (column.dict || column.dictbiz
+    || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+  ) {
+  #>
+  <#=column_name#>: <#=data_type_ts#>;<#
+  }
   #>
   <#=column_name_ts#>: <#=data_type_ts#>;<#
   }
@@ -823,12 +850,20 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
           column_name_ts = column_name + "_lbl";
           column_value = table + "_model." + column_name_ts;
         }
+      #><#
+      if (lbl2_fields_column.dict || lbl2_fields_column.dictbiz
+        || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+      ) {
+      #>
+      <#=column_name#>: <#=table + "_model." + column_name#>,<#
+      }
       #>
       <#=column_name_ts#>: <#=column_value#>,<#
       }
       #><#
       if (right_field) {
         const data_type = right_field_column?.DATA_TYPE;
+        let column_name = right_field;
         let column_name_ts = right_field;
         let column_value = table + "_model." + right_field;
         if (right_field_column.dict || right_field_column.dictbiz
@@ -837,6 +872,13 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
           column_name_ts = right_field + "_lbl";
           column_value = column_name_ts;
         }
+      #><#
+      if (right_field_column.dict || right_field_column.dictbiz
+        || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+      ) {
+      #>
+      <#=column_name#>: <#=table + "_model." + column_name#>,<#
+      }
       #>
       <#=column_name_ts#>: <#=column_value#>,<#
       }
