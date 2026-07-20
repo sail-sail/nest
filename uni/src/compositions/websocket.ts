@@ -26,7 +26,7 @@ async function socketPing() {
       data: "ping",
     });
   }
-  setTimeout(socketPing, 60000);
+  setTimeout(socketPing, 25000);
 }
 socketPing();
 

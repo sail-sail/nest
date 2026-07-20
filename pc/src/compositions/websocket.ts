@@ -19,7 +19,7 @@ function socketPing() {
   if (socket && socket.readyState === WebSocket.OPEN) {
     socket.send("ping");
   }
-  setTimeout(socketPing, 60000);
+  setTimeout(socketPing, 25000);
 }
 socketPing();
 
