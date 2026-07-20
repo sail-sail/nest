@@ -6,7 +6,7 @@ import type {
 /**
  * 根据当前用户获取权限列表
  */
-export async function getUsrPermits(): Promise<GetUsrPermits[]> {
+export async function getUsrPermits(route_path?: string): Promise<GetUsrPermits[]> {
   const {
     getAuthModel,
   } = await import("/lib/auth/auth.dao.ts");
@@ -20,7 +20,7 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
   } = await import("/gen/base/usr/usr.dao.ts");
   
   const {
-    findByIdMenu,
+    findAllMenu,
   } = await import("/gen/base/menu/menu.dao.ts");
   
   const {
@@ -85,34 +85,42 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
     );
     permitModels.push(...permitModels0);
   }
+  const menu_ids = [
+    ...new Set(
+      permitModels
+        .map((permitModel) => permitModel.menu_id)
+        .filter((menu_id): menu_id is MenuId => menu_id != null && menu_id !== ""),
+    ),
+  ];
   const menu_idMap = new Map<MenuId, string>();
-  for (const permitModel of permitModels) {
-    const menu_id: MenuId = permitModel.menu_id;
-    if (menu_idMap.has(menu_id)) {
-      continue;
+  if (menu_ids.length > 0) {
+    const menuModels = await findAllMenu(
+      {
+        ids: menu_ids,
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    for (const menuModel of menuModels) {
+      menu_idMap.set(menuModel.id as MenuId, menuModel.route_path || "");
     }
-    if (!menu_id) {
-      menu_idMap.set(menu_id, "");
-      continue;
-    }
-    const menuModel = await findByIdMenu(menu_id, options);
-    if (!menuModel) {
-      menu_idMap.set(menu_id, "");
-      continue;
-    }
-    const route_path = menuModel.route_path;
-    menu_idMap.set(menu_id, route_path);
   }
   const permits: GetUsrPermits[] = permitModels.map((permitModel) => {
     const menu_id: MenuId = permitModel.menu_id;
-    const route_path = menu_idMap.get(menu_id) || "";
+    const route_path0 = menu_idMap.get(menu_id) || "";
     return {
       id: permitModel.id as PermitId,
       menu_id,
-      route_path,
+      route_path: route_path0,
       code: permitModel.code,
       lbl: permitModel.lbl,
     };
+  }).filter((permit) => {
+    if (!route_path) {
+      return true;
+    }
+    return permit.route_path === route_path;
   });
   return permits;
 }
