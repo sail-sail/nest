@@ -23,6 +23,7 @@
     "no-debugger": "allow",
     "no-dupe-keys": "allow",
     "vue/no-dupe-keys": "allow",
-    "vue/prop-name-casing": "allow"
+    "vue/prop-name-casing": "allow",
+    "unicorn/no-empty-file": "allow"
   }
 }
