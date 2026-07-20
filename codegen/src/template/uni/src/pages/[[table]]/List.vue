@@ -156,6 +156,8 @@ if (searchByKeyword) {
 const search_fields = opts?.isUniPage?.list_page?.search_fields || [ ];
 const lbl_field = opts?.isUniPage?.list_page?.lbl_field || "lbl";
 const lbl_field_column = columns.find((col) => col.COLUMN_NAME === lbl_field);
+const lbl_field_foreignKey = lbl_field_column?.foreignKey;
+const lbl_field_modelLabel = lbl_field_column?.modelLabel;
 const lbl2_fields = opts?.isUniPage?.list_page?.lbl2_fields || [ ];
 const lbl2_fields_columns = lbl2_fields.map((field) => {
   const column = columns.find((col) => col.COLUMN_NAME === field);
@@ -423,7 +425,7 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
           :style="{
             borderColor: <#=table#>_id_selected === <#=table#>_model.id ? 'var(--color-primary)' : undefined,
           }"
-          @click="on<#=Table_Up#>(<#=table#>_model.id, <#=table#>_model.<#=lbl_field#>)"
+          @click="on<#=Table_Up#>(<#=table#>_model.id)"
         >
           
           <view
@@ -445,15 +447,63 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
               <view
                 un-flex="~"
                 un-gap="x-2"
-              >
+              ><#
+                if (lbl_field_foreignKey && lbl_field_modelLabel) {
+                #>
+                
+                <view>
+                  {{ <#=table#>_model.<#=lbl_field_modelLabel#> }}
+                </view><#
+                } else if (lbl_field_foreignKey) {
+                #>
+                
+                <view>
+                  {{ <#=table#>_model.<#=lbl_field#>_lbl }}
+                </view><#
+                } else {
+                #>
                 
                 <view>
                   {{ <#=table#>_model.<#=lbl_field#> }}
-                </view>
+                </view><#
+                }
+                #>
                 
               </view><#
               for (let i = 0; i < lbl2_fields.length; i++) {
                 const lbl2_field = lbl2_fields[i];
+                const lbl2_field_column = lbl2_fields_columns[i];
+                const data_type = lbl2_field_column?.DATA_TYPE;
+                if (!lbl2_field_column) {
+                  throw new Error(`表: ${ mod }_${ table } 中配置的列表辅助显示字段 ${ lbl2_field } 在列中不存在`);
+                }
+                const foreignKey = lbl2_field_column.foreignKey;
+                const modelLabel = lbl2_field_column.modelLabel;
+                if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
+              #>
+              
+              <view
+                un-text="3.5 gray-400"
+              >
+                {{ <#=table#>_model.<#=lbl2_field#>_lbl }}
+              </view><#
+                } else if (foreignKey && modelLabel) {
+              #>
+              
+              <view
+                un-text="3.5 gray-400"
+              >
+                {{ <#=table#>_model.<#=modelLabel#> }}
+              </view><#
+                } else if (foreignKey) {
+              #>
+              
+              <view
+                un-text="3.5 gray-400"
+              >
+                {{ <#=table#>_model.<#=lbl2_field#>_lbl }}
+              </view><#
+                } else {
               #>
               
               <view
@@ -461,6 +511,8 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
               >
                 {{ <#=table#>_model.<#=lbl2_field#> }}
               </view><#
+                }
+              #><#
               }
               #>
               
@@ -580,17 +632,7 @@ let isEditing = $ref(false);
 let <#=table#>_ids_selected = $ref<<#=Table_Up#>Id[]>([ ]);
 let <#=table#>_id_selected = $ref<<#=Table_Up#>Id>();
 
-const <#=table#>_models_key = "<#=table#>.List.<#=table#>_models";
 let <#=table#>_models = $ref<<#=Table_Up#>Model[]>([ ]);
-
-(async function() {
-  const models = uni.getStorageSync(<#=table#>_models_key) || [ ];
-  for (let i = 0; i < models.length; i++) {
-    const model = models[i];
-    await setLblById<#=Table_Up#>(model);
-  }
-  <#=table#>_models = models;
-})();
 
 type SearchType = {<#
   for (let i = 0; i < search_fields.length; i++) {
@@ -736,8 +778,18 @@ if (search.<#=column_name#> == null) {<#
 #>
 
 type <#=Table_Up#>ModelComputed = {
-  id: <#=Table_Up#>Id;
+  id: <#=Table_Up#>Id;<#
+  if (lbl_field_foreignKey && lbl_field_modelLabel) {
+  #>
+  <#=lbl_field_modelLabel#>: string;<#
+  } else if (lbl_field_foreignKey) {
+  #>
+  <#=lbl_field#>_lbl: string;<#
+  } else {
+  #>
   <#=lbl_field#>: string;<#
+  }
+  #><#
   for (let i = 0; i < lbl2_fields_columns.length; i++) {
     const column = lbl2_fields_columns[i];
     if (!column) {
@@ -748,6 +800,8 @@ type <#=Table_Up#>ModelComputed = {
     const column_comment = column.COLUMN_COMMENT || "";
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
+    const foreignKey = column.foreignKey;
+    const modelLabel = column.modelLabel;
     const is_nullable = column.IS_NULLABLE === "YES";
     let data_type_ts = "string";
     if (data_type === "int" || data_type === "bigint" || data_type === "float" || data_type === "double") {
@@ -775,6 +829,14 @@ type <#=Table_Up#>ModelComputed = {
   }
   #>
   <#=column_name_ts#>: <#=data_type_ts#>;<#
+  if (foreignKey && modelLabel) {
+  #>
+  <#=modelLabel#>: string,<#
+  } else if (foreignKey) {
+  #>
+  <#=column_name_ts#>: string,<#
+  }
+  #><#
   }
   #><#
   if (right_field) {
@@ -785,6 +847,8 @@ type <#=Table_Up#>ModelComputed = {
     const data_type = column.DATA_TYPE;
     const column_name = column.COLUMN_NAME;
     const column_type = column.COLUMN_TYPE;
+    const foreignKey = column.foreignKey;
+    const modelLabel = column.modelLabel;
     const is_nullable = column.IS_NULLABLE === "YES";
     let data_type_ts = "string";
     if (data_type === "int" || data_type === "bigint" || data_type === "float" || data_type === "double") {
@@ -810,6 +874,14 @@ type <#=Table_Up#>ModelComputed = {
   }
   #>
   <#=column_name_ts#>: <#=data_type_ts#>;<#
+  if (foreignKey && modelLabel) {
+  #>
+  <#=modelLabel#>: string,<#
+  } else if (foreignKey) {
+  #>
+  <#=column_name_ts#>: string,<#
+  }
+  #><#
   }
   #>
 };
@@ -828,14 +900,26 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
     }
     #>
     return {
-      id: <#=table#>_model.id,
+      id: <#=table#>_model.id,<#
+      if (lbl_field_foreignKey && lbl_field_modelLabel) {
+      #>
+      <#=lbl_field_modelLabel#>: <#=table#>_model.<#=lbl_field_modelLabel#>,<#
+      } else if (lbl_field_foreignKey) {
+      #>
+      <#=lbl_field#>_lbl: <#=table#>_model.<#=lbl_field#>_lbl,<#
+      } else {
+      #>
       <#=lbl_field#>: <#=table#>_model.<#=lbl_field#>,<#
+      }
+      #><#
       for (let i = 0; i < lbl2_fields_columns.length; i++) {
         const lbl2_fields_column = lbl2_fields_columns[i];
         const column_name = lbl2_fields_column.COLUMN_NAME;
         const column_comment = lbl2_fields_column.COLUMN_COMMENT || "";
         const data_type = lbl2_fields_column.DATA_TYPE;
         const column_type = lbl2_fields_column.COLUMN_TYPE;
+        const foreignKey = lbl2_fields_column.foreignKey;
+        const modelLabel = lbl2_fields_column.modelLabel;
         let data_type_ts = "string";
         if (data_type === "int" || data_type === "bigint" || data_type === "float" || data_type === "double") {
           data_type_ts = "number";
@@ -859,6 +943,14 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
       }
       #>
       <#=column_name_ts#>: <#=column_value#>,<#
+      if (foreignKey && modelLabel) {
+      #>
+      <#=modelLabel#>: <#=table + "_model." + modelLabel#>,<#
+      } else if (foreignKey) {
+      #>
+      <#=column_name_ts#>: <#=table + "_model." + column_name + "_lbl"#>,<#
+      }
+      #><#
       }
       #><#
       if (right_field) {
@@ -916,7 +1008,6 @@ function onRadio(
 
 async function on<#=Table_Up#>(
   <#=table#>_id: <#=Table_Up#>Id,
-  title?: string,
 ) {
   if (isEditing) {
     if (!<#=table#>_ids_selected.includes(<#=table#>_id)) {
@@ -933,7 +1024,6 @@ if (hasUniForeignTabs) {
   await uni.navigateTo({
     url: `/pages/<#=table#>/ForeignTabs${ buildPageQuery({
       <#=table#>_id,
-      title,
       tabGroup: "<#=defaultForeignTabsGroup#>",
     }) }`,
   });<#
@@ -1212,10 +1302,6 @@ async function onRefresh() {
     const len = <#=table#>_models.length;
     isEnd = len < pgSize;
     pgOffset = len;
-    await uni.setStorage({
-      key: <#=table#>_models_key,
-      data: <#=table#>_models,
-    });
   } finally {
     isLoading = false;
   }
@@ -1253,10 +1339,6 @@ async function onLoadMore() {
     if (!<#=table#>_models.some((item) => item.id === <#=table#>_id_selected)) {
       <#=table#>_id_selected = undefined;
     }
-    await uni.setStorage({
-      key: <#=table#>_models_key,
-      data: <#=table#>_models,
-    });
   } finally {
     isLoading = false;
   }

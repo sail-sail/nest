@@ -183,6 +183,8 @@ input UsrSearch {
   is_deleted: Int
   "ID列表"
   ids: [UsrId!]
+  ""
+  keyword: String
   "ID"
   id: UsrId
   "名称"
@@ -225,6 +227,9 @@ input UsrSearch {
   default_org_id_lbl_like: String
   "启用"
   is_enabled: [Int!]
+  "备注"
+  rem: String
+  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"

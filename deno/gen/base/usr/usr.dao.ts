@@ -112,6 +112,15 @@ async function getWhereQuery(
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
+  if (isNotEmpty(search?.keyword)) {
+    whereQuery += " and (";
+    whereQuery += ` t.lbl like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += " or";
+    whereQuery += ` t.username like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += " or";
+    whereQuery += ` t.rem like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += ")";
+  }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }

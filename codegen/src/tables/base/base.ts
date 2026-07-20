@@ -266,6 +266,11 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      searchByKeyword: {
+        prop: "keyword",
+        fields: [ "lbl", "username", "rem" ],
+      },
+      isUniApi: true,
       hasSelectInput: true,
     },
     columns: [
