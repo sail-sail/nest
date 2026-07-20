@@ -18,6 +18,10 @@
     "upgrade": "node --experimental-strip-types src/util/npmUpgrade.ts",
     "upgrade_all": "node --experimental-strip-types src/util/npmUpgradeAll.ts",
     "db_charset": "node --experimental-strip-types src/util/npmDbCharset.ts",
+    "oss_backup": "node --experimental-strip-types src/util/npmOssBucketBackup.ts",
+    "oss_restore": "node --experimental-strip-types src/util/npmOssBucketRestore.ts",
+    "mysql_backup": "node --experimental-strip-types src/util/npmMysqlBackup.ts",
+    "mysql_restore": "node --experimental-strip-types src/util/npmMysqlRestore.ts",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
