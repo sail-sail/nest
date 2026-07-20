@@ -519,7 +519,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1085,7 +1088,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1117,7 +1120,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1149,7 +1152,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }

@@ -395,7 +395,10 @@ import AttrsModal from "./AttrsModal.vue";
 const pagePath = getPagePathDynPageField();
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -542,7 +545,7 @@ async function onCopy() {
   if (!dyn_page_field_id) {
     return;
   }
-  if (!permit('add')) {
+  if (!await permitAsync('add')) {
     uni.showToast({
       title: "无新增权限",
       icon: "none",
@@ -565,7 +568,7 @@ async function onSave(
     return;
   }
   if (dialogAction === "add" || dialogAction === "copy") {
-    if (!permit('add')) {
+    if (!await permitAsync('add')) {
       uni.showToast({
         title: "无新增权限",
         icon: "none",
@@ -574,7 +577,7 @@ async function onSave(
     }
   }
   if (dialogAction === "edit") {
-    if (!permit('edit')) {
+    if (!await permitAsync('edit')) {
       uni.showToast({
         title: "无编辑权限",
         icon: "none",

@@ -828,14 +828,6 @@ async function onChangePassword() {
   }
 }
 
-/** 获取当前用户的权限列表 */
-async function getUsrPermitsEfc() {
-  const permits = await getUsrPermits({
-    notLoading: true,
-  });
-  permitStore.permits = permits;
-}
-
 async function initFrame() {
   if (usrStore.authorization) {
     if (import.meta.env.VITE_SERVER_I18N_ENABLE !== "false") {
@@ -863,7 +855,6 @@ async function initFrame() {
       usrStore.username = loginInfo.username;
       unreadMessageCount = unreadCount;
     }
-    getUsrPermitsEfc();
   }
   inited = true;
 }

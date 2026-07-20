@@ -4990,7 +4990,10 @@ const fieldPermitStore = useFieldPermitStore();<#
 }
 #>
 
-const permit = permitStore.getPermit(pagePath);<#
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);<#
 if (tableFieldPermit) {
 #>
 const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
@@ -7337,7 +7340,7 @@ async function onAuditSubmit() {
   if (!id) {
     return;
   }
-  if (!permit("audit_submit")) {
+  if (!await permitAsync("audit_submit")) {
     return;
   }
   try {
@@ -7398,7 +7401,7 @@ async function onAuditReverse() {
   if (!id) {
     return;
   }
-  if (!permit("audit_reverse")) {
+  if (!await permitAsync("audit_reverse")) {
     return;
   }
   try {
@@ -7459,7 +7462,7 @@ async function onAuditPass() {
   if (!id) {
     return;
   }
-  if (!permit("audit_pass")) {
+  if (!await permitAsync("audit_pass")) {
     return;
   }
   try {
@@ -7525,7 +7528,7 @@ async function onAuditReject() {
   if (!id) {
     return;
   }
-  if (!permit("audit_reject")) {
+  if (!await permitAsync("audit_reject")) {
     return;
   }
   const {
@@ -7582,7 +7585,7 @@ async function onAuditReview() {
   if (!id) {
     return;
   }
-  if (!permit("audit_review")) {
+  if (!await permitAsync("audit_review")) {
     return;
   }
   try {
@@ -7649,10 +7652,10 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !await permitAsync("edit")) {
     return;
   }
-  if (dialogAction === "add" && !permit("add")) {
+  if (dialogAction === "add" && !await permitAsync("add")) {
     return;
   }
   try {
@@ -8098,7 +8101,7 @@ async function onSave() {
   }<#
   if (hasAudit) {
   #>
-  if (permit("audit_submit")) {
+  if (await permitAsync("audit_submit")) {
     await onRefresh();
     if (dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
       dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected

@@ -3295,7 +3295,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);<#
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);<#
 if (tableFieldPermit) {
 #>
 const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
@@ -4532,7 +4535,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {<#
+  if (!await permitAsync("add")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -4578,7 +4581,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {<#
+  if (!await permitAsync("add")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -4966,7 +4969,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {<#
+  if (!await permitAsync("edit")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5179,11 +5182,11 @@ async function openAudit() {
     return;
   }
   if (
-    !permit("audit_submit") &&
-    !permit("audit_pass") &&
-    !permit("audit_reject") &&
-    !permit("audit_review") &&
-    !permit("audit_reverse")
+    !await permitAsync("audit_submit") &&
+    !await permitAsync("audit_pass") &&
+    !await permitAsync("audit_reject") &&
+    !await permitAsync("audit_review") &&
+    !await permitAsync("audit_reverse")
   ) {<#
     if (isUseI18n) {
     #>
@@ -5243,7 +5246,7 @@ async function onAuditReverseByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("audit_reverse")) {<#
+  if (!await permitAsync("audit_reverse")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5485,7 +5488,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {<#
+  if (!await permitAsync("delete")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5564,7 +5567,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {<#
+  if (!await permitAsync("force_delete")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5643,7 +5646,7 @@ async function onEnableByIds(is_enabled: number) {
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {<#
+  if (await permitAsync("edit") === false) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5716,7 +5719,7 @@ async function onLockByIds(is_locked: number) {
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {<#
+  if (await permitAsync("edit") === false) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5789,7 +5792,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {<#
+  if (await permitAsync("delete") === false) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
