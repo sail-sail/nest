@@ -40,7 +40,7 @@ export default function() {
   
   function logout() {
     authorization.value = "";
-    permitsStore.permits = [ ];
+    permitsStore.clear();
   }
   
   function setLang(lang0: string) {

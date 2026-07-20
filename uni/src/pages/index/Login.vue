@@ -115,7 +115,6 @@ const usrStore = useUsrStore();
 
 let inited = $ref(false);
 
-// eslint-disable-next-line prefer-const
 let tenants: GetLoginTenants[] = [ ];
 
 const login_input = ref<LoginInput>({
@@ -168,7 +167,7 @@ async function onLogin(
   usrStore.setUsrId(loginModel.usr_id);
   usrStore.setUsername(loginModel.username);
   usrStore.setTenantId(loginModel.tenant_id);
-  usrStore.setLang(loginModel.lang);
+  usrStore.setLang(loginModel.lang || "");
   usrStore.setLoginInfo(loginModel as GetLoginInfo);
   if (redirect_action === "navigateBack") {
     await uni.navigateBack();

@@ -17,7 +17,8 @@ export async function refreshPermits(
   force: boolean = false,
 ) {
   if (!authorization) {
-    permitStore.permits = [ ];
+    permitStore.clear();
+    return;
   }
   if (!force && permits && permits.length > 0) {
     permitStore.permits = permits;

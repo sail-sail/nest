@@ -968,6 +968,7 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      isUniApi: true,
     },
     columns: [
       {

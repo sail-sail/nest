@@ -84,6 +84,17 @@ export function escapeIdentifier(identifier: string) {
   return `\`${identifier.replace(/`/g, "``")}\``;
 }
 
+function formatMysqlDateTime(value: Date) {
+  return value.toISOString().replace("T", " ").replace("Z", "").replace(/\.\d+$/, "");
+}
+
+export function normalizeMysqlSqlDateTimeValues(sql: string) {
+  return sql.replace(/'((?:\d{4}-\d{2}-\d{2})T(?:\d{2}:\d{2}:\d{2})(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))'/g, (_match, rawValue) => {
+    const normalized = rawValue.replace(/T/, " ").replace(/Z$/, "").replace(/\.\d+$/, "");
+    return `'${normalized}'`;
+  });
+}
+
 export function escapeSqlValue(value: unknown) {
   if (value === null || value === undefined) {
     return "NULL";
@@ -95,7 +106,7 @@ export function escapeSqlValue(value: unknown) {
     return value ? "1" : "0";
   }
   if (value instanceof Date) {
-    return `'${value.toISOString().replace(/'/g, "''")}'`;
+    return `'${formatMysqlDateTime(value).replace(/'/g, "''")}'`;
   }
   if (Buffer.isBuffer(value)) {
     return `0x${value.toString("hex")}`;
@@ -174,7 +185,8 @@ export async function restoreDatabase(config: MysqlEnvConfig, backupFile: string
 
   const connection = await createMysqlConnection(config);
   try {
-    await connection.query(sqlText);
+    const normalizedSql = normalizeMysqlSqlDateTimeValues(sqlText);
+    await connection.query(normalizedSql);
     return {
       executed: true,
       backupFile,
