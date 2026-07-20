@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import {
-  refreshPermits,
-} from "./utils/permit.ts";
 
 onLaunch((async(options?: App.LaunchShowOption) => {
   const indexStore = useIndexStore();
   indexStore.setLaunchOptions(options);
   
   await checkLogin(options);
-  
-  refreshPermits();
   
 }));
 

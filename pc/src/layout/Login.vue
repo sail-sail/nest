@@ -133,6 +133,7 @@ import type {
 const router = useRouter();
 
 const usrStore = useUsrStore();
+const permitStore = usePermitStore();
 const indexStore = useIndexStore();
 const tabsStore = useTabsStore();
 
@@ -325,6 +326,7 @@ async function onLogin() {
   usrStore.username = loginModel.username;
   usrStore.tenant_id = loginModel.tenant_id;
   usrStore.lang = loginModel.lang ?? "";
+  permitStore.clear();
   tabsStore.clearKeepAliveNames();
   await indexStore.initI18nVersion();
   if (old_username !== model.username || old_tenant_id !== model.tenant_id) {
