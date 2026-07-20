@@ -197,7 +197,7 @@
           :style="{
             borderColor: dyn_page_field_id_selected === dyn_page_field_model.id ? 'var(--color-primary)' : undefined,
           }"
-          @click="onDynPageField(dyn_page_field_model.id, dyn_page_field_model.lbl)"
+          @click="onDynPageField(dyn_page_field_model.id)"
         >
           
           <view
@@ -315,17 +315,7 @@ let isEditing = $ref(false);
 let dyn_page_field_ids_selected = $ref<DynPageFieldId[]>([ ]);
 let dyn_page_field_id_selected = $ref<DynPageFieldId>();
 
-const dyn_page_field_models_key = "dyn_page_field.List.dyn_page_field_models";
 let dyn_page_field_models = $ref<DynPageFieldModel[]>([ ]);
-
-(async function() {
-  const models = uni.getStorageSync(dyn_page_field_models_key) || [ ];
-  for (let i = 0; i < models.length; i++) {
-    const model = models[i];
-    await setLblByIdDynPageField(model);
-  }
-  dyn_page_field_models = models;
-})();
 
 type SearchType = {
   // 名称
@@ -394,7 +384,6 @@ function onRadio(
 
 async function onDynPageField(
   dyn_page_field_id: DynPageFieldId,
-  title?: string,
 ) {
   if (isEditing) {
     if (!dyn_page_field_ids_selected.includes(dyn_page_field_id)) {
@@ -565,10 +554,6 @@ async function onRefresh() {
     const len = dyn_page_field_models.length;
     isEnd = len < pgSize;
     pgOffset = len;
-    await uni.setStorage({
-      key: dyn_page_field_models_key,
-      data: dyn_page_field_models,
-    });
   } finally {
     isLoading = false;
   }
@@ -606,10 +591,6 @@ async function onLoadMore() {
     if (!dyn_page_field_models.some((item) => item.id === dyn_page_field_id_selected)) {
       dyn_page_field_id_selected = undefined;
     }
-    await uni.setStorage({
-      key: dyn_page_field_models_key,
-      data: dyn_page_field_models,
-    });
   } finally {
     isLoading = false;
   }

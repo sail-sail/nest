@@ -470,6 +470,8 @@ pub struct UsrSearch {
   #[graphql(skip)]
   pub is_hidden: Option<Vec<u8>>,
   pub is_deleted: Option<u8>,
+  #[graphql(name = "keyword")]
+  pub keyword: Option<SmolStr>,
   /// 头像
   #[graphql(skip)]
   pub img: Option<SmolStr>,
@@ -549,10 +551,10 @@ pub struct UsrSearch {
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
-  #[graphql(skip)]
+  #[graphql(name = "rem")]
   pub rem: Option<SmolStr>,
   /// 备注
-  #[graphql(skip)]
+  #[graphql(name = "rem_like")]
   pub rem_like: Option<SmolStr>,
   /// 创建人
   #[graphql(name = "create_usr_id")]

@@ -741,7 +741,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
@@ -926,6 +926,8 @@ const props = defineProps<{
   default_org_id?: string|string[]; // 默认组织
   default_org_id_lbl?: string; // 默认组织
   is_enabled?: string|string[]; // 启用
+  rem?: string; // 备注
+  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
