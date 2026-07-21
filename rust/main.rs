@@ -319,6 +319,72 @@ pub async fn graphql_handler(
 //   )
 // }
 
+fn get_log_retention_days() -> usize {
+  std::env::var("log_retention_days")
+    .ok()
+    .and_then(|value| value.trim().parse::<usize>().ok())
+    .unwrap_or(90)
+}
+
+fn cleanup_old_log_files(
+  directory: impl AsRef<std::path::Path>,
+  prefix: &str,
+  retention_days: usize,
+) {
+  if retention_days == 0 {
+    return;
+  }
+
+  let directory = directory.as_ref();
+  if !directory.exists() {
+    return;
+  }
+
+  let current_date = time::OffsetDateTime::now_local()
+    .unwrap_or_else(|_| time::OffsetDateTime::now_utc())
+    .date();
+  let cutoff_date = current_date - time::Duration::days(retention_days as i64);
+
+  let Ok(entries) = std::fs::read_dir(directory) else {
+    return;
+  };
+
+  for entry in entries.flatten() {
+    let path = entry.path();
+    let Some(file_name) = path.file_name().and_then(|name| name.to_str()) else {
+      continue;
+    };
+    if !file_name.starts_with(prefix) || !file_name.starts_with(&format!("{prefix}.")) {
+      continue;
+    }
+
+    let suffix = &file_name[prefix.len() + 1..];
+    let mut parts = suffix.split('-');
+    let Some(year) = parts.next().and_then(|value| value.parse::<i32>().ok()) else {
+      continue;
+    };
+    let Some(month) = parts.next().and_then(|value| value.parse::<u8>().ok()) else {
+      continue;
+    };
+    let Some(day) = parts.next().and_then(|value| value.parse::<u8>().ok()) else {
+      continue;
+    };
+    if parts.next().is_some() {
+      continue;
+    }
+
+    let Ok(month) = time::Month::try_from(month) else {
+      continue;
+    };
+    let Ok(date) = time::Date::from_calendar_date(year, month, day) else {
+      continue;
+    };
+    if date < cutoff_date {
+      let _ = std::fs::remove_file(path);
+    }
+  }
+}
+
 fn main() -> Result<(), std::io::Error> {
   let runtime = tokio::runtime::Builder::new_multi_thread()
     .enable_all()
@@ -333,6 +399,8 @@ async fn async_main() -> Result<(), std::io::Error> {
   dotenv().ok();
   let server_title = std::env::var("server_title").expect("server_title not found in .env");
   let git_hash = std::env::var("GIT_HASH").ok();
+  let log_path = std::env::var("log_path").ok();
+  let retention_days = get_log_retention_days();
   
   #[cfg(debug_assertions)]
   let _guard = {
@@ -361,8 +429,7 @@ async fn async_main() -> Result<(), std::io::Error> {
       }))
       .install()
       .expect("Failed to install color_eyre hook");
-    let log_path = std::env::var("log_path").ok();
-    if let Some(log_path) = log_path {
+    if let Some(log_path) = log_path.as_deref() {
       let file_appender = LocalDailyAppender::new(
         log_path,
         format!("{server_title}.log"),
@@ -411,7 +478,6 @@ async fn async_main() -> Result<(), std::io::Error> {
       }))
       .install()
       .expect("Failed to install color_eyre hook");
-    let log_path = std::env::var("log_path").ok();
     if log_path.is_none() {
       tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
@@ -420,7 +486,7 @@ async fn async_main() -> Result<(), std::io::Error> {
         .init();
       None
     } else {
-      let log_path = log_path.expect("log_path is none");
+      let log_path = log_path.as_deref().expect("log_path is none");
       let file_appender = LocalDailyAppender::new(
         log_path,
         format!("{}.log", server_title),
@@ -438,6 +504,9 @@ async fn async_main() -> Result<(), std::io::Error> {
 
   if let Some(git_hash) = git_hash {
     info!("git_hash: {git_hash}");
+  }
+  if let Some(log_path) = log_path.as_deref() {
+    cleanup_old_log_files(log_path, &format!("{server_title}.log"), retention_days);
   }
   
   // oss, tmpfile
