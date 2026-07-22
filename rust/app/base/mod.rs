@@ -13,4 +13,3 @@ pub struct BaseAppQuery(
 pub struct BaseAppMutation(
   self::message::message_graphql::MessageMutation,
 );
-
