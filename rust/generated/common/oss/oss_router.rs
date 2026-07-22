@@ -17,6 +17,7 @@ use crate::common::context::{
   Ctx,
   get_auth_model,
   get_short_uuid,
+  id_to_smolstr,
 };
 
 use crate::common::tmpfile::tmpfile_dao;
@@ -65,7 +66,7 @@ async fn _upload(
   let id: SmolStr = if let Some(id) = id {
     id.into()
   } else {
-    get_short_uuid()
+    id_to_smolstr(&get_short_uuid())
   };
   let auth_model = get_auth_model();
   let tenant_id = auth_model.map(|x| x.tenant_id);
@@ -153,7 +154,7 @@ pub async fn _upload_public(
   let id: SmolStr = if let Some(id) = id {
     id.into()
   } else {
-    get_short_uuid()
+    id_to_smolstr(&get_short_uuid())
   };
   let res = oss_service::put_object(
     id.as_str(), &content, &content_type, &file_name,

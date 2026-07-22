@@ -10,6 +10,8 @@ use serde::{Serialize, Deserialize};
 use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
 use smol_str::SmolStr;
+use uuid::Uuid;
+use sha2::{Digest, Sha256};
 
 use std::sync::OnceLock;
 use std::sync::Arc;
@@ -2183,23 +2185,40 @@ pub fn get_order_by_query(
 }
 
 #[must_use]
-pub fn get_short_uuid() -> SmolStr {
-  let uuid = uuid::Uuid::new_v4();
-  let uuid = uuid.to_string();
-  let uuid = uuid.replace('-', "");
+pub fn get_short_uuid() -> [u8; 22] {
+  let uuid: Uuid = Uuid::now_v7();
   // base64编码
-  let uuid = general_purpose::STANDARD.encode(uuid);
-  // 切割字符串22位
-  let uuid = utf8_slice::from(&uuid, 22);
-  uuid.into()
+  let encoded = general_purpose::STANDARD.encode(uuid.as_bytes());
+  let mut arr: [u8; 22] = [0u8; 22];
+  arr.copy_from_slice(encoded.as_bytes());
+  arr
 }
 
 #[must_use]
-pub fn to_short_uuid(str: impl AsRef<str>) -> SmolStr {
-  let uuid = hash(str.as_ref().as_bytes());
-  // 切割字符串22位
-  let uuid = utf8_slice::from(&uuid, 22);
-  uuid.into()
+pub fn get_short_uuid_v4() -> [u8; 22] {
+  let uuid: Uuid = Uuid::new_v4();
+  // base64编码
+  let encoded = general_purpose::STANDARD.encode(uuid.as_bytes());
+  let mut arr: [u8; 22] = [0u8; 22];
+  arr.copy_from_slice(encoded.as_bytes());
+  arr
+}
+
+#[must_use]
+pub fn id_to_smolstr(id: &[u8; 22]) -> SmolStr {
+  let s = std::str::from_utf8(id).unwrap_or("");
+  SmolStr::new(s)
+}
+
+#[must_use]
+pub fn to_short_uuid(s: &[u8]) -> [u8; 22] {
+  let mut hasher = Sha256::new();
+  hasher.update(s);
+  let hash = hasher.finalize();
+  let encoded = general_purpose::STANDARD.encode(hash);
+  let mut arr: [u8; 22] = [0u8; 22];
+  arr.copy_from_slice(encoded.as_bytes());
+  arr
 }
 
 #[must_use]
