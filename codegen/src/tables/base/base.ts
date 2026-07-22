@@ -123,6 +123,7 @@ export default defineConfig({
         lbl: "关键字",
         placeholder: "关键字",
       },
+      isUniApi: true,
     },
     columns: [
       {
@@ -213,6 +214,7 @@ export default defineConfig({
       uniques: [
         [ "lbl" ],
       ],
+      isUniApi: true,
     },
     columns: [
       {
@@ -264,17 +266,21 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      searchByKeyword: {
+        prop: "keyword",
+        fields: [ "lbl", "username", "rem" ],
+      },
+      isUniApi: true,
       hasSelectInput: true,
     },
     columns: [
       {
         COLUMN_NAME: "img",
-        fixed: "left",
       },
       {
         COLUMN_NAME: "lbl",
         align: "center",
-        fixed: "left",
+        fixed: false,
       },
       {
         COLUMN_NAME: "username",
@@ -962,6 +968,7 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      isUniApi: true,
     },
     columns: [
       {
@@ -1007,6 +1014,7 @@ export default defineConfig({
       },
       list_tree: true,
       hasSelectInput: true,
+      isUniApi: true,
     },
     columns: [
       {

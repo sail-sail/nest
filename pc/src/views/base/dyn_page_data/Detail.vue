@@ -6,7 +6,6 @@
   @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
-  @keydown.insert="onInsert"
   @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
@@ -257,7 +256,10 @@ const pagePath = getPagePathDynPageData();
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 // 创建公式解析器
 const exprParser = new ExprParser();
@@ -725,10 +727,10 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !await permitAsync("edit")) {
     return;
   }
-  if (dialogAction === "add" && !permit("add")) {
+  if (dialogAction === "add" && !await permitAsync("add")) {
     return;
   }
   try {

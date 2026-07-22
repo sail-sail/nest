@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   MenuInput as MenuInputType,
   MenuModel as MenuModelType,

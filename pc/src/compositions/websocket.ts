@@ -19,7 +19,7 @@ function socketPing() {
   if (socket && socket.readyState === WebSocket.OPEN) {
     socket.send("ping");
   }
-  setTimeout(socketPing, 60000);
+  setTimeout(socketPing, 25000);
 }
 socketPing();
 
@@ -44,7 +44,13 @@ async function reConnect() {
 async function connect() {
   if (!socket || (socket.readyState !== WebSocket.OPEN && socket.readyState !== WebSocket.CONNECTING)) {
     // console.log(url);
-    socket = new WebSocket(url);
+    try {
+      socket = new WebSocket(url);
+    } catch (err) {
+      socket = undefined;
+      reConnect();
+      return;
+    }
     socket.onmessage = function(event) {
       // console.log(`websocket: clientId ${ clientId } onmessage`);
       const eventData = event.data;

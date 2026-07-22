@@ -5,7 +5,7 @@ export default function() {
   
   async function fireDirty(
     routePath: string,
-  )  {
+  ) {
     dirtyRoutePath.value = routePath;
     await nextTick();
     dirtyRoutePath.value = "";
@@ -14,7 +14,8 @@ export default function() {
   function onDirty(
     callback: () => void | PromiseLike<void>,
     routePath?: string,
-  )  {
+    isActivatedEffective = true,
+  ) {
     if (!routePath) {
       const t = getCurrentInstance();
       if (!t) {
@@ -37,7 +38,7 @@ export default function() {
         if (routePath !== dirtyRoutePath.value) {
           return;
         }
-        if (!isActivated.value) {
+        if (isActivatedEffective && !isActivated.value) {
           isDirty.value = true;
           return;
         }

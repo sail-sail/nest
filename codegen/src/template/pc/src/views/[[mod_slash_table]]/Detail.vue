@@ -175,7 +175,6 @@ for (let i = 0; i < columns.length; i++) {
   @keydown.page-up="onPageUp"<#
   if (opts?.noAdd !== true || opts?.noEdit !== true) {
   #>
-  @keydown.insert="onInsert"
   @keydown.ctrl.i="onInsert"<#
   }
   #>
@@ -516,6 +515,7 @@ for (let i = 0; i < columns.length; i++) {
               :method="getList<#=Foreign_Table_Up#>"<#
               }
               #>
+              dirty-key="<#=foreignSchema.opts.table_comment#>"
               :find-by-values="findByIds<#=Foreign_Table_Up#>"
               :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                 return {
@@ -1625,6 +1625,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       :method="getList<#=Foreign_Table_Up#>"
+                      dirty-key="<#=foreignSchema.opts.table_comment#>"
                       :find-by-values="findByIds<#=Foreign_Table_Up#>"
                       :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                         return {
@@ -2517,6 +2518,7 @@ for (let i = 0; i < columns.length; i++) {
                     :method="getList<#=Foreign_Table_Up#>"<#
                     }
                     #>
+                    dirty-key="<#=foreignSchema.opts.table_comment#>"
                     :find-by-values="findByIds<#=Foreign_Table_Up#>"
                     :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                       return {
@@ -3271,6 +3273,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       :method="getList<#=Foreign_Table_Up#>"
+                      dirty-key="<#=foreignSchema.opts.table_comment#>"
                       :find-by-values="findByIds<#=Foreign_Table_Up#>"
                       :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                         return {
@@ -3986,7 +3989,7 @@ for (let i = 0; i < columns.length; i++) {
         #>
         
         <el-button
-          v-if="permit('audit_reject') &&
+          v-if="permit('audit_reject', '审核拒绝') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
           "
           plain
@@ -4007,7 +4010,7 @@ for (let i = 0; i < columns.length; i++) {
         </el-button>
         
         <el-button
-          v-if="permit('audit_submit') &&
+          v-if="permit('audit_submit', '审核提交') &&
             (
               dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
               dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
@@ -4031,7 +4034,7 @@ for (let i = 0; i < columns.length; i++) {
         </el-button>
         
         <el-button
-          v-if="permit('audit_pass') &&
+          v-if="permit('audit_pass', '审核通过') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
           "
           plain
@@ -4054,7 +4057,7 @@ for (let i = 0; i < columns.length; i++) {
         #>
         
         <el-button
-          v-if="permit('audit_pass') &&
+          v-if="permit('audit_pass', '审核通过') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
           "
           plain
@@ -4077,7 +4080,7 @@ for (let i = 0; i < columns.length; i++) {
         #>
         
         <el-button
-          v-if="permit('audit_review') &&
+          v-if="permit('audit_review', '复核') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
           "
           plain
@@ -4098,9 +4101,9 @@ for (let i = 0; i < columns.length; i++) {
         </el-button>
         
         <el-button
-          v-if="permit('audit_review') &&
+          v-if="permit('audit_review', '复核') &&
             dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
-            !permit('audit_reverse')
+            !permit('audit_reverse', '反审核')
           "
           plain
           type="primary"
@@ -4987,7 +4990,10 @@ const fieldPermitStore = useFieldPermitStore();<#
 }
 #>
 
-const permit = permitStore.getPermit(pagePath);<#
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);<#
 if (tableFieldPermit) {
 #>
 const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
@@ -7334,7 +7340,7 @@ async function onAuditSubmit() {
   if (!id) {
     return;
   }
-  if (!permit("audit_submit")) {
+  if (!await permitAsync("audit_submit")) {
     return;
   }
   try {
@@ -7395,7 +7401,7 @@ async function onAuditReverse() {
   if (!id) {
     return;
   }
-  if (!permit("audit_reverse")) {
+  if (!await permitAsync("audit_reverse")) {
     return;
   }
   try {
@@ -7456,7 +7462,7 @@ async function onAuditPass() {
   if (!id) {
     return;
   }
-  if (!permit("audit_pass")) {
+  if (!await permitAsync("audit_pass")) {
     return;
   }
   try {
@@ -7522,7 +7528,7 @@ async function onAuditReject() {
   if (!id) {
     return;
   }
-  if (!permit("audit_reject")) {
+  if (!await permitAsync("audit_reject")) {
     return;
   }
   const {
@@ -7579,7 +7585,7 @@ async function onAuditReview() {
   if (!id) {
     return;
   }
-  if (!permit("audit_review")) {
+  if (!await permitAsync("audit_review")) {
     return;
   }
   try {
@@ -7646,10 +7652,10 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !await permitAsync("edit")) {
     return;
   }
-  if (dialogAction === "add" && !permit("add")) {
+  if (dialogAction === "add" && !await permitAsync("add")) {
     return;
   }
   try {
@@ -8095,7 +8101,7 @@ async function onSave() {
   }<#
   if (hasAudit) {
   #>
-  if (permit("audit_submit")) {
+  if (await permitAsync("audit_submit")) {
     await onRefresh();
     if (dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
       dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected

@@ -38,14 +38,15 @@ use crate::base::menu::menu_model::MenuId;
 use crate::base::lang::lang_model::LangId;
 use crate::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_TENANT: [&str; 3] = [
+static CAN_SORT_IN_API_TENANT: [&str; 4] = [
+  "code",
   "order_by",
   "create_time",
   "update_time",
 ];
 
 /// 租户 前端允许排序的字段
-fn get_can_sort_in_api_tenant() -> &'static [&'static str; 3] {
+fn get_can_sort_in_api_tenant() -> &'static [&'static str; 4] {
   &CAN_SORT_IN_API_TENANT
 }
 

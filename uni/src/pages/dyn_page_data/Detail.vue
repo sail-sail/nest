@@ -37,7 +37,7 @@
   </scroll-view>
   
   <view
-    v-if="dialogAction !== 'view'"
+    v-if="dialogAction !== 'view' && hasOperationButtons"
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -46,30 +46,128 @@
     un-gap="x-4"
   >
     
-    <view
-      v-if="dialogAction === 'edit' && dyn_page_data_id"
-      un-flex="1"
+    <tm-drawer
+      v-model:show="operationDrawerShow"
+      title="操作"
+      un-w="full"
+      :show-close="true"
+      :show-footer="true"
+      size="auto"
     >
-      <tm-button
-        block
-        color="info"
-        @click="onCopy"
+      
+      <template #trigger>
+        <tm-button
+          block
+          color="info"
+          @click="operationDrawerShow = true"
+        >
+          <view
+            un-flex="~"
+            un-justify="center"
+            un-items="center"
+          >
+            
+            <view>
+              操作
+            </view>
+            
+            <view
+              un-i="iconfont-caret_top"
+            ></view>
+            
+          </view>
+        </tm-button>
+      </template>
+      
+      <template #footer>
+        <tm-button
+          block
+          color="info"
+          @click="operationDrawerShow = false;"
+        >
+          <view
+            un-flex="~"
+            un-justify="center"
+            un-items="center"
+            un-gap="x-1"
+          >
+            
+            <view>
+              关闭
+            </view>
+            
+            <view
+              un-i="iconfont-caret_bottom"
+            ></view>
+            
+          </view>
+        </tm-button>
+      </template>
+      
+      <view
+        un-p="4"
+        un-box-border
+        un-w="full"
+        un-flex="~ col"
+        un-gap="y-4"
       >
-        复制
-      </tm-button>
-    </view>
-    
-    <view
-      un-flex="1"
-    >
-      <tm-button
-        :disabled="!inited || is_form_hydrating"
-        block
-        @click="formRef?.submit()"
-      >
-        确定
-      </tm-button>
-    </view>
+        
+        <view
+          v-if="dialogAction === 'edit'"
+          un-flex="~"
+          un-gap="x-2"
+        >
+          
+          <tm-button
+            v-if="permit('add', '新增')"
+            block
+            color="info"
+            @click="operationDrawerShow = false; onCopy();"
+          >
+            复制
+          </tm-button>
+          
+          <tm-button
+            v-if="permit('edit', '编辑')"
+            :disabled="!inited || is_form_hydrating"
+            block
+            @click="operationDrawerShow = false; formRef?.submit();"
+          >
+            编辑
+          </tm-button>
+          
+        </view>
+        
+        <CustomDivider
+          v-if="dialogAction === 'edit'"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
+        
+        <template
+          v-if="dialogAction === 'copy' || dialogAction === 'add'"
+        >
+          
+          <tm-button
+            v-if="permit('add', '新增')"
+            :disabled="!inited || is_form_hydrating"
+            block
+            @click="operationDrawerShow = false; formRef?.submit();"
+          >
+            新增
+          </tm-button>
+          
+        </template>
+          
+        <CustomDivider
+          v-if="dialogAction === 'copy' || dialogAction === 'add'"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
+        
+      </view>
+      
+    </tm-drawer>
     
   </view>
   
@@ -85,12 +183,21 @@ import {
   updateByIdDynPageData,
   getDefaultInputDynPageData,
   intoInputDynPageData,
+  getPagePathDynPageData,
 } from "./Api.ts";
 
 import {
 } from "./Api.ts";
 
 import TmForm from "@/uni_modules/tm-ui/components/tm-form/tm-form.vue";
+
+const pagePath = getPagePathDynPageData();
+const permitStore = usePermitStore();
+
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -104,13 +211,54 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {
 
 type ActionType = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<ActionType>("add");
+let isReadonly = $ref(false);
+
+watch(
+  () => dialogAction,
+  () => {
+    if (dialogAction === "view") {
+      isReadonly = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 
 const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);
 
+let operationDrawerShow = $ref(false);
+
+/** 是否有可用的操作按钮 */
+const hasOperationButtons = $computed(() => {
+  if (dialogAction === 'view') return false;
+
+  if (dialogAction === 'edit') {
+    // 复制按钮
+    if (permit('add')) return true;
+    // 编辑按钮
+    if (permit('edit')) return true;
+  }
+
+  if (dialogAction === 'add' || dialogAction === 'copy') {
+    // 新增按钮
+    if (permit('add')) return true;
+  }
+
+  return false;
+});
+
 /** 复制 */
 async function onCopy() {
   if (!dyn_page_data_id) {
+    return;
+  }
+  if (!await permitAsync('add')) {
+    uni.showToast({
+      title: "无新增权限",
+      icon: "none",
+    });
     return;
   }
   uni.redirectTo({
@@ -127,6 +275,24 @@ async function onSave(
   }
   if (!inited || is_form_hydrating) {
     return;
+  }
+  if (dialogAction === "add" || dialogAction === "copy") {
+    if (!await permitAsync('add')) {
+      uni.showToast({
+        title: "无新增权限",
+        icon: "none",
+      });
+      return;
+    }
+  }
+  if (dialogAction === "edit") {
+    if (!await permitAsync('edit')) {
+      uni.showToast({
+        title: "无编辑权限",
+        icon: "none",
+      });
+      return;
+    }
   }
   if (formSubmitResult?.isPass === false) {
     const firstValid = formSubmitResult.firstValid;
@@ -145,21 +311,30 @@ async function onSave(
       return;
     }
   }
+  const currentAction = dialogAction;
   
-  if (dialogAction === "copy" || dialogAction === "add") {
-    await createDynPageData(
+  if (currentAction === "copy" || currentAction === "add") {
+    const created_id = await createDynPageData(
       dyn_page_data_input,
     );
     await uni.showModal({
       content: "新增成功",
       showCancel: false,
     });
-    await uni.navigateBack();
-    uni.$emit("/pages/dyn_page_data/List:refresh");
-  } else if (dialogAction === "edit") {
+    if (backAfterSaveInner) {
+      await uni.navigateBack();
+    } else {
+      dyn_page_data_id = created_id;
+      dialogAction = "edit";
+      await onRefresh();
+    }
+    uni.$emit("/pages/dyn_page_data/List:refresh", {
+      action: currentAction,
+    });
+  } else if (currentAction === "edit") {
     if (!dyn_page_data_id) {
       uni.showToast({
-        title: "修改失败, id 不能为空",
+        title: "编辑失败, id 不能为空",
         icon: "none",
       });
       return;
@@ -169,10 +344,14 @@ async function onSave(
       dyn_page_data_input,
     );
     await uni.showModal({
-      content: "修改成功",
+      content: "编辑成功",
       showCancel: false,
     });
-    await uni.navigateBack();
+    if (backAfterSaveInner) {
+      await uni.navigateBack();
+    } else {
+      await onRefresh();
+    }
     uni.$emit("/pages/dyn_page_data/List:refresh");
   }
   
@@ -185,6 +364,10 @@ async function onRefresh() {
     formRef?.resetValidation();
     if (dialogAction === "add") {
       dyn_page_data_input = await getDefaultInputDynPageData();
+      dyn_page_data_input = {
+        ...dyn_page_data_input,
+        ...getMergedInputPatch(),
+      };
     } else if (dialogAction === "copy") {
       if (!dyn_page_data_id) {
         uni.showToast({
@@ -212,6 +395,10 @@ async function onRefresh() {
       dyn_page_data_input = intoInputDynPageData(
         dyn_page_data_model,
       );
+      dyn_page_data_input = {
+        ...dyn_page_data_input,
+        ...getMergedInputPatch(),
+      };
     } else if (dialogAction === "edit" || dialogAction === "view") {
       dyn_page_data_model = await findOneModel(
         {
@@ -252,6 +439,8 @@ const props = withDefaults(
     dyn_page_data_id?: DynPageDataId;
     findOne?: typeof findOneDynPageData;
     beforeSave?: (input: DynPageDataInput) => Promise<boolean>;
+    inputPatch?: Partial<DynPageDataInput>;
+    backAfterSave?: boolean;
   }>(),
   {
     init: true,
@@ -259,8 +448,20 @@ const props = withDefaults(
     dyn_page_data_id: undefined,
     findOne: undefined,
     beforeSave: undefined,
+    inputPatch: undefined,
+    backAfterSave: true,
   },
 );
+
+let inputPatchByQuery = $ref<Partial<DynPageDataInput>>({ });
+let backAfterSaveInner = $ref(true);
+
+function getMergedInputPatch(): Partial<DynPageDataInput> {
+  return {
+    ...inputPatchByQuery,
+    ...props.inputPatch,
+  };
+}
 
 let findOneModel: typeof findOneDynPageData = findOneDynPageData;
 
@@ -269,6 +470,7 @@ watch(
     props.action,
     props.dyn_page_data_id,
     props.findOne,
+    props.backAfterSave,
   ],
   () => {
     if (props.action) {
@@ -282,6 +484,7 @@ watch(
     } else {
       findOneModel = findOneDynPageData;
     }
+    backAfterSaveInner = props.backAfterSave ?? true;
   },
   {
     immediate: true,
@@ -291,12 +494,27 @@ watch(
 onLoad(async function(query?: AnyObject) {
   const dyn_page_data_id_str = query?.dyn_page_data_id;
   const action = query?.action;
+  const input_patch = query?.input_patch;
+  const back_after_save = query?.back_after_save;
   if (action === "add") {
     dialogAction = "add";
   } else if (action === "copy") {
     dialogAction = "copy";
   } else if (action === "edit") {
     dialogAction = "edit";
+  }
+  if (back_after_save != null) {
+    backAfterSaveInner = decodeURIComponent(back_after_save) !== "0";
+  }
+  if (input_patch) {
+    try {
+      const data = JSON.parse(decodeURIComponent(input_patch));
+      if (data && typeof data === "object") {
+        inputPatchByQuery = data as Partial<DynPageDataInput>;
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
   if (dyn_page_data_id_str) {
     dyn_page_data_id = decodeURIComponent(dyn_page_data_id_str) as DynPageDataId | undefined;

@@ -6,6 +6,7 @@ use smol_str::SmolStr;
 use crate::common::context::Ctx;
 
 use super::app_resolver;
+use crate::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct AppQuery;
@@ -48,13 +49,16 @@ impl AppQuery {
     ctx: &Context<'_>,
     platform: SmolStr,
     appid: SmolStr,
-  ) -> Result<SmolStr> {
+    agentid: Option<SmolStr>,
+  ) -> Result<TenantId> {
     Ctx::builder(ctx)
       .build()
       .scope({
         app_resolver::get_tenant_id_by_appid(
           platform,
           appid,
+          agentid,
+          None,
         )
       }).await
   }

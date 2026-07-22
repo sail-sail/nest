@@ -3,7 +3,7 @@
   -->
 
 <script setup lang="ts">
-import { PropsTypes } from './propsType'
+import type { PropsTypes } from './propsType'
 import { computed, provide, ref, watch } from 'vue'
 import { useTmConfig } from '../../libs/config'
 
@@ -113,5 +113,6 @@ defineExpose({
 		flex-direction: column;
 
 	}
+	gap: 12rpx;
 }
 </style>

@@ -62,6 +62,7 @@
           <CustomSelect
             v-model="role_ids_search"
             :method="getListRole"
+            dirty-key="角色"
             :options-map="((item: RoleModel) => {
               return {
                 label: item.lbl,
@@ -104,6 +105,7 @@
           <CustomSelect
             v-model="org_ids_search"
             :method="getListOrg"
+            dirty-key="组织"
             :options-map="((item: OrgModel) => {
               return {
                 label: item.lbl,
@@ -276,7 +278,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         @click="onDeleteByIds"
@@ -409,7 +411,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -421,7 +423,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -739,7 +741,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
             <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
@@ -882,7 +884,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -924,6 +929,8 @@ const props = defineProps<{
   default_org_id?: string|string[]; // 默认组织
   default_org_id_lbl?: string; // 默认组织
   is_enabled?: string|string[]; // 启用
+  rem?: string; // 备注
+  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -1219,7 +1226,6 @@ function getTableColumns(): ColumnType[] {
       width: 100,
       align: "center",
       headerAlign: "center",
-      fixed: "left",
     },
     {
       label: "名称",
@@ -1228,7 +1234,6 @@ function getTableColumns(): ColumnType[] {
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
-      fixed: "left",
     },
     {
       label: "用户名",
@@ -1547,7 +1552,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1579,7 +1584,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1770,7 +1775,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
+  if (!await permitAsync("edit")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1872,7 +1877,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1904,7 +1909,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1936,7 +1941,7 @@ async function onEnableByIds(is_enabled: number) {
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1970,7 +1975,7 @@ async function onLockByIds(is_locked: number) {
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -2004,7 +2009,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }

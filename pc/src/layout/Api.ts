@@ -3,7 +3,7 @@ import type {
   Mutation,
   MutationLoginArgs,
   GetLoginTenants,
-} from "#/types";
+} from "#/types.ts";
 
 /**
  * 根据 当前网址的域名+端口 获取 租户列表

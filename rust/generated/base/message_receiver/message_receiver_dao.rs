@@ -20,6 +20,8 @@ use tracing::{info, error};
 use crate::common::util::string::sql_like;
 #[allow(unused_imports)]
 use crate::common::gql::model::SortOrderEnum;
+#[allow(unused_imports)]
+use crate::common::gql::NaiveDateTime;
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -44,6 +46,7 @@ use crate::common::context::{
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  get_auth_org_id,
 };
 use crate::common::exceptions::service_exception::ServiceException;
 
@@ -291,7 +294,7 @@ async fn get_where_query(
   // 阅读时间
   {
     let mut read_time = match search {
-      Some(item) => item.read_time.unwrap_or_default(),
+      Some(item) => item.read_time.clone().unwrap_or_default(),
       None => Default::default(),
     };
     let read_time_gt = read_time[0].take();
@@ -1600,9 +1603,9 @@ pub async fn set_id_by_lbl_message_receiver(
   
   // 阅读时间
   if input.read_time.is_none() && let Some(read_time_lbl) = input.read_time_lbl.as_ref().filter(|s| !s.is_empty()) {
-    input.read_time = chrono::NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
+    input.read_time = NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
     if input.read_time.is_none() {
-      input.read_time = chrono::NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d").ok();
+      input.read_time = NaiveDateTime::parse_from_str(read_time_lbl, "%Y-%m-%d").ok();
     }
     if input.read_time.is_none() {
       let field_comments = get_field_comments_message_receiver(
@@ -1795,6 +1798,10 @@ pub async fn creates_return_message_receiver(
     );
   }
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let ids = _creates(
     inputs.clone(),
     options,
@@ -1832,6 +1839,10 @@ pub async fn creates_message_receiver(
     );
   }
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let ids = _creates(
     inputs,
     options,
@@ -1856,6 +1867,25 @@ async fn _creates(
       item.get_unique_type()
     )
     .unwrap_or_default();
+
+  let auth_org_id = get_auth_org_id();
+  let mut auth_org_id_lbl = SmolStr::new("");
+  if let Some(auth_org_id) = auth_org_id {
+    let org_model = crate::base::org::org_dao::find_by_id_org(
+      auth_org_id,
+      options,
+    ).await?;
+    if let Some(org_model) = org_model {
+      auth_org_id_lbl = org_model.lbl;
+    }
+  }
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    if input.org_id.is_none_or(|x| x.is_empty()) {
+      input.org_id = auth_org_id;
+      input.org_id_lbl = Some(auth_org_id_lbl.clone());
+    }
+  }
   
   let mut ids2: Vec<MessageReceiverId> = vec![];
   let mut inputs2: Vec<MessageReceiverInput> = vec![];
@@ -2225,6 +2255,10 @@ pub async fn create_message_receiver(
       req_id = get_req_id(),
     );
   }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let ids = _creates(
     vec![input],

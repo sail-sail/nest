@@ -8,6 +8,7 @@ const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 const hasIsMonth = columns.some((column) => column.isMonth);
+const hasSearchRangeMax = columns.some((column) => column.searchRangeMax && column.searchRangeMax > 0);
 const hasNoAdd = columns.some((column) => {
   const column_name = column.COLUMN_NAME;
   if (
@@ -154,6 +155,119 @@ use crate::bpm::process_inst::process_inst_model::ProcessInstId;
 use crate::bpm::task::task_model::TaskAction;
 use crate::base::usr::usr_model::UsrId;<#
 }
+#><#
+if (hasSearchRangeMax) {
+#>
+
+fn check_search_range_<#=table#>(
+  search: &<#=tableUP#>Search,
+) -> Result<()> {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column_name);
+    if (column_name === "id") continue;
+    const data_type = column.DATA_TYPE;
+    const column_type = (column.COLUMN_TYPE || "").toLowerCase();
+    const column_comment = column.COLUMN_COMMENT || column_name;
+    const searchRangeMax = Number(column.searchRangeMax || 0);
+    const searchRangeMaxMsg = column.searchRangeMaxMsg || `查询范围不能超过 ${searchRangeMax} 秒`;
+    if (!searchRangeMax || searchRangeMax <= 0) continue;
+    if (!["int", "double", "decimal", "datetime", "date"].includes(data_type)) continue;
+  #><#
+  if (data_type === "datetime" || data_type === "date") {
+  #>
+  
+  {
+    let begin = search.<#=column_name_rust#>.and_then(|x| x[0]);
+    let end = search.<#=column_name_rust#>.and_then(|x| x[1]);
+    if let [Some(begin), Some(end)] = [begin, end] {
+      if end.signed_duration_since(begin).num_seconds().abs() > <#=searchRangeMax#>i64 {
+        return Err(color_eyre::eyre::eyre!(
+          "<#=column_comment#> <#=searchRangeMaxMsg#>",
+        ));
+      }
+    } else if
+      search.id.is_none() &&
+      search.ids.is_none()<#
+      if ((opts.uniques || [ ]).length > 0) {
+      #> &&<#
+      }
+      #><#
+      for (let i = 0; i < (opts.uniques || [ ]).length; i++) {
+        const uniques = opts.uniques[i];
+      #><#
+      if (uniques.length > 1) {
+      #>(<#
+      }
+      #><#
+      for (let k = 0; k < uniques.length; k++) {
+        const unique = uniques[k];
+        const unique_rust = rustKeyEscape(unique);
+      #>
+      search.<#=unique_rust#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
+      }
+      #><#
+      if (uniques.length > 1) {
+      #>)<#
+      }
+      #><#
+      }
+      #>
+    {
+      return Err(color_eyre::eyre::eyre!(
+        "<#=column_comment#> <#=searchRangeMaxMsg#>",
+      ));
+    }
+  }<#
+  } else if (data_type === "decimal") {
+  #>
+  
+  {
+    let begin = search.<#=column_name_rust#>.and_then(|x| x[0]);
+    let end = search.<#=column_name_rust#>.and_then(|x| x[1]);
+    if let [Some(begin), Some(end)] = [begin, end] {
+      let diff = (*end - *begin).abs();
+      if diff > rust_decimal::Decimal::from(<#=searchRangeMax#>) {
+        return Err(color_eyre::eyre::eyre!(
+          "<#=column_comment#> <#=searchRangeMaxMsg#>",
+        ));
+      }
+    } else {
+      return Err(color_eyre::eyre::eyre!(
+        "<#=column_comment#> <#=searchRangeMaxMsg#>",
+      ));
+    }
+  }<#
+  } else {
+  #>
+  
+  {
+    let begin = search.<#=column_name_rust#>.and_then(|x| x[0]);
+    let end = search.<#=column_name_rust#>.and_then(|x| x[1]);
+    if let [Some(begin), Some(end)] = [begin, end] {
+      let diff = (*end as f64 - *begin as f64).abs();
+      if diff > <#=searchRangeMax#>f64 {
+        return Err(color_eyre::eyre::eyre!(
+          "<#=column_comment#> <#=searchRangeMaxMsg#>",
+        ));
+      }
+    } else {
+      return Err(color_eyre::eyre::eyre!(
+        "<#=column_comment#> <#=searchRangeMaxMsg#>",
+      ));
+    }
+  }<#
+  }
+  #><#
+  }
+  #>
+
+  Ok(())
+}<#
+}
 #>
 
 /// 根据搜索条件和分页查找<#=table_comment#>列表
@@ -178,6 +292,16 @@ pub async fn find_all_<#=table#>(
     search.is_hidden = Some(vec![0]);
     search
   });<#
+  }
+  #><#
+  if (hasSearchRangeMax) {
+  #>
+  
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
   }
   #>
   
@@ -258,6 +382,16 @@ pub async fn find_count_<#=table#>(
     search
   });<#
   }
+  #><#
+  if (hasSearchRangeMax) {
+  #>
+  
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
+  }
   #>
   
   let num = <#=table#>_service::find_count_<#=table#>(
@@ -289,6 +423,16 @@ pub async fn find_one_<#=table#>(
     search.is_hidden = Some(vec![0]);
     search
   });<#
+  }
+  #><#
+  if (hasSearchRangeMax) {
+  #>
+  
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
   }
   #>
   
@@ -369,6 +513,16 @@ pub async fn find_one_ok_<#=table#>(
     search.is_hidden = Some(vec![0]);
     search
   });<#
+  }
+  #><#
+  if (hasSearchRangeMax) {
+  #>
+  
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
   }
   #>
   
@@ -2119,7 +2273,17 @@ pub async fn find_summary_<#=table#>(
     "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
-  );
+  );<#
+  if (hasSearchRangeMax) {
+  #>
+  
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
+  }
+  #>
   
   let <#=table#>_summary = <#=table#>_service::find_summary_<#=table#>(
     search,
@@ -2144,7 +2308,17 @@ pub async fn find_last_order_by_<#=table#>(
     "{req_id} {function_name}: search: {search:?}",
     req_id = get_req_id(),
     function_name = function_name!(),
-  );
+  );<#
+  if (hasSearchRangeMax) {
+  #>
+  
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
+  }
+  #>
   
   let order_by = <#=table#>_service::find_last_order_by_<#=table#>(
     search,

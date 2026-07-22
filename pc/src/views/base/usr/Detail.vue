@@ -6,7 +6,6 @@
   @close="onDialogClose"
   @keydown.page-down="onPageDown"
   @keydown.page-up="onPageUp"
-  @keydown.insert="onInsert"
   @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
@@ -142,6 +141,7 @@
               v-model="dialogModel.role_ids"
               :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
               :method="getListRole"
+              dirty-key="角色"
               :find-by-values="findByIdsRole"
               :options-map="((item: RoleModel) => {
                 return {
@@ -183,6 +183,7 @@
               v-model="dialogModel.org_ids"
               :set="dialogModel.org_ids = dialogModel.org_ids ?? [ ]"
               :method="getListOrg"
+              dirty-key="组织"
               :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
@@ -208,6 +209,7 @@
               v-model="dialogModel.default_org_id"
               :init="false"
               :method="getListOrgApi"
+              dirty-key="组织"
               :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
@@ -408,7 +410,10 @@ const pagePath = getPagePathUsr();
 
 const permitStore = usePermitStore();
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 let is_form_hydrating = $ref(false);
@@ -894,10 +899,10 @@ async function save() {
   if (!formRef) {
     return;
   }
-  if ((dialogAction === "edit" || dialogAction === "view") && !permit("edit")) {
+  if ((dialogAction === "edit" || dialogAction === "view") && !await permitAsync("edit")) {
     return;
   }
-  if (dialogAction === "add" && !permit("add")) {
+  if (dialogAction === "add" && !await permitAsync("add")) {
     return;
   }
   try {

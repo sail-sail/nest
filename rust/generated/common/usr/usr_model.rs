@@ -42,16 +42,20 @@ pub struct ChangePasswordInput {
 #[graphql(rename_fields = "snake_case")]
 pub struct LoginModel {
   pub usr_id: UsrId,
+  pub lbl: SmolStr,
   pub username: SmolStr,
+  pub role_codes: Vec<SmolStr>,
   pub tenant_id: TenantId,
   pub authorization: SmolStr,
   pub org_id: Option<OrgId>,
+  pub org_id_models: Vec<GetLoginInfoorgIdModel>,
   pub lang: SmolStr,
 }
 
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 pub struct GetLoginInfo {
+  pub usr_id: UsrId,
   pub lbl: SmolStr,
   pub username: SmolStr,
   pub role_codes: Vec<SmolStr>,

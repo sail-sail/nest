@@ -2031,6 +2031,10 @@ pub async fn creates_return_menu(
     );
   }
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let ids = _creates(
     inputs.clone(),
     options,
@@ -2067,6 +2071,10 @@ pub async fn creates_menu(
       req_id = get_req_id(),
     );
   }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let ids = _creates(
     inputs,
@@ -2451,6 +2459,10 @@ pub async fn create_menu(
       req_id = get_req_id(),
     );
   }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let ids = _creates(
     vec![input],

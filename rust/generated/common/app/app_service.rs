@@ -1,9 +1,11 @@
 use color_eyre::eyre::{Result, bail};
-use tracing::info;
+use tracing::error;
 
 use smol_str::SmolStr;
 
 use super::app_dao;
+use crate::common::context::Options;
+use crate::base::tenant::tenant_model::TenantId;
 
 /// 清空缓存
 pub async fn generate_id() -> Result<SmolStr> {
@@ -19,7 +21,10 @@ pub async fn check_login() -> Result<bool> {
 pub async fn get_tenant_id_by_appid(
   platform: SmolStr,
   appid: SmolStr,
-) -> Result<SmolStr> {
-  info!("get_tenant_id_by_appid is not implemented, platform: {platform}, appid: {appid}",);
+  agentid: Option<SmolStr>,
+  options: Option<Options>,
+) -> Result<TenantId> {
+  
+  error!("get_tenant_id_by_appid is not implemented, platform: {platform}, appid: {appid}, agentid: {agentid:?}, options: {options:?}",);
   bail!("get_tenant_id_by_appid is not implemented")
 }

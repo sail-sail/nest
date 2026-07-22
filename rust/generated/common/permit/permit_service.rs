@@ -12,7 +12,7 @@ use smol_str::SmolStr;
 use crate::common::i18n::i18n_dao::ns;
 
 use crate::base::menu::menu_dao::{
-  find_by_id_menu,
+  find_all_menu,
   find_one_menu,
 };
 use crate::base::menu::menu_model::{MenuSearch, MenuId};
@@ -34,7 +34,7 @@ use crate::base::permit::permit_model::PermitModel;
 use crate::base::permit::permit_model::PermitId;
 
 /// 根据当前用户获取权限列表
-pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
+pub async fn get_usr_permits(route_path: Option<SmolStr>) -> Result<Vec<GetUsrPermits>> {
   let auth_model = get_auth_model();
   if auth_model.is_none() {
     return Ok(Vec::new());
@@ -116,30 +116,29 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
   }
   let permit_models = permit_models;
   
-  let mut menu_id_map = HashMap::<MenuId, SmolStr>::with_capacity(permit_len);
-  
+  let mut menu_ids = Vec::<MenuId>::new();
   for permit_model in permit_models.iter() {
-    let menu_id = permit_model.menu_id;
-    if menu_id_map.contains_key(&menu_id) {
+    let menu_id = permit_model.menu_id.clone();
+    if menu_id.is_empty() || menu_ids.contains(&menu_id) {
       continue;
     }
-    if menu_id.is_empty() {
-      menu_id_map.insert(menu_id, SmolStr::new(""));
-    }
-    
-    let menu_model = find_by_id_menu(
-      menu_id,
+    menu_ids.push(menu_id);
+  }
+  
+  let mut menu_id_map = HashMap::<MenuId, SmolStr>::with_capacity(menu_ids.len());
+  if !menu_ids.is_empty() {
+    let menu_models = find_all_menu(
+      Some(MenuSearch {
+        ids: Some(menu_ids),
+        ..Default::default()
+      }),
+      None,
+      None,
       options,
     ).await?;
-    
-    if menu_model.is_none() {
-      menu_id_map.insert(menu_id, SmolStr::new(""));
-      continue;
+    for menu_model in menu_models {
+      menu_id_map.insert(menu_model.id, menu_model.route_path);
     }
-    let menu_model = menu_model.unwrap();
-    
-    let route_path = menu_model.route_path;
-    menu_id_map.insert(menu_id, route_path);
   }
   
   let permits: Vec<GetUsrPermits> = permit_models.into_iter()
@@ -158,6 +157,10 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
         code: item.code,
         lbl: item.lbl,
       }
+    })
+    .filter(|permit| match &route_path {
+      Some(route_path) => permit.route_path == *route_path,
+      None => true,
     })
     .collect();
   

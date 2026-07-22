@@ -226,7 +226,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         @click="onDeleteByIds"
@@ -343,7 +343,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -355,7 +355,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -785,7 +785,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -889,20 +892,6 @@ function initSearch() {
 }
 
 let search = $ref<DynPageFieldSearch>(initSearch());
-
-// 动态页面
-const dyn_page_id_search = $computed({
-  get() {
-    return search.dyn_page_id || [ ];
-  },
-  set(val) {
-    if (!val || val.length === 0) {
-      search.dyn_page_id = undefined;
-    } else {
-      search.dyn_page_id = val;
-    }
-  },
-});
 
 // 启用
 const is_enabled_search = $computed({
@@ -1074,6 +1063,7 @@ function getTableColumns(): ColumnType[] {
       label: "编码",
       prop: "code",
       width: 140,
+      sortable: "custom",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1382,7 +1372,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1414,7 +1404,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1683,7 +1673,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
+  if (!await permitAsync("edit")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1785,7 +1775,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1817,7 +1807,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1849,7 +1839,7 @@ async function onEnableByIds(is_enabled: number) {
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1883,7 +1873,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }

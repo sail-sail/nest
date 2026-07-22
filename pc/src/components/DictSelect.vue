@@ -297,6 +297,7 @@ const props = withDefaults(
     readonlyMaxCollapseTags?: number;
     hasSelectAdd?: boolean;
     pageInited?: boolean;
+    dirtyKey?: string | string[];
   }>(),
   {
     optionsMap: function(item: DictModel) {
@@ -326,6 +327,7 @@ const props = withDefaults(
     readonlyMaxCollapseTags: 1,
     hasSelectAdd: false,
     pageInited: undefined,
+    dirtyKey: "系统字典",
   },
 );
 
@@ -629,6 +631,8 @@ const {
   initSysI18ns,
 } = useI18n();
 
+const dirtyStore = useDirtyStore();
+
 const modelLabels: string[] = $computed(() => {
   if (modelValue == null) {
     return [ "" ];
@@ -667,6 +671,43 @@ function onClear() {
   emit("change", [ ]);
   emit("clear");
 }
+
+let dirtyWatchHandles: Array<() => void> = [ ];
+
+function getDirtyKeys() {
+  if (!props.dirtyKey) {
+    return [ ];
+  }
+  const dirtyKey = Array.isArray(props.dirtyKey)
+    ? props.dirtyKey
+    : [ props.dirtyKey ];
+  return dirtyKey.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+}
+
+function resetDirtyWatch() {
+  for (const stopDirtyWatch of dirtyWatchHandles) {
+    stopDirtyWatch();
+  }
+  dirtyWatchHandles = [ ];
+  for (const dirtyKey of getDirtyKeys()) {
+    dirtyWatchHandles.push(
+      dirtyStore.onDirty(async () => {
+        await onRefresh();
+      }, dirtyKey, false),
+    );
+  }
+}
+
+watch(
+  () => props.dirtyKey,
+  () => {
+    resetDirtyWatch();
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 async function onRefresh() {
   const code = props.code;
@@ -805,6 +846,13 @@ onRefresh();
 
 onMounted(async function() {
   await refreshFitInputWidth();
+});
+
+onUnmounted(() => {
+  for (const stopDirtyWatch of dirtyWatchHandles) {
+    stopDirtyWatch();
+  }
+  dirtyWatchHandles = [ ];
 });
 
 function focus() {
