@@ -22,7 +22,7 @@ use base64::{engine::general_purpose, Engine};
 use regex::Regex;
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions, MySqlRow};
-use sqlx::{Pool, MySql, FromRow, Row, Transaction};
+use sqlx::{Executor, FromRow, MySql, Pool, Row, Transaction};
 
 use super::auth::auth_dao::{get_auth_model_by_token, get_token_by_auth_model};
 use super::auth::auth_model::{AuthModel, AUTHORIZATION};
@@ -84,9 +84,7 @@ fn db_pool_dw() -> Pool<MySql> {
 async fn get_transaction_conn_id(
   tran: &mut DbTransaction,
 ) -> Result<u64> {
-  let row = sqlx::query("select connection_id()")
-    .fetch_one(tran.as_mut())
-    .await?;
+  let row = tran.fetch_one("select connection_id()").await?;
   let connection_id: u64 = row.try_get(0).unwrap_or(0);
   Ok(connection_id)
 }
@@ -2184,24 +2182,27 @@ pub fn get_order_by_query(
   order_by_query
 }
 
+fn encode_short_bytes(bytes: &[u8]) -> [u8; 22] {
+  let encoded = general_purpose::STANDARD_NO_PAD.encode(bytes);
+  let mut arr: [u8; 22] = [0u8; 22];
+  let encoded_bytes = encoded.as_bytes();
+  let len = encoded_bytes.len().min(arr.len());
+  arr[..len].copy_from_slice(&encoded_bytes[..len]);
+  arr
+}
+
 #[must_use]
 pub fn get_short_uuid() -> [u8; 22] {
   let uuid: Uuid = Uuid::now_v7();
-  // base64编码
-  let encoded = general_purpose::STANDARD.encode(uuid.as_bytes());
-  let mut arr: [u8; 22] = [0u8; 22];
-  arr.copy_from_slice(encoded.as_bytes());
-  arr
+  // 16字节UUID编码为22字符的短ID，避免标准Base64的填充符号导致长度不一致
+  encode_short_bytes(uuid.as_bytes())
 }
 
 #[must_use]
 pub fn get_short_uuid_v4() -> [u8; 22] {
   let uuid: Uuid = Uuid::new_v4();
-  // base64编码
-  let encoded = general_purpose::STANDARD.encode(uuid.as_bytes());
-  let mut arr: [u8; 22] = [0u8; 22];
-  arr.copy_from_slice(encoded.as_bytes());
-  arr
+  // 16字节UUID编码为22字符的短ID，避免标准Base64的填充符号导致长度不一致
+  encode_short_bytes(uuid.as_bytes())
 }
 
 #[must_use]
@@ -2215,10 +2216,8 @@ pub fn to_short_uuid(s: &[u8]) -> [u8; 22] {
   let mut hasher = Sha256::new();
   hasher.update(s);
   let hash = hasher.finalize();
-  let encoded = general_purpose::STANDARD.encode(hash);
-  let mut arr: [u8; 22] = [0u8; 22];
-  arr.copy_from_slice(encoded.as_bytes());
-  arr
+  // 只取前16字节后做22字符Base64编码，保证输出长度固定且不依赖填充符号
+  encode_short_bytes(&hash[..16])
 }
 
 #[must_use]
@@ -2305,42 +2304,46 @@ pub fn get_debug_sql(
   debug_sql
 }
 
-// #[cfg(test)]
-// mod tests {
-  
-//   use super::*;
-  
-//   #[test]
-//   fn test_get_short_uuid() {
-//     let uuid = get_short_uuid();
-//     println!("{}", uuid);
-//   }
-  
-//   #[test]
-//   fn test_escape_id() {
-//     let val = "a.b.c";
-//     let val = escape_id(val);
-//     println!("{}", val);
-//   }
-  
-//   #[test]
-//   fn test_debug_sql() {
-//     let debug_args = vec!["a", "b"];
-//     let sql = r#"
-//       select
-//         *
-//       from
-//         `a`.`b`
-//       where 
-//         a = ?
-//         and b = ?
-//     "#;
-//     let mut debug_sql = sql.to_owned();
-//     debug_sql = multiple_space_regex().replace_all(&debug_sql, " ").to_string();
-//     for arg in debug_args {
-//       debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
-//     }
-//     println!("{}", debug_sql);
-//   }
-  
-// }
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn short_uuid_helpers_return_22_bytes() {
+    let id = get_short_uuid();
+    assert_eq!(id.len(), 22);
+
+    let id_v4 = get_short_uuid_v4();
+    assert_eq!(id_v4.len(), 22);
+
+    let hashed = to_short_uuid(b"hello");
+    assert_eq!(hashed.len(), 22);
+  }
+
+  #[test]
+  fn test_escape_id() {
+    let val = "a.b.c";
+    let val = escape_id(val);
+    println!("{}", val);
+  }
+
+  #[test]
+  fn test_debug_sql() {
+    let debug_args = vec!["a", "b"];
+    let sql = r#"
+      select
+        *
+      from
+        `a`.`b`
+      where 
+        a = ?
+        and b = ?
+    "#;
+    let mut debug_sql = sql.to_owned();
+    debug_sql = multiple_space_regex().replace_all(&debug_sql, " ").to_string();
+    for arg in debug_args {
+      debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
+    }
+    println!("{}", debug_sql);
+  }
+}
