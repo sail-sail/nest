@@ -37,7 +37,7 @@ url = "2.5.8"
 # sqlformat = "0.3.5"
 smallvec = { version = "1.15.2", features = ["union", "serde"] }
 # downcast-rs = "2.0.1"
-uuid = { version = "1.24.0", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "1.24.0", features = ["serde", "v4", "v7", "fast-rng"] }
 deadpool = "0.13.0"
 deadpool-redis = "0.23.0"
 redis = { version = "1.4.1", features = ["tokio-comp"], default-features = false }

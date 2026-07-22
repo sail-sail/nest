@@ -79,9 +79,9 @@ pub fn encrypt(
   let crypto_key = crypto_key.unwrap();
   let salt = get_short_uuid();
   let iv_str = get_short_uuid();
-  let salt = &salt.as_str()[..16];
-  let iv_str = &iv_str.as_str()[..16];
-  let iv = iv_str.as_bytes();
+  let salt = std::str::from_utf8(&salt[..16]).unwrap();
+  let iv = &iv_str[..16];
+  let iv_str = std::str::from_utf8(&iv_str[..16]).unwrap();
   let crypto_key = <&[u8; 16]>::try_from(crypto_key).unwrap();
   let iv = <&[u8; 16]>::try_from(iv).unwrap();
   let ct = Aes128CbcEnc::new(
