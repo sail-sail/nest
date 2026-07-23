@@ -109,7 +109,6 @@ const hasFollowBizTypeTabs = foreignTabGroups.some((group) => {
           bg-color="gray"
           font-color="white"
           :max-count="99"
-          :offset="[-1, -2]"
         >
           <text
             un-text="4"
