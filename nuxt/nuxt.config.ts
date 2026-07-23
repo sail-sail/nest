@@ -67,7 +67,7 @@ export default defineNuxtConfig({
     },
     optimizeDeps: {
       include: [
-        "graphql/index.mjs",
+        "graphql",
         'file-saver', // CJS
         'swiper/modules',
         'swiper/vue',
