@@ -84,7 +84,7 @@
   >
     <tm-form
       v-model="search"
-      :label-width="180"
+      :label-width="130"
       
       @submit="onSearch"
     >
@@ -147,16 +147,19 @@
       (暂无动态页面数据)
     </view>
     
-    <template
+    <view
       v-else
+      un-flex="~ col"
+      un-gap="y-2"
+      un-m="x-2"
     >
       
       <view
         v-for="dyn_page_data_model of dyn_page_data_models_computed"
         :key="dyn_page_data_model.id"
         un-flex="~"
-        un-m="x-2 t-2"
         un-gap="x-2"
+        un-box-border
       >
         
         <view
@@ -232,6 +235,7 @@
             >
               <view
                 un-i="iconfont-right"
+                un-text="[var(--color-placeholder)]"
               ></view>
             </view>
             
@@ -241,10 +245,16 @@
         
       </view>
       
-    </template>
+    </view>
     
     <CustomDivider
-      v-if="inited && total > 0"
+      v-if="!inited || isLoading"
+    >
+      加载中, 请稍后...
+    </CustomDivider>
+    
+    <CustomDivider
+      v-else-if="inited && total > 0"
     >
       共 {{ total }} 动态页面数据
     </CustomDivider>
@@ -292,22 +302,23 @@ let isEditing = $ref(false);
 let dyn_page_data_ids_selected = $ref<DynPageDataId[]>([ ]);
 let dyn_page_data_id_selected = $ref<DynPageDataId>();
 
-const dyn_page_data_models_key = "dyn_page_data.List.dyn_page_data_models";
 let dyn_page_data_models = $ref<DynPageDataModel[]>([ ]);
-
-(async function() {
-  const models = uni.getStorageSync(dyn_page_data_models_key) || [ ];
-  for (let i = 0; i < models.length; i++) {
-    const model = models[i];
-    await setLblByIdDynPageData(model);
-  }
-  dyn_page_data_models = models;
-})();
 
 type SearchType = {
   // 关联页面路由
   ref_code?: string;
 };
+
+const props = withDefaults(
+  defineProps<{
+    builtInSearch?: Partial<DynPageDataSearch>;
+    addQuery?: Record<string, string | number | boolean | null | undefined>;
+  }>(),
+  {
+    builtInSearch: undefined,
+    addQuery: undefined,
+  },
+);
 
 const searchKey = "/pages/dyn_page_data/List:search";
 const search = $ref<SearchType>(uni.getStorageSync(searchKey) || {
@@ -328,6 +339,20 @@ const dyn_page_data_models_computed = computed<DynPageDataModelComputed[]>(() =>
     };
   });
 });
+
+function buildPageQuery(
+  query?: Record<string, string | number | boolean | null | undefined>,
+) {
+  const params = Object.entries(query || { })
+    .filter(([, value]) => value != null && value !== "")
+    .map(([key, value]) => {
+      return `${ key }=${ encodeURIComponent(String(value)) }`;
+    });
+  if (params.length === 0) {
+    return "";
+  }
+  return `?${ params.join("&") }`;
+}
 
 function onRadio(
   checked: boolean,
@@ -354,6 +379,7 @@ async function onDynPageData(
     return;
   }
   dyn_page_data_id_selected = dyn_page_data_id;
+  
   await uni.navigateTo({
     url: `/pages/dyn_page_data/Detail?dyn_page_data_id=${ encodeURIComponent(dyn_page_data_id) }`,
   });
@@ -364,7 +390,10 @@ async function onAddDynPageData() {
     return;
   }
   await uni.navigateTo({
-    url: "/pages/dyn_page_data/Detail",
+    url: `/pages/dyn_page_data/Detail${ buildPageQuery({
+      action: "add",
+      ...props.addQuery,
+    }) }`,
   });
 }
 
@@ -457,10 +486,13 @@ async function onSearch() {
 }
 
 function getSearchDynPageData() {
-  const search2: SearchType = {
+  const search2: DynPageDataSearch = {
     ref_code: search.ref_code?.trim() || undefined,
   };
-  return search2;
+  return {
+    ...search2,
+    ...props.builtInSearch,
+  };
 }
 
 async function onRefresh() {
@@ -504,10 +536,6 @@ async function onRefresh() {
     const len = dyn_page_data_models.length;
     isEnd = len < pgSize;
     pgOffset = len;
-    await uni.setStorage({
-      key: dyn_page_data_models_key,
-      data: dyn_page_data_models,
-    });
   } finally {
     isLoading = false;
   }
@@ -545,10 +573,6 @@ async function onLoadMore() {
     if (!dyn_page_data_models.some((item) => item.id === dyn_page_data_id_selected)) {
       dyn_page_data_id_selected = undefined;
     }
-    await uni.setStorage({
-      key: dyn_page_data_models_key,
-      data: dyn_page_data_models,
-    });
   } finally {
     isLoading = false;
   }

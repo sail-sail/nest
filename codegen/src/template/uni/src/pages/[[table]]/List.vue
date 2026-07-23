@@ -48,6 +48,18 @@ const hasForeignTabsMore = columns.some((item) => {
     return item2.linkType === "more";
   });
 });
+const hasUniForeignTabs = columns.some((item) => {
+  const foreignTabs = item.foreignTabs || [ ];
+  return foreignTabs.some((foreignTab) => {
+    return !!optTables[foreignTab.mod + "_" + foreignTab.table]?.opts?.isUniPage;
+  });
+});
+const defaultForeignTabsGroup = columns.find((item) => {
+  const foreignTabs = item.foreignTabs || [ ];
+  return foreignTabs.some((foreignTab) => {
+    return !!optTables[foreignTab.mod + "_" + foreignTab.table]?.opts?.isUniPage;
+  });
+})?.COLUMN_NAME || "";
 const hasForeignPage = columns.some((item) => item.foreignPage);
 const hasImg = columns.some((item) => item.isImg && !item.onlyCodegenDeno);
 const hasAtt = columns.some((item) => item.isAtt && !item.onlyCodegenDeno);
@@ -144,6 +156,8 @@ if (searchByKeyword) {
 const search_fields = opts?.isUniPage?.list_page?.search_fields || [ ];
 const lbl_field = opts?.isUniPage?.list_page?.lbl_field || "lbl";
 const lbl_field_column = columns.find((col) => col.COLUMN_NAME === lbl_field);
+const lbl_field_foreignKey = lbl_field_column?.foreignKey;
+const lbl_field_modelLabel = lbl_field_column?.modelLabel;
 const lbl2_fields = opts?.isUniPage?.list_page?.lbl2_fields || [ ];
 const lbl2_fields_columns = lbl2_fields.map((field) => {
   const column = columns.find((col) => col.COLUMN_NAME === field);
@@ -261,7 +275,7 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
   >
     <tm-form
       v-model="search"
-      :label-width="180"
+      :label-width="130"
       
       @submit="onSearch"
     ><#
@@ -374,16 +388,19 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
       (暂无<#=table_comment#>)
     </view>
     
-    <template
+    <view
       v-else
+      un-flex="~ col"
+      un-gap="y-2"
+      un-m="x-2"
     >
       
       <view
         v-for="<#=table#>_model of <#=table#>_models_computed"
         :key="<#=table#>_model.id"
         un-flex="~"
-        un-m="x-2 t-2"
         un-gap="x-2"
+        un-box-border
       >
         
         <view
@@ -430,15 +447,63 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
               <view
                 un-flex="~"
                 un-gap="x-2"
-              >
+              ><#
+                if (lbl_field_foreignKey && lbl_field_modelLabel) {
+                #>
+                
+                <view>
+                  {{ <#=table#>_model.<#=lbl_field_modelLabel#> }}
+                </view><#
+                } else if (lbl_field_foreignKey) {
+                #>
+                
+                <view>
+                  {{ <#=table#>_model.<#=lbl_field#>_lbl }}
+                </view><#
+                } else {
+                #>
                 
                 <view>
                   {{ <#=table#>_model.<#=lbl_field#> }}
-                </view>
+                </view><#
+                }
+                #>
                 
               </view><#
               for (let i = 0; i < lbl2_fields.length; i++) {
                 const lbl2_field = lbl2_fields[i];
+                const lbl2_field_column = lbl2_fields_columns[i];
+                const data_type = lbl2_field_column?.DATA_TYPE;
+                if (!lbl2_field_column) {
+                  throw new Error(`表: ${ mod }_${ table } 中配置的列表辅助显示字段 ${ lbl2_field } 在列中不存在`);
+                }
+                const foreignKey = lbl2_field_column.foreignKey;
+                const modelLabel = lbl2_field_column.modelLabel;
+                if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
+              #>
+              
+              <view
+                un-text="3.5 gray-400"
+              >
+                {{ <#=table#>_model.<#=lbl2_field#>_lbl }}
+              </view><#
+                } else if (foreignKey && modelLabel) {
+              #>
+              
+              <view
+                un-text="3.5 gray-400"
+              >
+                {{ <#=table#>_model.<#=modelLabel#> }}
+              </view><#
+                } else if (foreignKey) {
+              #>
+              
+              <view
+                un-text="3.5 gray-400"
+              >
+                {{ <#=table#>_model.<#=lbl2_field#>_lbl }}
+              </view><#
+                } else {
               #>
               
               <view
@@ -446,6 +511,8 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
               >
                 {{ <#=table#>_model.<#=lbl2_field#> }}
               </view><#
+                }
+              #><#
               }
               #>
               
@@ -485,6 +552,7 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
             >
               <view
                 un-i="iconfont-right"
+                un-text="[var(--color-placeholder)]"
               ></view>
             </view>
             
@@ -494,10 +562,16 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
         
       </view>
       
-    </template>
+    </view>
     
     <CustomDivider
-      v-if="inited && total > 0"
+      v-if="!inited || isLoading"
+    >
+      加载中, 请稍后...
+    </CustomDivider>
+    
+    <CustomDivider
+      v-else-if="inited && total > 0"
     >
       共 {{ total }} <#=table_comment#>
     </CustomDivider>
@@ -558,17 +632,7 @@ let isEditing = $ref(false);
 let <#=table#>_ids_selected = $ref<<#=Table_Up#>Id[]>([ ]);
 let <#=table#>_id_selected = $ref<<#=Table_Up#>Id>();
 
-const <#=table#>_models_key = "<#=table#>.List.<#=table#>_models";
 let <#=table#>_models = $ref<<#=Table_Up#>Model[]>([ ]);
-
-(async function() {
-  const models = uni.getStorageSync(<#=table#>_models_key) || [ ];
-  for (let i = 0; i < models.length; i++) {
-    const model = models[i];
-    await setLblById<#=Table_Up#>(model);
-  }
-  <#=table#>_models = models;
-})();
 
 type SearchType = {<#
   for (let i = 0; i < search_fields.length; i++) {
@@ -603,6 +667,17 @@ type SearchType = {<#
   #>
 };
 
+const props = withDefaults(
+  defineProps<{
+    builtInSearch?: Partial<<#=Table_Up#>Search>;
+    addQuery?: Record<string, string | number | boolean | null | undefined>;
+  }>(),
+  {
+    builtInSearch: undefined,
+    addQuery: undefined,
+  },
+);
+
 const searchKey = "/pages/<#=table#>/List:search";
 const search = $ref<SearchType>(uni.getStorageSync(searchKey) || {<#
   for (let i = 0; i < search_fields.length; i++) {
@@ -615,11 +690,37 @@ const search = $ref<SearchType>(uni.getStorageSync(searchKey) || {<#
     const data_type = column?.DATA_TYPE;
     const column_type = column?.COLUMN_TYPE;
     const column_comment = column?.COLUMN_COMMENT || "";
+    const searchDefaultValue = column?.searchDefaultValue == null
+      ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+      : column.searchDefaultValue;
   #><#
   if (data_type === "datetime" || data_type === "date") {
+    if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+  // <#=column_comment#>
+  <#=column_name#>: [
+    dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+    dayjs().endOf("day").format("YYYY-MM-DD"),
+  ],<#
+    } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+      const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+      const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+  #>
+  // <#=column_comment#>
+  <#=column_name#>: [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ],<#
+    } else {
   #>
   // <#=column_comment#>
   <#=column_name#>: [ null, null ],<#
+    }
+  } else if (searchDefaultValue != null) {
+    const searchDefaultValueStr = String(searchDefaultValue);
+  #>
+  // <#=column_comment#>
+  <#=column_name#>: <#=JSON.stringify(searchDefaultValueStr)#>,<#
   }
   #><#
   }
@@ -635,23 +736,60 @@ for (let i = 0; i < search_fields.length; i++) {
   const data_type = column?.DATA_TYPE;
   const column_type = column?.COLUMN_TYPE;
   const column_comment = column?.COLUMN_COMMENT || "";
+  const searchDefaultValue = column?.searchDefaultValue == null
+    ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+    : column.searchDefaultValue;
   if (search_field === searchByKeyword.prop) {
     continue;
   }
-  if (data_type !== "datetime" && data_type !== "date") {
+  if (data_type !== "datetime" && data_type !== "date" && searchDefaultValue == null) {
     continue;
   }
 #>
 // <#=column_comment#>
-if (!search.<#=column_name#>) {
-  search.<#=column_name#> = [ null, null ];
+if (search.<#=column_name#> == null) {<#
+  if (data_type === "datetime" || data_type === "date") {
+    if (typeof searchDefaultValue === "string" && /^subtract:\\d+$/.test(searchDefaultValue)) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+#>
+  search.<#=column_name#> = [
+    dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+    dayjs().endOf("day").format("YYYY-MM-DD"),
+  ];<#
+    } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+      const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+      const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+#>
+  search.<#=column_name#> = [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ];<#
+    } else {
+#>
+  search.<#=column_name#> = [ null, null ];<#
+    }
+  } else if (searchDefaultValue != null) {
+    const searchDefaultValueStr = String(searchDefaultValue);
+#>
+  search.<#=column_name#> = <#=JSON.stringify(searchDefaultValueStr)#>;<#
+  }
+#>
 }<#
 }
 #>
 
 type <#=Table_Up#>ModelComputed = {
-  id: <#=Table_Up#>Id;
+  id: <#=Table_Up#>Id;<#
+  if (lbl_field_foreignKey && lbl_field_modelLabel) {
+  #>
+  <#=lbl_field_modelLabel#>: string;<#
+  } else if (lbl_field_foreignKey) {
+  #>
+  <#=lbl_field#>_lbl: string;<#
+  } else {
+  #>
   <#=lbl_field#>: string;<#
+  }
+  #><#
   for (let i = 0; i < lbl2_fields_columns.length; i++) {
     const column = lbl2_fields_columns[i];
     if (!column) {
@@ -662,11 +800,19 @@ type <#=Table_Up#>ModelComputed = {
     const column_comment = column.COLUMN_COMMENT || "";
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
+    const foreignKey = column.foreignKey;
+    const modelLabel = column.modelLabel;
+    const is_nullable = column.IS_NULLABLE === "YES";
     let data_type_ts = "string";
     if (data_type === "int" || data_type === "bigint" || data_type === "float" || data_type === "double") {
       data_type_ts = "number";
     } else if (data_type === "boolean" || data_type === "tinyint(1)") {
       data_type_ts = "number";
+    } else if (data_type === "decimal") {
+      data_type_ts = "DecimalType";
+    }
+    if (is_nullable) {
+      data_type_ts = data_type_ts + " | undefined | null";
     }
     let column_name_ts = column_name;
     if (column.dict || column.dictbiz
@@ -674,8 +820,23 @@ type <#=Table_Up#>ModelComputed = {
     ) {
       column_name_ts = column_name + "_lbl";
     }
+  #><#
+  if (column.dict || column.dictbiz
+    || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+  ) {
+  #>
+  <#=column_name#>: <#=data_type_ts#>;<#
+  }
   #>
   <#=column_name_ts#>: <#=data_type_ts#>;<#
+  if (foreignKey && modelLabel) {
+  #>
+  <#=modelLabel#>: string,<#
+  } else if (foreignKey) {
+  #>
+  <#=column_name_ts#>: string,<#
+  }
+  #><#
   }
   #><#
   if (right_field) {
@@ -686,11 +847,17 @@ type <#=Table_Up#>ModelComputed = {
     const data_type = column.DATA_TYPE;
     const column_name = column.COLUMN_NAME;
     const column_type = column.COLUMN_TYPE;
+    const foreignKey = column.foreignKey;
+    const modelLabel = column.modelLabel;
+    const is_nullable = column.IS_NULLABLE === "YES";
     let data_type_ts = "string";
     if (data_type === "int" || data_type === "bigint" || data_type === "float" || data_type === "double") {
       data_type_ts = "number";
     } else if (data_type === "boolean" || data_type === "tinyint(1)") {
       data_type_ts = "number";
+    }
+    if (is_nullable) {
+      data_type_ts = data_type_ts + " | undefined | null";
     }
     let column_name_ts = column_name;
     if (column.dict || column.dictbiz
@@ -698,8 +865,23 @@ type <#=Table_Up#>ModelComputed = {
     ) {
       column_name_ts = column_name + "_lbl";
     }
+  #><#
+  if (column.dict || column.dictbiz
+    || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+  ) {
+  #>
+  <#=column_name#>: <#=data_type_ts#>;<#
+  }
   #>
   <#=column_name_ts#>: <#=data_type_ts#>;<#
+  if (foreignKey && modelLabel) {
+  #>
+  <#=modelLabel#>: string,<#
+  } else if (foreignKey) {
+  #>
+  <#=column_name_ts#>: string,<#
+  }
+  #><#
   }
   #>
 };
@@ -718,14 +900,26 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
     }
     #>
     return {
-      id: <#=table#>_model.id,
+      id: <#=table#>_model.id,<#
+      if (lbl_field_foreignKey && lbl_field_modelLabel) {
+      #>
+      <#=lbl_field_modelLabel#>: <#=table#>_model.<#=lbl_field_modelLabel#>,<#
+      } else if (lbl_field_foreignKey) {
+      #>
+      <#=lbl_field#>_lbl: <#=table#>_model.<#=lbl_field#>_lbl,<#
+      } else {
+      #>
       <#=lbl_field#>: <#=table#>_model.<#=lbl_field#>,<#
+      }
+      #><#
       for (let i = 0; i < lbl2_fields_columns.length; i++) {
         const lbl2_fields_column = lbl2_fields_columns[i];
         const column_name = lbl2_fields_column.COLUMN_NAME;
         const column_comment = lbl2_fields_column.COLUMN_COMMENT || "";
         const data_type = lbl2_fields_column.DATA_TYPE;
         const column_type = lbl2_fields_column.COLUMN_TYPE;
+        const foreignKey = lbl2_fields_column.foreignKey;
+        const modelLabel = lbl2_fields_column.modelLabel;
         let data_type_ts = "string";
         if (data_type === "int" || data_type === "bigint" || data_type === "float" || data_type === "double") {
           data_type_ts = "number";
@@ -740,12 +934,28 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
           column_name_ts = column_name + "_lbl";
           column_value = table + "_model." + column_name_ts;
         }
+      #><#
+      if (lbl2_fields_column.dict || lbl2_fields_column.dictbiz
+        || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+      ) {
+      #>
+      <#=column_name#>: <#=table + "_model." + column_name#>,<#
+      }
       #>
       <#=column_name_ts#>: <#=column_value#>,<#
+      if (foreignKey && modelLabel) {
+      #>
+      <#=modelLabel#>: <#=table + "_model." + modelLabel#>,<#
+      } else if (foreignKey) {
+      #>
+      <#=column_name_ts#>: <#=table + "_model." + column_name + "_lbl"#>,<#
+      }
+      #><#
       }
       #><#
       if (right_field) {
         const data_type = right_field_column?.DATA_TYPE;
+        let column_name = right_field;
         let column_name_ts = right_field;
         let column_value = table + "_model." + right_field;
         if (right_field_column.dict || right_field_column.dictbiz
@@ -754,6 +964,13 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
           column_name_ts = right_field + "_lbl";
           column_value = column_name_ts;
         }
+      #><#
+      if (right_field_column.dict || right_field_column.dictbiz
+        || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
+      ) {
+      #>
+      <#=column_name#>: <#=table + "_model." + column_name#>,<#
+      }
       #>
       <#=column_name_ts#>: <#=column_value#>,<#
       }
@@ -761,6 +978,20 @@ const <#=table#>_models_computed = computed<<#=Table_Up#>ModelComputed[]>(() => 
     };
   });
 });
+
+function buildPageQuery(
+  query?: Record<string, string | number | boolean | null | undefined>,
+) {
+  const params = Object.entries(query || { })
+    .filter(([, value]) => value != null && value !== "")
+    .map(([key, value]) => {
+      return `${ key }=${ encodeURIComponent(String(value)) }`;
+    });
+  if (params.length === 0) {
+    return "";
+  }
+  return `?${ params.join("&") }`;
+}
 
 function onRadio(
   checked: boolean,
@@ -786,10 +1017,24 @@ async function on<#=Table_Up#>(
     }
     return;
   }
-  <#=table#>_id_selected = <#=table#>_id;
+  <#=table#>_id_selected = <#=table#>_id;<#
+if (hasUniForeignTabs) {
+#>
+  
+  await uni.navigateTo({
+    url: `/pages/<#=table#>/ForeignTabs${ buildPageQuery({
+      <#=table#>_id,
+      tabGroup: "<#=defaultForeignTabsGroup#>",
+    }) }`,
+  });<#
+  } else {
+  #>
+  
   await uni.navigateTo({
     url: `/pages/<#=table#>/Detail?<#=table#>_id=${ encodeURIComponent(<#=table#>_id) }`,
-  });
+  });<#
+  }
+  #>
 }
 
 async function onAdd<#=Table_Up#>() {
@@ -797,7 +1042,10 @@ async function onAdd<#=Table_Up#>() {
     return;
   }
   await uni.navigateTo({
-    url: "/pages/<#=table#>/Detail",
+    url: `/pages/<#=table#>/Detail${ buildPageQuery({
+      action: "add",
+      ...props.addQuery,
+    }) }`,
   });
 }
 
@@ -813,13 +1061,36 @@ async function onReset() {<#
     const column_type = column?.COLUMN_TYPE;
     const column_comment = column?.COLUMN_COMMENT || "";
     const prop = search_field === searchByKeyword?.prop ? searchByKeyword.prop : column_name;
+    const searchDefaultValue = column?.searchDefaultValue == null
+      ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+      : column.searchDefaultValue;
   #><#
   if (data_type === "datetime" || data_type === "date") {
+    if (typeof searchDefaultValue === "string" && /^subtract:\\d+$/.test(searchDefaultValue)) {
+      const subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+  #>
+  search.<#=prop#> = [
+    dayjs().subtract(<#=subtractSecond#>, "second").format("YYYY-MM-DD"),
+    dayjs().format("YYYY-MM-DD"),
+  ];<#
+    } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+      const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+      const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+  #>
+  search.<#=prop#> = [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ];<#
+    } else {
   #>
   search.<#=prop#> = [ null, null ];<#
+    }
   } else {
+    if (searchDefaultValue != null) {
+      const searchDefaultValueStr = String(searchDefaultValue);
+  #>
+  search.<#=prop#> = <#=JSON.stringify(searchDefaultValueStr)#>;<#
+    } else {
   #>
   search.<#=prop#> = undefined;<#
+    }
   }
   #><#
   }
@@ -937,7 +1208,7 @@ async function onSearch() {
 }
 
 function getSearch<#=Table_Up#>() {
-  const search2: SearchType = {<#
+  const search2: <#=Table_Up#>Search = {<#
   for (let i = 0; i < search_fields.length; i++) {
     const search_field = search_fields[i];
     const column = columns.find((col) => col.COLUMN_NAME === search_field);
@@ -984,7 +1255,10 @@ function getSearch<#=Table_Up#>() {
     }
   }
   #>
-  return search2;
+  return {
+    ...search2,
+    ...props.builtInSearch,
+  };
 }
 
 async function onRefresh() {
@@ -1028,10 +1302,6 @@ async function onRefresh() {
     const len = <#=table#>_models.length;
     isEnd = len < pgSize;
     pgOffset = len;
-    await uni.setStorage({
-      key: <#=table#>_models_key,
-      data: <#=table#>_models,
-    });
   } finally {
     isLoading = false;
   }
@@ -1069,10 +1339,6 @@ async function onLoadMore() {
     if (!<#=table#>_models.some((item) => item.id === <#=table#>_id_selected)) {
       <#=table#>_id_selected = undefined;
     }
-    await uni.setStorage({
-      key: <#=table#>_models_key,
-      data: <#=table#>_models,
-    });
   } finally {
     isLoading = false;
   }

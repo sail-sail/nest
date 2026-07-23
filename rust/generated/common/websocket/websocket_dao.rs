@@ -15,7 +15,9 @@ use tokio::sync::Mutex;
 
 use super::websocket_constants::{
   ClientSocketSinksType,
+  begin_websocket_shutdown,
   client_id_topics_map,
+  is_websocket_shutting_down,
   socket_sink_map,
   topic_client_ids_map,
 };
@@ -74,7 +76,7 @@ pub async fn add_socket_connection(
   connection_id: &str,
   sink: SplitSink<WebSocketStream, Message>,
 ) {
-  if client_id.is_empty() || connection_id.is_empty() {
+  if client_id.is_empty() || connection_id.is_empty() || is_websocket_shutting_down() {
     return;
   }
   let client_sockets = {
@@ -89,6 +91,39 @@ pub async fn add_socket_connection(
     connection_id.to_owned(),
     sink,
   );
+}
+
+#[allow(dead_code)]
+pub async fn close_socket_connection(
+  client_id: &str,
+  connection_id: &str,
+) {
+  if client_id.is_empty() || connection_id.is_empty() {
+    return;
+  }
+  let client_sockets = match get_socket_connections(client_id).await {
+    Some(client_sockets) => client_sockets,
+    None => return,
+  };
+  let mut client_sockets = client_sockets.lock().await;
+  if let Some(socket) = client_sockets.get_mut(connection_id) {
+    let _ = socket.close().await;
+  }
+}
+
+#[allow(dead_code)]
+pub async fn shutdown_all_connections() {
+  begin_websocket_shutdown();
+  let client_sockets_list = {
+    let socket_sink_map = socket_sink_map().lock().await;
+    socket_sink_map.values().cloned().collect::<Vec<_>>()
+  };
+  for client_sockets in client_sockets_list {
+    let mut client_sockets = client_sockets.lock().await;
+    for socket in client_sockets.values_mut() {
+      let _ = socket.close().await;
+    }
+  }
 }
 
 /// 获取客户端连接集合

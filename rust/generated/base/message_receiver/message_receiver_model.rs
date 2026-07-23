@@ -32,6 +32,8 @@ use async_graphql::{
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 use crate::common::id::{Id, impl_id};
+#[allow(unused_imports)]
+use crate::common::gql::NaiveDateTime;
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -78,7 +80,7 @@ pub struct MessageReceiverModel {
   pub is_read_lbl: SmolStr,
   /// 阅读时间
   #[graphql(name = "read_time")]
-  pub read_time: Option<chrono::NaiveDateTime>,
+  pub read_time: Option<NaiveDateTime>,
   /// 阅读时间
   #[graphql(name = "read_time_lbl")]
   pub read_time_lbl: SmolStr,
@@ -126,8 +128,8 @@ impl FromRow<'_, MySqlRow> for MessageReceiverModel {
     let is_read: u8 = row.try_get("is_read")?;
     let is_read_lbl = SmolStr::new(is_read.to_string());
     // 阅读时间
-    let read_time: Option<chrono::NaiveDateTime> = row.try_get("read_time")?;
-    let read_time_lbl: SmolStr = match read_time {
+    let read_time: Option<NaiveDateTime> = row.try_get("read_time")?;
+    let read_time_lbl: SmolStr = match &read_time {
       Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
       None => SmolStr::new(""),
     };
@@ -289,7 +291,7 @@ pub struct MessageReceiverSearch {
   pub is_read: Option<Vec<u8>>,
   /// 阅读时间
   #[graphql(name = "read_time")]
-  pub read_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
+  pub read_time: Option<[Option<NaiveDateTime>; 2]>,
   /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: Option<Vec<OrgId>>,
@@ -468,7 +470,7 @@ pub struct MessageReceiverInput {
   pub is_read_lbl: Option<SmolStr>,
   /// 阅读时间
   #[graphql(name = "read_time")]
-  pub read_time: Option<chrono::NaiveDateTime>,
+  pub read_time: Option<NaiveDateTime>,
   /// 阅读时间
   #[graphql(name = "read_time_lbl")]
   pub read_time_lbl: Option<SmolStr>,

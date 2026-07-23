@@ -45,15 +45,24 @@ const foreignTabsDialogType = columns.find((item) => item.foreignTabs?.length > 
           }).join("");
           const item_total = `${ itemTable }_total`;
         #>
-        
+          
           <el-tab-pane<#
             if (im !== 0) {
-            #>
-            lazy<#
+            #> lazy<#
             }
-            #>
-            :label="'<#=item.label#>' + (<#=item_total#> != null ? ` (${ <#=item_total#> })` : '')"
-          >
+            #>>
+            
+            <template #label>
+              <el-badge
+                :value="<#=item_total#>"
+                :show-zero="false"
+                type="info"
+                :offset="[8, 0]"
+              >
+                <#=item.label#>
+              </el-badge>
+            </template>
+            
             <<#=itemTable_Up#>List
               :<#=item.column#>="dialogModel.id"
               :is_deleted="dialogModel.is_deleted ? '1' : '0'"
@@ -62,6 +71,7 @@ const foreignTabsDialogType = columns.find((item) => item.foreignTabs?.length > 
               @remove="useAllFindDebounce"
               @revert="useAllFindDebounce"
             ></<#=itemTable_Up#>List>
+            
           </el-tab-pane><#
           }
           #>
@@ -121,7 +131,7 @@ import <#=itemTable_Up#>List from "@/views/<#=item.mod#>/<#=itemTable#>/List.vue
 
 import {
   findCount<#=itemTable_Up#>,
-} from "@/views/<#=item.mod#>/<#=itemTable#>/Api";<#
+} from "@/views/<#=item.mod#>/<#=itemTable#>/Api.ts";<#
   }
 #><#
 }

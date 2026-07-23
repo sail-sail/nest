@@ -547,8 +547,8 @@ export async function getListDynPage() {
     undefined,
     [
       {
-        prop: "order_by",
-        order: "ascending",
+        prop: "code",
+        order: "descending",
       },
     ],
     {

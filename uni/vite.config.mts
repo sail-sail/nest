@@ -105,9 +105,13 @@ export default defineConfig({
             "getDict",
             "getDictbiz",
             "list2tree",
+            "formatTimeRange",
           ],
           "@/store/usr.ts": [
             [ "default", "useUsrStore" ],
+          ],
+          "@/store/permit.ts": [
+            [ "default", "usePermitStore" ],
           ],
           "@/store/index.ts": [
             [ "default", "useIndexStore" ],

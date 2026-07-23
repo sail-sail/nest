@@ -413,6 +413,7 @@ if (searchByKeyword) {
           <CustomSelect
             v-model="<#=column_name#>_search"
             :method="getList<#=Foreign_Table_Up#>"
+            dirty-key="<#=foreignSchema.opts.table_comment#>"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
@@ -519,7 +520,7 @@ if (searchByKeyword) {
           ></SelectInput<#=Foreign_Table_Up#>>
         </el-form-item>
       </template><#
-      } else if (foreignKey && foreignKey.type === "many2many" && !foreignKey.isSearchBySelectInput) {
+      } else if (foreignKey && foreignKey.type === "many2many" && !foreignKey.isSearchByLbl && !foreignKey.isSearchBySelectInput) {
       #>
       <template<#
         if (fieldPermit || !isVirtual || vIfStr) {
@@ -550,6 +551,7 @@ if (searchByKeyword) {
           <CustomSelect
             v-model="<#=column_name#>_search"
             :method="getList<#=Foreign_Table_Up#>"
+            dirty-key="<#=foreignSchema.opts.table_comment#>"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
@@ -569,7 +571,49 @@ if (searchByKeyword) {
           ></CustomSelect>
         </el-form-item>
       </template><#
-      } else if (foreignKey && foreignKey.type === "many2many" && foreignKey.isSearchBySelectInput) {
+      } else if (foreignKey && foreignKey.type === "many2many" && foreignKey.isSearchByLbl && !foreignKey.isSearchBySelectInput) {
+      #>
+      <template<#
+        if (fieldPermit || !isVirtual || vIfStr) {
+      #> v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #><#
+        if (!isVirtual) {
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)<#
+        }
+      #>"<#
+        } else {
+      #> v-if="true"<#
+        }
+      #>>
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
+          prop="<#=column_name#>"
+        >
+          <CustomInput
+            v-model="search.<#=column_name#>_<#=foreignKey.lbl#>_like"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请输入 <#=column_comment#>"<#
+            }
+            #>
+            @change="onSearch(false)"
+          ></CustomInput>
+        </el-form-item>
+      </template><#
+      } else if (foreignKey && foreignKey.type === "many2many" && !foreignKey.isSearchByLbl && foreignKey.isSearchBySelectInput) {
       #>
       <template<#
         if (fieldPermit || !isVirtual || vIfStr) {
@@ -1327,7 +1371,7 @@ if (searchByKeyword) {
       #>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         @click="onDeleteByIds"
@@ -1693,7 +1737,7 @@ if (searchByKeyword) {
       #>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -1716,7 +1760,7 @@ if (searchByKeyword) {
       #>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -3251,7 +3295,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);<#
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);<#
 if (tableFieldPermit) {
 #>
 const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
@@ -3543,6 +3590,69 @@ useSubscribeList<<#=Table_Up#>Id>(
 /** 查询 */
 function initSearch() {
   const search = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "version") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "tenant_id") continue;
+      if (column.isPassword || column.isEncrypt) continue;
+      if (!column.search) continue;
+      const data_type = column.DATA_TYPE;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const searchDefaultValue = column.searchDefaultValue == null
+        ? (column.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+        : column.searchDefaultValue;
+      if (searchDefaultValue == null) continue;
+      if (data_type === "datetime") {
+        if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+          let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+          // 减去1天
+          subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      dayjs().endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+    ],<#
+        } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+          const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+          const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ],<#
+        }
+      } else if (data_type === "date") {
+        if (typeof searchDefaultValue === "string" && /^subtract:\\d+$/.test(searchDefaultValue)) {
+          let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+          // 减去1天
+          subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+      dayjs().endOf("day").format("YYYY-MM-DD"),
+    ],<#
+        } else if (Array.isArray(searchDefaultValue) && searchDefaultValue.length === 2) {
+          const searchDefaultValue0 = searchDefaultValue[0] == null ? null : String(searchDefaultValue[0]);
+          const searchDefaultValue1 = searchDefaultValue[1] == null ? null : String(searchDefaultValue[1]);
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: [ <#=JSON.stringify(searchDefaultValue0)#>, <#=JSON.stringify(searchDefaultValue1)#> ],<#
+        }
+      } else {
+        const searchDefaultValueText = typeof searchDefaultValue === "string"
+          ? searchDefaultValue
+          : JSON.stringify(searchDefaultValue);
+  #>
+    // <#=column_comment#>
+    <#=column_name#>: <#=JSON.stringify(searchDefaultValueText)#>,<#
+      }
+    }
+    #><#
     if (hasIsDeleted) {
     #>
     is_deleted: 0,<#
@@ -3572,7 +3682,7 @@ for (let i = 0; i < columns.length; i++) {
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
 #><#
-  if (foreignKey || column.dict || column.dictbiz) {
+  if ((foreignKey && !foreignKey.isSearchByLbl) || column.dict || column.dictbiz) {
 #>
 
 // <#=column_comment#>
@@ -4425,7 +4535,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {<#
+  if (!await permitAsync("add")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -4471,7 +4581,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {<#
+  if (!await permitAsync("add")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -4859,7 +4969,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {<#
+  if (!await permitAsync("edit")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5072,11 +5182,11 @@ async function openAudit() {
     return;
   }
   if (
-    !permit("audit_submit") &&
-    !permit("audit_pass") &&
-    !permit("audit_reject") &&
-    !permit("audit_review") &&
-    !permit("audit_reverse")
+    !await permitAsync("audit_submit") &&
+    !await permitAsync("audit_pass") &&
+    !await permitAsync("audit_reject") &&
+    !await permitAsync("audit_review") &&
+    !await permitAsync("audit_reverse")
   ) {<#
     if (isUseI18n) {
     #>
@@ -5136,7 +5246,7 @@ async function onAuditReverseByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("audit_reverse")) {<#
+  if (!await permitAsync("audit_reverse")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5378,7 +5488,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {<#
+  if (!await permitAsync("delete")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5457,7 +5567,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {<#
+  if (!await permitAsync("force_delete")) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5536,7 +5646,7 @@ async function onEnableByIds(is_enabled: number) {
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {<#
+  if (await permitAsync("edit") === false) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5609,7 +5719,7 @@ async function onLockByIds(is_locked: number) {
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {<#
+  if (await permitAsync("edit") === false) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#
@@ -5682,7 +5792,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {<#
+  if (await permitAsync("delete") === false) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#

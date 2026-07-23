@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -508,17 +507,23 @@ export async function forceDeleteByIdsMenu(
   return res;
 }
 
-export async function getListMenu() {
+export async function getListMenu(
+  search?: MenuSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAllMenu(
-    undefined,
-    undefined,
-    [
+    search,
+    page,
+    (sort || [ ]).concat([
       {
         prop: "order_by",
         order: "ascending",
       },
-    ],
+    ]),
     {
+      ...opt,
       notLoading: true,
     },
   );

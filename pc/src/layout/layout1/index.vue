@@ -441,13 +441,14 @@ import {
   clearCache,
   getUsrPermits,
   getMyUnreadMessageCount,
-} from "./Api";
+} from "./Api.ts";
+
 import {
   subscribe,
   unSubscribe,
-} from "@/compositions/websocket";
+} from "@/compositions/websocket.ts";
 
-import config from "@/utils/config";
+import config from "@/utils/config.ts";
 
 import {
   BellFilled,
@@ -495,9 +496,13 @@ watch(
   () => {
     const name = route.name as string;
     const menuLbl = menuStore.getLblByPath(route.path);
-    const lbl = menuLbl || (route.meta?.name as string) || name || "";
+    let lbl = menuLbl || (route.meta?.name as string) || name || "";
     const closeable = route.meta?.closeable as boolean ?? true;
     const icon = route.meta?.icon as string | undefined;
+    const _tab_name = route.query?._tab_name as string | undefined;
+    if (_tab_name) {
+      lbl = lbl + " - " + _tab_name;
+    }
     tabsStore.activeTab({
       name,
       lbl,
@@ -823,22 +828,14 @@ async function onChangePassword() {
   }
 }
 
-/** 获取当前用户的权限列表 */
-async function getUsrPermitsEfc() {
-  const permits = await getUsrPermits();
-  permitStore.permits = permits;
-}
-
 async function initFrame() {
   if (usrStore.authorization) {
     if (import.meta.env.VITE_SERVER_I18N_ENABLE !== "false") {
       const [
         loginInfoTmp,
-        _,
         unreadCount,
       ] = await Promise.all([
         getLoginInfo({ notLoading: true }),
-        getUsrPermitsEfc(),
         getMyUnreadMessageCount({ notLoading: true }),
       ]);
       loginInfo = loginInfoTmp;
@@ -847,11 +844,9 @@ async function initFrame() {
     } else {
       const [
         loginInfoTmp,
-        _,
         unreadCount,
       ] = await Promise.all([
         getLoginInfo({ notLoading: true }),
-        getUsrPermitsEfc(),
         getMyUnreadMessageCount({ notLoading: true }),
       ]);
       loginInfo = loginInfoTmp;

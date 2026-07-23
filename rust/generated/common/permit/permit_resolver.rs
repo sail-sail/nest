@@ -1,4 +1,5 @@
 use color_eyre::eyre::Result;
+use smol_str::SmolStr;
 use tracing::info;
 
 use crate::common::context::get_req_id;
@@ -8,7 +9,7 @@ use super::permit_model::GetUsrPermits;
 
 /// 根据当前用户获取权限列表
 #[function_name::named]
-pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
+pub async fn get_usr_permits(route_path: Option<SmolStr>) -> Result<Vec<GetUsrPermits>> {
   
   info!(
     "{req_id} {function_name}",
@@ -16,7 +17,7 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
     function_name = function_name!(),
   );
   
-  let permits = permit_service::get_usr_permits().await?;
+  let permits = permit_service::get_usr_permits(route_path).await?;
   
   Ok(permits)
 }

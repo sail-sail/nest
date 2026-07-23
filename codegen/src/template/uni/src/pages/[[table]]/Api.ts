@@ -130,14 +130,8 @@ for (let i = 0; i < columns.length; i++) {
   }
 }
 #><#
-if (hasUsrStore) {
-#>import cfg from "@/utils/config.ts";
-<#
-}
-#><#
 if (opts.noAdd !== true || opts.noEdit !== true) {
-#>
-import {
+#>import {
   UniqueType,
 } from "#/types.ts";<#
 }
@@ -1208,6 +1202,34 @@ export async function auditReview<#=Table_Up#>(
 }
 #><#
 }
+#><#
+if (opts?.audit?.hasReverse) {
+#>
+
+/** 反审核 */
+export async function auditReverse<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  opt?: GqlOpt,
+) {
+
+  const data: {
+    auditReverse<#=Table_Up2#>: Mutation["auditReverse<#=Table_Up2#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!) {
+        auditReverse<#=Table_Up2#>(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+
+  const res = data.auditReverse<#=Table_Up2#>;
+
+  return res;
+}<#
+}
 #>
 
 /**
@@ -1642,26 +1664,33 @@ export async function findAll<#=Foreign_Table_Up#>(
 }
 #>
 
-export async function getList<#=Foreign_Table_Up#>() {
+export async function getList<#=Foreign_Table_Up#>(
+  search?: <#=Foreign_Table_Up#>Search,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
   const data = await findAll<#=Foreign_Table_Up#>(<#
     if (foreignHasEnabled && foreignTable !== table) {
     #>
     {
+      ...search,
       is_enabled: [ 1 ],
     },<#
     } else {
     #>
-    undefined,<#
+    search,<#
     }
     #>
-    undefined,
-    [
+    page,
+    (sort || [ ]).concat([
       {
         prop: "<#=defaultSort && defaultSort.prop || ""#>",
         order: "<#=defaultSort && defaultSort.order || "ascending"#>",
       },
-    ],
+    ]),
     {
+      ...opt,
       notLoading: true,
     },
   );
@@ -2221,9 +2250,9 @@ export async function getDefaultInput<#=Table_Up#>() {<#
         }
       } else if (data_type === "varchar" || data_type === "text") {
         if (defaultValue === "CURRENT_USR_ID") {
-          defaultValue = "usrStore.usr_id";
+          defaultValue = "usrStore.getUsrId()";
         } else if (defaultValue === "CURRENT_ORG_ID") {
-          defaultValue = "usrStore.loginInfo?.org_id";
+          defaultValue = "usrStore.getLoginInfo()?.org_id";
         } else if (defaultValue === "CURRENT_TENANT_ID") {
           defaultValue = "usrStore.tenant_id";
         } else if (defaultValue === "CURRENT_USERNAME") {

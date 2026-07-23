@@ -137,6 +137,26 @@ async fn get_where_query(
       args.push(tenant_id.into());
     }
   }
+  {
+    let keyword: Option<SmolStr> = match search {
+      Some(item) => item.keyword.clone(),
+      None => None,
+    };
+    if let Some(keyword) = keyword && !keyword.is_empty() {
+      where_query.push_str(" and (");
+      where_query.push_str(" t.lbl like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+        
+      where_query.push_str(" or");
+      where_query.push_str(" t.username like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+        
+      where_query.push_str(" or");
+      where_query.push_str(" t.rem like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+      where_query.push(')');
+    }
+  }
   // 头像
   {
     let img = match search {
@@ -2478,6 +2498,10 @@ pub async fn creates_return_usr(
     );
   }
   
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let ids = _creates(
     inputs.clone(),
     options,
@@ -2514,6 +2538,10 @@ pub async fn creates_usr(
       req_id = get_req_id(),
     );
   }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let ids = _creates(
     inputs,
@@ -2980,6 +3008,10 @@ pub async fn create_usr(
       req_id = get_req_id(),
     );
   }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let ids = _creates(
     vec![input],

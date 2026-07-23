@@ -77,6 +77,7 @@ rust-embed.workspace = true
 percent-encoding.workspace = true
 qrcode.workspace = true
 calamine.workspace = true
+wecom-crypto.workspace = true
 
 generated = { path = "../generated" }
 

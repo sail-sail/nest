@@ -778,6 +778,23 @@ async function getSchema0(
           tables[table_name].opts.uniques.push([ item.autoCode.dateSeq, column_name ]);
         }
       }
+      if (item.search == null) {
+        item.search = true;
+        item.canSearch = true;
+      }
+      if (item.canSearch == null) {
+        item.canSearch = true;
+      }
+      if (item.sortable == null) {
+        item.sortable = true;
+      }
+      if (tables[table_name].opts?.defaultSort == null) {
+        tables[table_name].opts = tables[table_name].opts || { };
+        tables[table_name].opts.defaultSort = {
+          prop: column_name,
+          order: "descending",
+        };
+      }
     }
     
     if (item.isFluentEditor) {
@@ -810,6 +827,12 @@ async function getSchema0(
       }
       if (!bpm.apply_time_field) {
         bpm.apply_time_field = "apply_time";
+      }
+    }
+    
+    if (item.searchDefaultValue == null) {
+      if (item.searchRangeMax) {
+        item.searchDefaultValue = "subtract:" + item.searchRangeMax;
       }
     }
     
@@ -1568,6 +1591,16 @@ export async function getSchema(
     // 审核字段默认为不可改
     if (auditColumn && auditColumn.readonly == null) {
       auditColumn.readonly = true;
+    }
+    // 如果有审核并且 isUniPage 或者 isUniApi 为 true, 则找到对应的审核表 isUniApi=true
+    if (tables[table_name].opts.isUniPage || tables[table_name].opts.isUniApi) {
+      const auditTableSchema = tables[table_name].opts.audit?.auditTableSchema;
+      if (auditTableSchema) {
+        auditTableSchema.opts = auditTableSchema.opts || { };
+        if (auditTableSchema.opts.isUniApi == null) {
+          auditTableSchema.opts.isUniApi = true;
+        }
+      }
     }
   }
   

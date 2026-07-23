@@ -74,12 +74,15 @@ let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
+let auditLabelField = "";
 if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
   // 是否有复核
   hasReviewed = opts?.audit?.hasReviewed;
+  const auditStatusColumn = columns.find((item) => item.COLUMN_NAME === auditColumn);
+  auditLabelField = auditStatusColumn?.modelLabel || `${ auditColumn }_lbl`;
 }
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
@@ -222,6 +225,10 @@ if (right_field && !right_field_column) {
         const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
           return item.substring(0, 1).toUpperCase() + item.substring(1);
         }).join("");
+        let foreignSchema = undefined;
+        if (foreignKey) {
+          foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+        }
         const modelLabel = column.modelLabel;
         const isImg = column.isImg;
       #><#
@@ -242,7 +249,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -276,6 +283,18 @@ if (right_field && !right_field_column) {
             #>
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
             }
+            #><#
+            if (foreignKey.uniCustomSelectModalPage) {
+            #>
+            :init-data="false"
+            :is-page="true"
+            search-key="<#=foreignKey.uniCustomSelectModalPage.searchKey#>"<#
+            if (foreignKey.uniCustomSelectModalPage.searchIds) {
+            #>
+            search-ids="<#=foreignKey.uniCustomSelectModalPage.searchIds#>"<#
+            }
+            #><#
+            }
             #>
           ></CustomSelectModal>
         </tm-form-item><#
@@ -296,7 +315,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -339,7 +358,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -382,7 +401,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -390,7 +409,21 @@ if (right_field && !right_field_column) {
           :required="false"<#
           }
           #>
-        >
+        ><#
+          if (hasAudit && column_name === auditColumn) {
+          #>
+          <AuditHistoryField
+            v-model="<#=table#>_input.<#=column_name#>"
+            :model-label="<#=table#>_input.<#=auditLabelField#>"
+            title="审核历史"
+            placeholder="请选择 <#=column_comment#>"
+            readonly-placeholder="暂无审核记录"
+            :record-id="<#=table#>_id"
+            record-key="<#=table#>_id"
+            :method="findAll<#=auditTable_Up#>"
+          ></AuditHistoryField><#
+          } else {
+          #>
           <DictSelect
             v-model="<#=table#>_input.<#=column_name#>"<#
             if (modelLabel) {
@@ -412,7 +445,9 @@ if (right_field && !right_field_column) {
             :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
             }
             #>
-          ></DictSelect>
+          ></DictSelect><#
+          }
+          #>
         </tm-form-item><#
         } else if (column.dictbiz) {
         #>
@@ -431,7 +466,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -483,7 +518,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -527,7 +562,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -571,7 +606,7 @@ if (right_field && !right_field_column) {
           :readonly="true"<#
           } else {
           #>
-          :readonly="dialogAction === 'view'"<#
+          :readonly="isReadonly"<#
           }
           #><#
           if (!require) {
@@ -585,7 +620,7 @@ if (right_field && !right_field_column) {
             if (column.isTextarea) {
             #>
             type="textarea"
-            height="120"<#
+            height="130"<#
             }
             #><#
             if (placeholderInForm) {
@@ -731,7 +766,7 @@ if (right_field && !right_field_column) {
             un-p="x-2 y-2"
             un-box-border
             un-cursor="pointer"
-            @click="onEditDynPageField"
+            @click="onEdit<#=Table_Up#>"
           >
             编辑
           </view>
@@ -1131,7 +1166,7 @@ if (right_field && !right_field_column) {
     ></view>
     
   </scroll-view><#
-  if (opts.noCopy !== true || opts.noEdit !== true) {
+  if (opts.noCopy !== true || opts.noEdit !== true || opts.noAdd !== true || hasAudit) {
   #>
   
   <view
@@ -1145,43 +1180,266 @@ if (right_field && !right_field_column) {
     } else if (opts.noAdd === true) {
     #>dialogAction === 'edit'<#
     }
-    #>"
+    #> && hasOperationButtons"
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
     un-justify="center"
     un-items="center"
     un-gap="x-4"
-  ><#
-    if (opts.noCopy !== true) {
-    #>
+  >
     
-    <view
-      v-if="dialogAction === 'edit' && <#=table#>_id"
-      un-flex="1"
+    <tm-drawer
+      v-model:show="operationDrawerShow"
+      title="操作"
+      un-w="full"
+      :show-close="true"
+      :show-footer="true"
+      size="auto"
     >
-      <tm-button
-        block
-        color="info"
-        @click="onCopy"
-      >
-        复制
-      </tm-button>
-    </view><#
-    }
-    #>
-    
-    <view
-      un-flex="1"
-    >
-      <tm-button
-        :disabled="!inited || is_form_hydrating"
-        block
-        @click="formRef?.submit()"
-      >
-        确定
-      </tm-button>
-    </view>
+      
+      <template #trigger>
+        <tm-button
+          block
+          color="info"
+          @click="operationDrawerShow = true"
+        >
+          <view
+            un-flex="~"
+            un-justify="center"
+            un-items="center"
+          >
+            
+            <view>
+              操作
+            </view>
+            
+            <view
+              un-i="iconfont-caret_top"
+            ></view>
+            
+          </view>
+        </tm-button>
+      </template>
+      
+      <template #footer>
+        <tm-button
+          block
+          color="info"
+          @click="operationDrawerShow = false;"
+        >
+          <view
+            un-flex="~"
+            un-justify="center"
+            un-items="center"
+            un-gap="x-1"
+          >
+            
+            <view>
+              关闭
+            </view>
+            
+            <view
+              un-i="iconfont-caret_bottom"
+            ></view>
+            
+          </view>
+        </tm-button>
+      </template>
+      
+      <view
+        un-p="4"
+        un-box-border
+        un-w="full"
+        un-flex="~ col"
+        un-gap="y-4"
+      ><#
+        if (hasAudit) {
+        #>
+        
+        <view
+          v-if="dialogAction === 'edit'"
+          un-flex="~"
+          un-gap="x-2"
+        ><#
+          if (!hasReviewed) {
+          #>
+          <tm-button
+            v-if="permit('audit_pass', '审核通过') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
+            "
+            block
+            @click="operationDrawerShow = false; onAuditPass();"
+          >
+            审核通过
+          </tm-button>
+
+          <tm-button
+            v-if="permit('audit_pass', '审核通过') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+            "
+            block
+            disabled
+          >
+            已审核
+          </tm-button><#
+          }
+          #>
+          
+          <tm-button
+            v-if="permit('audit_reject', '审核拒绝') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
+            "
+            block
+            color="danger"
+            @click="operationDrawerShow = false; onAuditReject();"
+          >
+            审核拒绝
+          </tm-button>
+          
+          <tm-button
+            v-if="permit('audit_submit', '审核提交') &&
+              (
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
+              )
+            "
+            block
+            @click="operationDrawerShow = false; onAuditSubmit();"
+          >
+            审核提交
+          </tm-button><#
+          if (opts?.audit?.hasReverse) {
+          #>
+          
+          <tm-button
+            v-if="permit('audit_reverse', '反审核') &&
+              (
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
+                if (hasReviewed) {
+                #> ||
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
+                }
+                #>
+              )
+            "
+            block
+            color="warn"
+            @click="operationDrawerShow = false; onAuditReverse();"
+          >
+            反审核
+          </tm-button><#
+          }
+          #><#
+          if (hasReviewed) {
+          #>
+          
+          <tm-button
+            v-if="permit('audit_review', '复核') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+            "
+            block
+            @click="operationDrawerShow = false; onAuditReview();"
+          >
+            复核
+          </tm-button><#
+          }
+          #><#
+          if (hasReviewed) {
+          #>
+          
+          <tm-button
+            v-if="permit('audit_review', '复核') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
+              !permit('audit_reverse', '反审核')
+            "
+            block
+            disabled
+          >
+            已复核
+          </tm-button><#
+          }
+          #>
+          
+        </view>
+        
+        <CustomDivider
+          v-if="dialogAction === 'edit'"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider><#
+        }
+        #>
+        
+        <view
+          v-if="dialogAction === 'edit'"
+          un-flex="~"
+          un-gap="x-2"
+        ><#
+          if (opts.noCopy !== true) {
+          #>
+          
+          <tm-button
+            v-if="permit('add', '新增')"
+            block
+            color="info"
+            @click="operationDrawerShow = false; onCopy();"
+          >
+            复制
+          </tm-button><#
+          }
+          #><#
+          if (!opts.noEdit) {
+          #>
+          
+          <tm-button
+            v-if="permit('edit', '编辑')"
+            :disabled="!inited || is_form_hydrating"
+            block
+            @click="operationDrawerShow = false; formRef?.submit();"
+          >
+            编辑
+          </tm-button><#
+          }
+          #>
+          
+        </view>
+        
+        <CustomDivider
+          v-if="dialogAction === 'edit'"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
+        
+        <template
+          v-if="dialogAction === 'copy' || dialogAction === 'add'"
+        ><#
+          if (!opts.noAdd) {
+          #>
+          
+          <tm-button
+            v-if="permit('add', '新增')"
+            :disabled="!inited || is_form_hydrating"
+            block
+            @click="operationDrawerShow = false; formRef?.submit();"
+          >
+            新增
+          </tm-button><#
+          }
+          #>
+          
+        </template>
+          
+        <CustomDivider
+          v-if="dialogAction === 'copy' || dialogAction === 'add'"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
+        
+      </view>
+      
+    </tm-drawer>
     
   </view><#
   }
@@ -1234,7 +1492,33 @@ import {
   #>
   getDefaultInput<#=Table_Up#>,
   intoInput<#=Table_Up#>,
-} from "./Api.ts";
+  getPagePath<#=Table_Up#>,<#
+  if (hasAudit) {
+  #>
+  auditSubmit<#=Table_Up#>,
+  auditPass<#=Table_Up#>,
+  auditReverse<#=Table_Up#>,
+  auditReject<#=Table_Up#>,<#
+  if (hasReviewed) {
+  #>
+  auditReview<#=Table_Up#>,<#
+  }
+  #><#
+}
+#>
+} from "./Api.ts";<#
+if (hasAudit) {
+#>
+
+import {
+  findAll<#=auditTable_Up#>,
+} from "../<#=auditTable#>/Api.ts";
+
+import {
+  <#=Table_Up#>Audit,
+} from "#/types.ts";<#
+}
+#>
 
 import {<#
   for (let i = 0; i < columns.length; i++) {
@@ -1276,6 +1560,12 @@ import {<#
 } from "./Api.ts";
 
 import TmForm from "@/uni_modules/tm-ui/components/tm-form/tm-form.vue";<#
+if (hasAudit) {
+#>
+
+import AuditHistoryField from "@/components/AuditHistoryField/AuditHistoryField.vue";<#
+}
+#><#
 for (const inlineForeignTab of inlineForeignTabs) {
   const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
   const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
@@ -1299,6 +1589,14 @@ for (const inlineForeignTab of inlineForeignTabs) {
 import <#=Table_Up#>DetailModal from "@/pages/<#=table#>/DetailModal.vue";<#
 }
 #>
+
+const pagePath = getPagePath<#=Table_Up#>();
+const permitStore = usePermitStore();
+
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1370,13 +1668,123 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {<#
 
 type ActionType = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<ActionType>("add");
+let isReadonly = $ref(false);
+
+watch(
+  () => dialogAction,
+  () => {
+    if (dialogAction === "view") {
+      isReadonly = true;
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 
 const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);
 
+let operationDrawerShow = $ref(false);
+
+/** 是否有可用的操作按钮 */
+const hasOperationButtons = $computed(() => {
+  if (dialogAction === 'view') return false;
+
+  if (dialogAction === 'edit') {
+    // 复制按钮<#
+    if (opts.noCopy !== true) {
+    #>
+    if (permit('add')) return true;<#
+    }
+    #>
+    // 编辑按钮<#
+    if (!opts.noEdit) {
+    #>
+    if (permit('edit')) return true;<#
+    }
+    #><#
+    if (hasAudit) {
+      #>
+    // 审核按钮<#
+      if (!hasReviewed) {
+      #>
+    if (
+      permit('audit_pass') &&
+      (
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+      )
+    ) return true;<#
+      }
+      #>
+    if (
+      permit('audit_reject') &&
+      <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
+    ) return true;
+    if (
+      permit('audit_submit') &&
+      (
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
+      )
+    ) return true;<#
+      if (opts?.audit?.hasReverse) {
+      #>
+    if (
+      permit('audit_reverse') &&
+      (
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
+        if (hasReviewed) {
+        #> ||
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
+        }
+        #>
+      )
+    ) return true;<#
+      }
+      #><#
+      if (hasReviewed) {
+      #>
+    if (
+      permit('audit_review') &&
+      (
+        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited ||
+        (
+          <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
+          !permit('audit_reverse')
+        )
+      )
+    ) return true;<#
+      }
+      #><#
+    }
+    #>
+  }
+
+  if (dialogAction === 'add' || dialogAction === 'copy') {
+    // 新增按钮<#
+    if (!opts.noAdd) {
+    #>
+    if (permit('add')) return true;<#
+    }
+    #>
+  }
+
+  return false;
+});
+
 /** 复制 */
 async function onCopy() {
   if (!<#=table#>_id) {
+    return;
+  }
+  if (!await permitAsync('add')) {
+    uni.showToast({
+      title: "无新增权限",
+      icon: "none",
+    });
     return;
   }
   uni.redirectTo({
@@ -1393,29 +1801,39 @@ async function onSave(
   }
   if (!inited || is_form_hydrating) {
     return;
-  }<#
-  if (opts.noAdd === true) {
-  #>
-  if (dialogAction === "add" || dialogAction === "copy") {
-    uni.showToast({
-      title: "无新增权限",
-      icon: "none",
-    });
-    return;
-  }<#
   }
-  #><#
-  if (opts.noEdit === true) {
-  #>
-  if (dialogAction === "edit") {
-    uni.showToast({
-      title: "无修改权限",
-      icon: "none",
-    });
-    return;
-  }<#
+  if (dialogAction === "add" || dialogAction === "copy") {<#
+    if (opts.noAdd !== true) {
+    #>
+    if (!await permitAsync('add')) {
+      uni.showToast({
+        title: "无新增权限",
+        icon: "none",
+      });
+      return;
+    }<#
+    } else {
+    #>
+    return;<#
+    }
+    #>
   }
-  #>
+  if (dialogAction === "edit") {<#
+    if (opts.noEdit !== true) {
+    #>
+    if (!await permitAsync('edit')) {
+      uni.showToast({
+        title: "无编辑权限",
+        icon: "none",
+      });
+      return;
+    }<#
+    } else {
+    #>
+    return;<#
+    }
+    #>
+  }
   if (formSubmitResult?.isPass === false) {
     const firstValid = formSubmitResult.firstValid;
     if (firstValid) {
@@ -1433,21 +1851,30 @@ async function onSave(
       return;
     }
   }
+  const currentAction = dialogAction;
   
-  if (dialogAction === "copy" || dialogAction === "add") {
-    await create<#=Table_Up#>(
+  if (currentAction === "copy" || currentAction === "add") {
+    const created_id = await create<#=Table_Up#>(
       <#=table#>_input,
     );
     await uni.showModal({
       content: "新增成功",
       showCancel: false,
     });
-    await uni.navigateBack();
-    uni.$emit("/pages/<#=table#>/List:refresh");
-  } else if (dialogAction === "edit") {
+    if (backAfterSaveInner) {
+      await uni.navigateBack();
+    } else {
+      <#=table#>_id = created_id;
+      dialogAction = "edit";
+      await onRefresh();
+    }
+    uni.$emit("/pages/<#=table#>/List:refresh", {
+      action: currentAction,
+    });
+  } else if (currentAction === "edit") {
     if (!<#=table#>_id) {
       uni.showToast({
-        title: "修改失败, id 不能为空",
+        title: "编辑失败, id 不能为空",
         icon: "none",
       });
       return;
@@ -1457,14 +1884,162 @@ async function onSave(
       <#=table#>_input,
     );
     await uni.showModal({
-      content: "修改成功",
+      content: "编辑成功",
       showCancel: false,
     });
-    await uni.navigateBack();
+    if (backAfterSaveInner) {
+      await uni.navigateBack();
+    } else {
+      await onRefresh();
+    }
     uni.$emit("/pages/<#=table#>/List:refresh");
   }
   
+}<#
+if (hasAudit) {
+#>
+
+/** 审核提交 */
+async function onAuditSubmit() {
+  if (!<#=table#>_id) {
+    return;
+  }
+  if (!await permitAsync('audit_submit')) {
+    return;
+  }
+  const { confirm } = await uni.showModal({
+    title: "审核提交",
+    content: "确定要审核提交吗",
+    showCancel: true,
+  });
+  if (!confirm) {
+    return;
+  }
+  await auditSubmit<#=Table_Up#>(<#=table#>_id);
+  await uni.showModal({
+    content: "审核提交成功",
+    showCancel: false,
+  });
+  await onRefresh();
+  uni.$emit("/pages/<#=table#>/List:refresh");
 }
+
+/** 反审核 */
+async function onAuditReverse() {
+  if (!<#=table#>_id) {
+    return;
+  }
+  if (!await permitAsync('audit_reverse')) {
+    return;
+  }
+  const { confirm } = await uni.showModal({
+    title: "反审核",
+    content: "确认要反审核吗",
+    showCancel: true,
+  });
+  if (!confirm) {
+    return;
+  }
+  await auditReverse<#=Table_Up#>(<#=table#>_id);
+  await uni.showModal({
+    content: "反审核成功",
+    showCancel: false,
+  });
+  await onRefresh();
+  uni.$emit("/pages/<#=table#>/List:refresh");
+}
+
+/** 审核通过 */
+async function onAuditPass() {
+  if (!<#=table#>_id) {
+    return;
+  }
+  if (!await permitAsync('audit_pass')) {
+    return;
+  }
+  const { confirm } = await uni.showModal({
+    title: "审核通过",
+    content: "确定要审核通过吗",
+    showCancel: true,
+  });
+  if (!confirm) {
+    return;
+  }
+  await auditPass<#=Table_Up#>(<#=table#>_id);
+  await uni.showModal({
+    content: "审核通过成功",
+    showCancel: false,
+  });
+  await onRefresh();
+  uni.$emit("/pages/<#=table#>/List:refresh");
+}
+
+/** 审核拒绝 */
+async function onAuditReject() {
+  if (!<#=table#>_id) {
+    return;
+  }
+  if (!await permitAsync('audit_reject')) {
+    return;
+  }
+  const { confirm, content } = await uni.showModal({
+    title: "审核拒绝",
+    content: "请输入原因",
+    editable: true,
+    placeholderText: "请输入原因",
+  });
+  if (!confirm) {
+    return;
+  }
+  const rem = (content || "").trim();
+  if (!rem) {
+    uni.showToast({
+      title: "请输入原因",
+      icon: "none",
+    });
+    return;
+  }
+  await auditReject<#=Table_Up#>(<#=table#>_id, {
+    rem,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any);
+  await uni.showModal({
+    content: "审核拒绝成功",
+    showCancel: false,
+  });
+  await onRefresh();
+  uni.$emit("/pages/<#=table#>/List:refresh");
+}<#
+if (hasReviewed) {
+#>
+/** 复核通过 */
+async function onAuditReview() {
+  if (!<#=table#>_id) {
+    return;
+  }
+  if (!await permitAsync('audit_review')) {
+    return;
+  }
+  const { confirm } = await uni.showModal({
+    title: "复核",
+    content: "确定要复核通过吗",
+    showCancel: true,
+  });
+  if (!confirm) {
+    return;
+  }
+  await auditReview<#=Table_Up#>(<#=table#>_id);
+  await uni.showModal({
+    content: "复核通过成功",
+    showCancel: false,
+  });
+  await onRefresh();
+  uni.$emit("/pages/<#=table#>/List:refresh");
+}<#
+}
+#><#
+}
+#>
 
 /** 刷新 */
 async function onRefresh() {
@@ -1472,7 +2047,11 @@ async function onRefresh() {
   try {
     formRef?.resetValidation();
     if (dialogAction === "add") {
-      <#=table#>_input = await getDefaultInput<#=Table_Up#>();<#
+      <#=table#>_input = await getDefaultInput<#=Table_Up#>();
+      <#=table#>_input = {
+        ...<#=table#>_input,
+        ...getMergedInputPatch(),
+      };<#
       if (hasOrderBy) {
       #>
       if (props.order_by) {
@@ -1506,7 +2085,11 @@ async function onRefresh() {
       }
       <#=table#>_input = intoInput<#=Table_Up#>(
         <#=table#>_model,
-      );<#
+      );
+      <#=table#>_input = {
+        ...<#=table#>_input,
+        ...getMergedInputPatch(),
+      };<#
       if (hasOrderBy) {
       #>
       if (props.order_by) {
@@ -1659,7 +2242,7 @@ async function onEdit<#=Table_Up#>() {
       sort?: Sort[],
       opt?: GqlOpt,
     ): Promise<<#=Table_Up#>Model | undefined> {
-      return <#=oldTable#>_model?.<#=inline_column_name#>?.[index];
+      return <#=oldTable#>_model?.<#=inline_column_name#>?.[index] as <#=Table_Up#>Model | undefined;
     },
   });
   
@@ -1680,6 +2263,30 @@ async function onEdit<#=Table_Up#>() {
   
 }<#
 }
+#><#
+if (hasAudit) {
+#>
+
+// 已审核提交的不允许编辑
+watch(
+  () => [
+    inited,
+    dialogAction,
+    <#=table#>_model?.<#=auditColumn#>,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (
+      (dialogAction === "edit" || dialogAction === "view") &&
+      (<#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited || <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited || <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed)
+    ) {
+      isReadonly = true;
+    }
+  },
+);<#
+}
 #>
 
 async function initFrame() {
@@ -1694,7 +2301,9 @@ const props = withDefaults(
     action?: ActionType;
     <#=table#>_id?: <#=Table_Up#>Id;
     findOne?: typeof findOne<#=Table_Up#>;
-    beforeSave?: (input: <#=Table_Up#>Input) => Promise<boolean>;<#
+    beforeSave?: (input: <#=Table_Up#>Input) => Promise<boolean>;
+    inputPatch?: Partial<<#=Table_Up#>Input>;
+    backAfterSave?: boolean;<#
     if (hasOrderBy) {
     #>
     order_by?: number;<#
@@ -1706,7 +2315,9 @@ const props = withDefaults(
     action: undefined,
     <#=table#>_id: undefined,
     findOne: undefined,
-    beforeSave: undefined,<#
+    beforeSave: undefined,
+    inputPatch: undefined,
+    backAfterSave: true,<#
     if (hasOrderBy) {
     #>
     order_by: undefined,<#
@@ -1715,6 +2326,16 @@ const props = withDefaults(
   },
 );
 
+let inputPatchByQuery = $ref<Partial<<#=Table_Up#>Input>>({ });
+let backAfterSaveInner = $ref(true);
+
+function getMergedInputPatch(): Partial<<#=Table_Up#>Input> {
+  return {
+    ...inputPatchByQuery,
+    ...props.inputPatch,
+  };
+}
+
 let findOneModel: typeof findOne<#=Table_Up#> = findOne<#=Table_Up#>;
 
 watch(
@@ -1722,6 +2343,7 @@ watch(
     props.action,
     props.<#=table#>_id,
     props.findOne,
+    props.backAfterSave,
   ],
   () => {
     if (props.action) {
@@ -1735,6 +2357,7 @@ watch(
     } else {
       findOneModel = findOne<#=Table_Up#>;
     }
+    backAfterSaveInner = props.backAfterSave ?? true;
   },
   {
     immediate: true,
@@ -1744,12 +2367,27 @@ watch(
 onLoad(async function(query?: AnyObject) {
   const <#=table#>_id_str = query?.<#=table#>_id;
   const action = query?.action;
+  const input_patch = query?.input_patch;
+  const back_after_save = query?.back_after_save;
   if (action === "add") {
     dialogAction = "add";
   } else if (action === "copy") {
     dialogAction = "copy";
   } else if (action === "edit") {
     dialogAction = "edit";
+  }
+  if (back_after_save != null) {
+    backAfterSaveInner = decodeURIComponent(back_after_save) !== "0";
+  }
+  if (input_patch) {
+    try {
+      const data = JSON.parse(decodeURIComponent(input_patch));
+      if (data && typeof data === "object") {
+        inputPatchByQuery = data as Partial<<#=Table_Up#>Input>;
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
   if (<#=table#>_id_str) {
     <#=table#>_id = decodeURIComponent(<#=table#>_id_str) as <#=Table_Up#>Id | undefined;

@@ -331,6 +331,14 @@ export interface TableColumn {
      */
     is_where_query_not_null?: boolean;
     
+    /**
+     * uni 移动端中, 如果此外键弹窗数据量很大, 需要分页, 则配置分页搜索键
+     */
+    uniCustomSelectModalPage?: {
+      searchKey: string;
+      searchIds?: string;
+    };
+    
   },
   
   /** foreignTabs 弹出框的大小, 默认为 medium */
@@ -411,6 +419,23 @@ export interface TableColumn {
    * 如果 true 则 canSearch 默认为 true
    */
   search?: boolean,
+  
+  /**
+   * 前端列表搜索条件默认值
+   * 比如: 最近3年: subtract:94608000
+   */
+  searchDefaultValue?: any,
+  
+  /**
+   * 日期和数字后端resolver层限定搜索条件跨度最大范围
+   * 时间跨度时单位为秒
+   */
+  searchRangeMax?: number,
+  
+  /**
+   * 日期和数字后端resolver层限定搜索条件跨度最大范围提示信息
+   */
+  searchRangeMaxMsg?: string,
   
   /**
    * 是否可以搜索

@@ -41,6 +41,10 @@ pub async fn get_token_by_usr_id(
   validate_is_enabled_usr(&usr_model).await?;
   
   let username = usr_model.username;
+  let lbl = usr_model.lbl.clone();
+  let role_ids = usr_model.role_ids.clone();
+  let usr_org_ids = usr_model.org_ids.clone();
+  let usr_org_ids_lbl = usr_model.org_ids_lbl.clone();
   let org_ids = usr_model.org_ids;
   let tenant_id = tenant_id.unwrap_or(usr_model.tenant_id);
   let lang = lang.unwrap_or(SmolStr::new("zh-CN"));
@@ -67,13 +71,28 @@ pub async fn get_token_by_usr_id(
     exp,
     ..Default::default()
   })?;
+
+  let role_models = crate::base::role::role_dao::find_by_ids_role(role_ids, None).await?;
+  let role_codes = role_models
+    .into_iter()
+    .map(|item| item.code)
+    .collect::<Vec<_>>();
+
+  let org_id_models = usr_org_ids
+    .into_iter()
+    .zip(usr_org_ids_lbl)
+    .map(|(id, lbl)| super::usr_model::GetLoginInfoorgIdModel { id, lbl })
+    .collect();
   
   Ok(LoginModel {
     usr_id,
+    lbl,
     username,
+    role_codes,
     tenant_id,
     authorization,
     org_id,
+    org_id_models,
     lang,
   })
 }

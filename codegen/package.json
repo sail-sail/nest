@@ -19,6 +19,10 @@
     "upgrade": "node --experimental-strip-types src/util/npmUpgrade.ts",
     "upgrade_all": "node --experimental-strip-types src/util/npmUpgradeAll.ts",
     "db_charset": "node --experimental-strip-types src/util/npmDbCharset.ts",
+    "oss_backup": "node --experimental-strip-types src/util/npmOssBucketBackup.ts",
+    "oss_restore": "node --experimental-strip-types src/util/npmOssBucketRestore.ts",
+    "mysql_backup": "node --experimental-strip-types src/util/npmMysqlBackup.ts",
+    "mysql_restore": "node --experimental-strip-types src/util/npmMysqlRestore.ts",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
@@ -30,15 +34,15 @@
     "ejsexcel": "4.2.2",
     "fast-csv": "5.0.7",
     "fs-extra": "11.3.6",
-    "mysql2": "3.22.5",
+    "mysql2": "3.23.1",
     "shelljs": "0.10.0",
     "uuid": "14.0.1"
   },
   "devDependencies": {
     "@types/fs-extra": "11.0.4",
-    "@types/node": "26.0.1",
+    "@types/node": "26.1.1",
     "@types/shelljs": "0.10.0",
     "@types/uuid": "11.0.0",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   }
 }

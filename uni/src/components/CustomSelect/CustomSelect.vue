@@ -272,7 +272,7 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    method: () => Promise<any[]>; // 用于获取数据的方法
+    method?: (() => Promise<any[]> | Promise<MaybeRef<any[]>> | MaybeRef<any[]> | any[]) | any[]; // 用于获取数据的方法
     optionsMap?: OptionsMap;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
@@ -287,6 +287,7 @@ const props = withDefaults(
     readonlyPlaceholder?: string | null;
   }>(),
   {
+    method: undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     optionsMap: function(item: any) {
       const item2 = item as { lbl: string; id: string; };
@@ -340,6 +341,7 @@ const dHeight = computed(() => {
   return props.height + sysinfo.value.bottom + 80;
 });
 
+const inited = ref(false);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const data = ref<any[]>([ ]);
 const options4SelectV2 = ref<OptionType[]>([ ]);
@@ -411,6 +413,7 @@ function onSelect(value: string) {
     }
   } else {
     selectedValue.value = value;
+    onConfirm();
   }
 }
 
@@ -456,6 +459,16 @@ function onClick() {
   }
   showPicker.value = true;
 }
+
+watch(
+  () => showPicker.value,
+  async () => {
+    if (!showPicker.value || isLoading.value) {
+      return;
+    }
+    await onRefresh();
+  },
+);
 
 function onClear() {
   if (!props.multiple) {
@@ -506,19 +519,20 @@ function onCancel() {
 
 let methodWatchHandle: WatchHandle | null = null;
 
+const isLoading = ref(false);
+
 async function onRefresh() {
   if (methodWatchHandle) {
     methodWatchHandle();
     methodWatchHandle = null;
   }
-  const method = props.method;
-  const methodData = (await method?.()) || [ ];
-  if (isRef(methodData)) {
-    methodWatchHandle  = watch(
-      methodData,
-      () => {
+  if (typeof props.method !== "function") {
+    methodWatchHandle = watch(
+      () => props.method,
+      async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data.value = unref(methodData) as any[];
+        const methodData = (unref(props.method) || [ ]) as any[];
+        data.value = methodData;
         emit("data", data.value);
         options4SelectV2.value = data.value.map(props.optionsMap);
       },
@@ -527,10 +541,35 @@ async function onRefresh() {
       },
     );
   } else {
-    data.value = methodData;
-    emit("data", data.value);
-    options4SelectV2.value = data.value.map(props.optionsMap);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let methodData: any = [ ];
+    try {
+      isLoading.value = true;
+      methodData = (await props.method?.()) || [ ];
+    } finally {
+      isLoading.value = false;
+    }
+    if (isRef(methodData)) {
+      methodWatchHandle = watch(
+        methodData,
+        () => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data.value = (unref(methodData) || [ ]) as any[];
+          emit("data", data.value);
+          options4SelectV2.value = data.value.map(props.optionsMap);
+        },
+        {
+          immediate: true,
+        },
+      );
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data.value = (methodData || [ ]) as any[];
+      emit("data", data.value);
+      options4SelectV2.value = data.value.map(props.optionsMap);
+    }
   }
+  inited.value = true;
 }
 
 if (props.initData) {
