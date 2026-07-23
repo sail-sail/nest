@@ -71,7 +71,6 @@ rand.workspace = true
 csv.workspace = true
 percent-encoding.workspace = true
 qrcode.workspace = true
-mimalloc.workspace = true
 
 [lib]
 path = "lib.rs"
