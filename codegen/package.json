@@ -26,13 +26,13 @@
   },
   "dependencies": {
     "chalk": "5.6.2",
-    "clipboardy": "5.3.1",
+    "clipboardy": "5.3.2",
     "commander": "15.0.0",
     "dayjs": "1.11.21",
     "dotenv": "17.4.2",
     "ejsexcel": "4.2.2",
     "fast-csv": "5.0.7",
-    "fs-extra": "11.3.6",
+    "fs-extra": "11.4.0",
     "mysql2": "3.23.1",
     "shelljs": "0.10.0",
     "uuid": "14.0.1"

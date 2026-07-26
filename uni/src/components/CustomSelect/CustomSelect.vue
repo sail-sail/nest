@@ -478,9 +478,7 @@ function onClear() {
   }
   modelLabel = "";
   emit("update:modelValue", selectedValue.value);
-  if (hasModelLabel) {
-    emit("update:modelLabel", "");
-  }
+  emit("update:modelLabel", "");
   emit("confirm");
   emit("change");
   emit("clear");
@@ -492,9 +490,7 @@ function onConfirm() {
   modelValue = selectedValue.value;
   modelLabel = modelLabels.value.join(",");
   emit("update:modelValue", selectedValue.value);
-  if (hasModelLabel) {
-    emit("update:modelLabel", modelLabel);
-  }
+  emit("update:modelLabel", modelLabel);
   const models = selectedValueArr.value.map((selectedValue) => {
     const model = data.value.find((item) => props.optionsMap(item).value === selectedValue)!;
     return model;
