@@ -13,6 +13,12 @@ description: 数据库建表规范。创建新表 SQL 时必须遵循
 > 3. SQL 写完后逐项自检：字段名不能重复；同一语义不要并存两套命名；字典字段、布尔字段、外键字段必须满足本页的命名和类型规则。
 > 4. 如果需求要求本文未覆盖、且仓库里也没有先例的数据类型、默认值或索引写法，先明确指出冲突并等待确认，不要自行猜测。
 
+## 新表落库安全顺序
+
+- 常规验证新表时，禁止把 `pnpm run initdb` 当默认命令；它会清空并重建全库，风险极高
+- 默认安全顺序是：先 `pnpm run importCsv` 导入新菜单/字典，再 `pnpm run sql` 执行新增建表 SQL，确认库里已有新表后再 `pnpm run codegen`
+- 只有用户明确确认“目标库允许整库重建”时，才可以考虑 `pnpm run initdb`
+
 ## 表路径
 `codegen/src/tables/{mod}/{mod}.sql`
 
@@ -87,7 +93,7 @@ description: 数据库建表规范。创建新表 SQL 时必须遵循
 如果业务没有“复核”环节，可以去掉 `reviewed`，只保留：
 
 ```sql
-`audit` ENUM('unsubmited', 'unaudited', 'audited', 'rejected') NOT NULL DEFAULT 'unsubmited' COMMENT '审核,dict:audit',
+`audit` ENUM('unsubmited', 'unaudited', 'audited', 'reviewed', 'rejected') NOT NULL DEFAULT 'unsubmited' COMMENT '审核,dict:audit',
 ```
 
 - `audit` 字段属于系统字典字段，必须保持 `dict:audit`

@@ -27,7 +27,7 @@
       :scroll-with-animation="true"
     >
       
-      <DynPageFieldDetal
+      <DynPageFieldDetail
         ref="dyn_page_field_detail_ref"
         un-flex="~ [1_0_0]"
         un-overflow="hidden"
@@ -38,7 +38,10 @@
         :dyn_page_field_id="dyn_page_field_id"
         :find-one="findOneModel"
         :order_by="order_by"
-      ></DynPageFieldDetal>
+        :hide-fields="hideFields"
+        :has-close-btn="hasCloseBtn"
+        :close-btn-fn="onClose"
+      ></DynPageFieldDetail>
       
     </scroll-view>
     
@@ -49,7 +52,7 @@
 
 <script lang="ts" setup>
 import CustomDialog from "@/components/CustomDialog/CustomDialog.vue";
-import DynPageFieldDetal from "./Detail.vue";
+import DynPageFieldDetail from "./Detail.vue";
 
 import {
   findOneDynPageField,
@@ -65,9 +68,11 @@ let order_by = $ref<number>();
 let inited = $ref(false);
 
 const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
-const dyn_page_field_detail_ref = $ref<InstanceType<typeof DynPageFieldDetal>>();
+const dyn_page_field_detail_ref = $ref<InstanceType<typeof DynPageFieldDetail>>();
 
 let findOneModel = findOneDynPageField;
+let hideFields = $ref<string[]>([ ]);
+let hasCloseBtn = $ref<boolean>(false);
 
 type OnCloseResolveType = {
   type: "ok";
@@ -86,6 +91,8 @@ async function showDialog(
       order_by?: number;
     };
     findOne?: typeof findOneDynPageField;
+    hideFields?: string[];
+    hasCloseBtn?: boolean;
     action: DialogAction;
   },
 ) {
@@ -98,6 +105,16 @@ async function showDialog(
     findOneModel = arg.findOne;
   } else {
     findOneModel = findOneDynPageField;
+  }
+  if (arg?.hideFields) {
+    hideFields = arg.hideFields;
+  } else {
+    hideFields = [ ];
+  }
+  if (arg?.hasCloseBtn != null) {
+    hasCloseBtn = arg.hasCloseBtn;
+  } else {
+    hasCloseBtn = false;
   }
   dialogAction = action || "add";
   dyn_page_field_id = model?.id;

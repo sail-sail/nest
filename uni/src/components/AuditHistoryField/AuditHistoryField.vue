@@ -255,6 +255,7 @@ const resolvedSearchParams = $computed(() => {
     return {
       [props.recordKey]: [ props.recordId ],
       is_deleted: 0,
+      // oxlint-disable-next-line unicorn/no-useless-fallback-in-spread
       ...(searchParams || {}),
     };
   }
