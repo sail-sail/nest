@@ -128,11 +128,22 @@ use crate::bpm::process_def::process_def_model::{
   ProcessDefSearch,
 };
 use crate::bpm::process_def::process_def_service::find_one_ok_process_def;
-use crate::bpm::process_inst::process_inst_model::ProcessInstId;
-use crate::bpm::process_inst::process_inst_service2::start_process;
+use crate::bpm::process_inst::process_inst_model::{
+  ProcessInstBizCode,
+  ProcessInstId,
+  ProcessInstSearch,
+  ProcessInstStatus,
+};
+use crate::bpm::process_inst::process_inst_dao::{
+  find_by_id_ok_process_inst,
+  find_one_ok_process_inst,
+};
+use crate::bpm::process_inst::process_inst_service2::{
+  complete_task,
+  start_process,
+};
 use crate::bpm::task::task_model::TaskAction;
-use crate::base::usr::usr_model::UsrId;
-<#
+use crate::base::usr::usr_model::UsrId;<#
 }
 #><#
 if (
@@ -533,10 +544,23 @@ pub async fn start_process_<#=table#>(
     options,
   ).await?;
 
+  let process_inst_model = find_by_id_ok_process_inst(
+    process_inst_id,
+    options,
+  ).await?;
+
+  let bpm_status = match process_inst_model.status {
+    ProcessInstStatus::Running => <#=tableUP#><#=bpmStatusFieldUp#>::Running,
+    ProcessInstStatus::Approved => <#=tableUP#><#=bpmStatusFieldUp#>::Approved,
+    ProcessInstStatus::Rejected => <#=tableUP#><#=bpmStatusFieldUp#>::Rejected,
+    ProcessInstStatus::Revoked => <#=tableUP#><#=bpmStatusFieldUp#>::Revoked,
+    ProcessInstStatus::Draft => <#=tableUP#><#=bpmStatusFieldUp#>::Draft,
+  };
+
   update_by_id_<#=table#>(
     <#=table#>_id,
     <#=tableUP#>Input {
-      <#=bpmStatusField#>: Some(<#=tableUP#><#=bpmStatusFieldUp#>::Running),
+      <#=bpmStatusField#>: Some(bpm_status),
       ..Default::default()
     },
     options,
@@ -553,13 +577,51 @@ pub async fn complete_task_<#=table#>(
   add_sign_usr_ids: Option<Vec<UsrId>>,
   options: Option<Options>,
 ) -> Result<bool> {
-  let _ = (
+  let <#=table#>_model = find_by_id_ok_<#=table#>(
     <#=table#>_id,
+    options,
+  ).await?;
+
+  if <#=table#>_model.<#=bpmStatusField#> != <#=tableUP#><#=bpmStatusFieldUp#>::Running {
+    return Err(eyre!("仅审批中的单据可执行审批操作"));
+  }
+
+  let process_inst_model = find_one_ok_process_inst(
+    Some(ProcessInstSearch {
+      is_deleted: Some(0),
+      status: Some(vec![ProcessInstStatus::Running]),
+      biz_code: Some(vec!["<#=bpmBizCode#>".parse::<ProcessInstBizCode>()?]),
+      biz_id: Some(<#=table#>_id.into()),
+      ..Default::default()
+    }),
+    None,
+    options,
+  ).await?;
+
+  let complete_res = complete_task(
+    process_inst_model.id,
     action,
     opinion,
     add_sign_usr_ids,
     options,
-  );
+  ).await?;
+
+  let bpm_status = match complete_res.process_status {
+    ProcessInstStatus::Running => <#=tableUP#><#=bpmStatusFieldUp#>::Running,
+    ProcessInstStatus::Approved => <#=tableUP#><#=bpmStatusFieldUp#>::Approved,
+    ProcessInstStatus::Rejected => <#=tableUP#><#=bpmStatusFieldUp#>::Rejected,
+    ProcessInstStatus::Revoked => <#=tableUP#><#=bpmStatusFieldUp#>::Revoked,
+    ProcessInstStatus::Draft => <#=tableUP#><#=bpmStatusFieldUp#>::Draft,
+  };
+
+  <#=table#>_dao::update_by_id_<#=table#>(
+    <#=table#>_id,
+    <#=tableUP#>Input {
+      <#=bpmStatusField#>: Some(bpm_status),
+      ..Default::default()
+    },
+    options,
+  ).await?;
 
   Ok(true)
 }<#

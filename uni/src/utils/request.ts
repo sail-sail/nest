@@ -647,8 +647,6 @@ async function code2Session(
 export async function uniLogin() {
   const indexStore = useIndexStore();
   const usrStore = useUsrStore();
-  const permitStore = usePermitStore();
-  permitStore.clear();
   let providers: string[] = [ ];
   try {
     const providerInfo = await uni.getProvider({ service: "oauth" });

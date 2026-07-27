@@ -153,7 +153,7 @@
 </el-dialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 const {
   ns,
   nsAsync,

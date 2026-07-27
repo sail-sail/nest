@@ -64,7 +64,7 @@
 </el-dialog>
 </template>
 
-<script setup lang="ts" vapor>
+<script setup lang="ts">
 import type {
   Ref,
   WatchStopHandle,

@@ -78,7 +78,7 @@
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import List from "./List.vue";
 
 import {

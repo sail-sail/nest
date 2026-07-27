@@ -4277,7 +4277,7 @@ for (let i = 0; i < columns.length; i++) {
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,
@@ -8595,7 +8595,9 @@ if (hasBpm) {
 watch(
   () => dialogModel.<#=bpmStatusField#>,
   (val) => {
-    if (val === "draft") {
+    if (!val) {
+      isLocked = false;
+    } else if (val === "draft") {
       isLocked = false;
     } else {
       isLocked = true;

@@ -181,7 +181,7 @@ if (right_field && !right_field_column) {
   >
     
     <view
-      un-m="x-1"
+      un-m="x-2"
     >
       
       <tm-form
@@ -231,273 +231,353 @@ if (right_field && !right_field_column) {
         }
         const modelLabel = column.modelLabel;
         const isImg = column.isImg;
+        const isAtt = column.isAtt;
       #><#
         if (foreignKey) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item<#
-          if (column.noAdd === true) {
-          #>
-          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
-          }
-          #>
-          label="<#=column_comment#>"
-          name="<#=column_name#>"<#
-          if (column.readonly) {
-          #>
-          :readonly="true"<#
-          } else {
-          #>
-          :readonly="isReadonly"<#
-          }
-          #><#
-          if (!require) {
-          #>
-          :required="false"<#
-          }
-          #>
+        <template
+          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <CustomSelectModal
-            v-model="<#=table#>_input.<#=column_name#>"<#
-            if (modelLabel) {
+          <tm-form-item<#
+            if (column.noAdd === true) {
             #>
-            v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
+            v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
             }
-            #><#
-            if (placeholderInForm) {
             #>
-            placeholder="<#=placeholderInForm#>"<#
+            label="<#=column_comment#>"
+            name="<#=column_name#>"<#
+            if (column.readonly) {
+            #>
+            :readonly="true"<#
             } else {
             #>
-            placeholder="请选择 <#=column_comment#>"<#
-            }
-            #>
-            :method="getList<#=Foreign_Table_Up#>"<#
-            if (foreignKey.multiple) {
-            #>
-            multiple<#
+            :readonly="isReadonly"<#
             }
             #><#
-            if (readonlyPlaceholder) {
+            if (!require) {
             #>
-            :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
-            }
-            #><#
-            if (foreignKey.uniCustomSelectModalPage) {
-            #>
-            :init-data="false"
-            :is-page="true"
-            search-key="<#=foreignKey.uniCustomSelectModalPage.searchKey#>"<#
-            if (foreignKey.uniCustomSelectModalPage.searchIds) {
-            #>
-            search-ids="<#=foreignKey.uniCustomSelectModalPage.searchIds#>"<#
-            }
-            #><#
+            :required="false"<#
             }
             #>
-          ></CustomSelectModal>
-        </tm-form-item><#
+          >
+            <CustomSelectModal
+              v-model="<#=table#>_input.<#=column_name#>"<#
+              if (modelLabel) {
+              #>
+              v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
+              }
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #>
+              :method="getList<#=Foreign_Table_Up#>"<#
+              if (foreignKey.multiple) {
+              #>
+              multiple<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+              }
+              #><#
+              if (foreignKey.uniCustomSelectModalPage) {
+              #>
+              :init-data="false"
+              :is-page="true"
+              search-key="<#=foreignKey.uniCustomSelectModalPage.searchKey#>"<#
+              if (foreignKey.uniCustomSelectModalPage.searchIds) {
+              #>
+              search-ids="<#=foreignKey.uniCustomSelectModalPage.searchIds#>"<#
+              }
+              #><#
+              }
+              #>
+            ></CustomSelectModal>
+          </tm-form-item>
+        </template><#
         } else if (isImg) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item<#
-          if (column.noAdd === true) {
-          #>
-          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
-          }
-          #>
-          label="<#=column_comment#>"
-          name="<#=column_name#>"<#
-          if (column.readonly) {
-          #>
-          :readonly="true"<#
-          } else {
-          #>
-          :readonly="isReadonly"<#
-          }
-          #><#
-          if (!require) {
-          #>
-          :required="false"<#
-          }
-          #>
+        <template
+          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <CustomUploadImage
-            v-model="<#=table#>_input.<#=column_name#>"<#
-            if (placeholderInForm) {
+          <!-- <#=column_comment#> -->
+          <tm-form-item<#
+            if (column.noAdd === true) {
             #>
-            placeholder="<#=placeholderInForm#>"<#
+            v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+            }
+            #>
+            label="<#=column_comment#>"
+            name="<#=column_name#>"<#
+            if (column.readonly) {
+            #>
+            :readonly="true"<#
             } else {
             #>
-            placeholder="上传<#=column_comment#>"<#
+            :readonly="isReadonly"<#
             }
             #><#
-            if (readonlyPlaceholder) {
+            if (!require) {
             #>
-            :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+            :required="false"<#
             }
             #>
-          ></CustomUploadImage>
-        </tm-form-item><#
+          >
+            <CustomUploadImage
+              v-model="<#=table#>_input.<#=column_name#>"<#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
+              } else {
+              #>
+              placeholder="上传<#=column_comment#>"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+              }
+              #>
+            ></CustomUploadImage>
+          </tm-form-item>
+        </template><#
+        } else if (isAtt) {
+        #>
+        
+        <!-- <#=column_comment#> -->
+        <template
+          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
+        >
+          <!-- <#=column_comment#> -->
+          <tm-form-item<#
+            if (column.noAdd === true) {
+            #>
+            v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+            }
+            #>
+            label="<#=column_comment#>"
+            name="<#=column_name#>"<#
+            if (column.readonly) {
+            #>
+            :readonly="true"<#
+            } else {
+            #>
+            :readonly="isReadonly"<#
+            }
+            #><#
+            if (!require) {
+            #>
+            :required="false"<#
+            }
+            #>
+          >
+            <CustomAtt
+              v-model="<#=table#>_input.<#=column_name#>"<#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
+              } else {
+              #>
+              placeholder="添加附件"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+              }
+              #>
+            ></CustomAtt>
+          </tm-form-item>
+        </template><#
         } else if (data_type === "datetime" || data_type === "date") {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item<#
-          if (column.noAdd === true) {
-          #>
-          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
-          }
-          #>
-          label="<#=column_comment#>"
-          name="<#=column_name#>"<#
-          if (column.readonly) {
-          #>
-          :readonly="true"<#
-          } else {
-          #>
-          :readonly="isReadonly"<#
-          }
-          #><#
-          if (!require) {
-          #>
-          :required="false"<#
-          }
-          #>
+        <template
+          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <CustomDate
-            v-model="<#=table#>_input.<#=column_name#>"<#
-            if (placeholderInForm) {
+          <!-- <#=column_comment#> -->
+          <tm-form-item<#
+            if (column.noAdd === true) {
             #>
-            placeholder="<#=placeholderInForm#>"<#
+            v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+            }
+            #>
+            label="<#=column_comment#>"
+            name="<#=column_name#>"<#
+            if (column.readonly) {
+            #>
+            :readonly="true"<#
             } else {
             #>
-            placeholder="请选择 <#=column_comment#>"<#
+            :readonly="isReadonly"<#
             }
             #><#
-            if (readonlyPlaceholder) {
+            if (!require) {
             #>
-            :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+            :required="false"<#
             }
             #>
-          ></CustomDate>
-        </tm-form-item><#
+          >
+            <CustomDate
+              v-model="<#=table#>_input.<#=column_name#>"<#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+              }
+              #>
+            ></CustomDate>
+          </tm-form-item>
+        </template><#
         } else if (column.dict) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item<#
-          if (column.noAdd === true) {
-          #>
-          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
-          }
-          #>
-          label="<#=column_comment#>"
-          name="<#=column_name#>"<#
-          if (column.readonly) {
-          #>
-          :readonly="true"<#
-          } else {
-          #>
-          :readonly="isReadonly"<#
-          }
-          #><#
-          if (!require) {
-          #>
-          :required="false"<#
-          }
-          #>
-        ><#
-          if (hasAudit && column_name === auditColumn) {
-          #>
-          <AuditHistoryField
-            v-model="<#=table#>_input.<#=column_name#>"
-            :model-label="<#=table#>_input.<#=auditLabelField#>"
-            title="审核历史"
-            placeholder="请选择 <#=column_comment#>"
-            readonly-placeholder="暂无审核记录"
-            :record-id="<#=table#>_id"
-            record-key="<#=table#>_id"
-            :method="findAll<#=auditTable_Up#>"
-          ></AuditHistoryField><#
-          } else {
-          #>
-          <DictSelect
-            v-model="<#=table#>_input.<#=column_name#>"<#
-            if (modelLabel) {
+        <template
+          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
+        >
+          <!-- <#=column_comment#> -->
+          <tm-form-item<#
+            if (column.noAdd === true) {
             #>
-            v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
+            v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
             }
-            #><#
-            if (placeholderInForm) {
             #>
-            placeholder="<#=placeholderInForm#>"<#
+            label="<#=column_comment#>"
+            name="<#=column_name#>"<#
+            if (column.readonly) {
+            #>
+            :readonly="true"<#
             } else {
             #>
-            placeholder="请选择 <#=column_comment#>"<#
+            :readonly="isReadonly"<#
+            }
+            #><#
+            if (!require) {
+            #>
+            :required="false"<#
             }
             #>
-            code="<#=column.dict#>"<#
-            if (readonlyPlaceholder) {
+          ><#
+            if (hasAudit && column_name === auditColumn) {
             #>
-            :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+            <AuditHistoryField
+              v-model="<#=table#>_input.<#=column_name#>"
+              :model-label="<#=table#>_input.<#=auditLabelField#>"
+              title="审核历史"
+              placeholder="请选择 <#=column_comment#>"
+              readonly-placeholder="暂无审核记录"
+              :record-id="<#=table#>_id"
+              record-key="<#=table#>_id"
+              :method="findAll<#=auditTable_Up#>"
+              :disabled="dialogAction === 'add' || dialogAction === 'copy'"
+            ></AuditHistoryField><#
+            } else {
+            #>
+            <DictSelect
+              v-model="<#=table#>_input.<#=column_name#>"<#
+              if (modelLabel) {
+              #>
+              v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
+              } else {
+              #>
+              v-model:model-label="<#=table#>_input.<#=column_name#>_lbl"<#
+              }
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #>
+              code="<#=column.dict#>"<#
+              if (readonlyPlaceholder) {
+              #>
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+              }
+              #>
+            ></DictSelect><#
             }
             #>
-          ></DictSelect><#
-          }
-          #>
-        </tm-form-item><#
+          </tm-form-item>
+        </template><#
         } else if (column.dictbiz) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item<#
-          if (column.noAdd === true) {
-          #>
-          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
-          }
-          #>
-          label="<#=column_comment#>"
-          name="<#=column_name#>"<#
-          if (column.readonly) {
-          #>
-          :readonly="true"<#
-          } else {
-          #>
-          :readonly="isReadonly"<#
-          }
-          #><#
-          if (!require) {
-          #>
-          :required="false"<#
-          }
-          #>
+        <template
+          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <DictbizSelect
-            v-model="<#=table#>_input.<#=column_name#>"<#
-            if (modelLabel) {
+          <!-- <#=column_comment#> -->
+          <tm-form-item<#
+            if (column.noAdd === true) {
             #>
-            v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
+            v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
             }
-            #><#
-            if (placeholderInForm) {
             #>
-            placeholder="<#=placeholderInForm#>"<#
+            label="<#=column_comment#>"
+            name="<#=column_name#>"<#
+            if (column.readonly) {
+            #>
+            :readonly="true"<#
             } else {
             #>
-            placeholder="请选择 <#=column_comment#>"<#
+            :readonly="isReadonly"<#
+            }
+            #><#
+            if (!require) {
+            #>
+            :required="false"<#
             }
             #>
-            code="<#=column.dictbiz#>"<#
-            if (readonlyPlaceholder) {
-            #>
-            :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
-            }
-            #>
-          ></DictbizSelect>
-        </tm-form-item><#
+          >
+            <DictbizSelect
+              v-model="<#=table#>_input.<#=column_name#>"<#
+              if (modelLabel) {
+              #>
+              v-model:model-label="<#=table#>_input.<#=modelLabel#>"<#
+              } else {
+              #>
+              v-model:model-label="<#=table#>_input.<#=column_name#>_lbl"<#
+              }
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #>
+              code="<#=column.dictbiz#>"<#
+              if (readonlyPlaceholder) {
+              #>
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+              }
+              #>
+            ></DictbizSelect>
+          </tm-form-item>
+        </template><#
         } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
           /* TODO: 是否生成开关 */
         #><#
@@ -505,139 +585,154 @@ if (right_field && !right_field_column) {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item<#
-          if (column.noAdd === true) {
-          #>
-          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
-          }
-          #>
-          label="<#=column_comment#>"
-          name="<#=column_name#>"<#
-          if (column.readonly) {
-          #>
-          :readonly="true"<#
-          } else {
-          #>
-          :readonly="isReadonly"<#
-          }
-          #><#
-          if (!require) {
-          #>
-          :required="false"<#
-          }
-          #>
+        <template
+          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <CustomInput
-            v-model="<#=table#>_input.<#=column_name#>"
-            type="number"<#
-            if (placeholderInForm) {
+          <!-- <#=column_comment#> -->
+          <tm-form-item<#
+            if (column.noAdd === true) {
             #>
-            placeholder="<#=placeholderInForm#>"<#
+            v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+            }
+            #>
+            label="<#=column_comment#>"
+            name="<#=column_name#>"<#
+            if (column.readonly) {
+            #>
+            :readonly="true"<#
             } else {
             #>
-            placeholder="请输入 <#=column_comment#>"<#
+            :readonly="isReadonly"<#
             }
             #><#
-            if (readonlyPlaceholder) {
+            if (!require) {
             #>
-            :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+            :required="false"<#
             }
             #>
-          ></CustomInput>
-        </tm-form-item><#
+          >
+            <CustomInput
+              v-model="<#=table#>_input.<#=column_name#>"
+              type="number"<#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
+              } else {
+              #>
+              placeholder="请输入 <#=column_comment#>"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+              }
+              #>
+            ></CustomInput>
+          </tm-form-item>
+        </template><#
         } else if (data_type === "decimal") {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item<#
-          if (column.noAdd === true) {
-          #>
-          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
-          }
-          #>
-          label="<#=column_comment#>"
-          name="<#=column_name#>"<#
-          if (column.readonly) {
-          #>
-          :readonly="true"<#
-          } else {
-          #>
-          :readonly="isReadonly"<#
-          }
-          #><#
-          if (!require) {
-          #>
-          :required="false"<#
-          }
-          #>
+        <template
+          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <CustomInput
-            v-model="<#=table#>_input.<#=column_name#>"
-            type="decimal"<#
-            if (placeholderInForm) {
+          <!-- <#=column_comment#> -->
+          <tm-form-item<#
+            if (column.noAdd === true) {
             #>
-            placeholder="<#=placeholderInForm#>"<#
+            v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+            }
+            #>
+            label="<#=column_comment#>"
+            name="<#=column_name#>"<#
+            if (column.readonly) {
+            #>
+            :readonly="true"<#
             } else {
             #>
-            placeholder="请输入 <#=column_comment#>"<#
+            :readonly="isReadonly"<#
             }
             #><#
-            if (readonlyPlaceholder) {
+            if (!require) {
             #>
-            :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+            :required="false"<#
             }
             #>
-          ></CustomInput>
-        </tm-form-item><#
+          >
+            <CustomInput
+              v-model="<#=table#>_input.<#=column_name#>"
+              type="decimal"<#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
+              } else {
+              #>
+              placeholder="请输入 <#=column_comment#>"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+              }
+              #>
+            ></CustomInput>
+          </tm-form-item>
+        </template><#
         } else {
         #>
         
         <!-- <#=column_comment#> -->
-        <tm-form-item<#
-          if (column.noAdd === true) {
-          #>
-          v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
-          }
-          #>
-          label="<#=column_comment#>"
-          name="<#=column_name#>"<#
-          if (column.readonly) {
-          #>
-          :readonly="true"<#
-          } else {
-          #>
-          :readonly="isReadonly"<#
-          }
-          #><#
-          if (!require) {
-          #>
-          :required="false"<#
-          }
-          #>
+        <template
+          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
         >
-          <CustomInput
-            v-model="<#=table#>_input.<#=column_name#>"<#
-            if (column.isTextarea) {
+          <!-- <#=column_comment#> -->
+          <tm-form-item<#
+            if (column.noAdd === true) {
             #>
-            type="textarea"
-            height="130"<#
+            v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
             }
-            #><#
-            if (placeholderInForm) {
             #>
-            placeholder="<#=placeholderInForm#>"<#
+            label="<#=column_comment#>"
+            name="<#=column_name#>"<#
+            if (column.readonly) {
+            #>
+            :readonly="true"<#
             } else {
             #>
-            placeholder="请输入 <#=column_comment#>"<#
+            :readonly="isReadonly"<#
             }
             #><#
-            if (readonlyPlaceholder) {
+            if (!require) {
             #>
-            :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+            :required="false"<#
             }
             #>
-          ></CustomInput>
-        </tm-form-item><#
+          >
+            <CustomInput
+              v-model="<#=table#>_input.<#=column_name#>"<#
+              if (column.isTextarea) {
+              #>
+              type="textarea"
+              height="130"<#
+              }
+              #><#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
+              } else {
+              #>
+              placeholder="请输入 <#=column_comment#>"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+              }
+              #>
+            ></CustomInput>
+          </tm-form-item>
+        </template><#
         }
         #><#
       }
@@ -656,6 +751,7 @@ if (right_field && !right_field_column) {
       <tm-tabs
         v-model="inlineForeignTabIdx"
         color=""
+        :line-full="true"
         :list="[<#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
@@ -707,7 +803,6 @@ if (right_field && !right_field_column) {
       <view
         un-sticky
         un-top="-.5"
-        un-bg="[var(--page-bg)]"
         un-z="3"
       >
         
@@ -759,6 +854,16 @@ if (right_field && !right_field_column) {
             @click="onAdd<#=Table_Up#>"
           >
             新增
+          </view>
+          
+          <view
+            un-text="[var(--color-primary)]"
+            un-p="x-2 y-2"
+            un-box-border
+            un-cursor="pointer"
+            @click="onCopy<#=Table_Up#>"
+          >
+            复制
           </view>
           
           <view
@@ -849,7 +954,7 @@ if (right_field && !right_field_column) {
           <!-- <#=column_comment#> -->
           <view
             un-h="full"
-            un-flex="~ [1_0_auto]"
+            un-flex="~ [1_0_0]"
             un-justify="center"
             un-items="center"
           >
@@ -861,7 +966,7 @@ if (right_field && !right_field_column) {
           <!-- <#=column_comment#> -->
           <view
             un-h="full"
-            un-flex="~ [1_0_auto]"
+            un-flex="~ [1_0_0]"
             un-justify="center"
             un-items="center"
           >
@@ -873,7 +978,7 @@ if (right_field && !right_field_column) {
           <!-- <#=column_comment#> -->
           <view
             un-h="full"
-            un-flex="~ [1_0_auto]"
+            un-flex="~ [1_0_0]"
             un-justify="center"
             un-items="center"
           >
@@ -885,7 +990,7 @@ if (right_field && !right_field_column) {
           <!-- <#=column_comment#> -->
           <view
             un-h="full"
-            un-flex="~ [1_0_auto]"
+            un-flex="~ [1_0_0]"
             un-justify="center"
             un-items="center"
           >
@@ -897,7 +1002,7 @@ if (right_field && !right_field_column) {
           <!-- <#=column_comment#> -->
           <view
             un-h="full"
-            un-flex="~ [1_0_auto]"
+            un-flex="~ [1_0_0]"
             un-justify="center"
             un-items="center"
           >
@@ -909,7 +1014,7 @@ if (right_field && !right_field_column) {
           <!-- <#=column_comment#> -->
           <view
             un-h="full"
-            un-flex="~ [1_0_auto]"
+            un-flex="~ [1_0_0]"
             un-justify="center"
             un-items="center"
           >
@@ -921,7 +1026,7 @@ if (right_field && !right_field_column) {
           <!-- <#=column_comment#> -->
           <view
             un-h="full"
-            un-flex="~ [1_0_auto]"
+            un-flex="~ [1_0_0]"
             un-justify="center"
             un-items="center"
           >
@@ -933,7 +1038,7 @@ if (right_field && !right_field_column) {
           <!-- <#=column_comment#> -->
           <view
             un-h="full"
-            un-flex="~ [1_0_auto]"
+            un-flex="~ [1_0_0]"
             un-justify="center"
             un-items="center"
           >
@@ -1189,257 +1294,286 @@ if (right_field && !right_field_column) {
     un-gap="x-4"
   >
     
-    <tm-drawer
-      v-model:show="operationDrawerShow"
-      title="操作"
-      un-w="full"
-      :show-close="true"
-      :show-footer="true"
-      size="auto"
+    <view
+      v-if="props.hasCloseBtn"
+      un-flex="~ [1_0_0]"
+      un-overflow="hidden"
+      un-justify="center"
+      un-items="center"
     >
-      
-      <template #trigger>
-        <tm-button
-          block
-          color="info"
-          @click="operationDrawerShow = true"
-        >
-          <view
-            un-flex="~"
-            un-justify="center"
-            un-items="center"
-          >
-            
-            <view>
-              操作
-            </view>
-            
-            <view
-              un-i="iconfont-caret_top"
-            ></view>
-            
-          </view>
-        </tm-button>
-      </template>
-      
-      <template #footer>
-        <tm-button
-          block
-          color="info"
-          @click="operationDrawerShow = false;"
-        >
-          <view
-            un-flex="~"
-            un-justify="center"
-            un-items="center"
-            un-gap="x-1"
-          >
-            
-            <view>
-              关闭
-            </view>
-            
-            <view
-              un-i="iconfont-caret_bottom"
-            ></view>
-            
-          </view>
-        </tm-button>
-      </template>
-      
-      <view
-        un-p="4"
-        un-box-border
+      <tm-button
+        block
+        color="info"
+        @click="onCancel"
+      >
+        取消
+      </tm-button>
+    </view>
+    
+    <view
+      un-flex="~ [1_0_0]"
+      un-overflow="hidden"
+      un-justify="center"
+      un-items="center"
+    >
+      <tm-drawer
+        v-model:show="operationDrawerShow"
+        title="操作"
         un-w="full"
-        un-flex="~ col"
-        un-gap="y-4"
-      ><#
-        if (hasAudit) {
-        #>
+        :show-close="true"
+        :show-footer="true"
+        size="auto"
+      >
         
-        <view
-          v-if="dialogAction === 'edit'"
-          un-flex="~"
-          un-gap="x-2"
-        ><#
-          if (!hasReviewed) {
-          #>
+        <template #trigger>
           <tm-button
-            v-if="permit('audit_pass', '审核通过') &&
-              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
-            "
-            block
-            @click="operationDrawerShow = false; onAuditPass();"
-          >
-            审核通过
-          </tm-button>
-
-          <tm-button
-            v-if="permit('audit_pass', '审核通过') &&
-              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
-            "
-            block
-            disabled
-          >
-            已审核
-          </tm-button><#
-          }
-          #>
-          
-          <tm-button
-            v-if="permit('audit_reject', '审核拒绝') &&
-              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
-            "
-            block
-            color="danger"
-            @click="operationDrawerShow = false; onAuditReject();"
-          >
-            审核拒绝
-          </tm-button>
-          
-          <tm-button
-            v-if="permit('audit_submit', '审核提交') &&
-              (
-                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
-                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
-              )
-            "
-            block
-            @click="operationDrawerShow = false; onAuditSubmit();"
-          >
-            审核提交
-          </tm-button><#
-          if (opts?.audit?.hasReverse) {
-          #>
-          
-          <tm-button
-            v-if="permit('audit_reverse', '反审核') &&
-              (
-                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
-                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
-                if (hasReviewed) {
-                #> ||
-                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
-                }
-                #>
-              )
-            "
-            block
-            color="warn"
-            @click="operationDrawerShow = false; onAuditReverse();"
-          >
-            反审核
-          </tm-button><#
-          }
-          #><#
-          if (hasReviewed) {
-          #>
-          
-          <tm-button
-            v-if="permit('audit_review', '复核') &&
-              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
-            "
-            block
-            @click="operationDrawerShow = false; onAuditReview();"
-          >
-            复核
-          </tm-button><#
-          }
-          #><#
-          if (hasReviewed) {
-          #>
-          
-          <tm-button
-            v-if="permit('audit_review', '复核') &&
-              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
-              !permit('audit_reverse', '反审核')
-            "
-            block
-            disabled
-          >
-            已复核
-          </tm-button><#
-          }
-          #>
-          
-        </view>
-        
-        <CustomDivider
-          v-if="dialogAction === 'edit'"
-          :show-text="false"
-          un-p="y-0 x-0"
-        ></CustomDivider><#
-        }
-        #>
-        
-        <view
-          v-if="dialogAction === 'edit'"
-          un-flex="~"
-          un-gap="x-2"
-        ><#
-          if (opts.noCopy !== true) {
-          #>
-          
-          <tm-button
-            v-if="permit('add', '新增')"
             block
             color="info"
-            @click="operationDrawerShow = false; onCopy();"
+            @click="operationDrawerShow = true"
           >
-            复制
-          </tm-button><#
-          }
-          #><#
-          if (!opts.noEdit) {
+            <view
+              un-flex="~"
+              un-justify="center"
+              un-items="center"
+            >
+              
+              <view>
+                操作
+              </view>
+              
+              <view
+                un-i="iconfont-caret_top"
+              ></view>
+              
+            </view>
+          </tm-button>
+        </template>
+        
+        <template #footer>
+          <tm-button
+            block
+            color="info"
+            @click="operationDrawerShow = false;"
+          >
+            <view
+              un-flex="~"
+              un-justify="center"
+              un-items="center"
+              un-gap="x-1"
+            >
+              
+              <view>
+                关闭
+              </view>
+              
+              <view
+                un-i="iconfont-caret_bottom"
+              ></view>
+              
+            </view>
+          </tm-button>
+        </template>
+        
+        <view
+          un-p="4"
+          un-box-border
+          un-w="full"
+          un-flex="~ col"
+          un-gap="y-4"
+        ><#
+          if (hasAudit) {
           #>
           
-          <tm-button
-            v-if="permit('edit', '编辑')"
-            :disabled="!inited || is_form_hydrating"
-            block
-            @click="operationDrawerShow = false; formRef?.submit();"
-          >
-            编辑
-          </tm-button><#
+          <view
+            v-if="dialogAction === 'edit'"
+            un-flex="~"
+            un-gap="x-2"
+          ><#
+            if (!hasReviewed) {
+            #>
+
+            <tm-button
+              v-if="permit('audit_pass', '审核通过') &&
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+              "
+              block
+              disabled
+            >
+              已审核
+            </tm-button><#
+            }
+            #>
+            
+            <tm-button
+              v-if="permit('audit_reject', '审核拒绝') &&
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
+              "
+              block
+              color="danger"
+              @click="operationDrawerShow = false; onAuditReject();"
+            >
+              审核拒绝
+            </tm-button>
+            
+            <tm-button
+              v-if="permit('audit_submit', '审核提交') &&
+                (
+                  <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
+                  <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
+                )
+              "
+              block
+              @click="operationDrawerShow = false; onAuditSubmit();"
+            >
+              审核提交
+            </tm-button><#
+            if (hasReviewed) {
+            #>
+            
+            <tm-button
+              v-if="permit('audit_pass', '审核通过') &&
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+              "
+              block
+              color="success"
+              @click="operationDrawerShow = false; onAuditPass();"
+            >
+              审核通过
+            </tm-button><#
+            }
+            #><#
+            if (opts?.audit?.hasReverse) {
+            #>
+            
+            <tm-button
+              v-if="permit('audit_reverse', '反审核') &&
+                (
+                  <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
+                  <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
+                  if (hasReviewed) {
+                  #> ||
+                  <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
+                  }
+                  #>
+                )
+              "
+              block
+              color="warn"
+              @click="operationDrawerShow = false; onAuditReverse();"
+            >
+              反审核
+            </tm-button><#
+            }
+            #><#
+            if (hasReviewed) {
+            #>
+            
+            <tm-button
+              v-if="permit('audit_review', '复核') &&
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+              "
+              block
+              @click="operationDrawerShow = false; onAuditReview();"
+            >
+              复核
+            </tm-button><#
+            }
+            #><#
+            if (hasReviewed) {
+            #>
+            
+            <tm-button
+              v-if="permit('audit_review', '复核') &&
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
+                !permit('audit_reverse', '反审核')
+              "
+              block
+              disabled
+            >
+              已复核
+            </tm-button><#
+            }
+            #>
+            
+          </view>
+          
+          <CustomDivider
+            v-if="dialogAction === 'edit'"
+            :show-text="false"
+            un-p="y-0 x-0"
+          ></CustomDivider><#
           }
           #>
+          
+          <view
+            v-if="dialogAction === 'edit'"
+            un-flex="~"
+            un-gap="x-2"
+          ><#
+            if (opts.noCopy !== true) {
+            #>
+            
+            <tm-button
+              v-if="permit('add', '新增') && <#=table#>_id"
+              block
+              color="info"
+              @click="operationDrawerShow = false; onCopy();"
+            >
+              复制
+            </tm-button><#
+            }
+            #><#
+            if (!opts.noEdit) {
+            #>
+            
+            <tm-button
+              v-if="permit('edit', '编辑')"
+              :disabled="!inited || is_form_hydrating"
+              block
+              @click="operationDrawerShow = false; formRef?.submit();"
+            >
+              编辑
+            </tm-button><#
+            }
+            #>
+            
+          </view>
+          
+          <CustomDivider
+            v-if="dialogAction === 'edit'"
+            :show-text="false"
+            un-p="y-0 x-0"
+          ></CustomDivider>
+          
+          <template
+            v-if="dialogAction === 'copy' || dialogAction === 'add'"
+          ><#
+            if (!opts.noAdd) {
+            #>
+            
+            <tm-button
+              v-if="permit('add', '新增')"
+              :disabled="!inited || is_form_hydrating"
+              block
+              @click="operationDrawerShow = false; formRef?.submit();"
+            >
+              新增
+            </tm-button><#
+            }
+            #>
+            
+          </template>
+            
+          <CustomDivider
+            v-if="dialogAction === 'copy' || dialogAction === 'add'"
+            :show-text="false"
+            un-p="y-0 x-0"
+          ></CustomDivider>
           
         </view>
         
-        <CustomDivider
-          v-if="dialogAction === 'edit'"
-          :show-text="false"
-          un-p="y-0 x-0"
-        ></CustomDivider>
-        
-        <template
-          v-if="dialogAction === 'copy' || dialogAction === 'add'"
-        ><#
-          if (!opts.noAdd) {
-          #>
-          
-          <tm-button
-            v-if="permit('add', '新增')"
-            :disabled="!inited || is_form_hydrating"
-            block
-            @click="operationDrawerShow = false; formRef?.submit();"
-          >
-            新增
-          </tm-button><#
-          }
-          #>
-          
-        </template>
-          
-        <CustomDivider
-          v-if="dialogAction === 'copy' || dialogAction === 'add'"
-          :show-text="false"
-          un-p="y-0 x-0"
-        ></CustomDivider>
-        
-      </view>
-      
-    </tm-drawer>
+      </tm-drawer>
+    </view>
     
   </view><#
   }
@@ -1615,6 +1749,7 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {<#
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
     if (column.noDetail) continue;
+    if (column.autoCode) continue;
     if (column_name === "id") continue;
     if (column_name === "is_locked") continue;
     if (column_name === "is_deleted") continue;
@@ -1728,6 +1863,10 @@ const hasOperationButtons = $computed(() => {
         <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
         <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
       )
+    ) return true;
+    if (
+      permit('audit_pass') &&
+      <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
     ) return true;<#
       if (opts?.audit?.hasReverse) {
       #>
@@ -2088,7 +2227,13 @@ async function onRefresh() {
       );
       <#=table#>_input = {
         ...<#=table#>_input,
-        ...getMergedInputPatch(),
+        ...getMergedInputPatch(),<#
+        if (hasAudit) {
+        #>
+        audit: <#=Table_Up#>Audit.Unsubmited,
+        audit_lbl: "待提交",<#
+        }
+        #>
       };<#
       if (hasOrderBy) {
       #>
@@ -2168,15 +2313,14 @@ const <#=table#>_detail_modal_ref = $ref<InstanceType<typeof <#=Table_Up#>Detail
 async function onAdd<#=Table_Up#>() {
   
   if (
-    !inited || !<#=table#>_detail_modal_ref ||
-    !<#=oldTable#>_model
+    !inited || !<#=table#>_detail_modal_ref
   ) {
     return;
   }
   
   let order_by = 1;
-  if ((<#=oldTable#>_model.<#=inline_column_name#>?.length || 0) > 0) {
-    const max_order_by = Math.max(...<#=oldTable#>_model.<#=inline_column_name#>.map((it) => it.order_by || 0));
+  if ((<#=oldTable#>_input.<#=inline_column_name#>?.length || 0) > 0) {
+    const max_order_by = Math.max(...<#=oldTable#>_input.<#=inline_column_name#>?.map((it) => it.order_by || 0) || [ ]);
     order_by = max_order_by + 1;
   }
   
@@ -2185,7 +2329,38 @@ async function onAdd<#=Table_Up#>() {
     title: "新增 <#=inlineForeignTab.label#>",
     model: {
       order_by,
-    },
+    },<#
+    if (hasInlineForeignTabs) {
+    #>
+    hideFields: [<#
+      for (const inlineForeignTab of inlineForeignTabs) {
+        const table = inlineForeignTab.table;
+        const mod = inlineForeignTab.mod;
+        const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
+        const Table_Up = tableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
+        const inline_column_name = inlineForeignTab.column_name;
+        const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+        const inlineForeignColumns = inlineForeignSchema.columns;
+        const inlineForeignOrgIdColumn = inlineForeignColumns.find((item) => item.COLUMN_NAME === "org_id");
+        const inlineForeignHasOrgId = !!inlineForeignOrgIdColumn;
+        const inlineForeignHasOrgIdLbl = !!inlineForeignOrgIdColumn?.modelLabel;
+      #>
+      "<#=inlineForeignTab.column#>",<#
+      }
+      #><#
+      if (hasOrgId) {
+      #>
+      "org_id",<#
+      }
+      #>
+      "order_by",
+    ],
+    hasCloseBtn: true,<#
+    }
+    #>
   });
   
   if (res.type === "cancel") {
@@ -2197,13 +2372,74 @@ async function onAdd<#=Table_Up#>() {
   <#=oldTable#>_input.<#=inline_column_name#> = <#=oldTable#>_input.<#=inline_column_name#> || [ ];
   <#=oldTable#>_input.<#=inline_column_name#>.push(input);
   
-  <#=oldTable#>_model.<#=inline_column_name#>.push({
-    ...input,
+  <#=oldTable#>_input.<#=inline_column_name#>.push({
+    ...input,<#
+    if (hasOrgId) {
+    #>
+    org_id: <#=oldTable#>_input.org_id,<#
+    }
+    #>
     is_deleted: 0,
   } as <#=Table_Up#>Model);
   
-  <#=oldTable#>_model.<#=inline_column_name#>.sort((a, b) => (a.order_by || 0) - (b.order_by || 0));
-  <#=oldTable#>_input = intoInput<#=oldTable_Up#>(<#=oldTable#>_model);
+  <#=oldTable#>_input.<#=inline_column_name#>.sort((a, b) => (a.order_by || 0) - (b.order_by || 0));
+  <#=oldTable#>_input = intoInput<#=oldTable_Up#>(<#=oldTable#>_input);
+  
+}
+
+/** 复制 */
+async function onCopy<#=Table_Up#>() {
+  
+  if (
+    !inited || !<#=table#>_detail_modal_ref
+  ) {
+    return;
+  }
+  
+  if (index_selected_<#=table#>.length > 1) {
+    uni.showToast({
+      title: "只能单选 <#=inlineForeignTab.label#>",
+      icon: "none",
+    });
+    return;
+  }
+  if (index_selected_<#=table#>.length === 0) {
+    uni.showToast({
+      title: "请选择要复制的 <#=inlineForeignTab.label#>",
+      icon: "none",
+    });
+    return;
+  }
+  
+  const index = index_selected_<#=table#>[0];
+  const sourceItem = <#=oldTable#>_input.<#=inline_column_name#>?.[index] as <#=Table_Up#>Model | undefined;
+  if (!sourceItem) {
+    return;
+  }
+  
+  let order_by = 1;
+  if ((<#=oldTable#>_input.<#=inline_column_name#>?.length || 0) > 0) {
+    const max_order_by = Math.max(...<#=oldTable#>_input.<#=inline_column_name#>?.map((it) => it.order_by || 0) || [ ]);
+    order_by = max_order_by + 1;
+  }
+  
+  const copiedItem = {
+    ...sourceItem,
+    id: undefined,
+    order_by,<#
+    if (hasOrgId) {
+    #>
+    org_id: <#=oldTable#>_input.org_id,<#
+    }
+    #>
+    is_deleted: 0,
+  } as <#=Table_Up#>Input;
+  
+  <#=oldTable#>_input.<#=inline_column_name#> = <#=oldTable#>_input.<#=inline_column_name#> || [ ];
+  <#=oldTable#>_input.<#=inline_column_name#>.splice(index + 1, 0, copiedItem);
+  
+  <#=oldTable#>_input.<#=inline_column_name#>.sort((a, b) => (a.order_by || 0) - (b.order_by || 0));
+  <#=oldTable#>_input = intoInput<#=oldTable_Up#>(<#=oldTable#>_input);
   
 }
 
@@ -2211,8 +2447,7 @@ async function onAdd<#=Table_Up#>() {
 async function onEdit<#=Table_Up#>() {
   
   if (
-    !inited || !<#=table#>_detail_modal_ref ||
-    !<#=oldTable#>_model
+    !inited || !<#=table#>_detail_modal_ref
   ) {
     return;
   }
@@ -2242,8 +2477,28 @@ async function onEdit<#=Table_Up#>() {
       sort?: Sort[],
       opt?: GqlOpt,
     ): Promise<<#=Table_Up#>Model | undefined> {
-      return <#=oldTable#>_model?.<#=inline_column_name#>?.[index] as <#=Table_Up#>Model | undefined;
-    },
+      return <#=oldTable#>_input.<#=inline_column_name#>?.[index] as <#=Table_Up#>Model | undefined;
+    },<#
+    if (hasInlineForeignTabs) {
+      let inlineForeignTabColumnNames = inlineForeignTabs.map((tab) => tab.column);
+      inlineForeignTabColumnNames = Array.from(new Set(inlineForeignTabColumnNames));
+    #>
+    hideFields: [<#
+      for (const inlineForeignTabColumnName of inlineForeignTabColumnNames) {
+      #>
+      "<#=inlineForeignTabColumnName#>",<#
+      }
+      #><#
+      if (hasOrgId) {
+      #>
+      "org_id",<#
+      }
+      #>
+      "order_by",
+    ],
+    hasCloseBtn: true<#
+    }
+    #>
   });
   
   if (res.type === "cancel") {
@@ -2255,10 +2510,10 @@ async function onEdit<#=Table_Up#>() {
   <#=oldTable#>_input.<#=inline_column_name#> = <#=oldTable#>_input.<#=inline_column_name#> || [ ];
   <#=oldTable#>_input.<#=inline_column_name#>.splice(index, 1, input);
   
-  if (<#=oldTable#>_model && <#=oldTable#>_model.<#=inline_column_name#>) {
-    Object.assign(<#=oldTable#>_model.<#=inline_column_name#>[index], input);
-    <#=oldTable#>_model.<#=inline_column_name#>.sort((a, b) => (a.order_by || 0) - (b.order_by || 0));
-    <#=oldTable#>_input = intoInput<#=oldTable_Up#>(<#=oldTable#>_model);
+  if (<#=oldTable#>_input.<#=inline_column_name#>) {
+    Object.assign(<#=oldTable#>_input.<#=inline_column_name#>[index], input);
+    <#=oldTable#>_input.<#=inline_column_name#>.sort((a, b) => (a.order_by || 0) - (b.order_by || 0));
+    <#=oldTable#>_input = intoInput<#=oldTable_Up#>(<#=oldTable#>_input);
   }
   
 }<#
@@ -2289,6 +2544,14 @@ watch(
 }
 #>
 
+async function onCancel() {
+  if (props.closeBtnFn) {
+    await props.closeBtnFn();
+  } else {
+    await uni.navigateBack();
+  }
+}
+
 async function initFrame() {
   await onRefresh();
   inited = true;
@@ -2309,6 +2572,9 @@ const props = withDefaults(
     order_by?: number;<#
     }
     #>
+    hideFields?: string[];
+    hasCloseBtn?: boolean;
+    closeBtnFn?: () => Promise<void> | void;
   }>(),
   {
     init: true,
@@ -2323,6 +2589,9 @@ const props = withDefaults(
     order_by: undefined,<#
     }
     #>
+    hideFields: undefined,
+    hasCloseBtn: undefined,
+    closeBtnFn: undefined,
   },
 );
 
@@ -2366,7 +2635,7 @@ watch(
 
 onLoad(async function(query?: AnyObject) {
   const <#=table#>_id_str = query?.<#=table#>_id;
-  const action = query?.action;
+  const action = props.action || query?.action;
   const input_patch = query?.input_patch;
   const back_after_save = query?.back_after_save;
   if (action === "add") {

@@ -2899,7 +2899,7 @@ if (searchByKeyword) {
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import Detail from "./Detail.vue";<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
