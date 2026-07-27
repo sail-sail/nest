@@ -812,7 +812,7 @@ export function getPagePathMessage() {
 export async function getDefaultInputMessage() {
   const usrStore = useUsrStore();
   const defaultInput: MessageInput = {
-    channel: "pc",
+    channel: "sys",
     is_sys_msg: 0,
     is_pinned: 0,
     org_id: usrStore.loginInfo?.org_id,
