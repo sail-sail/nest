@@ -230,7 +230,6 @@
           >
             <el-table
               ref="dyn_page_fieldRef"
-              un-m="t-2"
               size="small"
               height="100%"
               :data="dyn_page_fieldData"
