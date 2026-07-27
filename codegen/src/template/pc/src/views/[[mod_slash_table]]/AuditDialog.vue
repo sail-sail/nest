@@ -147,7 +147,7 @@ if (hasAudit) {
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import {
   getPagePath<#=Table_Up#>,
   auditReject<#=Table_Up#>,

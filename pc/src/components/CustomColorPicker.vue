@@ -50,7 +50,7 @@
 </template>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 
 const props = withDefaults(
   defineProps<{

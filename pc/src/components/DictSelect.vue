@@ -240,7 +240,7 @@
 ></DictDetailDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   OptionType,
 } from "element-plus/es/components/select-v2/src/select.types";

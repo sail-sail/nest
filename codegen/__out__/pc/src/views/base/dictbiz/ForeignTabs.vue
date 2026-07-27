@@ -76,7 +76,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 
 import DictbizDetailList from "@/views/base/dictbiz_detail/List.vue";
 

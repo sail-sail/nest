@@ -112,7 +112,7 @@ const foreignTabsDialogType = columns.find((item) => item.foreignTabs?.length > 
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor><#
+<script lang="ts" setup><#
 for (let ic = 0; ic < columns.length; ic++) {
   const column = columns[ic];
   if (!column.foreignTabs) continue;
