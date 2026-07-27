@@ -1459,7 +1459,6 @@ for (let i = 0; i < columns.length; i++) {
           >
             <el-table
               ref="<#=inline_column_name#>Ref"
-              un-m="t-2"
               size="small"
               height="100%"
               :data="<#=inline_column_name#>Data"
@@ -1486,7 +1485,6 @@ for (let i = 0; i < columns.length; i++) {
                 if (column.ignoreCodegen) continue;
                 if (column.onlyCodegenDeno) continue;
                 if (column.noDetail) continue;
-                if (column.isAtt) continue;
                 const column_name = column.COLUMN_NAME;
                 if (column_name === "id") continue;
                 if (column_name === "is_deleted") continue;
@@ -1562,7 +1560,26 @@ for (let i = 0; i < columns.length; i++) {
               >
                 <template #default="{ row }">
                   <template v-if="row._type !== 'add'"><#
-                    if (column.isImg) {
+                    if (column.isIcon) {
+                    #>
+                    <CustomIcon
+                      v-model="row.<#=column_name#>"
+                      v-model:model-label="row.<#=column_name#>_lbl"<#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
+                      }
+                      #>
+                      :page-inited="inited"
+                    ></CustomIcon><#
+                    } else if (column.isImg) {
                     #>
                     <UploadImage
                       v-model="row.<#=column_name#>"
@@ -1597,7 +1614,7 @@ for (let i = 0; i < columns.length; i++) {
                       #>
                       :readonly="isLocked || isReadonly<#
                         if (hasIsSys && opts.sys_fields?.includes(column_name)) {
-                        #> || !!dialogModel.is_sys<#
+                        #> || !!row.is_sys<#
                         }
                         #>"<#
                       }
@@ -1606,6 +1623,43 @@ for (let i = 0; i < columns.length; i++) {
                       :item-height="48"
                       un-justify="center"
                     ></UploadImage><#
+                    } else if (column.isAtt) {
+                    #>
+                    <LinkAtt
+                      v-model="row.<#=column_name#>"<#
+                      if (column.attMaxSize > 1) {
+                      #>
+                      :max-size="<#=column.attMaxSize#>"<#
+                      }
+                      #><#
+                      if (column.maxFileSize) {
+                      #>
+                      :maxFileSize="<#=column.maxFileSize#>"<#
+                      }
+                      #><#
+                      if (column.attAccept) {
+                      #>
+                      accept="<#=column.attAccept#>"<#
+                      }
+                      #><#
+                      if (column.isPublicAtt) {
+                      #>
+                      :is-public="true"<#
+                      } else {
+                      #>
+                      :is-public="false"<#
+                      }
+                      #><#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly"<#
+                      }
+                      #>
+                      un-m="l-1"
+                    ></LinkAtt><#
                     } else if (
                       foreignKey
                       && (foreignKey.selectType === "select" || foreignKey.selectType == null)

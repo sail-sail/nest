@@ -169,7 +169,6 @@
           >
             <el-table
               ref="dict_detailRef"
-              un-m="t-2"
               size="small"
               height="100%"
               :data="dict_detailData"
