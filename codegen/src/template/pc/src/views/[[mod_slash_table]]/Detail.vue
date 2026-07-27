@@ -8595,7 +8595,9 @@ if (hasBpm) {
 watch(
   () => dialogModel.<#=bpmStatusField#>,
   (val) => {
-    if (val === "draft") {
+    if (!val) {
+      isLocked = false;
+    } else if (val === "draft") {
       isLocked = false;
     } else {
       isLocked = true;
