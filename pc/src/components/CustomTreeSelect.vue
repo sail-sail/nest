@@ -140,7 +140,7 @@
 </template>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   TreeNode,
 } from "element-plus";

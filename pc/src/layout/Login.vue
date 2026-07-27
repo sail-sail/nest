@@ -108,7 +108,7 @@
 </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import {
   lang,
 } from "@/locales/index.ts";

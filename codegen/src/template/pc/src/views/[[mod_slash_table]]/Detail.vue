@@ -4277,7 +4277,7 @@ for (let i = 0; i < columns.length; i++) {
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import type {
   MaybeRefOrGetter,
   WatchStopHandle,

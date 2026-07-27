@@ -134,7 +134,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 </template>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import {
   useFormItem,
 } from "element-plus";

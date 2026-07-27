@@ -115,7 +115,7 @@
 </template>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 const emit = defineEmits<{
   (e: "update:modelValue", value?: string[]): void,
   (e: "change", value?: string[]): void,

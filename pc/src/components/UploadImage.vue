@@ -234,7 +234,7 @@
 </Teleport>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import Sortable from "sortablejs";
 
 import type {
