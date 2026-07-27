@@ -10,6 +10,7 @@ use generated::common::context::{
 use wx_pay_sdk::{Amount, Jsapi, Payer, SceneInfo, WxPay, WxPayData};
 
 use smol_str::{SmolStr, ToSmolStr};
+use generated::common::context::id_to_smolstr;
 
 use super::pay_transactions_jsapi_model::RequestPaymentOptions;
 
@@ -65,7 +66,7 @@ use num_traits::ToPrimitive;
 
 /// 生成商户订单号 out_trade_no
 fn get_out_trade_no() -> String {
-  get_short_uuid()
+  id_to_smolstr(&get_short_uuid())
     .replace("+", "-")
     .replace("/", "_")
     .replace("=", "")

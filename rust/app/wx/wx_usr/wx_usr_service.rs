@@ -15,7 +15,10 @@ use super::wx_usr_model::{
   Code2sessionModel,
 };
 
-use generated::common::usr::usr_model::LoginModel;
+use generated::common::usr::usr_model::{
+  LoginModel,
+  GetLoginInfoorgIdModel,
+};
 
 // wx_app
 use generated::wx::wx_app::wx_app_model::WxAppSearch;
@@ -62,6 +65,7 @@ use generated::base::login_log::login_log_model::{
 // role
 use generated::base::role::role_dao::{
   find_all_role,
+  find_by_ids_role,
 };
 
 // base_org
@@ -274,11 +278,30 @@ pub async fn code2session(
     ).await?,
   ).await?;
   
-  let username = usr_model.username;
-  let org_ids =  usr_model.org_ids;
+  let lbl = usr_model.lbl.clone();
+  let username = usr_model.username.clone();
+  let role_ids = usr_model.role_ids.clone();
+  let org_ids = usr_model.org_ids.clone();
+  let org_ids_lbl = usr_model.org_ids_lbl.clone();
+  let default_org_id = usr_model.default_org_id.clone();
+
+  let role_models = find_by_ids_role(role_ids, None).await?;
+  let role_codes = role_models
+    .into_iter()
+    .map(|item| item.code)
+    .collect::<Vec<_>>();
+
+  let org_id_models: Vec<GetLoginInfoorgIdModel> = org_ids
+    .iter()
+    .zip(org_ids_lbl.iter())
+    .map(|(id, lbl)| GetLoginInfoorgIdModel {
+      id: id.clone(),
+      lbl: lbl.clone(),
+    })
+    .collect();
   
-  let org_id: Option<OrgId> = if !usr_model.default_org_id.is_empty() {
-    Some(usr_model.default_org_id)
+  let org_id: Option<OrgId> = if !default_org_id.is_empty() {
+    Some(default_org_id)
   } else {
     org_ids.first().cloned()
   };
@@ -314,10 +337,13 @@ pub async fn code2session(
   
   Ok(LoginModel {
     usr_id,
+    lbl,
     username,
+    role_codes,
     tenant_id,
-    org_id,
     authorization,
+    org_id,
+    org_id_models,
     lang: lang.unwrap_or(SmolStr::new("zh-CN")),
   })
 }

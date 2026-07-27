@@ -5,6 +5,7 @@ use generated::common::context::{
   Options,
   get_req_id,
   get_short_uuid,
+  id_to_smolstr,
 };
 use wx_pay_sdk::{Refund, RefundAmount, RefundStatus, WxPay};
 
@@ -190,7 +191,7 @@ pub async fn refund(
     notify_url: refund_notify_url.as_str(),
   };
 
-  let out_refund_no = get_short_uuid()
+  let out_refund_no = id_to_smolstr(&get_short_uuid())
     .replace("+", "-")
     .replace("/", "_")
     .replace("=", "");
