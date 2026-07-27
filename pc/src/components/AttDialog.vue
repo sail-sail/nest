@@ -279,7 +279,7 @@
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import { filesize } from "filesize";
 
 import {

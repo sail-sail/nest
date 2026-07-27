@@ -205,7 +205,7 @@
   </div>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import { usePage } from "@/compositions/List";
 import { query } from "@/utils/graphql";
 import { markMessageReceiverAsRead } from "@/views/base/message/Api2";

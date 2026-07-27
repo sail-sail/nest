@@ -72,7 +72,7 @@
 </template>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import Decimal from "decimal.js";
 
 const emit = defineEmits<{

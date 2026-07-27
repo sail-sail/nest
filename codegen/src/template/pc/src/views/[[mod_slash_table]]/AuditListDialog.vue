@@ -146,7 +146,7 @@ if (hasAudit) {
 </CustomDialog>
 </template>
 
-<script lang="ts" setup vapor>
+<script lang="ts" setup>
 import {
   findAll<#=auditTable_Up#>,
 } from "../<#=auditTable#>/Api.ts";
