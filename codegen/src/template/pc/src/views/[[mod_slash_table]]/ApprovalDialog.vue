@@ -245,7 +245,6 @@ for (let i = 0; i < columns.length; i++) {
       <el-button
         plain
         type="danger"
-        :loading="submitting"
         @click="onReject"
       >
         <template #icon>
@@ -256,8 +255,7 @@ for (let i = 0; i < columns.length; i++) {
       
       <el-button
         plain
-        type="success"
-        :loading="submitting"
+        type="primary"
         @click="onApprove"
       >
         <template #icon>
@@ -293,7 +291,6 @@ type OnCloseResolveType = {
 const customDialogRef = $(useTemplateRef("customDialogRef"));
 const formRef = $(useTemplateRef("formRef"));
 
-let submitting = $ref(false);
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 let formModel = $ref<{
@@ -331,7 +328,7 @@ async function submit(action: TaskAction) {
     ElMessage.warning("缺少业务单 ID");
     return;
   }
-
+  
   if (action === TaskAction.Reject) {
     if (!formModel.opinion?.trim()) {
       ElMessage.warning("请填写 审批意见");
@@ -341,23 +338,16 @@ async function submit(action: TaskAction) {
   
   const opinion = formModel.opinion?.trim() || undefined;
   const add_sign_usr_ids = formModel.add_sign_usr_ids?.length ? formModel.add_sign_usr_ids : undefined;
-
-  submitting = true;
-  try {
-    await completeTask<#=Table_Up#>(
-      currentId,
-      action,
-      opinion,
-      add_sign_usr_ids,
-    );
-
-    ElMessage.success(action === TaskAction.Approve ? "审批通过" : "已拒绝");
-    onCloseResolve({ type: "ok" });
-  } catch (err) {
-    ElMessage.error(String(err));
-  } finally {
-    submitting = false;
-  }
+  
+  await completeTask<#=Table_Up#>(
+    currentId,
+    action,
+    opinion,
+    add_sign_usr_ids,
+  );
+  
+  ElMessage.success(action === TaskAction.Approve ? "审批通过" : "已拒绝");
+  onCloseResolve({ type: "ok" });
 }
 
 async function onApprove() {
