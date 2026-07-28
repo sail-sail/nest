@@ -1769,7 +1769,7 @@ async function onLockByIds(is_locked: number) {
     if (is_locked === 1) {
       msg = `锁定 ${ num } 小程序设置 成功`;
     } else {
-      msg = `解锋 ${ num } 小程序设置 成功`;
+      msg = `解锁 ${ num } 小程序设置 成功`;
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);

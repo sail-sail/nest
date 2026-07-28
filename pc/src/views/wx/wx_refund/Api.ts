@@ -367,7 +367,7 @@ export function useExportExcelWxRefund() {
     try {
       const data = await query({
         query: `
-          query($search: WxRefundSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxRefundSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxRefund(search: $search, page: $page, sort: $sort) {
               ${ wxRefundQueryField }
             }

@@ -668,7 +668,7 @@ export function useExportExcelWxoApp() {
     try {
       const data = await query({
         query: `
-          query($search: WxoAppSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxoAppSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxoApp(search: $search, page: $page, sort: $sort) {
               ${ wxoAppQueryField }
             }

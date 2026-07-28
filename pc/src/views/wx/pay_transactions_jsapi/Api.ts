@@ -351,7 +351,7 @@ export function useExportExcelPayTransactionsJsapi() {
     try {
       const data = await query({
         query: `
-          query($search: PayTransactionsJsapiSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: PayTransactionsJsapiSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllPayTransactionsJsapi(search: $search, page: $page, sort: $sort) {
               ${ payTransactionsJsapiQueryField }
             }

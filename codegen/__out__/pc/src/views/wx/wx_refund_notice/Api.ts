@@ -345,7 +345,7 @@ export function useExportExcelWxRefundNotice() {
     try {
       const data = await query({
         query: `
-          query($search: WxRefundNoticeSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxRefundNoticeSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxRefundNotice(search: $search, page: $page, sort: $sort) {
               ${ wxRefundNoticeQueryField }
             }

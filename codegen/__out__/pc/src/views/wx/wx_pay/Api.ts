@@ -597,7 +597,7 @@ export function useExportExcelWxPay() {
     try {
       const data = await query({
         query: `
-          query($search: WxPaySearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxPaySearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxPay(search: $search, page: $page, sort: $sort) {
               ${ wxPayQueryField }
             }

@@ -359,7 +359,7 @@ export function useExportExcelWxPayNotice() {
     try {
       const data = await query({
         query: `
-          query($search: WxPayNoticeSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxPayNoticeSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxPayNotice(search: $search, page: $page, sort: $sort) {
               ${ wxPayNoticeQueryField }
             }
