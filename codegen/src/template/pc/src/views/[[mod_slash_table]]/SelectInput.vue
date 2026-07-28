@@ -151,7 +151,7 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[]): void,
+  (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | ""): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: <#=modelName#> | <#=modelName#>[]): void,
   (e: "clear"): void,
@@ -300,6 +300,9 @@ async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
   }
   const <#=table#>_models = await findByIds<#=Table_Up#>(
     ids,
+    {
+      notLoading: true,
+    },
   );
   return <#=table#>_models;
 }
@@ -345,7 +348,7 @@ async function refreshInputValue() {
 
 async function onClear(e?: PointerEvent) {
   e?.stopPropagation();
-  modelValue = undefined;
+  modelValue = "";
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);

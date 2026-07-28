@@ -125,7 +125,7 @@ import {
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: RoleId | RoleId[]): void,
+  (e: "update:modelValue", value?: RoleId | RoleId[] | ""): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: RoleModel | RoleModel[]): void,
   (e: "clear"): void,
@@ -261,6 +261,9 @@ async function getModelsByIds(ids: RoleId[]) {
   }
   const role_models = await findByIdsRole(
     ids,
+    {
+      notLoading: true,
+    },
   );
   return role_models;
 }
@@ -306,7 +309,7 @@ async function refreshInputValue() {
 
 async function onClear(e?: PointerEvent) {
   e?.stopPropagation();
-  modelValue = undefined;
+  modelValue = "";
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
