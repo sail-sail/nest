@@ -230,10 +230,9 @@ export async function updateByIdMenu(
   input: MenuInput,
 ): Promise<MenuId> {
   
-  intoInputMenu(input);
-  
   const {
     setIdByLblMenu,
+    validateMenu,
     updateByIdMenu,
   } = await import("./menu.service.ts");
   
@@ -243,7 +242,11 @@ export async function updateByIdMenu(
   
   set_is_tran(true);
   
+  intoInputMenu(input);
+  
   await setIdByLblMenu(input);
+  
+  await validateMenu(input);
   
   await usePermit(
     getPagePathMenu(),

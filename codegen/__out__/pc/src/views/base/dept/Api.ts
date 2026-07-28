@@ -745,7 +745,7 @@ export function useExportExcelDept() {
     try {
       const data = await query({
         query: `
-          query($search: DeptSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDept(search: $search, page: $page, sort: $sort) {
               ${ deptQueryField }
             }

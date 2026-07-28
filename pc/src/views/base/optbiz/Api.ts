@@ -581,7 +581,7 @@ export function useExportExcelOptbiz() {
     try {
       const data = await query({
         query: `
-          query($search: OptbizSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: OptbizSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllOptbiz(search: $search, page: $page, sort: $sort) {
               ${ optbizQueryField }
             }

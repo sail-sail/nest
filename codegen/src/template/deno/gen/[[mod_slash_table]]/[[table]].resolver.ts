@@ -726,10 +726,9 @@ export async function updateById<#=Table_Up2#>(
   input: <#=inputName#>,
 ): Promise<<#=Table_Up#>Id> {
   
-  intoInput<#=Table_Up#>(input);
-  
   const {
     setIdByLbl<#=Table_Up2#>,
+    validate<#=Table_Up2#>,
     updateById<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
@@ -745,7 +744,11 @@ export async function updateById<#=Table_Up2#>(
   
   set_is_tran(true);
   
+  intoInput<#=Table_Up#>(input);
+  
   await setIdByLbl<#=Table_Up2#>(input);
+  
+  await validate<#=Table_Up2#>(input);
   
   await usePermit(
     getPagePath<#=Table_Up#>(),

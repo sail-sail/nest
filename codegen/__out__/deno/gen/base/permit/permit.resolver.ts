@@ -176,10 +176,9 @@ export async function updateByIdPermit(
   input: PermitInput,
 ): Promise<PermitId> {
   
-  intoInputPermit(input);
-  
   const {
     setIdByLblPermit,
+    validatePermit,
     updateByIdPermit,
   } = await import("./permit.service.ts");
   
@@ -189,7 +188,11 @@ export async function updateByIdPermit(
   
   set_is_tran(true);
   
+  intoInputPermit(input);
+  
   await setIdByLblPermit(input);
+  
+  await validatePermit(input);
   
   await usePermit(
     getPagePathPermit(),

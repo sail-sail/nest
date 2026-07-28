@@ -218,10 +218,9 @@ export async function updateByIdDict(
   input: DictInput,
 ): Promise<DictId> {
   
-  intoInputDict(input);
-  
   const {
     setIdByLblDict,
+    validateDict,
     updateByIdDict,
   } = await import("./dict.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdDict(
   
   set_is_tran(true);
   
+  intoInputDict(input);
+  
   await setIdByLblDict(input);
+  
+  await validateDict(input);
   
   await usePermit(
     getPagePathDict(),

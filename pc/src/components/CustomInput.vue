@@ -235,7 +235,7 @@ defineExpose({
   .custom_input_readonly_content {
     text-align: left;
   }
-  :deep(el-input__inner) {
+  :deep(.el-input__inner) {
     text-align: left;
   }
 }

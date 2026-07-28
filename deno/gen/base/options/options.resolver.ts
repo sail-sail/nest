@@ -218,10 +218,9 @@ export async function updateByIdOptions(
   input: OptionsInput,
 ): Promise<OptionsId> {
   
-  intoInputOptions(input);
-  
   const {
     setIdByLblOptions,
+    validateOptions,
     updateByIdOptions,
   } = await import("./options.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdOptions(
   
   set_is_tran(true);
   
+  intoInputOptions(input);
+  
   await setIdByLblOptions(input);
+  
+  await validateOptions(input);
   
   await usePermit(
     getPagePathOptions(),

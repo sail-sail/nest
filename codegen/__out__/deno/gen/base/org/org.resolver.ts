@@ -218,10 +218,9 @@ export async function updateByIdOrg(
   input: OrgInput,
 ): Promise<OrgId> {
   
-  intoInputOrg(input);
-  
   const {
     setIdByLblOrg,
+    validateOrg,
     updateByIdOrg,
   } = await import("./org.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdOrg(
   
   set_is_tran(true);
   
+  intoInputOrg(input);
+  
   await setIdByLblOrg(input);
+  
+  await validateOrg(input);
   
   await usePermit(
     getPagePathOrg(),

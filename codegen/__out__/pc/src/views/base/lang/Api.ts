@@ -546,7 +546,7 @@ export function useExportExcelLang() {
     try {
       const data = await query({
         query: `
-          query($search: LangSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllLang(search: $search, page: $page, sort: $sort) {
               ${ langQueryField }
             }

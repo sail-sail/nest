@@ -247,10 +247,9 @@ export async function updateByIdMessage(
   input: MessageInput,
 ): Promise<MessageId> {
   
-  intoInputMessage(input);
-  
   const {
     setIdByLblMessage,
+    validateMessage,
     updateByIdMessage,
   } = await import("./message.service.ts");
   
@@ -260,7 +259,11 @@ export async function updateByIdMessage(
   
   set_is_tran(true);
   
+  intoInputMessage(input);
+  
   await setIdByLblMessage(input);
+  
+  await validateMessage(input);
   
   await usePermit(
     getPagePathMessage(),

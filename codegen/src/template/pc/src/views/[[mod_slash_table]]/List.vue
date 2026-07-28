@@ -5772,7 +5772,7 @@ async function onLockByIds(is_locked: number) {
       msg = await nsAsync("解锁 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));<#
       } else {
       #>
-      msg = `解锋 ${ num } <#=table_comment#> 成功`;<#
+      msg = `解锁 ${ num } <#=table_comment#> 成功`;<#
       }
       #>
     }

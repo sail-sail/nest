@@ -218,10 +218,9 @@ export async function updateByIdIcon(
   input: IconInput,
 ): Promise<IconId> {
   
-  intoInputIcon(input);
-  
   const {
     setIdByLblIcon,
+    validateIcon,
     updateByIdIcon,
   } = await import("./icon.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdIcon(
   
   set_is_tran(true);
   
+  intoInputIcon(input);
+  
   await setIdByLblIcon(input);
+  
+  await validateIcon(input);
   
   await usePermit(
     getPagePathIcon(),

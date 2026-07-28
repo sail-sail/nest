@@ -218,10 +218,9 @@ export async function updateByIdMessageReceiver(
   input: MessageReceiverInput,
 ): Promise<MessageReceiverId> {
   
-  intoInputMessageReceiver(input);
-  
   const {
     setIdByLblMessageReceiver,
+    validateMessageReceiver,
     updateByIdMessageReceiver,
   } = await import("./message_receiver.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdMessageReceiver(
   
   set_is_tran(true);
   
+  intoInputMessageReceiver(input);
+  
   await setIdByLblMessageReceiver(input);
+  
+  await validateMessageReceiver(input);
   
   await usePermit(
     getPagePathMessageReceiver(),

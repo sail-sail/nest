@@ -808,7 +808,7 @@ export function useExportExcelRole() {
     try {
       const data = await query({
         query: `
-          query($search: RoleSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllRole(search: $search, page: $page, sort: $sort) {
               ${ roleQueryField }
             }

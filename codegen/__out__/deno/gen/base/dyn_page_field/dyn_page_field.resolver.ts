@@ -218,10 +218,9 @@ export async function updateByIdDynPageField(
   input: DynPageFieldInput,
 ): Promise<DynPageFieldId> {
   
-  intoInputDynPageField(input);
-  
   const {
     setIdByLblDynPageField,
+    validateDynPageField,
     updateByIdDynPageField,
   } = await import("./dyn_page_field.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdDynPageField(
   
   set_is_tran(true);
   
+  intoInputDynPageField(input);
+  
   await setIdByLblDynPageField(input);
+  
+  await validateDynPageField(input);
   
   await usePermit(
     getPagePathDynPageField(),

@@ -218,10 +218,9 @@ export async function updateByIdTenant(
   input: TenantInput,
 ): Promise<TenantId> {
   
-  intoInputTenant(input);
-  
   const {
     setIdByLblTenant,
+    validateTenant,
     updateByIdTenant,
   } = await import("./tenant.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdTenant(
   
   set_is_tran(true);
   
+  intoInputTenant(input);
+  
   await setIdByLblTenant(input);
+  
+  await validateTenant(input);
   
   await usePermit(
     getPagePathTenant(),

@@ -261,10 +261,9 @@ export async function updateByIdUsr(
   input: UsrInput,
 ): Promise<UsrId> {
   
-  intoInputUsr(input);
-  
   const {
     setIdByLblUsr,
+    validateUsr,
     updateByIdUsr,
   } = await import("./usr.service.ts");
   
@@ -274,7 +273,11 @@ export async function updateByIdUsr(
   
   set_is_tran(true);
   
+  intoInputUsr(input);
+  
   await setIdByLblUsr(input);
+  
+  await validateUsr(input);
   
   await usePermit(
     getPagePathUsr(),
