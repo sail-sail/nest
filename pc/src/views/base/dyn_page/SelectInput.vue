@@ -261,6 +261,9 @@ async function getModelsByIds(ids: DynPageId[]) {
   }
   const dyn_page_models = await findByIdsDynPage(
     ids,
+    {
+      notLoading: true,
+    },
   );
   return dyn_page_models;
 }

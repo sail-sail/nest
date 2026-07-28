@@ -261,6 +261,9 @@ async function getModelsByIds(ids: DeptId[]) {
   }
   const dept_models = await findByIdsDept(
     ids,
+    {
+      notLoading: true,
+    },
   );
   return dept_models;
 }
