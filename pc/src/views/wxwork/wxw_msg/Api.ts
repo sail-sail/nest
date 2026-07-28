@@ -452,7 +452,7 @@ export function useExportExcelWxwMsg() {
     try {
       const data = await query({
         query: `
-          query($search: WxwMsgSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: WxwMsgSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxwMsg(search: $search, page: $page, sort: $sort) {
               ${ wxwMsgQueryField }
             }
