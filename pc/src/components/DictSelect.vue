@@ -585,8 +585,8 @@ function getSelectInputWidth() {
     return 0;
   }
   const wrapper = selectDivRef.querySelector(".el-select__wrapper") as HTMLDivElement | null | undefined;
-  const width = wrapper?.getBoundingClientRect().width || selectDivRef.getBoundingClientRect().width;
-  return Math.ceil(width);
+  const width = wrapper?.getBoundingClientRect().width ?? selectDivRef.getBoundingClientRect().width;
+  return Math.ceil(width || 0);
 }
 
 function getDropdownMeasureTexts() {

@@ -648,7 +648,7 @@ export function useExportExcelMessage() {
     try {
       const data = await query({
         query: `
-          query($search: MessageSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: MessageSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllMessage(search: $search, page: $page, sort: $sort) {
               ${ messageQueryField }
             }

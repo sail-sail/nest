@@ -577,7 +577,7 @@ export function useExportExcelDomain() {
     try {
       const data = await query({
         query: `
-          query($search: DomainSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: DomainSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDomain(search: $search, page: $page, sort: $sort) {
               ${ domainQueryField }
             }

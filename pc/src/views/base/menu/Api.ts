@@ -644,7 +644,7 @@ export function useExportExcelMenu() {
     try {
       const data = await query({
         query: `
-          query($search: MenuSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllMenu(search: $search, page: $page, sort: $sort) {
               ${ menuQueryField }
             }
