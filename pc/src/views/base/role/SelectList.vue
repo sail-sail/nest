@@ -154,6 +154,9 @@ function selectedIdsChg(value: RoleId[]) {
 async function getModelsByIds(ids: RoleId[]) {
   const role_models = await findByIdsRole(
     ids,
+    {
+      notLoading: true,
+    },
   );
   return role_models;
 }
