@@ -387,7 +387,7 @@ fn cleanup_old_log_files(
 }
 
 fn main() -> Result<(), std::io::Error> {
-  let runtime = tokio::runtime::Builder::new_multi_thread()
+  let runtime = tokio::runtime::Builder::new_current_thread()
     .enable_all()
     .thread_stack_size(TOKIO_THREAD_STACK_SIZE)
     .build()

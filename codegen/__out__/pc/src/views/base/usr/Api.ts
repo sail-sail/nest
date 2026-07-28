@@ -790,7 +790,7 @@ export function useExportExcelUsr() {
     try {
       const data = await query({
         query: `
-          query($search: UsrSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllUsr(search: $search, page: $page, sort: $sort) {
               ${ usrQueryField }
             }

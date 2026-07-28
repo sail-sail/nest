@@ -551,7 +551,7 @@ export function useExportExcelIcon() {
     try {
       const data = await query({
         query: `
-          query($search: IconSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: IconSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllIcon(search: $search, page: $page, sort: $sort) {
               ${ iconQueryField }
             }

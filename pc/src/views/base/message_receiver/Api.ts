@@ -678,7 +678,7 @@ export function useExportExcelMessageReceiver() {
     try {
       const data = await query({
         query: `
-          query($search: MessageReceiverSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: MessageReceiverSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllMessageReceiver(search: $search, page: $page, sort: $sort) {
               ${ messageReceiverQueryField }
             }

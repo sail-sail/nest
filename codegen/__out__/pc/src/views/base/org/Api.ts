@@ -574,7 +574,7 @@ export function useExportExcelOrg() {
     try {
       const data = await query({
         query: `
-          query($search: OrgSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllOrg(search: $search, page: $page, sort: $sort) {
               ${ orgQueryField }
             }

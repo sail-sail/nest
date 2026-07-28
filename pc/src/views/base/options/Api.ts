@@ -581,7 +581,7 @@ export function useExportExcelOptions() {
     try {
       const data = await query({
         query: `
-          query($search: OptionsSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: OptionsSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllOptions(search: $search, page: $page, sort: $sort) {
               ${ optionsQueryField }
             }

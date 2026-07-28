@@ -642,7 +642,7 @@ export function useExportExcelI18n() {
     try {
       const data = await query({
         query: `
-          query($search: I18nSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: I18nSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllI18n(search: $search, page: $page, sort: $sort) {
               ${ i18nQueryField }
             }
