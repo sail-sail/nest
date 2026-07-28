@@ -648,7 +648,7 @@ export function useExportExcelMessage() {
     try {
       const data = await query({
         query: `
-          query($search: MessageSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: MessageSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllMessage(search: $search, page: $page, sort: $sort) {
               ${ messageQueryField }
             }
@@ -812,7 +812,7 @@ export function getPagePathMessage() {
 export async function getDefaultInputMessage() {
   const usrStore = useUsrStore();
   const defaultInput: MessageInput = {
-    channel: "pc",
+    channel: "sys",
     is_sys_msg: 0,
     is_pinned: 0,
     org_id: usrStore.loginInfo?.org_id,

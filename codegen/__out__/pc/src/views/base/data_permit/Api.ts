@@ -602,7 +602,7 @@ export function useExportExcelDataPermit() {
     try {
       const data = await query({
         query: `
-          query($search: DataPermitSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDataPermit(search: $search, page: $page, sort: $sort) {
               ${ dataPermitQueryField }
             }

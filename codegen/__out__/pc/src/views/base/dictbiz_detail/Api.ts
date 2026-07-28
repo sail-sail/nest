@@ -600,7 +600,7 @@ export function useExportExcelDictbizDetail() {
     try {
       const data = await query({
         query: `
-          query($search: DictbizDetailSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: DictbizDetailSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDictbizDetail(search: $search, page: $page, sort: $sort) {
               ${ dictbizDetailQueryField }
             }

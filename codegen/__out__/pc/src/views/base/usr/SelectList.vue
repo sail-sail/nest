@@ -154,6 +154,9 @@ function selectedIdsChg(value: UsrId[]) {
 async function getModelsByIds(ids: UsrId[]) {
   const usr_models = await findByIdsUsr(
     ids,
+    {
+      notLoading: true,
+    },
   );
   return usr_models;
 }
