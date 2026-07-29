@@ -7,7 +7,6 @@
     "howardzuo.vscode-npm-dependency",
     "ibm.output-colorizer",
     "rust-lang.rust-analyzer",
-    "swellaby.vscode-rust-test-adapter",
     "hdevalke.rust-test-lens",
     "vadimcn.vscode-lldb",
     "tamasfe.even-better-toml",
