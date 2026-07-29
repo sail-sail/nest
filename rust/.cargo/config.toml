@@ -4,7 +4,7 @@
 auto-clean-frequency = "3 month"
 
 [target.x86_64-unknown-linux-gnu]
-rustflags = ["-C", "link-arg=-Wl,-z,stack-size=31457280"]
+rustflags = ["-C", "link-arg=-Wl,-z,stack-size=8388608"]
 
 [target.x86_64-unknown-linux-musl]
 linker = "rust-lld"
@@ -13,11 +13,11 @@ rustflags = [
   "-C",
   "link-arg=-z",
   "-C",
-  "link-arg=stack-size=31457280",
+  "link-arg=stack-size=8388608",
 ]
 
 [target.x86_64-pc-windows-msvc]
-rustflags = ["-C", "link-arg=/STACK:31457280"]
+rustflags = ["-C", "link-arg=/STACK:8388608"]
 
 [unstable]
 gc = true
