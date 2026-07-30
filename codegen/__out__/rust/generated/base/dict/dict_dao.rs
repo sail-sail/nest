@@ -2729,7 +2729,7 @@ pub async fn delete_by_ids_dict(
   
   del_cache_dict().await?;
   
-  let old_models = find_by_ids_ok_dict(
+  let old_models = find_by_ids_dict(
     ids.clone(),
     options,
   ).await?;

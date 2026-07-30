@@ -1868,7 +1868,7 @@ pub async fn delete_by_ids_permit(
   
   del_cache_permit().await?;
   
-  let old_models = find_by_ids_ok_permit(
+  let old_models = find_by_ids_permit(
     ids.clone(),
     options,
   ).await?;

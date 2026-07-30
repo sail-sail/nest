@@ -2911,7 +2911,7 @@ pub async fn delete_by_ids_menu(
   
   del_cache_menu().await?;
   
-  let old_models = find_by_ids_ok_menu(
+  let old_models = find_by_ids_menu(
     ids.clone(),
     options,
   ).await?;

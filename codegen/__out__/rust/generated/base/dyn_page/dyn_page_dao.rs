@@ -2729,7 +2729,7 @@ pub async fn delete_by_ids_dyn_page(
   
   del_cache_dyn_page().await?;
   
-  let old_models = find_by_ids_ok_dyn_page(
+  let old_models = find_by_ids_dyn_page(
     ids.clone(),
     options,
   ).await?;

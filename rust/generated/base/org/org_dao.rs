@@ -2555,7 +2555,7 @@ pub async fn delete_by_ids_org(
   
   del_cache_org().await?;
   
-  let old_models = find_by_ids_ok_org(
+  let old_models = find_by_ids_org(
     ids.clone(),
     options,
   ).await?;

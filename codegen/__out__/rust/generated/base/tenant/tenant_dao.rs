@@ -3317,7 +3317,7 @@ pub async fn delete_by_ids_tenant(
   
   del_cache_tenant().await?;
   
-  let old_models = find_by_ids_ok_tenant(
+  let old_models = find_by_ids_tenant(
     ids.clone(),
     options,
   ).await?;

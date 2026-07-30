@@ -3,6 +3,10 @@
 # This does not remove build artifacts under target/; use `cargo clean` for that.
 auto-clean-frequency = "3 month"
 
+[target.x86_64-unknown-linux-gnu]
+rustflags = ["-C", "link-arg=-Wl,-z,stack-size=8388608"]
+
+[target.x86_64-unknown-linux-musl]
 linker = "rust-lld"
 rustflags = [
   "-Clinker-flavor=ld.lld",
@@ -11,6 +15,9 @@ rustflags = [
   "-C",
   "link-arg=stack-size=8388608",
 ]
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "link-arg=/STACK:8388608"]
 
 [unstable]
 gc = true

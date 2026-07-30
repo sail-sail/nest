@@ -2504,7 +2504,7 @@ pub async fn delete_by_ids_domain(
   
   del_cache_domain().await?;
   
-  let old_models = find_by_ids_ok_domain(
+  let old_models = find_by_ids_domain(
     ids.clone(),
     options,
   ).await?;

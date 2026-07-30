@@ -2460,7 +2460,7 @@ pub async fn delete_by_ids_lang(
   
   del_cache_lang().await?;
   
-  let old_models = find_by_ids_ok_lang(
+  let old_models = find_by_ids_lang(
     ids.clone(),
     options,
   ).await?;

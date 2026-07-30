@@ -2542,7 +2542,7 @@ pub async fn delete_by_ids_icon(
   
   del_cache_icon().await?;
   
-  let old_models = find_by_ids_ok_icon(
+  let old_models = find_by_ids_icon(
     ids.clone(),
     options,
   ).await?;
