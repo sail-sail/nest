@@ -228,6 +228,13 @@ pub async fn update_tenant_by_id_usr(
   Ok(num)
 }
 
+fn should_sync_usr_lbl(
+  old_lbl: &str,
+  new_lbl: Option<&str>,
+) -> bool {
+  new_lbl.is_some_and(|lbl| lbl != old_lbl)
+}
+
 /// 根据 usr_id 修改用户
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id_usr(
@@ -246,7 +253,17 @@ pub async fn update_by_id_usr(
     return Err(eyre!(err_msg));
   }
   
-  let is_sync_usr_lbl = usr_input.lbl.is_some();
+  let old_model = usr_dao::find_by_id_ok_usr(
+    usr_id,
+    options,
+  ).await?;
+  
+  let old_lbl = old_model.lbl;
+  
+  let is_sync_usr_lbl = should_sync_usr_lbl(
+    &old_lbl,
+    usr_input.lbl.as_deref(),
+  );
   
   let usr_id = usr_dao::update_by_id_usr(
     usr_id,

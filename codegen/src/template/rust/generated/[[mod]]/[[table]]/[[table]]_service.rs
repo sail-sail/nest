@@ -741,6 +741,17 @@ pub async fn update_tenant_by_id_<#=table#>(
   Ok(num)
 }<#
 }
+#><#
+if (mod === "base" && table === "usr") {
+#>
+
+fn should_sync_usr_lbl(
+  old_lbl: &str,
+  new_lbl: Option<&str>,
+) -> bool {
+  new_lbl.is_some_and(|lbl| lbl != old_lbl)
+}<#
+}
 #>
 
 /// 根据 <#=table#>_id 修改<#=table_comment#>
@@ -848,7 +859,17 @@ pub async fn update_by_id_<#=table#>(
   if (mod === "base" && table === "usr") {
   #>
   
-  let is_sync_usr_lbl = <#=table#>_input.lbl.is_some();<#
+  let old_model = <#=table#>_dao::find_by_id_ok_<#=table#>(
+    <#=table#>_id,
+    options,
+  ).await?;
+  
+  let old_lbl = old_model.lbl;
+  
+  let is_sync_usr_lbl = should_sync_usr_lbl(
+    &old_lbl,
+    usr_input.lbl.as_deref(),
+  );<#
   }
   #>
   
