@@ -2292,7 +2292,7 @@ pub async fn delete_by_ids_login_log(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_models = find_by_ids_ok_login_log(
+  let old_models = find_by_ids_login_log(
     ids.clone(),
     options,
   ).await?;

@@ -2517,7 +2517,7 @@ pub async fn delete_by_ids_i18n(
   
   del_cache_i18n().await?;
   
-  let old_models = find_by_ids_ok_i18n(
+  let old_models = find_by_ids_i18n(
     ids.clone(),
     options,
   ).await?;

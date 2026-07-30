@@ -8508,7 +8508,7 @@ pub async fn delete_by_ids_<#=table#>(
   }
   #>
   
-  let old_models = find_by_ids_ok_<#=table#>(
+  let old_models = find_by_ids_<#=table#>(
     ids.clone(),
     options,
   ).await?;

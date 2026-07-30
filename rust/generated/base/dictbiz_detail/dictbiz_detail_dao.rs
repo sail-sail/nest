@@ -2638,7 +2638,7 @@ pub async fn delete_by_ids_dictbiz_detail(
   
   del_cache_dictbiz_detail().await?;
   
-  let old_models = find_by_ids_ok_dictbiz_detail(
+  let old_models = find_by_ids_dictbiz_detail(
     ids.clone(),
     options,
   ).await?;

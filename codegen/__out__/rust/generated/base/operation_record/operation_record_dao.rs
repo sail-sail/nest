@@ -2228,7 +2228,7 @@ pub async fn delete_by_ids_operation_record(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_models = find_by_ids_ok_operation_record(
+  let old_models = find_by_ids_operation_record(
     ids.clone(),
     options,
   ).await?;
