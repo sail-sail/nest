@@ -1,12 +1,19 @@
-rust 静态链接:
 ```bash
+# wsl 中安装 rustup
+rustup target add x86_64-unknown-linux-musl
+cargo build --release --target=x86_64-unknown-linux-musl
 
-# wsl中安装rustup
-  rustup target add x86_64-unknown-linux-musl
-  cargo build --release --target=x86_64-unknown-linux-musl
+# windows 中安装 rg
+winget install BurntSushi.ripgrep.MSVC
 
-# windows中安装 rg
-  winget install BurntSushi.ripgrep.MSVC
+# windows 中安装 sccache
+winget install Mozilla.sccache
+
+# linux 中安装 sccache, 先装 cargo-binstall
+curl -L --proto '=https' --tlsv1.2 -sSf \
+https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+cargo binstall sccache -y
 ```
 
 ## 换工程名字

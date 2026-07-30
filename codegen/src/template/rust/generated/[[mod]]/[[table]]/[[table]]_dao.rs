@@ -3948,7 +3948,7 @@ pub async fn find_by_unique_<#=table#>(
     if !is_silent_mode && search.create_usr_id.is_none() && let Some(auth_usr_id) = get_auth_id() {
       Some(vec![auth_usr_id])
     } else {
-      search.create_usr_id.clone()
+      search.create_usr_id
     }
   };<#
   }
@@ -6360,7 +6360,7 @@ pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
   let options = Some(options);
   
   let usr_model = find_by_id_usr(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
@@ -6376,7 +6376,7 @@ pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
   #>
   
   sql_fields += "create_usr_id_lbl=case when create_usr_id=? then ? else create_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("create_usr_id=?");<#
   }
@@ -6385,7 +6385,7 @@ pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
   #>
   
   sql_fields += "update_usr_id_lbl=case when update_usr_id=? then ? else update_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("update_usr_id=?");<#
   }
@@ -6394,7 +6394,7 @@ pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
   #>
   
   sql_fields += "delete_usr_id_lbl=case when delete_usr_id=? then ? else delete_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("delete_usr_id=?");<#
   }
@@ -6406,17 +6406,17 @@ pub async fn sync_usr_lbl_by_usr_id_<#=table#>(
   if (hasCreateUsrId && hasCreateUsrIdLbl) {
   #>
   
-  args.push(usr_id.clone().into());<#
+  args.push(usr_id.into());<#
   }
   #><#
   if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
   #>
-  args.push(usr_id.clone().into());<#
+  args.push(usr_id.into());<#
   }
   #><#
   if (hasDeleteUsrId && hasDeleteUsrIdLbl) {
   #>
-  args.push(usr_id.clone().into());<#
+  args.push(usr_id.into());<#
   }
   #>
   let where_query = where_querys.join(" or ");

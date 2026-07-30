@@ -3081,7 +3081,7 @@ pub async fn sync_usr_lbl_by_usr_id_usr(
   let options = Some(options);
   
   let usr_model = find_by_id_usr(
-    usr_id.clone(),
+    usr_id,
     options,
   ).await?;
   
@@ -3095,17 +3095,17 @@ pub async fn sync_usr_lbl_by_usr_id_usr(
   let mut args = QueryArgs::new();
   
   sql_fields += "create_usr_id_lbl=case when create_usr_id=? then ? else create_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("create_usr_id=?");
   
   sql_fields += "update_usr_id_lbl=case when update_usr_id=? then ? else update_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("update_usr_id=?");
   
   sql_fields += "delete_usr_id_lbl=case when delete_usr_id=? then ? else delete_usr_id_lbl end,";
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
   args.push(usr_lbl.clone().into());
   where_querys.push("delete_usr_id=?");
   
@@ -3113,9 +3113,9 @@ pub async fn sync_usr_lbl_by_usr_id_usr(
     sql_fields.pop();
   }
   
-  args.push(usr_id.clone().into());
-  args.push(usr_id.clone().into());
-  args.push(usr_id.clone().into());
+  args.push(usr_id.into());
+  args.push(usr_id.into());
+  args.push(usr_id.into());
   let where_query = where_querys.join(" or ");
   
   let sql = format!("update {table} set {sql_fields} where {where_query}");
