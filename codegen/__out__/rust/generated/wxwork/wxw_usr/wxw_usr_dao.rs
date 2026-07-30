@@ -2834,7 +2834,7 @@ pub async fn delete_by_ids_wxw_usr(
   
   del_cache_wxw_usr().await?;
   
-  let old_models = find_by_ids_ok_wxw_usr(
+  let old_models = find_by_ids_wxw_usr(
     ids.clone(),
     options,
   ).await?;

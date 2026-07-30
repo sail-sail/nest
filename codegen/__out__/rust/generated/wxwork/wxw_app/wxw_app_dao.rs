@@ -2939,7 +2939,7 @@ pub async fn delete_by_ids_wxw_app(
   
   del_cache_wxw_app().await?;
   
-  let old_models = find_by_ids_ok_wxw_app(
+  let old_models = find_by_ids_wxw_app(
     ids.clone(),
     options,
   ).await?;

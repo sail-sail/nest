@@ -2494,7 +2494,7 @@ pub async fn delete_by_ids_wxw_msg(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_models = find_by_ids_ok_wxw_msg(
+  let old_models = find_by_ids_wxw_msg(
     ids.clone(),
     options,
   ).await?;

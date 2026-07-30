@@ -2864,7 +2864,7 @@ pub async fn delete_by_ids_wxw_app_token(
   
   del_cache_wxw_app_token().await?;
   
-  let old_models = find_by_ids_ok_wxw_app_token(
+  let old_models = find_by_ids_wxw_app_token(
     ids.clone(),
     options,
   ).await?;
