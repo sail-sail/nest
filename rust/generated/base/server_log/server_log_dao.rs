@@ -1680,7 +1680,7 @@ pub async fn delete_by_ids_server_log(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_models = find_by_ids_ok_server_log(
+  let old_models = find_by_ids_server_log(
     ids.clone(),
     options,
   ).await?;

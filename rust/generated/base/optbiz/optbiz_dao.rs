@@ -2711,7 +2711,7 @@ pub async fn delete_by_ids_optbiz(
   
   del_cache_optbiz().await?;
   
-  let old_models = find_by_ids_ok_optbiz(
+  let old_models = find_by_ids_optbiz(
     ids.clone(),
     options,
   ).await?;

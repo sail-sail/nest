@@ -2438,7 +2438,7 @@ pub async fn delete_by_ids_dyn_page_data(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_models = find_by_ids_ok_dyn_page_data(
+  let old_models = find_by_ids_dyn_page_data(
     ids.clone(),
     options,
   ).await?;

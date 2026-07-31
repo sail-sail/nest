@@ -3518,7 +3518,7 @@ pub async fn delete_by_ids_role(
   
   del_cache_role().await?;
   
-  let old_models = find_by_ids_ok_role(
+  let old_models = find_by_ids_role(
     ids.clone(),
     options,
   ).await?;

@@ -47,6 +47,7 @@
     "git.timeline.showUncommitted": true,
     "rust-analyzer.imports.group.enable": false,
     "rust-analyzer.imports.merge.glob": false,
+    "rust-analyzer.check.allTargets": false,
     "scm.defaultViewMode": "tree",
     "scm.diffDecorationsGutterPattern": {
       "added": true

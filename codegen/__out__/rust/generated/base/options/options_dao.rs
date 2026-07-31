@@ -2625,7 +2625,7 @@ pub async fn delete_by_ids_options(
   
   del_cache_options().await?;
   
-  let old_models = find_by_ids_ok_options(
+  let old_models = find_by_ids_options(
     ids.clone(),
     options,
   ).await?;

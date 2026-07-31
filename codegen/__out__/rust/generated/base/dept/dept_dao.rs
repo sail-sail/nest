@@ -3127,7 +3127,7 @@ pub async fn delete_by_ids_dept(
   
   del_cache_dept().await?;
   
-  let old_models = find_by_ids_ok_dept(
+  let old_models = find_by_ids_dept(
     ids.clone(),
     options,
   ).await?;

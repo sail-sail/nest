@@ -3620,7 +3620,7 @@ pub async fn delete_by_ids_usr(
   
   del_cache_usr().await?;
   
-  let old_models = find_by_ids_ok_usr(
+  let old_models = find_by_ids_usr(
     ids.clone(),
     options,
   ).await?;

@@ -3055,7 +3055,7 @@ pub async fn delete_by_ids_message(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_models = find_by_ids_ok_message(
+  let old_models = find_by_ids_message(
     ids.clone(),
     options,
   ).await?;

@@ -2804,7 +2804,7 @@ pub async fn delete_by_ids_dictbiz(
   
   del_cache_dictbiz().await?;
   
-  let old_models = find_by_ids_ok_dictbiz(
+  let old_models = find_by_ids_dictbiz(
     ids.clone(),
     options,
   ).await?;

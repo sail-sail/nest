@@ -2740,7 +2740,7 @@ pub async fn delete_by_ids_message_receiver(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_models = find_by_ids_ok_message_receiver(
+  let old_models = find_by_ids_message_receiver(
     ids.clone(),
     options,
   ).await?;
