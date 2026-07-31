@@ -2747,7 +2747,7 @@ pub async fn delete_by_ids_wx_app(
   
   del_cache_wx_app().await?;
   
-  let old_models = find_by_ids_ok_wx_app(
+  let old_models = find_by_ids_wx_app(
     ids.clone(),
     options,
   ).await?;

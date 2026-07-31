@@ -2924,7 +2924,7 @@ pub async fn delete_by_ids_wx_pay(
   
   del_cache_wx_pay().await?;
   
-  let old_models = find_by_ids_ok_wx_pay(
+  let old_models = find_by_ids_wx_pay(
     ids.clone(),
     options,
   ).await?;

@@ -2835,7 +2835,7 @@ pub async fn delete_by_ids_wxo_usr(
   
   del_cache_wxo_usr().await?;
   
-  let old_models = find_by_ids_ok_wxo_usr(
+  let old_models = find_by_ids_wxo_usr(
     ids.clone(),
     options,
   ).await?;

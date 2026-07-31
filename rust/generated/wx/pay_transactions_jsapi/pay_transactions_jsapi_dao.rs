@@ -2804,7 +2804,7 @@ pub async fn delete_by_ids_pay_transactions_jsapi(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_models = find_by_ids_ok_pay_transactions_jsapi(
+  let old_models = find_by_ids_pay_transactions_jsapi(
     ids.clone(),
     options,
   ).await?;

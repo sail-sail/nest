@@ -2658,7 +2658,7 @@ pub async fn delete_by_ids_wx_refund(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_models = find_by_ids_ok_wx_refund(
+  let old_models = find_by_ids_wx_refund(
     ids.clone(),
     options,
   ).await?;
