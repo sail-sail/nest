@@ -42,6 +42,7 @@ export default defineConfig({
 4. 配置菜单
 
 - 创建菜单 CSV: `src/tables/{mod}/base_menu.{mod}.sql.csv`
+- 若菜单需要按业务语义分组（如“常用业务/记录/设置”），优先参考 [create-menu/SKILL.md](../create-menu/SKILL.md)
 
 ```csv
 id,parent_id,lbl,route_path,is_home_hide,is_enabled,is_hidden,order_by
