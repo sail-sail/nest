@@ -20,6 +20,10 @@ import {
   findOneDynPage,
 } from "@/views/base/dyn_page/Api.ts";
 
+import {
+  getSelectionDiff,
+} from "./listSelection.ts";
+
 /** 初始化内置搜索条件 */
 export function initBuiltInSearch(
   props: any,
@@ -216,19 +220,29 @@ export function useSelect(
     if (!tableRef.value || !tableRef.value?.context.store.states.data.value) {
       return;
     }
-    
+
+    const data = tableRef.value.context.store.states.data.value as any[];
+    const rowKey = getRowKey();
+    if (!rowKey) {
+      return;
+    }
+
+    const nextSelectedIds = new Set<string>(selectedIds);
+    const prevSelectedIdsSet = new Set<string>(prevSelectedIds);
     const newSelectList: any[] = [ ];
     const select2falseList: any[] = [ ];
-    for (let i = 0; i < (tableRef.value.context.store.states.data.value as any).length; i++) {
-      const item = tableRef.value.context.store.states.data.value[i];
-      const rowKey = getRowKey(item);
-      if (selectedIds.includes(item[rowKey])) {
+
+    for (let i = 0; i < data.length; i++) {
+      const item = data[i];
+      const itemRowKey = item[rowKey];
+      if (nextSelectedIds.has(itemRowKey)) {
         newSelectList.push(item);
-      } else if (prevSelectedIds.includes(item[rowKey])) {
+      } else if (prevSelectedIdsSet.has(itemRowKey)) {
         select2falseList.push(item);
       }
     }
-    if (newSelectList.length > 0) {
+
+    if (newSelectList.length > 0 || select2falseList.length > 0) {
       const selectFn = function() {
         if (!tableRef.value) {
           return;
@@ -262,8 +276,12 @@ export function useSelect(
   
   const watch2Stop = watch(
     () => selectedIds,
-    (_newSelectIds, oldSelectIds) => {
+    (newSelectIds, oldSelectIds) => {
       if (!tableRef.value?.context.store.states.data.value) return;
+      const diff = getSelectionDiff(newSelectIds, oldSelectIds);
+      if (diff.add.length === 0 && diff.remove.length === 0) {
+        return;
+      }
       prevSelectedIds = oldSelectIds;
       useSelectedIds();
     },
@@ -281,13 +299,16 @@ export function useSelect(
     if (isRef(opts?.multiple) && opts?.multiple.value === false) {
       multiple = false;
     }
+
     if (!row) {
       if (list.length === 0) {
         const data = tableRef.value?.context.store.states.data.value as unknown as any[];
         if (data) {
-          selectedIds = [
-            ...selectedIds.filter((item) => !data.some((item2) => item2[rowKey] === item)),
-          ];
+          const selectedSet = new Set(selectedIds);
+          const nextIds = selectedIds.filter((item) => !data.some((item2) => item2[rowKey] === item));
+          if (nextIds.length !== selectedIds.length) {
+            selectedIds = nextIds;
+          }
         }
       } else {
         if (!multiple) {
@@ -296,10 +317,12 @@ export function useSelect(
         } else {
           const selectedIds2 = [ ...selectedIds ];
           let isSelectChange = false;
+          const selectedSet = new Set(selectedIds2);
           for (let i = 0; i < list.length; i++) {
             const item = list[i] as any;
-            if (!selectedIds2.includes(item[rowKey])) {
+            if (!selectedSet.has(item[rowKey])) {
               isSelectChange = true;
+              selectedSet.add(item[rowKey]);
               selectedIds2.push(item[rowKey]);
             }
           }
@@ -892,7 +915,8 @@ export function useSelect(
       setSelectIds([ id ]);
       return;
     }
-    const idx = tableData.findIndex((item: any) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
+    const selectedId = selectedIds[selectedIds.length - 1];
+    const idx = tableData.findIndex((item: any) => item[rowKey] === selectedId);
     if (idx === -1) {
       setSelectIds([ id ]);
       return;
@@ -904,14 +928,15 @@ export function useSelect(
     }
     const minIdx = Math.min(idx, idx2);
     const maxIdx = Math.max(idx, idx2);
-    selectedIds = tableData.slice(minIdx, maxIdx + 1).map((item) => item[rowKey]);
+    const nextIds = tableData.slice(minIdx, maxIdx + 1).map((item) => item[rowKey]);
+    setSelectIds(nextIds);
   }
   
   /**
    * 表格每一行的css样式
    * @param {{ row: T, rowIndex: number }} { row, rowIndex }
    */
-  function rowClassName({ row, rowIndex }: { row: any, rowIndex: number }) {
+  function rowClassName({ row }: { row: any }) {
     return selectedIds.includes((row as any).id) ? "table_current_row" : "";
   }
   
@@ -1225,31 +1250,37 @@ export function useTableColumns<T>(
       localStorage.removeItem(store_key);
       dyn_page_model = undefined;
     }
-    if (dyn_page_model) {
-      const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
-      if (dyn_page_field.length > 0) {
-        const dynColumns = getDynPageTableColumns(dyn_page_field);
-        tableColumns.value = mergeDynPageTableColumns(tableColumns.value, dynColumns);
-        initColumns(tableColumns.value);
+
+    const applyDynColumns = (model: DynPageModel | undefined) => {
+      const baseColumns = [ ...tableColumn0s ];
+      const dyn_page_field = (model?.dyn_page_field ?? [ ]) as DynPageFieldModel[];
+      if (dyn_page_field.length === 0) {
+        tableColumns.value = [ ...baseColumns ];
+        return;
       }
+      const dynColumns = getDynPageTableColumns(dyn_page_field);
+      tableColumns.value = mergeDynPageTableColumns(baseColumns, dynColumns);
+    };
+
+    if (dyn_page_model) {
+      applyDynColumns(dyn_page_model);
+      initColumns();
     }
+
     dyn_page_model = await findOneDynPage({
       code: routePath,
       is_enabled: [ 1 ],
     });
-    tableColumns.value = tableColumns.value.filter((item) => !item.isDynField);
     if (!dyn_page_model) {
       localStorage.removeItem(store_key);
+      applyDynColumns(undefined);
+      initColumns();
       return;
     }
+
     localStorage.setItem(store_key, JSON.stringify(dyn_page_model));
-    const dyn_page_field = (dyn_page_model.dyn_page_field ?? [ ]) as DynPageFieldModel[];
-    if (dyn_page_field.length === 0) {
-      return;
-    }
-    const dynColumns = getDynPageTableColumns(dyn_page_field);
-    tableColumns.value = mergeDynPageTableColumns(tableColumns.value, dynColumns);
-    initColumns(tableColumns.value);
+    applyDynColumns(dyn_page_model);
+    initColumns();
   }
   
   // watch(
