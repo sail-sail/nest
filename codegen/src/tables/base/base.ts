@@ -1808,6 +1808,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "org_id",
+        require: false,
       },
       {
         COLUMN_NAME: "create_usr_id",
