@@ -278,6 +278,7 @@ if (searchByKeyword) {
         && !foreignSchema.opts?.ignoreCodegen
         && !foreignSchema.opts?.onlyCodegenDeno
         && typeof opts?.list_tree !== "string"
+        && !foreignKey.isSearchByLbl
       ) {
       #>
       <template<#
@@ -332,6 +333,7 @@ if (searchByKeyword) {
         && !foreignSchema.opts?.ignoreCodegen
         && !foreignSchema.opts?.onlyCodegenDeno
         && typeof opts?.list_tree === "string"
+        && !foreignKey.isSearchByLbl
       ) {
       #>
       <template<#
@@ -4316,6 +4318,38 @@ function getDataSearch() {<#
   if (hasIsDeleted) {
   #>
   const is_deleted = search.is_deleted;<#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno) continue;
+    if (!column.search) continue;
+    const column_name = column?.COLUMN_NAME;
+    const data_type = column?.DATA_TYPE;
+    const column_type = column?.COLUMN_TYPE;
+    const column_comment = column?.COLUMN_COMMENT || "";
+    const searchDefaultValue = column?.searchDefaultValue == null
+      ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+      : column.searchDefaultValue;
+  #><#
+  if (data_type === "datetime" || data_type === "date") {
+    if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+  
+  if (!search.<#=column_name#>?.[0] || !search.<#=column_name#>?.[1]) {
+    search.<#=column_name#> = [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+      dayjs().endOf("day").format("YYYY-MM-DD"),
+    ];
+  }<#
+    }
+  #><#
+  }
+  #><#
   }
   #>
   const search2 = {

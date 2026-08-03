@@ -20,7 +20,7 @@
       <tm-form
         ref="formRef"
         v-model="dyn_page_data_input"
-        :label-width="180"
+        :label-width="140"
         :rules="form_rules"
         @submit="onSave"
       >
@@ -155,7 +155,7 @@
               block
               @click="operationDrawerShow = false; formRef?.submit();"
             >
-              编辑
+              保存
             </tm-button>
             
           </view>
@@ -176,7 +176,7 @@
               block
               @click="operationDrawerShow = false; formRef?.submit();"
             >
-              新增
+              保存
             </tm-button>
             
           </template>

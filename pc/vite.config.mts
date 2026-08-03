@@ -324,7 +324,6 @@ export default defineConfig({
     open: false,
     cors: true,
     strictPort: true,
-    forwardConsole: true,
     proxy: {
       "/api": {
         target: "http://localhost:4001",

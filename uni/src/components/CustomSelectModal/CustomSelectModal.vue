@@ -414,6 +414,10 @@ import type {
   WatchHandle,
 } from "vue";
 
+import {
+  shouldPrefetchSelectedOptions,
+} from "./prefetch.ts";
+
 type OptionType = {
   label: string;
   subLabel?: string;
@@ -653,6 +657,14 @@ const modelValueIsEmpty = computed(() => {
 });
 
 const showPicker = ref(false);
+const emptyPrefetchKeys = ref<string[]>([ ]);
+
+function getPrefetchCacheKey(modelValues: unknown[]) {
+  return modelValues
+    .map((value) => String(value))
+    .sort()
+    .join("|");
+}
 
 let refresherTriggered = $ref(false);
 let pgOffset = $ref(0);
@@ -730,22 +742,25 @@ watch(
     props.isPage,
     props.multiple,
     showPicker.value,
-    isLoading.value,
     props.method,
   ],
   async () => {
-    if (!props.isPage || showPicker.value || isLoading.value) {
-      return;
-    }
     if (typeof props.method !== "function") {
       return;
     }
     const modelValues = getNormalizedModelValues();
-    if (modelValues.length === 0) {
+    const prefetchCacheKey = getPrefetchCacheKey(modelValues);
+    if (emptyPrefetchKeys.value.includes(prefetchCacheKey)) {
       return;
     }
-    const items = data.value.filter((item) => modelValues.includes(props.optionsMap(item).value));
-    if (modelValues.length === items.length) {
+    if (!shouldPrefetchSelectedOptions({
+      isPage: props.isPage,
+      showPicker: showPicker.value,
+      isLoading: isLoading.value,
+      modelValues,
+      dataItems: data.value,
+      optionsMap: props.optionsMap,
+    })) {
       return;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -773,6 +788,9 @@ watch(
       if (!mergedData.some((existingItem) => props.optionsMap(existingItem).value === itemValue)) {
         mergedData.push(item);
       }
+    }
+    if (methodData.length === 0) {
+      emptyPrefetchKeys.value = [ ...emptyPrefetchKeys.value, prefetchCacheKey ];
     }
     data.value = mergedData;
     emit("data", data.value);
