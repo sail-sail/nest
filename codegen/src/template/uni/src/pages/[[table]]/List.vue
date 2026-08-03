@@ -1207,7 +1207,40 @@ async function onSearch() {
   await onRefresh();
 }
 
-function getSearch<#=Table_Up#>() {
+function getSearch<#=Table_Up#>() {<#
+  for (let i = 0; i < search_fields.length; i++) {
+    const search_field = search_fields[i];
+    const column = columns.find((col) => col.COLUMN_NAME === search_field);
+    if (!column && search_field !== searchByKeyword.prop) {
+      throw new Error(`表: ${ mod }_${ table } 中配置的搜索字段 ${ search_field } 在列中不存在`);
+    }
+    const column_name = column?.COLUMN_NAME;
+    const data_type = column?.DATA_TYPE;
+    const column_type = column?.COLUMN_TYPE;
+    const column_comment = column?.COLUMN_COMMENT || "";
+    const searchDefaultValue = column?.searchDefaultValue == null
+      ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
+      : column.searchDefaultValue;
+  #><#
+  if (data_type === "datetime" || data_type === "date") {
+    if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+  
+  if (!search.<#=column_name#>?.[0] || !search.<#=column_name#>?.[1]) {
+    search.<#=column_name#> = [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DD"),
+      dayjs().endOf("day").format("YYYY-MM-DD"),
+    ];
+  }<#
+    }
+  #><#
+  }
+  #><#
+  }
+  #>
   const search2: <#=Table_Up#>Search = {<#
   for (let i = 0; i < search_fields.length; i++) {
     const search_field = search_fields[i];
@@ -1246,6 +1279,7 @@ function getSearch<#=Table_Up#>() {
     
     if (data_type === "date" || data_type === "datetime" || data_type === "timestamp") {
   #>
+  
   if (search2.<#=column_name#>?.[0]) {
     search2.<#=column_name#>[0] = dayjs(search2.<#=column_name#>[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss");
   }
