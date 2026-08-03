@@ -187,7 +187,7 @@ if (right_field && !right_field_column) {
       <tm-form
         ref="formRef"
         v-model="<#=table#>_input"
-        :label-width="180"
+        :label-width="140"
         :rules="form_rules"
         @submit="onSave"
       ><#
