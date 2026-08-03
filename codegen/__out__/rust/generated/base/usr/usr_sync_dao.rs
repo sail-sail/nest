@@ -13,64 +13,6 @@ use crate::common::context::{
 
 use super::usr_model::UsrId;
 
-use crate::base::role::role_dao::sync_usr_lbl_by_usr_id_role;
-
-use crate::base::tenant::tenant_dao::sync_usr_lbl_by_usr_id_tenant;
-
-use crate::base::domain::domain_dao::sync_usr_lbl_by_usr_id_domain;
-
-use crate::base::usr::usr_dao::sync_usr_lbl_by_usr_id_usr;
-
-use crate::base::login_log::login_log_dao::sync_usr_lbl_by_usr_id_login_log;
-
-use crate::base::menu::menu_dao::sync_usr_lbl_by_usr_id_menu;
-
-use crate::base::lang::lang_dao::sync_usr_lbl_by_usr_id_lang;
-
-use crate::base::i18n::i18n_dao::sync_usr_lbl_by_usr_id_i18n;
-
-use crate::base::data_permit::data_permit_dao::sync_usr_lbl_by_usr_id_data_permit;
-
-use crate::base::options::options_dao::sync_usr_lbl_by_usr_id_options;
-
-use crate::base::optbiz::optbiz_dao::sync_usr_lbl_by_usr_id_optbiz;
-
-use crate::base::operation_record::operation_record_dao::sync_usr_lbl_by_usr_id_operation_record;
-
-use crate::base::org::org_dao::sync_usr_lbl_by_usr_id_org;
-
-use crate::base::dept::dept_dao::sync_usr_lbl_by_usr_id_dept;
-
-use crate::base::dict::dict_dao::sync_usr_lbl_by_usr_id_dict;
-
-use crate::base::dict_detail::dict_detail_dao::sync_usr_lbl_by_usr_id_dict_detail;
-
-use crate::base::dictbiz::dictbiz_dao::sync_usr_lbl_by_usr_id_dictbiz;
-
-use crate::base::dictbiz_detail::dictbiz_detail_dao::sync_usr_lbl_by_usr_id_dictbiz_detail;
-
-use crate::base::icon::icon_dao::sync_usr_lbl_by_usr_id_icon;
-
-use crate::base::dyn_page::dyn_page_dao::sync_usr_lbl_by_usr_id_dyn_page;
-
-use crate::base::dyn_page_field::dyn_page_field_dao::sync_usr_lbl_by_usr_id_dyn_page_field;
-
-use crate::base::dyn_page_val::dyn_page_val_dao::sync_usr_lbl_by_usr_id_dyn_page_val;
-
-use crate::base::dyn_page_data::dyn_page_data_dao::sync_usr_lbl_by_usr_id_dyn_page_data;
-
-use crate::base::message::message_dao::sync_usr_lbl_by_usr_id_message;
-
-use crate::base::message_receiver::message_receiver_dao::sync_usr_lbl_by_usr_id_message_receiver;
-
-use crate::wxwork::wxw_app::wxw_app_dao::sync_usr_lbl_by_usr_id_wxw_app;
-
-use crate::wxwork::wxw_app_token::wxw_app_token_dao::sync_usr_lbl_by_usr_id_wxw_app_token;
-
-use crate::wxwork::wxw_usr::wxw_usr_dao::sync_usr_lbl_by_usr_id_wxw_usr;
-
-use crate::wxwork::wxw_msg::wxw_msg_dao::sync_usr_lbl_by_usr_id_wxw_msg;
-
 /// 根据 usr_id 同步所有表中的创建人/更新人/删除人标签
 pub async fn sync_usr_lbl_by_usr_id(
   usr_id: UsrId,
@@ -100,152 +42,156 @@ pub async fn sync_usr_lbl_by_usr_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let mut num = 0;
-  
-  num += sync_usr_lbl_by_usr_id_role(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_tenant(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_domain(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_usr(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_login_log(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_menu(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_lang(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_i18n(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_data_permit(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_options(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_optbiz(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_operation_record(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_org(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dept(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dict(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dict_detail(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dictbiz(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dictbiz_detail(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_icon(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dyn_page(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dyn_page_field(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dyn_page_val(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_dyn_page_data(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_message(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_message_receiver(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_wxw_app(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_wxw_app_token(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_wxw_usr(
-    usr_id,
-    options,
-  ).await?;
-  
-  num += sync_usr_lbl_by_usr_id_wxw_msg(
-    usr_id,
-    options,
-  ).await?;
-  
+  let futures: Vec<std::pin::Pin<Box<dyn std::future::Future<Output = Result<u64>> + Send>>> = vec![
+    
+    Box::pin(crate::base::role::role_dao::sync_usr_lbl_by_usr_id_role(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::tenant::tenant_dao::sync_usr_lbl_by_usr_id_tenant(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::domain::domain_dao::sync_usr_lbl_by_usr_id_domain(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::usr::usr_dao::sync_usr_lbl_by_usr_id_usr(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::login_log::login_log_dao::sync_usr_lbl_by_usr_id_login_log(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::menu::menu_dao::sync_usr_lbl_by_usr_id_menu(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::lang::lang_dao::sync_usr_lbl_by_usr_id_lang(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::i18n::i18n_dao::sync_usr_lbl_by_usr_id_i18n(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::data_permit::data_permit_dao::sync_usr_lbl_by_usr_id_data_permit(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::options::options_dao::sync_usr_lbl_by_usr_id_options(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::optbiz::optbiz_dao::sync_usr_lbl_by_usr_id_optbiz(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::operation_record::operation_record_dao::sync_usr_lbl_by_usr_id_operation_record(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::org::org_dao::sync_usr_lbl_by_usr_id_org(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::dept::dept_dao::sync_usr_lbl_by_usr_id_dept(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::dict::dict_dao::sync_usr_lbl_by_usr_id_dict(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::dict_detail::dict_detail_dao::sync_usr_lbl_by_usr_id_dict_detail(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::dictbiz::dictbiz_dao::sync_usr_lbl_by_usr_id_dictbiz(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::dictbiz_detail::dictbiz_detail_dao::sync_usr_lbl_by_usr_id_dictbiz_detail(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::icon::icon_dao::sync_usr_lbl_by_usr_id_icon(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::dyn_page::dyn_page_dao::sync_usr_lbl_by_usr_id_dyn_page(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::dyn_page_field::dyn_page_field_dao::sync_usr_lbl_by_usr_id_dyn_page_field(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::dyn_page_val::dyn_page_val_dao::sync_usr_lbl_by_usr_id_dyn_page_val(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::dyn_page_data::dyn_page_data_dao::sync_usr_lbl_by_usr_id_dyn_page_data(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::message::message_dao::sync_usr_lbl_by_usr_id_message(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::base::message_receiver::message_receiver_dao::sync_usr_lbl_by_usr_id_message_receiver(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::wxwork::wxw_app::wxw_app_dao::sync_usr_lbl_by_usr_id_wxw_app(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::wxwork::wxw_app_token::wxw_app_token_dao::sync_usr_lbl_by_usr_id_wxw_app_token(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::wxwork::wxw_usr::wxw_usr_dao::sync_usr_lbl_by_usr_id_wxw_usr(
+      usr_id,
+      options,
+    )),
+    
+    Box::pin(crate::wxwork::wxw_msg::wxw_msg_dao::sync_usr_lbl_by_usr_id_wxw_msg(
+      usr_id,
+      options,
+    )),
+  ];
+
+  let results = futures::future::try_join_all(futures).await?;
+  let num = results.into_iter().sum::<u64>();
+
   Ok(num)
 }
