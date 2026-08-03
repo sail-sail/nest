@@ -675,6 +675,11 @@ if (right_field && !right_field_column) {
               #>
               :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
+              #><#
+              if (column.isHideZero === false) {
+              #>
+              :is-hide-zero="false"<#
+              }
               #>
             ></CustomInput>
           </tm-form-item>

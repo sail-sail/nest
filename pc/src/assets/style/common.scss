@@ -418,7 +418,8 @@ html:is(.dark) {
 .custom_switch_readonly,
 .custom_checkbox_readonly,
 .custom_tree_select_readonly,
-.upload_image_empty {
+.upload_image_empty,
+.custom_input_tag_readonly {
   color: var(--readonly_font_color);
   background-color: var(--el-fill-color-blank);
   white-space: pre-wrap;
