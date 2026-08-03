@@ -216,10 +216,28 @@ export function showUploadMsg(
  * 复制文本到剪贴板
  */
 export async function copyText(text: string) {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  const helper = document.createElement("textarea");
+  helper.value = text;
+  helper.setAttribute("readonly", "");
+  helper.style.position = "fixed";
+  helper.style.left = "-9999px";
+  helper.style.top = "-9999px";
+  document.body.appendChild(helper);
+  helper.select();
   try {
-    await navigator.clipboard.writeText(text);
-  } catch (err) {
-    console.error(err);
+    document.execCommand("copy");
+  } catch (copyErr) {
+    console.error(copyErr);
+  } finally {
+    helper.remove();
   }
 }
 
