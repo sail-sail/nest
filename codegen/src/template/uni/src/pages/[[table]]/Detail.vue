@@ -431,6 +431,12 @@ if (right_field && !right_field_column) {
           >
             <CustomDate
               v-model="<#=table#>_input.<#=column_name#>"<#
+              if (data_type === "datetime") {
+              #>
+              format="YYYY-MM-DD hh:mm:ss"
+              type="second"<#
+              }
+              #><#
               if (placeholderInForm) {
               #>
               placeholder="<#=placeholderInForm#>"<#
@@ -1537,7 +1543,7 @@ if (right_field && !right_field_column) {
               block
               @click="operationDrawerShow = false; formRef?.submit();"
             >
-              编辑
+              保存
             </tm-button><#
             }
             #>
@@ -1562,7 +1568,7 @@ if (right_field && !right_field_column) {
               block
               @click="operationDrawerShow = false; formRef?.submit();"
             >
-              新增
+              保存
             </tm-button><#
             }
             #>
