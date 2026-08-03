@@ -13,14 +13,7 @@ use crate::common::context::{
   get_req_id,
 };
 
-use super::usr_model::UsrId;<#
-for (let i = 0; i < syncTables.length; i++) {
-  const item = syncTables[i];
-#>
-
-use crate::<#=item.mod#>::<#=item.table#>::<#=item.table#>_dao::sync_usr_lbl_by_usr_id_<#=item.table#>;<#
-}
-#>
+use super::usr_model::UsrId;
 
 /// 根据 usr_id 同步所有表中的创建人/更新人/删除人标签
 pub async fn sync_usr_lbl_by_usr_id(
@@ -51,17 +44,21 @@ pub async fn sync_usr_lbl_by_usr_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let mut num = 0;<#
-for (let i = 0; i < syncTables.length; i++) {
-  const item = syncTables[i];
-#>
-  
-  num += sync_usr_lbl_by_usr_id_<#=item.table#>(
-    usr_id,
-    options,
-  ).await?;<#
-}
-#>
-  
+  let futures: Vec<std::pin::Pin<Box<dyn std::future::Future<Output = Result<u64>> + Send>>> = vec![<#
+    for (let i = 0; i < syncTables.length; i++) {
+      const item = syncTables[i];
+    #>
+    
+    Box::pin(crate::<#=item.mod#>::<#=item.table#>::<#=item.table#>_dao::sync_usr_lbl_by_usr_id_<#=item.table#>(
+      usr_id,
+      options,
+    )),<#
+    }
+    #>
+  ];
+
+  let results = futures::future::try_join_all(futures).await?;
+  let num = results.into_iter().sum::<u64>();
+
   Ok(num)
 }
