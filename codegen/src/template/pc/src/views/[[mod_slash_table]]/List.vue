@@ -278,6 +278,7 @@ if (searchByKeyword) {
         && !foreignSchema.opts?.ignoreCodegen
         && !foreignSchema.opts?.onlyCodegenDeno
         && typeof opts?.list_tree !== "string"
+        && !foreignKey.isSearchByLbl
       ) {
       #>
       <template<#
@@ -332,6 +333,7 @@ if (searchByKeyword) {
         && !foreignSchema.opts?.ignoreCodegen
         && !foreignSchema.opts?.onlyCodegenDeno
         && typeof opts?.list_tree === "string"
+        && !foreignKey.isSearchByLbl
       ) {
       #>
       <template<#
