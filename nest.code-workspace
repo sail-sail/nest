@@ -61,6 +61,25 @@
     "vue.inlayHints.destructuredProps": true,
     "vue.inlayHints.inlineHandlerLeading": false,
     "vue.inlayHints.missingProps": true,
+    "rust-analyzer.cachePriming.enable": false,
+    "rust-analyzer.check.workspace": false,
+    "rust-analyzer.procMacro.enable": false,
+    "rust-analyzer.workspace.discoverConfig": {
+      "command": [
+        "cargo-subspace",
+        "discover",
+        "{arg}"
+      ],
+      "progressLabel": "cargo-subspace",
+      "filesToWatch": [
+        "Cargo.toml"
+      ]
+    },
+    "rust-analyzer.check.overrideCommand": [
+      "cargo-subspace",
+      "check",
+      "$saved_file",
+    ],
     "rust-analyzer.checkOnSave": true,
     // "rust-analyzer.server.extraEnv": {
     //   "HTTP_PROXY": "http://127.0.0.1:7890",
