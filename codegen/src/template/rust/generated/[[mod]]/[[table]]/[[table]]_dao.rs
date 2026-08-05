@@ -776,6 +776,7 @@ for (let i = 0; i < columns.length; i++) {
   }
   modelIds.push(modelId);
 #>
+#[allow(unused_imports)]
 use crate::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=modelId#>;<#
 }
 #><#
@@ -876,21 +877,13 @@ async fn get_where_query(
   }
   #>
   {
-    let id = match search {
-      Some(item) => item.id.as_ref(),
-      None => None,
-    };
-    if let Some(id) = id {
+    if let Some(id) = search.and_then(|item| item.id) {
       where_query.push_str(" and t.id=?");
       args.push(id.into());
     }
   }
   {
-    let ids: Option<Vec<<#=Table_Up#>Id>> = match search {
-      Some(item) => item.ids.clone(),
-      None => None,
-    };
-    if let Some(ids) = ids {
+    if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
           SmolStr::new("null")
@@ -1129,11 +1122,7 @@ async fn get_where_query(
   #>
   // <#=column_comment#>
   {
-    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match search {
-      Some(item) => item.<#=column_name_rust#>.clone(),
-      None => None,
-    };
-    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
+    if let Some(<#=column_name_rust#>) = search.and_then(|item| item.<#=column_name_rust#>.as_deref()) {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
           SmolStr::new("''")
@@ -1324,11 +1313,7 @@ async fn get_where_query(
   #>
   // <#=column_comment#>
   {
-    let <#=column_name_rust#>: Option<Vec<<#=foreignTable_Up#>Id>> = match search {
-      Some(item) => item.<#=column_name_rust#>.clone(),
-      None => None,
-    };
-    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
+    if let Some(<#=column_name_rust#>) = search.and_then(|item| item.<#=column_name_rust#>.as_deref()) {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
           SmolStr::new("null")
@@ -1518,11 +1503,7 @@ async fn get_where_query(
     }<#
     if (column.searchByArray) {
     #>
-    let <#=column_name#>s: Option<Vec<<#=_data_type#>>> = match search {
-      Some(item) => item.<#=column_name#>s.clone(),
-      None => None,
-    };
-    if let Some(<#=column_name#>s) = <#=column_name#>s {
+    if let Some(<#=column_name#>s) = search.and_then(|item| item.<#=column_name#>s.as_deref()) {
       let arg = {
         if <#=column_name#>s.is_empty() {
           SmolStr::new("null")

@@ -15,7 +15,7 @@ tracing-appender = "0.2.5"
 tracing-attributes = "0.1.31"
 tokio = { version = "1.53.1", features = ["rt-multi-thread", "macros", "net", "fs"] }
 poem = { version = "3.1.12", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
-async-graphql = { version = "7.2.1", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "jiff", "smol_str", "tokio-sync", "tracing", "raw_value", "boxed-trait"], default-features = false }
+async-graphql = { version = "7.2.1", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "jiff", "smol_str", "tokio-sync", "tracing", "raw_value", "boxed-trait", "dynamic-schema"], default-features = false }
 smol_str = { version = "0.3.6", features = ["serde"] }
 slab = "0.4.12"
 chrono = { version = "0.4.45", features = ["serde"] }
@@ -44,7 +44,7 @@ redis = { version = "1.4.1", features = ["tokio-comp"], default-features = false
 bigdecimal = "0.4.10"
 time = "0.3.54"
 rust_decimal = { version = "1.42.1", features = ["maths"]}
-rust_decimal_macros = "1.40.0"
+# rust_decimal_macros = "1.40.0"
 # enum_dispatch = "0.3.13"
 # pin-project-lite = "0.2.16"
 # rayon = "1.11.0"
@@ -129,7 +129,7 @@ redis.workspace = true
 bigdecimal.workspace = true
 time.workspace = true
 rust_decimal.workspace = true
-rust_decimal_macros.workspace = true
+# rust_decimal_macros.workspace = true
 # enum_dispatch.workspace = true
 # pin-project-lite.workspace = true
 # rayon.workspace = true
