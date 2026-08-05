@@ -65,10 +65,15 @@ use crate::common::dict_detail::dict_detail_dao::get_dict;
 use super::role_model::*;
 
 use crate::base::tenant::tenant_model::TenantId;
+#[allow(unused_imports)]
 use crate::base::menu::menu_model::MenuId;
+#[allow(unused_imports)]
 use crate::base::permit::permit_model::PermitId;
+#[allow(unused_imports)]
 use crate::base::data_permit::data_permit_model::DataPermitId;
+#[allow(unused_imports)]
 use crate::base::field_permit::field_permit_model::FieldPermitId;
+#[allow(unused_imports)]
 use crate::base::usr::usr_model::UsrId;
 
 use crate::base::usr::usr_dao::find_by_id_usr;
@@ -89,21 +94,13 @@ async fn get_where_query(
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
   {
-    let id = match search {
-      Some(item) => item.id.as_ref(),
-      None => None,
-    };
-    if let Some(id) = id {
+    if let Some(id) = search.and_then(|item| item.id) {
       where_query.push_str(" and t.id=?");
       args.push(id.into());
     }
   }
   {
-    let ids: Option<Vec<RoleId>> = match search {
-      Some(item) => item.ids.clone(),
-      None => None,
-    };
-    if let Some(ids) = ids {
+    if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
           SmolStr::new("null")
@@ -187,11 +184,7 @@ async fn get_where_query(
       where_query.push_str(" and t.code=?");
       args.push(code.into());
     }
-    let codes: Option<Vec<SmolStr>> = match search {
-      Some(item) => item.codes.clone(),
-      None => None,
-    };
-    if let Some(codes) = codes {
+    if let Some(codes) = search.and_then(|item| item.codes.as_deref()) {
       let arg = {
         if codes.is_empty() {
           SmolStr::new("null")
@@ -257,11 +250,7 @@ async fn get_where_query(
   }
   // 菜单权限
   {
-    let menu_ids: Option<Vec<MenuId>> = match search {
-      Some(item) => item.menu_ids.clone(),
-      None => None,
-    };
-    if let Some(menu_ids) = menu_ids {
+    if let Some(menu_ids) = search.and_then(|item| item.menu_ids.as_deref()) {
       let arg = {
         if menu_ids.is_empty() {
           SmolStr::new("null")
@@ -300,11 +289,7 @@ async fn get_where_query(
   }
   // 按钮权限
   {
-    let permit_ids: Option<Vec<PermitId>> = match search {
-      Some(item) => item.permit_ids.clone(),
-      None => None,
-    };
-    if let Some(permit_ids) = permit_ids {
+    if let Some(permit_ids) = search.and_then(|item| item.permit_ids.as_deref()) {
       let arg = {
         if permit_ids.is_empty() {
           SmolStr::new("null")
@@ -343,11 +328,7 @@ async fn get_where_query(
   }
   // 数据权限
   {
-    let data_permit_ids: Option<Vec<DataPermitId>> = match search {
-      Some(item) => item.data_permit_ids.clone(),
-      None => None,
-    };
-    if let Some(data_permit_ids) = data_permit_ids {
+    if let Some(data_permit_ids) = search.and_then(|item| item.data_permit_ids.as_deref()) {
       let arg = {
         if data_permit_ids.is_empty() {
           SmolStr::new("null")
@@ -376,11 +357,7 @@ async fn get_where_query(
   }
   // 字段权限
   {
-    let field_permit_ids: Option<Vec<FieldPermitId>> = match search {
-      Some(item) => item.field_permit_ids.clone(),
-      None => None,
-    };
-    if let Some(field_permit_ids) = field_permit_ids {
+    if let Some(field_permit_ids) = search.and_then(|item| item.field_permit_ids.as_deref()) {
       let arg = {
         if field_permit_ids.is_empty() {
           SmolStr::new("null")
@@ -503,11 +480,7 @@ async fn get_where_query(
   }
   // 创建人
   {
-    let create_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.create_usr_id.clone(),
-      None => None,
-    };
-    if let Some(create_usr_id) = create_usr_id {
+    if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
           SmolStr::new("''")
@@ -588,11 +561,7 @@ async fn get_where_query(
   }
   // 更新人
   {
-    let update_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.update_usr_id.clone(),
-      None => None,
-    };
-    if let Some(update_usr_id) = update_usr_id {
+    if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
           SmolStr::new("''")
