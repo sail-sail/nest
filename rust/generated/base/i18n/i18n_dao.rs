@@ -55,8 +55,11 @@ use crate::common::gql::model::{
 };
 
 use super::i18n_model::*;
+#[allow(unused_imports)]
 use crate::base::lang::lang_model::LangId;
+#[allow(unused_imports)]
 use crate::base::menu::menu_model::MenuId;
+#[allow(unused_imports)]
 use crate::base::usr::usr_model::UsrId;
 
 use crate::base::usr::usr_dao::find_by_id_usr;
@@ -77,21 +80,13 @@ async fn get_where_query(
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
   {
-    let id = match search {
-      Some(item) => item.id.as_ref(),
-      None => None,
-    };
-    if let Some(id) = id {
+    if let Some(id) = search.and_then(|item| item.id) {
       where_query.push_str(" and t.id=?");
       args.push(id.into());
     }
   }
   {
-    let ids: Option<Vec<I18nId>> = match search {
-      Some(item) => item.ids.clone(),
-      None => None,
-    };
-    if let Some(ids) = ids {
+    if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
           SmolStr::new("null")
@@ -111,11 +106,7 @@ async fn get_where_query(
   }
   // 语言
   {
-    let lang_id: Option<Vec<LangId>> = match search {
-      Some(item) => item.lang_id.clone(),
-      None => None,
-    };
-    if let Some(lang_id) = lang_id {
+    if let Some(lang_id) = search.and_then(|item| item.lang_id.as_deref()) {
       let arg = {
         if lang_id.is_empty() {
           SmolStr::new("''")
@@ -177,11 +168,7 @@ async fn get_where_query(
   }
   // 菜单
   {
-    let menu_id: Option<Vec<MenuId>> = match search {
-      Some(item) => item.menu_id.clone(),
-      None => None,
-    };
-    if let Some(menu_id) = menu_id {
+    if let Some(menu_id) = search.and_then(|item| item.menu_id.as_deref()) {
       let arg = {
         if menu_id.is_empty() {
           SmolStr::new("''")
@@ -300,11 +287,7 @@ async fn get_where_query(
   }
   // 创建人
   {
-    let create_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.create_usr_id.clone(),
-      None => None,
-    };
-    if let Some(create_usr_id) = create_usr_id {
+    if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
           SmolStr::new("''")
@@ -385,11 +368,7 @@ async fn get_where_query(
   }
   // 更新人
   {
-    let update_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.update_usr_id.clone(),
-      None => None,
-    };
-    if let Some(update_usr_id) = update_usr_id {
+    if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
           SmolStr::new("''")

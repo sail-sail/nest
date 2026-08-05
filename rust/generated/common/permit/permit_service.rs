@@ -118,7 +118,7 @@ pub async fn get_usr_permits(route_path: Option<SmolStr>) -> Result<Vec<GetUsrPe
   
   let mut menu_ids = Vec::<MenuId>::new();
   for permit_model in permit_models.iter() {
-    let menu_id = permit_model.menu_id.clone();
+    let menu_id = permit_model.menu_id;
     if menu_id.is_empty() || menu_ids.contains(&menu_id) {
       continue;
     }

@@ -66,8 +66,11 @@ use crate::common::dict_detail::dict_detail_dao::get_dict;
 use super::usr_model::*;
 
 use crate::base::tenant::tenant_model::TenantId;
+#[allow(unused_imports)]
 use crate::base::role::role_model::RoleId;
+#[allow(unused_imports)]
 use crate::base::dept::dept_model::DeptId;
+#[allow(unused_imports)]
 use crate::base::org::org_model::OrgId;
 
 #[allow(unused_variables)]
@@ -86,21 +89,13 @@ async fn get_where_query(
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
   {
-    let id = match search {
-      Some(item) => item.id.as_ref(),
-      None => None,
-    };
-    if let Some(id) = id {
+    if let Some(id) = search.and_then(|item| item.id) {
       where_query.push_str(" and t.id=?");
       args.push(id.into());
     }
   }
   {
-    let ids: Option<Vec<UsrId>> = match search {
-      Some(item) => item.ids.clone(),
-      None => None,
-    };
-    if let Some(ids) = ids {
+    if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
           SmolStr::new("null")
@@ -216,11 +211,7 @@ async fn get_where_query(
   }
   // 所属角色
   {
-    let role_ids: Option<Vec<RoleId>> = match search {
-      Some(item) => item.role_ids.clone(),
-      None => None,
-    };
-    if let Some(role_ids) = role_ids {
+    if let Some(role_ids) = search.and_then(|item| item.role_ids.as_deref()) {
       let arg = {
         if role_ids.is_empty() {
           SmolStr::new("null")
@@ -283,11 +274,7 @@ async fn get_where_query(
   }
   // 所属部门
   {
-    let dept_ids: Option<Vec<DeptId>> = match search {
-      Some(item) => item.dept_ids.clone(),
-      None => None,
-    };
-    if let Some(dept_ids) = dept_ids {
+    if let Some(dept_ids) = search.and_then(|item| item.dept_ids.as_deref()) {
       let arg = {
         if dept_ids.is_empty() {
           SmolStr::new("null")
@@ -326,11 +313,7 @@ async fn get_where_query(
   }
   // 所属组织
   {
-    let org_ids: Option<Vec<OrgId>> = match search {
-      Some(item) => item.org_ids.clone(),
-      None => None,
-    };
-    if let Some(org_ids) = org_ids {
+    if let Some(org_ids) = search.and_then(|item| item.org_ids.as_deref()) {
       let arg = {
         if org_ids.is_empty() {
           SmolStr::new("null")
@@ -369,11 +352,7 @@ async fn get_where_query(
   }
   // 默认组织
   {
-    let default_org_id: Option<Vec<OrgId>> = match search {
-      Some(item) => item.default_org_id.clone(),
-      None => None,
-    };
-    if let Some(default_org_id) = default_org_id {
+    if let Some(default_org_id) = search.and_then(|item| item.default_org_id.as_deref()) {
       let arg = {
         if default_org_id.is_empty() {
           SmolStr::new("''")
@@ -543,11 +522,7 @@ async fn get_where_query(
   }
   // 创建人
   {
-    let create_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.create_usr_id.clone(),
-      None => None,
-    };
-    if let Some(create_usr_id) = create_usr_id {
+    if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
           SmolStr::new("''")
@@ -628,11 +603,7 @@ async fn get_where_query(
   }
   // 更新人
   {
-    let update_usr_id: Option<Vec<UsrId>> = match search {
-      Some(item) => item.update_usr_id.clone(),
-      None => None,
-    };
-    if let Some(update_usr_id) = update_usr_id {
+    if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
           SmolStr::new("''")
