@@ -4,10 +4,6 @@ allowBuilds:
   "@vue-office/excel": true
   core-js: true
   es5-ext: true
-  "esbuild": true
   "vue-demi": true
 minimumReleaseAgeExclude:
   - '*'
-overrides:
-  "vite": "npm:@voidzero-dev/vite-plus-core@latest"
-  "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
