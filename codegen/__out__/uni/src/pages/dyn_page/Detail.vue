@@ -20,7 +20,7 @@
       <tm-form
         ref="formRef"
         v-model="dyn_page_input"
-        :label-width="140"
+        :label-width="160"
         :rules="form_rules"
         @submit="onSave"
       >
@@ -396,7 +396,7 @@
     </view>
     
     <view
-      un-p="t-[350px]"
+      un-p="t-[300px]"
       un-box-border
     ></view>
     

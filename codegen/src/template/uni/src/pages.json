@@ -27,15 +27,18 @@
       uniPages.push({
         path: `pages/${ table_name }/List`,
         title: `${ table_comment }列表`,
+        navigationStyle: record.opts?.isUniPage?.navigationStyle,
       });
       uniPages.push({
         path: `pages/${ table_name }/Detail`,
         title: `${ table_comment }详情`,
+        navigationStyle: record.opts?.isUniPage?.navigationStyle,
       });
       if (hasForeignTabs) {
         uniPages.push({
           path: `pages/${ table_name }/ForeignTabs`,
           title: `${ table_comment }详情`,
+          navigationStyle: record.opts?.isUniPage?.navigationStyle,
         });
       }
     }
@@ -44,7 +47,12 @@
     #>
     {
       "path": "<#=page.path#>",
-      "style": {
+      "style": {<#
+        if (page.navigationStyle) {
+        #>
+        "navigationStyle": "<#=page.navigationStyle#>",<#
+        }
+        #>
         "navigationBarTitleText": "<#=page.title#>"
       }
     }<#

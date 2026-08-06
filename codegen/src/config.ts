@@ -1154,6 +1154,9 @@ export interface TablesConfigItem {
        * Detail页面中是否有查看详情弹窗, 例如被外键关联引用时, 默认为false
        */
       hasDetailModal?: boolean;
+      /** Detail.vue 中表单文本框的宽度, 默认为: 160 */
+      detailFormWidth?: number;
+      navigationStyle?: "default" | "custom";
     };
     
     /**

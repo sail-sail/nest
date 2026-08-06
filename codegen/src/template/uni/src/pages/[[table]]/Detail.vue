@@ -186,8 +186,15 @@ if (right_field && !right_field_column) {
       
       <tm-form
         ref="formRef"
-        v-model="<#=table#>_input"
-        :label-width="140"
+        v-model="<#=table#>_input"<#
+        if (opts?.isUniPage?.detailFormWidth) {
+        #>
+        :label-width="opts?.isUniPage?.detailFormWidth"<#
+        } else {
+        #>
+        :label-width="160"<#
+        }
+        #>
         :rules="form_rules"
         @submit="onSave"
       ><#
@@ -1277,7 +1284,7 @@ if (right_field && !right_field_column) {
     #>
     
     <view
-      un-p="t-[350px]"
+      un-p="t-[300px]"
       un-box-border
     ></view>
     
