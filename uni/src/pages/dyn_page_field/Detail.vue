@@ -761,6 +761,11 @@ async function onRefresh() {
         });
         return;
       }
+      const [
+        defaultInput,
+      ] = await Promise.all([
+        getDefaultInputDynPageField(),
+      ]);
       dyn_page_field_model = await findOneModel(
         {
           id: dyn_page_field_id,
@@ -783,9 +788,12 @@ async function onRefresh() {
       dyn_page_field_input = {
         ...dyn_page_field_input,
         ...getMergedInputPatch(),
+        id: undefined,
       };
       if (props.order_by) {
         dyn_page_field_input.order_by = props.order_by;
+      } else {
+        dyn_page_field_input.order_by = 1;
       }
     } else if (dialogAction === "edit" || dialogAction === "view") {
       dyn_page_field_model = await findOneModel(

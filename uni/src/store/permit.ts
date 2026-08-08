@@ -47,6 +47,9 @@ function mergePermits(permitItems: PermitItem[]) {
 }
 
 export default function() {
+  
+  const not_permit = inject("not_permit", false);
+  
   function getRoutePermitMap(route_path: string) {
     const cacheState = routePermitMap[route_path];
     if (cacheState?.loaded) {
@@ -85,7 +88,7 @@ export default function() {
     })();
 
     function permit(code: string, lbl?: string) {
-      if (usrStore.isAdmin()) {
+      if (usrStore.isAdmin() || not_permit) {
         return true;
       }
       const permitObj = getRoutePermitMap(resolvedRoutePath);
@@ -97,7 +100,7 @@ export default function() {
     }
 
     async function permitAsync(code: string, lbl?: string) {
-      if (usrStore.isAdmin()) {
+      if (usrStore.isAdmin() || not_permit) {
         return true;
       }
       const permitObj = getRoutePermitMap(resolvedRoutePath);

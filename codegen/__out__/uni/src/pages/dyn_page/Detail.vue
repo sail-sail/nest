@@ -790,6 +790,11 @@ async function onRefresh() {
         });
         return;
       }
+      const [
+        defaultInput,
+      ] = await Promise.all([
+        getDefaultInputDynPage(),
+      ]);
       dyn_page_model = await findOneModel(
         {
           id: dyn_page_id,
@@ -812,9 +817,12 @@ async function onRefresh() {
       dyn_page_input = {
         ...dyn_page_input,
         ...getMergedInputPatch(),
+        id: undefined,
       };
       if (props.order_by) {
         dyn_page_input.order_by = props.order_by;
+      } else {
+        dyn_page_input.order_by = 1;
       }
     } else if (dialogAction === "edit" || dialogAction === "view") {
       dyn_page_model = await findOneModel(
@@ -944,7 +952,9 @@ async function onCopyDynPageField() {
     order_by = max_order_by + 1;
   }
   
+  const defaultInput = await getDefaultInputDynPageField();
   const copiedItem = {
+    ...defaultInput,
     ...sourceItem,
     id: undefined,
     order_by,

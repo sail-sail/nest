@@ -399,6 +399,11 @@ async function onRefresh() {
         });
         return;
       }
+      const [
+        defaultInput,
+      ] = await Promise.all([
+        getDefaultInputDynPageData(),
+      ]);
       dyn_page_data_model = await findOneModel(
         {
           id: dyn_page_data_id,
@@ -421,6 +426,7 @@ async function onRefresh() {
       dyn_page_data_input = {
         ...dyn_page_data_input,
         ...getMergedInputPatch(),
+        id: undefined,
       };
     } else if (dialogAction === "edit" || dialogAction === "view") {
       dyn_page_data_model = await findOneModel(
