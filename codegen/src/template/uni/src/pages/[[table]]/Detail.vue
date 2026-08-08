@@ -56,6 +56,7 @@ const hasForeignTabsMore = columns.some((item) => {
 const hasForeignPage = columns.some((item) => item.foreignPage);
 const hasImg = columns.some((item) => item.isImg && !item.onlyCodegenDeno);
 const hasAtt = columns.some((item) => item.isAtt && !item.onlyCodegenDeno);
+const hasVersion = columns.some((item) => item.COLUMN_NAME === "version" && !item.onlyCodegenDeno);
 
 const searchFormWidth = opts.searchFormWidth;
 
@@ -2224,6 +2225,11 @@ async function onRefresh() {
         });
         return;
       }
+      const [
+        defaultInput,
+      ] = await Promise.all([
+        getDefaultInput<#=Table_Up#>(),
+      ]);
       <#=table#>_model = await findOneModel(
         {
           id: <#=table#>_id,
@@ -2245,7 +2251,8 @@ async function onRefresh() {
       );
       <#=table#>_input = {
         ...<#=table#>_input,
-        ...getMergedInputPatch(),<#
+        ...getMergedInputPatch(),
+        id: undefined,<#
         if (hasAudit) {
         #>
         audit: <#=Table_Up#>Audit.Unsubmited,
@@ -2253,10 +2260,55 @@ async function onRefresh() {
         }
         #>
       };<#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (column.onlyCodegenDeno) continue;
+        if (column.noDetail) continue;
+        if (column.isAtt) continue;
+        const column_name = column.COLUMN_NAME;
+        if (column_name === "id") continue;
+        if (column_name === "is_locked") continue;
+        if (column_name === "is_deleted") continue;
+        if (column_name === "version") continue;
+        if (column_name === "tenant_id") continue;
+        if (column_name === "order_by") continue;
+        if (hasAudit && column_name === auditColumn) continue;
+        if (!column.readonly) continue;
+        const bpm = opts?.bpm;
+        const isBpmField =
+          bpm?.bpm_status_field === column_name ||
+          bpm?.apply_usr_id_field === column_name ||
+          bpm?.apply_usr_id_lbl_field === column_name ||
+          bpm?.apply_time_field === column_name;
+        if (isBpmField) continue;
+      #>
+      <#=table#>_input.<#=column_name#> = defaultInput.<#=column_name#>;<#
+      }
+      #><#
+      if (hasDefault) {
+      #>
+      <#=table#>_input.is_default = undefined;
+      <#=table#>_input.is_default_lbl = undefined;<#
+      }
+      #><#
+      if (hasLocked) {
+      #>
+      <#=table#>_input.is_locked = undefined;
+      <#=table#>_input.is_locked_lbl = undefined;<#
+      }
+      #><#
+      if (hasVersion) {
+      #>
+      <#=table#>_input.version = 0;<#
+      }
+      #><#
       if (hasOrderBy) {
       #>
       if (props.order_by) {
         <#=table#>_input.order_by = props.order_by;
+      } else {
+        <#=table#>_input.order_by = 1;
       }<#
       }
       #>
@@ -2441,13 +2493,58 @@ async function onCopy<#=Table_Up#>() {
     order_by = max_order_by + 1;
   }
   
+  const defaultInput = await getDefaultInput<#=Table_Up#>();
   const copiedItem = {
+    ...defaultInput,
     ...sourceItem,
     id: undefined,
     order_by,<#
     if (hasOrgId) {
     #>
     org_id: <#=oldTable#>_input.org_id,<#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno) continue;
+      if (column.noDetail) continue;
+      if (column.isAtt) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "is_locked") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "version") continue;
+      if (column_name === "tenant_id") continue;
+      if (column_name === "order_by") continue;
+      if (hasAudit && column_name === auditColumn) continue;
+      if (!column.readonly) continue;
+      const bpm = opts?.bpm;
+      const isBpmField =
+        bpm?.bpm_status_field === column_name ||
+        bpm?.apply_usr_id_field === column_name ||
+        bpm?.apply_usr_id_lbl_field === column_name ||
+        bpm?.apply_time_field === column_name;
+      if (isBpmField) continue;
+    #>
+    <#=column_name#>: defaultInput.<#=column_name#>,<#
+    }
+    #><#
+    if (hasDefault) {
+    #>
+    is_default: undefined,
+    is_default_lbl: undefined,<#
+    }
+    #><#
+    if (hasLocked) {
+    #>
+    is_locked: undefined,
+    is_locked_lbl: undefined,<#
+    }
+    #><#
+    if (hasVersion) {
+    #>
+    version: 0,<#
     }
     #>
     is_deleted: 0,
