@@ -239,6 +239,8 @@ let order_by = $ref<number>();<#
 
 let inited = $ref(false);
 
+provide("not_permit", true);
+
 const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 const <#=table#>_detail_ref = $ref<InstanceType<typeof <#=Table_Up#>Detail>>();
 

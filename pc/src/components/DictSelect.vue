@@ -207,7 +207,6 @@
       <span
         class="dict_select_placeholder"
         un-relative
-        un-top="-0.25"
       >
         {{ props.readonlyPlaceholder ?? "" }}
       </span>
@@ -219,7 +218,6 @@
         v-if="isShowModelLabel"
         class="dict_select_readonly_span"
         un-relative
-        un-top="-0.25"
       >
         {{ props.modelLabel || "" }}
       </span>
@@ -227,7 +225,6 @@
         v-else
         class="dict_select_readonly_span"
         un-relative
-        un-top="-0.25"
       >
         {{ modelLabels[0] || "" }}
       </span>
