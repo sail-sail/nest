@@ -1166,6 +1166,7 @@ if (right_field && !right_field_column) {
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRow<#=Table_Up#>(index)"
@@ -1180,6 +1181,7 @@ if (right_field && !right_field_column) {
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRow<#=Table_Up#>(index)"
@@ -1194,6 +1196,7 @@ if (right_field && !right_field_column) {
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRow<#=Table_Up#>(index)"
@@ -1208,6 +1211,7 @@ if (right_field && !right_field_column) {
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRow<#=Table_Up#>(index)"
@@ -1222,6 +1226,7 @@ if (right_field && !right_field_column) {
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRow<#=Table_Up#>(index)"
@@ -1236,6 +1241,7 @@ if (right_field && !right_field_column) {
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRow<#=Table_Up#>(index)"
@@ -1265,6 +1271,7 @@ if (right_field && !right_field_column) {
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRow<#=Table_Up#>(index)"
@@ -2440,7 +2447,6 @@ async function onAdd<#=Table_Up#>() {
   const input = res.input;
   
   <#=oldTable#>_input.<#=inline_column_name#> = <#=oldTable#>_input.<#=inline_column_name#> || [ ];
-  <#=oldTable#>_input.<#=inline_column_name#>.push(input);
   
   <#=oldTable#>_input.<#=inline_column_name#>.push({
     ...input,<#
