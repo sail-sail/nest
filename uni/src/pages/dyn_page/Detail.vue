@@ -606,6 +606,10 @@ function getTypeLabel(type?: string | null): string {
 // 动态页面字段
 import DynPageFieldDetailModal from "@/pages/dyn_page_field/DetailModal.vue";
 
+import {
+  getDefaultInputDynPageField,
+} from "@/pages/dyn_page_field/Api.ts";
+
 const pagePath = getPagePathDynPage();
 const permitStore = usePermitStore();
 

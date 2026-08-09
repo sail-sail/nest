@@ -1746,7 +1746,11 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 // <#=inlineForeignTab.label#>
-import <#=Table_Up#>DetailModal from "@/pages/<#=table#>/DetailModal.vue";<#
+import <#=Table_Up#>DetailModal from "@/pages/<#=table#>/DetailModal.vue";
+
+import {
+  getDefaultInput<#=Table_Up#>,
+} from "@/pages/<#=table#>/Api.ts";<#
 }
 #>
 
