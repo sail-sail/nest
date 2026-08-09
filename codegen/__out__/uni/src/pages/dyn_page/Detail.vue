@@ -360,6 +360,7 @@
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRowDynPageField(index)"
@@ -372,6 +373,7 @@
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRowDynPageField(index)"
@@ -384,6 +386,7 @@
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRowDynPageField(index)"
@@ -904,7 +907,6 @@ async function onAddDynPageField() {
   const input = res.input;
   
   dyn_page_input.dyn_page_field = dyn_page_input.dyn_page_field || [ ];
-  dyn_page_input.dyn_page_field.push(input);
   
   dyn_page_input.dyn_page_field.push({
     ...input,
