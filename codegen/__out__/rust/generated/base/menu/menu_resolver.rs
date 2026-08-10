@@ -38,12 +38,6 @@ pub async fn find_all_menu(
     function_name = function_name!(),
   );
   
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });
-  
   check_sort_menu(sort.as_deref())?;
   
   let models = menu_service::find_all_menu(
@@ -69,12 +63,6 @@ pub async fn find_count_menu(
     function_name = function_name!(),
   );
   
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });
-  
   let num = menu_service::find_count_menu(
     search,
     options,
@@ -96,12 +84,6 @@ pub async fn find_one_menu(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });
   
   check_sort_menu(sort.as_deref())?;
   
@@ -127,12 +109,6 @@ pub async fn find_one_ok_menu(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });
   
   check_sort_menu(sort.as_deref())?;
   

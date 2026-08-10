@@ -52,8 +52,7 @@ const hasDict = columns.some((column) => {
   if (
     column_name === "tenant_id" ||
     column_name === "is_sys" ||
-    column_name === "is_deleted" ||
-    column_name === "is_hidden"
+    column_name === "is_deleted"
   ) return false;
   const column_comment = column.COLUMN_COMMENT || "";
   if (!column.dict) return false;
@@ -67,8 +66,7 @@ const hasDictbiz = columns.some((column) => {
   if (
     column_name === "tenant_id" ||
     column_name === "is_sys" ||
-    column_name === "is_deleted" ||
-    column_name === "is_hidden"
+    column_name === "is_deleted"
   ) return false;
   const column_comment = column.COLUMN_COMMENT || "";
   if (!column.dictbiz) return false;
@@ -85,7 +83,6 @@ const hasDictModelLabel = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   const modelLabel = column.modelLabel;
   if (modelLabel) return false;
   return column.dict;
@@ -101,7 +98,6 @@ const hasDictbizModelLabel = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   const modelLabel = column.modelLabel;
   if (modelLabel) return false;
   return column.dictbiz;
@@ -748,8 +744,7 @@ for (let i = 0; i < columns.length; i++) {
   if (
     column_name === "tenant_id" ||
     column_name === "is_sys" ||
-    column_name === "is_deleted" ||
-    column_name === "is_hidden"
+    column_name === "is_deleted"
   ) continue;
   const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
   if (column_name === 'id') continue;
@@ -1090,7 +1085,6 @@ async fn get_where_query(
     }
   #><#
     if ([
-      "is_hidden",
       "is_sys",
     ].includes(column_name)) {
   #>
@@ -1992,7 +1986,6 @@ pub async fn find_all_<#=table#>(
   #><#
     if (
       [
-        "is_hidden",
         "is_sys",
       ].includes(column_name)
       || foreignKey
@@ -2325,8 +2318,7 @@ pub async fn find_all_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_comment = column.COLUMN_COMMENT || "";
     if (!column.dict) continue;
@@ -2348,8 +2340,7 @@ pub async fn find_all_<#=table#>(
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       const column_comment = column.COLUMN_COMMENT || "";
       if (!column.dict) continue;
@@ -2378,8 +2369,7 @@ pub async fn find_all_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_comment = column.COLUMN_COMMENT || "";
     if (!column.dictbiz) continue;
@@ -2401,8 +2391,7 @@ pub async fn find_all_<#=table#>(
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       const column_comment = column.COLUMN_COMMENT || "";
       if (!column.dictbiz) continue;
@@ -2544,7 +2533,6 @@ pub async fn find_all_<#=table#>(
         [
           "is_deleted",
           "is_sys",
-          "is_hidden",
         ].includes(column_name)
       ) continue;
       const data_type = column.DATA_TYPE;
@@ -2575,7 +2563,6 @@ pub async fn find_all_<#=table#>(
         [
           "is_deleted",
           "is_sys",
-          "is_hidden",
         ].includes(column_name)
       ) continue;
       const data_type = column.DATA_TYPE;
@@ -2802,7 +2789,6 @@ pub async fn find_count_<#=table#>(
   #><#
     if (
       [
-        "is_hidden",
         "is_sys",
       ].includes(column_name)
       || foreignKey
@@ -3066,8 +3052,7 @@ pub async fn get_field_comments_<#=table#>(<#
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       const data_type = column.DATA_TYPE;
@@ -3144,8 +3129,7 @@ pub async fn get_field_comments_<#=table#>(<#
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
       const data_type = column.DATA_TYPE;
@@ -3710,7 +3694,6 @@ pub async fn exists_<#=table#>(
   #><#
     if (
       [
-        "is_hidden",
         "is_sys",
       ].includes(column_name)
       || foreignKey
@@ -4177,7 +4160,6 @@ pub async fn set_id_by_lbl_<#=table#>(
         "update_time",
         "is_deleted",
         "is_sys",
-        "is_hidden",
       ].includes(column_name)
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
@@ -4296,8 +4278,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_comment = column.COLUMN_COMMENT || "";
     if (!column.dict) continue;
@@ -4317,8 +4298,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_comment = column.COLUMN_COMMENT || "";
     if (!column.dict) continue;
@@ -4356,8 +4336,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     const column_comment = column.COLUMN_COMMENT || "";
@@ -4377,8 +4356,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     const column_comment = column.COLUMN_COMMENT || "";
@@ -4414,8 +4392,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_name_rust = rustKeyEscape(column_name);
     let data_type = column.DATA_TYPE;
@@ -5107,8 +5084,7 @@ async fn _creates(
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       if (
         column_name === "create_usr_id" ||
@@ -6912,7 +6888,6 @@ pub async fn update_by_id_<#=table#>(
         "tenant_id",
         "is_sys",
         "is_deleted",
-        "is_hidden",
       ].includes(column_name)
     ) continue;
     if (

@@ -7,7 +7,7 @@ const tableUP = tableUp.split("_").map(function(item) {
 }).join("");
 const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
-const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
+/* const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden"); */
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
@@ -105,8 +105,7 @@ for (let i = 0; i < columns.length; i++) {
   if (
     column_name === "tenant_id" ||
     column_name === "is_sys" ||
-    column_name === "is_deleted" ||
-    column_name === "is_hidden"
+    column_name === "is_deleted"
   ) continue;
   const data_type = column.DATA_TYPE;
   const column_comment = column.COLUMN_COMMENT;
@@ -275,8 +274,7 @@ for (let i = 0; i < columns.length; i++) {
   if (
     column_name === "tenant_id" ||
     column_name === "is_sys" ||
-    column_name === "is_deleted" ||
-    column_name === "is_hidden"
+    column_name === "is_deleted"
   ) continue;
   const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
   if (column_name === 'id') continue;
@@ -350,13 +348,6 @@ pub struct <#=tableUP#>Model {<#
   pub is_sys: u8,<#
   }
   #><#
-  if (hasIsHidden) {
-  #>
-  /// 隐藏字段
-  #[graphql(skip)]
-  pub is_hidden: u8,<#
-  }
-  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -365,7 +356,6 @@ pub struct <#=tableUP#>Model {<#
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
-      column_name === "is_hidden" ||
       column_name === "create_usr_id" ||
       column_name === "create_time" ||
       column_name === "update_usr_id" ||
@@ -928,12 +918,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let is_sys = row.try_get("is_sys")?;<#
     }
     #><#
-    if (hasIsHidden) {
-    #>
-    // 隐藏字段
-    let is_hidden = row.try_get("is_hidden")?;<#
-    }
-    #><#
     if (hasVersion) {
     #>
     // 版本号
@@ -948,7 +932,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
-      column_name === "is_hidden" ||
       column_name === "create_usr_id" ||
       column_name === "create_time" ||
       column_name === "update_usr_id" ||
@@ -1526,11 +1509,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       version,<#
       }
       #><#
-      if (hasIsHidden) {
-      #>
-      is_hidden,<#
-      }
-      #><#
       if (hasIsDeleted) {
       #>
       is_deleted,<#
@@ -1544,7 +1522,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
           column_name === "tenant_id" ||
           column_name === "is_sys" ||
           column_name === "is_deleted" ||
-          column_name === "is_hidden" ||
           column_name === "create_usr_id" ||
           column_name === "create_time" ||
           column_name === "update_usr_id" ||
@@ -1743,8 +1720,7 @@ pub struct <#=tableUP#>FieldComment {<#
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     const column_name_rust = rustKeyEscape(column_name);
     const data_type = column.DATA_TYPE;
@@ -1841,12 +1817,6 @@ pub struct <#=tableUP#>Search {
   pub tenant_id: Option<TenantId>,<#
   }
   #><#
-  if (hasIsHidden) {
-  #>
-  #[graphql(skip)]
-  pub is_hidden: Option<Vec<u8>>,<#
-  }
-  #><#
   if (hasIsDeleted) {
   #>
   pub is_deleted: Option<u8>,<#
@@ -1867,8 +1837,7 @@ pub struct <#=tableUP#>Search {
     if (
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
+      column_name === "is_deleted"
     ) continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -2191,13 +2160,6 @@ impl std::fmt::Debug for <#=tableUP#>Search {
     }<#
     }
     #><#
-    if (hasIsHidden) {
-    #>
-    if let Some(ref is_hidden) = self.is_hidden {
-      item = item.field("is_hidden", is_hidden);
-    }<#
-    }
-    #><#
     if (hasIsDeleted) {
     #>
     if let Some(ref is_deleted) = self.is_deleted {
@@ -2217,8 +2179,7 @@ impl std::fmt::Debug for <#=tableUP#>Search {
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -2318,13 +2279,6 @@ pub struct <#=tableUP#>Input {
   pub is_sys: Option<u8>,<#
   }
   #><#
-  if (hasIsHidden) {
-  #>
-  /// 隐藏字段
-  #[graphql(skip)]
-  pub is_hidden: Option<u8>,<#
-  }
-  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -2333,7 +2287,6 @@ pub struct <#=tableUP#>Input {
       column_name === "tenant_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
-      column_name === "is_hidden" ||
       column_name === "create_usr_id" ||
       column_name === "create_time" ||
       column_name === "update_usr_id" ||
@@ -2718,13 +2671,6 @@ impl std::fmt::Debug for <#=tableUP#>Input {
     }<#
     }
     #><#
-    if (hasIsHidden) {
-    #>
-    if let Some(ref is_hidden) = self.is_hidden {
-      item = item.field("is_hidden", is_hidden);
-    }<#
-    }
-    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -2734,8 +2680,7 @@ impl std::fmt::Debug for <#=tableUP#>Input {
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -2823,11 +2768,6 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       version: model.version.into(),<#
       }
       #><#
-      if (hasIsHidden) {
-      #>
-      is_hidden: model.is_hidden.into(),<#
-      }
-      #><#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
@@ -2836,7 +2776,6 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
           column_name === "tenant_id" ||
           column_name === "is_sys" ||
           column_name === "is_deleted" ||
-          column_name === "is_hidden" ||
           column_name === "create_usr_id" ||
           column_name === "create_time" ||
           column_name === "update_usr_id" ||
@@ -3036,12 +2975,6 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       tenant_id: input.tenant_id,<#
       }
       #><#
-      if (hasIsHidden) {
-      #>
-      // 隐藏字段
-      is_hidden: input.is_hidden.map(|x| vec![x]),<#
-      }
-      #><#
       if (hasIsDeleted) {
       #>
       is_deleted: None,<#
@@ -3054,8 +2987,7 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         if (
           column_name === "tenant_id" ||
           column_name === "is_sys" ||
-          column_name === "is_deleted" ||
-          column_name === "is_hidden"
+          column_name === "is_deleted"
         ) continue;
         if (column_name === 'id') continue;
         const data_type = column.DATA_TYPE;
@@ -3134,19 +3066,13 @@ impl From<<#=tableUP#>Model> for crate::<#=mod#>::<#=historyTable#>::<#=historyT
       if (hasTenantId) {
       #>
       // 租户ID
-      tenant_id: input.tenant_id,<#
+      tenant_id: model.tenant_id,<#
       }
       #><#
       if (hasIsSys) {
       #>
       // 系统记录
-      is_sys: input.is_sys,<#
-      }
-      #><#
-      if (hasIsHidden) {
-      #>
-      // 隐藏字段
-      is_hidden: input.is_hidden,<#
+      is_sys: model.is_sys,<#
       }
       #><#
       for (let i = 0; i < columns.length; i++) {
@@ -3390,8 +3316,7 @@ for (let i = 0; i < columns.length; i++) {
   if (
     column_name === "tenant_id" ||
     column_name === "is_sys" ||
-    column_name === "is_deleted" ||
-    column_name === "is_hidden"
+    column_name === "is_deleted"
   ) continue;
   const column_comment = column.COLUMN_COMMENT || "";
   const column_default = column.COLUMN_DEFAULT;
@@ -3708,7 +3633,6 @@ pub async fn field_permit_input_<#=table#>(
       "update_usr_id",
       "update_time",
       "tenant_id",
-      "is_hidden",
       "is_deleted",
       "is_sys",
     ].includes(column_name)) continue;
@@ -3821,7 +3745,6 @@ pub async fn field_permit_model_<#=table#>(
       "update_usr_id",
       "update_time",
       "tenant_id",
-      "is_hidden",
       "is_deleted",
       "is_sys",
     ].includes(column_name)) continue;

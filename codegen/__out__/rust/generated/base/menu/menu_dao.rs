@@ -330,6 +330,30 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
   }
+  // 隐藏
+  {
+    let is_hidden: Option<Vec<u8>> = match search {
+      Some(item) => item.is_hidden.clone(),
+      None => None,
+    };
+    if let Some(is_hidden) = is_hidden {
+      let arg = {
+        if is_hidden.is_empty() {
+          SmolStr::new("null")
+        } else {
+          let mut items = Vec::with_capacity(is_hidden.len());
+          for item in is_hidden {
+            args.push(item.into());
+            items.push("?");
+          }
+          SmolStr::new(items.join(","))
+        }
+      };
+      where_query.push_str(" and t.is_hidden in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
   // 创建人
   {
     if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
@@ -492,30 +516,6 @@ async fn get_where_query(
       args.push(update_time_lt.into());
     }
   }
-  // 隐藏记录
-  {
-    let is_hidden: Option<Vec<u8>> = match search {
-      Some(item) => item.is_hidden.clone(),
-      None => Default::default(),
-    };
-    if let Some(is_hidden) = is_hidden {
-      let arg = {
-        if is_hidden.is_empty() {
-          SmolStr::new("null")
-        } else {
-          let mut items = Vec::with_capacity(is_hidden.len());
-          for item in is_hidden {
-            args.push(item.into());
-            items.push("?");
-          }
-          SmolStr::new(items.join(","))
-        }
-      };
-      where_query.push_str(" and t.is_hidden in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }
   Ok(where_query)
 }
 
@@ -637,16 +637,6 @@ pub async fn find_all_menu(
     }
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-    }
-  }
-  // 隐藏记录
-  if let Some(search) = &search && let Some(is_hidden) = &search.is_hidden {
-    let len = is_hidden.len();
-    if len == 0 {
-      return Ok(vec![]);
-    }
-    if len > ids_limit {
-      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
     }
   }
   
@@ -921,20 +911,6 @@ pub async fn find_count_menu(
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
   }
-  // 隐藏记录
-  if let Some(search) = &search && search.is_hidden.is_some() {
-    let len = search.is_hidden.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(0);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
-    }
-  }
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
@@ -1036,6 +1012,7 @@ pub async fn get_field_comments_menu(
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
     rem: "备注".into(),
+    is_hidden: "隐藏".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
     create_time: "创建时间".into(),
@@ -1509,20 +1486,6 @@ pub async fn exists_menu(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
-    }
-  }
-  // 隐藏记录
-  if let Some(search) = &search && search.is_hidden.is_some() {
-    let len = search.is_hidden.as_ref().unwrap().len();
-    if len == 0 {
-      return Ok(false);
-    }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
-    if len > ids_limit {
-      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
     }
   }
   
@@ -2144,7 +2107,7 @@ async fn _creates(
   sql_fields += ",order_by";
   // 备注
   sql_fields += ",rem";
-  // 隐藏记录
+  // 隐藏
   sql_fields += ",is_hidden";
   
   let inputs2_len = inputs2.len();
@@ -2327,7 +2290,7 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 隐藏记录
+    // 隐藏
     if let Some(is_hidden) = input.is_hidden {
       sql_values += ",?";
       args.push(is_hidden.into());
@@ -2675,7 +2638,7 @@ pub async fn update_by_id_menu(
     sql_fields += "rem=?,";
     args.push(rem.into());
   }
-  // 隐藏记录
+  // 隐藏
   if let Some(is_hidden) = input.is_hidden {
     field_num += 1;
     sql_fields += "is_hidden=?,";

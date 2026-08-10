@@ -51,9 +51,6 @@ fn get_can_sort_in_api_menu() -> &'static [&'static str; 4] {
 #[graphql(rename_fields = "snake_case", name = "MenuModel")]
 #[allow(dead_code)]
 pub struct MenuModel {
-  /// 隐藏字段
-  #[graphql(skip)]
-  pub is_hidden: u8,
   /// ID
   pub id: MenuId,
   /// 父菜单
@@ -95,6 +92,9 @@ pub struct MenuModel {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: SmolStr,
+  /// 隐藏
+  #[graphql(name = "is_hidden")]
+  pub is_hidden: u8,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -117,8 +117,6 @@ pub struct MenuModel {
 
 impl FromRow<'_, MySqlRow> for MenuModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
-    // 隐藏字段
-    let is_hidden = row.try_get("is_hidden")?;
     // ID
     let id: MenuId = row.try_get("id")?;
     // 父菜单
@@ -148,6 +146,8 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     // 备注
     let rem: &str = row.try_get("rem")?;
     let rem = SmolStr::new(rem);
+    // 隐藏
+    let is_hidden: u8 = row.try_get("is_hidden")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
@@ -172,7 +172,6 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
-      is_hidden,
       is_deleted,
       id,
       parent_id,
@@ -188,6 +187,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       is_enabled_lbl,
       order_by,
       rem,
+      is_hidden,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -248,6 +248,9 @@ pub struct MenuFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: SmolStr,
+  /// 隐藏
+  #[graphql(name = "is_hidden")]
+  pub is_hidden: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: SmolStr,
@@ -282,8 +285,6 @@ pub struct MenuSearch {
   pub id: Option<MenuId>,
   /// ID列表
   pub ids: Option<Vec<MenuId>>,
-  #[graphql(skip)]
-  pub is_hidden: Option<Vec<u8>>,
   pub is_deleted: Option<u8>,
   /// 父菜单
   #[graphql(name = "parent_id")]
@@ -333,6 +334,9 @@ pub struct MenuSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<SmolStr>,
+  /// 隐藏
+  #[graphql(name = "is_hidden")]
+  pub is_hidden: Option<Vec<u8>>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -373,9 +377,6 @@ impl std::fmt::Debug for MenuSearch {
     }
     if let Some(ref ids) = self.ids {
       item = item.field("ids", ids);
-    }
-    if let Some(ref is_hidden) = self.is_hidden {
-      item = item.field("is_hidden", is_hidden);
     }
     if let Some(ref is_deleted) = self.is_deleted {
       if *is_deleted == 1 {
@@ -439,6 +440,10 @@ impl std::fmt::Debug for MenuSearch {
     if let Some(ref rem_like) = self.rem_like {
       item = item.field("rem_like", rem_like);
     }
+    // 隐藏
+    if let Some(ref is_hidden) = self.is_hidden {
+      item = item.field("is_hidden", is_hidden);
+    }
     // 创建人
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
@@ -486,9 +491,6 @@ pub struct MenuInput {
   /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
-  /// 隐藏字段
-  #[graphql(skip)]
-  pub is_hidden: Option<u8>,
   /// 父菜单
   #[graphql(name = "parent_id")]
   pub parent_id: Option<MenuId>,
@@ -528,6 +530,9 @@ pub struct MenuInput {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<SmolStr>,
+  /// 隐藏
+  #[graphql(name = "is_hidden")]
+  pub is_hidden: Option<u8>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
@@ -571,9 +576,6 @@ impl std::fmt::Debug for MenuInput {
         item = item.field("is_deleted", is_deleted);
       }
     }
-    if let Some(ref is_hidden) = self.is_hidden {
-      item = item.field("is_hidden", is_hidden);
-    }
     if let Some(ref parent_id) = self.parent_id {
       item = item.field("parent_id", parent_id);
     }
@@ -600,6 +602,9 @@ impl std::fmt::Debug for MenuInput {
     }
     if let Some(ref rem) = self.rem {
       item = item.field("rem", rem);
+    }
+    if let Some(ref is_hidden) = self.is_hidden {
+      item = item.field("is_hidden", is_hidden);
     }
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
@@ -628,7 +633,6 @@ impl From<MenuModel> for MenuInput {
     Self {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
-      is_hidden: model.is_hidden.into(),
       // 父菜单
       parent_id: model.parent_id.into(),
       parent_id_lbl: model.parent_id_lbl.into(),
@@ -651,6 +655,8 @@ impl From<MenuModel> for MenuInput {
       order_by: model.order_by.into(),
       // 备注
       rem: model.rem.into(),
+      // 隐藏
+      is_hidden: model.is_hidden.into(),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -674,8 +680,6 @@ impl From<MenuInput> for MenuSearch {
     Self {
       id: input.id,
       ids: None,
-      // 隐藏字段
-      is_hidden: input.is_hidden.map(|x| vec![x]),
       is_deleted: None,
       // 父菜单
       parent_id: input.parent_id.map(|x| vec![x]),
@@ -695,6 +699,8 @@ impl From<MenuInput> for MenuSearch {
       order_by: input.order_by.map(|x| [Some(x), Some(x)]),
       // 备注
       rem: input.rem,
+      // 隐藏
+      is_hidden: input.is_hidden.map(|x| vec![x]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建人

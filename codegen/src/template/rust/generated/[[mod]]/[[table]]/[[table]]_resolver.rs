@@ -6,7 +6,6 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
-const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 const hasIsMonth = columns.some((column) => column.isMonth);
 const hasSearchRangeMax = columns.some((column) => column.searchRangeMax && column.searchRangeMax > 0);
 const hasNoAdd = columns.some((column) => {
@@ -284,16 +283,6 @@ pub async fn find_all_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (hasIsHidden) {
-  #>
-  
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });<#
-  }
-  #><#
   if (hasSearchRangeMax) {
   #>
   
@@ -373,16 +362,6 @@ pub async fn find_count_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (hasIsHidden) {
-  #>
-  
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });<#
-  }
-  #><#
   if (hasSearchRangeMax) {
   #>
   
@@ -415,16 +394,6 @@ pub async fn find_one_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (hasIsHidden) {
-  #>
-  
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });<#
-  }
-  #><#
   if (hasSearchRangeMax) {
   #>
   
@@ -505,16 +474,6 @@ pub async fn find_one_ok_<#=table#>(
     req_id = get_req_id(),
     function_name = function_name!(),
   );<#
-  if (hasIsHidden) {
-  #>
-  
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });<#
-  }
-  #><#
   if (hasSearchRangeMax) {
   #>
   
