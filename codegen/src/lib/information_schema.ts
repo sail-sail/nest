@@ -280,7 +280,7 @@ async function getSchema0(
       COLUMN_NAME: "is_hidden",
       COLUMN_TYPE: "tinyint(1) unsigned",
       DATA_TYPE: "tinyint",
-      COLUMN_COMMENT: "隐藏记录",
+      COLUMN_COMMENT: "隐藏",
       onlyCodegenDeno: true,
     });
   }
@@ -354,11 +354,6 @@ async function getSchema0(
       item.canSearch = true;
     }
     const record = records2.find((item: TableColumn) => item.COLUMN_NAME === column_name);
-    if (column_name === "is_hidden") {
-      if (item.onlyCodegenDeno != null) {
-        item.onlyCodegenDeno = true;
-      }
-    }
     if (column_name === "org_id") {
       if (!item.COLUMN_DEFAULT) {
         item.COLUMN_DEFAULT = "CURRENT_ORG_ID";
@@ -520,6 +515,20 @@ async function getSchema0(
       }
       if (item.noDetail == null) {
         item.noDetail = true;
+      }
+    }
+    if (column_name === "is_hidden") {
+      if (item.canSearch == null) {
+        item.canSearch = true;
+      }
+      if (item.onlyCodegenDeno == null) {
+        item.onlyCodegenDeno = true;
+      }
+      if (item.onlyCodegenDenoButApi == null) {
+        item.onlyCodegenDenoButApi = true;
+      }
+      if (item.dict == null) {
+        item.dict = "yes_no";
       }
     }
     if (column_name.startsWith("is_")

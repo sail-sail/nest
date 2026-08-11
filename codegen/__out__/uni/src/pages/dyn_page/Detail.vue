@@ -444,6 +444,7 @@
         :show-close="true"
         :show-footer="true"
         size="auto"
+        :disable-teleport="props.drawerDisableTeleport"
       >
         
         <template #trigger>
@@ -520,7 +521,7 @@
             
             <tm-button
               v-if="permit('edit', '编辑')"
-              :disabled="!inited || is_form_hydrating"
+              :disabled="!inited || is_form_hydrating || isReadonly"
               block
               @click="operationDrawerShow = false; formRef?.submit();"
             >
@@ -1062,6 +1063,7 @@ const props = withDefaults(
     hideFields?: string[];
     hasCloseBtn?: boolean;
     closeBtnFn?: () => Promise<void> | void;
+    drawerDisableTeleport?: boolean;
   }>(),
   {
     init: true,
@@ -1075,6 +1077,7 @@ const props = withDefaults(
     hideFields: undefined,
     hasCloseBtn: undefined,
     closeBtnFn: undefined,
+    drawerDisableTeleport: undefined,
   },
 );
 

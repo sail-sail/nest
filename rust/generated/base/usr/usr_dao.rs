@@ -870,6 +870,16 @@ pub async fn find_all_usr(
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
     }
   }
+  // 隐藏
+  if let Some(search) = &search && let Some(is_hidden) = &search.is_hidden {
+    let len = is_hidden.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
+    }
+  }
   // 创建人
   if let Some(search) = &search && let Some(create_usr_id) = &search.create_usr_id {
     let len = create_usr_id.len();
@@ -1016,12 +1026,14 @@ pub async fn find_all_usr(
     "usr_type",
     "is_locked",
     "is_enabled",
+    "yes_no",
   ]).await?;
   let [
     type_dict,
     is_locked_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 3] = dict_vec
+    is_hidden_dict,
+  ]: [Vec<_>; 4] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -1053,6 +1065,15 @@ pub async fn find_all_usr(
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.is_enabled.to_string().into())
+    };
+    
+    // 隐藏
+    model.is_hidden_lbl = {
+      is_hidden_dict
+        .iter()
+        .find(|item| item.val == model.is_hidden.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_hidden.to_string().into())
     };
     
   }
@@ -1190,6 +1211,20 @@ pub async fn find_count_usr(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
+    }
+  }
+  // 隐藏
+  if let Some(search) = &search && search.is_hidden.is_some() {
+    let len = search.is_hidden.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
     }
   }
   // 创建人
@@ -1341,6 +1376,8 @@ pub async fn get_field_comments_usr(
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
     rem: "备注".into(),
+    is_hidden: "隐藏".into(),
+    is_hidden_lbl: "隐藏".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
     create_time: "创建时间".into(),
@@ -1830,6 +1867,20 @@ pub async fn exists_usr(
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
     }
   }
+  // 隐藏
+  if let Some(search) = &search && search.is_hidden.is_some() {
+    let len = search.is_hidden.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_hidden.length > {ids_limit}"));
+    }
+  }
   // 创建人
   if let Some(search) = &search && search.create_usr_id.is_some() {
     let len = search.create_usr_id.as_ref().unwrap().len();
@@ -2181,6 +2232,7 @@ pub async fn set_id_by_lbl_usr(
     "usr_type",
     "is_locked",
     "is_enabled",
+    "yes_no",
   ]).await?;
   
   // 类型
@@ -2221,6 +2273,21 @@ pub async fn set_id_by_lbl_usr(
         .iter()
         .find(|item| {
           item.lbl == is_enabled_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
+  // 隐藏
+  if input.is_hidden.is_none() {
+    let is_hidden_dict = &dict_vec[3];
+    if let Some(is_hidden_lbl) = input.is_hidden_lbl.clone() {
+      input.is_hidden = is_hidden_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_hidden_lbl
         })
         .map(|item| {
           item.val.parse().unwrap_or_default()
@@ -2439,6 +2506,31 @@ pub async fn set_id_by_lbl_usr(
     });
     let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
     input.is_enabled_lbl = lbl;
+  }
+  
+  // 隐藏
+  if
+    input.is_hidden_lbl.is_some() && !input.is_hidden_lbl.as_ref().unwrap().is_empty()
+    && input.is_hidden.is_none()
+  {
+    let is_hidden_dict = &dict_vec[3];
+    let dict_model = is_hidden_dict.iter().find(|item| {
+      item.lbl == input.is_hidden_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    if let Some(val) = val {
+      input.is_hidden = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_hidden_lbl.is_none() || input.is_hidden_lbl.as_ref().unwrap().is_empty())
+    && input.is_hidden.is_some()
+  {
+    let is_hidden_dict = &dict_vec[3];
+    let dict_model = is_hidden_dict.iter().find(|item| {
+      item.val == input.is_hidden.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    input.is_hidden_lbl = lbl;
   }
   
   Ok(input)

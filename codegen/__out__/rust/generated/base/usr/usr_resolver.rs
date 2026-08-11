@@ -40,12 +40,6 @@ pub async fn find_all_usr(
     function_name = function_name!(),
   );
   
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });
-  
   check_sort_usr(sort.as_deref())?;
   
   let models = usr_service::find_all_usr(
@@ -78,12 +72,6 @@ pub async fn find_count_usr(
     function_name = function_name!(),
   );
   
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });
-  
   let num = usr_service::find_count_usr(
     search,
     options,
@@ -105,12 +93,6 @@ pub async fn find_one_usr(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });
   
   check_sort_usr(sort.as_deref())?;
   
@@ -143,12 +125,6 @@ pub async fn find_one_ok_usr(
     req_id = get_req_id(),
     function_name = function_name!(),
   );
-  
-  let search = Some({
-    let mut search = search.unwrap_or_default();
-    search.is_hidden = Some(vec![0]);
-    search
-  });
   
   check_sort_usr(sort.as_deref())?;
   

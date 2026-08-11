@@ -96,13 +96,14 @@ watch(
 
 const props = withDefaults(
   defineProps<{
-  height?: string;
-  closeOnClickModal?: boolean;
-}>(),
-{
-  height: undefined,
-  closeOnClickModal: false,
-});
+    height?: string;
+    closeOnClickModal?: boolean;
+  }>(),
+  {
+    height: undefined,
+    closeOnClickModal: false,
+  },
+);
 
 let titleWatchHandle: WatchStopHandle | undefined;
 let noticeWatchHandle: WatchStopHandle | undefined;
