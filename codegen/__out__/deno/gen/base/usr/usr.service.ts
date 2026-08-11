@@ -11,8 +11,11 @@ import {
 import * as usrDao from "./usr.dao.ts";
 
 async function setSearchQuery(
-  _search: UsrSearch,
+  search: UsrSearch,
 ) {
+  if (!search) {
+    search.is_hidden = [ 0 ];
+  }
   
 }
 

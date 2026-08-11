@@ -38,12 +38,13 @@ declare global {
     is_locked?: number[];
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
+    /** 隐藏 */
+    is_hidden?: number[];
     /** 创建时间 */
     create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
     update_time?: [(string|undefined|null), (string|undefined|null)];
     tenant_id?: TenantId | null;
-    is_hidden?: (0|1)[];
   }
 
   interface UsrModel extends UsrModelType {
@@ -56,7 +57,6 @@ declare global {
     update_time?: string | null;
     update_time_lbl: string;
     tenant_id: TenantId;
-    is_hidden: 0|1;
   }
 
   interface UsrInput extends UsrInputType {
@@ -72,7 +72,6 @@ declare global {
     update_time_save_null?: boolean | null;
     is_deleted?: number | null;
     tenant_id?: TenantId | null;
-    is_hidden?: 0|1|null;
   }
 
   interface UsrFieldComment extends UsrFieldCommentType {

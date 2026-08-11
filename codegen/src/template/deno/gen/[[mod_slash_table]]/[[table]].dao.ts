@@ -44,7 +44,6 @@ const hasDict = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   return column.dict;
 });
 const hasDictbiz = columns.some((column) => {
@@ -55,7 +54,6 @@ const hasDictbiz = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   return column.dictbiz;
 });
 const hasDictModelLabel = columns.some((column) => {
@@ -66,7 +64,6 @@ const hasDictModelLabel = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   const modelLabel = column.modelLabel;
   if (modelLabel) return false;
   return column.dict;
@@ -79,7 +76,6 @@ const hasDictbizModelLabel = columns.some((column) => {
   if (column_name === "id") return false;
   if (column_name === "is_sys") return false;
   if (column_name === "is_deleted") return false;
-  if (column_name === "is_hidden") return false;
   const modelLabel = column.modelLabel;
   if (modelLabel) return false;
   return column.dictbiz;
@@ -1483,7 +1479,6 @@ export async function findCount<#=Table_Up#>(
   #><#
     if (
       [
-        "is_hidden",
         "is_sys",
       ].includes(column_name)
       || foreignKey
@@ -1730,7 +1725,6 @@ export async function findAll<#=Table_Up#>(
   #><#
     if (
       [
-        "is_hidden",
         "is_sys",
       ].includes(column_name)
       || foreignKey
@@ -2106,7 +2100,6 @@ export async function findAll<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
       const modelLabel = column.modelLabel;
       if (modelLabel) continue;
@@ -2126,7 +2119,6 @@ export async function findAll<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
       const modelLabel = column.modelLabel;
       if (modelLabel) continue;
@@ -2151,7 +2143,6 @@ export async function findAll<#=Table_Up#>(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
       const modelLabel = column.modelLabel;
       if (modelLabel) continue;
@@ -2170,7 +2161,6 @@ export async function findAll<#=Table_Up#>(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
       const modelLabel = column.modelLabel;
       if (modelLabel) continue;
@@ -2286,7 +2276,6 @@ export async function findAll<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       if (column_name === "tenant_id") continue;
       const data_type = column.DATA_TYPE;
       const column_type = column.COLUMN_TYPE;
@@ -2335,7 +2324,6 @@ export async function findAll<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       if (column_name === "tenant_id") continue;
       const data_type = column.DATA_TYPE;
       const column_type = column.COLUMN_TYPE;
@@ -2592,7 +2580,6 @@ export async function setIdByLbl<#=Table_Up#>(
         "update_time",
         "is_sys",
         "is_deleted",
-        "is_hidden",
       ].includes(column_name)
     ) continue;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -2716,7 +2703,6 @@ export async function setIdByLbl<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dict) {
@@ -2734,7 +2720,6 @@ export async function setIdByLbl<#=Table_Up#>(
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dict) {
@@ -2757,7 +2742,6 @@ export async function setIdByLbl<#=Table_Up#>(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dictbiz) {
@@ -2774,7 +2758,6 @@ export async function setIdByLbl<#=Table_Up#>(
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
-      if (column_name === "is_hidden") continue;
       const column_comment = column.COLUMN_COMMENT || "";
     #><#
       if (column.dictbiz) {
@@ -2799,7 +2782,6 @@ export async function setIdByLbl<#=Table_Up#>(
       "update_time",
       "is_sys",
       "is_deleted",
-      "is_hidden",
     ].includes(column_name)) continue;
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
@@ -2950,7 +2932,6 @@ export async function setIdByLbl<#=Table_Up#>(
     if (column_name === "id") continue;
     if (column_name === "is_sys") continue;
     if (column_name === "is_deleted") continue;
-    if (column_name === "is_hidden") continue;
     const column_comment = column.COLUMN_COMMENT || "";
     const redundLbl = column.redundLbl;
     if (!redundLbl) {
@@ -3007,7 +2988,6 @@ export async function setIdByLbl<#=Table_Up#>(
     if (column_name === "id") continue;
     if (column_name === "is_sys") continue;
     if (column_name === "is_deleted") continue;
-    if (column_name === "is_hidden") continue;
     const column_comment = column.COLUMN_COMMENT || "";
     const redundLbl = column.redundLbl;
     if (!redundLbl) {
@@ -3078,9 +3058,6 @@ export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentNa
       if (column_name === "tenant_id") {
         continue;
       }
-      if (column_name === "is_hidden") {
-        continue;
-      }
       const isPassword = column.isPassword;
       if (isPassword) continue;
       const foreignKey = column.foreignKey;
@@ -3121,9 +3098,6 @@ export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentNa
         continue;
       }
       if (column_name === "tenant_id") {
-        continue;
-      }
-      if (column_name === "is_hidden") {
         continue;
       }
       const isPassword = column.isPassword;
@@ -3242,7 +3216,6 @@ export async function findByUnique<#=Table_Up#>(
           "tenant_id",
           "is_sys",
           "is_deleted",
-          "is_hidden",
         ].includes(column_name)
       ) {
         continue;
@@ -4046,9 +4019,6 @@ export async function validate<#=Table_Up#>(
     if (column_name === "tenant_id") {
       continue;
     }
-    if (column_name === 'is_hidden') {
-      continue;
-    }
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     const column_comment = column.COLUMN_COMMENT || "";
@@ -4838,8 +4808,7 @@ async function _creates(
       if (
         column_name === "tenant_id" ||
         column_name === "is_sys" ||
-        column_name === "is_deleted" ||
-        column_name === "is_hidden"
+        column_name === "is_deleted"
       ) continue;
       if (
         column_name === "create_usr_id" ||
@@ -6118,7 +6087,6 @@ export async function updateById<#=Table_Up#>(
         "tenant_id",
         "is_sys",
         "is_deleted",
-        "is_hidden",
       ].includes(column_name)
     ) continue;
     if (

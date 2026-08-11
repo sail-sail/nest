@@ -784,6 +784,7 @@
       :tenant_ids="[ usrStore.tenant_id ]"
       :is_current_tenant="1"
       is_enabled="1"
+      :is_hidden="[0,1]"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
     ></MenuTreeList>
@@ -798,6 +799,7 @@
     <PermitTreeList
       :is_current_tenant="1"
       is_enabled="1"
+      :is_hidden="[0,1]"
       :props-not-reset="[ 'is_enabled' ]"
       v-bind="listSelectProps"
     ></PermitTreeList>

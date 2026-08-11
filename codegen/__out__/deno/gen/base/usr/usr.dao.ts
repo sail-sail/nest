@@ -207,6 +207,9 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
+  if (search?.is_hidden != null) {
+    whereQuery += ` and t.is_hidden in (${ args.push(search.is_hidden) })`;
+  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
@@ -246,9 +249,6 @@ async function getWhereQuery(
     if (search.update_time[1] != null) {
       whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
-  }
-  if (search?.is_hidden != null) {
-    whereQuery += ` and t.is_hidden in (${ args.push(search?.is_hidden) })`;
   }
   return whereQuery;
 }
@@ -423,6 +423,17 @@ export async function findCountUsr(
       throw new Error(`search.is_enabled.length > ${ ids_limit }`);
     }
   }
+  // 隐藏
+  if (search && search.is_hidden != null) {
+    const len = search.is_hidden.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_hidden.length > ${ ids_limit }`);
+    }
+  }
   // 创建人
   if (search && search.create_usr_id != null) {
     const len = search.create_usr_id.length;
@@ -443,17 +454,6 @@ export async function findCountUsr(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
-    }
-  }
-  // 隐藏记录
-  if (search && search.is_hidden != null) {
-    const len = search.is_hidden.length;
-    if (len === 0) {
-      return 0;
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_hidden.length > ${ ids_limit }`);
     }
   }
   
@@ -603,6 +603,17 @@ export async function findAllUsr(
       throw new Error(`search.is_enabled.length > ${ ids_limit }`);
     }
   }
+  // 隐藏
+  if (search && search.is_hidden != null) {
+    const len = search.is_hidden.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_hidden.length > ${ ids_limit }`);
+    }
+  }
   // 创建人
   if (search && search.create_usr_id != null) {
     const len = search.create_usr_id.length;
@@ -623,17 +634,6 @@ export async function findAllUsr(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
-    }
-  }
-  // 隐藏记录
-  if (search && search.is_hidden != null) {
-    const len = search.is_hidden.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_hidden.length > ${ ids_limit }`);
     }
   }
   
@@ -792,10 +792,12 @@ export async function findAllUsr(
     typeDict, // 类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_hiddenDict, // 隐藏
   ] = await getDict([
     "usr_type",
     "is_locked",
     "is_enabled",
+    "yes_no",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -833,6 +835,16 @@ export async function findAllUsr(
       }
     }
     model.is_enabled_lbl = is_enabled_lbl || "";
+    
+    // 隐藏
+    let is_hidden_lbl = model.is_hidden?.toString() || "";
+    if (model.is_hidden != null) {
+      const dictItem = is_hiddenDict.find((dictItem) => dictItem.val === String(model.is_hidden));
+      if (dictItem) {
+        is_hidden_lbl = dictItem.lbl;
+      }
+    }
+    model.is_hidden_lbl = is_hidden_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -878,10 +890,12 @@ export async function setIdByLblUsr(
     typeDict, // 类型
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_hiddenDict, // 隐藏
   ] = await getDict([
     "usr_type",
     "is_locked",
     "is_enabled",
+    "yes_no",
   ]);
   
   // 所属角色
@@ -1008,6 +1022,17 @@ export async function setIdByLblUsr(
     const lbl = is_enabledDict.find((itemTmp) => itemTmp.val === String(input.is_enabled))?.lbl || "";
     input.is_enabled_lbl = lbl;
   }
+  
+  // 隐藏
+  if (isNotEmpty(input.is_hidden_lbl) && input.is_hidden == null) {
+    const val = is_hiddenDict.find((itemTmp) => itemTmp.lbl === input.is_hidden_lbl)?.val;
+    if (val != null) {
+      input.is_hidden = Number(val);
+    }
+  } else if (isEmpty(input.is_hidden_lbl) && input.is_hidden != null) {
+    const lbl = is_hiddenDict.find((itemTmp) => itemTmp.val === String(input.is_hidden))?.lbl || "";
+    input.is_hidden_lbl = lbl;
+  }
 }
 
 // MARK: getFieldCommentsUsr
@@ -1034,6 +1059,8 @@ export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
     is_enabled_lbl: "启用",
     order_by: "排序",
     rem: "备注",
+    is_hidden: "隐藏",
+    is_hidden_lbl: "隐藏",
     create_usr_id: "创建人",
     create_usr_id_lbl: "创建人",
     create_time: "创建时间",
@@ -2351,6 +2378,12 @@ export async function updateByIdUsr(
       updateFldNum++;
     }
   }
+  if (input.is_hidden != null) {
+    if (input.is_hidden != oldModel.is_hidden) {
+      sql += `is_hidden=${ args.push(input.is_hidden) },`;
+      updateFldNum++;
+    }
+  }
   if (isNotEmpty(input.create_usr_id_lbl)) {
     sql += `create_usr_id_lbl=?,`;
     args.push(input.create_usr_id_lbl);
@@ -2365,12 +2398,6 @@ export async function updateByIdUsr(
   if (input.create_time != null || input.create_time_save_null) {
     if (input.create_time != oldModel.create_time) {
       sql += `create_time=${ args.push(input.create_time) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.is_hidden != null) {
-    if (input.is_hidden != oldModel.is_hidden) {
-      sql += `is_hidden=${ args.push(input.is_hidden) },`;
       updateFldNum++;
     }
   }

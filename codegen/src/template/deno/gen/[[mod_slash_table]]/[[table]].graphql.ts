@@ -1,11 +1,11 @@
 <#
-const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && !column.onlyCodegenDeno);
+const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' && (!column.onlyCodegenDeno || column.onlyCodegenDenoButApi));
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
-const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
+/* const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden"); */
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -93,8 +93,7 @@ for (let i = 0; i < columns.length; i++) {
   if (
     column_name === "tenant_id" ||
     column_name === "is_sys" ||
-    column_name === "is_deleted" ||
-    column_name === "is_hidden"
+    column_name === "is_deleted"
   ) continue;
   const data_type = column.DATA_TYPE;
   const column_comment = column.COLUMN_COMMENT;
@@ -168,9 +167,6 @@ type <#=modelName#> {<#
       continue;
     }
     if (column_name === 'tenant_id') {
-      continue;
-    }
-    if (column_name === 'is_hidden') {
       continue;
     }
     let _data_type = "String";
@@ -403,7 +399,7 @@ type <#=modelName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     const comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -481,9 +477,6 @@ type <#=fieldCommentName#> {<#
     if (column_name === "tenant_id") {
       continue;
     }
-    if (column_name === 'is_hidden') {
-      continue;
-    }
     const isPassword = column.isPassword;
     if (isPassword) continue;
   #><#
@@ -539,7 +532,6 @@ input <#=inputName#> {<#
       [
         "is_sys",
         "tenant_id",
-        "is_hidden",
         "create_usr_id",
         "create_time",
         "update_usr_id",
@@ -734,7 +726,7 @@ input <#=inputName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     const comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -810,7 +802,7 @@ input <#=searchName#> {<#
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (
-      column.onlyCodegenDeno
+      (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi)
       || column.canSearch !== true
     ) continue;
     const column_name = column.COLUMN_NAME;
@@ -836,9 +828,6 @@ input <#=searchName#> {<#
       continue;
     }
     if (column_name === 'is_deleted') {
-      continue;
-    }
-    if (column_name === 'is_hidden') {
       continue;
     }
     if (column_name === 'id') {
@@ -965,7 +954,7 @@ type <#=Table_Up2#>Summary {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     const column_comment = column.COLUMN_COMMENT || "";

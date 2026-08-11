@@ -3350,7 +3350,6 @@ const props = defineProps<{<#
       "update_usr_id",
       "update_time",
       "tenant_id",
-      "is_hidden",
       "is_deleted",
     ].includes(column_name)) continue;
     let is_nullable = column.IS_NULLABLE === "YES";

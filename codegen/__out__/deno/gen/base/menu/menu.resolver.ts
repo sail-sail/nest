@@ -29,9 +29,6 @@ export async function findCountMenu(
     findCountMenu,
   } = await import("./menu.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
-  
   const num = await findCountMenu(search);
   
   return num;
@@ -49,9 +46,6 @@ export async function findAllMenu(
   const {
     findAllMenu,
   } = await import("./menu.service.ts");
-  
-  search = search || { };
-  search.is_hidden = [ 0 ];
   
   checkSortMenu(sort);
   
@@ -86,9 +80,6 @@ export async function findOneMenu(
     findOneMenu,
   } = await import("./menu.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
-  
   checkSortMenu(sort);
   
   const model = await findOneMenu(search, sort);
@@ -107,9 +98,6 @@ export async function findOneOkMenu(
   const {
     findOneOkMenu,
   } = await import("./menu.service.ts");
-  
-  search = search || { };
-  search.is_hidden = [ 0 ];
   
   checkSortMenu(sort);
   

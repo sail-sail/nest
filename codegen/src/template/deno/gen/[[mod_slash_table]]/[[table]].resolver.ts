@@ -5,7 +5,7 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasPassword = columns.some((column) => column.isPassword);
 const hasSearchRangeMax = columns.some((column) => Number(column.searchRangeMax || 0) > 0);
-const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
+/* const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden"); */
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -192,13 +192,6 @@ export async function findCount<#=Table_Up2#>(
   setNotVerifyToken(true);<#
   }
   #><#
-  if (hasIsHidden) {
-  #>
-  
-  search = search || { };
-  search.is_hidden = [ 0 ];<#
-  }
-  #><#
   if (hasSearchRangeMax) {
   #>
   
@@ -227,13 +220,6 @@ export async function findAll<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  }
-  #><#
-  if (hasIsHidden) {
-  #>
-  
-  search = search || { };
-  search.is_hidden = [ 0 ];<#
   }
   #><#
   if (hasSearchRangeMax) {
@@ -341,13 +327,6 @@ export async function findOne<#=Table_Up2#>(
   
   setNotVerifyToken(true);<#
   }
-  #><#
-  if (hasIsHidden) {
-  #>
-  
-  search = search || { };
-  search.is_hidden = [ 0 ];<#
-  }
   #>
   
   checkSort<#=Table_Up2#>(sort);
@@ -397,13 +376,6 @@ export async function findOneOk<#=Table_Up2#>(
   #>
   
   setNotVerifyToken(true);<#
-  }
-  #><#
-  if (hasIsHidden) {
-  #>
-  
-  search = search || { };
-  search.is_hidden = [ 0 ];<#
   }
   #>
   

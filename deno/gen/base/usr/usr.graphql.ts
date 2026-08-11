@@ -57,6 +57,10 @@ type UsrModel {
   order_by: Int!
   "备注"
   rem: String!
+  "隐藏"
+  is_hidden: Int!
+  "隐藏"
+  is_hidden_lbl: String!
   "创建人"
   create_usr_id: UsrId!
   "创建人"
@@ -117,6 +121,10 @@ type UsrFieldComment {
   order_by: String!
   "备注"
   rem: String!
+  "隐藏"
+  is_hidden: String!
+  "隐藏"
+  is_hidden_lbl: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -177,6 +185,10 @@ input UsrInput {
   order_by: Int
   "备注"
   rem: String
+  "隐藏"
+  is_hidden: Int
+  "隐藏"
+  is_hidden_lbl: String
 }
 input UsrSearch {
   "已删除"
@@ -231,6 +243,8 @@ input UsrSearch {
   "备注"
   rem: String
   rem_like: String
+  "隐藏"
+  is_hidden: [Int!]
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"

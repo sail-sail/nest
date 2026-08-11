@@ -29,9 +29,6 @@ export async function findCountUsr(
     findCountUsr,
   } = await import("./usr.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
-  
   const num = await findCountUsr(search);
   
   return num;
@@ -49,9 +46,6 @@ export async function findAllUsr(
   const {
     findAllUsr,
   } = await import("./usr.service.ts");
-  
-  search = search || { };
-  search.is_hidden = [ 0 ];
   
   checkSortUsr(sort);
   
@@ -91,9 +85,6 @@ export async function findOneUsr(
     findOneUsr,
   } = await import("./usr.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
-  
   checkSortUsr(sort);
   
   const model = await findOneUsr(search, sort);
@@ -117,9 +108,6 @@ export async function findOneOkUsr(
   const {
     findOneOkUsr,
   } = await import("./usr.service.ts");
-  
-  search = search || { };
-  search.is_hidden = [ 0 ];
   
   checkSortUsr(sort);
   

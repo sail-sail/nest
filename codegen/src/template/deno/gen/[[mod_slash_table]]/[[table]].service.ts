@@ -4,6 +4,7 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
+const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -170,7 +171,7 @@ import dayjs from "dayjs";<#
 import * as <#=table#>Dao from "./<#=table#>.dao.ts";
 
 async function setSearchQuery(<#
-  if (opts.filterDataByCreateUsr || hasOrgId) {
+  if (opts.filterDataByCreateUsr || hasOrgId || hasIsHidden) {
   #>
   search: <#=searchName#>,<#
   } else {
@@ -179,6 +180,13 @@ async function setSearchQuery(<#
   }
   #>
 ) {<#
+  if (hasIsHidden) {
+  #>
+  if (!search) {
+    search.is_hidden = [ 0 ];
+  }<#
+  }
+  #><#
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
