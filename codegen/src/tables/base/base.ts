@@ -364,6 +364,10 @@ export default defineConfig({
         COLUMN_NAME: "rem",
       },
       {
+        COLUMN_NAME: "is_hidden",
+        dict: "yes_no",
+      },
+      {
         COLUMN_NAME: "create_usr_id",
       },
       {
@@ -488,6 +492,9 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "is_hidden",
       },
       {
         COLUMN_NAME: "create_usr_id",

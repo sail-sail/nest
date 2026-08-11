@@ -20,7 +20,7 @@
       <tm-form
         ref="formRef"
         v-model="dyn_page_input"
-        :label-width="140"
+        :label-width="160"
         :rules="form_rules"
         @submit="onSave"
       >
@@ -360,6 +360,7 @@
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRowDynPageField(index)"
@@ -372,6 +373,7 @@
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRowDynPageField(index)"
@@ -384,6 +386,7 @@
           un-h="full"
           un-flex="~ [1_0_0]"
           un-overflow="hidden"
+          un-justify="center"
           un-items="center"
           un-break="all"
           @click="onRowDynPageField(index)"
@@ -396,7 +399,7 @@
     </view>
     
     <view
-      un-p="t-[350px]"
+      un-p="t-[300px]"
       un-box-border
     ></view>
     
@@ -441,6 +444,7 @@
         :show-close="true"
         :show-footer="true"
         size="auto"
+        :disable-teleport="props.drawerDisableTeleport"
       >
         
         <template #trigger>
@@ -517,7 +521,7 @@
             
             <tm-button
               v-if="permit('edit', '编辑')"
-              :disabled="!inited || is_form_hydrating"
+              :disabled="!inited || is_form_hydrating || isReadonly"
               block
               @click="operationDrawerShow = false; formRef?.submit();"
             >
@@ -589,6 +593,10 @@ import TmForm from "@/uni_modules/tm-ui/components/tm-form/tm-form.vue";
 
 // 动态页面字段
 import DynPageFieldDetailModal from "@/pages/dyn_page_field/DetailModal.vue";
+
+import {
+  getDefaultInputDynPageField,
+} from "@/pages/dyn_page_field/Api.ts";
 
 const pagePath = getPagePathDynPage();
 const permitStore = usePermitStore();
@@ -790,6 +798,11 @@ async function onRefresh() {
         });
         return;
       }
+      const [
+        defaultInput,
+      ] = await Promise.all([
+        getDefaultInputDynPage(),
+      ]);
       dyn_page_model = await findOneModel(
         {
           id: dyn_page_id,
@@ -812,9 +825,12 @@ async function onRefresh() {
       dyn_page_input = {
         ...dyn_page_input,
         ...getMergedInputPatch(),
+        id: undefined,
       };
       if (props.order_by) {
         dyn_page_input.order_by = props.order_by;
+      } else {
+        dyn_page_input.order_by = 1;
       }
     } else if (dialogAction === "edit" || dialogAction === "view") {
       dyn_page_model = await findOneModel(
@@ -896,7 +912,6 @@ async function onAddDynPageField() {
   const input = res.input;
   
   dyn_page_input.dyn_page_field = dyn_page_input.dyn_page_field || [ ];
-  dyn_page_input.dyn_page_field.push(input);
   
   dyn_page_input.dyn_page_field.push({
     ...input,
@@ -944,7 +959,9 @@ async function onCopyDynPageField() {
     order_by = max_order_by + 1;
   }
   
+  const defaultInput = await getDefaultInputDynPageField();
   const copiedItem = {
+    ...defaultInput,
     ...sourceItem,
     id: undefined,
     order_by,
@@ -1046,6 +1063,7 @@ const props = withDefaults(
     hideFields?: string[];
     hasCloseBtn?: boolean;
     closeBtnFn?: () => Promise<void> | void;
+    drawerDisableTeleport?: boolean;
   }>(),
   {
     init: true,
@@ -1059,6 +1077,7 @@ const props = withDefaults(
     hideFields: undefined,
     hasCloseBtn: undefined,
     closeBtnFn: undefined,
+    drawerDisableTeleport: undefined,
   },
 );
 

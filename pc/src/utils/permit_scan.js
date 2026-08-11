@@ -530,7 +530,7 @@ async function exec(context) {
       return item.menu_id === permit_model.menu_id && item.code === permit_model.code;
     });
     if (!has) {
-      console.log("删除", permit_model.id, permit_model.code, permit_model.lbl);
+      console.log("删除", permit_model);
       await deletePermit(context, permit_model.id);
       deletedCount++;
     }

@@ -32,6 +32,10 @@ async fn set_search_query(
   options: Option<Options>,
 ) -> Result<()> {
   
+  if search.is_hidden.is_none() {
+    search.is_hidden = Some(vec![0]);
+  }
+  
   Ok(())
 }
 

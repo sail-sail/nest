@@ -20,7 +20,7 @@
       <tm-form
         ref="formRef"
         v-model="dyn_page_field_input"
-        :label-width="140"
+        :label-width="160"
         :rules="form_rules"
         @submit="onSave"
       >
@@ -287,7 +287,7 @@
     </view>
     
     <view
-      un-p="t-[350px]"
+      un-p="t-[300px]"
       un-box-border
     ></view>
     
@@ -332,6 +332,7 @@
         :show-close="true"
         :show-footer="true"
         size="auto"
+        :disable-teleport="props.drawerDisableTeleport"
       >
         
         <template #trigger>
@@ -408,7 +409,7 @@
             
             <tm-button
               v-if="permit('edit', '编辑')"
-              :disabled="!inited || is_form_hydrating"
+              :disabled="!inited || is_form_hydrating || isReadonly"
               block
               @click="operationDrawerShow = false; formRef?.submit();"
             >
@@ -761,6 +762,11 @@ async function onRefresh() {
         });
         return;
       }
+      const [
+        defaultInput,
+      ] = await Promise.all([
+        getDefaultInputDynPageField(),
+      ]);
       dyn_page_field_model = await findOneModel(
         {
           id: dyn_page_field_id,
@@ -783,9 +789,12 @@ async function onRefresh() {
       dyn_page_field_input = {
         ...dyn_page_field_input,
         ...getMergedInputPatch(),
+        id: undefined,
       };
       if (props.order_by) {
         dyn_page_field_input.order_by = props.order_by;
+      } else {
+        dyn_page_field_input.order_by = 1;
       }
     } else if (dialogAction === "edit" || dialogAction === "view") {
       dyn_page_field_model = await findOneModel(
@@ -841,6 +850,7 @@ const props = withDefaults(
     hideFields?: string[];
     hasCloseBtn?: boolean;
     closeBtnFn?: () => Promise<void> | void;
+    drawerDisableTeleport?: boolean;
   }>(),
   {
     init: true,
@@ -854,6 +864,7 @@ const props = withDefaults(
     hideFields: undefined,
     hasCloseBtn: undefined,
     closeBtnFn: undefined,
+    drawerDisableTeleport: undefined,
   },
 );
 

@@ -209,6 +209,7 @@ if (right_field && !right_field_column) {
         :hide-fields="hideFields"
         :has-close-btn="hasCloseBtn"
         :close-btn-fn="onClose"
+        :drawer-disable-teleport="true"
       ></<#=Table_Up#>Detail>
       
     </scroll-view>
@@ -238,6 +239,8 @@ let order_by = $ref<number>();<#
 #>
 
 let inited = $ref(false);
+
+provide("not_permit", true);
 
 const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 const <#=table#>_detail_ref = $ref<InstanceType<typeof <#=Table_Up#>Detail>>();

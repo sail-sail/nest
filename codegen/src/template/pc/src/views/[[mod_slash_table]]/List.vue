@@ -3350,7 +3350,6 @@ const props = defineProps<{<#
       "update_usr_id",
       "update_time",
       "tenant_id",
-      "is_hidden",
       "is_deleted",
     ].includes(column_name)) continue;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -4333,7 +4332,7 @@ function getDataSearch() {<#
       ? (column?.searchRangeMax ? "subtract:" + column.searchRangeMax : undefined)
       : column.searchDefaultValue;
   #><#
-  if (data_type === "datetime" || data_type === "date") {
+  if (data_type === "date") {
     if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
       let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
       // 减去1天
@@ -4348,6 +4347,20 @@ function getDataSearch() {<#
   }<#
     }
   #><#
+  } else if (data_type === "datetime") {
+    if (typeof searchDefaultValue === "string" && searchDefaultValue.startsWith("subtract:")) {
+      let subtractSecond = Number(searchDefaultValue.substring("subtract:".length));
+      // 减去1天
+      subtractSecond = subtractSecond - 24 * 60 * 60;
+  #>
+  
+  if (!search.<#=column_name#>?.[0] || !search.<#=column_name#>?.[1]) {
+    search.<#=column_name#> = [
+      dayjs().subtract(<#=subtractSecond#>, "second").startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      dayjs().endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+    ];
+  }<#
+    }
   }
   #><#
   }

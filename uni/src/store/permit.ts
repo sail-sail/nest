@@ -16,8 +16,37 @@ type PermitRouteState = {
 const permits = ref<PermitItem[]>([ ]);
 const routePermitMap = reactive<Record<string, PermitRouteState>>({ });
 const routePermitLoading = reactive<Record<string, Promise<Record<string, boolean>> | undefined>>({ });
+const currentPermitScopeKey = ref("");
 
 const usrStore = useUsrStore();
+
+function getPermitScopeKey() {
+  return [
+    usrStore.getUsername?.() || "",
+    usrStore.getTenantId?.() || "",
+    usrStore.getAuthorization?.() || "",
+    usrStore.isAdmin() ? "admin" : "user",
+  ].join("|");
+}
+
+function ensurePermitScope() {
+  const nextScopeKey = getPermitScopeKey();
+  if (currentPermitScopeKey.value === nextScopeKey) {
+    return;
+  }
+  currentPermitScopeKey.value = nextScopeKey;
+  permits.value = [ ];
+  Object.keys(routePermitMap).forEach((key) => {
+    delete routePermitMap[key];
+  });
+  Object.keys(routePermitLoading).forEach((key) => {
+    delete routePermitLoading[key];
+  });
+}
+
+function getRouteCacheKey(route_path: string) {
+  return `${ route_path }::${ getPermitScopeKey() }`;
+}
 
 function buildPermitMap(route_path: string, permitItems: PermitItem[]) {
   const permitObj = permitItems
@@ -26,7 +55,7 @@ function buildPermitMap(route_path: string, permitItems: PermitItem[]) {
       ...prev,
       [curr.code]: true,
     }), {});
-  routePermitMap[route_path] = {
+  routePermitMap[getRouteCacheKey(route_path)] = {
     loaded: true,
     permits: permitObj,
   };
@@ -47,8 +76,13 @@ function mergePermits(permitItems: PermitItem[]) {
 }
 
 export default function() {
+  
+  const not_permit = inject("not_permit", false);
+  
   function getRoutePermitMap(route_path: string) {
-    const cacheState = routePermitMap[route_path];
+    ensurePermitScope();
+    const cacheKey = getRouteCacheKey(route_path);
+    const cacheState = routePermitMap[cacheKey];
     if (cacheState?.loaded) {
       return cacheState.permits;
     }
@@ -60,8 +94,10 @@ export default function() {
   }
 
   async function requestRoutePermits(route_path: string) {
-    if (routePermitLoading[route_path]) {
-      return await routePermitLoading[route_path];
+    ensurePermitScope();
+    const cacheKey = getRouteCacheKey(route_path);
+    if (routePermitLoading[cacheKey]) {
+      return await routePermitLoading[cacheKey];
     }
     const pending = (async () => {
       const data = await getUsrPermitsApi(route_path, { notLoading: true });
@@ -69,11 +105,11 @@ export default function() {
       mergePermits(permitItems);
       return buildPermitMap(route_path, permitItems);
     })();
-    routePermitLoading[route_path] = pending;
+    routePermitLoading[cacheKey] = pending;
     try {
       return await pending;
     } finally {
-      delete routePermitLoading[route_path];
+      delete routePermitLoading[cacheKey];
     }
   }
 
@@ -85,23 +121,27 @@ export default function() {
     })();
 
     function permit(code: string, lbl?: string) {
-      if (usrStore.isAdmin()) {
+      if (usrStore.isAdmin() || not_permit) {
         return true;
       }
+      ensurePermitScope();
       const permitObj = getRoutePermitMap(resolvedRoutePath);
-      const isLoaded = Boolean(routePermitMap[resolvedRoutePath]?.loaded);
-      if (!isLoaded && !routePermitLoading[resolvedRoutePath]) {
+      const cacheKey = getRouteCacheKey(resolvedRoutePath);
+      const isLoaded = Boolean(routePermitMap[cacheKey]?.loaded);
+      if (!isLoaded && !routePermitLoading[cacheKey]) {
         void requestRoutePermits(resolvedRoutePath);
       }
       return Boolean(permitObj[code]);
     }
 
     async function permitAsync(code: string, lbl?: string) {
-      if (usrStore.isAdmin()) {
+      if (usrStore.isAdmin() || not_permit) {
         return true;
       }
+      ensurePermitScope();
       const permitObj = getRoutePermitMap(resolvedRoutePath);
-      if (routePermitMap[resolvedRoutePath]?.loaded || Object.keys(permitObj).length > 0) {
+      const cacheKey = getRouteCacheKey(resolvedRoutePath);
+      if (routePermitMap[cacheKey]?.loaded || Object.keys(permitObj).length > 0) {
         return Boolean(permitObj[code]);
       }
       const nextPermitObj = await requestRoutePermits(resolvedRoutePath);
@@ -118,6 +158,7 @@ export default function() {
   }
 
   function clear() {
+    currentPermitScopeKey.value = "";
     permits.value = [ ];
     Object.keys(routePermitMap).forEach((key) => {
       delete routePermitMap[key];

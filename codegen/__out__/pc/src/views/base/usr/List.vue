@@ -930,6 +930,7 @@ const props = defineProps<{
   is_enabled?: string|string[]; // 启用
   rem?: string; // 备注
   rem_like?: string; // 备注
+  is_hidden?: string|string[]; // 隐藏
 }>();
 
 const builtInSearchType: { [key: string]: string } = {

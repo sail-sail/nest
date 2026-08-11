@@ -6,6 +6,7 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
+const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -209,6 +210,14 @@ async fn set_search_query(
   search: &mut <#=tableUP#>Search,
   options: Option<Options>,
 ) -> Result<()> {<#
+  if (hasIsHidden) {
+  #>
+  
+  if search.is_hidden.is_none() {
+    search.is_hidden = Some(vec![0]);
+  }<#
+  }
+  #><#
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   

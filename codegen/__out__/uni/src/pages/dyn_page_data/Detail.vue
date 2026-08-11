@@ -20,7 +20,7 @@
       <tm-form
         ref="formRef"
         v-model="dyn_page_data_input"
-        :label-width="140"
+        :label-width="160"
         :rules="form_rules"
         @submit="onSave"
       >
@@ -30,7 +30,7 @@
     </view>
     
     <view
-      un-p="t-[350px]"
+      un-p="t-[300px]"
       un-box-border
     ></view>
     
@@ -75,6 +75,7 @@
         :show-close="true"
         :show-footer="true"
         size="auto"
+        :disable-teleport="props.drawerDisableTeleport"
       >
         
         <template #trigger>
@@ -151,7 +152,7 @@
             
             <tm-button
               v-if="permit('edit', '编辑')"
-              :disabled="!inited || is_form_hydrating"
+              :disabled="!inited || is_form_hydrating || isReadonly"
               block
               @click="operationDrawerShow = false; formRef?.submit();"
             >
@@ -399,6 +400,11 @@ async function onRefresh() {
         });
         return;
       }
+      const [
+        defaultInput,
+      ] = await Promise.all([
+        getDefaultInputDynPageData(),
+      ]);
       dyn_page_data_model = await findOneModel(
         {
           id: dyn_page_data_id,
@@ -421,6 +427,7 @@ async function onRefresh() {
       dyn_page_data_input = {
         ...dyn_page_data_input,
         ...getMergedInputPatch(),
+        id: undefined,
       };
     } else if (dialogAction === "edit" || dialogAction === "view") {
       dyn_page_data_model = await findOneModel(
@@ -475,6 +482,7 @@ const props = withDefaults(
     hideFields?: string[];
     hasCloseBtn?: boolean;
     closeBtnFn?: () => Promise<void> | void;
+    drawerDisableTeleport?: boolean;
   }>(),
   {
     init: true,
@@ -487,6 +495,7 @@ const props = withDefaults(
     hideFields: undefined,
     hasCloseBtn: undefined,
     closeBtnFn: undefined,
+    drawerDisableTeleport: undefined,
   },
 );
 

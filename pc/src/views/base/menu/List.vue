@@ -806,6 +806,7 @@ const props = defineProps<{
   route_path?: string; // 路由
   route_path_like?: string; // 路由
   is_enabled?: string|string[]; // 启用
+  is_hidden?: string|string[]; // 隐藏
   is_current_tenant?: number; // 仅当前租户
 }>();
 
