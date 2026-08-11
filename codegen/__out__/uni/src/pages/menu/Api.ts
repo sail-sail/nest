@@ -48,6 +48,9 @@ export function intoInputMenu(
     order_by: model?.order_by != null ? Number(model?.order_by || 0) : undefined,
     // 备注
     rem: model?.rem,
+    // 隐藏
+    is_hidden: model?.is_hidden,
+    is_hidden_lbl: model?.is_hidden_lbl,
   };
   return input;
 }
@@ -642,6 +645,7 @@ export async function getDefaultInputMenu() {
     is_dyn_page: 0,
     is_enabled: 1,
     order_by: 1,
+    is_hidden: 0,
   };
   return defaultInput;
 }

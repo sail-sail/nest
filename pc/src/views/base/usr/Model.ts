@@ -63,6 +63,9 @@ export const usrFields = [
   "order_by",
   // 备注
   "rem",
+  // 隐藏
+  "is_hidden",
+  "is_hidden_lbl",
   // 创建人
   "create_usr_id",
   "create_usr_id_lbl",

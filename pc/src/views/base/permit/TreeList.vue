@@ -100,6 +100,7 @@ defineOptions({
 const props = defineProps<{
   parent_id?: MenuId;
   showBuildIn?: string;
+  is_hidden?: (0 | 1)[];
 }>();
 
 const pagePath = getPagePathPermit();
@@ -185,6 +186,7 @@ async function onFindTree() {
   treeData = await findTreeMenu({
     is_current_tenant,
     is_enabled: [ 1 ],
+    is_hidden: props.is_hidden,
   });
   if (parent_id) {
     const node = getById(parent_id, treeData);

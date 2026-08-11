@@ -209,6 +209,7 @@ if (right_field && !right_field_column) {
         :hide-fields="hideFields"
         :has-close-btn="hasCloseBtn"
         :close-btn-fn="onClose"
+        :drawer-disable-teleport="true"
       ></<#=Table_Up#>Detail>
       
     </scroll-view>
