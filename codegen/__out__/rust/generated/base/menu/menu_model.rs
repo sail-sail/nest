@@ -95,6 +95,9 @@ pub struct MenuModel {
   /// 隐藏
   #[graphql(name = "is_hidden")]
   pub is_hidden: u8,
+  /// 隐藏
+  #[graphql(name = "is_hidden_lbl")]
+  pub is_hidden_lbl: SmolStr,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -148,6 +151,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let rem = SmolStr::new(rem);
     // 隐藏
     let is_hidden: u8 = row.try_get("is_hidden")?;
+    let is_hidden_lbl = SmolStr::new(is_hidden.to_string());
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
@@ -188,6 +192,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
       order_by,
       rem,
       is_hidden,
+      is_hidden_lbl,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -251,6 +256,9 @@ pub struct MenuFieldComment {
   /// 隐藏
   #[graphql(name = "is_hidden")]
   pub is_hidden: SmolStr,
+  /// 隐藏
+  #[graphql(name = "is_hidden_lbl")]
+  pub is_hidden_lbl: SmolStr,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: SmolStr,
@@ -533,6 +541,9 @@ pub struct MenuInput {
   /// 隐藏
   #[graphql(name = "is_hidden")]
   pub is_hidden: Option<u8>,
+  /// 隐藏
+  #[graphql(name = "is_hidden_lbl")]
+  pub is_hidden_lbl: Option<SmolStr>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
@@ -657,6 +668,7 @@ impl From<MenuModel> for MenuInput {
       rem: model.rem.into(),
       // 隐藏
       is_hidden: model.is_hidden.into(),
+      is_hidden_lbl: model.is_hidden_lbl.into(),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
