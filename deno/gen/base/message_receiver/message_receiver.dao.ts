@@ -1860,12 +1860,7 @@ export async function updateByIdMessageReceiver(
   const oldModel = await findByIdMessageReceiver(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 消息接收人 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();

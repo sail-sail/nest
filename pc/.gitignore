@@ -37,6 +37,7 @@ public/@jsquash/
 public/wasm-feature-detect.js
 public/excel_template/**/*.xlsx
 public/import_template/**/*.xlsx
+public/file-viewer/
 
 # IDE 和编辑器文件
 .vscode/settings.json

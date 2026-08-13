@@ -2154,12 +2154,7 @@ export async function updateByIdDynPageField(
   const oldModel = await findByIdDynPageField(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 动态页面字段 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();

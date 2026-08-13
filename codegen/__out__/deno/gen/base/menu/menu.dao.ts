@@ -1855,12 +1855,7 @@ export async function updateByIdMenu(
   const oldModel = await findByIdMenu(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 菜单 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();

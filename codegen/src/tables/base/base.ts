@@ -1755,6 +1755,20 @@ export default defineConfig({
         order: "descending",
       },
       lbl_field: "content",
+      searchByKeyword: {
+        prop: "keyword",
+        fields: [ "title", "content" ],
+        lbl: "关键字",
+        placeholder: "关键字",
+      },
+      isUniPage: {
+        list_page: {
+          search_fields: [ "keyword" ],
+          lbl_field: "content",
+          lbl2_fields: [ "title" ],
+          right_field: "create_time",
+        },
+      },
     },
     columns: [
       {

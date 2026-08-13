@@ -6241,25 +6241,8 @@ export async function updateById<#=Table_Up#>(
   
   const oldModel = await findById<#=Table_Up#>(id, options);
   
-  if (!oldModel) {<#
-    if (isUseI18n) {
-    #>
-    throw throw new ServiceException(
-      await ns("编辑失败, 此 {0} 已被删除", await ns("<#=table_comment#>")),
-      "500",
-      true,
-      true,
-    );<#
-    } else {
-    #>
-    throw new ServiceException(
-      "编辑失败, 此 <#=table_comment#> 已被删除",
-      "500",
-      true,
-      true,
-    );<#
-    }
-    #>
+  if (!oldModel) {
+    return 0;
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>

@@ -1691,12 +1691,7 @@ export async function updateByIdOptions(
   const oldModel = await findByIdOptions(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 系统选项 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   // 不能修改系统记录的系统字段

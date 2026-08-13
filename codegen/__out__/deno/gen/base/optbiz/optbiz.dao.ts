@@ -1772,12 +1772,7 @@ export async function updateByIdOptbiz(
   const oldModel = await findByIdOptbiz(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 业务选项 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   // 不能修改系统记录的系统字段

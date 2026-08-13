@@ -1715,12 +1715,7 @@ export async function updateByIdDict(
   const oldModel = await findByIdDict(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 系统字典 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   // 不能修改系统记录的系统字段

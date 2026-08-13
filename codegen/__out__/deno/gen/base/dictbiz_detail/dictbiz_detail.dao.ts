@@ -1754,12 +1754,7 @@ export async function updateByIdDictbizDetail(
   const oldModel = await findByIdDictbizDetail(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 业务字典明细 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();

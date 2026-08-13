@@ -2325,12 +2325,7 @@ export async function updateByIdUsr(
   const oldModel = await findByIdUsr(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 用户 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();

@@ -153,6 +153,8 @@ input MessageSearch {
   is_deleted: Int
   "ID列表"
   ids: [MessageId!]
+  "关键字"
+  keyword: String
   "ID"
   id: MessageId
   "分类"
@@ -160,6 +162,9 @@ input MessageSearch {
   "标题"
   title: String
   title_like: String
+  "内容"
+  content: String
+  content_like: String
   "跳转路由"
   route_path: String
   route_path_like: String

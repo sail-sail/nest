@@ -91,7 +91,7 @@
     "cross-env": "10.1.0",
     "eslint": "10.8.1",
     "eslint-plugin-vue": "10.10.0",
-    "globals": "17.9.0",
+    "globals": "17.11.0",
     "hookable": "6.1.1",
     "perfect-debounce": "2.1.0",
     "rollup": "4.62.4",

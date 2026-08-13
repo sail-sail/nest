@@ -1797,12 +1797,7 @@ export async function updateByIdDictbiz(
   const oldModel = await findByIdDictbiz(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 业务字典 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();

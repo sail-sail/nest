@@ -2354,12 +2354,7 @@ export async function updateByIdRole(
   const oldModel = await findByIdRole(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 角色 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   {

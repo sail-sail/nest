@@ -1606,12 +1606,7 @@ export async function updateByIdLang(
   const oldModel = await findByIdLang(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 语言 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();

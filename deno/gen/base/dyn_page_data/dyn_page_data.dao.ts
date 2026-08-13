@@ -1692,12 +1692,7 @@ export async function updateByIdDynPageData(
   const oldModel = await findByIdDynPageData(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 动态页面数据 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();

@@ -1285,12 +1285,7 @@ export async function updateByIdServerLog(
   const oldModel = await findByIdServerLog(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 系统日志 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();

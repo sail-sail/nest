@@ -1663,12 +1663,7 @@ export async function updateByIdI18n(
   const oldModel = await findByIdI18n(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 国际化 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();

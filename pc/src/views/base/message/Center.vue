@@ -44,6 +44,22 @@
           <div
             un-min="h-80"
           >
+            <div un-flex="~ items-center justify-between" un-m="b-3">
+              <div un-flex="~ items-center" un-gap="x-2">
+                <el-checkbox
+                  :model-value="isCurrentTabAllSelected"
+                  :indeterminate="isCurrentTabIndeterminate"
+                  @change="toggleCurrentTabSelectAll"
+                />
+                <span un-text="gray-500 sm">全选</span>
+              </div>
+              <el-button
+                :disabled="selectedUnreadIds.length === 0"
+                @click="markSelectedAsRead"
+              >
+                设为已读
+              </el-button>
+            </div>
             <div
               v-if="unreadItems.length > 0"
               class="message-list"
@@ -52,32 +68,42 @@
                 v-for="item in unreadItems"
                 :key="item.receiver.id"
                 class="message-card unread"
-                @click="openDetail(item)"
+                :class="{ 'is-selected': isItemSelected(item, 'unread') }"
               >
-                <div un-flex="~ justify-between items-start">
-                  <div un-flex="~ col" un-gap="y-1">
-                    <div un-flex="~ items-center" un-gap="x-2">
-                      <el-tag type="danger" size="small">未读</el-tag>
-                      <span un-font="semibold">
-                        {{ item.message?.title || item.message?.content || item.receiver.message_id_content || '系统消息' }}
-                      </span>
+                <div un-flex="~ items-start" un-gap="x-3">
+                  <div class="selection-cell" @click.stop>
+                    <el-checkbox
+                      :model-value="isItemSelected(item, 'unread')"
+                      @change="toggleItemSelection(item, 'unread')"
+                    />
+                  </div>
+                  <div un-flex="~ col" un-w="full" @click="openDetail(item)">
+                    <div un-flex="~ justify-between items-start">
+                      <div un-flex="~ col" un-gap="y-1">
+                        <div un-flex="~ items-center" un-gap="x-2">
+                          <el-tag type="danger" size="small">未读</el-tag>
+                          <span un-font="semibold">
+                            {{ item.message?.title || item.message?.content || item.receiver.message_id_content || '系统消息' }}
+                          </span>
+                        </div>
+                        <div un-text="gray-500 sm" un-line-clamp="2">
+                          {{ item.message?.content || item.receiver.message_id_content || '暂无内容' }}
+                        </div>
+                      </div>
+                      <div un-text="gray-400 sm" un-whitespace-nowrap>
+                        {{ formatTime(item.receiver.create_time) }}
+                      </div>
                     </div>
-                    <div un-text="gray-500 sm" un-line-clamp="2">
-                      {{ item.message?.content || item.receiver.message_id_content || '暂无内容' }}
+                    <div v-if="item.message?.route_path" un-m="t-5">
+                      <el-button
+                        link
+                        type="primary"
+                        @click.stop="goToRoute(item)"
+                      >
+                        跳转
+                      </el-button>
                     </div>
                   </div>
-                  <div un-text="gray-400 sm" un-whitespace-nowrap>
-                    {{ formatTime(item.receiver.create_time) }}
-                  </div>
-                </div>
-                <div v-if="item.message?.route_path" un-m="t-5">
-                  <el-button
-                    link
-                    type="primary"
-                    @click.stop="goToRoute(item)"
-                  >
-                    跳转
-                  </el-button>
                 </div>
               </div>
             </div>
@@ -99,6 +125,22 @@
           <div
             un-min="h-80"
           >
+            <div un-flex="~ items-center justify-between" un-m="b-3">
+              <div un-flex="~ items-center" un-gap="x-2">
+                <el-checkbox
+                  :model-value="isCurrentTabAllSelected"
+                  :indeterminate="isCurrentTabIndeterminate"
+                  @change="toggleCurrentTabSelectAll"
+                />
+                <span un-text="gray-500 sm">全选</span>
+              </div>
+              <el-button
+                :disabled="selectedReadIds.length === 0"
+                @click="deleteSelectedReadMessages"
+              >
+                删除已选
+              </el-button>
+            </div>
             <div
               v-if="readItems.length > 0"
               class="message-list"
@@ -107,38 +149,48 @@
                 v-for="item in readItems"
                 :key="item.receiver.id"
                 class="message-card"
-                @click="openDetail(item)"
+                :class="{ 'is-selected': isItemSelected(item, 'read') }"
               >
-                <div un-flex="~ justify-between items-start">
-                  <div un-flex="~ col" un-gap="y-1">
-                    <div un-flex="~ items-center" un-gap="x-2">
-                      <el-tag type="info" size="small">已读</el-tag>
-                      <span un-font="semibold">
-                        {{ item.message?.title || item.message?.content || item.receiver.message_id_content || '系统消息' }}
-                      </span>
-                    </div>
-                    <div un-text="gray-500 sm" un-line-clamp="2">
-                      {{ item.message?.content || item.receiver.message_id_content || '暂无内容' }}
-                    </div>
+                <div un-flex="~ items-start" un-gap="x-3">
+                  <div class="selection-cell" @click.stop>
+                    <el-checkbox
+                      :model-value="isItemSelected(item, 'read')"
+                      @change="toggleItemSelection(item, 'read')"
+                    />
                   </div>
-                  <div un-text="gray-400 sm" un-whitespace-nowrap>
-                    {{ formatTime(item.receiver.create_time) }}
-                  </div>
-                </div>
-                <div un-flex="~ justify-between items-center" un-m="t-3">
-                  <div un-text="gray-400 sm">
-                    <div v-if="item.message?.route_path" un-m="t-2">
-                      <el-button
-                        link
-                        type="primary"
-                        @click.stop="goToRoute(item)"
-                      >
-                        跳转
-                      </el-button>
+                  <div un-flex="~ col" un-w="full" @click="openDetail(item)">
+                    <div un-flex="~ justify-between items-start">
+                      <div un-flex="~ col" un-gap="y-1">
+                        <div un-flex="~ items-center" un-gap="x-2">
+                          <el-tag type="info" size="small">已读</el-tag>
+                          <span un-font="semibold">
+                            {{ item.message?.title || item.message?.content || item.receiver.message_id_content || '系统消息' }}
+                          </span>
+                        </div>
+                        <div un-text="gray-500 sm" un-line-clamp="2">
+                          {{ item.message?.content || item.receiver.message_id_content || '暂无内容' }}
+                        </div>
+                      </div>
+                      <div un-text="gray-400 sm" un-whitespace-nowrap>
+                        {{ formatTime(item.receiver.create_time) }}
+                      </div>
                     </div>
-                  </div>
-                  <div un-text="blue-500 hover:blue-600">
-                    查看详情
+                    <div un-flex="~ justify-between items-center" un-m="t-3">
+                      <div un-text="gray-400 sm">
+                        <div v-if="item.message?.route_path" un-m="t-2">
+                          <el-button
+                            link
+                            type="primary"
+                            @click.stop="goToRoute(item)"
+                          >
+                            跳转
+                          </el-button>
+                        </div>
+                      </div>
+                      <div un-text="blue-500 hover:blue-600">
+                        查看详情
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -209,6 +261,7 @@
 import { usePage } from "@/compositions/List";
 import { query } from "@/utils/graphql";
 import { markMessageReceiverAsRead } from "@/views/base/message/Api2";
+import { deleteByIdsMessageReceiver } from "@/views/base/message_receiver/Api";
 
 defineOptions({
   name: "消息中心",
@@ -226,6 +279,8 @@ let activeTab = $ref("unread");
 let detailVisible = $ref(false);
 let selectedItem = $ref<MessageCenterItem | null>(null);
 let items = $ref<MessageCenterItem[]>([]);
+let selectedUnreadIds = $ref<string[]>([]);
+let selectedReadIds = $ref<string[]>([]);
 
 const { page, pageSizes, pgSizeChg, pgCurrentChg } = $(usePage(async (isCount = true) => {
   await refreshMessages(isCount);
@@ -237,9 +292,75 @@ const totalCount = $computed(() => page.total);
 const unreadItems = $computed(() => items.filter((item) => !isRead(item.receiver)));
 const readItems = $computed(() => items.filter((item) => isRead(item.receiver)));
 const unreadCount = $computed(() => unreadItems.length);
+const currentTabSelectionIds = $computed(() => activeTab === "unread" ? selectedUnreadIds : selectedReadIds);
+const currentTabItems = $computed(() => activeTab === "unread" ? unreadItems : readItems);
+const isCurrentTabAllSelected = $computed(() => currentTabItems.length > 0 && currentTabSelectionIds.length === currentTabItems.length);
+const isCurrentTabIndeterminate = $computed(() => currentTabSelectionIds.length > 0 && currentTabSelectionIds.length < currentTabItems.length);
 
 function isRead(receiver: MessageReceiverModel) {
   return Number(receiver.is_read) === 1;
+}
+
+function getItemSelectionId(item: MessageCenterItem) {
+  return String(item.receiver.id);
+}
+
+function isItemSelected(item: MessageCenterItem, tabName: "unread" | "read") {
+  const id = getItemSelectionId(item);
+  if (tabName === "unread") {
+    return selectedUnreadIds.includes(id);
+  }
+  return selectedReadIds.includes(id);
+}
+
+function toggleItemSelection(item: MessageCenterItem, tabName: "unread" | "read") {
+  const id = getItemSelectionId(item);
+  if (tabName === "unread") {
+    selectedUnreadIds = selectedUnreadIds.includes(id)
+      ? selectedUnreadIds.filter((currentId) => currentId !== id)
+      : [...selectedUnreadIds, id];
+    return;
+  }
+  selectedReadIds = selectedReadIds.includes(id)
+    ? selectedReadIds.filter((currentId) => currentId !== id)
+    : [...selectedReadIds, id];
+}
+
+function selectSingleItem(item: MessageCenterItem, tabName: "unread" | "read") {
+  const id = getItemSelectionId(item);
+  selectedUnreadIds = [];
+  selectedReadIds = [];
+  if (tabName === "unread") {
+    selectedUnreadIds = [id];
+    return;
+  }
+  selectedReadIds = [id];
+}
+
+function toggleCurrentTabSelectAll() {
+  if (isCurrentTabAllSelected) {
+    if (activeTab === "unread") {
+      selectedUnreadIds = [];
+    } else {
+      selectedReadIds = [];
+    }
+    return;
+  }
+
+  const ids = currentTabItems.map((item) => getItemSelectionId(item));
+  if (activeTab === "unread") {
+    selectedUnreadIds = ids;
+  } else {
+    selectedReadIds = ids;
+  }
+}
+
+function syncSelectionIds() {
+  const unreadIds = new Set(unreadItems.map((item) => getItemSelectionId(item)));
+  selectedUnreadIds = selectedUnreadIds.filter((id) => unreadIds.has(id));
+
+  const readIds = new Set(readItems.map((item) => getItemSelectionId(item)));
+  selectedReadIds = selectedReadIds.filter((id) => readIds.has(id));
 }
 
 function formatTime(value?: string | null) {
@@ -397,6 +518,7 @@ async function refreshMessages(isCount = true) {
       return bTime.localeCompare(aTime);
     });
 
+  syncSelectionIds();
   inited = true;
 }
 
@@ -420,9 +542,67 @@ async function markAsRead(item: MessageCenterItem) {
 }
 
 async function openDetail(item: MessageCenterItem) {
+  selectSingleItem(item, activeTab === "unread" ? "unread" : "read");
   await markAsRead(item);
   selectedItem = item;
   detailVisible = true;
+}
+
+async function markSelectedAsRead() {
+  const ids = selectedUnreadIds
+    .map((id) => id as MessageReceiverId)
+    .filter(Boolean);
+  if (ids.length === 0) {
+    return;
+  }
+
+  try {
+    let successCount = 0;
+    for (const id of ids) {
+      const ok = await markMessageReceiverAsRead(id);
+      if (ok) {
+        successCount += 1;
+      }
+    }
+
+    if (successCount === 0) {
+      ElMessage.error("更新消息状态失败");
+      return;
+    }
+
+    selectedUnreadIds = [];
+    await refreshMessages(false);
+    window.dispatchEvent(new CustomEvent("message-count-changed"));
+    ElMessage.success(`已将 ${successCount} 条消息设为已读`);
+  } catch (err) {
+    console.error(err);
+    ElMessage.error("更新消息状态失败");
+  }
+}
+
+async function deleteSelectedReadMessages() {
+  const ids = selectedReadIds
+    .map((id) => id as MessageReceiverId)
+    .filter(Boolean);
+  if (ids.length === 0) {
+    return;
+  }
+
+  try {
+    const count = await deleteByIdsMessageReceiver(ids);
+    if (count <= 0) {
+      ElMessage.error("删除消息失败");
+      return;
+    }
+
+    selectedReadIds = [];
+    await refreshMessages();
+    window.dispatchEvent(new CustomEvent("message-count-changed"));
+    ElMessage.success(`已删除 ${count} 条消息`);
+  } catch (err) {
+    console.error(err);
+    ElMessage.error("删除消息失败");
+  }
 }
 
 async function goToRoute(item: MessageCenterItem) {
@@ -476,8 +656,19 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
 }
 
+.message-card.is-selected {
+  border-color: var(--el-color-primary);
+  box-shadow: 0 0 0 1px var(--el-color-primary-light-5) inset;
+}
+
 .message-card.unread {
   background: var(--el-color-primary-light-9);
+}
+
+.selection-cell {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
 }
 
 .detail {

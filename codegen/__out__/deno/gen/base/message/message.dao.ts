@@ -108,6 +108,13 @@ async function getWhereQuery(
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
+  if (isNotEmpty(search?.keyword)) {
+    whereQuery += " and (";
+    whereQuery += ` t.title like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += " or";
+    whereQuery += ` t.content like ${ args.push("%" + sqlLike(search?.keyword) + "%") }`;
+    whereQuery += ")";
+  }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
@@ -1985,12 +1992,7 @@ export async function updateByIdMessage(
   const oldModel = await findByIdMessage(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 消息 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();
