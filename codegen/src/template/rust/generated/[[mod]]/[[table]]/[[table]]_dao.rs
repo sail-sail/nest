@@ -6938,26 +6938,8 @@ pub async fn update_by_id_<#=table#>(
   
   let old_model = match old_model {
     Some(model) => model,
-    None => {<#
-      if (isUseI18n) {
-      #>
-      let table_comment = i18n_dao::ns(
-        "<#=table_comment#>".to_owned(),
-        None,
-      ).await?;
-      let map = HashMap::from([
-        ("0".to_owned(), table_comment),
-      ]);
-      let err_msg = i18n_dao::ns(
-        "编辑失败, 此 {0} 已被删除".to_owned(),
-        map.into(),
-      ).await?;<#
-      } else {
-      #>
-      let err_msg = "编辑失败, 此 <#=table_comment#> 已被删除";<#
-      }
-      #>
-      return Err(eyre!(err_msg));
+    None => {
+      return Ok(id);
     }
   };<#
   if (hasVersion || hasUpdateUsrId || hasUpdateTime) {

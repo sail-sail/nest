@@ -324,10 +324,10 @@ pub async fn delete_by_ids_message(
     function_name = function_name!(),
   );
   
-  use_permit(
-    SmolStr::new(get_page_path_message()),
-    SmolStr::new("delete"),
-  ).await?;
+  // use_permit(
+  //   SmolStr::new(get_page_path_message()),
+  //   SmolStr::new("delete"),
+  // ).await?;
   
   let num = message_service::delete_by_ids_message(
     ids,

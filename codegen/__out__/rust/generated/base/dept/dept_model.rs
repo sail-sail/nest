@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -754,7 +753,7 @@ impl From<DeptInput> for DeptSearch {
   }
 }
 
-impl_id!(DeptId);
+crate::common::id::impl_id!(DeptId);
 
 /// 部门 检测字段是否允许前端排序
 pub fn check_sort_dept(

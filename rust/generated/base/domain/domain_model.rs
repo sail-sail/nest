@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 use crate::base::usr::usr_model::UsrId;
 
@@ -563,7 +562,7 @@ impl From<DomainInput> for DomainSearch {
   }
 }
 
-impl_id!(DomainId);
+crate::common::id::impl_id!(DomainId);
 
 /// 域名 检测字段是否允许前端排序
 pub fn check_sort_domain(

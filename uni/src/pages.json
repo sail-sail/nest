@@ -20,6 +20,18 @@
       "style": {
         "navigationBarTitleText": "登录"
       }
+    },
+    {
+      "path": "pages/message/List",
+      "style": {
+        "navigationBarTitleText": "消息列表"
+      }
+    },
+    {
+      "path": "pages/message/Detail",
+      "style": {
+        "navigationBarTitleText": "消息详情"
+      }
     }
 	],
 	"globalStyle": {
