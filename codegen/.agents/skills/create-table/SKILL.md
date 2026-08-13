@@ -15,9 +15,8 @@ description: 数据库建表规范。创建新表 SQL 时必须遵循
 
 ## 新表落库安全顺序
 
-- 常规验证新表时，禁止把 `pnpm run initdb` 当默认命令；它会清空并重建全库，风险极高
-- 默认安全顺序是：先 `pnpm run importCsv` 导入新菜单/字典，再 `pnpm run sql` 执行新增建表 SQL，确认库里已有新表后再 `pnpm run codegen`
-- 只有用户明确确认“目标库允许整库重建”时，才可以考虑 `pnpm run initdb`
+- 禁止执行 `pnpm run initdb`；它会清空并重建全库，风险极高
+- 默认安全顺序是：先 `pnpm run importCsv` 导入新菜单/字典，再生成新增修改删除字段 SQL 出来给人类去数据库执行
 
 ## 表路径
 `codegen/src/tables/{mod}/{mod}.sql`
