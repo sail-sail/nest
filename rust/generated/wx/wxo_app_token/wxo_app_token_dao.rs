@@ -2114,8 +2114,7 @@ pub async fn update_by_id_wxo_app_token(
   let old_model = match old_model {
     Some(model) => model,
     None => {
-      let err_msg = "编辑失败, 此 小程序接口凭据 已被删除";
-      return Err(eyre!(err_msg));
+      return Ok(id);
     }
   };
   

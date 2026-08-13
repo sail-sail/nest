@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -938,7 +937,7 @@ impl From<WxRefundInput> for WxRefundSearch {
   }
 }
 
-impl_id!(WxRefundId);
+crate::common::id::impl_id!(WxRefundId);
 
 /// 微信退款申请退款渠道
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]

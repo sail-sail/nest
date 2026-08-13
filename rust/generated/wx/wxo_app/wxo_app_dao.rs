@@ -2936,8 +2936,7 @@ pub async fn update_by_id_wxo_app(
   let old_model = match old_model {
     Some(model) => model,
     None => {
-      let err_msg = "编辑失败, 此 公众号设置 已被删除";
-      return Err(eyre!(err_msg));
+      return Ok(id);
     }
   };
   

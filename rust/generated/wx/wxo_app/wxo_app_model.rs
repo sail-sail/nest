@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -899,7 +898,7 @@ impl From<WxoAppInput> for WxoAppSearch {
   }
 }
 
-impl_id!(WxoAppId);
+crate::common::id::impl_id!(WxoAppId);
 
 /// 公众号设置消息加解密方式
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]

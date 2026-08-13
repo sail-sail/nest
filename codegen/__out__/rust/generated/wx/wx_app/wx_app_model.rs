@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -684,7 +683,7 @@ impl From<WxAppInput> for WxAppSearch {
   }
 }
 
-impl_id!(WxAppId);
+crate::common::id::impl_id!(WxAppId);
 
 /// 小程序设置 检测字段是否允许前端排序
 pub fn check_sort_wx_app(
