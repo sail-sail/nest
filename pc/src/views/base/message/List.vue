@@ -758,6 +758,8 @@ const props = defineProps<{
   category?: string|string[]; // 分类
   title?: string; // 标题
   title_like?: string; // 标题
+  content?: string; // 内容
+  content_like?: string; // 内容
   route_path?: string; // 跳转路由
   route_path_like?: string; // 跳转路由
   sender_usr_id?: string|string[]; // 发送人

@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -616,7 +615,7 @@ impl From<DictbizDetailInput> for DictbizDetailSearch {
   }
 }
 
-impl_id!(DictbizDetailId);
+crate::common::id::impl_id!(DictbizDetailId);
 
 /// 业务字典明细 检测字段是否允许前端排序
 pub fn check_sort_dictbiz_detail(

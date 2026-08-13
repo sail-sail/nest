@@ -63,6 +63,7 @@
     "rust-analyzer.cachePriming.enable": false,
     "rust-analyzer.check.workspace": false,
     "rust-analyzer.procMacro.enable": false,
+    "rust-analyzer.inlayHints.typeHints.hideInferredTypes": true,
     //"rust-analyzer.workspace.discoverConfig": {
     //  "command": [
     //    "cargo-subspace",

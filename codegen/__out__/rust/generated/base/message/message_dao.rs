@@ -124,6 +124,22 @@ async fn get_where_query(
       args.push(tenant_id.into());
     }
   }
+  {
+    let keyword: Option<SmolStr> = match search {
+      Some(item) => item.keyword.clone(),
+      None => None,
+    };
+    if let Some(keyword) = keyword && !keyword.is_empty() {
+      where_query.push_str(" and (");
+      where_query.push_str(" t.title like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+        
+      where_query.push_str(" or");
+      where_query.push_str(" t.content like ?");
+      args.push(format!("%{}%", sql_like(&keyword)).into());
+      where_query.push(')');
+    }
+  }
   // 分类
   {
     let category: Option<Vec<SmolStr>> = match search {
@@ -2739,8 +2755,7 @@ pub async fn update_by_id_message(
   let old_model = match old_model {
     Some(model) => model,
     None => {
-      let err_msg = "编辑失败, 此 消息 已被删除";
-      return Err(eyre!(err_msg));
+      return Ok(id);
     }
   };
   

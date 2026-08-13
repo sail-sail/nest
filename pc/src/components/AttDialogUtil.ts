@@ -114,24 +114,30 @@ const flyfishSupportedExts = new Set([
 ]);
 
 function getFileExt(
-  fileStat?: AttFileStat,
+  filename?: string,
 ): string {
-  const lbl = fileStat?.lbl || "";
-  const dotIndex = lbl.lastIndexOf(".");
-  if (dotIndex <= -1 || dotIndex === lbl.length - 1) {
+  const name = filename || "";
+  const dotIndex = name.lastIndexOf(".");
+  if (dotIndex <= -1 || dotIndex === name.length - 1) {
     return "";
   }
-  return lbl.slice(dotIndex + 1).toLowerCase();
+  return name.slice(dotIndex + 1).toLowerCase();
+}
+
+export function getAttPreviewTypeByFilename(
+  filename?: string,
+): AttPreviewType {
+  const ext = getFileExt(filename);
+  if (ext && flyfishSupportedExts.has(ext)) {
+    return "flyfish";
+  }
+  return "iframe";
 }
 
 export function getAttPreviewType(
   fileStat?: AttFileStat,
 ): AttPreviewType {
-  const ext = getFileExt(fileStat);
-  if (ext && flyfishSupportedExts.has(ext)) {
-    return "flyfish";
-  }
-  return "iframe";
+  return getAttPreviewTypeByFilename(fileStat?.lbl);
 }
 
 export function canAttPreviewTypePreview(

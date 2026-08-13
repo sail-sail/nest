@@ -2,6 +2,7 @@
 <CustomDialog
   ref="customDialogRef"
   :before-close="beforeClose"
+  destroy-on-close
 >
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
@@ -31,7 +32,7 @@
         v-if="currentItem && !dialogModel.readonly"
         plain
         type="danger"
-        @click="deleteClk"
+        @click="onDelete"
       >
         <template #icon>
           <ElIconDelete />
@@ -135,6 +136,9 @@
             <FileViewer
               un-w="full"
               un-h="full"
+              :options="{
+                search: false,
+              }"
               :file="fileCache.get(item.id)"
             />
           </div>
@@ -208,7 +212,8 @@
     </div>
     <div
       v-if="items.length > 1"
-      un-p="b-[5px]"
+      un-p="t-2"
+      un-box-border
       un-flex="~"
       un-justify-center
     >
@@ -274,7 +279,7 @@
     type="file"
     :accept="dialogModel.accept"
     un-hidden
-    @change="inputChg"
+    @change="onInput"
   />
 </CustomDialog>
 </template>
@@ -285,6 +290,7 @@ import { filesize } from "filesize";
 import {
   getAttDialogPreviewInfo,
   getAttPreviewType,
+  getAttPreviewTypeByFilename,
   splitAttIds,
 } from "./AttDialogUtil";
 
@@ -295,7 +301,7 @@ import type {
 
 import {
   FileViewer,
-} from "@flyfish-group/file-viewer3";
+} from "@file-viewer/vue3";
 
 import {
   saveAs,
@@ -318,6 +324,7 @@ type PreviewRef = HTMLIFrameElement | HTMLImageElement;
 type AttItem = {
   id: string;
   stat?: AttFileStat;
+  filename?: string;
   shown: boolean;
   ref?: PreviewRef;
   previewType: AttPreviewType;
@@ -375,14 +382,19 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 function createItem(
   id: string,
   index: number,
+  filename?: string,
 ): AttItem {
+  const previewType = getAttPreviewTypeByFilename(filename);
   return {
     id,
     stat: undefined,
+    filename,
     shown: index === 0,
     ref: undefined,
-    previewType: "iframe",
-    loadState: "idle",
+    previewType,
+    loadState: previewType === "flyfish"
+      ? "loaded"
+      : "idle",
   };
 }
 
@@ -398,6 +410,7 @@ function mergeItems(
     return {
       id,
       stat,
+      filename: prevItem?.filename ?? stat?.lbl,
       shown: prevItem?.shown ?? index === 0,
       ref: prevItem?.ref,
       previewType,
@@ -423,7 +436,7 @@ function clampNowIndex() {
 }
 
 function getItemFilename(item: AttItem) {
-  return item.stat?.lbl || "";
+  return item.stat?.lbl || item.filename || "";
 }
 
 let fileCache = $ref(new Map<string, File>());
@@ -461,7 +474,10 @@ async function getItemFile(item: AttItem) {
   return file;
 }
 
-function getItemUrl(item: AttItem) {
+function getItemUrl(
+  item: AttItem,
+  inline: "0" | "1" = "1",
+) {
   let url = location.origin + location.pathname;
   if (url.endsWith("/")) {
     url = url.slice(0, -1);
@@ -469,6 +485,7 @@ function getItemUrl(item: AttItem) {
   url += getDownloadUrl({
     id: item.id,
     filename: getItemFilename(item),
+    inline,
   });
   return url;
 }
@@ -517,14 +534,13 @@ async function showDialog(
   modelValue = nextModelValue;
   if (isChg) {
     nowIndex = 0;
-    items = mergeItems(splitAttIds(modelValue));
-    await getStatsOssEfc();
   }
+  await refreshItemsFromModelValue();
   await afterSwitchPreview();
 }
 
-async function getStatsOssEfc() {
-  const ids = items.map((item) => item.id);
+async function refreshItemsFromModelValue() {
+  const ids = splitAttIds(modelValue);
   if (ids.length === 0) {
     items = [ ];
     return;
@@ -676,13 +692,13 @@ function downloadClk() {
   if (!currentItem) {
     return;
   }
-  const url = getItemUrl(currentItem);
+  const url = getItemUrl(currentItem, "0");
   saveAs(url);
 }
 
 const fileRef = $ref<HTMLInputElement>();
 
-async function inputChg() {
+async function onInput() {
   if (!fileRef) return;
   if (dialogModel.maxSize && items.length >= dialogModel.maxSize) {
     fileRef.value = "";
@@ -706,11 +722,11 @@ async function inputChg() {
   const insertIndex = items.length > 0 ? nowIndex + 1 : 0;
   pauseIframeMedia(currentItem);
   const nextItems = [ ...items ];
-  nextItems.splice(insertIndex, 0, createItem(id, insertIndex));
+  nextItems.splice(insertIndex, 0, createItem(id, insertIndex, file.name));
   items = nextItems;
   nowIndex = insertIndex;
   syncModelValue();
-  await getStatsOssEfc();
+  await refreshItemsFromModelValue();
   await afterSwitchPreview();
   emit("change", modelValue);
 }
@@ -727,7 +743,7 @@ async function onUpload() {
 }
 
 // 删除附件
-async function deleteClk() {
+async function onDelete() {
   try {
     await ElMessageBox.confirm(await nsAsync("确定删除当前附件吗？"));
   } catch (err) {

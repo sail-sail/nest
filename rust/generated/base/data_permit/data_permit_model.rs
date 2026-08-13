@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -563,7 +562,7 @@ impl From<DataPermitInput> for DataPermitSearch {
   }
 }
 
-impl_id!(DataPermitId);
+crate::common::id::impl_id!(DataPermitId);
 
 /// 数据权限范围
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]

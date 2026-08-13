@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 use crate::base::menu::menu_model::MenuId;
 
@@ -326,7 +325,7 @@ impl From<FieldPermitInput> for FieldPermitSearch {
   }
 }
 
-impl_id!(FieldPermitId);
+crate::common::id::impl_id!(FieldPermitId);
 
 /// 字段权限 检测字段是否允许前端排序
 pub fn check_sort_field_permit(

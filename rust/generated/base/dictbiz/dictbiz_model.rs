@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::dictbiz_detail::dictbiz_detail_model::{
@@ -643,7 +642,7 @@ impl From<DictbizInput> for DictbizSearch {
   }
 }
 
-impl_id!(DictbizId);
+crate::common::id::impl_id!(DictbizId);
 
 /// 业务字典数据类型
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
