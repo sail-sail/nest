@@ -2357,8 +2357,7 @@ pub async fn update_by_id_optbiz(
   let old_model = match old_model {
     Some(model) => model,
     None => {
-      let err_msg = "编辑失败, 此 业务选项 已被删除";
-      return Err(eyre!(err_msg));
+      return Ok(id);
     }
   };
   

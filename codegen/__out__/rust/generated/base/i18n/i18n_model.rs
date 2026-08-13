@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 use crate::base::lang::lang_model::LangId;
 use crate::base::menu::menu_model::MenuId;
@@ -576,7 +575,7 @@ impl From<I18nInput> for I18nSearch {
   }
 }
 
-impl_id!(I18nId);
+crate::common::id::impl_id!(I18nId);
 
 /// 国际化 检测字段是否允许前端排序
 pub fn check_sort_i18n(

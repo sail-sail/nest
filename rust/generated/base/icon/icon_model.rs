@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 use crate::base::usr::usr_model::UsrId;
 
@@ -567,7 +566,7 @@ impl From<IconInput> for IconSearch {
   }
 }
 
-impl_id!(IconId);
+crate::common::id::impl_id!(IconId);
 
 /// 图标库 检测字段是否允许前端排序
 pub fn check_sort_icon(

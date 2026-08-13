@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -314,6 +313,8 @@ pub struct MessageSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
+  #[graphql(name = "keyword")]
+  pub keyword: Option<SmolStr>,
   /// 分类
   #[graphql(name = "category")]
   pub category: Option<Vec<SmolStr>>,
@@ -327,10 +328,10 @@ pub struct MessageSearch {
   #[graphql(name = "title_like")]
   pub title_like: Option<SmolStr>,
   /// 内容
-  #[graphql(skip)]
+  #[graphql(name = "content")]
   pub content: Option<SmolStr>,
   /// 内容
-  #[graphql(skip)]
+  #[graphql(name = "content_like")]
   pub content_like: Option<SmolStr>,
   /// 跳转路由
   #[graphql(name = "route_path")]
@@ -794,7 +795,7 @@ impl From<MessageInput> for MessageSearch {
   }
 }
 
-impl_id!(MessageId);
+crate::common::id::impl_id!(MessageId);
 
 /// 消息 检测字段是否允许前端排序
 pub fn check_sort_message(

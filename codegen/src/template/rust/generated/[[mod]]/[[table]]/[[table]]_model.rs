@@ -172,7 +172,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;<#
 if (hasAudit && auditTable_Up) {
 #>
@@ -3307,7 +3306,7 @@ impl FromRow<'_, MySqlRow> for <#=Table_Up#>Summary {
 }
 #>
 
-impl_id!(<#=Table_Up#>Id);<#
+crate::common::id::impl_id!(<#=Table_Up#>Id);<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;

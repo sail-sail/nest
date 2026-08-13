@@ -326,6 +326,7 @@ macro_rules! impl_id {
 
     impl PartialEq<str> for $id_type {
       fn eq(&self, other: &str) -> bool {
+        use $crate::common::id::Id;
         let bytes = other.as_bytes();
         *self.as_bytes() == bytes
       }

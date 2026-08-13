@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 #[allow(unused_imports)]
 use crate::common::gql::NaiveDateTime;
 use crate::common::exceptions::service_exception::ServiceException;
@@ -651,7 +650,7 @@ impl From<MessageReceiverInput> for MessageReceiverSearch {
   }
 }
 
-impl_id!(MessageReceiverId);
+crate::common::id::impl_id!(MessageReceiverId);
 
 /// 消息接收人 检测字段是否允许前端排序
 pub fn check_sort_message_receiver(

@@ -61,7 +61,7 @@ pub async fn send_message(
 
   for receiver_usr_id in &receiver_usr_ids {
     receiver_inputs.push(MessageReceiverInput {
-      message_id: Some(message.id.clone()),
+      message_id: Some(message.id),
       receiver_usr_id: Some(receiver_usr_id.clone()),
       is_read: Some(0),
       tenant_id,

@@ -31,7 +31,6 @@ use async_graphql::{
 #[allow(unused_imports)]
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::common::id::{Id, impl_id};
 use crate::common::exceptions::service_exception::ServiceException;
 
 static CAN_SORT_IN_API_SERVER_LOG: [&str; 1] = [
@@ -346,7 +345,7 @@ impl From<ServerLogInput> for ServerLogSearch {
   }
 }
 
-impl_id!(ServerLogId);
+crate::common::id::impl_id!(ServerLogId);
 
 /// 系统日志日志级别
 #[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
