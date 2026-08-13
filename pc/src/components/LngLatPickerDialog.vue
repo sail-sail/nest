@@ -51,13 +51,13 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>取消</span>
+        <span>关闭</span>
       </el-button>
 
       <el-button
+        plain
         type="primary"
-        :disabled="!hasCoordinate"
-        @click="confirmClk"
+        @click="onConfirm"
       >
         <template #icon>
           <ElIconCircleCheck />
@@ -159,7 +159,7 @@ function cancelClk() {
   });
 }
 
-async function confirmClk() {
+async function onConfirm() {
   if (!hasCoordinate || !coordinate) {
     return;
   }
