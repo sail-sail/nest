@@ -199,18 +199,20 @@ fn check_search_range_<#=table#>(
         const uniques = opts.uniques[i];
       #><#
       if (uniques.length > 1) {
-      #>(<#
-      }
-      #><#
-      for (let k = 0; k < uniques.length; k++) {
-        const unique = uniques[k];
-        const unique_rust = rustKeyEscape(unique);
-      #>
-      search.<#=unique_rust#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
-      }
-      #><#
-      if (uniques.length > 1) {
-      #>)<#
+      #> &&
+      (<#
+        }
+        #><#
+        for (let k = 0; k < uniques.length; k++) {
+          const unique = uniques[k];
+          const unique_rust = rustKeyEscape(unique);
+        #>
+      <# if (uniques.length > 1) { #>  <# } #>search.<#=unique_rust#>.is_none()<#=k === (uniques.length - 1) ? "" : " ||"#><#
+        }
+        #><#
+        if (uniques.length > 1) {
+        #>
+      )<#
       }
       #><#
       }
