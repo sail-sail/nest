@@ -312,7 +312,7 @@ const is_export_excel = opts?.isUniPage?.list_page?.is_export_excel;
       
       <!-- <#=column_comment#> -->
       <tm-form-item
-        label="<#=search_field#>"
+        label="<#=column_comment#>"
         name="<#=column_name#>"
         :required="false"
       >
