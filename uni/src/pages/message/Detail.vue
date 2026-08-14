@@ -221,7 +221,7 @@
   </scroll-view>
   
   <view
-    v-if="dialogAction !== 'view' && hasOperationButtons"
+    v-if="dialogAction !== 'view'"
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -229,7 +229,7 @@
     un-items="center"
     un-gap="x-4"
   >
-    
+
     <view
       v-if="props.hasCloseBtn"
       un-flex="~ [1_0_0]"
@@ -245,138 +245,76 @@
         取消
       </tm-button>
     </view>
-    
+
     <view
       un-flex="~ [1_0_0]"
       un-overflow="hidden"
       un-justify="center"
       un-items="center"
     >
-      <tm-drawer
-        v-model:show="operationDrawerShow"
-        title="操作"
-        un-w="full"
-        :show-close="true"
-        :show-footer="true"
-        size="auto"
-        :disable-teleport="props.drawerDisableTeleport"
+      <CustomActionBar
+        ref="actionBarRef"
+        trigger-text="操作"
+        trigger-color="info"
       >
-        
-        <template #trigger>
-          <tm-button
-            block
-            color="info"
-            @click="operationDrawerShow = true"
-          >
-            <view
-              un-flex="~"
-              un-justify="center"
-              un-items="center"
-            >
-              
-              <view>
-                操作
-              </view>
-              
-              <view
-                un-i="iconfont-caret_top"
-              ></view>
-              
-            </view>
-          </tm-button>
-        </template>
-        
-        <template #footer>
-          <tm-button
-            block
-            color="info"
-            @click="operationDrawerShow = false;"
-          >
-            <view
-              un-flex="~"
-              un-justify="center"
-              un-items="center"
-              un-gap="x-1"
-            >
-              
-              <view>
-                关闭
-              </view>
-              
-              <view
-                un-i="iconfont-caret_bottom"
-              ></view>
-              
-            </view>
-          </tm-button>
-        </template>
-        
+
         <view
-          un-p="4"
-          un-box-border
-          un-w="full"
-          un-flex="~ col"
-          un-gap="y-4"
+          v-if="dialogAction === 'edit'"
+          un-flex="~"
+          un-gap="x-2"
         >
-          
-          <view
-            v-if="dialogAction === 'edit'"
-            un-flex="~"
-            un-gap="x-2"
+
+          <CustomActionButton
+            v-if="permit('add', '新增') && message_id"
+            report
+            color="info"
+            @click="actionBarRef?.close(); onCopy();"
           >
-            
-            <tm-button
-              v-if="permit('add', '新增') && message_id"
-              block
-              color="info"
-              @click="operationDrawerShow = false; onCopy();"
-            >
-              复制
-            </tm-button>
-            
-            <tm-button
-              v-if="permit('edit', '编辑')"
-              :disabled="!inited || is_form_hydrating || isReadonly"
-              block
-              @click="operationDrawerShow = false; formRef?.submit();"
-            >
-              保存
-            </tm-button>
-            
-          </view>
-          
-          <CustomDivider
-            v-if="dialogAction === 'edit'"
-            :show-text="false"
-            un-p="y-0 x-0"
-          ></CustomDivider>
-          
-          <template
-            v-if="dialogAction === 'copy' || dialogAction === 'add'"
+            复制
+          </CustomActionButton>
+
+          <CustomActionButton
+            v-if="permit('edit', '编辑')"
+            report
+            :disabled="!inited || is_form_hydrating || isReadonly"
+            @click="actionBarRef?.close(); formRef?.submit();"
           >
-            
-            <tm-button
-              v-if="permit('add', '新增')"
-              :disabled="!inited || is_form_hydrating"
-              block
-              @click="operationDrawerShow = false; formRef?.submit();"
-            >
-              保存
-            </tm-button>
-            
-          </template>
-            
-          <CustomDivider
-            v-if="dialogAction === 'copy' || dialogAction === 'add'"
-            :show-text="false"
-            un-p="y-0 x-0"
-          ></CustomDivider>
-          
+            保存
+          </CustomActionButton>
+
         </view>
-        
-      </tm-drawer>
+
+        <CustomDivider
+          v-if="dialogAction === 'edit'"
+          class="custom-action-bar-single-hide"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
+
+        <template
+          v-if="dialogAction === 'copy' || dialogAction === 'add'"
+        >
+
+          <CustomActionButton
+            v-if="permit('add', '新增')"
+            report
+            :disabled="!inited || is_form_hydrating"
+            @click="actionBarRef?.close(); formRef?.submit();"
+          >
+            保存
+          </CustomActionButton>
+
+        </template>
+
+        <CustomDivider
+          v-if="dialogAction === 'copy' || dialogAction === 'add'"
+          class="custom-action-bar-single-hide"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
+      </CustomActionBar>
     </view>
-    
+
   </view>
   
   <AppLoading></AppLoading>
@@ -474,26 +412,9 @@ watch(
 const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);
 
-let operationDrawerShow = $ref(false);
-
-/** 是否有可用的操作按钮 */
-const hasOperationButtons = $computed(() => {
-  if (dialogAction === 'view') return false;
-
-  if (dialogAction === 'edit') {
-    // 复制按钮
-    if (permit('add')) return true;
-    // 编辑按钮
-    if (permit('edit')) return true;
-  }
-
-  if (dialogAction === 'add' || dialogAction === 'copy') {
-    // 新增按钮
-    if (permit('add')) return true;
-  }
-
-  return false;
-});
+const actionBarRef = $ref<{
+  close: () => void;
+}>();
 
 /** 复制 */
 async function onCopy() {
