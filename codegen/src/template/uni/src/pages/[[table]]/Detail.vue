@@ -1311,7 +1311,7 @@ if (right_field && !right_field_column) {
     } else if (opts.noAdd === true) {
     #>dialogAction === 'edit'<#
     }
-    #> && hasOperationButtons"
+    #>"
     un-p="x-2 b-2"
     un-box-border
     un-flex="~"
@@ -1319,7 +1319,7 @@ if (right_field && !right_field_column) {
     un-items="center"
     un-gap="x-4"
   >
-    
+
     <view
       v-if="props.hasCloseBtn"
       un-flex="~ [1_0_0]"
@@ -1335,273 +1335,212 @@ if (right_field && !right_field_column) {
         取消
       </tm-button>
     </view>
-    
+
     <view
       un-flex="~ [1_0_0]"
       un-overflow="hidden"
       un-justify="center"
       un-items="center"
     >
-      <tm-drawer
-        v-model:show="operationDrawerShow"
-        title="操作"
-        un-w="full"
-        :show-close="true"
-        :show-footer="true"
-        size="auto"
-        :disable-teleport="props.drawerDisableTeleport"
-      >
-        
-        <template #trigger>
-          <tm-button
-            block
-            color="info"
-            @click="operationDrawerShow = true"
-          >
-            <view
-              un-flex="~"
-              un-justify="center"
-              un-items="center"
-            >
-              
-              <view>
-                操作
-              </view>
-              
-              <view
-                un-i="iconfont-caret_top"
-              ></view>
-              
-            </view>
-          </tm-button>
-        </template>
-        
-        <template #footer>
-          <tm-button
-            block
-            color="info"
-            @click="operationDrawerShow = false;"
-          >
-            <view
-              un-flex="~"
-              un-justify="center"
-              un-items="center"
-              un-gap="x-1"
-            >
-              
-              <view>
-                关闭
-              </view>
-              
-              <view
-                un-i="iconfont-caret_bottom"
-              ></view>
-              
-            </view>
-          </tm-button>
-        </template>
-        
-        <view
-          un-p="4"
-          un-box-border
-          un-w="full"
-          un-flex="~ col"
-          un-gap="y-4"
-        ><#
-          if (hasAudit) {
-          #>
-          
-          <view
-            v-if="dialogAction === 'edit'"
-            un-flex="~"
-            un-gap="x-2"
-          ><#
-            if (!hasReviewed) {
-            #>
+      <CustomActionBar
+        ref="actionBarRef"
+        trigger-text="操作"
+        trigger-color="info"
+      ><#
+        if (hasAudit) {
+        #>
 
-            <tm-button
-              v-if="permit('audit_pass', '审核通过') &&
-                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
-              "
-              block
-              disabled
-            >
-              已审核
-            </tm-button><#
-            }
-            #>
-            
-            <tm-button
-              v-if="permit('audit_reject', '审核拒绝') &&
-                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
-              "
-              block
-              color="danger"
-              @click="operationDrawerShow = false; onAuditReject();"
-            >
-              审核拒绝
-            </tm-button>
-            
-            <tm-button
-              v-if="permit('audit_submit', '审核提交') &&
-                (
-                  <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
-                  <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
-                )
-              "
-              block
-              @click="operationDrawerShow = false; onAuditSubmit();"
-            >
-              审核提交
-            </tm-button><#
-            if (hasReviewed) {
-            #>
-            
-            <tm-button
-              v-if="permit('audit_pass', '审核通过') &&
-                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
-              "
-              block
-              color="success"
-              @click="operationDrawerShow = false; onAuditPass();"
-            >
-              审核通过
-            </tm-button><#
-            }
-            #><#
-            if (opts?.audit?.hasReverse) {
-            #>
-            
-            <tm-button
-              v-if="permit('audit_reverse', '反审核') &&
-                (
-                  <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
-                  <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
-                  if (hasReviewed) {
-                  #> ||
-                  <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
-                  }
-                  #>
-                )
-              "
-              block
-              color="warn"
-              @click="operationDrawerShow = false; onAuditReverse();"
-            >
-              反审核
-            </tm-button><#
-            }
-            #><#
-            if (hasReviewed) {
-            #>
-            
-            <tm-button
-              v-if="permit('audit_review', '复核') &&
-                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
-              "
-              block
-              @click="operationDrawerShow = false; onAuditReview();"
-            >
-              复核
-            </tm-button><#
-            }
-            #><#
-            if (hasReviewed) {
-            #>
-            
-            <tm-button
-              v-if="permit('audit_review', '复核') &&
-                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
-                !permit('audit_reverse', '反审核')
-              "
-              block
-              disabled
-            >
-              已复核
-            </tm-button><#
-            }
-            #>
-            
-          </view>
-          
-          <CustomDivider
-            v-if="dialogAction === 'edit'"
-            :show-text="false"
-            un-p="y-0 x-0"
-          ></CustomDivider><#
+        <view
+          v-if="dialogAction === 'edit'"
+          un-flex="~"
+          un-gap="x-2"
+        ><#
+          if (!hasReviewed) {
+          #>
+
+          <CustomActionButton
+            v-if="permit('audit_pass', '审核通过') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+            "
+            report
+            disabled
+          >
+            已审核
+          </CustomActionButton><#
           }
           #>
-          
-          <view
-            v-if="dialogAction === 'edit'"
-            un-flex="~"
-            un-gap="x-2"
-          ><#
-            if (opts.noCopy !== true) {
-            #>
-            
-            <tm-button
-              v-if="permit('add', '新增') && <#=table#>_id"
-              block
-              color="info"
-              @click="operationDrawerShow = false; onCopy();"
-            >
-              复制
-            </tm-button><#
-            }
-            #><#
-            if (!opts.noEdit) {
-            #>
-            
-            <tm-button
-              v-if="permit('edit', '编辑')"
-              :disabled="!inited || is_form_hydrating || isReadonly"
-              block
-              @click="operationDrawerShow = false; formRef?.submit();"
-            >
-              保存
-            </tm-button><#
-            }
-            #>
-            
-          </view>
-          
-          <CustomDivider
-            v-if="dialogAction === 'edit'"
-            :show-text="false"
-            un-p="y-0 x-0"
-          ></CustomDivider>
-          
-          <template
-            v-if="dialogAction === 'copy' || dialogAction === 'add'"
-          ><#
-            if (!opts.noAdd) {
-            #>
-            
-            <tm-button
-              v-if="permit('add', '新增')"
-              :disabled="!inited || is_form_hydrating"
-              block
-              @click="operationDrawerShow = false; formRef?.submit();"
-            >
-              保存
-            </tm-button><#
-            }
-            #>
-            
-          </template>
-            
-          <CustomDivider
-            v-if="dialogAction === 'copy' || dialogAction === 'add'"
-            :show-text="false"
-            un-p="y-0 x-0"
-          ></CustomDivider>
-          
+
+          <CustomActionButton
+            v-if="permit('audit_reject', '审核拒绝') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
+            "
+            report
+            color="danger"
+            @click="actionBarRef?.close(); onAuditReject();"
+          >
+            审核拒绝
+          </CustomActionButton>
+
+          <CustomActionButton
+            v-if="permit('audit_submit', '审核提交') &&
+              (
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
+              )
+            "
+            report
+            @click="actionBarRef?.close(); onAuditSubmit();"
+          >
+            审核提交
+          </CustomActionButton><#
+          if (hasReviewed) {
+          #>
+
+          <CustomActionButton
+            v-if="permit('audit_pass', '审核通过') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+            "
+            report
+            color="success"
+            @click="actionBarRef?.close(); onAuditPass();"
+          >
+            审核通过
+          </CustomActionButton><#
+          }
+          #><#
+          if (opts?.audit?.hasReverse) {
+          #>
+
+          <CustomActionButton
+            v-if="permit('audit_reverse', '反审核') &&
+              (
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
+                if (hasReviewed) {
+                #> ||
+                <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
+                }
+                #>
+              )
+            "
+            report
+            color="warn"
+            @click="actionBarRef?.close(); onAuditReverse();"
+          >
+            反审核
+          </CustomActionButton><#
+          }
+          #><#
+          if (hasReviewed) {
+          #>
+
+          <CustomActionButton
+            v-if="permit('audit_review', '复核') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+            "
+            report
+            @click="actionBarRef?.close(); onAuditReview();"
+          >
+            复核
+          </CustomActionButton><#
+          }
+          #><#
+          if (hasReviewed) {
+          #>
+
+          <CustomActionButton
+            v-if="permit('audit_review', '复核') &&
+              <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
+              !permit('audit_reverse', '反审核')
+            "
+            report
+            disabled
+          >
+            已复核
+          </CustomActionButton><#
+          }
+          #>
+
         </view>
-        
-      </tm-drawer>
+
+        <CustomDivider
+          v-if="dialogAction === 'edit'"
+          class="custom-action-bar-single-hide"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider><#
+        }
+        #>
+
+        <view
+          v-if="dialogAction === 'edit'"
+          un-flex="~"
+          un-gap="x-2"
+        ><#
+          if (opts.noCopy !== true) {
+          #>
+
+          <CustomActionButton
+            v-if="permit('add', '新增') && <#=table#>_id"
+            report
+            color="info"
+            @click="actionBarRef?.close(); onCopy();"
+          >
+            复制
+          </CustomActionButton><#
+          }
+          #><#
+          if (!opts.noEdit) {
+          #>
+
+          <CustomActionButton
+            v-if="permit('edit', '编辑')"
+            report
+            :disabled="!inited || is_form_hydrating || isReadonly"
+            @click="actionBarRef?.close(); formRef?.submit();"
+          >
+            保存
+          </CustomActionButton><#
+          }
+          #>
+
+        </view>
+
+        <CustomDivider
+          v-if="dialogAction === 'edit'"
+          class="custom-action-bar-single-hide"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
+
+        <template
+          v-if="dialogAction === 'copy' || dialogAction === 'add'"
+        ><#
+          if (!opts.noAdd) {
+          #>
+
+          <CustomActionButton
+            v-if="permit('add', '新增')"
+            report
+            :disabled="!inited || is_form_hydrating"
+            @click="actionBarRef?.close(); formRef?.submit();"
+          >
+            保存
+          </CustomActionButton><#
+          }
+          #>
+
+        </template>
+
+        <CustomDivider
+          v-if="dialogAction === 'copy' || dialogAction === 'add'"
+          class="custom-action-bar-single-hide"
+          :show-text="false"
+          un-p="y-0 x-0"
+        ></CustomDivider>
+      </CustomActionBar>
     </view>
-    
+
   </view><#
   }
   #>
@@ -1851,99 +1790,9 @@ watch(
 const formRef = $ref<InstanceType<typeof TmForm>>();
 let is_form_hydrating = $ref(false);
 
-let operationDrawerShow = $ref(false);
-
-/** 是否有可用的操作按钮 */
-const hasOperationButtons = $computed(() => {
-  if (dialogAction === 'view') return false;
-
-  if (dialogAction === 'edit') {
-    // 复制按钮<#
-    if (opts.noCopy !== true) {
-    #>
-    if (permit('add')) return true;<#
-    }
-    #>
-    // 编辑按钮<#
-    if (!opts.noEdit) {
-    #>
-    if (permit('edit')) return true;<#
-    }
-    #><#
-    if (hasAudit) {
-      #>
-    // 审核按钮<#
-      if (!hasReviewed) {
-      #>
-    if (
-      permit('audit_pass') &&
-      (
-        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
-        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
-      )
-    ) return true;<#
-      }
-      #>
-    if (
-      permit('audit_reject') &&
-      <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
-    ) return true;
-    if (
-      permit('audit_submit') &&
-      (
-        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
-        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
-      )
-    ) return true;
-    if (
-      permit('audit_pass') &&
-      <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
-    ) return true;<#
-      if (opts?.audit?.hasReverse) {
-      #>
-    if (
-      permit('audit_reverse') &&
-      (
-        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited ||
-        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
-        if (hasReviewed) {
-        #> ||
-        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
-        }
-        #>
-      )
-    ) return true;<#
-      }
-      #><#
-      if (hasReviewed) {
-      #>
-    if (
-      permit('audit_review') &&
-      (
-        <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Audited ||
-        (
-          <#=table#>_model?.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed &&
-          !permit('audit_reverse')
-        )
-      )
-    ) return true;<#
-      }
-      #><#
-    }
-    #>
-  }
-
-  if (dialogAction === 'add' || dialogAction === 'copy') {
-    // 新增按钮<#
-    if (!opts.noAdd) {
-    #>
-    if (permit('add')) return true;<#
-    }
-    #>
-  }
-
-  return false;
-});
+const actionBarRef = $ref<{
+  close: () => void;
+}>();
 
 /** 复制 */
 async function onCopy() {
