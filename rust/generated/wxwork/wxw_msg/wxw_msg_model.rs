@@ -15,6 +15,16 @@ use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use smol_str::SmolStr;
 
+#[derive(Serialize, Deserialize, Clone, Default)]
+pub struct SendCardMsgInput {
+  pub wxw_app_id: WxwAppId,
+  pub touser: SmolStr,
+  pub title: SmolStr,
+  pub description: SmolStr,
+  pub url: SmolStr,
+  pub btntxt: SmolStr,
+}
+
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
