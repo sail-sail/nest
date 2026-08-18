@@ -627,6 +627,23 @@
             </el-table-column>
           </template>
           
+          <!-- 发送企微消息 -->
+          <template v-else-if="'is_send_msg_lbl' === col.prop">
+            <!-- @vue-generic {WxwAppModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_send_msg"
+                  @change="onIs_send_msg(row.id, row.is_send_msg)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
             <!-- @vue-generic {WxwAppModel} -->
@@ -1186,6 +1203,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "发送企微消息",
+      prop: "is_send_msg_lbl",
+      sortBy: "is_send_msg",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
@@ -1555,6 +1581,7 @@ async function onImportExcel() {
     [ "通讯录密钥" ]: "contactsecret",
     [ "通讯录回调Token" ]: "contact_notify_token",
     [ "通讯录回调AESKey" ]: "contact_notify_aeskey",
+    [ "发送企微消息" ]: "is_send_msg_lbl",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
@@ -1590,6 +1617,7 @@ async function onImportExcel() {
           "contactsecret": "string",
           "contact_notify_token": "string",
           "contact_notify_aeskey": "string",
+          "is_send_msg_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
@@ -1621,6 +1649,30 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
+}
+
+/** 发送企微消息 */
+async function onIs_send_msg(id: WxwAppId, is_send_msg: number) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateByIdWxwApp(
+    id,
+    {
+      is_send_msg,
+    },
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 锁定 */

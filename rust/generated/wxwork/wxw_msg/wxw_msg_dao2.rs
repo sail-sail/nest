@@ -250,7 +250,7 @@ fn build_url_with_tenant_prefix(prefix: &str, route_path: &str, route_query: &st
 }
 
 #[allow(dead_code)]
-async fn fetch_send_card_msg(
+async fn fetch_send_text_msg(
   input: SendCardMsgInput,
   force: bool,
   options: Option<Options>,
@@ -267,12 +267,61 @@ async fn fetch_send_card_msg(
   if input.touser.is_empty() {
     return Err(eyre!("touser 不能为空"));
   }
-  if input.title.is_empty() {
-    return Err(eyre!("title 不能为空"));
-  }
   if input.description.is_empty() {
     return Err(eyre!("description 不能为空"));
   }
+
+  let wxw_app_model = find_by_id_wxw_app(wxw_app_id, None).await?;
+  let wxw_app_model = validate_option_wxw_app(wxw_app_model).await?;
+  validate_is_enabled_wxw_app(&wxw_app_model).await?;
+  let agentid = wxw_app_model.agentid;
+
+  let res = client()
+    .post(&url)
+    .json(&json!({
+      "touser": input.touser,
+      "msgtype": "text",
+      "agentid": agentid,
+      "text": {
+        "content": input.description,
+      },
+    }))
+    .send().await?;
+
+  let data: SendRes = res.json().await?;
+  Ok(data)
+}
+
+#[allow(dead_code)]
+async fn fetch_send_card_msg(
+  input: SendCardMsgInput,
+  force: bool,
+  options: Option<Options>,
+) -> Result<Option<SendRes>> {
+  
+  if input.touser.is_empty() {
+    return Ok(None);
+  }
+  if input.title.is_empty() {
+    return Ok(None);
+  }
+  if input.description.is_empty() {
+    return Ok(None);
+  }
+  
+  if input.url.trim().is_empty() {
+    return Ok(Some(fetch_send_text_msg(input, force, options).await?));
+  }
+
+  let wxw_app_id = input.wxw_app_id;
+  let access_token = get_access_token(
+    wxw_app_id,
+    force.into(),
+    options,
+  ).await?;
+  let url = format!(
+    "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token}",
+  );
 
   let wxw_app_model = find_by_id_wxw_app(wxw_app_id, None).await?;
   let wxw_app_model = validate_option_wxw_app(wxw_app_model).await?;
@@ -295,7 +344,7 @@ async fn fetch_send_card_msg(
     .send().await?;
 
   let data: SendRes = res.json().await?;
-  Ok(data)
+  Ok(Some(data))
 }
 
 /// 发送卡片消息
@@ -304,29 +353,76 @@ pub async fn send_card_msg(
   input: SendCardMsgInput,
   options: Option<Options>,
 ) -> Result<bool> {
+  
   let req_id = get_req_id();
-  let wxw_app_id = input.wxw_app_id;
-  let wxw_app_model = find_by_id_wxw_app(wxw_app_id, None).await?;
-  let wxw_app_model = validate_option_wxw_app(wxw_app_model).await?;
-  validate_is_enabled_wxw_app(&wxw_app_model).await?;
-  let tenant_id = wxw_app_model.tenant_id;
-
+  
   info!(
     "{req_id} 发送卡片消息: {msg}",
     msg = serde_json::to_string(&input)?,
   );
+  
+  let wxwork_msg_enable = std::env::var("wxwork_msg_enable")
+    .unwrap_or_else(|_| "false".to_string())
+    .trim()
+    .to_ascii_lowercase();
+  
+  if wxwork_msg_enable != "true" {
+    return Ok(false);
+  }
+  
+  if input.touser.is_empty() {
+    return Ok(false);
+  }
+  if input.title.is_empty() {
+    return Ok(false);
+  }
+  if input.description.is_empty() {
+    return Ok(false);
+  }
+  
+  let wxw_app_id = input.wxw_app_id;
+  let wxw_app_model = find_by_id_wxw_app(wxw_app_id, options).await?;
+  let wxw_app_model = validate_option_wxw_app(wxw_app_model).await?;
+  validate_is_enabled_wxw_app(&wxw_app_model).await?;
+  
+  if wxw_app_model.is_send_msg == 0 {
+    return Ok(false);
+  }
+  
+  let tenant_id = wxw_app_model.tenant_id;
 
-  let mut data = fetch_send_card_msg(input.clone(), false, options).await?;
+  let data = fetch_send_card_msg(input.clone(), false, options).await?;
+  let mut data = match data {
+    Some(data) => data,
+    None => {
+      return Ok(true);
+    }
+  };
   if data.errcode == 42001 {
-    data = fetch_send_card_msg(input.clone(), true, options).await?;
+    let data_opt = fetch_send_card_msg(input.clone(), true, options).await?;
+    data = match data_opt {
+      Some(data) => data,
+      None => {
+        return Ok(true);
+      }
+    };
   }
 
   let data_str = serde_json::to_string(&data)?;
-  let (errcode, errmsg, msgid) = (data.errcode, data.errmsg, data.msgid);
 
   info!(
     "{req_id} 发送卡片消息结果: {msg}",
     msg = &data_str,
+  );
+  
+  let (
+    errcode,
+    errmsg,
+    msgid,
+  ) = (
+    data.errcode,
+    data.errmsg,
+    data.msgid,
   );
 
   let errmsg: SmolStr = if errcode == 0 {

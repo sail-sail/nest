@@ -92,6 +92,12 @@ pub struct WxwAppModel {
   /// 通讯录回调AESKey
   #[graphql(name = "contact_notify_aeskey")]
   pub contact_notify_aeskey: SmolStr,
+  /// 发送企微消息
+  #[graphql(name = "is_send_msg")]
+  pub is_send_msg: u8,
+  /// 发送企微消息
+  #[graphql(name = "is_send_msg_lbl")]
+  pub is_send_msg_lbl: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -167,6 +173,9 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
     // 通讯录回调AESKey
     let contact_notify_aeskey: &str = row.try_get("contact_notify_aeskey")?;
     let contact_notify_aeskey = SmolStr::new(decrypt(contact_notify_aeskey));
+    // 发送企微消息
+    let is_send_msg: u8 = row.try_get("is_send_msg")?;
+    let is_send_msg_lbl = SmolStr::new(is_send_msg.to_string());
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl = SmolStr::new(is_locked.to_string());
@@ -216,6 +225,8 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
       contactsecret,
       contact_notify_token,
       contact_notify_aeskey,
+      is_send_msg,
+      is_send_msg_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -276,6 +287,12 @@ pub struct WxwAppFieldComment {
   /// 通讯录回调AESKey
   #[graphql(name = "contact_notify_aeskey")]
   pub contact_notify_aeskey: SmolStr,
+  /// 发送企微消息
+  #[graphql(name = "is_send_msg")]
+  pub is_send_msg: SmolStr,
+  /// 发送企微消息
+  #[graphql(name = "is_send_msg_lbl")]
+  pub is_send_msg_lbl: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: SmolStr,
@@ -361,6 +378,9 @@ pub struct WxwAppSearch {
   /// 可信域名
   #[graphql(name = "domain_id_lbl_like")]
   pub domain_id_lbl_like: Option<SmolStr>,
+  /// 发送企微消息
+  #[graphql(skip)]
+  pub is_send_msg: Option<Vec<u8>>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -458,6 +478,10 @@ impl std::fmt::Debug for WxwAppSearch {
     }
     if let Some(ref domain_id_is_null) = self.domain_id_is_null {
       item = item.field("domain_id_is_null", domain_id_is_null);
+    }
+    // 发送企微消息
+    if let Some(ref is_send_msg) = self.is_send_msg {
+      item = item.field("is_send_msg", is_send_msg);
     }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
@@ -561,6 +585,12 @@ pub struct WxwAppInput {
   /// 通讯录回调AESKey
   #[graphql(name = "contact_notify_aeskey")]
   pub contact_notify_aeskey: Option<SmolStr>,
+  /// 发送企微消息
+  #[graphql(name = "is_send_msg")]
+  pub is_send_msg: Option<u8>,
+  /// 发送企微消息
+  #[graphql(name = "is_send_msg_lbl")]
+  pub is_send_msg_lbl: Option<SmolStr>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -637,6 +667,9 @@ impl std::fmt::Debug for WxwAppInput {
     if let Some(ref domain_id) = self.domain_id {
       item = item.field("domain_id", domain_id);
     }
+    if let Some(ref is_send_msg) = self.is_send_msg {
+      item = item.field("is_send_msg", is_send_msg);
+    }
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
     }
@@ -698,6 +731,9 @@ impl From<WxwAppModel> for WxwAppInput {
       contact_notify_token: model.contact_notify_token.into(),
       // 通讯录回调AESKey
       contact_notify_aeskey: model.contact_notify_aeskey.into(),
+      // 发送企微消息
+      is_send_msg: model.is_send_msg.into(),
+      is_send_msg_lbl: model.is_send_msg_lbl.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -742,6 +778,8 @@ impl From<WxwAppInput> for WxwAppSearch {
       agentid: input.agentid,
       // 可信域名
       domain_id: input.domain_id.map(|x| vec![x]),
+      // 发送企微消息
+      is_send_msg: input.is_send_msg.map(|x| vec![x]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用

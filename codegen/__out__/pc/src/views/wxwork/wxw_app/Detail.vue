@@ -216,6 +216,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_send_msg == null)">
+          <el-form-item
+            label="发送企微消息"
+            prop="is_send_msg"
+          >
+            <DictSelect
+              v-model="dialogModel.is_send_msg"
+              :set="dialogModel.is_send_msg = dialogModel.is_send_msg ?? undefined"
+              code="yes_no"
+              placeholder="请选择 发送企微消息"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"
@@ -467,6 +482,13 @@ watchEffect(async () => {
         type: "string",
         max: 120,
         message: "应用密钥 长度不能超过 120",
+      },
+    ],
+    // 发送企微消息
+    is_send_msg: [
+      {
+        required: true,
+        message: "请选择 发送企微消息",
       },
     ],
     // 排序
@@ -840,6 +862,7 @@ async function nextId() {
 watch(
   () => [
     dialogModel.domain_id,
+    dialogModel.is_send_msg,
   ],
   () => {
     if (!inited) {
@@ -847,6 +870,9 @@ watch(
     }
     if (!dialogModel.domain_id) {
       dialogModel.domain_id_lbl = "";
+    }
+    if (!dialogModel.is_send_msg) {
+      dialogModel.is_send_msg_lbl = "";
     }
   },
 );

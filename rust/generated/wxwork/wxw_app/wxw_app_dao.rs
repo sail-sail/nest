@@ -80,7 +80,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 21 * 2);
+  let mut where_query = String::with_capacity(80 * 22 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -245,6 +245,30 @@ async fn get_where_query(
     if let Some(domain_id_lbl_like) = domain_id_lbl_like {
       where_query.push_str(" and domain_id_lbl.lbl like ?");
       args.push(format!("%{}%", sql_like(&domain_id_lbl_like)).into());
+    }
+  }
+  // 发送企微消息
+  {
+    let is_send_msg: Option<Vec<u8>> = match search {
+      Some(item) => item.is_send_msg.clone(),
+      None => None,
+    };
+    if let Some(is_send_msg) = is_send_msg {
+      let arg = {
+        if is_send_msg.is_empty() {
+          SmolStr::new("null")
+        } else {
+          let mut items = Vec::with_capacity(is_send_msg.len());
+          for item in is_send_msg {
+            args.push(item.into());
+            items.push("?");
+          }
+          SmolStr::new(items.join(","))
+        }
+      };
+      where_query.push_str(" and t.is_send_msg in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   // 锁定
@@ -566,6 +590,16 @@ pub async fn find_all_wxw_app(
       return Err(eyre!("search.domain_id.length > {ids_limit}"));
     }
   }
+  // 发送企微消息
+  if let Some(search) = &search && let Some(is_send_msg) = &search.is_send_msg {
+    let len = is_send_msg.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.is_send_msg.length > {ids_limit}"));
+    }
+  }
   // 锁定
   if let Some(search) = &search && let Some(is_locked) = &search.is_locked {
     let len = is_locked.len();
@@ -713,18 +747,29 @@ pub async fn find_all_wxw_app(
   }
   
   let dict_vec = get_dict(&[
+    "yes_no",
     "is_locked",
     "is_enabled",
   ]).await?;
   let [
+    is_send_msg_dict,
     is_locked_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 2] = dict_vec
+  ]: [Vec<_>; 3] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
   #[allow(unused_variables)]
   for model in &mut res {
+    
+    // 发送企微消息
+    model.is_send_msg_lbl = {
+      is_send_msg_dict
+        .iter()
+        .find(|item| item.val == model.is_send_msg.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_send_msg.to_string().into())
+    };
     
     // 锁定
     model.is_locked_lbl = {
@@ -795,6 +840,20 @@ pub async fn find_count_wxw_app(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.domain_id.length > {ids_limit}"));
+    }
+  }
+  // 发送企微消息
+  if let Some(search) = &search && search.is_send_msg.is_some() {
+    let len = search.is_send_msg.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_send_msg.length > {ids_limit}"));
     }
   }
   // 锁定
@@ -952,6 +1011,8 @@ pub async fn get_field_comments_wxw_app(
     contactsecret: "通讯录密钥".into(),
     contact_notify_token: "通讯录回调Token".into(),
     contact_notify_aeskey: "通讯录回调AESKey".into(),
+    is_send_msg: "发送企微消息".into(),
+    is_send_msg_lbl: "发送企微消息".into(),
     is_locked: "锁定".into(),
     is_locked_lbl: "锁定".into(),
     is_enabled: "启用".into(),
@@ -1363,6 +1424,20 @@ pub async fn exists_wxw_app(
       return Err(eyre!("search.domain_id.length > {ids_limit}"));
     }
   }
+  // 发送企微消息
+  if let Some(search) = &search && search.is_send_msg.is_some() {
+    let len = search.is_send_msg.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_send_msg.length > {ids_limit}"));
+    }
+  }
   // 锁定
   if let Some(search) = &search && search.is_locked.is_some() {
     let len = search.is_locked.as_ref().unwrap().len();
@@ -1754,13 +1829,29 @@ pub async fn set_id_by_lbl_wxw_app(
   let mut input = input;
   
   let dict_vec = get_dict(&[
+    "yes_no",
     "is_locked",
     "is_enabled",
   ]).await?;
   
+  // 发送企微消息
+  if input.is_send_msg.is_none() {
+    let is_send_msg_dict = &dict_vec[0];
+    if let Some(is_send_msg_lbl) = input.is_send_msg_lbl.clone() {
+      input.is_send_msg = is_send_msg_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_send_msg_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 锁定
   if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[0];
+    let is_locked_dict = &dict_vec[1];
     if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
       input.is_locked = is_locked_dict
         .iter()
@@ -1775,7 +1866,7 @@ pub async fn set_id_by_lbl_wxw_app(
   
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[2];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -1824,12 +1915,37 @@ pub async fn set_id_by_lbl_wxw_app(
     }
   }
   
+  // 发送企微消息
+  if
+    input.is_send_msg_lbl.is_some() && !input.is_send_msg_lbl.as_ref().unwrap().is_empty()
+    && input.is_send_msg.is_none()
+  {
+    let is_send_msg_dict = &dict_vec[0];
+    let dict_model = is_send_msg_dict.iter().find(|item| {
+      item.lbl == input.is_send_msg_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    if let Some(val) = val {
+      input.is_send_msg = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_send_msg_lbl.is_none() || input.is_send_msg_lbl.as_ref().unwrap().is_empty())
+    && input.is_send_msg.is_some()
+  {
+    let is_send_msg_dict = &dict_vec[0];
+    let dict_model = is_send_msg_dict.iter().find(|item| {
+      item.val == input.is_send_msg.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    input.is_send_msg_lbl = lbl;
+  }
+  
   // 锁定
   if
     input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
     && input.is_locked.is_none()
   {
-    let is_locked_dict = &dict_vec[0];
+    let is_locked_dict = &dict_vec[1];
     let dict_model = is_locked_dict.iter().find(|item| {
       item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
     });
@@ -1841,7 +1957,7 @@ pub async fn set_id_by_lbl_wxw_app(
     (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
     && input.is_locked.is_some()
   {
-    let is_locked_dict = &dict_vec[0];
+    let is_locked_dict = &dict_vec[1];
     let dict_model = is_locked_dict.iter().find(|item| {
       item.val == input.is_locked.unwrap_or_default().to_string()
     });
@@ -1854,7 +1970,7 @@ pub async fn set_id_by_lbl_wxw_app(
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[2];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
@@ -1866,7 +1982,7 @@ pub async fn set_id_by_lbl_wxw_app(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[2];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
@@ -2023,7 +2139,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 21 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2053,6 +2169,8 @@ async fn _creates(
   sql_fields += ",contact_notify_token";
   // 通讯录回调AESKey
   sql_fields += ",contact_notify_aeskey";
+  // 发送企微消息
+  sql_fields += ",is_send_msg";
   // 锁定
   sql_fields += ",is_locked";
   // 启用
@@ -2063,7 +2181,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 21 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 22 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2256,6 +2374,13 @@ async fn _creates(
     if let Some(contact_notify_aeskey) = input.contact_notify_aeskey {
       sql_values += ",?";
       args.push(encrypt(&contact_notify_aeskey).into());
+    } else {
+      sql_values += ",default";
+    }
+    // 发送企微消息
+    if let Some(is_send_msg) = input.is_send_msg {
+      sql_values += ",?";
+      args.push(is_send_msg.into());
     } else {
       sql_values += ",default";
     }
@@ -2617,7 +2742,7 @@ pub async fn update_by_id_wxw_app(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 21 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2685,6 +2810,12 @@ pub async fn update_by_id_wxw_app(
     field_num += 1;
     sql_fields += "contact_notify_aeskey=?,";
     args.push(encrypt(&contact_notify_aeskey).into());
+  }
+  // 发送企微消息
+  if let Some(is_send_msg) = input.is_send_msg {
+    field_num += 1;
+    sql_fields += "is_send_msg=?,";
+    args.push(is_send_msg.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {

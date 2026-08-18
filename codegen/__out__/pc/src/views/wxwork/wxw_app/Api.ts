@@ -48,6 +48,9 @@ export function intoInputWxwApp(
     contact_notify_token: model?.contact_notify_token,
     // 通讯录回调AESKey
     contact_notify_aeskey: model?.contact_notify_aeskey,
+    // 发送企微消息
+    is_send_msg: model?.is_send_msg,
+    is_send_msg_lbl: model?.is_send_msg_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -593,11 +596,18 @@ export function useDownloadImportTemplateWxwApp() {
             contactsecret
             contact_notify_token
             contact_notify_aeskey
+            is_send_msg_lbl
             order_by
             rem
           }
           findAllDomain {
             id
+            lbl
+          }
+          getDict(codes: [
+            "yes_no",
+          ]) {
+            code
             lbl
           }
         }
@@ -660,6 +670,7 @@ export function useExportExcelWxwApp() {
               lbl
             }
             getDict(codes: [
+              "yes_no",
               "is_locked",
               "is_enabled",
             ]) {
@@ -803,6 +814,8 @@ export async function getFieldCommentsWxwApp(
           contactsecret,
           contact_notify_token,
           contact_notify_aeskey,
+          is_send_msg,
+          is_send_msg_lbl,
           is_locked,
           is_locked_lbl,
           is_enabled,
@@ -836,6 +849,7 @@ export function getPagePathWxwApp() {
 /** 新增时的默认值 */
 export async function getDefaultInputWxwApp() {
   const defaultInput: WxwAppInput = {
+    is_send_msg: 0,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,

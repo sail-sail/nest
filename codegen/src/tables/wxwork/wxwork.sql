@@ -12,6 +12,7 @@ CREATE TABLE if not exists `wxwork_wxw_app` (
   `contactsecret` varchar(120) NOT NULL DEFAULT '' COMMENT '通讯录密钥',
   `contact_notify_token` varchar(512) NOT NULL DEFAULT '' COMMENT '通讯录回调Token',
   `contact_notify_aeskey` varchar(512) NOT NULL DEFAULT '' COMMENT '通讯录回调AESKey',
+  `is_send_msg` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '发送企微消息,dict:yes_no',
   `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',

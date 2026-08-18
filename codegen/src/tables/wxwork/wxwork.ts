@@ -71,6 +71,10 @@ export default defineConfig({
         isEncrypt: true,
       },
       {
+        COLUMN_NAME: "is_send_msg",
+        width: 120,
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {

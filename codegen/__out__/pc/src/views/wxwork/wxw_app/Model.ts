@@ -51,6 +51,9 @@ export const wxwAppFields = [
   "contact_notify_token",
   // 通讯录回调AESKey
   "contact_notify_aeskey",
+  // 发送企微消息
+  "is_send_msg",
+  "is_send_msg_lbl",
   // 锁定
   "is_locked",
   "is_locked_lbl",
