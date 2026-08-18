@@ -246,13 +246,6 @@
             {{ getMessageContent(item) }}
           </view>
 
-          <view
-            v-if="item.message?.route_path"
-            un-m="t-2"
-            un-text="blue-500 sm"
-          >
-            可查看相关内容
-          </view>
         </view>
       </view>
     </view>
@@ -505,7 +498,7 @@ async function refreshMessages(isCount = true) {
 
     isEnd = false;
 
-    const [receiverData, unreadCountData, readCountData] = await Promise.all([
+    const [receiverData, totalCountData, unreadCountData, readCountData] = await Promise.all([
       query({
         query: /* GraphQL */ `
           query($search: MessageReceiverSearch, $page: PageInput, $sort: [SortInput!]) {
@@ -523,6 +516,7 @@ async function refreshMessages(isCount = true) {
         variables: {
           search: {
             receiver_usr_id: usrId,
+            channel: ["sys"],
           },
           page: {
             pgOffset: 0,
@@ -549,7 +543,25 @@ async function refreshMessages(isCount = true) {
           variables: {
             search: {
               receiver_usr_id: usrId,
+              channel: ["sys"],
+            },
+          },
+        }, {
+          notLoading: true,
+        })
+        : Promise.resolve({ findCountMessageReceiver: total }),
+      shouldCount
+        ? query({
+          query: /* GraphQL */ `
+            query($search: MessageReceiverSearch) {
+              findCountMessageReceiver(search: $search)
+            }
+          `,
+          variables: {
+            search: {
+              receiver_usr_id: usrId,
               is_read: [0],
+              channel: ["sys"],
             },
           },
         }, {
@@ -567,6 +579,7 @@ async function refreshMessages(isCount = true) {
             search: {
               receiver_usr_id: usrId,
               is_read: [1],
+              channel: ["sys"],
             },
           },
         }, {
@@ -634,7 +647,7 @@ async function refreshMessages(isCount = true) {
       });
 
     if (shouldCount) {
-      total = Number(receiverData.findAllMessageReceiver?.length || 0);
+      total = Number(totalCountData.findCountMessageReceiver || 0);
       unreadTotal = Number(unreadCountData.findCountMessageReceiver || 0);
       readTotal = Number(readCountData.findCountMessageReceiver || 0);
     }
@@ -681,6 +694,7 @@ async function onLoadMore() {
       variables: {
         search: {
           receiver_usr_id: usrId,
+          channel: ["sys"],
         },
         page: {
           pgOffset: pgOffset + pgSize,

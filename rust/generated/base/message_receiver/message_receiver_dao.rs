@@ -190,6 +190,29 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&message_id_content_like)).into());
     }
   }
+  {
+    let channel: Option<Vec<SmolStr>> = match search {
+      Some(item) => item.channel.clone(),
+      None => None,
+    };
+    if let Some(channel) = channel {
+      let arg = {
+        if channel.is_empty() {
+          SmolStr::new("null")
+        } else {
+          let mut items = Vec::with_capacity(channel.len());
+          for item in channel {
+            args.push(item.into());
+            items.push("?");
+          }
+          SmolStr::new(items.join(","))
+        }
+      };
+      where_query.push_str(" and message_id_lbl.channel in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
   // 接收人
   {
     if let Some(receiver_usr_id) = search.and_then(|item| item.receiver_usr_id.as_deref()) {

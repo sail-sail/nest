@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use color_eyre::eyre::{Result, eyre};
 
@@ -19,10 +19,15 @@ use crate::base::menu::menu_model::{MenuSearch, MenuId};
 
 use super::permit_model::GetUsrPermits;
 
+use crate::base::message::message_dao2::send_message;
+use crate::base::message::message_model::MessageInput;
 use crate::base::usr::usr_dao::find_by_id_usr;
+use crate::base::usr::usr_model::{UsrId, UsrSearch};
+use crate::base::usr::usr_service::find_all_usr;
+use crate::wxwork::wxw_msg::wxw_msg_dao2::send_message_wxwork;
 
 use crate::base::role::role_dao::find_all_role;
-use crate::base::role::role_model::RoleSearch;
+use crate::base::role::role_model::{RoleId, RoleSearch};
 
 use crate::base::permit::permit_dao::{
   find_all_permit,
@@ -165,6 +170,166 @@ pub async fn get_usr_permits(route_path: Option<SmolStr>) -> Result<Vec<GetUsrPe
     .collect();
   
   Ok(permits)
+}
+
+pub fn filter_audit_receiver_usr_ids(
+  receiver_usr_ids: Vec<UsrId>,
+  exclude_usr_ids: Vec<UsrId>,
+) -> Vec<UsrId> {
+  let exclude_usr_ids: HashSet<UsrId> = exclude_usr_ids.into_iter().collect();
+  let mut filtered = Vec::with_capacity(receiver_usr_ids.len());
+  let mut seen = HashSet::with_capacity(receiver_usr_ids.len());
+
+  for usr_id in receiver_usr_ids {
+    if exclude_usr_ids.contains(&usr_id) {
+      continue;
+    }
+    if seen.insert(usr_id) {
+      filtered.push(usr_id);
+    }
+  }
+
+  filtered
+}
+
+pub async fn get_audit_receiver_usr_ids(
+  route_path: SmolStr,
+  code: SmolStr,
+  options: Option<Options>,
+) -> Result<Vec<UsrId>> {
+  let menu_model = match find_one_menu(
+    MenuSearch {
+      route_path: Some(route_path.clone()),
+      is_enabled: Some(vec![1]),
+      ..Default::default()
+    }.into(),
+    None,
+    options,
+  ).await? {
+    Some(menu_model) => menu_model,
+    None => return Ok(Vec::new()),
+  };
+
+  let permit_model = match find_one_permit(
+    PermitSearch {
+      menu_id: vec![menu_model.id].into(),
+      code: Some(code.clone()),
+      ..Default::default()
+    }.into(),
+    None,
+    options,
+  ).await? {
+    Some(permit_model) => permit_model,
+    None => return Ok(Vec::new()),
+  };
+
+  let role_models = find_all_role(
+    Some(RoleSearch {
+      permit_ids: Some(vec![permit_model.id]),
+      is_audit_msg: Some(vec![1]),
+      is_enabled: Some(vec![1]),
+      ..Default::default()
+    }),
+    None,
+    None,
+    options,
+  ).await?;
+
+  if role_models.is_empty() {
+    return Ok(Vec::new());
+  }
+
+  let role_ids: Vec<RoleId> = role_models
+    .iter()
+    .map(|item| item.id)
+    .collect();
+
+  let mut usr_models = find_all_usr(
+    Some(UsrSearch {
+      role_ids: Some(role_ids),
+      is_reject_msg: Some(vec![0]),
+      is_enabled: Some(vec![1]),
+      is_deleted: Some(0),
+      ..Default::default()
+    }),
+    None,
+    None,
+    options,
+  ).await?;
+
+  usr_models.sort_by(|left, right| {
+    left
+      .order_by
+      .cmp(&right.order_by)
+      .then_with(|| left.lbl.cmp(&right.lbl))
+      .then_with(|| left.id.to_string().cmp(&right.id.to_string()))
+  });
+
+  Ok(usr_models
+    .into_iter()
+    .map(|item| item.id)
+    .collect())
+}
+
+pub fn find_next_audit_receiver_usr_id_in_list(
+  receiver_usr_ids: Vec<UsrId>,
+  current_usr_id: UsrId,
+) -> Option<UsrId> {
+  if receiver_usr_ids.is_empty() {
+    return None;
+  }
+
+  if receiver_usr_ids.len() == 1 {
+    if receiver_usr_ids[0] == current_usr_id {
+      return None;
+    }
+    return Some(receiver_usr_ids[0]);
+  }
+
+  let Some(current_index) = receiver_usr_ids.iter().position(|item| *item == current_usr_id) else {
+    return receiver_usr_ids.first().copied();
+  };
+
+  let next_index = if current_index + 1 < receiver_usr_ids.len() {
+    current_index + 1
+  } else {
+    0
+  };
+
+  Some(receiver_usr_ids[next_index])
+}
+
+pub async fn find_next_audit_receiver_usr_id(
+  route_path: SmolStr,
+  code: SmolStr,
+  current_usr_id: UsrId,
+  options: Option<Options>,
+) -> Result<Option<UsrId>> {
+  let receiver_usr_ids = get_audit_receiver_usr_ids(route_path, code, options).await?;
+  Ok(find_next_audit_receiver_usr_id_in_list(receiver_usr_ids, current_usr_id))
+}
+
+/// 按角色权限筛选出全部可接收审核消息的用户，并广播通知
+pub async fn notify_next_audit_usr_by_permit(
+  route_path: SmolStr,
+  code: SmolStr,
+  current_usr_id: UsrId,
+  message_input: MessageInput,
+  options: Option<Options>,
+) -> Result<()> {
+  let receiver_usr_ids = get_audit_receiver_usr_ids(route_path, code, options).await?;
+  let receiver_usr_ids = filter_audit_receiver_usr_ids(receiver_usr_ids, vec![current_usr_id]);
+  if receiver_usr_ids.is_empty() {
+    return Ok(());
+  }
+
+  let mut notify_input = message_input;
+  notify_input.is_sys_msg = notify_input.is_sys_msg.or(Some(1));
+
+  send_message(notify_input.clone(), receiver_usr_ids.clone(), options).await?;
+  send_message_wxwork(notify_input, receiver_usr_ids, options).await?;
+
+  Ok(())
 }
 
 /// 后端按钮权限校验

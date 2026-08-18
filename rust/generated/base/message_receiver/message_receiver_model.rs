@@ -36,8 +36,9 @@ use crate::common::gql::NaiveDateTime;
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
-use crate::base::message::message_model::MessageId;
+
 use crate::base::usr::usr_model::UsrId;
+use crate::base::message::message_model::MessageId;
 use crate::base::org::org_model::OrgId;
 
 static CAN_SORT_IN_API_MESSAGE_RECEIVER: [&str; 2] = [
@@ -254,6 +255,8 @@ pub struct MessageReceiverFieldComment {
 #[graphql(rename_fields = "snake_case", name = "MessageReceiverSearch")]
 #[allow(dead_code)]
 pub struct MessageReceiverSearch {
+  #[graphql(skip)]
+  pub auth_usr_id: Option<UsrId>,
   /// ID
   pub id: Option<MessageReceiverId>,
   /// ID列表
@@ -273,6 +276,9 @@ pub struct MessageReceiverSearch {
   /// 消息
   #[graphql(name = "message_id_content_like")]
   pub message_id_content_like: Option<SmolStr>,
+  /// 消息通道
+  #[graphql(name = "channel")]
+  pub channel: Option<Vec<SmolStr>>,
   /// 接收人
   #[graphql(name = "receiver_usr_id")]
   pub receiver_usr_id: Option<Vec<UsrId>>,
@@ -361,6 +367,9 @@ impl std::fmt::Debug for MessageReceiverSearch {
     }
     if let Some(ref message_id_content_like) = self.message_id_content_like {
       item = item.field("message_id_content_like", message_id_content_like);
+    }
+    if let Some(ref channel) = self.channel {
+      item = item.field("channel", channel);
     }
     if let Some(ref message_id_is_null) = self.message_id_is_null {
       item = item.field("message_id_is_null", message_id_is_null);

@@ -96,6 +96,12 @@ pub struct RoleModel {
   /// 字段权限
   #[graphql(name = "field_permit_ids_lbl")]
   pub field_permit_ids_lbl: Vec<SmolStr>,
+  /// 接收审核消息
+  #[graphql(name = "is_audit_msg")]
+  pub is_audit_msg: u8,
+  /// 接收审核消息
+  #[graphql(name = "is_audit_msg_lbl")]
+  pub is_audit_msg_lbl: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -294,6 +300,9 @@ impl FromRow<'_, MySqlRow> for RoleModel {
         )
         .collect::<Vec<SmolStr>>()
     };
+    // 接收审核消息
+    let is_audit_msg: u8 = row.try_get("is_audit_msg")?;
+    let is_audit_msg_lbl = SmolStr::new(is_audit_msg.to_string());
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl = SmolStr::new(is_locked.to_string());
@@ -344,6 +353,8 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       data_permit_ids,
       field_permit_ids,
       field_permit_ids_lbl,
+      is_audit_msg,
+      is_audit_msg_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -404,6 +415,12 @@ pub struct RoleFieldComment {
   /// 字段权限
   #[graphql(name = "field_permit_ids_lbl")]
   pub field_permit_ids_lbl: SmolStr,
+  /// 接收审核消息
+  #[graphql(name = "is_audit_msg")]
+  pub is_audit_msg: SmolStr,
+  /// 接收审核消息
+  #[graphql(name = "is_audit_msg_lbl")]
+  pub is_audit_msg_lbl: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: SmolStr,
@@ -518,6 +535,9 @@ pub struct RoleSearch {
   /// 字段权限
   #[graphql(name = "field_permit_ids_lbl_like")]
   pub field_permit_ids_lbl_like: Option<SmolStr>,
+  /// 接收审核消息
+  #[graphql(skip)]
+  pub is_audit_msg: Option<Vec<u8>>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -623,6 +643,10 @@ impl std::fmt::Debug for RoleSearch {
     if let Some(ref field_permit_ids) = self.field_permit_ids {
       item = item.field("field_permit_ids", field_permit_ids);
     }
+    // 接收审核消息
+    if let Some(ref is_audit_msg) = self.is_audit_msg {
+      item = item.field("is_audit_msg", is_audit_msg);
+    }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
@@ -727,6 +751,12 @@ pub struct RoleInput {
   /// 字段权限
   #[graphql(name = "field_permit_ids_lbl")]
   pub field_permit_ids_lbl: Option<Vec<SmolStr>>,
+  /// 接收审核消息
+  #[graphql(name = "is_audit_msg")]
+  pub is_audit_msg: Option<u8>,
+  /// 接收审核消息
+  #[graphql(name = "is_audit_msg_lbl")]
+  pub is_audit_msg_lbl: Option<SmolStr>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -818,6 +848,9 @@ impl std::fmt::Debug for RoleInput {
     if let Some(ref field_permit_ids_lbl) = self.field_permit_ids_lbl {
       item = item.field("field_permit_ids_lbl", field_permit_ids_lbl);
     }
+    if let Some(ref is_audit_msg) = self.is_audit_msg {
+      item = item.field("is_audit_msg", is_audit_msg);
+    }
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
     }
@@ -878,6 +911,9 @@ impl From<RoleModel> for RoleInput {
       // 字段权限
       field_permit_ids: model.field_permit_ids.into(),
       field_permit_ids_lbl: model.field_permit_ids_lbl.into(),
+      // 接收审核消息
+      is_audit_msg: model.is_audit_msg.into(),
+      is_audit_msg_lbl: model.is_audit_msg_lbl.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -930,6 +966,8 @@ impl From<RoleInput> for RoleSearch {
       data_permit_ids: input.data_permit_ids,
       // 字段权限
       field_permit_ids: input.field_permit_ids,
+      // 接收审核消息
+      is_audit_msg: input.is_audit_msg.map(|x| vec![x]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用

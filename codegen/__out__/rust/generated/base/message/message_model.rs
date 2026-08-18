@@ -34,6 +34,7 @@ use crate::common::gql::model::SortInput;
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
+
 use crate::base::usr::usr_model::UsrId;
 use crate::base::org::org_model::OrgId;
 
@@ -306,6 +307,8 @@ pub struct MessageFieldComment {
 #[graphql(rename_fields = "snake_case", name = "MessageSearch")]
 #[allow(dead_code)]
 pub struct MessageSearch {
+  #[graphql(skip)]
+  pub auth_usr_id: Option<UsrId>,
   /// ID
   pub id: Option<MessageId>,
   /// ID列表
@@ -319,7 +322,7 @@ pub struct MessageSearch {
   #[graphql(name = "category")]
   pub category: Option<Vec<SmolStr>>,
   /// 发送通道
-  #[graphql(skip)]
+  #[graphql(name = "channel")]
   pub channel: Option<Vec<SmolStr>>,
   /// 标题
   #[graphql(name = "title")]

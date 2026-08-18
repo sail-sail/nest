@@ -17,12 +17,12 @@
           消息中心
         </div>
         <div un-m="t-1" un-text="gray-500">
-          共 {{ totalCount }} 条消息，未读 {{ unreadCount }} 条
+          共 {{ totalCount }} 条消息，未读 {{ unreadCount }} 条，已读 {{ readCount }} 条
         </div>
       </div>
       <el-button
         plain
-        @click="refreshMessages()"
+        @click="refreshMessageTabs()"
       >
         <template #icon>
           <ElIconRefresh />
@@ -31,15 +31,23 @@
       </el-button>
     </div>
 
-    <el-card
+    <div
       shadow="never"
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
     >
-      <el-tabs v-model="activeTab" un-h="full">
+      <el-tabs
+        v-model="activeTab"
+        class="el-flex-tabs"
+        type="card"
+      >
         <el-tab-pane
-          label="未读消息"
+          :label="`未读(${unreadCount})`"
           name="unread"
+          un-flex="~ [1_0_0] col"
+          un-overflow-hidden
+          un-p="4"
+          un-box-border
         >
           <div
             un-min="h-80"
@@ -63,6 +71,8 @@
             <div
               v-if="unreadItems.length > 0"
               class="message-list"
+              un-flex="~ [1_0_0] col"
+              un-overflow="x-hidden y-auto"
             >
               <div
                 v-for="item in unreadItems"
@@ -119,11 +129,17 @@
         </el-tab-pane>
 
         <el-tab-pane
-          label="已读消息"
+          :label="`已读(${readCount})`"
           name="read"
+          un-flex="~ [1_0_0] col"
+          un-overflow-hidden
+          un-p="4"
+          un-box-border
         >
           <div
             un-min="h-80"
+            un-flex="~ [1_0_0] col"
+            un-overflow="hidden"
           >
             <div un-flex="~ items-center justify-between" un-m="b-3">
               <div un-flex="~ items-center" un-gap="x-2">
@@ -144,6 +160,8 @@
             <div
               v-if="readItems.length > 0"
               class="message-list"
+              un-flex="~ [1_0_0] col"
+              un-overflow="x-hidden y-auto"
             >
               <div
                 v-for="item in readItems"
@@ -202,22 +220,22 @@
           </div>
         </el-tab-pane>
       </el-tabs>
-    </el-card>
+    </div>
 
     <div
-      v-if="page.total > 0"
+      v-if="activePage.total > 0"
       un-flex="~ justify-end"
       un-m="t-4"
     >
       <el-pagination
         background
         :page-sizes="pageSizes"
-        :page-size="page.size"
+        :page-size="activePage.size"
         layout="total, sizes, prev, pager, next, jumper"
-        :current-page="page.current"
-        :total="page.total"
-        @size-change="pgSizeChg"
-        @current-change="pgCurrentChg"
+        :current-page="activePage.current"
+        :total="activePage.total"
+        @size-change="handlePageSizeChange"
+        @current-change="handlePageCurrentChange"
       />
     </div>
 
@@ -272,26 +290,39 @@ type MessageCenterItem = {
   message?: MessageModel;
 };
 
+type MessageTab = "unread" | "read";
+
 const router = useRouter();
 const usrStore = useUsrStore();
 
-let activeTab = $ref("unread");
+const pageSizes = [ 20, 50, 100 ];
+
+let activeTab = $ref<MessageTab>("unread");
 let detailVisible = $ref(false);
 let selectedItem = $ref<MessageCenterItem | null>(null);
-let items = $ref<MessageCenterItem[]>([]);
+let unreadItems = $ref<MessageCenterItem[]>([]);
+let readItems = $ref<MessageCenterItem[]>([]);
 let selectedUnreadIds = $ref<string[]>([]);
 let selectedReadIds = $ref<string[]>([]);
 
-const { page, pageSizes, pgSizeChg, pgCurrentChg } = $(usePage(async (isCount = true) => {
-  await refreshMessages(isCount);
+const { page: unreadPage, pgSizeChg: unreadPgSizeChg, pgCurrentChg: unreadPgCurrentChg } = $(usePage(async (isCount = true) => {
+  await refreshMessages("unread", isCount);
 }, {
+  pageSizes,
   isPagination: true,
 }));
 
-const totalCount = $computed(() => page.total);
-const unreadItems = $computed(() => items.filter((item) => !isRead(item.receiver)));
-const readItems = $computed(() => items.filter((item) => isRead(item.receiver)));
-const unreadCount = $computed(() => unreadItems.length);
+const { page: readPage, pgSizeChg: readPgSizeChg, pgCurrentChg: readPgCurrentChg } = $(usePage(async (isCount = true) => {
+  await refreshMessages("read", isCount);
+}, {
+  pageSizes,
+  isPagination: true,
+}));
+
+const activePage = $computed(() => activeTab === "unread" ? unreadPage : readPage);
+const totalCount = $computed(() => unreadPage.total + readPage.total);
+const unreadCount = $computed(() => unreadPage.total);
+const readCount = $computed(() => readPage.total);
 const currentTabSelectionIds = $computed(() => activeTab === "unread" ? selectedUnreadIds : selectedReadIds);
 const currentTabItems = $computed(() => activeTab === "unread" ? unreadItems : readItems);
 const isCurrentTabAllSelected = $computed(() => currentTabItems.length > 0 && currentTabSelectionIds.length === currentTabItems.length);
@@ -363,6 +394,20 @@ function syncSelectionIds() {
   selectedReadIds = selectedReadIds.filter((id) => readIds.has(id));
 }
 
+function handlePageSizeChange(size: number) {
+  if (activeTab === "unread") {
+    return unreadPgSizeChg(size);
+  }
+  return readPgSizeChg(size);
+}
+
+function handlePageCurrentChange(current: number) {
+  if (activeTab === "unread") {
+    return unreadPgCurrentChg(current);
+  }
+  return readPgCurrentChg(current);
+}
+
 function formatTime(value?: string | null) {
   if (!value) {
     return "-";
@@ -394,13 +439,19 @@ function getRouteQuery(routeQuery?: string | Record<string, unknown> | null) {
   return routeQuery as Record<string, unknown>;
 }
 
-async function refreshMessages(isCount = true) {
+async function refreshMessages(tab: MessageTab = activeTab, isCount = true) {
   const shouldCount = isCount !== false;
+  const currentPage = tab === "unread" ? unreadPage : readPage;
+  const tabStatus = tab === "unread" ? 0 : 1;
 
   if (!usrStore.usr_id) {
-    items = [];
+    if (tab === "unread") {
+      unreadItems = [];
+    } else {
+      readItems = [];
+    }
     if (shouldCount) {
-      page.total = 0;
+      currentPage.total = 0;
     }
     inited = true;
     return;
@@ -425,10 +476,12 @@ async function refreshMessages(isCount = true) {
     variables: {
       search: {
         receiver_usr_id: usrStore.usr_id,
+        channel: "sys",
+        is_read: [ tabStatus ],
       },
       page: {
-        pgOffset: (page.current - 1) * page.size,
-        pgSize: page.size,
+        pgOffset: (currentPage.current - 1) * currentPage.size,
+        pgSize: currentPage.size,
         isResultLimit: true,
       },
       sort: [
@@ -444,9 +497,13 @@ async function refreshMessages(isCount = true) {
 
   const receivers = data.findAllMessageReceiver || [];
   if (receivers.length === 0) {
-    items = [];
+    if (tab === "unread") {
+      unreadItems = [];
+    } else {
+      readItems = [];
+    }
     if (shouldCount) {
-      page.total = 0;
+      currentPage.total = 0;
     }
     inited = true;
     return;
@@ -464,12 +521,14 @@ async function refreshMessages(isCount = true) {
       variables: {
         search: {
           receiver_usr_id: usrStore.usr_id,
+          channel: "sys",
+          is_read: [ tabStatus ],
         },
       },
     }, {
       notLoading: true,
     });
-    page.total = countData.findCountMessageReceiver || 0;
+    currentPage.total = countData.findCountMessageReceiver || 0;
   }
 
   const messageIds = receivers
@@ -507,7 +566,7 @@ async function refreshMessages(isCount = true) {
   }
 
   const messageMap = new Map(messages.map((item) => [String(item.id), item]));
-  items = receivers
+  const nextItems = receivers
     .map((receiver) => ({
       receiver,
       message: messageMap.get(String(receiver.message_id)),
@@ -518,8 +577,21 @@ async function refreshMessages(isCount = true) {
       return bTime.localeCompare(aTime);
     });
 
+  if (tab === "unread") {
+    unreadItems = nextItems;
+  } else {
+    readItems = nextItems;
+  }
+
   syncSelectionIds();
   inited = true;
+}
+
+async function refreshMessageTabs(isCount = true) {
+  await Promise.all([
+    refreshMessages("unread", isCount),
+    refreshMessages("read", isCount),
+  ]);
 }
 
 async function markAsRead(item: MessageCenterItem) {
@@ -571,7 +643,7 @@ async function markSelectedAsRead() {
     }
 
     selectedUnreadIds = [];
-    await refreshMessages(false);
+    await refreshMessageTabs();
     window.dispatchEvent(new CustomEvent("message-count-changed"));
     ElMessage.success(`已将 ${successCount} 条消息设为已读`);
   } catch (err) {
@@ -596,7 +668,7 @@ async function deleteSelectedReadMessages() {
     }
 
     selectedReadIds = [];
-    await refreshMessages();
+    await refreshMessageTabs();
     window.dispatchEvent(new CustomEvent("message-count-changed"));
     ElMessage.success(`已删除 ${count} 条消息`);
   } catch (err) {
@@ -619,19 +691,19 @@ async function goToRoute(item: MessageCenterItem) {
 let inited = $ref(false);
 
 async function initFrame() {
-  await refreshMessages();
+  await refreshMessageTabs();
   inited = true;
 }
 
 initFrame();
 
 onActivated(() => {
-  refreshMessages();
+  refreshMessageTabs();
 });
 
 onMounted(() => {
   window.addEventListener("message-count-changed", () => {
-    refreshMessages();
+    refreshMessageTabs();
   });
 });
 </script>

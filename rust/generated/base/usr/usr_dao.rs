@@ -84,7 +84,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 21 * 2);
+  let mut where_query = String::with_capacity(80 * 22 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -432,6 +432,30 @@ async fn get_where_query(
         }
       };
       where_query.push_str(" and t.type in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  // 拒收消息
+  {
+    let is_reject_msg: Option<Vec<u8>> = match search {
+      Some(item) => item.is_reject_msg.clone(),
+      None => None,
+    };
+    if let Some(is_reject_msg) = is_reject_msg {
+      let arg = {
+        if is_reject_msg.is_empty() {
+          SmolStr::new("null")
+        } else {
+          let mut items = Vec::with_capacity(is_reject_msg.len());
+          for item in is_reject_msg {
+            args.push(item.into());
+            items.push("?");
+          }
+          SmolStr::new(items.join(","))
+        }
+      };
+      where_query.push_str(" and t.is_reject_msg in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
@@ -850,6 +874,16 @@ pub async fn find_all_usr(
       return Err(eyre!("search.type.length > {ids_limit}"));
     }
   }
+  // 拒收消息
+  if let Some(search) = &search && let Some(is_reject_msg) = &search.is_reject_msg {
+    let len = is_reject_msg.len();
+    if len == 0 {
+      return Ok(vec![]);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.is_reject_msg.length > {ids_limit}"));
+    }
+  }
   // 锁定
   if let Some(search) = &search && let Some(is_locked) = &search.is_locked {
     let len = is_locked.len();
@@ -1024,16 +1058,18 @@ pub async fn find_all_usr(
   
   let dict_vec = get_dict(&[
     "usr_type",
+    "yes_no",
     "is_locked",
     "is_enabled",
     "yes_no",
   ]).await?;
   let [
     type_dict,
+    is_reject_msg_dict,
     is_locked_dict,
     is_enabled_dict,
     is_hidden_dict,
-  ]: [Vec<_>; 4] = dict_vec
+  ]: [Vec<_>; 5] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -1047,6 +1083,15 @@ pub async fn find_all_usr(
         .find(|item| item.val == model.r#type.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.r#type.clone().into())
+    };
+    
+    // 拒收消息
+    model.is_reject_msg_lbl = {
+      is_reject_msg_dict
+        .iter()
+        .find(|item| item.val == model.is_reject_msg.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_reject_msg.to_string().into())
     };
     
     // 锁定
@@ -1183,6 +1228,20 @@ pub async fn find_count_usr(
       .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.type.length > {ids_limit}"));
+    }
+  }
+  // 拒收消息
+  if let Some(search) = &search && search.is_reject_msg.is_some() {
+    let len = search.is_reject_msg.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(0);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_reject_msg.length > {ids_limit}"));
     }
   }
   // 锁定
@@ -1370,6 +1429,8 @@ pub async fn get_field_comments_usr(
     default_org_id_lbl: "默认组织".into(),
     r#type: "类型".into(),
     type_lbl: "类型".into(),
+    is_reject_msg: "拒收消息".into(),
+    is_reject_msg_lbl: "拒收消息".into(),
     is_locked: "锁定".into(),
     is_locked_lbl: "锁定".into(),
     is_enabled: "启用".into(),
@@ -1839,6 +1900,20 @@ pub async fn exists_usr(
       return Err(eyre!("search.type.length > {ids_limit}"));
     }
   }
+  // 拒收消息
+  if let Some(search) = &search && search.is_reject_msg.is_some() {
+    let len = search.is_reject_msg.as_ref().unwrap().len();
+    if len == 0 {
+      return Ok(false);
+    }
+    let ids_limit = options
+      .as_ref()
+      .and_then(|x| x.get_ids_limit())
+      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.is_reject_msg.length > {ids_limit}"));
+    }
+  }
   // 锁定
   if let Some(search) = &search && search.is_locked.is_some() {
     let len = search.is_locked.as_ref().unwrap().len();
@@ -2230,6 +2305,7 @@ pub async fn set_id_by_lbl_usr(
   
   let dict_vec = get_dict(&[
     "usr_type",
+    "yes_no",
     "is_locked",
     "is_enabled",
     "yes_no",
@@ -2250,9 +2326,24 @@ pub async fn set_id_by_lbl_usr(
     }
   }
   
+  // 拒收消息
+  if input.is_reject_msg.is_none() {
+    let is_reject_msg_dict = &dict_vec[1];
+    if let Some(is_reject_msg_lbl) = input.is_reject_msg_lbl.clone() {
+      input.is_reject_msg = is_reject_msg_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_reject_msg_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 锁定
   if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[1];
+    let is_locked_dict = &dict_vec[2];
     if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
       input.is_locked = is_locked_dict
         .iter()
@@ -2267,7 +2358,7 @@ pub async fn set_id_by_lbl_usr(
   
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[3];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -2282,7 +2373,7 @@ pub async fn set_id_by_lbl_usr(
   
   // 隐藏
   if input.is_hidden.is_none() {
-    let is_hidden_dict = &dict_vec[3];
+    let is_hidden_dict = &dict_vec[4];
     if let Some(is_hidden_lbl) = input.is_hidden_lbl.clone() {
       input.is_hidden = is_hidden_dict
         .iter()
@@ -2458,12 +2549,37 @@ pub async fn set_id_by_lbl_usr(
     input.type_lbl = lbl;
   }
   
+  // 拒收消息
+  if
+    input.is_reject_msg_lbl.is_some() && !input.is_reject_msg_lbl.as_ref().unwrap().is_empty()
+    && input.is_reject_msg.is_none()
+  {
+    let is_reject_msg_dict = &dict_vec[1];
+    let dict_model = is_reject_msg_dict.iter().find(|item| {
+      item.lbl == input.is_reject_msg_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    if let Some(val) = val {
+      input.is_reject_msg = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_reject_msg_lbl.is_none() || input.is_reject_msg_lbl.as_ref().unwrap().is_empty())
+    && input.is_reject_msg.is_some()
+  {
+    let is_reject_msg_dict = &dict_vec[1];
+    let dict_model = is_reject_msg_dict.iter().find(|item| {
+      item.val == input.is_reject_msg.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    input.is_reject_msg_lbl = lbl;
+  }
+  
   // 锁定
   if
     input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
     && input.is_locked.is_none()
   {
-    let is_locked_dict = &dict_vec[1];
+    let is_locked_dict = &dict_vec[2];
     let dict_model = is_locked_dict.iter().find(|item| {
       item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
     });
@@ -2475,7 +2591,7 @@ pub async fn set_id_by_lbl_usr(
     (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
     && input.is_locked.is_some()
   {
-    let is_locked_dict = &dict_vec[1];
+    let is_locked_dict = &dict_vec[2];
     let dict_model = is_locked_dict.iter().find(|item| {
       item.val == input.is_locked.unwrap_or_default().to_string()
     });
@@ -2488,7 +2604,7 @@ pub async fn set_id_by_lbl_usr(
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[3];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
@@ -2500,7 +2616,7 @@ pub async fn set_id_by_lbl_usr(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[3];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
@@ -2513,7 +2629,7 @@ pub async fn set_id_by_lbl_usr(
     input.is_hidden_lbl.is_some() && !input.is_hidden_lbl.as_ref().unwrap().is_empty()
     && input.is_hidden.is_none()
   {
-    let is_hidden_dict = &dict_vec[3];
+    let is_hidden_dict = &dict_vec[4];
     let dict_model = is_hidden_dict.iter().find(|item| {
       item.lbl == input.is_hidden_lbl.clone().unwrap_or_default()
     });
@@ -2525,7 +2641,7 @@ pub async fn set_id_by_lbl_usr(
     (input.is_hidden_lbl.is_none() || input.is_hidden_lbl.as_ref().unwrap().is_empty())
     && input.is_hidden.is_some()
   {
-    let is_hidden_dict = &dict_vec[3];
+    let is_hidden_dict = &dict_vec[4];
     let dict_model = is_hidden_dict.iter().find(|item| {
       item.val == input.is_hidden.unwrap_or_default().to_string()
     });
@@ -2682,7 +2798,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 21 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -2704,6 +2820,8 @@ async fn _creates(
   sql_fields += ",default_org_id";
   // 类型
   sql_fields += ",type";
+  // 拒收消息
+  sql_fields += ",is_reject_msg";
   // 锁定
   sql_fields += ",is_locked";
   // 启用
@@ -2716,7 +2834,7 @@ async fn _creates(
   sql_fields += ",is_hidden";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 21 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 22 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2885,6 +3003,13 @@ async fn _creates(
     if let Some(r#type) = input.r#type {
       sql_values += ",?";
       args.push(r#type.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 拒收消息
+    if let Some(is_reject_msg) = input.is_reject_msg {
+      sql_values += ",?";
+      args.push(is_reject_msg.into());
     } else {
       sql_values += ",default";
     }
@@ -3311,7 +3436,7 @@ pub async fn update_by_id_usr(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 21 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 + 20);
   
   let mut field_num: usize = 0;
   
@@ -3357,6 +3482,12 @@ pub async fn update_by_id_usr(
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());
+  }
+  // 拒收消息
+  if let Some(is_reject_msg) = input.is_reject_msg {
+    field_num += 1;
+    sql_fields += "is_reject_msg=?,";
+    args.push(is_reject_msg.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {

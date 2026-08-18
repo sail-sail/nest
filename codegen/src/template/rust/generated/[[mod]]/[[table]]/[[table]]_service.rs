@@ -154,8 +154,7 @@ if (
 #>
 
 use crate::base::usr::usr_dao::{
-  find_by_id_usr,
-  validate_option_usr,
+  find_by_id_ok_usr,
 };<#
 }
 #><#
@@ -177,6 +176,14 @@ if (
 #>
 
 use crate::common::usr::usr_dao::is_admin;<#
+if (opts.audit.sendAuditMessage) {
+#>
+use crate::common::permit::permit_service::{
+  get_audit_receiver_usr_ids,
+};
+use crate::base::message::message_model::MessageInput;<#
+}
+#><#
 }
 #>
 
@@ -218,22 +225,25 @@ async fn set_search_query(
   }<#
   }
   #><#
-  if (opts.filterDataByCreateUsr || hasOrgId) {
+  if (opts.filterDataByCreateUsr || hasOrgId || hasAudit) {
   #>
   
-  let usr_id = get_auth_id_ok()?;
-  let usr_model = validate_option_usr(
-    find_by_id_usr(
-      usr_id,
-      options,
-    ).await?,
+  let usr_id = if let Some(auth_usr_id) = search.auth_usr_id.clone() {
+    auth_usr_id
+  } else {
+    get_auth_id_ok()?
+  };
+  
+  let usr_model = find_by_id_ok_usr(
+    usr_id,
+    options,
   ).await?;<#
     if (hasOrgId) {
   #>
   
   let org_id = get_auth_org_id().unwrap_or_default();
   let mut org_ids: Vec<OrgId> = vec![];
-  if !org_id.is_empty() {
+  if search.auth_usr_id.unwrap_or_default().is_empty() && !org_id.is_empty() {
     org_ids.push(org_id);
   } else {
     org_ids.append(&mut usr_model.org_ids.clone());
@@ -290,8 +300,7 @@ fn get_reverse_<#=auditColumn#>_status(
       #>
     },
   }
-}
-<#
+}<#
 }
 #>
 
@@ -927,11 +936,9 @@ pub async fn audit_submit_<#=table#>(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = validate_option_<#=table#>(
-    <#=table#>_dao::find_by_id_<#=table#>(
-      <#=table#>_id,
-      options,
-    ).await?,
+  let old_model = <#=table#>_dao::find_by_id_ok_<#=table#>(
+    <#=table#>_id,
+    options,
   ).await?;
   
   if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
@@ -987,11 +994,9 @@ pub async fn audit_submit_<#=table#>(
   let audit_usr_id = get_auth_id_ok()?;
   let audit_time = get_now();
   
-  let audit_usr_model = validate_option_usr(
-    find_by_id_usr(
-      audit_usr_id,
-      options,
-    ).await?,
+  let audit_usr_model = find_by_id_ok_usr(
+    audit_usr_id,
+    options,
   ).await?;
   
   let audit_usr_id_lbl = audit_usr_model.lbl;
@@ -1000,7 +1005,7 @@ pub async fn audit_submit_<#=table#>(
     <#=table#>_id: Some(<#=table#>_id),<#
     if (auditModelLabel) {
     #>
-    <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
+    <#=auditModelLabel#>: Some(<#=auditModelLabel#>.clone()),<#
     }
     #>
     audit: Some(<#=auditTable_Up#>Audit::Unaudited),
@@ -1014,6 +1019,63 @@ pub async fn audit_submit_<#=table#>(
     <#=table#>_input,
     options,
   ).await?;<#
+  if (opts.audit.sendAuditMessage) {
+  #>
+  
+  let next_message = MessageInput {
+    title: Some("<#=table_comment#>待审核".into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已提交审核，请尽快处理。").into()),
+    route_path: Some(get_page_path_<#=table#>().into()),
+    route_query: Some(format!("id={<#=table#>_id}").into()),
+    tenant_id: old_model.tenant_id.clone().into(),
+    is_sys_msg: Some(1),
+    ..Default::default()
+  };
+  
+  let receiver_usr_ids = get_audit_receiver_usr_ids(
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("audit_pass"),
+    options,
+  ).await?;
+  
+  let receiver_usr_ids = receiver_usr_ids.into_iter()
+    .filter(|x| x != &audit_usr_id)
+    .collect::<std::collections::HashSet<_>>().into_iter()
+    .collect::<Vec<_>>();
+  
+  let mut receiver_usr_ids2 = Vec::with_capacity(receiver_usr_ids.len());
+  
+  for receiver_usr_id in receiver_usr_ids {
+    
+    if is_admin(receiver_usr_id, options).await? {
+      continue;
+    }
+    
+    let has_permit = find_one_<#=table#>(
+      Some(<#=Table_Up#>Search {
+        id: Some(<#=table#>_id),
+        auth_usr_id: Some(receiver_usr_id),
+        ..Default::default()
+      }),
+      None,
+      options,
+    ).await?.is_some();
+    
+    if has_permit {
+      receiver_usr_ids2.push(receiver_usr_id);
+    }
+    
+  }
+  
+  let receiver_usr_ids = receiver_usr_ids2;
+  
+  crate::base::message::message_dao2::send_message(
+    next_message.clone(),
+    receiver_usr_ids.clone(),
+    options,
+  ).await?;<#
+  } 
+  #><#
   }
   #>
   
@@ -1026,11 +1088,9 @@ pub async fn audit_pass_<#=table#>(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = validate_option_<#=table#>(
-    <#=table#>_dao::find_by_id_<#=table#>(
-      <#=table#>_id,
-      options,
-    ).await?,
+  let old_model = <#=table#>_dao::find_by_id_ok_<#=table#>(
+    <#=table#>_id,
+    options,
   ).await?;
   
   if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unaudited {<#
@@ -1085,11 +1145,9 @@ pub async fn audit_pass_<#=table#>(
   let audit_usr_id = get_auth_id_ok()?;
   let audit_time = get_now();
   
-  let audit_usr_model = validate_option_usr(
-    find_by_id_usr(
-      audit_usr_id,
-      options,
-    ).await?,
+  let audit_usr_model = find_by_id_ok_usr(
+    audit_usr_id,
+    options,
   ).await?;
   
   let audit_usr_id_lbl = audit_usr_model.lbl;
@@ -1098,7 +1156,7 @@ pub async fn audit_pass_<#=table#>(
     <#=table#>_id: Some(<#=table#>_id),<#
     if (auditModelLabel) {
     #>
-    <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
+    <#=auditModelLabel#>: Some(<#=auditModelLabel#>.clone()),<#
     }
     #>
     audit: Some(<#=auditTable_Up#>Audit::Audited),
@@ -1112,6 +1170,87 @@ pub async fn audit_pass_<#=table#>(
     <#=table#>_input,
     options,
   ).await?;<#
+  if (opts.audit.sendAuditMessage && hasReviewed) {
+  #>
+  
+  let next_message = MessageInput {
+    title: Some("<#=table_comment#>待复核".into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已审核通过，请继续复核。").into()),
+    route_path: Some(get_page_path_<#=table#>().into()),
+    route_query: Some(format!("id={<#=table#>_id}").into()),
+    tenant_id: old_model.tenant_id.into(),
+    is_sys_msg: Some(1),
+    ..Default::default()
+  };
+  
+  let receiver_usr_ids = get_audit_receiver_usr_ids(
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new("audit_review"),
+    options,
+  ).await?;
+  
+  let receiver_usr_ids = receiver_usr_ids.into_iter()
+    .filter(|x| x != &audit_usr_id)
+    .collect::<std::collections::HashSet<_>>()
+    .into_iter()
+    .collect::<Vec<_>>();
+  
+  let mut receiver_usr_ids2 = Vec::with_capacity(receiver_usr_ids.len());
+  
+  for receiver_usr_id in receiver_usr_ids {
+    
+    if is_admin(receiver_usr_id, options).await? {
+      continue;
+    }
+    
+    let has_permit = find_one_<#=table#>(
+      Some(<#=tableUP#>Search {
+        id: Some(<#=table#>_id),
+        auth_usr_id: Some(receiver_usr_id),
+        ..Default::default()
+      }),
+      None,
+      options,
+    ).await?.is_some();
+    
+    if has_permit {
+      receiver_usr_ids2.push(receiver_usr_id);
+    }
+    
+  }
+  
+  let receiver_usr_ids = receiver_usr_ids2;
+  
+  crate::base::message::message_dao2::send_message(
+    next_message.clone(),
+    receiver_usr_ids.clone(),
+    options,
+  ).await?;<#
+  } else if (opts.audit.sendAuditMessage && !hasReviewed) {
+  #>
+  
+  let receiver_usr_ids = vec![old_model.create_usr_id];
+  let next_message = MessageInput {
+    title: Some("<#=table_comment#>已审核通过".into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已审核通过。").into()),
+    route_path: Some(get_page_path_<#=table#>().into()),
+    route_query: Some(format!("id={<#=table#>_id}").into()),
+    tenant_id: old_model.tenant_id.into(),
+    is_sys_msg: Some(1),
+    ..Default::default()
+  };
+  
+  if !old_model.create_usr_id.is_empty() {
+    
+    crate::base::message::message_dao2::send_message(
+      next_message.clone(),
+      receiver_usr_ids.clone(),
+      options,
+    ).await?;
+    
+  }<#
+  }
+  #><#
   }
   #>
   
@@ -1126,11 +1265,9 @@ pub async fn audit_reject_<#=table#>(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = validate_option_<#=table#>(
-    <#=table#>_dao::find_by_id_<#=table#>(
-      <#=table#>_id,
-      options,
-    ).await?,
+  let old_model = <#=table#>_dao::find_by_id_ok_<#=table#>(
+    <#=table#>_id,
+    options,
   ).await?;
   
   if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unaudited<#
@@ -1190,11 +1327,9 @@ pub async fn audit_reject_<#=table#>(
   let audit_usr_id = get_auth_id_ok()?;
   let audit_time = get_now();
   
-  let audit_usr_model = validate_option_usr(
-    find_by_id_usr(
-      audit_usr_id,
-      options,
-    ).await?,
+  let audit_usr_model = find_by_id_ok_usr(
+    audit_usr_id,
+    options,
   ).await?;
   
   let audit_usr_id_lbl = audit_usr_model.lbl;
@@ -1203,7 +1338,7 @@ pub async fn audit_reject_<#=table#>(
     <#=table#>_id: Some(<#=table#>_id),<#
     if (auditModelLabel) {
     #>
-    <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
+    <#=auditModelLabel#>: Some(<#=auditModelLabel#>.clone()),<#
     }
     #>
     audit: Some(<#=auditTable_Up#>Audit::Rejected),
@@ -1218,6 +1353,32 @@ pub async fn audit_reject_<#=table#>(
     <#=table#>_input,
     options,
   ).await?;<#
+  if (opts.audit.sendAuditMessage) {
+  #>
+  
+  let receiver_usr_ids = vec![old_model.create_usr_id];
+  
+  let next_message = MessageInput {
+    title: Some(format!("<#=table_comment#>已被拒绝").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被拒绝，请重新提交审核。").into()),
+    route_path: Some(get_page_path_<#=table#>().into()),
+    route_query: Some(format!("id={<#=table#>_id}").into()),
+    tenant_id: old_model.tenant_id.clone().into(),
+    is_sys_msg: Some(1),
+    ..Default::default()
+  };
+  
+  if !old_model.create_usr_id.is_empty() {
+    
+    crate::base::message::message_dao2::send_message(
+      next_message.clone(),
+      receiver_usr_ids.clone(),
+      options,
+    ).await?;
+    
+  }<#
+  }
+  #><#
   }
   #>
   
@@ -1230,11 +1391,9 @@ pub async fn audit_reverse_<#=table#>(
   options: Option<Options>,
 ) -> Result<bool> {
 
-  let old_model = validate_option_<#=table#>(
-    <#=table#>_dao::find_by_id_<#=table#>(
-      <#=table#>_id,
-      options,
-    ).await?,
+  let old_model = <#=table#>_dao::find_by_id_ok_<#=table#>(
+    <#=table#>_id,
+    options,
   ).await?;<#
   if (auditTable_Up) {
   #><#
@@ -1269,11 +1428,9 @@ pub async fn audit_reverse_<#=table#>(
   let audit_usr_id = get_auth_id_ok()?;
   let audit_time = get_now();
 
-  let audit_usr_model = validate_option_usr(
-    find_by_id_usr(
-      audit_usr_id,
-      options,
-    ).await?,
+  let audit_usr_model = find_by_id_ok_usr(
+    audit_usr_id,
+    options,
   ).await?;
 
   let audit_usr_id_lbl = audit_usr_model.lbl;
@@ -1282,10 +1439,10 @@ pub async fn audit_reverse_<#=table#>(
     <#=table#>_id: Some(<#=table#>_id),<#
     if (auditModelLabel) {
     #>
-    <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
+    <#=auditModelLabel#>: Some(<#=auditModelLabel#>.clone()),<#
     }
     #>
-    audit: Some(audit_log),
+    audit: Some(audit_log.clone()),
     audit_usr_id: Some(audit_usr_id),
     audit_usr_id_lbl: Some(audit_usr_id_lbl),
     audit_time: Some(audit_time),
@@ -1297,6 +1454,64 @@ pub async fn audit_reverse_<#=table#>(
     <#=table#>_input,
     options,
   ).await?;<#
+  if (opts.audit.sendAuditMessage) {
+  #>
+  
+  let next_message = MessageInput {
+    title: Some(format!("<#=table_comment#>待{audit_log}").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被反审核，请重新{audit_log}。").into()),
+    route_path: Some(get_page_path_<#=table#>().into()),
+    route_query: Some(format!("id={<#=table#>_id}").into()),
+    tenant_id: old_model.tenant_id.into(),
+    is_sys_msg: Some(1),
+    ..Default::default()
+  };
+  
+  let receiver_usr_ids = get_audit_receiver_usr_ids(
+    SmolStr::new(get_page_path_<#=table#>()),
+    SmolStr::new(audit.to_string()),
+    options,
+  ).await?;
+  
+  let receiver_usr_ids = receiver_usr_ids.into_iter()
+    .filter(|x| x != &audit_usr_id)
+    .collect::<std::collections::HashSet<_>>()
+    .into_iter()
+    .collect::<Vec<_>>();
+  
+  let mut receiver_usr_ids2 = Vec::with_capacity(receiver_usr_ids.len());
+  
+  for receiver_usr_id in receiver_usr_ids {
+    
+    if is_admin(receiver_usr_id, options).await? {
+      continue;
+    }
+    
+    let has_permit = find_one_<#=table#>(
+      Some(<#=tableUP#>Search {
+        id: Some(<#=table#>_id),
+        auth_usr_id: Some(receiver_usr_id),
+        ..Default::default()
+      }),
+      None,
+      options,
+    ).await?.is_some();
+    
+    if has_permit {
+      receiver_usr_ids2.push(receiver_usr_id);
+    }
+    
+  }
+  
+  let receiver_usr_ids = receiver_usr_ids2;
+  
+  crate::base::message::message_dao2::send_message(
+    next_message.clone(),
+    receiver_usr_ids.clone(),
+    options,
+  ).await?;<#
+  }
+  #><#
   }
   #>
 
@@ -1311,11 +1526,9 @@ pub async fn audit_review_<#=table#>(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = validate_option_<#=table#>(
-    <#=table#>_dao::find_by_id_<#=table#>(
-      <#=table#>_id,
-      options,
-    ).await?,
+  let old_model = <#=table#>_dao::find_by_id_ok_<#=table#>(
+    <#=table#>_id,
+    options,
   ).await?;
   
   if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Audited {<#
@@ -1370,11 +1583,9 @@ pub async fn audit_review_<#=table#>(
   let audit_usr_id = get_auth_id_ok()?;
   let audit_time = get_now();
   
-  let audit_usr_model = validate_option_usr(
-    find_by_id_usr(
-      audit_usr_id,
-      options,
-    ).await?,
+  let audit_usr_model = find_by_id_ok_usr(
+    audit_usr_id,
+    options,
   ).await?;
   
   let audit_usr_id_lbl = audit_usr_model.lbl;
@@ -1383,7 +1594,7 @@ pub async fn audit_review_<#=table#>(
     <#=table#>_id: Some(<#=table#>_id),<#
     if (auditModelLabel) {
     #>
-    <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
+    <#=auditModelLabel#>: Some(<#=auditModelLabel#>.clone()),<#
     }
     #>
     audit: Some(<#=auditTable_Up#>Audit::Reviewed),
@@ -1396,7 +1607,28 @@ pub async fn audit_review_<#=table#>(
   create_<#=auditTable#>(
     <#=table#>_input,
     options,
-  ).await?;<#
+  ).await?;
+  
+  let receiver_usr_ids = vec![old_model.create_usr_id];
+  let next_message = MessageInput {
+    title: Some("<#=table_comment#>已复核通过".into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已复核通过。").into()),
+    route_path: Some(get_page_path_<#=table#>().into()),
+    route_query: Some(format!("id={<#=table#>_id}").into()),
+    tenant_id: old_model.tenant_id.into(),
+    is_sys_msg: Some(1),
+    ..Default::default()
+  };
+  
+  if !old_model.create_usr_id.is_empty() {
+    
+    crate::base::message::message_dao2::send_message(
+      next_message.clone(),
+      receiver_usr_ids.clone(),
+      options,
+    ).await?;
+    
+  }<#
   }
   #>
   

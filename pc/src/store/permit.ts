@@ -16,6 +16,7 @@ type PermitRouteState = {
 const permits = ref<PermitItem[]>([ ]);
 const routePermitMap = reactive<Record<string, PermitRouteState>>({ });
 const routePermitLoading = reactive<Record<string, Promise<Record<string, boolean>> | undefined>>({ });
+const routePermitFailed = reactive<Record<string, boolean>>({ });
 const currentPermitScopeKey = ref("");
 
 const usrStore = useUsrStore();
@@ -41,6 +42,9 @@ function ensurePermitScope() {
   });
   Object.keys(routePermitLoading).forEach((key) => {
     delete routePermitLoading[key];
+  });
+  Object.keys(routePermitFailed).forEach((key) => {
+    delete routePermitFailed[key];
   });
 }
 
@@ -83,6 +87,9 @@ export default function() {
     if (cacheState?.loaded) {
       return cacheState.permits;
     }
+    if (routePermitFailed[cacheKey]) {
+      return { };
+    }
     const matchingPermits = permits.value.filter((permit) => permit.route_path === route_path);
     if (matchingPermits.length > 0) {
       return buildPermitMap(route_path, matchingPermits);
@@ -96,11 +103,20 @@ export default function() {
     if (routePermitLoading[cacheKey]) {
       return await routePermitLoading[cacheKey];
     }
+    if (routePermitFailed[cacheKey]) {
+      return { };
+    }
     const pending = (async () => {
-      const data = await getUsrPermitsApi(route_path, { notLoading: true });
-      const permitItems = (data || [ ]) as PermitItem[];
-      mergePermits(permitItems);
-      return buildPermitMap(route_path, permitItems);
+      try {
+        const data = await getUsrPermitsApi(route_path, { notLoading: true });
+        const permitItems = (data || [ ]) as PermitItem[];
+        mergePermits(permitItems);
+        delete routePermitFailed[cacheKey];
+        return buildPermitMap(route_path, permitItems);
+      } catch (err) {
+        routePermitFailed[cacheKey] = true;
+        throw err;
+      }
     })();
     routePermitLoading[cacheKey] = pending;
     try {
@@ -124,8 +140,8 @@ export default function() {
       const permitObj = getRoutePermitMap(route_path!);
       const cacheKey = getRouteCacheKey(route_path!);
       const isLoaded = Boolean(routePermitMap[cacheKey]?.loaded);
-      if (!isLoaded && !routePermitLoading[cacheKey]) {
-        void requestRoutePermits(route_path!);
+      if (!isLoaded && !routePermitLoading[cacheKey] && !routePermitFailed[cacheKey]) {
+        void requestRoutePermits(route_path!).catch(() => undefined);
       }
       return Boolean(permitObj[code]);
     }
@@ -137,6 +153,9 @@ export default function() {
       ensurePermitScope();
       const permitObj = getRoutePermitMap(route_path!);
       const cacheKey = getRouteCacheKey(route_path!);
+      if (routePermitFailed[cacheKey]) {
+        return false;
+      }
       if (routePermitMap[cacheKey]?.loaded || Object.keys(permitObj).length > 0) {
         return Boolean(permitObj[code]);
       }
@@ -161,6 +180,9 @@ export default function() {
     });
     Object.keys(routePermitLoading).forEach((key) => {
       delete routePermitLoading[key];
+    });
+    Object.keys(routePermitFailed).forEach((key) => {
+      delete routePermitFailed[key];
     });
   }
   
