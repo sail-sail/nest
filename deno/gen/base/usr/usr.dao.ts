@@ -193,6 +193,9 @@ async function getWhereQuery(
   if (search?.type != null) {
     whereQuery += ` and t.type in (${ args.push(search.type) })`;
   }
+  if (search?.is_reject_msg != null) {
+    whereQuery += ` and t.is_reject_msg in (${ args.push(search.is_reject_msg) })`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
@@ -407,6 +410,17 @@ export async function findCountUsr(
       throw new Error(`search.type.length > ${ ids_limit }`);
     }
   }
+  // 拒收消息
+  if (search && search.is_reject_msg != null) {
+    const len = search.is_reject_msg.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_reject_msg.length > ${ ids_limit }`);
+    }
+  }
   // 锁定
   if (search && search.is_locked != null) {
     const len = search.is_locked.length;
@@ -596,6 +610,17 @@ export async function findAllUsr(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.type.length > ${ ids_limit }`);
+    }
+  }
+  // 拒收消息
+  if (search && search.is_reject_msg != null) {
+    const len = search.is_reject_msg.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_reject_msg.length > ${ ids_limit }`);
     }
   }
   // 锁定
@@ -807,11 +832,13 @@ export async function findAllUsr(
   
   const [
     typeDict, // 类型
+    is_reject_msgDict, // 拒收消息
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
     is_hiddenDict, // 隐藏
   ] = await getDict([
     "usr_type",
+    "yes_no",
     "is_locked",
     "is_enabled",
     "yes_no",
@@ -832,6 +859,16 @@ export async function findAllUsr(
       }
     }
     model.type_lbl = type_lbl || "";
+    
+    // 拒收消息
+    let is_reject_msg_lbl = model.is_reject_msg?.toString() || "";
+    if (model.is_reject_msg != null) {
+      const dictItem = is_reject_msgDict.find((dictItem) => dictItem.val === String(model.is_reject_msg));
+      if (dictItem) {
+        is_reject_msg_lbl = dictItem.lbl;
+      }
+    }
+    model.is_reject_msg_lbl = is_reject_msg_lbl || "";
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -905,11 +942,13 @@ export async function setIdByLblUsr(
   
   const [
     typeDict, // 类型
+    is_reject_msgDict, // 拒收消息
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
     is_hiddenDict, // 隐藏
   ] = await getDict([
     "usr_type",
+    "yes_no",
     "is_locked",
     "is_enabled",
     "yes_no",
@@ -1018,6 +1057,17 @@ export async function setIdByLblUsr(
     input.type_lbl = lbl;
   }
   
+  // 拒收消息
+  if (isNotEmpty(input.is_reject_msg_lbl) && input.is_reject_msg == null) {
+    const val = is_reject_msgDict.find((itemTmp) => itemTmp.lbl === input.is_reject_msg_lbl)?.val;
+    if (val != null) {
+      input.is_reject_msg = Number(val);
+    }
+  } else if (isEmpty(input.is_reject_msg_lbl) && input.is_reject_msg != null) {
+    const lbl = is_reject_msgDict.find((itemTmp) => itemTmp.val === String(input.is_reject_msg))?.lbl || "";
+    input.is_reject_msg_lbl = lbl;
+  }
+  
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
@@ -1070,6 +1120,8 @@ export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
     default_org_id_lbl: "默认组织",
     type: "类型",
     type_lbl: "类型",
+    is_reject_msg: "拒收消息",
+    is_reject_msg_lbl: "拒收消息",
     is_locked: "锁定",
     is_locked_lbl: "锁定",
     is_enabled: "启用",
@@ -1921,7 +1973,7 @@ async function _creates(
   await delCacheUsr();
   
   const args = new QueryArgs();
-  let sql = "insert into base_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,img,lbl,username,password,default_org_id,type,is_locked,is_enabled,order_by,rem,is_hidden)values";
+  let sql = "insert into base_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,img,lbl,username,password,default_org_id,type,is_reject_msg,is_locked,is_enabled,order_by,rem,is_hidden)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -2046,6 +2098,11 @@ async function _creates(
       }
       if (input.type != null) {
         sql += `,${ args.push(input.type) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_reject_msg != null) {
+        sql += `,${ args.push(input.is_reject_msg) }`;
       } else {
         sql += ",default";
       }
@@ -2363,6 +2420,12 @@ export async function updateByIdUsr(
   if (input.type != null) {
     if (input.type != oldModel.type) {
       sql += `type=${ args.push(input.type) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_reject_msg != null) {
+    if (input.is_reject_msg != oldModel.is_reject_msg) {
+      sql += `is_reject_msg=${ args.push(input.is_reject_msg) },`;
       updateFldNum++;
     }
   }

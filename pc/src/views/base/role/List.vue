@@ -178,7 +178,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -623,6 +625,23 @@
                 >
                   {{ row.field_permit_ids?.length || 0 }}
                 </el-link>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 接收审核消息 -->
+          <template v-else-if="'is_audit_msg_lbl' === col.prop">
+            <!-- @vue-generic {RoleModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_audit_msg"
+                  @change="onIs_audit_msg(row.id, row.is_audit_msg)"
+                ></CustomSwitch>
               </template>
             </el-table-column>
           </template>
@@ -1265,6 +1284,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
+      label: "接收审核消息",
+      prop: "is_audit_msg_lbl",
+      sortBy: "is_audit_msg",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
@@ -1630,6 +1658,7 @@ async function onImportExcel() {
     [ "按钮权限" ]: "permit_ids_lbl",
     [ "数据权限" ]: "data_permit_ids_lbl",
     [ "字段权限" ]: "field_permit_ids_lbl",
+    [ "接收审核消息" ]: "is_audit_msg_lbl",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
@@ -1661,6 +1690,7 @@ async function onImportExcel() {
           "permit_ids_lbl": "string[]",
           "data_permit_ids_lbl": "string[]",
           "field_permit_ids_lbl": "string[]",
+          "is_audit_msg_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
@@ -1692,6 +1722,30 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
+}
+
+/** 接收审核消息 */
+async function onIs_audit_msg(id: RoleId, is_audit_msg: number) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateByIdRole(
+    id,
+    {
+      is_audit_msg,
+    },
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
 }
 
 /** 锁定 */

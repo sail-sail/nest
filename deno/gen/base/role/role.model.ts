@@ -32,6 +32,8 @@ declare global {
     /** 首页 */
     home_url?: string;
     home_url_like?: string;
+    /** 接收审核消息 */
+    is_audit_msg?: number[];
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */

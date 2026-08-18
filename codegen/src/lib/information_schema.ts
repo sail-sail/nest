@@ -1578,6 +1578,9 @@ export async function getSchema(
   // 审核
   if (tables[table_name].opts.audit) {
     const audit = tables[table_name].opts.audit;
+    if (audit.sendAuditMessage == null) {
+      audit.sendAuditMessage = true;
+    }
     if (audit.auditTable) {
       const auditMod = audit.auditMod || mod;
       const auditTable = audit.auditTable;

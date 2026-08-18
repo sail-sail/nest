@@ -18,7 +18,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "dayjs": "1.11.21",
+    "dayjs": "1.11.23",
     "decimal.js": "10.6.0",
     "graphql": "17.0.2",
     "js-md5": "0.9.2",
@@ -34,7 +34,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "7.2.0",
     "@graphql-codegen/typescript": "6.1.0",
-    "@graphql-codegen/typescript-operations": "6.1.5",
+    "@graphql-codegen/typescript-operations": "6.1.6",
     "@types/node": "26.2.0",
     "@types/sqlstring": "2.3.2",
     "chokidar": "5.0.0",

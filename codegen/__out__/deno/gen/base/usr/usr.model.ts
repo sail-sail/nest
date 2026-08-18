@@ -34,6 +34,8 @@ declare global {
     img_like?: string;
     /** 类型 */
     type?: UsrType[];
+    /** 拒收消息 */
+    is_reject_msg?: number[];
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */

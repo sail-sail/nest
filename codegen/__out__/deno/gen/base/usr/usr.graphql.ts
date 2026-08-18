@@ -45,6 +45,10 @@ type UsrModel {
   type: UsrType!
   "类型"
   type_lbl: String!
+  "拒收消息"
+  is_reject_msg: Int!
+  "拒收消息"
+  is_reject_msg_lbl: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -109,6 +113,10 @@ type UsrFieldComment {
   type: String!
   "类型"
   type_lbl: String!
+  "拒收消息"
+  is_reject_msg: String!
+  "拒收消息"
+  is_reject_msg_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -173,6 +181,10 @@ input UsrInput {
   type: UsrType
   "类型"
   type_lbl: String
+  "拒收消息"
+  is_reject_msg: Int
+  "拒收消息"
+  is_reject_msg_lbl: String
   "锁定"
   is_locked: Int
   "锁定"

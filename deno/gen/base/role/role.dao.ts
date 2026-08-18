@@ -183,6 +183,9 @@ async function getWhereQuery(
   if (isNotEmpty(search?.field_permit_ids_lbl_like)) {
     whereQuery += ` and base_field_permit.lbl like ${ args.push("%" + sqlLike(search?.field_permit_ids_lbl_like) + "%") }`;
   }
+  if (search?.is_audit_msg != null) {
+    whereQuery += ` and t.is_audit_msg in (${ args.push(search.is_audit_msg) })`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
@@ -401,6 +404,17 @@ export async function findCountRole(
       throw new Error(`search.field_permit_ids.length > ${ ids_limit }`);
     }
   }
+  // 接收审核消息
+  if (search && search.is_audit_msg != null) {
+    const len = search.is_audit_msg.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_audit_msg.length > ${ ids_limit }`);
+    }
+  }
   // 锁定
   if (search && search.is_locked != null) {
     const len = search.is_locked.length;
@@ -575,6 +589,17 @@ export async function findAllRole(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.field_permit_ids.length > ${ ids_limit }`);
+    }
+  }
+  // 接收审核消息
+  if (search && search.is_audit_msg != null) {
+    const len = search.is_audit_msg.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_audit_msg.length > ${ ids_limit }`);
     }
   }
   // 锁定
@@ -798,15 +823,27 @@ export async function findAllRole(
   }
   
   const [
+    is_audit_msgDict, // 接收审核消息
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
+    "yes_no",
     "is_locked",
     "is_enabled",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 接收审核消息
+    let is_audit_msg_lbl = model.is_audit_msg?.toString() || "";
+    if (model.is_audit_msg != null) {
+      const dictItem = is_audit_msgDict.find((dictItem) => dictItem.val === String(model.is_audit_msg));
+      if (dictItem) {
+        is_audit_msg_lbl = dictItem.lbl;
+      }
+    }
+    model.is_audit_msg_lbl = is_audit_msg_lbl || "";
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -869,9 +906,11 @@ export async function setIdByLblRole(
   };
   
   const [
+    is_audit_msgDict, // 接收审核消息
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
+    "yes_no",
     "is_locked",
     "is_enabled",
   ]);
@@ -942,6 +981,17 @@ export async function setIdByLblRole(
     }
   }
   
+  // 接收审核消息
+  if (isNotEmpty(input.is_audit_msg_lbl) && input.is_audit_msg == null) {
+    const val = is_audit_msgDict.find((itemTmp) => itemTmp.lbl === input.is_audit_msg_lbl)?.val;
+    if (val != null) {
+      input.is_audit_msg = Number(val);
+    }
+  } else if (isEmpty(input.is_audit_msg_lbl) && input.is_audit_msg != null) {
+    const lbl = is_audit_msgDict.find((itemTmp) => itemTmp.val === String(input.is_audit_msg))?.lbl || "";
+    input.is_audit_msg_lbl = lbl;
+  }
+  
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
@@ -981,6 +1031,8 @@ export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
     data_permit_ids_lbl: "数据权限",
     field_permit_ids: "字段权限",
     field_permit_ids_lbl: "字段权限",
+    is_audit_msg: "接收审核消息",
+    is_audit_msg_lbl: "接收审核消息",
     is_locked: "锁定",
     is_locked_lbl: "锁定",
     is_enabled: "启用",
@@ -1948,7 +2000,7 @@ async function _creates(
   await delCacheRole();
   
   const args = new QueryArgs();
-  let sql = "insert into base_role(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,lbl,home_url,is_locked,is_enabled,order_by,rem,is_sys)values";
+  let sql = "insert into base_role(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,lbl,home_url,is_audit_msg,is_locked,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -2063,6 +2115,11 @@ async function _creates(
       }
       if (input.home_url != null) {
         sql += `,${ args.push(input.home_url) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_audit_msg != null) {
+        sql += `,${ args.push(input.is_audit_msg) }`;
       } else {
         sql += ",default";
       }
@@ -2389,6 +2446,12 @@ export async function updateByIdRole(
   if (input.home_url != null) {
     if (input.home_url != oldModel.home_url) {
       sql += `home_url=${ args.push(input.home_url) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_audit_msg != null) {
+    if (input.is_audit_msg != oldModel.is_audit_msg) {
+      sql += `is_audit_msg=${ args.push(input.is_audit_msg) },`;
       updateFldNum++;
     }
   }

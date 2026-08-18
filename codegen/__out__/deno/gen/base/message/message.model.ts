@@ -27,8 +27,6 @@ declare global {
   
   /** 消息 */
   interface MessageSearch extends MessageSearchType {
-    /** 发送通道 */
-    channel?: string[];
     /** 跳转参数 */
     route_query?: string;
     route_query_like?: string;

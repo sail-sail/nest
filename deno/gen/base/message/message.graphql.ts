@@ -159,6 +159,8 @@ input MessageSearch {
   id: MessageId
   "分类"
   category: [String!]
+  "发送通道"
+  channel: [String!]
   "标题"
   title: String
   title_like: String
