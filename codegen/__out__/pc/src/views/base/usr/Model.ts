@@ -53,6 +53,9 @@ export const usrFields = [
   // 类型
   "type",
   "type_lbl",
+  // 拒收消息
+  "is_reject_msg",
+  "is_reject_msg_lbl",
   // 锁定
   "is_locked",
   "is_locked_lbl",

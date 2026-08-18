@@ -523,6 +523,7 @@ async function refreshMessages(isCount = true) {
         variables: {
           search: {
             receiver_usr_id: usrId,
+            channel: "sys",
           },
           page: {
             pgOffset: 0,

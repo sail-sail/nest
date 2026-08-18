@@ -48,6 +48,9 @@ export const roleFields = [
   // 字段权限
   "field_permit_ids",
   "field_permit_ids_lbl",
+  // 接收审核消息
+  "is_audit_msg",
+  "is_audit_msg_lbl",
   // 锁定
   "is_locked",
   "is_locked_lbl",
