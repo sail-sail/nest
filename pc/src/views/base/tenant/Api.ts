@@ -700,18 +700,6 @@ export function useDownloadImportTemplateTenant() {
             order_by
             rem
           }
-          findAllDomain {
-            id
-            lbl
-          }
-          findAllMenu {
-            id
-            lbl
-          }
-          findAllLang {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -767,22 +755,6 @@ export function useExportExcelTenant() {
           query($search: TenantSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllTenant(search: $search, page: $page, sort: $sort) {
               ${ tenantQueryField }
-            }
-            findAllDomain {
-              lbl
-            }
-            findAllMenu {
-              lbl
-            }
-            findAllLang {
-              lbl
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

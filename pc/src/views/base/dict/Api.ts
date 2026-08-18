@@ -518,12 +518,6 @@ export function useDownloadImportTemplateDict() {
             order_by
             rem
           }
-          getDict(codes: [
-            "dict_type",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -579,13 +573,6 @@ export function useExportExcelDict() {
           query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDict(search: $search, page: $page, sort: $sort) {
               ${ dictQueryField }
-            }
-            getDict(codes: [
-              "dict_type",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

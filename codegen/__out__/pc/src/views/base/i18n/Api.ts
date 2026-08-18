@@ -582,14 +582,6 @@ export function useDownloadImportTemplateI18n() {
             lbl
             rem
           }
-          findAllLang {
-            id
-            lbl
-          }
-          findAllMenu {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -645,12 +637,6 @@ export function useExportExcelI18n() {
           query($search: I18nSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllI18n(search: $search, page: $page, sort: $sort) {
               ${ i18nQueryField }
-            }
-            findAllLang {
-              lbl
-            }
-            findAllMenu {
-              lbl
             }
           }
         `,

@@ -209,9 +209,7 @@ export interface TableColumn {
   notForeignKeyById?: boolean;
   
   /**
-   * 是否不显示导入导出中的下拉框
-   * 若不设置, create_usr_id 跟 update_usr_id 默认为 true
-   *   true: 不显示, false: 显示, 默认为false
+   * 是否不显示导入导出中的下拉框, 默认为 true
    */
   notImportExportList?: boolean;
   

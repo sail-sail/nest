@@ -585,13 +585,6 @@ export function useExportExcelOptions() {
             findAllOptions(search: $search, page: $page, sort: $sort) {
               ${ optionsQueryField }
             }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
-            }
           }
         `,
         variables: {

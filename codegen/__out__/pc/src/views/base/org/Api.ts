@@ -578,13 +578,6 @@ export function useExportExcelOrg() {
             findAllOrg(search: $search, page: $page, sort: $sort) {
               ${ orgQueryField }
             }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
-            }
           }
         `,
         variables: {
