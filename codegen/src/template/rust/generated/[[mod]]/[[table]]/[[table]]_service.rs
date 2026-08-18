@@ -1034,7 +1034,7 @@ pub async fn audit_submit_<#=table#>(
   
   let receiver_usr_ids = get_audit_receiver_usr_ids(
     SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("audit_submit"),
+    SmolStr::new("audit_pass"),
     options,
   ).await?;
   
