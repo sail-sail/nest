@@ -425,6 +425,7 @@ async function refreshMessages(isCount = true) {
     variables: {
       search: {
         receiver_usr_id: usrStore.usr_id,
+        channel: "sys",
       },
       page: {
         pgOffset: (page.current - 1) * page.size,

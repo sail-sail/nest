@@ -34,6 +34,7 @@ use crate::common::gql::model::SortInput;
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
+
 use crate::base::usr::usr_model::UsrId;
 use crate::base::org::org_model::OrgId;
 
@@ -315,6 +316,8 @@ pub struct DeptFieldComment {
 #[graphql(rename_fields = "snake_case", name = "DeptSearch")]
 #[allow(dead_code)]
 pub struct DeptSearch {
+  #[graphql(skip)]
+  pub auth_usr_id: Option<UsrId>,
   /// ID
   pub id: Option<DeptId>,
   /// ID列表

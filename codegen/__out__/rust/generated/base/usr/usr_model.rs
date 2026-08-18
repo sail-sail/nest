@@ -101,6 +101,12 @@ pub struct UsrModel {
   /// 类型
   #[graphql(name = "type_lbl")]
   pub type_lbl: SmolStr,
+  /// 拒收消息
+  #[graphql(name = "is_reject_msg")]
+  pub is_reject_msg: u8,
+  /// 拒收消息
+  #[graphql(name = "is_reject_msg_lbl")]
+  pub is_reject_msg_lbl: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -294,6 +300,9 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let type_lbl: &str = row.try_get("type")?;
     let r#type: UsrType = type_lbl.try_into()?;
     let type_lbl = SmolStr::new(type_lbl);
+    // 拒收消息
+    let is_reject_msg: u8 = row.try_get("is_reject_msg")?;
+    let is_reject_msg_lbl = SmolStr::new(is_reject_msg.to_string());
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl = SmolStr::new(is_locked.to_string());
@@ -349,6 +358,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       default_org_id_lbl,
       r#type,
       type_lbl,
+      is_reject_msg,
+      is_reject_msg_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -417,6 +428,12 @@ pub struct UsrFieldComment {
   /// 类型
   #[graphql(name = "type_lbl")]
   pub type_lbl: SmolStr,
+  /// 拒收消息
+  #[graphql(name = "is_reject_msg")]
+  pub is_reject_msg: SmolStr,
+  /// 拒收消息
+  #[graphql(name = "is_reject_msg_lbl")]
+  pub is_reject_msg_lbl: SmolStr,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: SmolStr,
@@ -546,6 +563,9 @@ pub struct UsrSearch {
   /// 类型
   #[graphql(skip)]
   pub r#type: Option<Vec<UsrType>>,
+  /// 拒收消息
+  #[graphql(skip)]
+  pub is_reject_msg: Option<Vec<u8>>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -670,6 +690,10 @@ impl std::fmt::Debug for UsrSearch {
     if let Some(ref r#type) = self.r#type {
       item = item.field("r#type", r#type);
     }
+    // 拒收消息
+    if let Some(ref is_reject_msg) = self.is_reject_msg {
+      item = item.field("is_reject_msg", is_reject_msg);
+    }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
@@ -785,6 +809,12 @@ pub struct UsrInput {
   /// 类型
   #[graphql(name = "type_lbl")]
   pub type_lbl: Option<SmolStr>,
+  /// 拒收消息
+  #[graphql(name = "is_reject_msg")]
+  pub is_reject_msg: Option<u8>,
+  /// 拒收消息
+  #[graphql(name = "is_reject_msg_lbl")]
+  pub is_reject_msg_lbl: Option<SmolStr>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -882,6 +912,9 @@ impl std::fmt::Debug for UsrInput {
     if let Some(ref r#type) = self.r#type {
       item = item.field("r#type", r#type);
     }
+    if let Some(ref is_reject_msg) = self.is_reject_msg {
+      item = item.field("is_reject_msg", is_reject_msg);
+    }
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
     }
@@ -948,6 +981,9 @@ impl From<UsrModel> for UsrInput {
       // 类型
       r#type: model.r#type.into(),
       type_lbl: model.type_lbl.into(),
+      // 拒收消息
+      is_reject_msg: model.is_reject_msg.into(),
+      is_reject_msg_lbl: model.is_reject_msg_lbl.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -1005,6 +1041,8 @@ impl From<UsrInput> for UsrSearch {
       default_org_id: input.default_org_id.map(|x| vec![x]),
       // 类型
       r#type: input.r#type.map(|x| vec![x]),
+      // 拒收消息
+      is_reject_msg: input.is_reject_msg.map(|x| vec![x]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用

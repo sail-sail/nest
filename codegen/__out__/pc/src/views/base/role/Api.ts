@@ -48,6 +48,9 @@ export function intoInputRole(
     // 字段权限
     field_permit_ids: model?.field_permit_ids,
     field_permit_ids_lbl: model?.field_permit_ids_lbl,
+    // 接收审核消息
+    is_audit_msg: model?.is_audit_msg,
+    is_audit_msg_lbl: model?.is_audit_msg_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -737,6 +740,7 @@ export function useDownloadImportTemplateRole() {
             permit_ids_lbl
             data_permit_ids_lbl
             field_permit_ids_lbl
+            is_audit_msg_lbl
             order_by
             rem
           }
@@ -754,6 +758,12 @@ export function useDownloadImportTemplateRole() {
           }
           findAllFieldPermit {
             id
+            lbl
+          }
+          getDict(codes: [
+            "yes_no",
+          ]) {
+            code
             lbl
           }
         }
@@ -822,6 +832,7 @@ export function useExportExcelRole() {
               lbl
             }
             getDict(codes: [
+              "yes_no",
               "is_locked",
               "is_enabled",
             ]) {
@@ -965,6 +976,8 @@ export async function getFieldCommentsRole(
           data_permit_ids_lbl,
           field_permit_ids,
           field_permit_ids_lbl,
+          is_audit_msg,
+          is_audit_msg_lbl,
           is_locked,
           is_locked_lbl,
           is_enabled,
@@ -998,6 +1011,7 @@ export function getPagePathRole() {
 /** 新增时的默认值 */
 export async function getDefaultInputRole() {
   const defaultInput: RoleInput = {
+    is_audit_msg: 0,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,

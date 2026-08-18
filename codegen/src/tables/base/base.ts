@@ -85,6 +85,10 @@ export default defineConfig({
         },
       },
       {
+        COLUMN_NAME: "is_audit_msg",
+        width: 140,
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
@@ -349,6 +353,10 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "type",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "is_reject_msg",
         width: 120,
       },
       {
@@ -1782,6 +1790,7 @@ export default defineConfig({
         COLUMN_NAME: "channel",
         align: "center",
         width: 120,
+        search: true,
       },
       {
         COLUMN_NAME: "title",

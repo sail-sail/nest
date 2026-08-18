@@ -43,7 +43,7 @@ impl MessageMutation {
       .with_auth()?
       .build()
       .scope({
-        message_resolver::send_message(input, receiver_usr_ids)
+        message_resolver::send_message(input, receiver_usr_ids, None)
       }).await
   }
 
@@ -58,7 +58,7 @@ impl MessageMutation {
       .with_auth()?
       .build()
       .scope({
-        message_resolver::mark_message_receiver_as_read(id)
+        message_resolver::mark_message_receiver_as_read(id, None)
       }).await
   }
 }

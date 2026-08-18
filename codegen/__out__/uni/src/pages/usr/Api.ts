@@ -64,6 +64,9 @@ export function intoInputUsr(
     // 类型
     type: model?.type,
     type_lbl: model?.type_lbl,
+    // 拒收消息
+    is_reject_msg: model?.is_reject_msg,
+    is_reject_msg_lbl: model?.is_reject_msg_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -769,6 +772,8 @@ export async function getFieldCommentsUsr(
           default_org_id_lbl,
           type,
           type_lbl,
+          is_reject_msg,
+          is_reject_msg_lbl,
           is_locked,
           is_locked_lbl,
           is_enabled,
@@ -803,6 +808,7 @@ export function getPagePathUsr() {
 export async function getDefaultInputUsr() {
   const defaultInput: UsrInput = {
     type: UsrType.Login,
+    is_reject_msg: 0,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,

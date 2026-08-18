@@ -240,6 +240,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_reject_msg == null)">
+          <el-form-item
+            label="拒收消息"
+            prop="is_reject_msg"
+          >
+            <DictSelect
+              v-model="dialogModel.is_reject_msg"
+              :set="dialogModel.is_reject_msg = dialogModel.is_reject_msg ?? undefined"
+              code="yes_no"
+              placeholder="请选择 拒收消息"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             label="排序"
@@ -479,6 +494,13 @@ watchEffect(async () => {
       {
         required: true,
         message: "请选择 类型",
+      },
+    ],
+    // 拒收消息
+    is_reject_msg: [
+      {
+        required: true,
+        message: "请选择 拒收消息",
       },
     ],
     // 排序
@@ -860,6 +882,7 @@ watch(
     dialogModel.org_ids,
     dialogModel.default_org_id,
     dialogModel.type,
+    dialogModel.is_reject_msg,
   ],
   () => {
     if (!inited) {
@@ -879,6 +902,9 @@ watch(
     }
     if (!dialogModel.type) {
       dialogModel.type_lbl = "";
+    }
+    if (!dialogModel.is_reject_msg) {
+      dialogModel.is_reject_msg_lbl = "";
     }
   },
 );

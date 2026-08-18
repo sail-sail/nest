@@ -1124,6 +1124,13 @@ export interface TablesConfigItem {
        */
       hasReverse?: boolean;
       
+      /**
+       * 此审核功能审核后是否发送消息 message，默认为 true
+       * 如果不需要发送消息，则显式写 false
+       * 相关逻辑 notify_next_audit_usr_by_permit
+       */
+      sendAuditMessage?: boolean;
+      
     };
     
     /**
