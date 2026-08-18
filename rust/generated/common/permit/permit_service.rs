@@ -19,12 +19,9 @@ use crate::base::menu::menu_model::{MenuSearch, MenuId};
 
 use super::permit_model::GetUsrPermits;
 
-use crate::base::message::message_dao2::send_message;
-use crate::base::message::message_model::MessageInput;
 use crate::base::usr::usr_dao::find_by_id_usr;
 use crate::base::usr::usr_model::{UsrId, UsrSearch};
 use crate::base::usr::usr_service::find_all_usr;
-use crate::wxwork::wxw_msg::wxw_msg_dao2::send_message_wxwork;
 
 use crate::base::role::role_dao::find_all_role;
 use crate::base::role::role_model::{RoleId, RoleSearch};
@@ -307,29 +304,6 @@ pub async fn find_next_audit_receiver_usr_id(
 ) -> Result<Option<UsrId>> {
   let receiver_usr_ids = get_audit_receiver_usr_ids(route_path, code, options).await?;
   Ok(find_next_audit_receiver_usr_id_in_list(receiver_usr_ids, current_usr_id))
-}
-
-/// 按角色权限筛选出全部可接收审核消息的用户，并广播通知
-pub async fn notify_next_audit_usr_by_permit(
-  route_path: SmolStr,
-  code: SmolStr,
-  current_usr_id: UsrId,
-  message_input: MessageInput,
-  options: Option<Options>,
-) -> Result<()> {
-  let receiver_usr_ids = get_audit_receiver_usr_ids(route_path, code, options).await?;
-  let receiver_usr_ids = filter_audit_receiver_usr_ids(receiver_usr_ids, vec![current_usr_id]);
-  if receiver_usr_ids.is_empty() {
-    return Ok(());
-  }
-
-  let mut notify_input = message_input;
-  notify_input.is_sys_msg = notify_input.is_sys_msg.or(Some(1));
-
-  send_message(notify_input.clone(), receiver_usr_ids.clone(), options).await?;
-  send_message_wxwork(notify_input, receiver_usr_ids, options).await?;
-
-  Ok(())
 }
 
 /// 后端按钮权限校验
