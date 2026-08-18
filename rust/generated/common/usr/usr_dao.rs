@@ -122,3 +122,38 @@ pub async fn is_admin(
   
   Ok(username == "admin")
 }
+
+/// 返回用户是否持有指定角色编码
+#[allow(dead_code)]
+pub async fn has_role_code(
+  usr_id: UsrId,
+  target_code: &str,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let usr_model = find_by_id_usr(
+    usr_id,
+    options,
+  ).await?;
+  
+  if usr_model.is_none() {
+    return Ok(false);
+  }
+  let usr_model = usr_model.unwrap();
+  
+  if usr_model.is_enabled == 0 {
+    return Ok(false);
+  }
+
+  if usr_model.role_ids.is_empty() {
+    return Ok(false);
+  }
+
+  let role_models = crate::base::role::role_dao::find_by_ids_role(
+    usr_model.role_ids,
+    options,
+  ).await?;
+
+  Ok(role_models.into_iter()
+    .any(|role| role.code.as_str() == target_code))
+}

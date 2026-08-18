@@ -24,8 +24,7 @@ use crate::base::tenant::tenant_model::TenantId;
 use crate::base::org::org_model::OrgId;
 
 use crate::base::usr::usr_dao::{
-  find_by_id_usr,
-  validate_option_usr,
+  find_by_id_ok_usr,
 };
 
 use super::dept_model::*;
@@ -37,17 +36,20 @@ async fn set_search_query(
   options: Option<Options>,
 ) -> Result<()> {
   
-  let usr_id = get_auth_id_ok()?;
-  let usr_model = validate_option_usr(
-    find_by_id_usr(
-      usr_id,
-      options,
-    ).await?,
+  let usr_id = if let Some(auth_usr_id) = search.auth_usr_id.clone() {
+    auth_usr_id
+  } else {
+    get_auth_id_ok()?
+  };
+  
+  let usr_model = find_by_id_ok_usr(
+    usr_id,
+    options,
   ).await?;
   
   let org_id = get_auth_org_id().unwrap_or_default();
   let mut org_ids: Vec<OrgId> = vec![];
-  if !org_id.is_empty() {
+  if search.auth_usr_id.unwrap_or_default().is_empty() && !org_id.is_empty() {
     org_ids.push(org_id);
   } else {
     org_ids.append(&mut usr_model.org_ids.clone());

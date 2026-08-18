@@ -1,5 +1,6 @@
 use color_eyre::eyre::Result;
 use tracing::info;
+use generated::common::context::Options;
 
 use generated::base::message::message_model::{MessageInput, MessageModel};
 use generated::base::message_receiver::message_receiver_model::MessageReceiverId;
@@ -25,6 +26,7 @@ pub async fn get_my_unread_message_count() -> Result<u64> {
 pub async fn send_message(
   input: MessageInput,
   receiver_usr_ids: Vec<UsrId>,
+  options: Option<Options>,
 ) -> Result<MessageModel> {
   info!(
     "{req_id} {function_name}",
@@ -32,17 +34,20 @@ pub async fn send_message(
     function_name = function_name!(),
   );
 
-  message_service::send_message(input, receiver_usr_ids).await
+  message_service::send_message(input, receiver_usr_ids, options).await
 }
 
 /// 标记消息接收记录为已读
 #[function_name::named]
-pub async fn mark_message_receiver_as_read(id: MessageReceiverId) -> Result<bool> {
+pub async fn mark_message_receiver_as_read(
+  id: MessageReceiverId,
+  options: Option<Options>,
+) -> Result<bool> {
   info!(
     "{req_id} {function_name}",
     req_id = get_req_id(),
     function_name = function_name!(),
   );
 
-  message_service::mark_message_receiver_as_read(id).await
+  message_service::mark_message_receiver_as_read(id, options).await
 }

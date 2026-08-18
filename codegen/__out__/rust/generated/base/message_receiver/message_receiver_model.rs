@@ -34,8 +34,9 @@ use crate::common::gql::model::SortInput;
 use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::base::tenant::tenant_model::TenantId;
-use crate::base::message::message_model::MessageId;
+
 use crate::base::usr::usr_model::UsrId;
+use crate::base::message::message_model::MessageId;
 use crate::base::org::org_model::OrgId;
 
 static CAN_SORT_IN_API_MESSAGE_RECEIVER: [&str; 2] = [
@@ -252,6 +253,8 @@ pub struct MessageReceiverFieldComment {
 #[graphql(rename_fields = "snake_case", name = "MessageReceiverSearch")]
 #[allow(dead_code)]
 pub struct MessageReceiverSearch {
+  #[graphql(skip)]
+  pub auth_usr_id: Option<UsrId>,
   /// ID
   pub id: Option<MessageReceiverId>,
   /// ID列表

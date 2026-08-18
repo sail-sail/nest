@@ -14,7 +14,11 @@ use generated::base::message_receiver::message_receiver_model::{
   MessageReceiverInput,
 };
 use generated::base::usr::usr_model::UsrId;
-use generated::common::context::{get_auth_id_ok, get_now};
+use generated::common::context::{
+  Options,
+  get_auth_id_ok,
+  get_now,
+};
 
 /// 获取当前用户未读消息数量
 pub async fn get_my_unread_message_count() -> Result<u64> {
@@ -25,14 +29,18 @@ pub async fn get_my_unread_message_count() -> Result<u64> {
 pub async fn send_message(
   input: MessageInput,
   receiver_usr_ids: Vec<UsrId>,
+  options: Option<Options>
 ) -> Result<MessageModel> {
-  send_message_dao2(input, receiver_usr_ids).await
+  send_message_dao2(input, receiver_usr_ids, options).await
 }
 
 /// 标记消息接收记录为已读
-pub async fn mark_message_receiver_as_read(id: MessageReceiverId) -> Result<bool> {
+pub async fn mark_message_receiver_as_read(
+  id: MessageReceiverId,
+  options: Option<Options>,
+) -> Result<bool> {
   let usr_id = get_auth_id_ok()?;
-  let receiver_model = match find_by_id_message_receiver(id, None).await? {
+  let receiver_model = match find_by_id_message_receiver(id, options).await? {
     Some(item) => item,
     None => return Ok(false),
   };
@@ -50,7 +58,7 @@ pub async fn mark_message_receiver_as_read(id: MessageReceiverId) -> Result<bool
     read_time: Some(get_now().into()),
     ..Default::default()
   };
-  update_by_id_message_receiver(receiver_model.id, input, None).await?;
+  update_by_id_message_receiver(receiver_model.id, input, options).await?;
   Ok(true)
 }
 

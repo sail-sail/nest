@@ -266,6 +266,16 @@ modelIds.push("TenantId");
 #><#
 }
 #><#
+if (
+  (opts.filterDataByCreateUsr || hasOrgId || hasAudit) &&
+  !modelIds.includes("UsrId")
+) {
+#>
+
+use crate::base::usr::usr_model::UsrId;<#
+modelIds.push("UsrId");
+}
+#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -1805,7 +1815,13 @@ pub struct <#=tableUP#>FieldComment {<#
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
 #[graphql(rename_fields = "snake_case", name = "<#=tableUP#>Search")]
 #[allow(dead_code)]
-pub struct <#=tableUP#>Search {
+pub struct <#=tableUP#>Search {<#
+  if (opts.filterDataByCreateUsr || hasOrgId || hasAudit) {
+  #>
+  #[graphql(skip)]
+  pub auth_usr_id: Option<UsrId>,<#
+  }
+  #>
   /// ID
   pub id: Option<<#=Table_Up#>Id>,
   /// ID列表
