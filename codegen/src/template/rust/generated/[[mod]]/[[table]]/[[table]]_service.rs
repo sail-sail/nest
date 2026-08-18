@@ -1073,6 +1073,17 @@ pub async fn audit_submit_<#=table#>(
     next_message.clone(),
     receiver_usr_ids.clone(),
     options,
+  ).await?;
+  
+  let mut next_message_wxwork = MessageInput {
+    ..next_message
+  };
+  next_message_wxwork.route_path = None;
+  next_message_wxwork.route_query = None;
+  crate::wxwork::wxw_msg::wxw_msg_dao2::send_message_wxwork(
+    next_message_wxwork,
+    receiver_usr_ids,
+    options,
   ).await?;<#
   } 
   #><#
@@ -1225,6 +1236,18 @@ pub async fn audit_pass_<#=table#>(
     next_message.clone(),
     receiver_usr_ids.clone(),
     options,
+  ).await?;
+  
+  let mut next_message_wxwork = MessageInput {
+    ..next_message
+  };
+  next_message_wxwork.route_path = None;
+  next_message_wxwork.route_query = None;
+  
+  crate::wxwork::wxw_msg::wxw_msg_dao2::send_message_wxwork(
+    next_message_wxwork,
+    receiver_usr_ids,
+    options,
   ).await?;<#
   } else if (opts.audit.sendAuditMessage && !hasReviewed) {
   #>
@@ -1244,6 +1267,18 @@ pub async fn audit_pass_<#=table#>(
     
     crate::base::message::message_dao2::send_message(
       next_message.clone(),
+      receiver_usr_ids.clone(),
+      options,
+    ).await?;
+    
+    let mut next_message_wxwork = MessageInput {
+      ..next_message
+    };
+    next_message_wxwork.route_path = None;
+    next_message_wxwork.route_query = None;
+    
+    crate::wxwork::wxw_msg::wxw_msg_dao2::send_message_wxwork(
+      next_message_wxwork,
       receiver_usr_ids.clone(),
       options,
     ).await?;
@@ -1372,6 +1407,18 @@ pub async fn audit_reject_<#=table#>(
     
     crate::base::message::message_dao2::send_message(
       next_message.clone(),
+      receiver_usr_ids.clone(),
+      options,
+    ).await?;
+    
+    let mut next_message_wxwork = MessageInput {
+      ..next_message
+    };
+    next_message_wxwork.route_path = None;
+    next_message_wxwork.route_query = None;
+    
+    crate::wxwork::wxw_msg::wxw_msg_dao2::send_message_wxwork(
+      next_message_wxwork,
       receiver_usr_ids.clone(),
       options,
     ).await?;
@@ -1509,6 +1556,18 @@ pub async fn audit_reverse_<#=table#>(
     next_message.clone(),
     receiver_usr_ids.clone(),
     options,
+  ).await?;
+  
+  let mut next_message_wxwork = MessageInput {
+    ..next_message
+  };
+  next_message_wxwork.route_path = None;
+  next_message_wxwork.route_query = None;
+  
+  crate::wxwork::wxw_msg::wxw_msg_dao2::send_message_wxwork(
+    next_message_wxwork,
+    receiver_usr_ids,
+    options,
   ).await?;<#
   }
   #><#
@@ -1624,6 +1683,18 @@ pub async fn audit_review_<#=table#>(
     
     crate::base::message::message_dao2::send_message(
       next_message.clone(),
+      receiver_usr_ids.clone(),
+      options,
+    ).await?;
+    
+    let mut next_message_wxwork = MessageInput {
+      ..next_message
+    };
+    next_message_wxwork.route_path = None;
+    next_message_wxwork.route_query = None;
+    
+    crate::wxwork::wxw_msg::wxw_msg_dao2::send_message_wxwork(
+      next_message_wxwork,
       receiver_usr_ids.clone(),
       options,
     ).await?;
