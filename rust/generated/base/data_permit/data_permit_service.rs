@@ -167,6 +167,27 @@ pub async fn find_by_ids_data_permit(
   Ok(data_permit_models)
 }
 
+/// 根据搜索条件判断数据权限是否存在
+pub async fn exists_data_permit(
+  search: Option<DataPermitSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = data_permit_dao::exists_data_permit(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找数据权限, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_data_permit(
   data_permit_ids: Vec<DataPermitId>,

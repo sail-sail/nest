@@ -337,6 +337,32 @@ export async function findByIdsIcon(
 }
 
 /**
+ * 根据搜索条件判断图标库是否存在
+ */
+export async function existsIcon(
+  search?: IconSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsIcon: Query["existsIcon"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: IconSearch) {
+        existsIcon(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsIcon;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 图标库, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkIcon(
@@ -554,12 +580,6 @@ export function useExportExcelIcon() {
           query($search: IconSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllIcon(search: $search, page: $page, sort: $sort) {
               ${ iconQueryField }
-            }
-            getDict(codes: [
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

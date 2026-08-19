@@ -494,6 +494,35 @@ pub async fn find_by_ids_<#=table#>(
   Ok(<#=table#>_models)
 }
 
+/// 根据搜索条件判断<#=table_comment#>是否存在
+pub async fn exists_<#=table#>(
+  search: Option<<#=tableUP#>Search>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true);
+  let options = Some(options);<#
+  }
+  #>
+  
+  let exists_res = <#=table#>_dao::exists_<#=table#>(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找<#=table_comment#>, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_<#=table#>(
   <#=table#>_ids: Vec<<#=Table_Up#>Id>,
@@ -1024,7 +1053,7 @@ pub async fn audit_submit_<#=table#>(
   
   let next_message = MessageInput {
     title: Some("<#=table_comment#>待审核".into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已提交审核，请尽快处理。").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已提交审核，请尽快处理").into()),
     route_path: Some(get_page_path_<#=table#>().into()),
     route_query: Some(format!("id={<#=table#>_id}").into()),
     tenant_id: old_model.tenant_id.clone().into(),
@@ -1051,15 +1080,14 @@ pub async fn audit_submit_<#=table#>(
       continue;
     }
     
-    let has_permit = find_one_<#=table#>(
+    let has_permit = exists_<#=table#>(
       Some(<#=Table_Up#>Search {
         id: Some(<#=table#>_id),
         auth_usr_id: Some(receiver_usr_id),
         ..Default::default()
       }),
-      None,
       options,
-    ).await?.is_some();
+    ).await?;
     
     if has_permit {
       receiver_usr_ids2.push(receiver_usr_id);
@@ -1175,7 +1203,7 @@ pub async fn audit_pass_<#=table#>(
   
   let next_message = MessageInput {
     title: Some("<#=table_comment#>待复核".into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已审核通过，请继续复核。").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已审核通过，请继续复核").into()),
     route_path: Some(get_page_path_<#=table#>().into()),
     route_query: Some(format!("id={<#=table#>_id}").into()),
     tenant_id: old_model.tenant_id.into(),
@@ -1203,15 +1231,14 @@ pub async fn audit_pass_<#=table#>(
       continue;
     }
     
-    let has_permit = find_one_<#=table#>(
-      Some(<#=tableUP#>Search {
+    let has_permit = exists_<#=table#>(
+      Some(<#=Table_Up#>Search {
         id: Some(<#=table#>_id),
         auth_usr_id: Some(receiver_usr_id),
         ..Default::default()
       }),
-      None,
       options,
-    ).await?.is_some();
+    ).await?;
     
     if has_permit {
       receiver_usr_ids2.push(receiver_usr_id);
@@ -1232,7 +1259,7 @@ pub async fn audit_pass_<#=table#>(
   let receiver_usr_ids = vec![old_model.create_usr_id];
   let next_message = MessageInput {
     title: Some("<#=table_comment#>已审核通过".into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已审核通过。").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已审核通过").into()),
     route_path: Some(get_page_path_<#=table#>().into()),
     route_query: Some(format!("id={<#=table#>_id}").into()),
     tenant_id: old_model.tenant_id.into(),
@@ -1360,7 +1387,7 @@ pub async fn audit_reject_<#=table#>(
   
   let next_message = MessageInput {
     title: Some(format!("<#=table_comment#>已被拒绝").into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被拒绝，请重新提交审核。").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被拒绝，请重新提交审核").into()),
     route_path: Some(get_page_path_<#=table#>().into()),
     route_query: Some(format!("id={<#=table#>_id}").into()),
     tenant_id: old_model.tenant_id.clone().into(),
@@ -1390,7 +1417,7 @@ pub async fn audit_reverse_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
-
+  
   let old_model = <#=table#>_dao::find_by_id_ok_<#=table#>(
     <#=table#>_id,
     options,
@@ -1399,24 +1426,24 @@ pub async fn audit_reverse_<#=table#>(
   #><#
   if (opts?.lbl_field) {
   #>
-
+  
   let <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#>;<#
   } else {
   #>
-
+  
   let <#=auditModelLabel#> = String::new();<#
   }
   #><#
   }
   #>
-
-  let (audit, audit_log) = get_reverse_<#=auditColumn#>_status(old_model.<#=auditColumn#>.clone())?;
-
+  
+  let (audit, audit_log) = get_reverse_<#=auditColumn#>_status(old_model.<#=auditColumn#>)?;
+  
   let <#=table#>_input = <#=tableUP#>Input {
     <#=auditColumn#>: Some(audit),
     ..Default::default()
   };
-
+  
   <#=table#>_dao::update_by_id_<#=table#>(
     <#=table#>_id,
     <#=table#>_input,
@@ -1424,7 +1451,7 @@ pub async fn audit_reverse_<#=table#>(
   ).await?;<#
   if (auditTable_Up) {
   #>
-
+  
   let audit_usr_id = get_auth_id_ok()?;
   let audit_time = get_now();
 
@@ -1432,9 +1459,9 @@ pub async fn audit_reverse_<#=table#>(
     audit_usr_id,
     options,
   ).await?;
-
+  
   let audit_usr_id_lbl = audit_usr_model.lbl;
-
+  
   let <#=table#>_input = <#=auditTable_Up#>Input {
     <#=table#>_id: Some(<#=table#>_id),<#
     if (auditModelLabel) {
@@ -1449,7 +1476,7 @@ pub async fn audit_reverse_<#=table#>(
     rem: Some("反审核".into()),
     ..Default::default()
   };
-
+  
   create_<#=auditTable#>(
     <#=table#>_input,
     options,
@@ -1459,7 +1486,7 @@ pub async fn audit_reverse_<#=table#>(
   
   let next_message = MessageInput {
     title: Some(format!("<#=table_comment#>待{audit_log}").into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被反审核，请重新{audit_log}。").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被反审核，请重新{audit_log}").into()),
     route_path: Some(get_page_path_<#=table#>().into()),
     route_query: Some(format!("id={<#=table#>_id}").into()),
     tenant_id: old_model.tenant_id.into(),
@@ -1487,15 +1514,14 @@ pub async fn audit_reverse_<#=table#>(
       continue;
     }
     
-    let has_permit = find_one_<#=table#>(
-      Some(<#=tableUP#>Search {
+    let has_permit = exists_<#=table#>(
+      Some(<#=Table_Up#>Search {
         id: Some(<#=table#>_id),
         auth_usr_id: Some(receiver_usr_id),
         ..Default::default()
       }),
-      None,
       options,
-    ).await?.is_some();
+    ).await?;
     
     if has_permit {
       receiver_usr_ids2.push(receiver_usr_id);
@@ -1514,7 +1540,7 @@ pub async fn audit_reverse_<#=table#>(
   #><#
   }
   #>
-
+  
   Ok(true)
 }<#
 if (hasReviewed) {
@@ -1612,7 +1638,7 @@ pub async fn audit_review_<#=table#>(
   let receiver_usr_ids = vec![old_model.create_usr_id];
   let next_message = MessageInput {
     title: Some("<#=table_comment#>已复核通过".into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已复核通过。").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已复核通过").into()),
     route_path: Some(get_page_path_<#=table#>().into()),
     route_query: Some(format!("id={<#=table#>_id}").into()),
     tenant_id: old_model.tenant_id.into(),

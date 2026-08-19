@@ -377,6 +377,32 @@ export async function findByIdsUsr(
 }
 
 /**
+ * 根据搜索条件判断用户是否存在
+ */
+export async function existsUsr(
+  search?: UsrSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsUsr: Query["existsUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: UsrSearch) {
+        existsUsr(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsUsr;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 用户, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkUsr(
@@ -728,26 +754,6 @@ export function useDownloadImportTemplateUsr() {
             rem
             is_hidden_lbl
           }
-          findAllRole {
-            id
-            lbl
-          }
-          findAllDept {
-            id
-            lbl
-          }
-          findAllOrg {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "usr_type",
-            "yes_no",
-            "yes_no",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -803,25 +809,6 @@ export function useExportExcelUsr() {
           query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllUsr(search: $search, page: $page, sort: $sort) {
               ${ usrQueryField }
-            }
-            findAllRole {
-              lbl
-            }
-            findAllDept {
-              lbl
-            }
-            findAllOrg {
-              lbl
-            }
-            getDict(codes: [
-              "usr_type",
-              "yes_no",
-              "is_locked",
-              "is_enabled",
-              "yes_no",
-            ]) {
-              code
-              lbl
             }
           }
         `,

@@ -184,6 +184,26 @@ impl OptbizGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断业务选项是否存在
+  #[graphql(name = "existsOptbiz")]
+  async fn exists_optbiz(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<OptbizSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        optbiz_resolver::exists_optbiz(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找业务选项
   #[graphql(name = "findByIdsOkOptbiz")]
   async fn find_by_ids_ok_optbiz(

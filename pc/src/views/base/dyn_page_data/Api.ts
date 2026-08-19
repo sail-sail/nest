@@ -326,6 +326,32 @@ export async function findByIdsDynPageData(
 }
 
 /**
+ * 根据搜索条件判断动态页面数据是否存在
+ */
+export async function existsDynPageData(
+  search?: DynPageDataSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDynPageData: Query["existsDynPageData"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DynPageDataSearch) {
+        existsDynPageData(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDynPageData;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 动态页面数据, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDynPageData(

@@ -733,6 +733,37 @@ pub async fn find_by_ids_<#=table#>(
   Ok(models)
 }
 
+/// 根据搜索条件判断<#=table_comment#>是否存在
+#[function_name::named]
+pub async fn exists_<#=table#>(
+  search: Option<<#=tableUP#>Search>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );<#
+  if (hasSearchRangeMax) {
+  #>
+  
+  let search = {
+    let search = search.unwrap_or_default();
+    check_search_range_<#=table#>(&search)?;
+    Some(search)
+  };<#
+  }
+  #>
+  
+  let res = <#=table#>_service::exists_<#=table#>(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找<#=table_comment#>, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_<#=table#>(

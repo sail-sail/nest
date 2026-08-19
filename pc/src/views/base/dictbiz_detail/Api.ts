@@ -336,6 +336,32 @@ export async function findByIdsDictbizDetail(
 }
 
 /**
+ * 根据搜索条件判断业务字典明细是否存在
+ */
+export async function existsDictbizDetail(
+  search?: DictbizDetailSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDictbizDetail: Query["existsDictbizDetail"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DictbizDetailSearch) {
+        existsDictbizDetail(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDictbizDetail;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 业务字典明细, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDictbizDetail(
@@ -544,10 +570,6 @@ export function useDownloadImportTemplateDictbizDetail() {
             order_by
             rem
           }
-          findAllDictbiz {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -603,15 +625,6 @@ export function useExportExcelDictbizDetail() {
           query($search: DictbizDetailSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDictbizDetail(search: $search, page: $page, sort: $sort) {
               ${ dictbizDetailQueryField }
-            }
-            findAllDictbiz {
-              lbl
-            }
-            getDict(codes: [
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

@@ -184,6 +184,27 @@ pub async fn find_by_ids_lang(
   Ok(models)
 }
 
+/// 根据搜索条件判断语言是否存在
+#[function_name::named]
+pub async fn exists_lang(
+  search: Option<LangSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = lang_service::exists_lang(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找语言, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_lang(

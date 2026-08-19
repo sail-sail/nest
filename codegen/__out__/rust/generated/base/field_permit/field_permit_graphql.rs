@@ -182,6 +182,26 @@ impl FieldPermitGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断字段权限是否存在
+  #[graphql(name = "existsFieldPermit")]
+  async fn exists_field_permit(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<FieldPermitSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        field_permit_resolver::exists_field_permit(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找字段权限
   #[graphql(name = "findByIdsOkFieldPermit")]
   async fn find_by_ids_ok_field_permit(

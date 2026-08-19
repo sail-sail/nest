@@ -184,6 +184,26 @@ impl DynPageGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断动态页面是否存在
+  #[graphql(name = "existsDynPage")]
+  async fn exists_dyn_page(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DynPageSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dyn_page_resolver::exists_dyn_page(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找动态页面
   #[graphql(name = "findByIdsOkDynPage")]
   async fn find_by_ids_ok_dyn_page(

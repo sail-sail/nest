@@ -663,11 +663,8 @@ async function getSchema0(
         item.sortable = true;
       }
     }
-    // 是否不显示导入导出中的下拉框, 若不设置, create_usr_id 跟 update_usr_id 默认为 true
-    if (
-      (item.COLUMN_NAME === "create_usr_id" || item.COLUMN_NAME === "update_usr_id") &&
-      item.notImportExportList == null
-    ) {
+    // 是否不显示导入导出中的下拉框, 默认为 true
+    if (item.notImportExportList == null) {
       item.notImportExportList = true;
     }
     if (record && record.DATA_TYPE === "date") {

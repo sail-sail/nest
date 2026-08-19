@@ -173,6 +173,27 @@ pub async fn find_by_ids_usr(
   Ok(usr_models)
 }
 
+/// 根据搜索条件判断用户是否存在
+pub async fn exists_usr(
+  search: Option<UsrSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = usr_dao::exists_usr(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找用户, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_usr(
   usr_ids: Vec<UsrId>,

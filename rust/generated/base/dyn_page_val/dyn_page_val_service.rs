@@ -167,6 +167,27 @@ pub async fn find_by_ids_dyn_page_val(
   Ok(dyn_page_val_models)
 }
 
+/// 根据搜索条件判断动态页面值是否存在
+pub async fn exists_dyn_page_val(
+  search: Option<DynPageValSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = dyn_page_val_dao::exists_dyn_page_val(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找动态页面值, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_dyn_page_val(
   dyn_page_val_ids: Vec<DynPageValId>,

@@ -368,6 +368,32 @@ export async function findByIdsMenu(
 }
 
 /**
+ * 根据搜索条件判断菜单是否存在
+ */
+export async function existsMenu(
+  search?: MenuSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsMenu: Query["existsMenu"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MenuSearch) {
+        existsMenu(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsMenu;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 菜单, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkMenu(

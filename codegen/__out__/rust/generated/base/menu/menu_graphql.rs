@@ -182,6 +182,26 @@ impl MenuGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断菜单是否存在
+  #[graphql(name = "existsMenu")]
+  async fn exists_menu(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<MenuSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        menu_resolver::exists_menu(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找菜单
   #[graphql(name = "findByIdsOkMenu")]
   async fn find_by_ids_ok_menu(

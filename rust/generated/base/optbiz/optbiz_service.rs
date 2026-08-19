@@ -167,6 +167,27 @@ pub async fn find_by_ids_optbiz(
   Ok(optbiz_models)
 }
 
+/// 根据搜索条件判断业务选项是否存在
+pub async fn exists_optbiz(
+  search: Option<OptbizSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = optbiz_dao::exists_optbiz(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找业务选项, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_optbiz(
   optbiz_ids: Vec<OptbizId>,

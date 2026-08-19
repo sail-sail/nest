@@ -167,6 +167,27 @@ pub async fn find_by_ids_login_log(
   Ok(login_log_models)
 }
 
+/// 根据搜索条件判断登录日志是否存在
+pub async fn exists_login_log(
+  search: Option<LoginLogSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = login_log_dao::exists_login_log(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找登录日志, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_login_log(
   login_log_ids: Vec<LoginLogId>,

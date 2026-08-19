@@ -1688,136 +1688,115 @@ pub async fn exists_role(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(false);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(false);
     }
   }
-  // 菜单权限
-  if let Some(search) = &search && search.menu_ids.is_some() {
-    let len = search.menu_ids.as_ref().unwrap().len();
+  // 编码
+  if let Some(search) = &search && let Some(codes) = &search.codes {
+    let len = codes.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
+    if len > ids_limit {
+      return Err(eyre!("search.codes.length > {ids_limit}"));
+    }
+  }
+  // 菜单权限
+  if let Some(search) = &search && let Some(menu_ids) = &search.menu_ids {
+    let len = menu_ids.len();
+    if len == 0 {
+      return Ok(false);
+    }
     if len > ids_limit {
       return Err(eyre!("search.menu_ids.length > {ids_limit}"));
     }
   }
   // 按钮权限
-  if let Some(search) = &search && search.permit_ids.is_some() {
-    let len = search.permit_ids.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(permit_ids) = &search.permit_ids {
+    let len = permit_ids.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.permit_ids.length > {ids_limit}"));
     }
   }
   // 数据权限
-  if let Some(search) = &search && search.data_permit_ids.is_some() {
-    let len = search.data_permit_ids.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(data_permit_ids) = &search.data_permit_ids {
+    let len = data_permit_ids.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.data_permit_ids.length > {ids_limit}"));
     }
   }
   // 字段权限
-  if let Some(search) = &search && search.field_permit_ids.is_some() {
-    let len = search.field_permit_ids.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(field_permit_ids) = &search.field_permit_ids {
+    let len = field_permit_ids.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.field_permit_ids.length > {ids_limit}"));
     }
   }
   // 接收审核消息
-  if let Some(search) = &search && search.is_audit_msg.is_some() {
-    let len = search.is_audit_msg.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_audit_msg) = &search.is_audit_msg {
+    let len = is_audit_msg.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_audit_msg.length > {ids_limit}"));
     }
   }
   // 锁定
-  if let Some(search) = &search && search.is_locked.is_some() {
-    let len = search.is_locked.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_locked) = &search.is_locked {
+    let len = is_locked.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_locked.length > {ids_limit}"));
     }
   }
   // 启用
-  if let Some(search) = &search && search.is_enabled.is_some() {
-    let len = search.is_enabled.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(is_enabled) = &search.is_enabled {
+    let len = is_enabled.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.is_enabled.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(create_usr_id) = &search.create_usr_id {
+    let len = create_usr_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(update_usr_id) = &search.update_usr_id {
+    let len = update_usr_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
@@ -1826,6 +1805,10 @@ pub async fn exists_role(
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
+  
+  #[allow(unused_variables)]
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
   
   let mut args = QueryArgs::new();
   
@@ -1875,10 +1858,6 @@ pub async fn exists_role(
   let exists_res: bool = if let Some(exists_res) = exists_res {
     exists_res
   } else {
-    let options = Options::from(options)
-      .set_is_debug(Some(false));
-    let options = Some(options);
-    
     let res: Option<(bool,)> = query_one(
       sql,
       args,

@@ -3655,11 +3655,16 @@ pub async fn exists_<#=table#>(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(false);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(false);
     }
   }<#
@@ -3701,17 +3706,27 @@ pub async fn exists_<#=table#>(
     ) {
   #>
   // <#=column_comment#>
-  if let Some(search) = &search && search.<#=column_name_rust#>.is_some() {
-    let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(<#=column_name_rust#>) = &search.<#=column_name_rust#> {
+    let len = <#=column_name_rust#>.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
+    }
+  }<#
+    }
+  #><#
+    if (column.searchByArray) {
+  #>
+  // <#=column_comment#>
+  if let Some(search) = &search && let Some(<#=column_name#>s) = &search.<#=column_name#>s {
+    let len = <#=column_name#>s.len();
+    if len == 0 {
+      return Ok(false);
+    }
+    if len > ids_limit {
+      return Err(eyre!("search.<#=column_name#>s.length > {ids_limit}"));
     }
   }<#
     }
@@ -3721,14 +3736,35 @@ pub async fn exists_<#=table#>(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
-  let options = Some(options);
+  let options = Some(options);<#
+  if (hasIsDeleted) {
+  #>
+  
+  #[allow(unused_variables)]
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);<#
+  }
+  #>
   
   let mut args = QueryArgs::new();
   
   let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
-  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;<#
+  if (opts?.isHasForUpdate) {
+  #>
+  let for_update_str = if options.as_ref().and_then(|x| x.get_is_for_update()).unwrap_or(false) {
+    " for update"
+  } else {
+    ""
+  };<#
+  }
+  #>
   
-  let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
+  let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)<#
+  if (opts?.isHasForUpdate) {
+  #>{for_update_str}<#
+  }
+  #>"#);
   
   let args = args.into();<#
   if (cache) {
@@ -3773,10 +3809,6 @@ pub async fn exists_<#=table#>(
   let exists_res: bool = if let Some(exists_res) = exists_res {
     exists_res
   } else {
-    let options = Options::from(options)
-      .set_is_debug(Some(false));
-    let options = Some(options);
-    
     let res: Option<(bool,)> = query_one(
       sql,
       args,
@@ -3795,10 +3827,6 @@ pub async fn exists_<#=table#>(
   Ok(exists_res)<#
   } else {
   #>
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
   
   let res: Option<(bool,)> = query_one(
     sql,

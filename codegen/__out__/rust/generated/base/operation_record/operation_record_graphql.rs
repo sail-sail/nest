@@ -184,6 +184,26 @@ impl OperationRecordGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断操作记录是否存在
+  #[graphql(name = "existsOperationRecord")]
+  async fn exists_operation_record(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<OperationRecordSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        operation_record_resolver::exists_operation_record(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找操作记录
   #[graphql(name = "findByIdsOkOperationRecord")]
   async fn find_by_ids_ok_operation_record(

@@ -184,6 +184,26 @@ impl MessageGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断消息是否存在
+  #[graphql(name = "existsMessage")]
+  async fn exists_message(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<MessageSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        message_resolver::exists_message(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找消息
   #[graphql(name = "findByIdsOkMessage")]
   async fn find_by_ids_ok_message(

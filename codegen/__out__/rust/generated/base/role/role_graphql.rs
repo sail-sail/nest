@@ -184,6 +184,26 @@ impl RoleGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断角色是否存在
+  #[graphql(name = "existsRole")]
+  async fn exists_role(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<RoleSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        role_resolver::exists_role(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找角色
   #[graphql(name = "findByIdsOkRole")]
   async fn find_by_ids_ok_role(

@@ -185,6 +185,27 @@ pub async fn find_by_ids_server_log(
   Ok(models)
 }
 
+/// 根据搜索条件判断系统日志是否存在
+#[function_name::named]
+pub async fn exists_server_log(
+  search: Option<ServerLogSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  // info!(
+  //   "{req_id} {function_name}: search: {search:?}",
+  //   req_id = get_req_id(),
+  //   function_name = function_name!(),
+  // );
+  
+  let res = server_log_service::exists_server_log(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找系统日志, 出现查询不到的 id 则报错
 // #[function_name::named]
 pub async fn find_by_ids_ok_server_log(
