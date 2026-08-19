@@ -335,6 +335,32 @@ export async function findByIdsDomain(
 }
 
 /**
+ * 根据搜索条件判断域名是否存在
+ */
+export async function existsDomain(
+  search?: DomainSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDomain: Query["existsDomain"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DomainSearch) {
+        existsDomain(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDomain;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 域名, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDomain(

@@ -1375,6 +1375,32 @@ export async function findByIds<#=Table_Up#>(
 }
 
 /**
+ * 根据搜索条件判断<#=table_comment#>是否存在
+ */
+export async function exists<#=Table_Up#>(
+  search?: <#=searchName#>,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    exists<#=Table_Up2#>: Query["exists<#=Table_Up2#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: <#=searchName#>) {
+        exists<#=Table_Up2#>(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.exists<#=Table_Up2#>;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 <#=table_comment#>, 出现查询不到的 id 则报错
  */
 export async function findByIdsOk<#=Table_Up#>(

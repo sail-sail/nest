@@ -355,6 +355,32 @@ export async function findByIdsDynPage(
 }
 
 /**
+ * 根据搜索条件判断动态页面是否存在
+ */
+export async function existsDynPage(
+  search?: DynPageSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDynPage: Query["existsDynPage"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DynPageSearch) {
+        existsDynPage(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDynPage;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 动态页面, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDynPage(
