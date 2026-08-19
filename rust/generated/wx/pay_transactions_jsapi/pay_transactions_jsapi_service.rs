@@ -167,6 +167,27 @@ pub async fn find_by_ids_pay_transactions_jsapi(
   Ok(pay_transactions_jsapi_models)
 }
 
+/// 根据搜索条件判断微信JSAPI下单是否存在
+pub async fn exists_pay_transactions_jsapi(
+  search: Option<PayTransactionsJsapiSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = pay_transactions_jsapi_dao::exists_pay_transactions_jsapi(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找微信JSAPI下单, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_pay_transactions_jsapi(
   pay_transactions_jsapi_ids: Vec<PayTransactionsJsapiId>,

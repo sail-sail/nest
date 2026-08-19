@@ -362,6 +362,32 @@ export async function findByIdsWxUsr(
 }
 
 /**
+ * 根据搜索条件判断小程序用户是否存在
+ */
+export async function existsWxUsr(
+  search?: WxUsrSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxUsr: Query["existsWxUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxUsrSearch) {
+        existsWxUsr(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxUsr;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 小程序用户, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxUsr(
@@ -551,16 +577,6 @@ export function useDownloadImportTemplateWxUsr() {
             language
             rem
           }
-          findAllUsr {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "wx_usr_gender",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -616,15 +632,6 @@ export function useExportExcelWxUsr() {
           query($search: WxUsrSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxUsr(search: $search, page: $page, sort: $sort) {
               ${ wxUsrQueryField }
-            }
-            findAllUsr {
-              lbl
-            }
-            getDict(codes: [
-              "wx_usr_gender",
-            ]) {
-              code
-              lbl
             }
           }
         `,

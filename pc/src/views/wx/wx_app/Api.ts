@@ -344,6 +344,32 @@ export async function findByIdsWxApp(
 }
 
 /**
+ * 根据搜索条件判断小程序设置是否存在
+ */
+export async function existsWxApp(
+  search?: WxAppSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxApp: Query["existsWxApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxAppSearch) {
+        existsWxApp(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxApp;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 小程序设置, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxApp(
@@ -591,13 +617,6 @@ export function useExportExcelWxApp() {
           query($search: WxAppSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxApp(search: $search, page: $page, sort: $sort) {
               ${ wxAppQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

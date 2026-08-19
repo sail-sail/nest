@@ -184,6 +184,26 @@ impl WxAppGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断小程序设置是否存在
+  #[graphql(name = "existsWxApp")]
+  async fn exists_wx_app(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<WxAppSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_app_resolver::exists_wx_app(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找小程序设置
   #[graphql(name = "findByIdsOkWxApp")]
   async fn find_by_ids_ok_wx_app(

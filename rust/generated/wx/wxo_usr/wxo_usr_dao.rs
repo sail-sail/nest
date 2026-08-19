@@ -1363,66 +1363,55 @@ pub async fn exists_wxo_usr(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(false);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(false);
     }
   }
   // 绑定用户
-  if let Some(search) = &search && search.usr_id.is_some() {
-    let len = search.usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(usr_id) = &search.usr_id {
+    let len = usr_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.usr_id.length > {ids_limit}"));
     }
   }
   // 性别
-  if let Some(search) = &search && search.sex.is_some() {
-    let len = search.sex.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(sex) = &search.sex {
+    let len = sex.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.sex.length > {ids_limit}"));
     }
   }
   // 创建人
-  if let Some(search) = &search && search.create_usr_id.is_some() {
-    let len = search.create_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(create_usr_id) = &search.create_usr_id {
+    let len = create_usr_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
     }
   }
   // 更新人
-  if let Some(search) = &search && search.update_usr_id.is_some() {
-    let len = search.update_usr_id.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(update_usr_id) = &search.update_usr_id {
+    let len = update_usr_id.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
     }
@@ -1431,6 +1420,10 @@ pub async fn exists_wxo_usr(
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
+  
+  #[allow(unused_variables)]
+  let is_deleted = search.as_ref()
+    .and_then(|item| item.is_deleted);
   
   let mut args = QueryArgs::new();
   
@@ -1480,10 +1473,6 @@ pub async fn exists_wxo_usr(
   let exists_res: bool = if let Some(exists_res) = exists_res {
     exists_res
   } else {
-    let options = Options::from(options)
-      .set_is_debug(Some(false));
-    let options = Some(options);
-    
     let res: Option<(bool,)> = query_one(
       sql,
       args,

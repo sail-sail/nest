@@ -184,6 +184,26 @@ impl WxRefundNoticeGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断微信退款通知是否存在
+  #[graphql(name = "existsWxRefundNotice")]
+  async fn exists_wx_refund_notice(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<WxRefundNoticeSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_refund_notice_resolver::exists_wx_refund_notice(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找微信退款通知
   #[graphql(name = "findByIdsOkWxRefundNotice")]
   async fn find_by_ids_ok_wx_refund_notice(

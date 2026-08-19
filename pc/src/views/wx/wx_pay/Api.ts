@@ -352,6 +352,32 @@ export async function findByIdsWxPay(
 }
 
 /**
+ * 根据搜索条件判断微信支付设置是否存在
+ */
+export async function existsWxPay(
+  search?: WxPaySearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxPay: Query["existsWxPay"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxPaySearch) {
+        existsWxPay(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxPay;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 微信支付设置, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxPay(
@@ -600,13 +626,6 @@ export function useExportExcelWxPay() {
           query($search: WxPaySearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxPay(search: $search, page: $page, sort: $sort) {
               ${ wxPayQueryField }
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

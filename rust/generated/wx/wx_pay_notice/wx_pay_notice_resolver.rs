@@ -186,6 +186,27 @@ pub async fn find_by_ids_wx_pay_notice(
   Ok(models)
 }
 
+/// 根据搜索条件判断微信支付通知是否存在
+#[function_name::named]
+pub async fn exists_wx_pay_notice(
+  search: Option<WxPayNoticeSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = wx_pay_notice_service::exists_wx_pay_notice(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找微信支付通知, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_wx_pay_notice(

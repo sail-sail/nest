@@ -184,6 +184,26 @@ impl WxPayNoticeGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断微信支付通知是否存在
+  #[graphql(name = "existsWxPayNotice")]
+  async fn exists_wx_pay_notice(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<WxPayNoticeSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_pay_notice_resolver::exists_wx_pay_notice(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找微信支付通知
   #[graphql(name = "findByIdsOkWxPayNotice")]
   async fn find_by_ids_ok_wx_pay_notice(

@@ -184,6 +184,26 @@ impl PayTransactionsJsapiGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断微信JSAPI下单是否存在
+  #[graphql(name = "existsPayTransactionsJsapi")]
+  async fn exists_pay_transactions_jsapi(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<PayTransactionsJsapiSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        pay_transactions_jsapi_resolver::exists_pay_transactions_jsapi(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找微信JSAPI下单
   #[graphql(name = "findByIdsOkPayTransactionsJsapi")]
   async fn find_by_ids_ok_pay_transactions_jsapi(

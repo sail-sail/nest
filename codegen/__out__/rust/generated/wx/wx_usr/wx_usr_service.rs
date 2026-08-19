@@ -167,6 +167,27 @@ pub async fn find_by_ids_wx_usr(
   Ok(wx_usr_models)
 }
 
+/// 根据搜索条件判断小程序用户是否存在
+pub async fn exists_wx_usr(
+  search: Option<WxUsrSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = wx_usr_dao::exists_wx_usr(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找小程序用户, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_wx_usr(
   wx_usr_ids: Vec<WxUsrId>,

@@ -167,6 +167,27 @@ pub async fn find_by_ids_wx_app(
   Ok(wx_app_models)
 }
 
+/// 根据搜索条件判断小程序设置是否存在
+pub async fn exists_wx_app(
+  search: Option<WxAppSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = wx_app_dao::exists_wx_app(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找小程序设置, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_wx_app(
   wx_app_ids: Vec<WxAppId>,

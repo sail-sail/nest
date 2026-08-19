@@ -167,6 +167,27 @@ pub async fn find_by_ids_wxo_usr(
   Ok(wxo_usr_models)
 }
 
+/// 根据搜索条件判断公众号用户是否存在
+pub async fn exists_wxo_usr(
+  search: Option<WxoUsrSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = wxo_usr_dao::exists_wxo_usr(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找公众号用户, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_wxo_usr(
   wxo_usr_ids: Vec<WxoUsrId>,

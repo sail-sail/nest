@@ -184,6 +184,26 @@ impl WxPayGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断微信支付设置是否存在
+  #[graphql(name = "existsWxPay")]
+  async fn exists_wx_pay(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<WxPaySearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_pay_resolver::exists_wx_pay(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找微信支付设置
   #[graphql(name = "findByIdsOkWxPay")]
   async fn find_by_ids_ok_wx_pay(

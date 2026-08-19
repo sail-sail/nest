@@ -1317,66 +1317,55 @@ pub async fn exists_wx_refund(
     );
   }
   
+  let ids_limit = options
+    .as_ref()
+    .and_then(|x| x.get_ids_limit())
+    .unwrap_or(FIND_ALL_IDS_LIMIT);
+  
   if let Some(search) = &search {
-    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+    if let Some(id) = &search.id && id.is_empty() {
       return Ok(false);
     }
-    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+    if let Some(ids) = &search.ids && ids.is_empty() {
       return Ok(false);
     }
   }
   // 退款渠道
-  if let Some(search) = &search && search.channel.is_some() {
-    let len = search.channel.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(channel) = &search.channel {
+    let len = channel.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.channel.length > {ids_limit}"));
     }
   }
   // 退款状态
-  if let Some(search) = &search && search.status.is_some() {
-    let len = search.status.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(status) = &search.status {
+    let len = status.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.status.length > {ids_limit}"));
     }
   }
   // 资金账户
-  if let Some(search) = &search && search.funds_account.is_some() {
-    let len = search.funds_account.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(funds_account) = &search.funds_account {
+    let len = funds_account.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.funds_account.length > {ids_limit}"));
     }
   }
   // 退款币种
-  if let Some(search) = &search && search.amount_currency.is_some() {
-    let len = search.amount_currency.as_ref().unwrap().len();
+  if let Some(search) = &search && let Some(amount_currency) = &search.amount_currency {
+    let len = amount_currency.len();
     if len == 0 {
       return Ok(false);
     }
-    let ids_limit = options
-      .as_ref()
-      .and_then(|x| x.get_ids_limit())
-      .unwrap_or(FIND_ALL_IDS_LIMIT);
     if len > ids_limit {
       return Err(eyre!("search.amount_currency.length > {ids_limit}"));
     }
@@ -1394,10 +1383,6 @@ pub async fn exists_wx_refund(
   let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
   
   let args = args.into();
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
   
   let res: Option<(bool,)> = query_one(
     sql,

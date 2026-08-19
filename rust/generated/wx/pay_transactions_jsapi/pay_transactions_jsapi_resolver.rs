@@ -186,6 +186,27 @@ pub async fn find_by_ids_pay_transactions_jsapi(
   Ok(models)
 }
 
+/// 根据搜索条件判断微信JSAPI下单是否存在
+#[function_name::named]
+pub async fn exists_pay_transactions_jsapi(
+  search: Option<PayTransactionsJsapiSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = pay_transactions_jsapi_service::exists_pay_transactions_jsapi(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找微信JSAPI下单, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_pay_transactions_jsapi(

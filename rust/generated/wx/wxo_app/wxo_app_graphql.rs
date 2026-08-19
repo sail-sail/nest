@@ -184,6 +184,26 @@ impl WxoAppGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断公众号设置是否存在
+  #[graphql(name = "existsWxoApp")]
+  async fn exists_wxo_app(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<WxoAppSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxo_app_resolver::exists_wxo_app(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找公众号设置
   #[graphql(name = "findByIdsOkWxoApp")]
   async fn find_by_ids_ok_wxo_app(

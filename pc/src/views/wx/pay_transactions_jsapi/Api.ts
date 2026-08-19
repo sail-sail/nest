@@ -290,6 +290,32 @@ export async function findByIdsPayTransactionsJsapi(
 }
 
 /**
+ * 根据搜索条件判断微信JSAPI下单是否存在
+ */
+export async function existsPayTransactionsJsapi(
+  search?: PayTransactionsJsapiSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsPayTransactionsJsapi: Query["existsPayTransactionsJsapi"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: PayTransactionsJsapiSearch) {
+        existsPayTransactionsJsapi(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsPayTransactionsJsapi;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 微信JSAPI下单, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkPayTransactionsJsapi(
@@ -354,13 +380,6 @@ export function useExportExcelPayTransactionsJsapi() {
           query($search: PayTransactionsJsapiSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllPayTransactionsJsapi(search: $search, page: $page, sort: $sort) {
               ${ payTransactionsJsapiQueryField }
-            }
-            getDict(codes: [
-              "wx_pay_notice_trade_state",
-              "wx_pay_notice_currency",
-            ]) {
-              code
-              lbl
             }
           }
         `,

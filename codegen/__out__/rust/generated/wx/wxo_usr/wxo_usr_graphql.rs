@@ -184,6 +184,26 @@ impl WxoUsrGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断公众号用户是否存在
+  #[graphql(name = "existsWxoUsr")]
+  async fn exists_wxo_usr(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<WxoUsrSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxo_usr_resolver::exists_wxo_usr(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找公众号用户
   #[graphql(name = "findByIdsOkWxoUsr")]
   async fn find_by_ids_ok_wxo_usr(

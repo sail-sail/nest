@@ -184,6 +184,26 @@ impl WxRefundGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断微信退款申请是否存在
+  #[graphql(name = "existsWxRefund")]
+  async fn exists_wx_refund(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<WxRefundSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wx_refund_resolver::exists_wx_refund(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找微信退款申请
   #[graphql(name = "findByIdsOkWxRefund")]
   async fn find_by_ids_ok_wx_refund(

@@ -298,6 +298,32 @@ export async function findByIdsWxPayNotice(
 }
 
 /**
+ * 根据搜索条件判断微信支付通知是否存在
+ */
+export async function existsWxPayNotice(
+  search?: WxPayNoticeSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxPayNotice: Query["existsWxPayNotice"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxPayNoticeSearch) {
+        existsWxPayNotice(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxPayNotice;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 微信支付通知, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxPayNotice(
@@ -362,15 +388,6 @@ export function useExportExcelWxPayNotice() {
           query($search: WxPayNoticeSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxPayNotice(search: $search, page: $page, sort: $sort) {
               ${ wxPayNoticeQueryField }
-            }
-            getDict(codes: [
-              "wx_unified_order_trade_type",
-              "wx_pay_notice_trade_state",
-              "wx_pay_notice_currency",
-              "wx_pay_notice_currency",
-            ]) {
-              code
-              lbl
             }
           }
         `,

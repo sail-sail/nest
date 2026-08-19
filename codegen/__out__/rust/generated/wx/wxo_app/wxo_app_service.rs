@@ -167,6 +167,27 @@ pub async fn find_by_ids_wxo_app(
   Ok(wxo_app_models)
 }
 
+/// 根据搜索条件判断公众号设置是否存在
+pub async fn exists_wxo_app(
+  search: Option<WxoAppSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = wxo_app_dao::exists_wxo_app(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找公众号设置, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_wxo_app(
   wxo_app_ids: Vec<WxoAppId>,

@@ -167,6 +167,27 @@ pub async fn find_by_ids_wx_pay(
   Ok(wx_pay_models)
 }
 
+/// 根据搜索条件判断微信支付设置是否存在
+pub async fn exists_wx_pay(
+  search: Option<WxPaySearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = wx_pay_dao::exists_wx_pay(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找微信支付设置, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_wx_pay(
   wx_pay_ids: Vec<WxPayId>,
