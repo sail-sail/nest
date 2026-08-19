@@ -494,6 +494,35 @@ pub async fn find_by_ids_<#=table#>(
   Ok(<#=table#>_models)
 }
 
+/// 根据搜索条件判断<#=table_comment#>是否存在
+pub async fn exists_<#=table#>(
+  search: Option<<#=tableUP#>Search>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true);
+  let options = Some(options);<#
+  }
+  #>
+  
+  let exists_res = <#=table#>_dao::exists_<#=table#>(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找<#=table_comment#>, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_<#=table#>(
   <#=table#>_ids: Vec<<#=Table_Up#>Id>,
@@ -1051,15 +1080,14 @@ pub async fn audit_submit_<#=table#>(
       continue;
     }
     
-    let has_permit = find_one_<#=table#>(
+    let has_permit = exists_<#=table#>(
       Some(<#=Table_Up#>Search {
         id: Some(<#=table#>_id),
         auth_usr_id: Some(receiver_usr_id),
         ..Default::default()
       }),
-      None,
       options,
-    ).await?.is_some();
+    ).await?;
     
     if has_permit {
       receiver_usr_ids2.push(receiver_usr_id);
@@ -1203,15 +1231,14 @@ pub async fn audit_pass_<#=table#>(
       continue;
     }
     
-    let has_permit = find_one_<#=table#>(
-      Some(<#=tableUP#>Search {
+    let has_permit = exists_<#=table#>(
+      Some(<#=Table_Up#>Search {
         id: Some(<#=table#>_id),
         auth_usr_id: Some(receiver_usr_id),
         ..Default::default()
       }),
-      None,
       options,
-    ).await?.is_some();
+    ).await?;
     
     if has_permit {
       receiver_usr_ids2.push(receiver_usr_id);
@@ -1487,15 +1514,14 @@ pub async fn audit_reverse_<#=table#>(
       continue;
     }
     
-    let has_permit = find_one_<#=table#>(
-      Some(<#=tableUP#>Search {
+    let has_permit = exists_<#=table#>(
+      Some(<#=Table_Up#>Search {
         id: Some(<#=table#>_id),
         auth_usr_id: Some(receiver_usr_id),
         ..Default::default()
       }),
-      None,
       options,
-    ).await?.is_some();
+    ).await?;
     
     if has_permit {
       receiver_usr_ids2.push(receiver_usr_id);

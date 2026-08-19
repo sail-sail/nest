@@ -182,6 +182,26 @@ impl I18nGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断国际化是否存在
+  #[graphql(name = "existsI18n")]
+  async fn exists_i18n(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<I18nSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        i18n_resolver::exists_i18n(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找国际化
   #[graphql(name = "findByIdsOkI18n")]
   async fn find_by_ids_ok_i18n(

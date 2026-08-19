@@ -184,6 +184,26 @@ impl MessageReceiverGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断消息接收人是否存在
+  #[graphql(name = "existsMessageReceiver")]
+  async fn exists_message_receiver(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<MessageReceiverSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        message_receiver_resolver::exists_message_receiver(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找消息接收人
   #[graphql(name = "findByIdsOkMessageReceiver")]
   async fn find_by_ids_ok_message_receiver(

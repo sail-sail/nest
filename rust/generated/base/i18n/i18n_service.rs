@@ -166,6 +166,27 @@ pub async fn find_by_ids_i18n(
   Ok(i18n_models)
 }
 
+/// 根据搜索条件判断国际化是否存在
+pub async fn exists_i18n(
+  search: Option<I18nSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = i18n_dao::exists_i18n(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找国际化, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_i18n(
   i18n_ids: Vec<I18nId>,

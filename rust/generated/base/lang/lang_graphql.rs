@@ -182,6 +182,26 @@ impl LangGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断语言是否存在
+  #[graphql(name = "existsLang")]
+  async fn exists_lang(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<LangSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        lang_resolver::exists_lang(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找语言
   #[graphql(name = "findByIdsOkLang")]
   async fn find_by_ids_ok_lang(

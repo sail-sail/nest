@@ -182,6 +182,26 @@ impl IconGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断图标库是否存在
+  #[graphql(name = "existsIcon")]
+  async fn exists_icon(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<IconSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        icon_resolver::exists_icon(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找图标库
   #[graphql(name = "findByIdsOkIcon")]
   async fn find_by_ids_ok_icon(

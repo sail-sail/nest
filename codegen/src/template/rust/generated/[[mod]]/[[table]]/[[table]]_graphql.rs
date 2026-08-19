@@ -321,6 +321,33 @@ impl <#=tableUP#>GenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断<#=table_comment#>是否存在
+  #[graphql(name = "exists<#=Table_Up#>")]
+  async fn exists_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<<#=tableUP#>Search>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)<#
+      if (is_with_auth_optional) {
+      #>
+      .with_auth_optional()?<#
+      } else {
+      #>
+      .with_auth()?<#
+      }
+      #>
+      .build()
+      .scope({
+        <#=table#>_resolver::exists_<#=table#>(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找<#=table_comment#>
   #[graphql(name = "findByIdsOk<#=Table_Up#>")]
   async fn find_by_ids_ok_<#=table#>(

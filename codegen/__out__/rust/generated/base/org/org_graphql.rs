@@ -184,6 +184,26 @@ impl OrgGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断组织是否存在
+  #[graphql(name = "existsOrg")]
+  async fn exists_org(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<OrgSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        org_resolver::exists_org(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找组织
   #[graphql(name = "findByIdsOkOrg")]
   async fn find_by_ids_ok_org(

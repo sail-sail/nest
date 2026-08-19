@@ -184,6 +184,26 @@ impl DeptGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断部门是否存在
+  #[graphql(name = "existsDept")]
+  async fn exists_dept(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DeptSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dept_resolver::exists_dept(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找部门
   #[graphql(name = "findByIdsOkDept")]
   async fn find_by_ids_ok_dept(

@@ -184,6 +184,27 @@ pub async fn find_by_ids_tenant(
   Ok(models)
 }
 
+/// 根据搜索条件判断租户是否存在
+#[function_name::named]
+pub async fn exists_tenant(
+  search: Option<TenantSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = tenant_service::exists_tenant(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找租户, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_tenant(

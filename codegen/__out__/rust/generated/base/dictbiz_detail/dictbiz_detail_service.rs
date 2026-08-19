@@ -167,6 +167,27 @@ pub async fn find_by_ids_dictbiz_detail(
   Ok(dictbiz_detail_models)
 }
 
+/// 根据搜索条件判断业务字典明细是否存在
+pub async fn exists_dictbiz_detail(
+  search: Option<DictbizDetailSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = dictbiz_detail_dao::exists_dictbiz_detail(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找业务字典明细, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_dictbiz_detail(
   dictbiz_detail_ids: Vec<DictbizDetailId>,
