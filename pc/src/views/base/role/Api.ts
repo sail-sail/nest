@@ -363,6 +363,32 @@ export async function findByIdsRole(
 }
 
 /**
+ * 根据搜索条件判断角色是否存在
+ */
+export async function existsRole(
+  search?: RoleSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsRole: Query["existsRole"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: RoleSearch) {
+        existsRole(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsRole;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 角色, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkRole(

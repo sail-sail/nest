@@ -355,6 +355,32 @@ export async function findByIdsDict(
 }
 
 /**
+ * 根据搜索条件判断系统字典是否存在
+ */
+export async function existsDict(
+  search?: DictSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDict: Query["existsDict"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DictSearch) {
+        existsDict(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDict;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 系统字典, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDict(

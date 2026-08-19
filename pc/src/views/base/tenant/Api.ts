@@ -353,6 +353,32 @@ export async function findByIdsTenant(
 }
 
 /**
+ * 根据搜索条件判断租户是否存在
+ */
+export async function existsTenant(
+  search?: TenantSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsTenant: Query["existsTenant"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: TenantSearch) {
+        existsTenant(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsTenant;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 租户, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkTenant(

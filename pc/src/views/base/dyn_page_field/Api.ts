@@ -370,6 +370,32 @@ export async function findByIdsDynPageField(
 }
 
 /**
+ * 根据搜索条件判断动态页面字段是否存在
+ */
+export async function existsDynPageField(
+  search?: DynPageFieldSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDynPageField: Query["existsDynPageField"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DynPageFieldSearch) {
+        existsDynPageField(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDynPageField;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 动态页面字段, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDynPageField(

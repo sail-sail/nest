@@ -339,6 +339,32 @@ export async function findByIdsOptions(
 }
 
 /**
+ * 根据搜索条件判断系统选项是否存在
+ */
+export async function existsOptions(
+  search?: OptionsSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsOptions: Query["existsOptions"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OptionsSearch) {
+        existsOptions(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsOptions;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 系统选项, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkOptions(

@@ -336,6 +336,32 @@ export async function findByIdsDictDetail(
 }
 
 /**
+ * 根据搜索条件判断系统字典明细是否存在
+ */
+export async function existsDictDetail(
+  search?: DictDetailSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDictDetail: Query["existsDictDetail"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DictDetailSearch) {
+        existsDictDetail(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDictDetail;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 系统字典明细, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDictDetail(
