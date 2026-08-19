@@ -364,6 +364,32 @@ export async function findByIdsDept(
 }
 
 /**
+ * 根据搜索条件判断部门是否存在
+ */
+export async function existsDept(
+  search?: DeptSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsDept: Query["existsDept"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: DeptSearch) {
+        existsDept(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsDept;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 部门, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkDept(

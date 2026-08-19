@@ -347,6 +347,32 @@ export async function findByIdsMessage(
 }
 
 /**
+ * 根据搜索条件判断消息是否存在
+ */
+export async function existsMessage(
+  search?: MessageSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsMessage: Query["existsMessage"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MessageSearch) {
+        existsMessage(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsMessage;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 消息, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkMessage(

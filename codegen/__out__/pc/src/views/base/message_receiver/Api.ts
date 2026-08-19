@@ -338,6 +338,32 @@ export async function findByIdsMessageReceiver(
 }
 
 /**
+ * 根据搜索条件判断消息接收人是否存在
+ */
+export async function existsMessageReceiver(
+  search?: MessageReceiverSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsMessageReceiver: Query["existsMessageReceiver"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: MessageReceiverSearch) {
+        existsMessageReceiver(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsMessageReceiver;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 消息接收人, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkMessageReceiver(

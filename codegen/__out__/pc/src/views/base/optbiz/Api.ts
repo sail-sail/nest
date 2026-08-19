@@ -339,6 +339,32 @@ export async function findByIdsOptbiz(
 }
 
 /**
+ * 根据搜索条件判断业务选项是否存在
+ */
+export async function existsOptbiz(
+  search?: OptbizSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsOptbiz: Query["existsOptbiz"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OptbizSearch) {
+        existsOptbiz(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsOptbiz;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 业务选项, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkOptbiz(
