@@ -627,14 +627,6 @@ export function useDownloadImportTemplateDynPage() {
             order_by
             rem
           }
-          findAllMenu {
-            id
-            lbl
-          }
-          findAllRole {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -690,18 +682,6 @@ export function useExportExcelDynPage() {
           query($search: DynPageSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDynPage(search: $search, page: $page, sort: $sort) {
               ${ dynPageQueryField }
-            }
-            findAllMenu {
-              lbl
-            }
-            findAllRole {
-              lbl
-            }
-            getDict(codes: [
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

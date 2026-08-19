@@ -585,18 +585,6 @@ export function useDownloadImportTemplateMenu() {
             rem
             is_hidden_lbl
           }
-          findAllMenu {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "yes_no",
-            "yes_no",
-            "yes_no",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -652,15 +640,6 @@ export function useExportExcelMenu() {
           query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllMenu(search: $search, page: $page, sort: $sort) {
               ${ menuQueryField }
-            }
-            getDict(codes: [
-              "yes_no",
-              "yes_no",
-              "is_enabled",
-              "yes_no",
-            ]) {
-              code
-              lbl
             }
           }
         `,

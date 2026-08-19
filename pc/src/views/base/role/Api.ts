@@ -751,28 +751,6 @@ export function useDownloadImportTemplateRole() {
             order_by
             rem
           }
-          findAllMenu {
-            id
-            lbl
-          }
-          findAllPermit {
-            id
-            lbl
-          }
-          findAllDataPermit {
-            id
-            
-          }
-          findAllFieldPermit {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "yes_no",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -828,23 +806,6 @@ export function useExportExcelRole() {
           query($search: RoleSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllRole(search: $search, page: $page, sort: $sort) {
               ${ roleQueryField }
-            }
-            findAllMenu {
-              lbl
-            }
-            findAllPermit {
-              lbl
-            }
-            findAllFieldPermit {
-              lbl
-            }
-            getDict(codes: [
-              "yes_no",
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

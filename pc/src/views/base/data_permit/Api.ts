@@ -539,17 +539,6 @@ export function useDownloadImportTemplateDataPermit() {
             type_lbl
             rem
           }
-          findAllMenu {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "data_permit_scope",
-            "data_permit_type",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -605,16 +594,6 @@ export function useExportExcelDataPermit() {
           query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDataPermit(search: $search, page: $page, sort: $sort) {
               ${ dataPermitQueryField }
-            }
-            findAllMenu {
-              lbl
-            }
-            getDict(codes: [
-              "data_permit_scope",
-              "data_permit_type",
-            ]) {
-              code
-              lbl
             }
           }
         `,

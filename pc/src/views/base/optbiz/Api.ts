@@ -585,13 +585,6 @@ export function useExportExcelOptbiz() {
             findAllOptbiz(search: $search, page: $page, sort: $sort) {
               ${ optbizQueryField }
             }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
-            }
           }
         `,
         variables: {

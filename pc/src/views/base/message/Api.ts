@@ -579,23 +579,6 @@ export function useDownloadImportTemplateMessage() {
             is_pinned_lbl
             org_id_lbl
           }
-          findAllUsr {
-            id
-            lbl
-          }
-          findAllOrg {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "message_category",
-            "message_channel",
-            "yes_no",
-            "yes_no",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -651,21 +634,6 @@ export function useExportExcelMessage() {
           query($search: MessageSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllMessage(search: $search, page: $page, sort: $sort) {
               ${ messageQueryField }
-            }
-            findAllUsr {
-              lbl
-            }
-            findAllOrg {
-              lbl
-            }
-            getDict(codes: [
-              "message_category",
-              "message_channel",
-              "yes_no",
-              "yes_no",
-            ]) {
-              code
-              lbl
             }
           }
         `,
