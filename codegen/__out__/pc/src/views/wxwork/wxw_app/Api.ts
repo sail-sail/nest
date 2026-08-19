@@ -356,6 +356,32 @@ export async function findByIdsWxwApp(
 }
 
 /**
+ * 根据搜索条件判断企微应用是否存在
+ */
+export async function existsWxwApp(
+  search?: WxwAppSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxwApp: Query["existsWxwApp"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxwAppSearch) {
+        existsWxwApp(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxwApp;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 企微应用, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxwApp(

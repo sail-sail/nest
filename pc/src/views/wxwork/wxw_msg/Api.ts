@@ -267,6 +267,32 @@ export async function findByIdsWxwMsg(
 }
 
 /**
+ * 根据搜索条件判断企微消息是否存在
+ */
+export async function existsWxwMsg(
+  search?: WxwMsgSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxwMsg: Query["existsWxwMsg"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxwMsgSearch) {
+        existsWxwMsg(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxwMsg;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 企微消息, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxwMsg(

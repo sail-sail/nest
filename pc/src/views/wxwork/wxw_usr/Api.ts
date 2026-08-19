@@ -331,6 +331,32 @@ export async function findByIdsWxwUsr(
 }
 
 /**
+ * 根据搜索条件判断企微用户是否存在
+ */
+export async function existsWxwUsr(
+  search?: WxwUsrSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsWxwUsr: Query["existsWxwUsr"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxwUsrSearch) {
+        existsWxwUsr(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsWxwUsr;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 企微用户, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkWxwUsr(
