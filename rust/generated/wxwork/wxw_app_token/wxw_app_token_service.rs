@@ -167,6 +167,27 @@ pub async fn find_by_ids_wxw_app_token(
   Ok(wxw_app_token_models)
 }
 
+/// 根据搜索条件判断企微应用接口凭据是否存在
+pub async fn exists_wxw_app_token(
+  search: Option<WxwAppTokenSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = wxw_app_token_dao::exists_wxw_app_token(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找企微应用接口凭据, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_wxw_app_token(
   wxw_app_token_ids: Vec<WxwAppTokenId>,

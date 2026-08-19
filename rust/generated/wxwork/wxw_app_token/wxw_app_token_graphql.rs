@@ -184,6 +184,26 @@ impl WxwAppTokenGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断企微应用接口凭据是否存在
+  #[graphql(name = "existsWxwAppToken")]
+  async fn exists_wxw_app_token(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<WxwAppTokenSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_app_token_resolver::exists_wxw_app_token(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找企微应用接口凭据
   #[graphql(name = "findByIdsOkWxwAppToken")]
   async fn find_by_ids_ok_wxw_app_token(

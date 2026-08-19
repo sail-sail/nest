@@ -510,10 +510,6 @@ export function useDownloadImportTemplateWxwUsr() {
             userid
             rem
           }
-          findAllWxwApp {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -569,9 +565,6 @@ export function useExportExcelWxwUsr() {
           query($search: WxwUsrSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxwUsr(search: $search, page: $page, sort: $sort) {
               ${ wxwUsrQueryField }
-            }
-            findAllWxwApp {
-              lbl
             }
           }
         `,

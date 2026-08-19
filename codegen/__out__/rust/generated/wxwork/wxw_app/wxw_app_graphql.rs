@@ -184,6 +184,26 @@ impl WxwAppGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断企微应用是否存在
+  #[graphql(name = "existsWxwApp")]
+  async fn exists_wxw_app(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<WxwAppSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_app_resolver::exists_wxw_app(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找企微应用
   #[graphql(name = "findByIdsOkWxwApp")]
   async fn find_by_ids_ok_wxw_app(

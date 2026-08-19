@@ -600,16 +600,6 @@ export function useDownloadImportTemplateWxwApp() {
             order_by
             rem
           }
-          findAllDomain {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "yes_no",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -665,17 +655,6 @@ export function useExportExcelWxwApp() {
           query($search: WxwAppSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllWxwApp(search: $search, page: $page, sort: $sort) {
               ${ wxwAppQueryField }
-            }
-            findAllDomain {
-              lbl
-            }
-            getDict(codes: [
-              "yes_no",
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

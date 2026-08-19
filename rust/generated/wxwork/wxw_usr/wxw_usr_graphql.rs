@@ -184,6 +184,26 @@ impl WxwUsrGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断企微用户是否存在
+  #[graphql(name = "existsWxwUsr")]
+  async fn exists_wxw_usr(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<WxwUsrSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_usr_resolver::exists_wxw_usr(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找企微用户
   #[graphql(name = "findByIdsOkWxwUsr")]
   async fn find_by_ids_ok_wxw_usr(

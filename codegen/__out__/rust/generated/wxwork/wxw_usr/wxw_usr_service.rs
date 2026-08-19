@@ -167,6 +167,27 @@ pub async fn find_by_ids_wxw_usr(
   Ok(wxw_usr_models)
 }
 
+/// 根据搜索条件判断企微用户是否存在
+pub async fn exists_wxw_usr(
+  search: Option<WxwUsrSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = wxw_usr_dao::exists_wxw_usr(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找企微用户, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_wxw_usr(
   wxw_usr_ids: Vec<WxwUsrId>,

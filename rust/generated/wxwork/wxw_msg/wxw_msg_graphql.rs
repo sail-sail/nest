@@ -184,6 +184,26 @@ impl WxwMsgGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断企微消息是否存在
+  #[graphql(name = "existsWxwMsg")]
+  async fn exists_wxw_msg(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<WxwMsgSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_msg_resolver::exists_wxw_msg(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找企微消息
   #[graphql(name = "findByIdsOkWxwMsg")]
   async fn find_by_ids_ok_wxw_msg(

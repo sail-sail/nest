@@ -186,6 +186,27 @@ pub async fn find_by_ids_wxw_msg(
   Ok(models)
 }
 
+/// 根据搜索条件判断企微消息是否存在
+#[function_name::named]
+pub async fn exists_wxw_msg(
+  search: Option<WxwMsgSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = wxw_msg_service::exists_wxw_msg(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找企微消息, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_wxw_msg(

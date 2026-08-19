@@ -456,15 +456,6 @@ export function useExportExcelWxwMsg() {
             findAllWxwMsg(search: $search, page: $page, sort: $sort) {
               ${ wxwMsgQueryField }
             }
-            findAllWxwApp {
-              lbl
-            }
-            getDict(codes: [
-              "wxw_msg_errcode",
-            ]) {
-              code
-              lbl
-            }
           }
         `,
         variables: {
