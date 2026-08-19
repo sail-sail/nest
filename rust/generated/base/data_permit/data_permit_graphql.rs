@@ -184,6 +184,26 @@ impl DataPermitGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断数据权限是否存在
+  #[graphql(name = "existsDataPermit")]
+  async fn exists_data_permit(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DataPermitSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        data_permit_resolver::exists_data_permit(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找数据权限
   #[graphql(name = "findByIdsOkDataPermit")]
   async fn find_by_ids_ok_data_permit(

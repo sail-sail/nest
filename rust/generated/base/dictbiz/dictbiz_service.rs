@@ -167,6 +167,27 @@ pub async fn find_by_ids_dictbiz(
   Ok(dictbiz_models)
 }
 
+/// 根据搜索条件判断业务字典是否存在
+pub async fn exists_dictbiz(
+  search: Option<DictbizSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = dictbiz_dao::exists_dictbiz(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找业务字典, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_dictbiz(
   dictbiz_ids: Vec<DictbizId>,

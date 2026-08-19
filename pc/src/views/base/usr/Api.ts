@@ -728,26 +728,6 @@ export function useDownloadImportTemplateUsr() {
             rem
             is_hidden_lbl
           }
-          findAllRole {
-            id
-            lbl
-          }
-          findAllDept {
-            id
-            lbl
-          }
-          findAllOrg {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "usr_type",
-            "yes_no",
-            "yes_no",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -803,25 +783,6 @@ export function useExportExcelUsr() {
           query($search: UsrSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllUsr(search: $search, page: $page, sort: $sort) {
               ${ usrQueryField }
-            }
-            findAllRole {
-              lbl
-            }
-            findAllDept {
-              lbl
-            }
-            findAllOrg {
-              lbl
-            }
-            getDict(codes: [
-              "usr_type",
-              "yes_no",
-              "is_locked",
-              "is_enabled",
-              "yes_no",
-            ]) {
-              code
-              lbl
             }
           }
         `,

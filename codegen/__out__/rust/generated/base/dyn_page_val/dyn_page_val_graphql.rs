@@ -184,6 +184,26 @@ impl DynPageValGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断动态页面值是否存在
+  #[graphql(name = "existsDynPageVal")]
+  async fn exists_dyn_page_val(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DynPageValSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dyn_page_val_resolver::exists_dyn_page_val(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找动态页面值
   #[graphql(name = "findByIdsOkDynPageVal")]
   async fn find_by_ids_ok_dyn_page_val(

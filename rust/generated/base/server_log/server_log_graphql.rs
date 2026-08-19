@@ -182,6 +182,26 @@ impl ServerLogGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断系统日志是否存在
+  #[graphql(name = "existsServerLog")]
+  async fn exists_server_log(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<ServerLogSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        server_log_resolver::exists_server_log(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统日志
   #[graphql(name = "findByIdsOkServerLog")]
   async fn find_by_ids_ok_server_log(

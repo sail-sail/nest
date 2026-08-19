@@ -182,6 +182,26 @@ impl TenantGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断租户是否存在
+  #[graphql(name = "existsTenant")]
+  async fn exists_tenant(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<TenantSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        tenant_resolver::exists_tenant(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找租户
   #[graphql(name = "findByIdsOkTenant")]
   async fn find_by_ids_ok_tenant(

@@ -518,12 +518,6 @@ export function useDownloadImportTemplateDictbiz() {
             order_by
             rem
           }
-          getDict(codes: [
-            "dict_type",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -579,13 +573,6 @@ export function useExportExcelDictbiz() {
           query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDictbiz(search: $search, page: $page, sort: $sort) {
               ${ dictbizQueryField }
-            }
-            getDict(codes: [
-              "dict_type",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

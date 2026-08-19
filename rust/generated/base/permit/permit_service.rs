@@ -165,6 +165,27 @@ pub async fn find_by_ids_permit(
   Ok(permit_models)
 }
 
+/// 根据搜索条件判断按钮权限是否存在
+pub async fn exists_permit(
+  search: Option<PermitSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = permit_dao::exists_permit(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找按钮权限, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_permit(
   permit_ids: Vec<PermitId>,

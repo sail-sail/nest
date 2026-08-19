@@ -165,6 +165,27 @@ pub async fn find_by_ids_field_permit(
   Ok(field_permit_models)
 }
 
+/// 根据搜索条件判断字段权限是否存在
+pub async fn exists_field_permit(
+  search: Option<FieldPermitSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = field_permit_dao::exists_field_permit(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找字段权限, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_field_permit(
   field_permit_ids: Vec<FieldPermitId>,

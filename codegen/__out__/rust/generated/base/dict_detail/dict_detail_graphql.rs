@@ -182,6 +182,26 @@ impl DictDetailGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断系统字典明细是否存在
+  #[graphql(name = "existsDictDetail")]
+  async fn exists_dict_detail(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DictDetailSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_detail_resolver::exists_dict_detail(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统字典明细
   #[graphql(name = "findByIdsOkDictDetail")]
   async fn find_by_ids_ok_dict_detail(

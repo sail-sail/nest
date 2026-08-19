@@ -608,24 +608,6 @@ export function useDownloadImportTemplateMessageReceiver() {
             read_time_lbl
             org_id_lbl
           }
-          findAllMessage {
-            id
-            content
-          }
-          findAllUsr {
-            id
-            lbl
-          }
-          findAllOrg {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "yes_no",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -681,21 +663,6 @@ export function useExportExcelMessageReceiver() {
           query($search: MessageReceiverSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllMessageReceiver(search: $search, page: $page, sort: $sort) {
               ${ messageReceiverQueryField }
-            }
-            findAllMessage {
-              content
-            }
-            findAllUsr {
-              lbl
-            }
-            findAllOrg {
-              lbl
-            }
-            getDict(codes: [
-              "yes_no",
-            ]) {
-              code
-              lbl
             }
           }
         `,

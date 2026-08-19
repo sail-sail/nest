@@ -586,20 +586,6 @@ export function useDownloadImportTemplateDynPageField() {
             is_mobile_search_lbl
             order_by
           }
-          findAllDynPage {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "yes_no",
-            "yes_no",
-            "dyn_page_field_align",
-            "yes_no",
-            "yes_no",
-          ]) {
-            code
-            lbl
-          }
         }
       `,
       variables: {
@@ -655,20 +641,6 @@ export function useExportExcelDynPageField() {
           query($search: DynPageFieldSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDynPageField(search: $search, page: $page, sort: $sort) {
               ${ dynPageFieldQueryField }
-            }
-            findAllDynPage {
-              lbl
-            }
-            getDict(codes: [
-              "yes_no",
-              "yes_no",
-              "dyn_page_field_align",
-              "yes_no",
-              "yes_no",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

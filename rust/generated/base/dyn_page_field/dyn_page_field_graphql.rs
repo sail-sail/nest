@@ -184,6 +184,26 @@ impl DynPageFieldGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断动态页面字段是否存在
+  #[graphql(name = "existsDynPageField")]
+  async fn exists_dyn_page_field(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DynPageFieldSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dyn_page_field_resolver::exists_dyn_page_field(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找动态页面字段
   #[graphql(name = "findByIdsOkDynPageField")]
   async fn find_by_ids_ok_dyn_page_field(

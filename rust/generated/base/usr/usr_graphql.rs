@@ -184,6 +184,26 @@ impl UsrGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断用户是否存在
+  #[graphql(name = "existsUsr")]
+  async fn exists_usr(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<UsrSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        usr_resolver::exists_usr(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找用户
   #[graphql(name = "findByIdsOkUsr")]
   async fn find_by_ids_ok_usr(

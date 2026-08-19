@@ -550,12 +550,6 @@ export function useExportExcelLang() {
             findAllLang(search: $search, page: $page, sort: $sort) {
               ${ langQueryField }
             }
-            getDict(codes: [
-              "is_enabled",
-            ]) {
-              code
-              lbl
-            }
           }
         `,
         variables: {

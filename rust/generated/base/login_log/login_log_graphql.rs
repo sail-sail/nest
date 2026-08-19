@@ -184,6 +184,26 @@ impl LoginLogGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断登录日志是否存在
+  #[graphql(name = "existsLoginLog")]
+  async fn exists_login_log(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<LoginLogSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        login_log_resolver::exists_login_log(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找登录日志
   #[graphql(name = "findByIdsOkLoginLog")]
   async fn find_by_ids_ok_login_log(

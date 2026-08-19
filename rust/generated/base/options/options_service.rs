@@ -165,6 +165,27 @@ pub async fn find_by_ids_options(
   Ok(options_models)
 }
 
+/// 根据搜索条件判断系统选项是否存在
+pub async fn exists_options(
+  search: Option<OptionsSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = options_dao::exists_options(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找系统选项, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_options(
   options_ids: Vec<OptionsId>,

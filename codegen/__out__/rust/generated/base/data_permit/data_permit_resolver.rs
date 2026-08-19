@@ -186,6 +186,27 @@ pub async fn find_by_ids_data_permit(
   Ok(models)
 }
 
+/// 根据搜索条件判断数据权限是否存在
+#[function_name::named]
+pub async fn exists_data_permit(
+  search: Option<DataPermitSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = data_permit_service::exists_data_permit(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找数据权限, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_data_permit(

@@ -184,6 +184,26 @@ impl DictbizDetailGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断业务字典明细是否存在
+  #[graphql(name = "existsDictbizDetail")]
+  async fn exists_dictbiz_detail(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DictbizDetailSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dictbiz_detail_resolver::exists_dictbiz_detail(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找业务字典明细
   #[graphql(name = "findByIdsOkDictbizDetail")]
   async fn find_by_ids_ok_dictbiz_detail(

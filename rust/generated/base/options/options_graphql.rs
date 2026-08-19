@@ -182,6 +182,26 @@ impl OptionsGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断系统选项是否存在
+  #[graphql(name = "existsOptions")]
+  async fn exists_options(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<OptionsSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        options_resolver::exists_options(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统选项
   #[graphql(name = "findByIdsOkOptions")]
   async fn find_by_ids_ok_options(

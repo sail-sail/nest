@@ -544,10 +544,6 @@ export function useDownloadImportTemplateDictbizDetail() {
             order_by
             rem
           }
-          findAllDictbiz {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -603,15 +599,6 @@ export function useExportExcelDictbizDetail() {
           query($search: DictbizDetailSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDictbizDetail(search: $search, page: $page, sort: $sort) {
               ${ dictbizDetailQueryField }
-            }
-            findAllDictbiz {
-              lbl
-            }
-            getDict(codes: [
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

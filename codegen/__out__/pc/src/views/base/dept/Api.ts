@@ -681,18 +681,6 @@ export function useDownloadImportTemplateDept() {
             org_id_lbl
             rem
           }
-          findAllDept {
-            id
-            lbl
-          }
-          findAllUsr {
-            id
-            lbl
-          }
-          findAllOrg {
-            id
-            lbl
-          }
         }
       `,
       variables: {
@@ -748,19 +736,6 @@ export function useExportExcelDept() {
           query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllDept(search: $search, page: $page, sort: $sort) {
               ${ deptQueryField }
-            }
-            findAllUsr {
-              lbl
-            }
-            findAllOrg {
-              lbl
-            }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

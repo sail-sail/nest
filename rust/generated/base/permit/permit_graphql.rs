@@ -182,6 +182,26 @@ impl PermitGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断按钮权限是否存在
+  #[graphql(name = "existsPermit")]
+  async fn exists_permit(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<PermitSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        permit_resolver::exists_permit(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找按钮权限
   #[graphql(name = "findByIdsOkPermit")]
   async fn find_by_ids_ok_permit(

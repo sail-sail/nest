@@ -182,6 +182,26 @@ impl DictGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断系统字典是否存在
+  #[graphql(name = "existsDict")]
+  async fn exists_dict(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DictSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_resolver::exists_dict(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统字典
   #[graphql(name = "findByIdsOkDict")]
   async fn find_by_ids_ok_dict(

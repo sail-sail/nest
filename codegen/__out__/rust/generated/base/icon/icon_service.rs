@@ -165,6 +165,27 @@ pub async fn find_by_ids_icon(
   Ok(icon_models)
 }
 
+/// 根据搜索条件判断图标库是否存在
+pub async fn exists_icon(
+  search: Option<IconSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(
+    &mut search,
+    options,
+  ).await?;
+  
+  let exists_res = icon_dao::exists_icon(
+    Some(search),
+    options,
+  ).await?;
+  
+  Ok(exists_res)
+}
+
 /// 根据 ids 查找图标库, 出现查询不到的 id 则报错
 pub async fn find_by_ids_ok_icon(
   icon_ids: Vec<IconId>,

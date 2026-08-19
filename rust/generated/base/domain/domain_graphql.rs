@@ -182,6 +182,26 @@ impl DomainGenQuery {
       }).await
   }
   
+  /// 根据搜索条件判断域名是否存在
+  #[graphql(name = "existsDomain")]
+  async fn exists_domain(
+    &self,
+    ctx: &Context<'_>,
+    #[graphql(name = "search")]
+    search: Option<DomainSearch>,
+  ) -> Result<bool> {
+    
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        domain_resolver::exists_domain(
+          search,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找域名
   #[graphql(name = "findByIdsOkDomain")]
   async fn find_by_ids_ok_domain(

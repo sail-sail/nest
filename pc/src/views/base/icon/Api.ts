@@ -555,12 +555,6 @@ export function useExportExcelIcon() {
             findAllIcon(search: $search, page: $page, sort: $sort) {
               ${ iconQueryField }
             }
-            getDict(codes: [
-              "is_enabled",
-            ]) {
-              code
-              lbl
-            }
           }
         `,
         variables: {

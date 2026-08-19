@@ -581,13 +581,6 @@ export function useExportExcelDomain() {
             findAllDomain(search: $search, page: $page, sort: $sort) {
               ${ domainQueryField }
             }
-            getDict(codes: [
-              "is_locked",
-              "is_enabled",
-            ]) {
-              code
-              lbl
-            }
           }
         `,
         variables: {

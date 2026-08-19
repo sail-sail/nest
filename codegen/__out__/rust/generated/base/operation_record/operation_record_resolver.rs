@@ -186,6 +186,27 @@ pub async fn find_by_ids_operation_record(
   Ok(models)
 }
 
+/// 根据搜索条件判断操作记录是否存在
+#[function_name::named]
+pub async fn exists_operation_record(
+  search: Option<OperationRecordSearch>,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let res = operation_record_service::exists_operation_record(
+    search,
+    options,
+  ).await?;
+  
+  Ok(res)
+}
+
 /// 根据 ids 查找操作记录, 出现查询不到的 id 则报错
 #[function_name::named]
 pub async fn find_by_ids_ok_operation_record(
