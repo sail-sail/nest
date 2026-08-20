@@ -1,4 +1,4 @@
-/* oxlint-disable @typescript-eslint/no-explicit-any */
+/* oxlint-disable @typescript-eslint/no-explicit-any @react/immutability */
 import {
   useI18n,
 } from "@/locales/i18n.ts";

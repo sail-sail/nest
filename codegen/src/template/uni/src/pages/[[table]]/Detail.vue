@@ -240,13 +240,18 @@ if (right_field && !right_field_column) {
         const modelLabel = column.modelLabel;
         const isImg = column.isImg;
         const isAtt = column.isAtt;
+        const fieldPermit = column.fieldPermit;
       #><#
         if (foreignKey) {
         #>
         
         <!-- <#=column_comment#> -->
         <template
-          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
+          v-if="<#
+          if (fieldPermit) {
+          #>fieldPermit('<#=column_name#>') && <#
+          }
+          #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
           <tm-form-item<#
             if (column.noAdd === true) {
@@ -316,7 +321,11 @@ if (right_field && !right_field_column) {
         
         <!-- <#=column_comment#> -->
         <template
-          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
+          v-if="<#
+          if (fieldPermit) {
+          #>fieldPermit('<#=column_name#>') && <#
+          }
+          #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
           <!-- <#=column_comment#> -->
           <tm-form-item<#
@@ -364,7 +373,11 @@ if (right_field && !right_field_column) {
         
         <!-- <#=column_comment#> -->
         <template
-          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
+          v-if="<#
+          if (fieldPermit) {
+          #>fieldPermit('<#=column_name#>') && <#
+          }
+          #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
           <!-- <#=column_comment#> -->
           <tm-form-item<#
@@ -412,7 +425,11 @@ if (right_field && !right_field_column) {
         
         <!-- <#=column_comment#> -->
         <template
-          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
+          v-if="<#
+          if (fieldPermit) {
+          #>fieldPermit('<#=column_name#>') && <#
+          }
+          #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
           <!-- <#=column_comment#> -->
           <tm-form-item<#
@@ -466,7 +483,11 @@ if (right_field && !right_field_column) {
         
         <!-- <#=column_comment#> -->
         <template
-          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
+          v-if="<#
+          if (fieldPermit) {
+          #>fieldPermit('<#=column_name#>') && <#
+          }
+          #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
           <!-- <#=column_comment#> -->
           <tm-form-item<#
@@ -540,7 +561,11 @@ if (right_field && !right_field_column) {
         
         <!-- <#=column_comment#> -->
         <template
-          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
+          v-if="<#
+          if (fieldPermit) {
+          #>fieldPermit('<#=column_name#>') && <#
+          }
+          #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
           <!-- <#=column_comment#> -->
           <tm-form-item<#
@@ -600,7 +625,11 @@ if (right_field && !right_field_column) {
         
         <!-- <#=column_comment#> -->
         <template
-          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
+          v-if="<#
+          if (fieldPermit) {
+          #>fieldPermit('<#=column_name#>') && <#
+          }
+          #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
           <!-- <#=column_comment#> -->
           <tm-form-item<#
@@ -649,7 +678,11 @@ if (right_field && !right_field_column) {
         
         <!-- <#=column_comment#> -->
         <template
-          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
+          v-if="<#
+          if (fieldPermit) {
+          #>fieldPermit('<#=column_name#>') && <#
+          }
+          #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
           <!-- <#=column_comment#> -->
           <tm-form-item<#
@@ -703,7 +736,11 @@ if (right_field && !right_field_column) {
         
         <!-- <#=column_comment#> -->
         <template
-          v-if="props.hideFields?.includes('<#=column_name#>') !== true"
+          v-if="<#
+          if (fieldPermit) {
+          #>fieldPermit('<#=column_name#>') && <#
+          }
+          #>props.hideFields?.includes('<#=column_name#>') !== true"
         >
           <!-- <#=column_comment#> -->
           <tm-form-item<#
@@ -1695,12 +1732,25 @@ import {
 #>
 
 const pagePath = getPagePath<#=Table_Up#>();
-const permitStore = usePermitStore();
+const permitStore = usePermitStore();<#
+if (tableFieldPermit) {
+#>
+const fieldPermitStore = useFieldPermitStore();<#
+}
+#>
 
 const {
   permit,
   permitAsync,
-} = permitStore.getPermit(pagePath);
+} = permitStore.getPermit(pagePath);<#
+if (tableFieldPermit) {
+#>
+const {
+  fieldPermit,
+  fieldPermitAsync,
+} = fieldPermitStore.getFieldPermit(pagePath);<#
+}
+#>
 
 let inited = $ref(false);
 

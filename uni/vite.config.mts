@@ -113,6 +113,9 @@ export default defineConfig({
           "@/store/permit.ts": [
             [ "default", "usePermitStore" ],
           ],
+          "@/store/field_permit.ts": [
+            [ "default", "useFieldPermitStore" ],
+          ],
           "@/store/index.ts": [
             [ "default", "useIndexStore" ],
           ],

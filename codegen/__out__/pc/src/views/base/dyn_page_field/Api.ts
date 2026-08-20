@@ -648,7 +648,6 @@ export function useExportExcelDynPageField() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     

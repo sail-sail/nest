@@ -24,6 +24,7 @@
     "no-dupe-keys": "allow",
     "vue/no-dupe-keys": "allow",
     "vue/prop-name-casing": "allow",
-    "unicorn/no-empty-file": "allow"
+    "unicorn/no-empty-file": "allow",
+    "@react/immutability": "allow"
   }
 }
