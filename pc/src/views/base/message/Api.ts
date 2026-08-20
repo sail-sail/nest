@@ -650,7 +650,6 @@ export function useExportExcelMessage() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     

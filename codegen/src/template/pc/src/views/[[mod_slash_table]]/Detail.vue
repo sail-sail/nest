@@ -361,7 +361,7 @@ for (let i = 0; i < columns.length; i++) {
           if (fieldPermit || !isVirtual || vIfStr) {
         #> v-if="<#
           if (fieldPermit) {
-        #>field_permit('<#=column_name#>') && <#
+        #>fieldPermit('<#=column_name#>') && <#
           }
         #><#
           if (!isVirtual) {
@@ -5050,7 +5050,10 @@ const {
 } = permitStore.getPermit(pagePath);<#
 if (tableFieldPermit) {
 #>
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
+const {
+  fieldPermit,
+  fieldPermitAsync,
+} = fieldPermitStore.getFieldPermit(pagePath);<#
 }
 #><#
 for (let i = 0; i < columns.length; i++) {
