@@ -3623,19 +3623,18 @@ if (opts.noAdd !== true || opts.noEdit !== true) {
 /// 过滤 input 字段权限
 pub async fn field_permit_input_<#=table#>(
   input: &mut <#=tableUP#>Input,
-  mut fields: Option<Vec<String>>,
+  fields: Option<Vec<SmolStr>>,
 ) -> Result<()> {
   
   let route_path = get_page_path_<#=table#>();
   
-  if fields.is_none() {
-    fields = get_field_permit(route_path.to_string()).await?;
-  }
-  
-  if fields.is_none() {
-    return Ok(());
-  }
-  let fields = fields.unwrap();<#
+  let fields = match fields {
+    Some(fields) => fields,
+    None => match get_field_permit(SmolStr::new(route_path)).await? {
+      Some(fields) => fields,
+      None => return Ok(()),
+    },
+  };<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3686,7 +3685,7 @@ pub async fn field_permit_input_<#=table#>(
   #>
   
   // <#=column_comment#>
-  if !fields.contains(&"<#=column_name#>".to_owned()) {<#
+  if !fields.contains(&SmolStr::new("<#=column_name#>")) {<#
     if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
     ) {
@@ -3735,19 +3734,18 @@ pub async fn field_permit_input_<#=table#>(
 /// 过滤 model 字段权限
 pub async fn field_permit_model_<#=table#>(
   model: &mut <#=tableUP#>Model,
-  mut fields: Option<Vec<String>>,
+  fields: Option<Vec<SmolStr>>,
 ) -> Result<()> {
   
   let route_path = get_page_path_<#=table#>();
   
-  if fields.is_none() {
-    fields = get_field_permit(route_path.to_string()).await?;
-  }
-  
-  if fields.is_none() {
-    return Ok(());
-  }
-  let fields = fields.unwrap();<#
+  let fields = match fields {
+    Some(fields) => fields,
+    None => match get_field_permit(SmolStr::new(route_path)).await? {
+      Some(fields) => fields,
+      None => return Ok(()),
+    },
+  };<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3798,7 +3796,7 @@ pub async fn field_permit_model_<#=table#>(
   #>
   
   // <#=column_comment#>
-  if !fields.contains(&"<#=column_name#>".to_owned()) {<#
+  if !fields.contains(&SmolStr::new("<#=column_name#>")) {<#
     if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
     ) {

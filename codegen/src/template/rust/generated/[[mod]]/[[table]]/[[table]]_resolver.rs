@@ -335,7 +335,7 @@ pub async fn find_all_<#=table#>(
   
   let mut models = models;
   {
-    let fields = get_field_permit_<#=table#>(
+    let fields = get_field_permit(
       SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     for model in &mut models {
@@ -445,7 +445,7 @@ pub async fn find_one_<#=table#>(
   
   let mut model = model;
   {
-    let fields = get_field_permit_<#=table#>(
+    let fields = get_field_permit(
       SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     
@@ -523,7 +523,7 @@ pub async fn find_one_ok_<#=table#>(
   
   let mut model = model;
   {
-    let fields = get_field_permit_<#=table#>(
+    let fields = get_field_permit(
       SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     
@@ -587,7 +587,7 @@ pub async fn find_by_id_<#=table#>(
   
   let mut model = model;
   {
-    let fields = get_field_permit_<#=table#>(
+    let fields = get_field_permit(
       SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     
@@ -651,7 +651,7 @@ pub async fn find_by_id_ok_<#=table#>(
   
   let mut model = model;
   {
-    let fields = get_field_permit_<#=table#>(
+    let fields = get_field_permit(
       SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     
@@ -715,7 +715,7 @@ pub async fn find_by_ids_<#=table#>(
   
   let mut models = models;
   {
-    let fields = get_field_permit_<#=table#>(
+    let fields = get_field_permit(
       SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     
@@ -812,7 +812,7 @@ pub async fn find_by_ids_ok_<#=table#>(
   
   let mut models = models;
   {
-    let fields = get_field_permit_<#=table#>(
+    let fields = get_field_permit(
       SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     
@@ -972,7 +972,7 @@ pub async fn creates_<#=table#>(
   
   let mut inputs = inputs;
   {
-    let fields = get_field_permit_<#=table#>(
+    let fields = get_field_permit(
       SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     for input in &mut inputs {
@@ -1118,7 +1118,7 @@ pub async fn update_by_id_<#=table#>(
   
   let mut input = input;
   {
-    let fields = get_field_permit_<#=table#>(
+    let fields = get_field_permit(
       SmolStr::new(get_page_path_<#=table#>()),
     ).await?;
     field_permit_input_<#=table#>(
