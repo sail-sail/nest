@@ -39,11 +39,12 @@ pub fn get_auth_model_by_token(
   if token.starts_with("Bearer ") {
     token = utf8_slice::from(token, 7);
   }
-  let auth_model = decode::<AuthModel>(
+  let decoded = decode::<AuthModel>(
     token,
     &JWT_DECODING_KEY,
     &JWT_VALIDATION,
-  )?.claims;
+  ).map_err(|e| eyre!("token解析失败: {e}"))?;
+  let auth_model = decoded.claims;
   Ok(auth_model)
 }
 
@@ -61,9 +62,10 @@ pub fn get_token_by_auth_model(
 }
 
 pub fn get_password(str: SmolStr) -> Result<SmolStr> {
+  let secret = SECRET_KEY.as_str();
   let str = {
     let mut hasher = sha2::Sha256::new();
-    hasher.update(str.to_string() + SECRET_KEY);
+    hasher.update(str.to_string() + secret);
     let result = hasher.finalize();
     general_purpose::STANDARD.encode(result)
   };
