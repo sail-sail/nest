@@ -671,7 +671,6 @@ export function useExportExcelWxwApp() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
