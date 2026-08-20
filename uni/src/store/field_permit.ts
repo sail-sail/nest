@@ -1,10 +1,15 @@
 import {
   getFieldPermit as getFieldPermitApi,
-} from "./Api";
+} from "./Api.ts";
 
-const field_permits = useStorage<{
+type FieldPermitColumn = {
+  prop?: string;
+  [key: string]: unknown;
+};
+
+const field_permits = ref<{
   [route_path: string]: string[] | null;
-}>("store.field_permit.field_permits", { });
+}>({ });
 
 const routeFieldPermitMap = reactive<Record<string, {
   loaded: boolean;
@@ -18,9 +23,9 @@ const usrStore = useUsrStore();
 
 function getFieldPermitScopeKey() {
   return [
-    usrStore.username || "",
-    usrStore.tenant_id || "",
-    usrStore.authorization || "",
+    usrStore.getUsername?.() || "",
+    usrStore.getTenantId?.() || "",
+    usrStore.getAuthorization?.() || "",
     usrStore.isAdmin() ? "admin" : "user",
   ].join("|");
 }
@@ -165,13 +170,16 @@ export default function() {
   }
 
   async function setTableColumnsFieldPermit(
-    tableColumns: Ref<ColumnType[]>,
+    tableColumns: Ref<FieldPermitColumn[]>,
     permitFields: (string | string[])[],
     route_path?: string,
   ) {
     if (!route_path) {
       const route = useRoute();
       route_path = route.path;
+    }
+    if (!route_path) {
+      return;
     }
     ensureFieldPermitScope();
     const permitFieldsFlat = permitFields.flat();
@@ -180,7 +188,7 @@ export default function() {
       return;
     }
     tableColumns.value = tableColumns.value.filter((column) => {
-      if (!permitFieldsFlat.includes(column.prop)) {
+      if (!permitFieldsFlat.includes(column.prop ?? "")) {
         return true;
       }
       for (const field of fields) {

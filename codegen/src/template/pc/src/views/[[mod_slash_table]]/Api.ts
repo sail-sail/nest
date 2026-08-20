@@ -2347,7 +2347,6 @@ if (isUseI18n) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     

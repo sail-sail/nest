@@ -589,7 +589,6 @@ export function useExportExcelDictbiz() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
