@@ -68,9 +68,8 @@ ec_order: {
 
 ### 5. 新表生成前的安全执行顺序
 
-- `pnpm run codegen` 依赖当前数据库里的真实表结构，不会只看本地 SQL/TS 配置
-- 新增表时，默认顺序是：`pnpm run importCsv` -> 生成新增建表 SQL -> 人工执行 SQL -> 确认库里已有新表 -> `pnpm run codegen`
 - 禁止执行 `pnpm run initdb`；它会清空并重建全库，风险极高
+- 建表和配置表之后, 应等人类来执行代码生成, 禁止连接数据库修改数据
 
 ---
 
