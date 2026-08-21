@@ -4609,7 +4609,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts?.list_tree) {
+  if (foreignSchema.opts?.list_tree !== true) {
     continue;
   }
   if (foreignTableArr3.includes(foreignTable)) continue;
@@ -4874,7 +4874,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
       continue;
     }
-    if (!foreignSchema.opts?.list_tree) {
+    if (foreignSchema.opts?.list_tree !== true) {
       continue;
     }
     if (foreignTableArr3.includes(foreignTable)) continue;

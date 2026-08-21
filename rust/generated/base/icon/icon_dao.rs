@@ -113,25 +113,6 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
-  // 图标
-  {
-    let img = match search {
-      Some(item) => item.img.clone(),
-      None => None,
-    };
-    if let Some(img) = img {
-      where_query.push_str(" and t.img=?");
-      args.push(img.into());
-    }
-    let img_like = match search {
-      Some(item) => item.img_like.clone(),
-      None => None,
-    };
-    if let Some(img_like) = img_like && !img_like.is_empty() {
-      where_query.push_str(" and t.img like ?");
-      args.push(format!("%{}%", sql_like(&img_like)).into());
-    }
-  }
   // 编码
   {
     let code = match search {
@@ -603,11 +584,15 @@ pub async fn find_all_icon(
     
     // 图标
     model.img_lbl = {
-      let res = get_object(&model.img).await?;
-      if let Some(res) = res {
-        SmolStr::new(String::from_utf8(res.to_vec())?)
-      } else {
+      if model.img.is_empty() {
         SmolStr::new("")
+      } else {
+        let res = get_object(&model.img).await?;
+        if let Some(res) = res && res.status_code() != 404 {
+          SmolStr::new(String::from_utf8(res.to_vec())?)
+        } else {
+          SmolStr::new("")
+        }
       }
     };
     
