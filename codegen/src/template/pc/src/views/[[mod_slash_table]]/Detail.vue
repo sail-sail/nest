@@ -5916,26 +5916,15 @@ async function showDialog(
   readonlyWatchStop = watchEffect(function() {
     showBuildIn = toValue(arg?.showBuildIn) ?? showBuildIn;
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
-    oldIsLocked = toValue(arg?.isLocked) ?? false;
-    <#
+    oldIsLocked = toValue(arg?.isLocked) ?? false;<#
     if (hasLocked) {
     #>
-    if (dialogAction === "add") {
-      isLocked = false;
-    } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
-    }<#
+    
+    isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;<#
     } else {
     #>
-    if (!permit("edit")) {
-      isLocked = true;
-    } else {
-      isLocked = toValue(arg?.isLocked) ?? isLocked;
-    }<#
+    
+    isLocked = toValue(arg?.isLocked) ?? isLocked;<#
     }
     #>
   });
