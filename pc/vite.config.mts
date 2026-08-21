@@ -318,6 +318,7 @@ export default defineConfig({
       versionType: "build_timestamp",
     }),
   ],
+  // @ts-ignore
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
