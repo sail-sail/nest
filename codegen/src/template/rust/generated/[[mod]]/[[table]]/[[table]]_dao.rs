@@ -1021,6 +1021,10 @@ async fn get_where_query(
       column_name === "is_sys" ||
       column_name === "is_deleted"
     ) continue;
+    const isIcon = column.isIcon;
+    if (isIcon) {
+      continue;
+    }
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -2544,11 +2548,15 @@ pub async fn find_all_<#=table#>(
     
     // <#=column_comment#>
     model.<#=column_name#>_lbl = {
-      let res = get_object(&model.<#=column_name#>).await?;
-      if let Some(res) = res {
-        SmolStr::new(String::from_utf8(res.to_vec())?)
-      } else {
+      if model.<#=column_name#>.is_empty() {
         SmolStr::new("")
+      } else {
+        let res = get_object(&model.<#=column_name#>).await?;
+        if let Some(res) = res && res.status_code() != 404 {
+          SmolStr::new(String::from_utf8(res.to_vec())?)
+        } else {
+          SmolStr::new("")
+        }
       }
     };<#
     }

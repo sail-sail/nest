@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::sync::LazyLock;
 
 use smol_str::SmolStr;
 
@@ -9,7 +10,11 @@ use crate::base::org::org_model::OrgId;
 use crate::wx::wx_usr::wx_usr_model::WxUsrId;
 use crate::wx::wxo_usr::wxo_usr_model::WxoUsrId;
 
-pub const SECRET_KEY: &str = "38e52379-9e94-467c-8e63-17ad318fc845";
+const DEFAULT_SECRET_KEY: &str = "38e52379-9e94-467c-8e63-17ad318fc845";
+pub static SECRET_KEY: LazyLock<String> = LazyLock::new(|| {
+  dotenv::dotenv().ok();
+  std::env::var("server_secret_key").unwrap_or_else(|_| DEFAULT_SECRET_KEY.to_owned())
+});
 pub const AUTHORIZATION: &str = "authorization";
 
 fn default_lang() -> Option<SmolStr> {

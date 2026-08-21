@@ -361,7 +361,7 @@ for (let i = 0; i < columns.length; i++) {
           if (fieldPermit || !isVirtual || vIfStr) {
         #> v-if="<#
           if (fieldPermit) {
-        #>field_permit('<#=column_name#>') && <#
+        #>fieldPermit('<#=column_name#>') && <#
           }
         #><#
           if (!isVirtual) {
@@ -4609,7 +4609,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts?.list_tree) {
+  if (foreignSchema.opts?.list_tree !== true) {
     continue;
   }
   if (foreignTableArr3.includes(foreignTable)) continue;
@@ -4874,7 +4874,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
       continue;
     }
-    if (!foreignSchema.opts?.list_tree) {
+    if (foreignSchema.opts?.list_tree !== true) {
       continue;
     }
     if (foreignTableArr3.includes(foreignTable)) continue;
@@ -5050,7 +5050,10 @@ const {
 } = permitStore.getPermit(pagePath);<#
 if (tableFieldPermit) {
 #>
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
+const {
+  fieldPermit,
+  fieldPermitAsync,
+} = fieldPermitStore.getFieldPermit(pagePath);<#
 }
 #><#
 for (let i = 0; i < columns.length; i++) {
