@@ -25,6 +25,7 @@
     "vue/no-dupe-keys": "allow",
     "vue/prop-name-casing": "allow",
     "unicorn/no-empty-file": "allow",
-    "@react/immutability": "allow"
+    "@react/immutability": "allow",
+    "eslint/no-unused-vars": "allow"
   }
 }
