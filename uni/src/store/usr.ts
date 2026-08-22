@@ -2,11 +2,11 @@ import type {
   GetLoginInfo,
 } from "#/types.ts";
 
-let authorization: string = uni.getStorageSync("authorization") || "";
-let usr_id: UsrId = uni.getStorageSync("usr_id");
-let tenant_id: TenantId = uni.getStorageSync("tenant_id");
-let username: string = uni.getStorageSync("username");
-let loginInfo: GetLoginInfo = uni.getStorageSync("loginInfo");
+let authorization = $ref<string>(uni.getStorageSync("authorization") || "");
+let usr_id = $ref<UsrId>(uni.getStorageSync("usr_id"));
+let tenant_id = $ref<TenantId>(uni.getStorageSync("tenant_id"));
+let username = $ref<string>(uni.getStorageSync("username"));
+let loginInfo = $ref<GetLoginInfo>(uni.getStorageSync("loginInfo"));
   
 let showAuth = false;
   

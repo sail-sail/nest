@@ -689,6 +689,10 @@ export async function uniLogin() {
         usrStore.setUsername(login_model.username);
         usrStore.setTenantId(login_model.tenant_id);
         usrStore.setLang(login_model.lang || "");
+        usrStore.setLoginInfo({
+          ...login_model,
+          __typename: "GetLoginInfo",
+        });
         return true;
       }
       return false;
