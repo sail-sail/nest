@@ -519,11 +519,11 @@ pub async fn send_message_wxwork(
       }.into(),
       None,
       options,
-    ).await? {
-      if wxw_app_id.is_none() {
-        wxw_app_id = Some(wxw_usr_model.wxw_app_id);
-        break;
-      }
+    ).await?
+      && wxw_app_id.is_none()
+    {
+      wxw_app_id = Some(wxw_usr_model.wxw_app_id);
+      break;
     }
   }
   let wxw_app_id = match wxw_app_id {
