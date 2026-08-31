@@ -300,7 +300,7 @@ for (let i = 0; i < columns.length; i++) {
   break;
 }
 #><#
-if (hasAttOrImg) {
+if (hasAttOrImg && false) {
 #>
 
 import {
@@ -7232,6 +7232,8 @@ export async function updateById<#=Table_Up#>(
   }<#
   }
   #><#
+  if (false) {
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -7256,6 +7258,8 @@ export async function updateById<#=Table_Up#>(
       oldModel?.<#=column_name_rust#>,
     );
   }<#
+  }
+  #><#
   }
   #><#
   if (mod === "cron" && table === "cron_job") {
@@ -7664,7 +7668,7 @@ export async function deleteByIds<#=Table_Up#>(
     #><#
     }
     #><#
-    if (!hasIsDeleted) {
+    if (!hasIsDeleted && false) {
     #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -8447,6 +8451,8 @@ export async function forceDeleteByIds<#=Table_Up#>(
     #><#
     }
     #><#
+    if (false) {
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -8463,6 +8469,8 @@ export async function forceDeleteByIds<#=Table_Up#>(
     await deleteObject(
       oldModel?.<#=column_name#>,
     );<#
+    }
+    #><#
     }
     #>
   }<#

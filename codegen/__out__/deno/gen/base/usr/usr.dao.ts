@@ -40,10 +40,6 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
-import {
-  deleteObject,
-} from "/lib/oss/oss.dao.ts";
-
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import * as validators from "/lib/validators/mod.ts";
@@ -2591,13 +2587,6 @@ export async function updateByIdUsr(
     log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
   }
   
-  // 头像
-  if (input.img != null && input.img !== oldModel?.img) {
-    await deleteObject(
-      oldModel?.img,
-    );
-  }
-  
   return id;
 }
 
@@ -3108,11 +3097,6 @@ export async function forceDeleteByIdsUsr(
         },
       );
     }
-    
-    // 头像
-    await deleteObject(
-      oldModel?.img,
-    );
   }
   
   await delCacheUsr();
