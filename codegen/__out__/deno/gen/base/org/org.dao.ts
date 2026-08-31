@@ -1692,7 +1692,7 @@ export async function updateByIdOrg(
   const oldModel = await findByIdOrg(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

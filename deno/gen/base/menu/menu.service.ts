@@ -9,7 +9,7 @@ import * as menuDao from "./menu.dao.ts";
 async function setSearchQuery(
   search: MenuSearch,
 ) {
-  if (!search) {
+  if (search.is_hidden == null) {
     search.is_hidden = [ 0 ];
   }
   

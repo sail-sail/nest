@@ -1772,7 +1772,7 @@ export async function updateByIdOptbiz(
   const oldModel = await findByIdOptbiz(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   // 不能修改系统记录的系统字段

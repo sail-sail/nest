@@ -10,8 +10,7 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findByIdUsr,
-  validateOptionUsr,
+  findByIdOkUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import * as messageDao from "./message.dao.ts";
@@ -20,13 +19,11 @@ async function setSearchQuery(
   search: MessageSearch,
 ) {
   
-  const usr_id = await get_usr_id(false);
+  const usr_id = search.auth_usr_id || await get_usr_id(false);
   const org_id = await get_org_id();
-  const usr_model = await validateOptionUsr(
-    await findByIdUsr(usr_id),
-  );
+  const usr_model = await findByIdOkUsr(usr_id);
   const org_ids: OrgId[] = [ ];
-  if (org_id) {
+  if (!search.auth_usr_id && org_id) {
     org_ids.push(org_id);
   } else {
     org_ids.push(...usr_model.org_ids);

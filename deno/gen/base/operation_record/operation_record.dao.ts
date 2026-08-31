@@ -1538,7 +1538,7 @@ export async function updateByIdOperationRecord(
   const oldModel = await findByIdOperationRecord(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

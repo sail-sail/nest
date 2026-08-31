@@ -44,7 +44,7 @@ export async function syncUsrLblByUsrId(
   
   const {
     syncUsrLblByUsrId<#=item.Table_Up#>,
-  } = await import.defer("/gen/<#=item.mod#>/<#=item.table#>/<#=item.table#>.dao.ts");
+  } = await import("/gen/<#=item.mod#>/<#=item.table#>/<#=item.table#>.dao.ts");
   
   affectedRows += await syncUsrLblByUsrId<#=item.Table_Up#>(
     usr_id,

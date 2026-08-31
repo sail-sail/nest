@@ -2411,7 +2411,7 @@ export async function updateByIdRole(
   const oldModel = await findByIdRole(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   {

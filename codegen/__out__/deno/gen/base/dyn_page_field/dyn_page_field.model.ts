@@ -41,17 +41,17 @@ declare global {
     formula?: string;
     formula_like?: string;
     /** 必填 */
-    is_required?: number[];
+    is_required?: number[] | null;
     /** 查询条件 */
-    is_search?: number[];
+    is_search?: number[] | null;
     /** 宽度 */
     width?: [(number|undefined|null), (number|undefined|null)];
     /** 对齐方式 */
-    align?: DynPageFieldAlign[];
+    align?: DynPageFieldAlign[] | null;
     /** 手机列表显示 */
-    is_mobile_list?: number[];
+    is_mobile_list?: number[] | null;
     /** 手机列表查询 */
-    is_mobile_search?: number[];
+    is_mobile_search?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 创建人 */

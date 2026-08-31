@@ -27,6 +27,7 @@ declare global {
   
   /** 消息接收人 */
   interface MessageReceiverSearch extends MessageReceiverSearchType {
+    auth_usr_id?: UsrId | null;
     /** 更新时间 */
     update_time?: [(string|undefined|null), (string|undefined|null)];
     tenant_id?: TenantId | null;

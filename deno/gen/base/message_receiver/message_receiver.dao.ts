@@ -1860,7 +1860,7 @@ export async function updateByIdMessageReceiver(
   const oldModel = await findByIdMessageReceiver(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

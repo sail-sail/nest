@@ -1867,7 +1867,7 @@ export async function updateByIdMenu(
   const oldModel = await findByIdMenu(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

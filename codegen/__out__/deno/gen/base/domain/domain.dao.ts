@@ -1630,7 +1630,7 @@ export async function updateByIdDomain(
   const oldModel = await findByIdDomain(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

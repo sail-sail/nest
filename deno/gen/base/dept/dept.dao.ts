@@ -2028,7 +2028,7 @@ export async function updateByIdDept(
   const oldModel = await findByIdDept(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

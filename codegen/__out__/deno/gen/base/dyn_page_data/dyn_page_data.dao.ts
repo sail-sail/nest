@@ -1689,7 +1689,7 @@ export async function updateByIdDynPageData(
   const oldModel = await findByIdDynPageData(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();
