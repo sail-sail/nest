@@ -115,10 +115,10 @@ async function requestRouteFieldPermits(route_path: string) {
 export default function() {
 
   function getFieldPermit(route_path?: string) {
-    if (!route_path) {
-      const route = useRoute();
-      route_path = route.path;
-    }
+    // if (!route_path) {
+    //   const route = useRoute();
+    //   route_path = route.path;
+    // }
 
     function fieldPermit(code: string) {
       ensureFieldPermitScope();
@@ -174,10 +174,10 @@ export default function() {
     permitFields: (string | string[])[],
     route_path?: string,
   ) {
-    if (!route_path) {
-      const route = useRoute();
-      route_path = route.path;
-    }
+    // if (!route_path) {
+    //   const route = useRoute();
+    //   route_path = route.path;
+    // }
     if (!route_path) {
       return;
     }
