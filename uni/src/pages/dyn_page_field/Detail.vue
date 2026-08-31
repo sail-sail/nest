@@ -329,6 +329,7 @@
         ref="actionBarRef"
         trigger-text="操作"
         trigger-color="info"
+        un-w="full"
       >
 
         <view
@@ -341,6 +342,7 @@
             v-if="permit('add', '新增') && dyn_page_field_id"
             report
             color="info"
+            un-w="full"
             @click="actionBarRef?.close(); onCopy();"
           >
             复制
@@ -349,6 +351,7 @@
           <CustomActionButton
             v-if="permit('edit', '编辑')"
             report
+            un-w="full"
             :disabled="!inited || is_form_hydrating || isReadonly"
             @click="actionBarRef?.close(); formRef?.submit();"
           >
