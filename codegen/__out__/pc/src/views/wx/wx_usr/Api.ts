@@ -22,12 +22,20 @@ export async function setLblByIdWxUsr(
   
   // 头像
   if (model.avatar_img) {
-    model.avatar_img_lbl = location.origin + getImgUrl({
-      id: model.avatar_img,
-      height: 100,
-    }, {
-      notAuthorization: true,
-    });
+    const avatar_img_lbls: string[] = [ ];
+    const avatar_imgs = model.avatar_img.split(",");
+    for (let i = 0; i < avatar_imgs.length; i++) {
+      const img = avatar_imgs[i];
+      const img_lbl = location.origin + location.pathname + getImgUrl({
+        id: img,
+        height: 100,
+      }, {
+        notAuthorization: true,
+      }) || "";
+      avatar_img_lbls.push(img_lbl);
+    }
+    model.avatar_img_lbls = avatar_img_lbls;
+    model.avatar_img_lbl = avatar_img_lbls[0] || "";
   }
 }
 
