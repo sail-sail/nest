@@ -190,7 +190,7 @@ if (right_field && !right_field_column) {
         v-model="<#=table#>_input"<#
         if (opts?.isUniPage?.detailFormWidth) {
         #>
-        :label-width="opts?.isUniPage?.detailFormWidth"<#
+        :label-width="<#=opts?.isUniPage?.detailFormWidth#>"<#
         } else {
         #>
         :label-width="160"<#
@@ -1383,6 +1383,7 @@ if (right_field && !right_field_column) {
         ref="actionBarRef"
         trigger-text="操作"
         trigger-color="info"
+        un-w="full"
       ><#
         if (hasAudit) {
         #>
@@ -1521,6 +1522,7 @@ if (right_field && !right_field_column) {
             v-if="permit('add', '新增') && <#=table#>_id"
             report
             color="info"
+            un-w="full"
             @click="actionBarRef?.close(); onCopy();"
           >
             复制
@@ -1533,6 +1535,7 @@ if (right_field && !right_field_column) {
           <CustomActionButton
             v-if="permit('edit', '编辑')"
             report
+            un-w="full"
             :disabled="!inited || is_form_hydrating || isReadonly"
             @click="actionBarRef?.close(); formRef?.submit();"
           >

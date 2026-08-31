@@ -3,14 +3,14 @@
     "oxc",
     "typescript",
     "unicorn",
-    "react",
     "vue"
   ],
   "ignorePatterns": [
     "src/typings/**",
     "src/assets/**",
     "src/typings/**",
-    "*.d.ts"
+    "*.d.ts",
+    "**/**"
   ],
   "rules": {
     "unicorn/no-single-promise-in-promise-methods": "allow",
