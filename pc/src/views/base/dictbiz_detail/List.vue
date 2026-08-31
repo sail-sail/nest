@@ -36,6 +36,7 @@
           <CustomSelect
             v-model="dictbiz_id_search"
             :method="getListDictbiz"
+            dirty-key="业务字典"
             :options-map="((item: DictbizModel) => {
               return {
                 label: item.lbl,
@@ -193,12 +194,14 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('add', '新增') && !isLocked"
+        v-if="dictbiz_model && dictbiz_model.is_add && permit('add', '新增') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -210,7 +213,7 @@
       </el-button>
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('add', '复制') && !isLocked"
+        v-if="dictbiz_model && dictbiz_model.is_add && permit('add', '复制') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -234,7 +237,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         :disabled="selectedIds.length === 0 || selectedIds.map((item) => tableData.find((item2) => item2.id === item)).some((item) => item?.is_sys === 1)"
@@ -291,7 +294,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -350,7 +355,7 @@
     <template v-else>
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_add && permit('delete') && !isLocked"
+        v-if="dictbiz_model && dictbiz_model.is_add && permit('delete', '删除') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -362,7 +367,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -518,6 +523,7 @@
           
           <!-- 业务字典 -->
           <template v-if="'dictbiz_id_lbl' === col.prop && (showBuildIn || builtInSearch?.dictbiz_id == null)">
+            <!-- @vue-generic {DictbizDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -527,6 +533,7 @@
           
           <!-- 名称 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {DictbizDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -536,6 +543,7 @@
           
           <!-- 值 -->
           <template v-else-if="'val' === col.prop && (showBuildIn || builtInSearch?.val == null)">
+            <!-- @vue-generic {DictbizDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -545,6 +553,7 @@
           
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <!-- @vue-generic {DictbizDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -554,6 +563,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {DictbizDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -580,6 +590,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {DictbizDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -589,6 +600,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {DictbizDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -598,6 +610,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {DictbizDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -607,6 +620,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {DictbizDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -616,6 +630,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {DictbizDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -715,7 +730,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1098,7 +1116,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1113,7 +1131,33 @@ const {
   },
 ));
 
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
+
 const detailRef = $(useTemplateRef("detailRef"));
+
+let dictbiz_model = $ref<DictbizModel>();
 
 /** 刷新表格 */
 async function dataGrid(
@@ -1122,6 +1166,15 @@ async function dataGrid(
 ) {
   clearDirty();
   const search = getDataSearch();
+  const dictbiz_id = search.dictbiz_id?.[0];
+  if (dictbiz_id) {
+    dictbiz_model = await findOneDictbiz({
+      id: dictbiz_id,
+      is_deleted: search.is_deleted,
+    });
+  } else {
+    dictbiz_model = undefined;
+  }
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
@@ -1211,7 +1264,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<DictbizDetailModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<DictbizDetailModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1256,7 +1313,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1288,7 +1345,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1423,7 +1480,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
+  if (!await permitAsync("edit")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1472,9 +1529,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: DictbizDetailModel,
-  column: TableColumnCtx<DictbizDetailModel>,
+  column: TableColumnCtx<DictbizDetailModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1525,7 +1582,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1557,7 +1614,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1584,12 +1641,12 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1623,7 +1680,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1651,10 +1708,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1663,31 +1721,17 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 
-let dictbiz_model = $ref<DictbizModel>();
-
-const dict_id = $computed(() => {
-  return search.dictbiz_id as unknown as DictbizId | undefined;
-});
-
 async function initFrame() {
   initColumns(tableColumns);
-  [
-    ,
-    dictbiz_model,
-  ] = await Promise.all([
-    dataGrid(true),
-    findOneDictbiz({
-      id: dict_id,
-      is_deleted: search.is_deleted,
-    }),
-  ]);
+  await dataGrid(true);
   inited = true;
 }
 

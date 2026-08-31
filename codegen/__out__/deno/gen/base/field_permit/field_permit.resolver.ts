@@ -176,10 +176,9 @@ export async function updateByIdFieldPermit(
   input: FieldPermitInput,
 ): Promise<FieldPermitId> {
   
-  intoInputFieldPermit(input);
-  
   const {
     setIdByLblFieldPermit,
+    validateFieldPermit,
     updateByIdFieldPermit,
   } = await import("./field_permit.service.ts");
   
@@ -189,7 +188,11 @@ export async function updateByIdFieldPermit(
   
   set_is_tran(true);
   
+  intoInputFieldPermit(input);
+  
   await setIdByLblFieldPermit(input);
+  
+  await validateFieldPermit(input);
   
   await usePermit(
     getPagePathFieldPermit(),

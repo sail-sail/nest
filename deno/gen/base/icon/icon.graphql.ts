@@ -11,8 +11,8 @@ type IconModel {
   id: IconId!
   "图标"
   img: String!
-  "图标svg"
-  img_lbl_svg: String!
+  "图标"
+  img_lbl: String!
   "编码"
   code: String!
   "名称"
@@ -83,6 +83,8 @@ input IconInput {
   id: IconId
   "图标"
   img: String
+  "图标"
+  img_lbl: String
   "编码"
   code: String
   "名称"

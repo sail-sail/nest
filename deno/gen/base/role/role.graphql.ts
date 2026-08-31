@@ -29,6 +29,10 @@ type RoleModel {
   field_permit_ids: [FieldPermitId!]!
   "字段权限"
   field_permit_ids_lbl: [String!]!
+  "接收审核消息"
+  is_audit_msg: Int!
+  "接收审核消息"
+  is_audit_msg_lbl: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -87,6 +91,10 @@ type RoleFieldComment {
   field_permit_ids: String!
   "字段权限"
   field_permit_ids_lbl: String!
+  "接收审核消息"
+  is_audit_msg: String!
+  "接收审核消息"
+  is_audit_msg_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -139,6 +147,10 @@ input RoleInput {
   field_permit_ids: [FieldPermitId!]
   "字段权限"
   field_permit_ids_lbl: [String!]
+  "接收审核消息"
+  is_audit_msg: Int
+  "接收审核消息"
+  is_audit_msg_lbl: String
   "锁定"
   is_locked: Int
   "锁定"

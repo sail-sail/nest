@@ -218,10 +218,9 @@ export async function updateByIdI18n(
   input: I18nInput,
 ): Promise<I18nId> {
   
-  intoInputI18n(input);
-  
   const {
     setIdByLblI18n,
+    validateI18n,
     updateByIdI18n,
   } = await import("./i18n.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdI18n(
   
   set_is_tran(true);
   
+  intoInputI18n(input);
+  
   await setIdByLblI18n(input);
+  
+  await validateI18n(input);
   
   await usePermit(
     getPagePathI18n(),

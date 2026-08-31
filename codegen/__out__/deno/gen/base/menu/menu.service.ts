@@ -7,8 +7,11 @@ import type {
 import * as menuDao from "./menu.dao.ts";
 
 async function setSearchQuery(
-  _search: MenuSearch,
+  search: MenuSearch,
 ) {
+  if (!search) {
+    search.is_hidden = [ 0 ];
+  }
   
 }
 

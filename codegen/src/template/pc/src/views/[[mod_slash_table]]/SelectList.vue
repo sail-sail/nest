@@ -65,7 +65,10 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
       v-bind="$attrs"
       ref="listRef"
       :selected-ids="selectedIds"
+      is-list-select-dialog="1"
       @selected-ids-chg="selectedIdsChg"
+      @row-enter="onRowEnter"
+      @row-dblclick="onRowDblclick"
       :is-multiple="multiple ? '1' : '0'"
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
@@ -154,13 +157,13 @@ let inited = $ref(false);
 
 let dialogAction = $ref("select");
 
-export type OnCloseResolveType = {
+type OnCloseResolveType = {
   type: "ok" | "cancel";
   selectedIds?: <#=Table_Up#>Id[];
   selectedModels?: <#=modelName#>[];
 };
-export type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
-export type OnBeforeChangeFnType = (value: <#=modelName#>[]) => Promise<boolean | undefined>;
+type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
+type OnBeforeChangeFnType = (value: <#=modelName#>[]) => Promise<boolean | undefined>;
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
@@ -270,20 +273,25 @@ async function onSave() {
       return;
     }
   }
+  if (onBeforeChange) {
+    const isCloseChange = await onBeforeChange(selectedModels);
+    if (isCloseChange === false) {
+      onCloseResolve({
+        type: "ok",
+        selectedIds,
+        selectedModels,
+      });
+      return;
+    }
+  }
+  nextTick(() => nextTick(() => {
+    emit("change", selectedModels);
+  }));
   onCloseResolve({
     type: "ok",
     selectedIds,
     selectedModels,
   });
-  if (onBeforeChange) {
-    const isCloseChange = await onBeforeChange(selectedModels);
-    if (isCloseChange === false) {
-      return;
-    }
-  }
-  await nextTick();
-  await nextTick();
-  emit("change", selectedModels);
 }
 
 /** 点击取消关闭按钮 */

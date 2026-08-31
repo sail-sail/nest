@@ -83,6 +83,8 @@ declare global {
 
 /** 动态页面 前端允许排序的字段 */
 export const canSortInApiDynPage = {
+  // 路由
+  "code": true,
   // 排序
   "order_by": true,
   // 创建时间

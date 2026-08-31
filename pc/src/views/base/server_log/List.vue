@@ -190,7 +190,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="true">
       
@@ -328,6 +330,7 @@
           
           <!-- 日志日期 -->
           <template v-if="'log_date_lbl' === col.prop && (showBuildIn || builtInSearch?.log_date == null)">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -337,6 +340,7 @@
           
           <!-- 日志时间 -->
           <template v-else-if="'log_time_lbl' === col.prop">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -346,6 +350,7 @@
           
           <!-- 日志级别 -->
           <template v-else-if="'level_lbl' === col.prop && (showBuildIn || builtInSearch?.level == null)">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -355,6 +360,7 @@
           
           <!-- 模块 -->
           <template v-else-if="'module' === col.prop && (showBuildIn || builtInSearch?.module == null)">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -364,6 +370,7 @@
           
           <!-- 请求ID -->
           <template v-else-if="'req_id' === col.prop && (showBuildIn || builtInSearch?.req_id == null)">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -373,6 +380,7 @@
           
           <!-- 日志内容 -->
           <template v-else-if="'content' === col.prop && (showBuildIn || builtInSearch?.content == null)">
+            <!-- @vue-generic {ServerLogModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -456,7 +464,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -817,7 +828,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -831,6 +842,30 @@ const {
     persistKey: __filename,
   },
 ));
+
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 const detailRef = $(useTemplateRef("detailRef"));
 
@@ -928,7 +963,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<ServerLogModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<ServerLogModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -960,9 +999,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: ServerLogModel,
-  column: TableColumnCtx<ServerLogModel>,
+  column: TableColumnCtx<ServerLogModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1007,10 +1046,11 @@ async function openView() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1019,18 +1059,17 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 
 async function initFrame() {
   initColumns(tableColumns);
-  await Promise.all([
-    dataGrid(true),
-  ]);
+  await dataGrid(true);
   inited = true;
 }
 

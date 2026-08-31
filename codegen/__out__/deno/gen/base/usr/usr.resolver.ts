@@ -29,9 +29,6 @@ export async function findCountUsr(
     findCountUsr,
   } = await import("./usr.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
-  
   const num = await findCountUsr(search);
   
   return num;
@@ -49,9 +46,6 @@ export async function findAllUsr(
   const {
     findAllUsr,
   } = await import("./usr.service.ts");
-  
-  search = search || { };
-  search.is_hidden = [ 0 ];
   
   checkSortUsr(sort);
   
@@ -91,9 +85,6 @@ export async function findOneUsr(
     findOneUsr,
   } = await import("./usr.service.ts");
   
-  search = search || { };
-  search.is_hidden = [ 0 ];
-  
   checkSortUsr(sort);
   
   const model = await findOneUsr(search, sort);
@@ -117,9 +108,6 @@ export async function findOneOkUsr(
   const {
     findOneOkUsr,
   } = await import("./usr.service.ts");
-  
-  search = search || { };
-  search.is_hidden = [ 0 ];
   
   checkSortUsr(sort);
   
@@ -261,10 +249,9 @@ export async function updateByIdUsr(
   input: UsrInput,
 ): Promise<UsrId> {
   
-  intoInputUsr(input);
-  
   const {
     setIdByLblUsr,
+    validateUsr,
     updateByIdUsr,
   } = await import("./usr.service.ts");
   
@@ -274,7 +261,11 @@ export async function updateByIdUsr(
   
   set_is_tran(true);
   
+  intoInputUsr(input);
+  
   await setIdByLblUsr(input);
+  
+  await validateUsr(input);
   
   await usePermit(
     getPagePathUsr(),

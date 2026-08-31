@@ -15,6 +15,8 @@ import "/gen/base/icon/icon.graphql.ts";
 import "/gen/base/lang/lang.graphql.ts";
 import "/gen/base/login_log/login_log.graphql.ts";
 import "/gen/base/menu/menu.graphql.ts";
+import "/gen/base/message/message.graphql.ts";
+import "/gen/base/message_receiver/message_receiver.graphql.ts";
 import "/gen/base/operation_record/operation_record.graphql.ts";
 import "/gen/base/optbiz/optbiz.graphql.ts";
 import "/gen/base/options/options.graphql.ts";

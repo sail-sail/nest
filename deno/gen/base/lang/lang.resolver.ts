@@ -218,10 +218,9 @@ export async function updateByIdLang(
   input: LangInput,
 ): Promise<LangId> {
   
-  intoInputLang(input);
-  
   const {
     setIdByLblLang,
+    validateLang,
     updateByIdLang,
   } = await import("./lang.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdLang(
   
   set_is_tran(true);
   
+  intoInputLang(input);
+  
   await setIdByLblLang(input);
+  
+  await validateLang(input);
   
   await usePermit(
     getPagePathLang(),

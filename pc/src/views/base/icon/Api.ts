@@ -1,4 +1,3 @@
-
 import {
   UniqueType,
 } from "#/types.ts";
@@ -20,16 +19,6 @@ export async function setLblByIdIcon(
   if (!model) {
     return;
   }
-  
-  // 图标
-  if (model.img) {
-    model.img_lbl = location.origin + getImgUrl({
-      id: model.img,
-      height: 100,
-    }, {
-      notAuthorization: true,
-    });
-  }
 }
 
 export function intoInputIcon(
@@ -40,8 +29,8 @@ export function intoInputIcon(
     id: model?.id,
     // 图标
     img: model?.img,
-    // svg
-    img_lbl_svg: model?.img_lbl_svg,
+    // 图标
+    img_lbl: model?.img_lbl,
     // 编码
     code: model?.code,
     // 名称
@@ -348,6 +337,32 @@ export async function findByIdsIcon(
 }
 
 /**
+ * 根据搜索条件判断图标库是否存在
+ */
+export async function existsIcon(
+  search?: IconSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsIcon: Query["existsIcon"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: IconSearch) {
+        existsIcon(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsIcon;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 图标库, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkIcon(
@@ -415,7 +430,7 @@ export async function deleteByIdsIcon(
  */
 export async function enableByIdsIcon(
   ids: IconId[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -555,22 +570,15 @@ export function useExportExcelIcon() {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: IconSearch, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: IconSearch, $page: PageInput, $sort: [SortInput!]) {
             findAllIcon(search: $search, page: $page, sort: $sort) {
               ${ iconQueryField }
-            }
-            getDict(codes: [
-              "is_enabled",
-            ]) {
-              code
-              lbl
             }
           }
         `,

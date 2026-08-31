@@ -270,6 +270,32 @@ export async function findByIdsServerLog(
 }
 
 /**
+ * 根据搜索条件判断系统日志是否存在
+ */
+export async function existsServerLog(
+  search?: ServerLogSearch,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    existsServerLog: Query["existsServerLog"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: ServerLogSearch) {
+        existsServerLog(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.existsServerLog;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 系统日志, 出现查询不到的 id 则报错
  */
 export async function findByIdsOkServerLog(

@@ -43,6 +43,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 }
 // 审核
 const hasAudit = !!opts?.audit;
+let hasReviewed = false;
 let auditColumn = "";
 let auditMod = "";
 let auditTable = "";
@@ -50,14 +51,18 @@ if (hasAudit) {
   auditColumn = opts.audit.column;
   auditMod = opts.audit.auditMod;
   auditTable = opts.audit.auditTable;
+  // 是否有复核
+  hasReviewed = opts?.audit?.hasReviewed;
 }
-// 是否有复核
-const hasReviewed = opts?.hasReviewed;
 const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
 const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
+
+// bpm
+const hasBpm = !!opts?.bpm && !!opts?.bpm?.biz_code;
+const bpmBizCode = opts?.bpm?.biz_code;
 #><#
 let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
@@ -111,15 +116,17 @@ for (let i = 0; i < columns.length; i++) {
   }
 }
 #><#
-if (hasUsrStore) {
-#>import cfg from "@/utils/config.ts";
-<#
+if (opts.noAdd !== true || opts.noEdit !== true) {
+#>import {
+  UniqueType,
+} from "#/types.ts";<#
 }
 #><#
-if (opts.noAdd !== true || opts.noEdit !== true) {
+if (hasBpm) {
 #>
+
 import {
-  UniqueType,
+  TaskAction,
 } from "#/types.ts";<#
 }
 #><#
@@ -557,21 +564,29 @@ export async function setLblById<#=Table_Up#>(
   } else {
     model.<#=column_name#>_lbl = new Decimal(model.<#=column_name#> ?? 0).toFixed(<#=precision#>);
   }<#
-    } else if (column.isImg) {
+    } else if (column.isImg && !column.isIcon) {
   #>
   
   // <#=column_comment#>
   if (model.<#=column_name#>) {
-    model.<#=column_name#>_lbl = location.origin + getImgUrl({
-      id: model.<#=column_name#>,
-      height: 100,
-    }<#
-    if (column.isPublicAtt) {
-    #>, {
-      notAuthorization: true,
-    }<#
+    const <#=column_name#>_lbls: string[] = [ ];
+    const <#=column_name#>s = model.<#=column_name#>.split(",");
+    for (let i = 0; i < <#=column_name#>s.length; i++) {
+      const img = <#=column_name#>s[i];
+      const img_lbl = location.origin + location.pathname + getImgUrl({
+        id: img,
+        height: 100,
+      }<#
+      if (column.isPublicAtt) {
+      #>, {
+        notAuthorization: true,
+      }<#
+      }
+      #>) || "";
+      <#=column_name#>_lbls.push(img_lbl);
     }
-    #>);
+    model.<#=column_name#>_lbls = <#=column_name#>_lbls;
+    model.<#=column_name#>_lbl = <#=column_name#>_lbls[0] || "";
   }<#
     }
   #><#
@@ -1200,6 +1215,34 @@ export async function auditReview<#=Table_Up#>(
 }
 #><#
 }
+#><#
+if (opts?.audit?.hasReverse) {
+#>
+
+/** 反审核 */
+export async function auditReverse<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  opt?: GqlOpt,
+) {
+
+  const data: {
+    auditReverse<#=Table_Up2#>: Mutation["auditReverse<#=Table_Up2#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!) {
+        auditReverse<#=Table_Up2#>(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+
+  const res = data.auditReverse<#=Table_Up2#>;
+
+  return res;
+}<#
+}
 #>
 
 /**
@@ -1340,6 +1383,32 @@ export async function findByIds<#=Table_Up#>(
 }
 
 /**
+ * 根据搜索条件判断<#=table_comment#>是否存在
+ */
+export async function exists<#=Table_Up#>(
+  search?: <#=searchName#>,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  
+  const data: {
+    exists<#=Table_Up2#>: Query["exists<#=Table_Up2#>"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: <#=searchName#>) {
+        exists<#=Table_Up2#>(search: $search)
+      }
+    `,
+    variables: {
+      search,
+    },
+  }, opt);
+  
+  const res = data.exists<#=Table_Up2#>;
+  
+  return res;
+}
+
+/**
  * 根据 ids 查找 <#=table_comment#>, 出现查询不到的 id 则报错
  */
 export async function findByIdsOk<#=Table_Up#>(
@@ -1455,7 +1524,7 @@ if (hasEnabled && opts.noEdit !== true) {
  */
 export async function enableByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
-  is_enabled: 0 | 1,
+  is_enabled: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -1487,7 +1556,7 @@ if (hasLocked && opts.noEdit !== true) {
  */
 export async function lockByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
-  is_locked: 0 | 1,
+  is_locked: number,
   opt?: GqlOpt,
 ): Promise<number> {
   if (ids.length === 0) {
@@ -2286,14 +2355,13 @@ if (isUseI18n) {
     sort?: Sort[],
     opt?: GqlOpt,
   ) {
-    workerStatus.value = "PENDING";
     
     loading.value = true;
     
     try {
       const data = await query({
         query: `
-          query($search: <#=searchName#>, $page: PageInput, , $sort: [SortInput!]) {
+          query($search: <#=searchName#>, $page: PageInput, $sort: [SortInput!]) {
             findAll<#=Table_Up2#>(search: $search, page: $page, sort: $sort) {
               ${ <#=table_Up#>QueryField }<#
               if (hasAudit && auditTable_Up) {
@@ -2565,6 +2633,67 @@ export async function findLastOrderBy<#=Table_Up#>(
   const order_by = data.findLastOrderBy<#=Table_Up2#>;
   
   return order_by;
+}<#
+}
+#><#
+if (hasBpm) {
+#>
+
+/** 提交 */
+export async function startProcess<#=Table_Up2#>(
+  id: <#=Table_Up2#>Id,
+  opt?: GqlOpt,
+): Promise<ProcessInstId> {
+  const res: {
+    startProcess<#=Table_Up2#>: ProcessInstId;
+  } = await mutation({
+    query: `
+      mutation($id: <#=Table_Up2#>Id!) {
+        startProcess<#=Table_Up2#>(
+          id: $id,
+        )
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+
+  const data = res.startProcess<#=Table_Up2#>;
+  
+  return data;
+}
+
+/** 完成 <#=table_comment#> 流程任务 */
+export async function completeTask<#=Table_Up#>(
+  id: <#=Table_Up#>Id,
+  action: TaskAction,
+  opinion?: string | null,
+  add_sign_usr_ids?: UsrId[] | null,
+  opt?: GqlOpt,
+): Promise<boolean> {
+  const res: {
+    completeTask<#=Table_Up#>: Mutation["completeTask<#=Table_Up#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!, $action: TaskAction!, $opinion: SmolStr, $add_sign_usr_ids: [UsrId!]) {
+        completeTask<#=Table_Up#>(
+          id: $id,
+          action: $action,
+          opinion: $opinion,
+          add_sign_usr_ids: $add_sign_usr_ids,
+        )
+      }
+    `,
+    variables: {
+      id,
+      action,
+      opinion,
+      add_sign_usr_ids,
+    },
+  }, opt);
+
+  return !!res.completeTask<#=Table_Up#>;
 }<#
 }
 #>

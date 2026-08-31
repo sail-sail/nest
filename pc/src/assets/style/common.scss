@@ -174,6 +174,7 @@ html,body {
       color: var(--el-color-primary);
     }
     .notice_span,.reset_but:hover {
+      margin-left: 6px;
       color: red;
     }
   }
@@ -417,7 +418,8 @@ html:is(.dark) {
 .custom_switch_readonly,
 .custom_checkbox_readonly,
 .custom_tree_select_readonly,
-.upload_image_empty {
+.upload_image_empty,
+.custom_input_tag_readonly {
   color: var(--readonly_font_color);
   background-color: var(--el-fill-color-blank);
   white-space: pre-wrap;
@@ -638,3 +640,14 @@ html .ql-toolbar span.ql-picker-label path {
   }
 }
 // 月范围选择, 日范围选择 -- end
+
+.splitter-bar__dragger-hidden {
+  .el-splitter-bar__dragger-horizontal:before, .el-splitter-bar__dragger-horizontal:after {
+    width: 1px;
+    background-color: transparent;
+  }
+
+  .el-splitter-bar__dragger:hover:not(.is-disabled):before {
+    background-color: transparent;
+  }
+}

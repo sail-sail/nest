@@ -218,10 +218,9 @@ export async function updateByIdDept(
   input: DeptInput,
 ): Promise<DeptId> {
   
-  intoInputDept(input);
-  
   const {
     setIdByLblDept,
+    validateDept,
     updateByIdDept,
   } = await import("./dept.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdDept(
   
   set_is_tran(true);
   
+  intoInputDept(input);
+  
   await setIdByLblDept(input);
+  
+  await validateDept(input);
   
   await usePermit(
     getPagePathDept(),

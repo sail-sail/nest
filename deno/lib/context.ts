@@ -693,16 +693,21 @@ export function getNow() {
   return context.reqDate;
 }
 
+export function getCacheEnabled() {
+  const context = useMaybeContext();
+  if (!context) {
+    return false;
+  }
+  return context.cacheEnabled;
+}
+
 export async function getCache(
   cacheKey1: string | undefined,
   cacheKey2: string | undefined,
 // deno-lint-ignore no-explicit-any
 ): Promise<any> {
-  const context = useMaybeContext();
-  if (!context) {
-    return;
-  }
-  if (!context.cacheEnabled) {
+  const cacheEnabled = getCacheEnabled();
+  if (!cacheEnabled) {
     return;
   }
   if (!cacheKey1 || !cacheKey2) {

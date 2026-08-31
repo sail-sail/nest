@@ -115,6 +115,8 @@ declare global {
 
 /** 动态页面字段 前端允许排序的字段 */
 export const canSortInApiDynPageField = {
+  // 编码
+  "code": true,
   // 排序
   "order_by": true,
   // 创建时间

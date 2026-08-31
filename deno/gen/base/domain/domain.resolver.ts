@@ -218,10 +218,9 @@ export async function updateByIdDomain(
   input: DomainInput,
 ): Promise<DomainId> {
   
-  intoInputDomain(input);
-  
   const {
     setIdByLblDomain,
+    validateDomain,
     updateByIdDomain,
   } = await import("./domain.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdDomain(
   
   set_is_tran(true);
   
+  intoInputDomain(input);
+  
   await setIdByLblDomain(input);
+  
+  await validateDomain(input);
   
   await usePermit(
     getPagePathDomain(),

@@ -218,10 +218,9 @@ export async function updateByIdRole(
   input: RoleInput,
 ): Promise<RoleId> {
   
-  intoInputRole(input);
-  
   const {
     setIdByLblRole,
+    validateRole,
     updateByIdRole,
   } = await import("./role.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdRole(
   
   set_is_tran(true);
   
+  intoInputRole(input);
+  
   await setIdByLblRole(input);
+  
+  await validateRole(input);
   
   await usePermit(
     getPagePathRole(),

@@ -1,6 +1,6 @@
 ---
 name: table-config
-description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取，尤其要检查 lbl、*_id_lbl/modelLabel、审计字段等容易漏掉的配置
+description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取
 ---
 
 # 表配置规范
@@ -21,6 +21,8 @@ description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取，
 | `modelLabel` | `xxx_id` 对应存在 `xxx_id_lbl` 时，给 `xxx_id` 配置 `modelLabel` | `xxx_id_lbl` 无需再单独写入 `columns` |
 | 审计字段 | 通常补齐 `create_usr_id/create_time/update_usr_id/update_time` | 按表实际用途判断 |
 | 配置换行 | `opts` 和 `columns` 维持多行结构 | 不要压成单行 |
+
+尤其要检查 lbl、*_id_lbl/modelLabel、审计字段等容易漏掉的配置
 
 ### 1. lbl 字段必须在 columns 中显式写出
 
@@ -44,6 +46,8 @@ description: 表字段配置规范。生成或修改 {mod}.ts 时必须读取，
 
 不配置会导致 codegen 报错：`字段 xxx_id 的 modelLabel 未设置, 却有 xxx_id_lbl 字段`
 
+注意命名陷阱：`xxx_id_lbl` 字段存在时，codegen 只按上述规则报错提示配置 `modelLabel`；但像 `biz_lbl`、`receiver_province_lbl` 这类**不是** `xxx_id_lbl` 命名的冗余标签字段，需要单独写入 `columns`，不享受 modelLabel 推断。
+
 ### 3. 审计字段通常需要补齐
 
 ```ts
@@ -61,6 +65,11 @@ ec_order: {
   columns: [ ... ],
 },
 ```
+
+### 5. 新表生成前的安全执行顺序
+
+- 禁止执行 `pnpm run initdb`；它会清空并重建全库，风险极高
+- 建表和配置表之后, 应等人类来执行代码生成, 禁止连接数据库修改数据
 
 ---
 
@@ -86,7 +95,7 @@ ec_order: {
 | rem | width:280, align:left |
 | `*_province_code` | 自动识别省份 |
 | 有 `,dictbiz:` 或 `,dict:` 标注的字段 | 无需配置 `foreignKey` |
-| `is_enabled` | `isSwitch` 默认 true |
+| 所有 `is_*` 布尔字段 | `isSwitch` 默认 true，显示文本或只读时要显式 `isSwitch: false` |
 | `order_by` | 无需配置 |
 | `isFluentEditor` | noList 默认 true |
 
@@ -94,7 +103,7 @@ ec_order: {
 
 | 配置项 | 用途 |
 |--------|------|
-| `opts.uniques` | 唯一约束，如 `[["mod", "code"]]` |
+| `opts.uniques` | 唯一约束，元素是字段名数组，如 `[["code"], ["lbl"]]`；带 `autoCode` 的编码字段会自动追加，无需手写 |
 | `opts.defaultSort` | 默认排序，不配置则为 `create_time` 降序 |
 | `opts.cache` | 是否缓存 |
 | `opts.log` | 操作日志，开启后增改自动记录到 `operation_record` 表 |
@@ -109,6 +118,7 @@ ec_order: {
 | `opts.is_with_auth_optional` | 可选认证，跳过 permit 检查 |
 | `opts.isRealData` | 实时数据推送 |
 | `opts.searchByKeyword` | 统一关键字搜索 |
+| `opts.isUniApi` | 生成 uni 端 Api；配了 `isUniPage` 时自动为 true，不用重复写；带审核的主表其审核流水表也会自动继承 |
 
 ### defaultSort 是全局配置
 
@@ -123,20 +133,156 @@ await findAllXxx(search, page, [
 
 ## 审核流 (audit)
 
+- 主表配置 `opts.audit` 时，必须同时存在对应的审核流水表 `{mod}_{table}_audit`（SQL 与 `{mod}.ts` 都要建）；codegen 找不到审核表会直接报错 `审核表: xxx 不存在`
+- 审核流水表不需要 `opts.audit`，只需标准 columns（见下文示例）
+- 审核流水表不注册独立菜单，前端通过主表的 `AuditListDialog` 查看流水
+- 主表 `audit` 字段在 columns 中只写 `{ COLUMN_NAME: "audit" }`，codegen 会自动置 `readonly: true`
+
 ```ts
 opts: {
   audit: {
     column: "audit",           // 审核字段，默认 audit
     auditMod: "base",          // 审核模块，默认当前模块
     auditTable: "usr_audit",   // 审核表名，默认 [表名]_audit
-    hasReviewed: true,         // 是否启用复核（第4种状态 Reviewed）
+    hasReviewed: true,          // 是否启用复核；audit 枚举含 reviewed 时 codegen 会自动推断为 true，可省略
+    hasReverse: true,           // 是否生成反审核能力，必须显式写 true，无自动推断
   },
 }
 ```
 
-- 新增记录时审核字段自动设为 `Unsubmited`（未提交）
+- `hasReviewed`：SQL 枚举含 `reviewed` 时自动为 true，不写也会生成复核；需要显式写 `false` 的场景是枚举含 `reviewed` 但不想开放复核
+- `hasReverse`：不写就不生成反审核按钮与 mutation，需要反审核必须显式 `true`
+
+### 标准状态设计
+
+如果业务有“复核”环节，主表和审核流水表的 `audit` 枚举建议统一为：
+
+```sql
+ENUM('unsubmited', 'unaudited', 'audited', 'reviewed', 'rejected')
+```
+
+对应配置：
+
+```ts
+audit: {
+  column: "audit",
+  auditMod: "scrm",
+  auditTable: "clue_audit",
+  hasReviewed: true,
+  hasReverse: true,
+}
+```
+
+如果业务没有“复核”环节，建议枚举改为：
+
+```sql
+ENUM('unsubmited', 'unaudited', 'audited', 'rejected')
+```
+
+对应配置：
+
+```ts
+audit: {
+  column: "audit",
+  auditMod: "base",
+  auditTable: "example_audit",
+  hasReviewed: false,
+  hasReverse: true,
+}
+```
+
+### 标准行为约定
+
+- 新增记录时审核字段默认是 `Unsubmited`
+- `audit_submit`: `unsubmited` / `rejected` -> `unaudited`
+- `audit_pass`: `unaudited` -> `audited`
+- `audit_reject`: `unaudited`，以及有复核时的 `audited` -> `rejected`
+- `audit_review`: `audited` -> `reviewed`（仅 `hasReviewed: true`）
+- `audit_reverse`: 回退到上一状态，不新增新枚举值
+  - `reviewed -> audited`
+  - `audited -> unaudited`
+  - `unaudited -> unsubmited`
+  - `unsubmited`、`rejected` 不允许反审核
 - `audit_reject` 操作接收 `auditTableInput` 类型，记录拒绝原因
 - 删除/还原/彻底删除时会级联处理审核记录
+
+### 审核流水表配置
+
+审核流水表 `columns` 至少保持以下结构：
+
+```ts
+scrm_clue_audit: {
+  opts: {
+    defaultSort: {
+      prop: "audit_time",
+      order: "descending",
+    },
+  },
+  columns: [
+    {
+      COLUMN_NAME: "clue_id",
+      modelLabel: "clue_id_lbl",
+      isCascadeUpdateModelLabel: true,
+      foreignKey: {
+        selectType: "selectInput",
+      },
+    },
+    {
+      COLUMN_NAME: "audit",
+    },
+    {
+      COLUMN_NAME: "audit_usr_id",
+      modelLabel: "audit_usr_id_lbl",
+      isCascadeUpdateModelLabel: true,
+      foreignKey: {
+        mod: "base",
+        table: "usr",
+        selectType: "selectInput",
+      },
+    },
+    { COLUMN_NAME: "audit_time" },
+    { COLUMN_NAME: "rem" },
+    { COLUMN_NAME: "create_usr_id" },
+    { COLUMN_NAME: "create_time" },
+    { COLUMN_NAME: "update_usr_id" },
+    { COLUMN_NAME: "update_time" },
+  ],
+}
+```
+
+- 审核流水表的外键字段必须配置 `modelLabel`
+- `{table}_id` 推荐配置 `isCascadeUpdateModelLabel: true`，避免主表名称变化后流水表标签不更新
+- `audit_usr_id` 也推荐按标准用户外键去配置
+
+### 当前仓库约定
+
+- 如果决定启用标准审核能力，建议在 `opts.audit` 中显式写出 `hasReverse: true`
+- 不要为“反审核”额外新增枚举值；标准方案就是回退到上一个已存在状态
+- 以后 AI 创建带审核的新表时，优先复用 `scrm_clue` / `scrm_clue_audit` 这一对表的设计，而不是重新发明审核字段或审核流水结构
+
+## 树形结构 (list_tree + parent_id)
+
+```ts
+scrm_category: {
+  opts: {
+    list_tree: true, // 自身是一棵树
+  },
+  columns: [
+    {
+      COLUMN_NAME: "parent_id",
+      modelLabel: "parent_id_lbl",
+      require: false,
+      placeholderInForm: "上级类目, 默认为一级类目",
+      foreignKey: {
+        mod: "scrm",
+        table: "category",       // 自引用，指向本表
+        lbl: "lbl",
+        selectType: "tree" as const, // 树形选择
+      },
+    },
+  ],
+}
+```
 
 ## 系统记录保护 (sys_fields)
 
@@ -183,6 +329,14 @@ opts: {
 
 ## 外键相关
 
+### 不以 _id/_ids 结尾的字段不会被推断为外键
+
+如 `notify_usrs` 这类存 id 列表但命名不带 `_ids` 后缀的字段，按普通字符串字段处理；需要外键行为就改字段名以 `_ids` 结尾。
+
+### 跨模块多态外键需 notForeignKeyById
+
+`xxx_id` 字段如果实际引用多个不同模块的表（如 `biz_id` 配合 `biz_type`），要显式配置 `notForeignKeyById: true`，否则 codegen 会按字段名前缀错误推断外键表。
+
 ### 外键数据量大时用 selectInput
 
 ```ts
@@ -225,6 +379,7 @@ ec_order: {
     inlineForeignTabs: [{
       mod: "ec", table: "order_detail",
       label: "订单明细", column: "order_id",
+      uni_list_page_fields: [ "product_id_lbl", "quantity" ], // 移动端内联表格显示列
     }],
     detailCustomDialogType: "medium",
     detailFormCols: 3,
@@ -232,9 +387,13 @@ ec_order: {
 }
 ```
 
+- 主表同时有 `isUniPage` 时，inline 子表应配 `uni_list_page_fields`，并且子表自身的 `opts.isUniPage` 配 `hasDetailModal: true`
+
 ## 自动编码字段
 
 ```ts
+// 序列字段名跟随编码字段名: code -> code_seq/code_date_seq, lbl -> lbl_seq/lbl_date_seq
+{ COLUMN_NAME: "code_date_seq", onlyCodegenDeno: true }, // 仅 dateSeq 编码需要
 { COLUMN_NAME: "code_seq", onlyCodegenDeno: true },
 {
   COLUMN_NAME: "code",
@@ -243,7 +402,7 @@ ec_order: {
   autoCode: {
     prefix: "JS", seq: "code_seq", seqPadStart0: 3,
     // suffix: "SN",        // 可选，编码后缀
-    // dateSeq: "code_date_seq",  // 可选，日期序列
+    // dateSeq: "code_date_seq",  // 可选，日期序列，字段名是 [编码字段]_date_seq
     // dateFormat: "YYYYMMDD",    // 可选，日期格式
   },
   searchByArray: true,
@@ -251,6 +410,8 @@ ec_order: {
 ```
 
 - `onlyCodegenDeno`: 只生成后端，不生成到前端
+- 序列字段必须在 SQL 中建出并在 columns 中写出（配 `onlyCodegenDeno: true`），codegen 会校验存在性，缺失会报错
+- 带 `autoCode` 的字段自动追加唯一约束（无 dateSeq 时 `[字段]`，有 dateSeq 时 `[dateSeq, 字段]`），`opts.uniques` 无需再手写该字段
 
 ## COLUMN_DEFAULT 特殊默认值
 

@@ -26,6 +26,9 @@ defineGraphql(usr_resolver, /* GraphQL */ `
     org_id: OrgId
     authorization: String!
     lang: String
+    lbl: String!
+    role_codes: [String!]!
+    org_id_models: [GetLoginInfoOrgIdModels!]!
   }
   
   input LoginInput {

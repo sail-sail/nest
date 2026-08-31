@@ -218,10 +218,9 @@ export async function updateByIdOptbiz(
   input: OptbizInput,
 ): Promise<OptbizId> {
   
-  intoInputOptbiz(input);
-  
   const {
     setIdByLblOptbiz,
+    validateOptbiz,
     updateByIdOptbiz,
   } = await import("./optbiz.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdOptbiz(
   
   set_is_tran(true);
   
+  intoInputOptbiz(input);
+  
   await setIdByLblOptbiz(input);
+  
+  await validateOptbiz(input);
   
   await usePermit(
     getPagePathOptbiz(),

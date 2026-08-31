@@ -11,8 +11,11 @@ import {
 import * as usrDao from "./usr.dao.ts";
 
 async function setSearchQuery(
-  _search: UsrSearch,
+  search: UsrSearch,
 ) {
+  if (!search) {
+    search.is_hidden = [ 0 ];
+  }
   
 }
 
@@ -205,9 +208,13 @@ export async function updateByIdUsr(
     throw "不能修改已经锁定的 用户";
   }
   
+  const old_model = await usrDao.findByIdOkUsr(usr_id);
+  const old_lbl = old_model.lbl ?? "";
+  const is_sync_usr_lbl = old_lbl !== (input.lbl ?? "");
+  
   usr_id = await usrDao.updateByIdUsr(usr_id, input);
   
-  if (input.lbl != null) {
+  if (is_sync_usr_lbl) {
     await syncUsrLblByUsrId(
       usr_id,
     );

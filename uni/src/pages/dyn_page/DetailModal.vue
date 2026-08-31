@@ -1,16 +1,16 @@
 <template>
-<tm-modal
-  v-model:show="dialogVisible"
-  :closeable="true"
-  :height="height"
+<CustomDialog
+  ref="customDialogRef"
   :title="dialogTitle"
+  type="large"
   disabled-scroll
   show-close
   :show-footer="false"
   :content-padding="0"
   max-height="90%"
-  :overlay-click="true"
+  :close-on-click-modal="true"
   v-bind="$attrs"
+  @close="onClose"
 >
   
   <view
@@ -44,10 +44,11 @@
     
   </view>
   
-</tm-modal>
+</CustomDialog>
 </template>
 
 <script lang="ts" setup>
+import CustomDialog from "@/components/CustomDialog/CustomDialog.vue";
 import DynPageDetal from "./Detail.vue";
 
 import {
@@ -57,14 +58,13 @@ import {
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
-let dialogVisible = $ref(false);
-const height = $ref<string | number>("90%");
 
 let dyn_page_id = $ref<DynPageId>();
 let order_by = $ref<number>();
 
 let inited = $ref(false);
 
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 const dyn_page_detail_ref = $ref<InstanceType<typeof DynPageDetal>>();
 
 let findOneModel = findOneDynPage;
@@ -75,8 +75,6 @@ type OnCloseResolveType = {
 } | {
   type: "cancel";
 };
-
-let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 /** 打开对话框 */
 async function showDialog(
@@ -104,19 +102,24 @@ async function showDialog(
   dialogAction = action || "add";
   dyn_page_id = model?.id;
   
-  const dialogPrm = new Promise<OnCloseResolveType>((resolve) => {
-    onCloseResolve = function(arg: OnCloseResolveType) {
-      dialogVisible = false;
-      resolve(arg);
-    };
-  });
-  
-  dialogVisible = true;
-  
   await onRefresh();
   
   inited = true;
-  return await dialogPrm;
+  
+  return await customDialogRef!.showDialog<OnCloseResolveType>({
+    title: dialogTitle,
+    type: "large",
+    showFooter: false,
+    showClose: true,
+    showTitle: true,
+    disabledScroll: true,
+    contentPadding: 0,
+    maxHeight: "90%",
+    closeOnClickModal: true,
+    closeResult: {
+      type: "cancel",
+    },
+  });
 }
 
 /** 刷新 */
@@ -128,7 +131,7 @@ async function onRefresh() {
 async function beforeSave(
   input: DynPageInput,
 ) {
-  onCloseResolve({
+  customDialogRef?.resolve({
     type: "ok",
     input,
   });
@@ -136,7 +139,7 @@ async function beforeSave(
 }
 
 async function onClose() {
-  onCloseResolve({
+  customDialogRef?.resolve({
     type: "cancel",
   });
 }

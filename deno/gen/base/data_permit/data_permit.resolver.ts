@@ -218,10 +218,9 @@ export async function updateByIdDataPermit(
   input: DataPermitInput,
 ): Promise<DataPermitId> {
   
-  intoInputDataPermit(input);
-  
   const {
     setIdByLblDataPermit,
+    validateDataPermit,
     updateByIdDataPermit,
   } = await import("./data_permit.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdDataPermit(
   
   set_is_tran(true);
   
+  intoInputDataPermit(input);
+  
   await setIdByLblDataPermit(input);
+  
+  await validateDataPermit(input);
   
   await usePermit(
     getPagePathDataPermit(),

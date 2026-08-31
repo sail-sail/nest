@@ -218,10 +218,9 @@ export async function updateByIdDynPageVal(
   input: DynPageValInput,
 ): Promise<DynPageValId> {
   
-  intoInputDynPageVal(input);
-  
   const {
     setIdByLblDynPageVal,
+    validateDynPageVal,
     updateByIdDynPageVal,
   } = await import("./dyn_page_val.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdDynPageVal(
   
   set_is_tran(true);
   
+  intoInputDynPageVal(input);
+  
   await setIdByLblDynPageVal(input);
+  
+  await validateDynPageVal(input);
   
   await usePermit(
     getPagePathDynPageVal(),

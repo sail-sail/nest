@@ -218,10 +218,9 @@ export async function updateByIdDictbizDetail(
   input: DictbizDetailInput,
 ): Promise<DictbizDetailId> {
   
-  intoInputDictbizDetail(input);
-  
   const {
     setIdByLblDictbizDetail,
+    validateDictbizDetail,
     updateByIdDictbizDetail,
   } = await import("./dictbiz_detail.service.ts");
   
@@ -231,7 +230,11 @@ export async function updateByIdDictbizDetail(
   
   set_is_tran(true);
   
+  intoInputDictbizDetail(input);
+  
   await setIdByLblDictbizDetail(input);
+  
+  await validateDictbizDetail(input);
   
   await usePermit(
     getPagePathDictbizDetail(),

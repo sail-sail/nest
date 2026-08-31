@@ -35,6 +35,10 @@ type MenuModel {
   order_by: Int!
   "备注"
   rem: String!
+  "隐藏"
+  is_hidden: Int!
+  "隐藏"
+  is_hidden_lbl: String!
   "创建人"
   create_usr_id: UsrId!
   "创建人"
@@ -83,6 +87,10 @@ type MenuFieldComment {
   order_by: String!
   "备注"
   rem: String!
+  "隐藏"
+  is_hidden: String!
+  "隐藏"
+  is_hidden_lbl: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -129,6 +137,10 @@ input MenuInput {
   order_by: Int
   "备注"
   rem: String
+  "隐藏"
+  is_hidden: Int
+  "隐藏"
+  is_hidden_lbl: String
 }
 input MenuSearch {
   "已删除"
@@ -153,6 +165,8 @@ input MenuSearch {
   route_path_like: String
   "启用"
   is_enabled: [Int!]
+  "隐藏"
+  is_hidden: [Int!]
   "仅当前租户"
   is_current_tenant: Int
   "创建人"

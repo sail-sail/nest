@@ -14,7 +14,7 @@ import type {
   Response,
 } from "@oak/oak";
 
-const requestIdMap = new Map<string, number>();
+const requestIdMap = new Map<string, NodeJS.Timeout>();
 const requestTimeoutSec = 60;
 const requestTimeout = requestTimeoutSec * 1000;
 

@@ -172,7 +172,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -213,7 +215,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         @click="onDeleteByIds"
@@ -269,7 +271,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -328,7 +332,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -340,7 +344,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -496,6 +500,7 @@
           
           <!-- 路由 -->
           <template v-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
+            <!-- @vue-generic {DynPageModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -505,6 +510,7 @@
           
           <!-- 名称 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {DynPageModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -514,6 +520,7 @@
           
           <!-- 父菜单 -->
           <template v-else-if="'parent_menu_id_lbl' === col.prop">
+            <!-- @vue-generic {DynPageModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -523,6 +530,7 @@
           
           <!-- 所属角色 -->
           <template v-else-if="'role_ids_lbl' === col.prop">
+            <!-- @vue-generic {DynPageModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -537,6 +545,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {DynPageModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -563,6 +572,7 @@
           
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <!-- @vue-generic {DynPageModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -579,6 +589,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {DynPageModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -588,6 +599,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {DynPageModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -597,6 +609,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {DynPageModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -606,6 +619,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {DynPageModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -615,6 +629,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {DynPageModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -706,7 +721,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -989,6 +1007,7 @@ function getTableColumns(): ColumnType[] {
       label: "路由",
       prop: "code",
       width: 140,
+      sortable: "custom",
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1089,7 +1108,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1103,6 +1122,30 @@ const {
     persistKey: __filename,
   },
 ));
+
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 const detailRef = $(useTemplateRef("detailRef"));
 
@@ -1178,8 +1221,8 @@ async function useFindCount(
 }
 
 const _defaultSort: Sort = {
-  prop: "order_by",
-  order: "ascending",
+  prop: "code",
+  order: "descending",
 };
 
 const defaultSort: Sort = $computed(() => {
@@ -1202,7 +1245,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<DynPageModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<DynPageModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1247,7 +1294,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1279,7 +1326,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1409,7 +1456,7 @@ async function stopImport() {
 }
 
 /** 启用 */
-async function onIs_enabled(id: DynPageId, is_enabled: 0 | 1) {
+async function onIs_enabled(id: DynPageId, is_enabled: number) {
   if (isLocked) {
     return;
   }
@@ -1438,7 +1485,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
+  if (!await permitAsync("edit")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1487,9 +1534,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: DynPageModel,
-  column: TableColumnCtx<DynPageModel>,
+  column: TableColumnCtx<DynPageModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1540,7 +1587,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1572,7 +1619,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1599,12 +1646,12 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1638,7 +1685,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1666,10 +1713,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1678,10 +1726,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

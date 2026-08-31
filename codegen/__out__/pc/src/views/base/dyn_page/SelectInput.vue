@@ -23,7 +23,7 @@
     :readonly-placeholder="props.placeholder"
     @update:model-value="inputValue = $event"
     @change="onInputChange"
-    @click="onInput('input')"
+    @click.stop="onInput('input')"
     @clear="onClear"
     @focus="onFocus"
     @blur="onBlur"
@@ -105,10 +105,11 @@
       label_readonly_1: props.labelReadonly,
       label_readonly_0: !props.labelReadonly,
       'select_input_isShowModelLabel': props.pageInited && !modelLabelRefreshing && hasModelLabel && modelLabel != inputValue,
+      'custom_select_placeholder': showReadonlyPlaceholder,
     }"
     v-bind="$attrs"
   >
-    {{ hasModelLabel ? modelLabel : inputValue }}
+    {{ !showReadonlyPlaceholder ? (hasModelLabel ? modelLabel : inputValue) : props.readonlyPlaceholder }}
   </div>
 </template>
 </template>
@@ -122,11 +123,10 @@ import SelectList from "./SelectList.vue";
 
 import {
   findByIdsDynPage,
-  getPagePathDynPage,
 } from "./Api.ts";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: DynPageId | DynPageId[]): void,
+  (e: "update:modelValue", value?: DynPageId | DynPageId[] | ""): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: DynPageModel | DynPageModel[]): void,
   (e: "clear"): void,
@@ -136,20 +136,20 @@ const {
   formItem,
 } = useFormItem();
 
-const pagePath = getPagePathDynPage();
-
 const props = withDefaults(
   defineProps<{
-    modelValue?: DynPageId | DynPageId[] | null;
+    modelValue?: DynPageId | DynPageId[] | null | "";
     modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;
     disabled?: boolean;
     readonly?: boolean;
+    readonlyPlaceholder?: string;
     labelReadonly?: boolean;
     selectListReadonly?: boolean;
     validateEvent?: boolean;
     pageInited?: boolean;
+    beforeSelect?: (ids: DynPageId[]) => Promise<boolean>;
   }>(),
   {
     modelValue: undefined,
@@ -158,10 +158,12 @@ const props = withDefaults(
     placeholder: undefined,
     disabled: false,
     readonly: false,
+    readonlyPlaceholder: undefined,
     labelReadonly: true,
     selectListReadonly: true,
     validateEvent: undefined,
     pageInited: false,
+    beforeSelect: undefined,
   },
 );
 
@@ -177,6 +179,10 @@ let hasModelLabel = $ref(false);
 let modelLabelRefreshing = $ref(false);
 
 let isInputChanging = false;
+
+const showReadonlyPlaceholder = $computed(() => {
+  return props.readonly && !(hasModelLabel ? modelLabel : inputValue);
+});
 
 watch(
   () => props.modelLabel,
@@ -310,7 +316,7 @@ async function refreshInputValue() {
 
 async function onClear(e?: PointerEvent) {
   e?.stopPropagation();
-  modelValue = undefined;
+  modelValue = "";
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
@@ -327,6 +333,7 @@ const selectListRef = $(useTemplateRef("selectListRef"));
 async function onInput(
   clickType: "input" | "icon",
 ) {
+  formItem?.clearValidate();
   if (!selectListRef) {
     return;
   }
@@ -338,6 +345,12 @@ async function onInput(
   }
   formItem?.clearValidate();
   const modelValueArr = getModelValueArr();
+  if (props.beforeSelect) {
+    const isContinue = await props.beforeSelect(modelValueArr);
+    if (isContinue === false) {
+      return;
+    }
+  }
   const {
     type,
     selectedIds,

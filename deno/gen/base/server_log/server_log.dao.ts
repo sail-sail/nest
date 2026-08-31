@@ -48,6 +48,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -281,7 +282,6 @@ export async function findAllServerLog(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
@@ -1285,12 +1285,7 @@ export async function updateByIdServerLog(
   const oldModel = await findByIdServerLog(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 系统日志 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();

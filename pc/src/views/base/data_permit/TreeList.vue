@@ -70,6 +70,9 @@
         @remove="onFindTree"
         @revert="onFindTree"
         @refresh="onFindTree"
+        @selected-ids-chg="emit('selectedIdsChg', $event)"
+        @row-enter="emit('rowEnter', $event)"
+        @row-dblclick="emit('rowDblclick', $event)"
         @before-search-reset="beforeSearchReset"
       ></List>
     </slot>
@@ -97,6 +100,12 @@ import type {
 defineOptions({
   name: "数据权限TreeList",
 });
+
+const emit = defineEmits<{
+  selectedIdsChg: [ DataPermitId[] ],
+  rowEnter: [ KeyboardEvent? ],
+  rowDblclick: [ DataPermitModel ],
+}>();
 
 const props = defineProps<{
   parent_id?: MenuId;

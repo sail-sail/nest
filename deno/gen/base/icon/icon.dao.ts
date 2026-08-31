@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  getCacheEnabled,
 } from "/lib/context.ts";
 
 import sqlstring from "sqlstring";
@@ -39,10 +40,6 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
-import {
-  deleteObject,
-} from "/lib/oss/oss.dao.ts";
-
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 
 import * as validators from "/lib/validators/mod.ts";
@@ -54,6 +51,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
+
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -73,9 +71,22 @@ import {
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
+  statObject,
+  getObject,
+  streamToString,
+  putObject,
+} from "/lib/oss/oss.dao.ts";
+
+import {
+  createHash,
+} from "node:crypto";
+
+import {
   getPagePathIcon,
   getTableNameIcon,
 } from "./icon.model.ts";
+
+const textEncoding = new TextEncoder();
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -258,8 +269,15 @@ export async function findCountIcon(
   }
   sql += ` group by t.id) t`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   interface Result {
     total: number,
@@ -382,14 +400,19 @@ export async function findAllIcon(
   }
   sql += `) f`;
   
-  // 分页
   if (page?.pgSize) {
     sql += ` limit ${ Number(page?.pgOffset) || 0 },${ Number(page.pgSize) }`;
   }
   
-  // 缓存
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
@@ -425,13 +448,15 @@ export async function findAllIcon(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    // svg
+    // 图标
+    let img_lbl = "";
     if (model.img) {
-      const obj = await getObject(model.img);
-      if (obj) {
-        model.img_lbl_svg = await streamToString(obj.body);
+      const res = await getObject(model.img);
+      if (res) {
+        img_lbl = await streamToString(res.body);
       }
     }
+    model.img_lbl = img_lbl;
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -1010,8 +1035,15 @@ export async function existByIdIcon(
   const args = new QueryArgs();
   const sql = `select 1 e from base_icon t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
-  const cacheKey1 = `dao.sql.${ table }`;
-  const cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  const cacheEnabled = getCacheEnabled();
+  
+  let cacheKey1 = "";
+  let cacheKey2 = "";
+  
+  if (cacheEnabled) {
+    cacheKey1 = `dao.sql.${ table }`;
+    cacheKey2 = await hash(JSON.stringify({ sql, args }));
+  }
   
   const queryOptions = {
     cacheKey1,
@@ -1066,13 +1098,6 @@ export async function validateIcon(
     input.id,
     22,
     fieldComments.id,
-  );
-  
-  // 图标
-  await validators.chars_max_length(
-    input.img,
-    22,
-    fieldComments.img,
   );
   
   // 编码
@@ -1288,6 +1313,38 @@ async function _creates(
   
   if (inputs.length === 0) {
     return [ ];
+  }
+  
+  // 设置图标
+  for (const input of inputs) {
+    // 图标
+    if (!input.img && input.img_lbl) {
+      const hash = createHash("sha256");
+      hash.update(input.img_lbl);
+      input.img = hash.digest("base64").substring(0, 22);
+      const stat = await statObject(input.img);
+      if (!stat) {
+        const contentType = input.img_lbl.substring(input.img_lbl.lastIndexOf("data:") + 5, input.img_lbl.indexOf(";"));
+        const buffer = textEncoding.encode(input.img_lbl);
+        const tenant_id = undefined;
+        const meta: {
+          filename?: string;
+          once?: string;
+          db?: string;
+          is_public: "0" | "1";
+          tenant_id?: string;
+        } = {
+          filename: input.img,
+          db: "base_icon.img",
+          is_public: "1",
+          tenant_id,
+        };
+        await putObject(input.img, buffer, {
+          contentType,
+          meta,
+        });
+      }
+    }
   }
   
   const table = getTableNameIcon();
@@ -1592,6 +1649,35 @@ export async function updateByIdIcon(
     throw new Error("updateByIdIcon: input cannot be null");
   }
   
+  // 图标
+  if (!input.img && input.img_lbl) {
+    const hash = createHash("sha256");
+    hash.update(input.img_lbl);
+    input.img = hash.digest("base64").substring(0, 22);
+    const stat = await statObject(input.img);
+    if (!stat) {
+      const contentType = input.img_lbl.substring(input.img_lbl.lastIndexOf("data:") + 5, input.img_lbl.indexOf(";"));
+      const buffer = textEncoding.encode(input.img_lbl);
+      const tenant_id = undefined;
+      const meta: {
+        filename?: string;
+        once?: string;
+        db?: string;
+        is_public: "0" | "1";
+        tenant_id?: string;
+      } = {
+        filename: input.img,
+        db: "base_icon.img",
+        is_public: "1",
+        tenant_id,
+      };
+      await putObject(input.img, buffer, {
+        contentType,
+        meta,
+      });
+    }
+  }
+  
   {
     const input2 = {
       ...input,
@@ -1611,12 +1697,7 @@ export async function updateByIdIcon(
   const oldModel = await findByIdIcon(id, options);
   
   if (!oldModel) {
-    throw new ServiceException(
-      "编辑失败, 此 图标库 已被删除",
-      "500",
-      true,
-      true,
-    );
+    return 0;
   }
   
   const args = new QueryArgs();
@@ -1754,13 +1835,6 @@ export async function updateByIdIcon(
   
   if (!is_silent_mode) {
     log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
-  }
-  
-  // 图标
-  if (input.img != null && input.img !== oldModel?.img) {
-    await deleteObject(
-      oldModel?.img,
-    );
   }
   
   return id;
@@ -2085,11 +2159,6 @@ export async function forceDeleteByIdsIcon(
     const sql = `delete from base_icon where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
-    
-    // 图标
-    await deleteObject(
-      oldModel?.img,
-    );
   }
   
   await delCacheIcon();

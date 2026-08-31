@@ -62,6 +62,7 @@
           <CustomSelect
             v-model="role_ids_search"
             :method="getListRole"
+            dirty-key="角色"
             :options-map="((item: RoleModel) => {
               return {
                 label: item.lbl,
@@ -104,6 +105,7 @@
           <CustomSelect
             v-model="org_ids_search"
             :method="getListOrg"
+            dirty-key="组织"
             :options-map="((item: OrgModel) => {
               return {
                 label: item.lbl,
@@ -235,7 +237,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -276,7 +280,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         @click="onDeleteByIds"
@@ -332,7 +336,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -407,7 +413,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -419,7 +425,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -575,6 +581,7 @@
           
           <!-- 头像 -->
           <template v-if="'img' === col.prop">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -591,6 +598,7 @@
           
           <!-- 名称 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -600,6 +608,7 @@
           
           <!-- 用户名 -->
           <template v-else-if="'username' === col.prop && (showBuildIn || builtInSearch?.username == null)">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -609,6 +618,7 @@
           
           <!-- 所属角色 -->
           <template v-else-if="'role_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.role_ids == null)">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -623,6 +633,7 @@
           
           <!-- 所属部门 -->
           <template v-else-if="'dept_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.dept_ids == null)">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -637,6 +648,7 @@
           
           <!-- 所属组织 -->
           <template v-else-if="'org_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.org_ids == null)">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -651,6 +663,7 @@
           
           <!-- 默认组织 -->
           <template v-else-if="'default_org_id_lbl' === col.prop && (showBuildIn || builtInSearch?.default_org_id == null)">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -660,6 +673,7 @@
           
           <!-- 类型 -->
           <template v-else-if="'type_lbl' === col.prop">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -667,8 +681,26 @@
             </el-table-column>
           </template>
           
+          <!-- 拒收消息 -->
+          <template v-else-if="'is_reject_msg_lbl' === col.prop">
+            <!-- @vue-generic {UsrModel} -->
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_reject_msg"
+                  @change="onIs_reject_msg(row.id, row.is_reject_msg)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -685,6 +717,7 @@
           
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -701,6 +734,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -726,7 +760,8 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop">
+          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -736,6 +771,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -745,6 +781,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -754,6 +791,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -763,6 +801,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {UsrModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -864,7 +903,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -906,6 +948,9 @@ const props = defineProps<{
   default_org_id?: string|string[]; // 默认组织
   default_org_id_lbl?: string; // 默认组织
   is_enabled?: string|string[]; // 启用
+  rem?: string; // 备注
+  rem_like?: string; // 备注
+  is_hidden?: string|string[]; // 隐藏
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -1201,7 +1246,6 @@ function getTableColumns(): ColumnType[] {
       width: 100,
       align: "center",
       headerAlign: "center",
-      fixed: "left",
     },
     {
       label: "名称",
@@ -1210,7 +1254,6 @@ function getTableColumns(): ColumnType[] {
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
-      fixed: "left",
     },
     {
       label: "用户名",
@@ -1265,6 +1308,15 @@ function getTableColumns(): ColumnType[] {
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
+    },
+    {
+      label: "拒收消息",
+      prop: "is_reject_msg_lbl",
+      sortBy: "is_reject_msg",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
     },
     {
       label: "锁定",
@@ -1343,7 +1395,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1357,6 +1409,30 @@ const {
     persistKey: __filename,
   },
 ));
+
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 
 const detailRef = $(useTemplateRef("detailRef"));
 
@@ -1456,7 +1532,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<UsrModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<UsrModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1501,7 +1581,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1533,7 +1613,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1606,6 +1686,7 @@ async function onImportExcel() {
     [ "所属组织" ]: "org_ids_lbl",
     [ "默认组织" ]: "default_org_id_lbl",
     [ "类型" ]: "type_lbl",
+    [ "拒收消息" ]: "is_reject_msg_lbl",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
@@ -1639,6 +1720,7 @@ async function onImportExcel() {
           "org_ids_lbl": "string[]",
           "default_org_id_lbl": "string",
           "type_lbl": "string",
+          "is_reject_msg_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
@@ -1672,8 +1754,32 @@ async function stopImport() {
   isImporting = false;
 }
 
+/** 拒收消息 */
+async function onIs_reject_msg(id: UsrId, is_reject_msg: number) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateByIdUsr(
+    id,
+    {
+      is_reject_msg,
+    },
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}
+
 /** 锁定 */
-async function onIs_locked(id: UsrId, is_locked: 0 | 1) {
+async function onIs_locked(id: UsrId, is_locked: number) {
   if (isLocked) {
     return;
   }
@@ -1695,7 +1801,7 @@ async function onIs_locked(id: UsrId, is_locked: 0 | 1) {
 }
 
 /** 启用 */
-async function onIs_enabled(id: UsrId, is_enabled: 0 | 1) {
+async function onIs_enabled(id: UsrId, is_enabled: number) {
   if (isLocked) {
     return;
   }
@@ -1724,7 +1830,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
+  if (!await permitAsync("edit")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1773,9 +1879,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: UsrModel,
-  column: TableColumnCtx<UsrModel>,
+  column: TableColumnCtx<UsrModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1826,7 +1932,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1858,7 +1964,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1885,12 +1991,12 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1919,12 +2025,12 @@ async function onEnableByIds(is_enabled: 0 | 1) {
 }
 
 /** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
+async function onLockByIds(is_locked: number) {
   tableFocus();
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1944,7 +2050,7 @@ async function onLockByIds(is_locked: 0 | 1) {
     if (is_locked === 1) {
       msg = `锁定 ${ num } 用户 成功`;
     } else {
-      msg = `解锋 ${ num } 用户 成功`;
+      msg = `解锁 ${ num } 用户 成功`;
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1958,7 +2064,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1986,10 +2092,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1998,10 +2105,11 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 

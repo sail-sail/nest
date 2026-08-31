@@ -195,8 +195,7 @@ defineExpose({
   - 次级说明文案优先使用 `un-text="3.5"` 或接近 `14px` 的大小
   - 分组标题、卡片标题通常控制在 `un-text="4.5"` 到 `un-text="5"`，除非是页面主标题，不要轻易使用 `un-text="6"` 及以上
 - 先根据信息层级控制字号，再决定字重；不要靠过大的字号去撑出“重点感”
-- 颜色优先使用 UnoCSS 标准色阶，例如 `gray-200`、`gray-400`、`gray-700`、`red-500`，尽量避免随手写零散十六进制颜色
-- 只有在品牌色、业务状态色、设计稿明确指定时，才使用自定义颜色，例如 `un-text="[#24324a]"`
+- 颜色优先使用 UnoCSS 标准色阶，例如 `gray-200`、`dark:gray-700`、`gray-400`、`dark:gray-500`、`gray-700`、`dark:gray-200`、`red-500`、`dark:gray-400`，尽量避免随手写零散十六进制颜色
 - 灰色文案优先从标准灰阶中选择：
   - 弱提示/分隔信息优先 `gray-400`
   - 常规次级文案优先 `gray-500` 或 `gray-600`
@@ -213,20 +212,20 @@ defineExpose({
 
 <!-- ✅ 更接近当前 uni 仓库的移动端字号基线 -->
 <view
-  un-text="5 gray-700"
-  un-font="700"
+  un-text="5 gray-700 dark:gray-200"
+  un-font="bold"
 >
   今日食堂菜单
 </view>
 
 <view
-  un-text="4 gray-700"
+  un-text="4 gray-700 dark:gray-200"
 >
   午餐 A: 红烧排骨 + 清炒时蔬 + 紫菜蛋花汤
 </view>
 
 <view
-  un-text="3.5 gray-500"
+  un-text="3.5 gray-500 dark:gray-400"
 >
   限时供应, 售完即止
 </view>
@@ -239,15 +238,14 @@ defineExpose({
 
 ```html
 <!-- ❌ 传统方式 -->
-<tm-button class="bg-blue-400 hover:bg-blue-500 text-sm text-white font-mono py-2 px-4 rounded border-2">
+<tm-button class="bg-blue-400 hover:bg-blue-500 text-3.5 text-white py-2 px-4 rounded border-2">
   Button
 </tm-button>
 
 <!-- ✅ Attributify -->
 <tm-button
   un-bg="blue-400 hover:blue-500"
-  un-text="sm white"
-  un-font="mono"
+  un-text="3.5 white"
   un-p="y-2 x-4"
   un-border="2 rounded"
 >
@@ -296,7 +294,7 @@ defineExpose({
 
 ```typescript
 // 如 dayjs、ref、computed 等
-const now = dayjs().format('YYYY-MM-DD');
+const now = dayjs().format("YYYY-MM-DD");
 ```
 
 ### uni 中的 API 也可直接使用, 在 `src/typings/uni.d.ts` 中定义:
@@ -311,6 +309,8 @@ const res = await uni.navigateTo({
 `src/typings/components2.d.ts` 中的组件可直接在模板中使用：
 
 ```vue
-<tm-button>Click Me</tm-button>
+<tm-button>
+  Click Me
+</tm-button>
 ```
 

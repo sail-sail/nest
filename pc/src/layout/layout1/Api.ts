@@ -24,11 +24,31 @@ export type MenuModel = MenuModel0 & {
   _isShow?: boolean;
 }
 
+const usrStore = useUsrStore();
+
 function treeMenusUrl(children: MenuModel[]) {
   for (let i = 0; i < children.length; i++) {
     const item = children[i];
-    if (item.route_path && (item.route_path.startsWith("http://") || item.route_path.startsWith("https://"))) {
-      const path = item.route_path;
+    if (item.route_path && item.route_path.startsWith("{iframe}")) {
+      let path = item.route_path.substring("{iframe}".length);
+      const route_query = item.route_query;
+      if (route_query) {
+        try {
+          const queryObj = JSON.parse(route_query);
+          const queryStr = Object.keys(queryObj).map((key) => {
+            let value = (queryObj[key] || "") as string;
+            if (value === "{authorization}") {
+              value = usrStore.authorization;
+            }
+            return `${ encodeURIComponent(key) }=${ encodeURIComponent(value) }`;
+          }).join("&");
+          if (queryStr) {
+            path += (path.includes("?") ? "&" : "?") + queryStr;
+          }
+        } catch (e) {
+          console.error("菜单路由参数解析错误:", e);
+        }
+      }
       item.oldRoute_path = path;
       item.route_path = `/myiframe?name=${ encodeURIComponent(item.lbl) }&src=${ encodeURIComponent(path) }`;
     }
@@ -94,7 +114,7 @@ export async function getMenus(
             name,
             component: async () => {
               const com = await import("@/views/base/dyn_page_data/List.vue");
-              com.default.name = name;
+              (com.default as any).name = name;
               return com;
             },
             props: (route) => {
@@ -197,22 +217,43 @@ export async function getLoginInfo(
 
 /** 获取当前用户的权限列表 */
 export async function getUsrPermits(
+  route_pathOrOpt?: string | GqlOpt,
   opt?: GqlOpt,
 ) {
+  const route_path = typeof route_pathOrOpt === "string" ? route_pathOrOpt : undefined;
+  const gqlOpt = typeof route_pathOrOpt === "string" ? opt : route_pathOrOpt;
   const res: {
     getUsrPermits: Query["getUsrPermits"],
   } = await query({
     query: /* GraphQL */ `
-      query {
-        getUsrPermits {
+      query($route_path: SmolStr) {
+        getUsrPermits(route_path: $route_path) {
           route_path
           code
         }
       }
     `,
-  }, opt);
+    variables: route_path ? {
+      route_path,
+    } : undefined,
+  }, gqlOpt);
   const data = res.getUsrPermits;
   return data;
+}
+
+export async function getMyUnreadMessageCount(
+  opt?: GqlOpt,
+) {
+  const res: {
+    getMyUnreadMessageCount: number;
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        getMyUnreadMessageCount
+      }
+    `,
+  }, opt);
+  return res.getMyUnreadMessageCount || 0;
 }
 
 export async function deptLoginSelect(

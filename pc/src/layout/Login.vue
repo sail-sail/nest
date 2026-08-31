@@ -36,6 +36,10 @@
           style="width: 100%;"
           filterable
           default-first-option
+          :placeholder="`${ ns('请选择') } ${ n('租户') }`"
+          :input-style="inputStyle"
+          clearable
+          :popper-style="{ zIndex: 10000 }"
         >
           <template #prefix>
             <el-icon>
@@ -107,7 +111,7 @@
 <script lang="ts" setup>
 import {
   lang,
-} from "@/locales/index";
+} from "@/locales/index.ts";
 
 import {
   User,
@@ -119,16 +123,17 @@ import {
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
   clearCache,
   getLoginTenantByIds,
-} from "./Api";
+} from "./Api.ts";
 
 import type {
   LoginModel,
   MutationLoginArgs,
-} from "#/types";
+} from "#/types.ts";
 
 const router = useRouter();
 
 const usrStore = useUsrStore();
+const permitStore = usePermitStore();
 const indexStore = useIndexStore();
 const tabsStore = useTabsStore();
 
@@ -321,10 +326,9 @@ async function onLogin() {
   usrStore.username = loginModel.username;
   usrStore.tenant_id = loginModel.tenant_id;
   usrStore.lang = loginModel.lang ?? "";
+  permitStore.clear();
   tabsStore.clearKeepAliveNames();
-  await Promise.all([
-    indexStore.initI18nVersion(),
-  ]);
+  await indexStore.initI18nVersion();
   if (old_username !== model.username || old_tenant_id !== model.tenant_id) {
     tabsStore.tabs = [ ];
     location.href = location.pathname;

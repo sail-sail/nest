@@ -36,6 +36,7 @@
           <CustomSelect
             v-model="dict_id_search"
             :method="getListDict"
+            dirty-key="系统字典"
             :options-map="((item: DictModel) => {
               return {
                 label: item.lbl,
@@ -193,7 +194,9 @@
   </div>
   <div
     un-m="x-1.5 t-1.5"
-    un-flex="~ nowrap"
+    un-flex="~ wrap"
+    un-items-center
+    un-gap="y-2"
   >
     <template v-if="search.is_deleted !== 1">
       
@@ -234,7 +237,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="permit('delete', '删除') && !isLocked"
         plain
         type="danger"
         :disabled="selectedIds.length === 0 || selectedIds.map((item) => tableData.find((item2) => item2.id === item)).some((item) => item?.is_sys === 1)"
@@ -291,7 +294,9 @@
           >
             更多操作
           </span>
-          <el-icon>
+          <el-icon
+            un-m="l-1"
+          >
             <ElIconArrowDown />
           </el-icon>
         </el-button>
@@ -350,7 +355,7 @@
     <template v-else>
       
       <el-button
-        v-if="dict_model && dict_model.is_add && permit('delete') && !isLocked"
+        v-if="dict_model && dict_model.is_add && permit('delete', '删除') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -362,7 +367,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('force_delete') && !isLocked"
+        v-if="permit('force_delete', '彻底删除') && !isLocked"
         plain
         type="danger"
         @click="onForceDeleteByIds"
@@ -518,6 +523,7 @@
           
           <!-- 系统字典 -->
           <template v-if="'dict_id_lbl' === col.prop && (showBuildIn || builtInSearch?.dict_id == null)">
+            <!-- @vue-generic {DictDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -527,6 +533,7 @@
           
           <!-- 名称 -->
           <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <!-- @vue-generic {DictDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -536,6 +543,7 @@
           
           <!-- 值 -->
           <template v-else-if="'val' === col.prop && (showBuildIn || builtInSearch?.val == null)">
+            <!-- @vue-generic {DictDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -545,6 +553,7 @@
           
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <!-- @vue-generic {DictDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -554,6 +563,7 @@
           
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
+            <!-- @vue-generic {DictDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -580,6 +590,7 @@
           
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
+            <!-- @vue-generic {DictDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -589,6 +600,7 @@
           
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
+            <!-- @vue-generic {DictDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -598,6 +610,7 @@
           
           <!-- 创建时间 -->
           <template v-else-if="'create_time_lbl' === col.prop">
+            <!-- @vue-generic {DictDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -607,6 +620,7 @@
           
           <!-- 更新人 -->
           <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
+            <!-- @vue-generic {DictDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -616,6 +630,7 @@
           
           <!-- 更新时间 -->
           <template v-else-if="'update_time_lbl' === col.prop">
+            <!-- @vue-generic {DictDetailModel} -->
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -715,7 +730,10 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
+const {
+  permit,
+  permitAsync,
+} = permitStore.getPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1099,7 +1117,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列 */
 const {
@@ -1114,7 +1132,33 @@ const {
   },
 ));
 
+watch(
+  () => [
+    showBuildIn,
+    builtInSearch,
+  ],
+  () => {
+    if (showBuildIn) {
+      tableColumns = getTableColumns();
+      return;
+    }
+    const keys = Object.keys(builtInSearch);
+    for (const col of tableColumns) {
+      if ((col.prop && keys.includes(col.prop)) || (col.sortBy && keys.includes(col.sortBy))) {
+        col.hide = true;
+        col.forceHide = true;
+      }
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
+
 const detailRef = $(useTemplateRef("detailRef"));
+
+let dict_model = $ref<DictModel>();
 
 /** 刷新表格 */
 async function dataGrid(
@@ -1123,6 +1167,15 @@ async function dataGrid(
 ) {
   clearDirty();
   const search = getDataSearch();
+  const dict_id = search.dict_id?.[0];
+  if (dict_id) {
+    dict_model = await findOneDict({
+      id: dict_id,
+      is_deleted: search.is_deleted,
+    });
+  } else {
+    dict_model = undefined;
+  }
   if (isCount) {
     await Promise.all([
       useFindAll(search, opt),
@@ -1212,7 +1265,11 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<DictDetailModel> } & Sort,
+  { prop, order, column }: {
+    column: TableColumnCtx<DictDetailModel>;
+    prop: string | null;
+    order: TableSortOrder | null;
+  },
 ) {
   if (!order) {
     sort = {
@@ -1257,7 +1314,7 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1289,7 +1346,7 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
+  if (!await permitAsync("add")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1424,7 +1481,7 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
+  if (!await permitAsync("edit")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1473,9 +1530,9 @@ async function onRowEnter(e: KeyboardEvent) {
 /** 双击行 */
 async function onRowDblclick(
   row: DictDetailModel,
-  column: TableColumnCtx<DictDetailModel>,
+  column: TableColumnCtx<DictDetailModel> | null,
 ) {
-  if (column.type === "selection") {
+  if (column?.type === "selection") {
     return;
   }
   if (isListSelectDialog) {
@@ -1526,7 +1583,7 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
+  if (!await permitAsync("delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1558,7 +1615,7 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("force_delete")) {
+  if (!await permitAsync("force_delete")) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1585,12 +1642,12 @@ async function onForceDeleteByIds() {
 }
 
 /** 点击启用或者禁用 */
-async function onEnableByIds(is_enabled: 0 | 1) {
+async function onEnableByIds(is_enabled: number) {
   tableFocus();
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
+  if (await permitAsync("edit") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1624,7 +1681,7 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
+  if (await permitAsync("delete") === false) {
     ElMessage.warning("无权限");
     return;
   }
@@ -1652,10 +1709,11 @@ async function onRevertByIds() {
 }
 
 async function focus() {
-  if (!inited || !tableRef || !tableRef.$el) {
+  const tableWrapper = tableRef?.context?.refs.tableWrapper
+  if (!inited || !tableWrapper) {
     return;
   }
-  tableRef.$el.focus();
+  tableWrapper.focus();
 }
 
 watch(
@@ -1664,31 +1722,17 @@ watch(
     inited,
   ],
   () => {
-    if (!inited || !isFocus || !tableRef || !tableRef.$el) {
+    const tableWrapper = tableRef?.context?.refs.tableWrapper
+    if (!inited || !isFocus || !tableWrapper) {
       return;
     }
-    tableRef.$el.focus();
+    tableWrapper.focus();
   },
 );
 
-let dict_model = $ref<DictModel>();
-
-const dict_id = $computed(() => {
-  return search.dict_id as unknown as DictId | undefined;
-});
-
 async function initFrame() {
   initColumns(tableColumns);
-  [
-    ,
-    dict_model,
-  ] = await Promise.all([
-    dataGrid(true),
-    findOneDict({
-      id: dict_id,
-      is_deleted: search.is_deleted,
-    }),
-  ]);
+  await dataGrid(true);
   inited = true;
 }
 

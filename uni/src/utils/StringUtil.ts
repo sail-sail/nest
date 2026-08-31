@@ -36,12 +36,12 @@ export function uuid() {
 }
 
 /**
- * Parse a query string into an object.
+ * Parse a queryStr string into an object.
  */
-function parseQuery(query: string): Record<string, string> {
+function parseQuery(queryStr: string): Record<string, string> {
   const result: Record<string, string> = { };
-  if (query) {
-    const pairs = query.split("&");
+  if (queryStr) {
+    const pairs = queryStr.split("&");
     for (const pair of pairs) {
       const [ key, value ] = pair.split("=");
       result[key] = value;

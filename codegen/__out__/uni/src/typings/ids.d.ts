@@ -67,6 +67,14 @@ declare const menuId: unique symbol;
 /** 菜单 */
 type MenuId = Distinct<string, typeof menuId>;
 
+declare const messageId: unique symbol;
+/** 消息 */
+type MessageId = Distinct<string, typeof messageId>;
+
+declare const message_receiverId: unique symbol;
+/** 消息接收人 */
+type MessageReceiverId = Distinct<string, typeof message_receiverId>;
+
 declare const operation_recordId: unique symbol;
 /** 操作记录 */
 type OperationRecordId = Distinct<string, typeof operation_recordId>;
