@@ -8244,6 +8244,7 @@ pub async fn update_by_id_<#=table#>(
   }<#
   }
   #><#
+  if (false) {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -8275,6 +8276,8 @@ pub async fn update_by_id_<#=table#>(
       );
     }
   }<#
+  }
+  #><#
   }
   #>
   
@@ -8864,7 +8867,7 @@ pub async fn delete_by_ids_<#=table#>(
     #><#
     }
     #><#
-    if (!hasIsDeleted) {
+    if (false && !hasIsDeleted) {
     #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -9860,6 +9863,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     #><#
     }
     #><#
+    if (false) {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -9876,6 +9880,8 @@ pub async fn force_delete_by_ids_<#=table#>(
     crate::common::oss::oss_dao::delete_object(
       old_model.<#=column_name#>.as_str(),
     ).await?;<#
+    }
+    #><#
     }
     #>
   }<#

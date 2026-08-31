@@ -1386,7 +1386,7 @@ pub async fn audit_reject_<#=table#>(
   let receiver_usr_ids = vec![old_model.create_usr_id];
   
   let next_message = MessageInput {
-    title: Some(format!("<#=table_comment#>已被拒绝").into()),
+    title: Some("<#=table_comment#>已被拒绝".into()),
     content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被拒绝，请重新提交审核").into()),
     route_path: Some(get_page_path_<#=table#>().into()),
     route_query: Some(format!("id={<#=table#>_id}").into()),
