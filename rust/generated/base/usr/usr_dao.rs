@@ -3647,20 +3647,6 @@ pub async fn update_by_id_usr(
     ).await?;
   }
   
-  // 头像
-  if let Some(img) = input.img.as_ref() && img != &old_model.img {
-    let res = crate::common::oss::oss_dao::delete_object(
-      old_model.img.as_str(),
-    ).await;
-    if let Err(err) = res {
-      info!(
-        "{} {table}.{method}: 删除对象失败, img: {}, err: {err}",
-        get_req_id(),
-        old_model.img,
-      );
-    }
-  }
-  
   Ok(id)
 }
 
@@ -4460,11 +4446,6 @@ pub async fn force_delete_by_ids_usr(
         options,
       ).await?;
     }
-    
-    // 头像
-    crate::common::oss::oss_dao::delete_object(
-      old_model.img.as_str(),
-    ).await?;
   }
   
   del_cache_usr().await?;

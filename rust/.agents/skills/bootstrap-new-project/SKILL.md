@@ -1,6 +1,6 @@
 ---
 name: bootstrap-new-project
-description: 从 rust4wx（或其他上游分支）拉新分支启动新项目时，执行全仓库改名与环境配置。涉及 rust/ 与 codegen/ 两侧多处联动修改时使用。
+description: 新分支启动新项目时，执行全仓库改名与环境配置。
 metadata:
   version: "1.0"
 ---

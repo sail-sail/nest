@@ -71,6 +71,9 @@
         @remove="onFindTree"
         @revert="onFindTree"
         @refresh="onFindTree"
+        @selected-ids-chg="emit('selectedIdsChg', $event)"
+        @row-enter="emit('rowEnter', $event)"
+        @row-dblclick="emit('rowDblclick', $event)"
         @before-search-reset="beforeSearchReset"
       ></List>
     </slot>
@@ -94,6 +97,12 @@ import type {
 defineOptions({
   name: "部门TreeList",
 });
+
+const emit = defineEmits<{
+  selectedIdsChg: [ DeptId[] ],
+  rowEnter: [ KeyboardEvent? ],
+  rowDblclick: [ DeptModel ],
+}>();
 
 const props = defineProps<{
   parent_id?: DeptId;

@@ -203,6 +203,8 @@ pub async fn login(
   }
   let usr_model = usr_model.unwrap();
   
+  // dbg!(get_password(password.clone())?);
+  
   if usr_model.password != get_password(password)? {
     
     #[cfg(not(debug_assertions))]

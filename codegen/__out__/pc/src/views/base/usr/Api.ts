@@ -30,10 +30,18 @@ export async function setLblByIdUsr(
   
   // 头像
   if (model.img) {
-    model.img_lbl = location.origin + getImgUrl({
-      id: model.img,
-      height: 100,
-    });
+    const img_lbls: string[] = [ ];
+    const imgs = model.img.split(",");
+    for (let i = 0; i < imgs.length; i++) {
+      const img = imgs[i];
+      const img_lbl = location.origin + location.pathname + getImgUrl({
+        id: img,
+        height: 100,
+      }) || "";
+      img_lbls.push(img_lbl);
+    }
+    model.img_lbls = img_lbls;
+    model.img_lbl = img_lbls[0] || "";
   }
 }
 

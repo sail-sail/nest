@@ -19,6 +19,8 @@ use base64::{engine::general_purpose, Engine};
 
 use smol_str::SmolStr;
 
+use crate::common::exceptions::service_exception::ServiceException;
+
 static JWT_ENCODING_KEY: LazyLock<EncodingKey> =
   LazyLock::new(|| EncodingKey::from_secret(SECRET_KEY.as_bytes()));
 
@@ -43,7 +45,10 @@ pub fn get_auth_model_by_token(
     token,
     &JWT_DECODING_KEY,
     &JWT_VALIDATION,
-  ).map_err(|e| eyre!("token解析失败: {e}"))?;
+  ).map_err(|e| eyre!(ServiceException {
+    message: format!("token解析失败: {e}").into(),
+    ..Default::default()
+  }))?;
   let auth_model = decoded.claims;
   Ok(auth_model)
 }
