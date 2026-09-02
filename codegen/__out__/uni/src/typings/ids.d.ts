@@ -110,3 +110,7 @@ type TenantId = Distinct<string, typeof tenantId>;
 declare const usrId: unique symbol;
 /** 用户 */
 type UsrId = Distinct<string, typeof usrId>;
+
+declare const tsdb_appId: unique symbol;
+/** 时序数据库 */
+type TsdbAppId = Distinct<string, typeof tsdb_appId>;

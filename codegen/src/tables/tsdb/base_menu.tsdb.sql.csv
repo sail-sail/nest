@@ -1,0 +1,3 @@
+id,parent_id,lbl,route_path,is_home_hide,is_enabled,is_hidden,order_by
+AaBfrguSdn67SGwp+tbgMw,,时序数据库,,0,1,0,90000
+AaBfrguTdRqz3K93pUxjbg,AaBfrguSdn67SGwp+tbgMw,数据库配置,/tsdb/tsdb_app,0,1,0,90001

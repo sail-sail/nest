@@ -1,0 +1,5 @@
+id,dict_id,_dict_lbl,lbl,val,order_by,is_sys
+AaBfoiasdoS3j2NsI+7/HA,AaBfoMmSd42Ba/RXyXfiPQ,时序数据库-类型,influxdb3,influxdb3,1,1
+,,,,,,
+AaBfo8kmcSai2Wrs1XkTJg,AaBfoyRIdOqbWhWZ4sAerg,时序数据库-协议,https,https,1,1
+AaBfo8kndaugpU9vHjC9PA,AaBfoyRIdOqbWhWZ4sAerg,,http,http,2,1

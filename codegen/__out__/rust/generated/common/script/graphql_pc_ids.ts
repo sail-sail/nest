@@ -170,6 +170,12 @@ export function getScalars() {
       "output": "UsrId",
     },
     
+    // 时序数据库
+    "TsdbAppId": {
+      "input": "TsdbAppId",
+      "output": "TsdbAppId",
+    },
+    
   };
   return scalars;
 }

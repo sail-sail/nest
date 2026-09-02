@@ -416,4 +416,19 @@ export const routesGen: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/tsdb/tsdb_app",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "时序数据库",
+        component: () => import("@/views/tsdb/tsdb_app/List.vue"),
+        props: (route) => route.query,
+        meta: {
+          name: "时序数据库",
+        },
+      },
+    ],
+  },
 ];

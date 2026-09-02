@@ -1,0 +1,3 @@
+id,code,lbl,type,order_by,is_sys,is_add
+AaBfoMmSd42Ba/RXyXfiPQ,tsdb_tsdb_app_type,时序数据库-类型,string,1,1,0
+AaBfoyRIdOqbWhWZ4sAerg,tsdb_tsdb_app_protocol,时序数据库-协议,string,2,1,0

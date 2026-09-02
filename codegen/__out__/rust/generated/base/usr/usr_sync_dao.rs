@@ -168,6 +168,11 @@ pub async fn sync_usr_lbl_by_usr_id(
       usr_id,
       options,
     )),
+    
+    Box::pin(crate::tsdb::tsdb_app::tsdb_app_dao::sync_usr_lbl_by_usr_id_tsdb_app(
+      usr_id,
+      options,
+    )),
   ];
 
   let results = futures::future::try_join_all(futures).await?;

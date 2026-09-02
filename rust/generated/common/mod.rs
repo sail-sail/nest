@@ -26,6 +26,7 @@ pub mod field_permit;
 pub mod optbiz;
 pub mod org;
 pub mod id;
+pub mod tsdb;
 
 use async_graphql::MergedObject;
 
