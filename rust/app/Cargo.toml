@@ -79,6 +79,7 @@ calamine.workspace = true
 wecom-crypto.workspace = true
 
 generated = { path = "../generated" }
+rust_macros = { path = "../rust-macros" }
 
 [lib]
 path = "lib.rs"

@@ -28,6 +28,7 @@ use std::env;
 use async_graphql::{
   EmptySubscription, Schema,
 };
+use rust_macros::wrap_agql_schema_build;
 use poem::{
   get, post,
   listener::TcpListener,
@@ -518,12 +519,14 @@ async fn async_main() -> Result<(), std::io::Error> {
     }
   });
   
-  let schema: app::QuerySchema = Schema::build(
-    app::Query::default(),
-    app::Mutation::default(),
-    EmptySubscription
-  )
-    .finish();
+  let schema: app::QuerySchema = wrap_agql_schema_build! {
+    Schema::build(
+      app::Query::default(),
+      app::Mutation::default(),
+      EmptySubscription
+    )
+      .finish()
+  };
   
   #[cfg(debug_assertions)]
   {

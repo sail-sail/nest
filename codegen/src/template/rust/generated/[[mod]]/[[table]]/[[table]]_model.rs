@@ -3628,7 +3628,7 @@ pub async fn field_permit_input_<#=table#>(
   #>
   
   // <#=column_comment#>
-  if !fields.contains("<#=column_name#>") {<#
+  if !fields.contains(&String::from("<#=column_name#>")) {<#
     if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
     ) {
@@ -3739,7 +3739,7 @@ pub async fn field_permit_model_<#=table#>(
   #>
   
   // <#=column_comment#>
-  if !fields.contains("<#=column_name#>") {<#
+  if !fields.contains(&String::from("<#=column_name#>")) {<#
     if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
     ) {
