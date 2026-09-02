@@ -17,8 +17,6 @@ use super::auth_model::{AuthModel, SECRET_KEY};
 
 use base64::{engine::general_purpose, Engine};
 
-use smol_str::SmolStr;
-
 use crate::common::exceptions::service_exception::ServiceException;
 
 static JWT_ENCODING_KEY: LazyLock<EncodingKey> =
@@ -46,7 +44,7 @@ pub fn get_auth_model_by_token(
     &JWT_DECODING_KEY,
     &JWT_VALIDATION,
   ).map_err(|e| eyre!(ServiceException {
-    message: format!("token解析失败: {e}").into(),
+    message: format!("token解析失败: {e}"),
     ..Default::default()
   }))?;
   let auth_model = decoded.claims;
@@ -55,7 +53,7 @@ pub fn get_auth_model_by_token(
 
 pub fn get_token_by_auth_model(
   auth_model: &AuthModel,
-) -> Result<SmolStr> {
+)-> Result<String> {
   if auth_model.exp <= 0 {
     return Err(eyre!("token过期时间不能为空"));
   }
@@ -63,10 +61,10 @@ pub fn get_token_by_auth_model(
     &Header::default(),
     auth_model,
     &JWT_ENCODING_KEY,
-  )?.into())
+  )?)
 }
 
-pub fn get_password(str: SmolStr) -> Result<SmolStr> {
+pub fn get_password(str: String) -> Result<String> {
   let secret = SECRET_KEY.as_str();
   let str = {
     let mut hasher = sha2::Sha256::new();
@@ -139,7 +137,7 @@ mod test {
   
   #[test]
   fn test_get_password() {
-    let str = get_password("a".into()).unwrap();
+    let str = get_password("a".to_string()).unwrap();
     assert!(str == "RoZMvtNCRmGuZCdQ2FoRdhfYFQ0GBNu/JDaKdRx5o7A");
   }
   

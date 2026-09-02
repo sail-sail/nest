@@ -4,7 +4,6 @@ use async_graphql::{
   Enum,
 };
 use serde::{Deserialize, Serialize};
-use smol_str::SmolStr;
 
 #[derive(SimpleObject, InputObject, Copy, Clone, Deserialize, Serialize)]
 pub struct PageInput {
@@ -42,7 +41,7 @@ impl std::fmt::Debug for PageInput {
 #[derive(SimpleObject, InputObject, Clone, Debug, Serialize, Deserialize)]
 pub struct SortInput {
   #[graphql(default)]
-  pub prop: SmolStr,
+  pub prop: String,
   #[graphql(default)]
   pub order: SortOrderEnum,
 }
@@ -87,6 +86,6 @@ pub enum UniqueType {
 }
 
 #[derive(Clone, Debug)]
-pub struct Ip(pub SmolStr);
+pub struct Ip(pub String);
 
 pub use crate::common::gql::json_object::JSONObject;

@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -250,8 +247,8 @@ pub async fn update_by_id_field_permit(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_field_permit()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_field_permit()),
+    String::from("edit"),
   ).await?;
   
   let res = field_permit_service::update_by_id_field_permit(

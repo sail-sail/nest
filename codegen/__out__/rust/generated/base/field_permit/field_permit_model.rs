@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -56,19 +53,19 @@ pub struct FieldPermitModel {
   pub menu_id: MenuId,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: SmolStr,
+  pub menu_id_lbl: String,
   /// 编码
   #[graphql(name = "code")]
-  pub code: SmolStr,
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
 }
 
 impl FromRow<'_, MySqlRow> for FieldPermitModel {
@@ -80,18 +77,15 @@ impl FromRow<'_, MySqlRow> for FieldPermitModel {
     // 菜单
     let menu_id: MenuId = row.try_get("menu_id")?;
     let menu_id_lbl: Option<&str> = row.try_get("menu_id_lbl")?;
-    let menu_id_lbl = SmolStr::new(menu_id_lbl.unwrap_or_default());
+    let menu_id_lbl = String::from(menu_id_lbl.unwrap_or_default());
     // 编码
-    let code: &str = row.try_get("code")?;
-    let code = SmolStr::new(code);
+    let code: String = row.try_get("code")?;
     // 名称
-    let lbl: &str = row.try_get("lbl")?;
-    let lbl = SmolStr::new(lbl);
+    let lbl: String = row.try_get("lbl")?;
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
-    let rem: &str = row.try_get("rem")?;
-    let rem = SmolStr::new(rem);
+    let rem: String = row.try_get("rem")?;
     
     let model = Self {
       is_sys,
@@ -114,25 +108,25 @@ impl FromRow<'_, MySqlRow> for FieldPermitModel {
 pub struct FieldPermitFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 菜单
   #[graphql(name = "menu_id")]
-  pub menu_id: SmolStr,
+  pub menu_id: String,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: SmolStr,
+  pub menu_id_lbl: String,
   /// 编码
   #[graphql(name = "code")]
-  pub code: SmolStr,
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: SmolStr,
+  pub order_by: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -151,31 +145,31 @@ pub struct FieldPermitSearch {
   pub menu_id_is_null: Option<bool>,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: Option<Vec<SmolStr>>,
+  pub menu_id_lbl: Option<Vec<String>>,
   /// 菜单
   #[graphql(name = "menu_id_lbl_like")]
-  pub menu_id_lbl_like: Option<SmolStr>,
+  pub menu_id_lbl_like: Option<String>,
   /// 编码
   #[graphql(name = "code")]
-  pub code: Option<SmolStr>,
+  pub code: Option<String>,
   /// 编码
   #[graphql(name = "code_like")]
-  pub code_like: Option<SmolStr>,
+  pub code_like: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<SmolStr>,
+  pub lbl_like: Option<String>,
   /// 排序
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<SmolStr>,
+  pub rem_like: Option<String>,
 }
 
 impl std::fmt::Debug for FieldPermitSearch {
@@ -242,19 +236,19 @@ pub struct FieldPermitInput {
   pub menu_id: Option<MenuId>,
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
-  pub menu_id_lbl: Option<SmolStr>,
+  pub menu_id_lbl: Option<String>,
   /// 编码
   #[graphql(name = "code")]
-  pub code: Option<SmolStr>,
+  pub code: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
 }
 
 impl std::fmt::Debug for FieldPermitInput {
@@ -351,7 +345,7 @@ pub fn check_sort_field_permit(
     }
     if !get_can_sort_in_api_field_permit.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_field_permit: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_field_permit: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

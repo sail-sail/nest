@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -79,14 +76,14 @@ async fn get_where_query(
     if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -99,14 +96,14 @@ async fn get_where_query(
     if let Some(menu_id) = search.and_then(|item| item.menu_id.as_deref()) {
       let arg = {
         if menu_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(menu_id.len());
           for item in menu_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.menu_id in (");
@@ -124,21 +121,21 @@ async fn get_where_query(
     }
   }
   {
-    let menu_id_lbl: Option<Vec<SmolStr>> = match search {
+    let menu_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.menu_id_lbl.clone(),
       None => None,
     };
     if let Some(menu_id_lbl) = menu_id_lbl {
       let arg = {
         if menu_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(menu_id_lbl.len());
           for item in menu_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and menu_id_lbl.lbl in (");
@@ -391,7 +388,7 @@ pub async fn find_all_permit(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -693,7 +690,7 @@ pub async fn find_by_id_ok_permit(
   ).await?;
   
   let Some(permit_model) = permit_model else {
-    let err_msg = SmolStr::new("此 按钮权限 已被删除");
+    let err_msg = String::from("此 按钮权限 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -805,7 +802,7 @@ pub async fn find_by_ids_ok_permit(
   ).await?;
   
   if permit_models.len() != len {
-    let err_msg = SmolStr::new("此 按钮权限 已被删除");
+    let err_msg = String::from("此 按钮权限 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -818,7 +815,7 @@ pub async fn find_by_ids_ok_permit(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 按钮权限 已经被删除");
+      let err_msg = String::from("此 按钮权限 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<PermitModel>>>()?;
@@ -1229,7 +1226,7 @@ pub async fn set_id_by_lbl_permit(
     && input.menu_id.is_none()
   {
     input.menu_id_lbl = input.menu_id_lbl.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );
     let model = crate::base::menu::menu_dao::find_one_menu(
       crate::base::menu::menu_model::MenuSearch {
@@ -1795,9 +1792,9 @@ pub async fn del_cache_permit() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      SmolStr::new(format!("dao.sql.{x}"))
+      format!("dao.sql.{x}")
     )
-    .collect::<Vec<SmolStr>>();
+    .collect::<Vec<String>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -2020,7 +2017,7 @@ pub async fn validate_option_permit(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("按钮权限不存在");
+      let err_msg = String::from("按钮权限不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),

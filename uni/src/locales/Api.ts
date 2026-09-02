@@ -15,7 +15,7 @@ export async function n0(
     n: Query["n"];
   } = await query({
     query: /* GraphQL */ `
-      query($langCode: SmolStr!, $routePath: SmolStr, $code: SmolStr!) {
+      query($langCode: String!, $routePath: String, $code: String!) {
         n(langCode: $langCode, routePath: $routePath, code: $code)
       }
     `,

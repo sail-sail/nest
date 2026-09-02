@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -88,14 +85,14 @@ async fn get_where_query(
     if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -150,14 +147,14 @@ async fn get_where_query(
     if let Some(is_locked) = is_locked {
       let arg = {
         if is_locked.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_locked.len());
           for item in is_locked {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_locked in (");
@@ -174,14 +171,14 @@ async fn get_where_query(
     if let Some(is_enabled) = is_enabled {
       let arg = {
         if is_enabled.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_enabled.len());
           for item in is_enabled {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_enabled in (");
@@ -230,14 +227,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -255,21 +252,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let create_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -311,14 +308,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -336,21 +333,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let update_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -587,7 +584,7 @@ pub async fn find_all_domain(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -614,7 +611,7 @@ pub async fn find_all_domain(
         .iter()
         .find(|item| item.val == model.is_locked.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string().into())
+        .unwrap_or_else(|| model.is_locked.to_string())
     };
     
     // 启用
@@ -623,7 +620,7 @@ pub async fn find_all_domain(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string().into())
+        .unwrap_or_else(|| model.is_enabled.to_string())
     };
     
   }
@@ -970,7 +967,7 @@ pub async fn find_by_id_ok_domain(
   ).await?;
   
   let Some(domain_model) = domain_model else {
-    let err_msg = SmolStr::new("此 域名 已被删除");
+    let err_msg = String::from("此 域名 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -1082,7 +1079,7 @@ pub async fn find_by_ids_ok_domain(
   ).await?;
   
   if domain_models.len() != len {
-    let err_msg = SmolStr::new("此 域名 已被删除");
+    let err_msg = String::from("此 域名 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1095,7 +1092,7 @@ pub async fn find_by_ids_ok_domain(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 域名 已经被删除");
+      let err_msg = String::from("此 域名 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<DomainModel>>>()?;
@@ -1575,7 +1572,7 @@ pub async fn set_id_by_lbl_domain(
     let dict_model = is_locked_dict.iter().find(|item| {
       item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_locked = val.parse::<u8>()?.into();
     }
@@ -1587,7 +1584,7 @@ pub async fn set_id_by_lbl_domain(
     let dict_model = is_locked_dict.iter().find(|item| {
       item.val == input.is_locked.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_locked_lbl = lbl;
   }
   
@@ -1600,7 +1597,7 @@ pub async fn set_id_by_lbl_domain(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_enabled = val.parse::<u8>()?.into();
     }
@@ -1612,7 +1609,7 @@ pub async fn set_id_by_lbl_domain(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_enabled_lbl = lbl;
   }
   
@@ -1832,7 +1829,7 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -1857,7 +1854,7 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
           options,
@@ -2277,7 +2274,7 @@ pub async fn update_by_id_domain(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2301,7 +2298,7 @@ pub async fn update_by_id_domain(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2419,9 +2416,9 @@ pub async fn del_cache_domain() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      SmolStr::new(format!("dao.sql.{x}"))
+      format!("dao.sql.{x}")
     )
-    .collect::<Vec<SmolStr>>();
+    .collect::<Vec<String>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -2502,7 +2499,7 @@ pub async fn delete_by_ids_domain(
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = SmolStr::new("");
+    let mut usr_lbl = String::from("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
@@ -3044,7 +3041,7 @@ pub async fn validate_is_enabled_domain(
   model: &DomainModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let err_msg = SmolStr::new("域名已禁用");
+    let err_msg = String::from("域名已禁用");
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -3060,7 +3057,7 @@ pub async fn validate_option_domain(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("域名不存在");
+      let err_msg = String::from("域名不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),
