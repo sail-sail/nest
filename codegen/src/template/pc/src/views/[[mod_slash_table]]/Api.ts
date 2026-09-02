@@ -2668,7 +2668,7 @@ export async function completeTask<#=Table_Up#>(
     completeTask<#=Table_Up#>: Mutation["completeTask<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: <#=Table_Up#>Id!, $action: TaskAction!, $opinion: SmolStr, $add_sign_usr_ids: [UsrId!]) {
+      mutation($id: <#=Table_Up#>Id!, $action: TaskAction!, $opinion: String, $add_sign_usr_ids: [UsrId!]) {
         completeTask<#=Table_Up#>(
           id: $id,
           action: $action,
