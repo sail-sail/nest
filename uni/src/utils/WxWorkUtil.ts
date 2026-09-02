@@ -15,15 +15,18 @@ import type {
 let domain = "";
 let appid = "";
 let agentid = "";
+let scope = "";
 
 export async function wxwGetAppid(): Promise<{
   appid: string;
   agentid: string;
+  scope: string;
 }> {
   if (appid && agentid && domain === cfg.domain) {
     return {
       appid,
       agentid,
+      scope,
     };
   }
   
@@ -33,6 +36,7 @@ export async function wxwGetAppid(): Promise<{
     wxwGetAppid: {
       appid: string,
       agentid: string,
+      scope: string,
     },
   } = await query({
     query: /* GraphQL */ `
@@ -40,6 +44,7 @@ export async function wxwGetAppid(): Promise<{
         wxwGetAppid(host: $host) {
           appid
           agentid
+          scope
         }
       }
     `,
@@ -59,12 +64,13 @@ export async function wxwGetAppid(): Promise<{
   domain = host;
   appid = data.appid;
   agentid = data.agentid;
+  scope = data.scope;
   return data;
 }
 
 export async function initWxWorkCfg() {
-  const indexStore = useIndexStore(cfg.pinia);
-  const usrStore = useUsrStore(cfg.pinia);
+  const indexStore = useIndexStore();
+  const usrStore = useUsrStore();
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWxwork || userAgent.isWechat) {
     const href = location.href;
@@ -90,6 +96,7 @@ export async function initWxWorkCfg() {
     const {
       appid,
       agentid,
+      scope,
     } = await wxwGetAppid();
     ww.register({
       corpId: appid,
@@ -97,6 +104,7 @@ export async function initWxWorkCfg() {
       jsApiList: [
         "checkJsApi",
         "scanQRCode",
+        "getLocation",
       ],
       getConfigSignature: async (url) => {
         return await wxwGetConfigSignature(
