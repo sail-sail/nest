@@ -174,7 +174,7 @@ members = [
   "generated",
   "app",
   "wx_pay_sdk",
-  "aliyun_sdk"
+  "aliyun_sdk",
 ]
 resolver = "2"
 

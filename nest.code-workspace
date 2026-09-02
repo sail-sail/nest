@@ -86,6 +86,9 @@
     //   "HTTPS_PROXY": "http://127.0.0.1:7890",
     //   "ALL_PROXY": "http://127.0.0.1:7890"
     // },
+    "rust-analyzer.server.extraEnv": {
+      "STRIP_ASYNC_GRAPHQL": "1"
+    },
     "vue.codeActions.askNewComponentName": false,
     "vue.editor.reactivityVisualization": false,
     "vue.editor.templateInterpolationDecorators": false,

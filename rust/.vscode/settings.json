@@ -16,7 +16,8 @@
     "**/.oxlintrc.json": true,
     "pnpm-workspace.yaml": true,
     "wx_pay_sdk": true,
-    "aliyun_sdk": true
+    "aliyun_sdk": true,
+    "rust-macros": true
   },
   "search.exclude": {
     "schema.rs": true,
