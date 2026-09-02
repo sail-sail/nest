@@ -25,10 +25,6 @@ use generated::common::auth::auth_model::{AUTHORIZATION, AuthToken};
 use generated::common::gql::request_id::handle_request_id;
 
 use std::env;
-use async_graphql::{
-  EmptySubscription, Schema,
-};
-use rust_macros::wrap_agql_schema_build;
 use poem::{
   get, post,
   listener::TcpListener,
@@ -396,7 +392,9 @@ fn main() -> Result<(), std::io::Error> {
 
 #[allow(clippy::too_many_lines)]
 async fn async_main() -> Result<(), std::io::Error> {
+  
   dotenv().ok();
+  
   let server_title = std::env::var("server_title").expect("server_title not found in .env");
   let git_hash = std::env::var("GIT_HASH").ok();
   let log_path = std::env::var("log_path").ok();
@@ -519,14 +517,11 @@ async fn async_main() -> Result<(), std::io::Error> {
     }
   });
   
-  let schema: app::QuerySchema = wrap_agql_schema_build! {
-    Schema::build(
-      app::Query::default(),
-      app::Mutation::default(),
-      EmptySubscription
-    )
-      .finish()
-  };
+  let schema: app::QuerySchema = async_graphql::Schema::build(
+    app::Query::default(),
+    app::Mutation::default(),
+    async_graphql::EmptySubscription,
+  ).finish();
   
   #[cfg(debug_assertions)]
   {

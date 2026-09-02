@@ -7,12 +7,6 @@ use async_graphql::{
   MergedObject,
   EmptySubscription, Schema,
 };
-use rust_macros::{
-  wrap_agql_schema_type,
-  wrap_slow_macros,
-};
-
-wrap_slow_macros! {
 
 #[derive(MergedObject, Default)]
 pub struct Query(
@@ -29,8 +23,6 @@ pub struct Mutation(
   
   base::BaseAppMutation,
 );
-
-}
 
 pub type QuerySchema = wrap_agql_schema_type! {
   Schema<Query, Mutation, EmptySubscription>

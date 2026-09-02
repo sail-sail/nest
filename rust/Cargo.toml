@@ -165,7 +165,6 @@ calamine.workspace = true
 
 generated = { path = "./generated" }
 app = { path = "./app" }
-rust_macros = { path = "./rust-macros" }
 
 wx_pay_sdk = { path = "./wx_pay_sdk" }
 aliyun_sdk = { path = "./aliyun_sdk" }
@@ -176,7 +175,6 @@ members = [
   "app",
   "wx_pay_sdk",
   "aliyun_sdk",
-  "rust-macros"
 ]
 resolver = "2"
 
