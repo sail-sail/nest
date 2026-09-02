@@ -24,9 +24,7 @@ pub struct Mutation(
   base::BaseAppMutation,
 );
 
-pub type QuerySchema = wrap_agql_schema_type! {
-  Schema<Query, Mutation, EmptySubscription>
-};
+pub type QuerySchema = Schema<Query, Mutation, EmptySubscription>;
 
 #[allow(unused_imports)]
 use poem::{Route, get};
