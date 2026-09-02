@@ -31,16 +31,16 @@ declare global {
     route_query?: string;
     route_query_like?: string;
     /** 首页隐藏 */
-    is_home_hide?: number[];
+    is_home_hide?: number[] | null;
     /** 动态页面 */
-    is_dyn_page?: number[];
+    is_dyn_page?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */
     rem?: string;
     rem_like?: string;
     /** 隐藏 */
-    is_hidden?: number[];
+    is_hidden?: number[] | null;
     /** 创建时间 */
     create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */

@@ -1561,7 +1561,7 @@ export async function updateByIdLoginLog(
   const oldModel = await findByIdLoginLog(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

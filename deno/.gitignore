@@ -16,6 +16,7 @@ dist/
 build/
 .cache/
 .temp/
+.deno/
 
 # 项目特定文件
 /lib/script/publish_cnf.js

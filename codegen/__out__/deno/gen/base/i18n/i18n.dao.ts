@@ -1663,7 +1663,7 @@ export async function updateByIdI18n(
   const oldModel = await findByIdI18n(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

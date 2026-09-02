@@ -1692,7 +1692,7 @@ export async function updateByIdIcon(
   const oldModel = await findByIdIcon(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

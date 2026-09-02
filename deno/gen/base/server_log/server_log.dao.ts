@@ -1285,7 +1285,7 @@ export async function updateByIdServerLog(
   const oldModel = await findByIdServerLog(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

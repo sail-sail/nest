@@ -2154,7 +2154,7 @@ export async function updateByIdDynPageField(
   const oldModel = await findByIdDynPageField(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

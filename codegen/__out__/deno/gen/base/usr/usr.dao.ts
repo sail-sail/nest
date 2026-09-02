@@ -2361,7 +2361,7 @@ export async function updateByIdUsr(
   const oldModel = await findByIdUsr(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

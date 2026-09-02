@@ -565,15 +565,23 @@ export async function setLblById<#=Table_Up#>(
   
   // <#=column_comment#>
   if (model.<#=column_name#>) {
-    model.<#=column_name#>_lbl = getImgUrl({
-      id: model.<#=column_name#>,
-    }<#
-    if (column.isPublicAtt) {
-    #>, {
-      notAuthorization: true,
-    }<#
+    const <#=column_name#>_lbls: string[] = [ ];
+    const <#=column_name#>s = model.<#=column_name#>.split(",");
+    for (let i = 0; i < <#=column_name#>s.length; i++) {
+      const img = <#=column_name#>s[i];
+      const img_lbl = getImgUrl({
+        id: img,
+      }<#
+      if (column.isPublicAtt) {
+      #>, {
+        notAuthorization: true,
+      }<#
+      }
+      #>) || "";
+      <#=column_name#>_lbls.push(img_lbl);
     }
-    #>) || "";
+    model.<#=column_name#>_lbls = <#=column_name#>_lbls;
+    model.<#=column_name#>_lbl = <#=column_name#>_lbls[0] || "";
   }<#
     }
   #><#

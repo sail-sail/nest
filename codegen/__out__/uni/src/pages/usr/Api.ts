@@ -29,9 +29,17 @@ export async function setLblByIdUsr(
   
   // 头像
   if (model.img) {
-    model.img_lbl = getImgUrl({
-      id: model.img,
-    }) || "";
+    const img_lbls: string[] = [ ];
+    const imgs = model.img.split(",");
+    for (let i = 0; i < imgs.length; i++) {
+      const img = imgs[i];
+      const img_lbl = getImgUrl({
+        id: img,
+      }) || "";
+      img_lbls.push(img_lbl);
+    }
+    model.img_lbls = img_lbls;
+    model.img_lbl = img_lbls[0] || "";
   }
 }
 

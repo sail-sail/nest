@@ -27,13 +27,14 @@ declare global {
   
   /** 消息 */
   interface MessageSearch extends MessageSearchType {
+    auth_usr_id?: UsrId | null;
     /** 跳转参数 */
     route_query?: string;
     route_query_like?: string;
     /** 系统消息 */
-    is_sys_msg?: number[];
+    is_sys_msg?: number[] | null;
     /** 置顶 */
-    is_pinned?: number[];
+    is_pinned?: number[] | null;
     /** 更新时间 */
     update_time?: [(string|undefined|null), (string|undefined|null)];
     tenant_id?: TenantId | null;

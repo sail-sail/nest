@@ -1992,7 +1992,7 @@ export async function updateByIdMessage(
   const oldModel = await findByIdMessage(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   const args = new QueryArgs();

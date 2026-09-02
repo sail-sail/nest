@@ -252,6 +252,11 @@ declare global {
   
   /** <#=table_comment#> */
   interface <#=searchName#> extends <#=searchName#>Type {<#
+    if (opts.filterDataByCreateUsr || hasOrgId || !!opts?.audit) {
+    #>
+    auth_usr_id?: UsrId | null;<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -332,7 +337,7 @@ declare global {
       } else if (foreignKey.lbl) {
     #>
     /** <#=column_comment#> */
-    <#=column_name#>_<#=foreignKey.lbl#>?: string[];
+    <#=column_name#>_<#=foreignKey.lbl#>?: string[] | null;
     /** <#=column_comment#> */
     <#=column_name#>_<#=foreignKey.lbl#>_like?: string;<#
       }
@@ -358,7 +363,7 @@ declare global {
         }
     #>
     /** <#=column_comment#> */
-    <#=column_name#>?: <#=enumColumnName#>[];<#
+    <#=column_name#>?: <#=enumColumnName#>[] | null;<#
       } else if (column_name === "id") {
     #>
     /** ID */

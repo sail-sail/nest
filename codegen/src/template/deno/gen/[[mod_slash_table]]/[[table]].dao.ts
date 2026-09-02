@@ -6242,7 +6242,7 @@ export async function updateById<#=Table_Up#>(
   const oldModel = await findById<#=Table_Up#>(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>

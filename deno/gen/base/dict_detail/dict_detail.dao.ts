@@ -1673,7 +1673,7 @@ export async function updateByIdDictDetail(
   const oldModel = await findByIdDictDetail(id, options);
   
   if (!oldModel) {
-    return 0;
+    return id;
   }
   
   // 不能修改系统记录的系统字段

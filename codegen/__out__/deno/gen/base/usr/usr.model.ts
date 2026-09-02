@@ -33,15 +33,15 @@ declare global {
     img?: string;
     img_like?: string;
     /** 类型 */
-    type?: UsrType[];
+    type?: UsrType[] | null;
     /** 拒收消息 */
-    is_reject_msg?: number[];
+    is_reject_msg?: number[] | null;
     /** 锁定 */
-    is_locked?: number[];
+    is_locked?: number[] | null;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 隐藏 */
-    is_hidden?: number[];
+    is_hidden?: number[] | null;
     /** 创建时间 */
     create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */

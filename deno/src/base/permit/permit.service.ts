@@ -126,6 +126,102 @@ export async function getUsrPermits(route_path?: string): Promise<GetUsrPermits[
 }
 
 /**
+ * 根据菜单路由和权限 code 获取审核消息接收人列表
+ */
+export async function getAuditReceiverUsrIds(
+  route_path: string,
+  code: string,
+): Promise<UsrId[]> {
+  const {
+    findOneMenu,
+  } = await import("/gen/base/menu/menu.dao.ts");
+
+  const {
+    findOnePermit,
+  } = await import("/gen/base/permit/permit.dao.ts");
+
+  const {
+    findAllRole,
+  } = await import("/gen/base/role/role.dao.ts");
+
+  const {
+    findAllUsr,
+  } = await import("/gen/base/usr/usr.dao.ts");
+
+  const options = {
+    is_debug: false,
+  };
+
+  const menuModel = await findOneMenu(
+    {
+      route_path,
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    options,
+  );
+  if (!menuModel) {
+    return [ ];
+  }
+
+  const permitModel = await findOnePermit(
+    {
+      menu_id: [ menuModel.id ],
+      code,
+    },
+    undefined,
+    options,
+  );
+  if (!permitModel) {
+    return [ ];
+  }
+
+  const roleModels = await findAllRole(
+    {
+      permit_ids: [ permitModel.id ],
+      is_audit_msg: [ 1 ],
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    undefined,
+    options,
+  );
+  if (roleModels.length === 0) {
+    return [ ];
+  }
+
+  const role_ids = Array.from(new Set(
+    roleModels
+      .map((item) => item.id)
+      .filter((item): item is RoleId => !!item),
+  ));
+
+  const usrModels = await findAllUsr(
+    {
+      role_ids,
+      is_reject_msg: [ 0 ],
+      is_enabled: [ 1 ],
+      is_deleted: 0,
+    },
+    undefined,
+    undefined,
+    options,
+  );
+
+  usrModels.sort((left, right) => {
+    return (left.order_by ?? 0) - (right.order_by ?? 0)
+      || String(left.lbl || "").localeCompare(String(right.lbl || ""))
+      || String(left.id).localeCompare(String(right.id));
+  });
+
+  return Array.from(new Set(
+    usrModels
+      .map((item) => item.id)
+      .filter((item): item is UsrId => !!item),
+  ));
+}
+
+/**
  * 查看当前用户是否有权限
  */
 export async function usePermit(
