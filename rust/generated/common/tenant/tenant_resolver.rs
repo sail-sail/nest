@@ -3,8 +3,6 @@ use tracing::info;
 
 use crate::common::context::get_req_id;
 
-use smol_str::SmolStr;
-
 use super::tenant_service;
 
 use super::tenant_model::GetLoginTenants;
@@ -15,7 +13,7 @@ use crate::base::tenant::tenant_model::TenantId;
 /// 根据 当前网址的域名+端口 获取 租户列表
 #[function_name::named]
 pub async fn get_login_tenants(
-  domain: SmolStr,
+  domain: String,
 ) -> Result<Vec<GetLoginTenants>> {
   
   info!(

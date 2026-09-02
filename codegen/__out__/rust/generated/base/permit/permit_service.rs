@@ -14,9 +14,6 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 
 use super::permit_model::*;

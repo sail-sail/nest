@@ -98,9 +98,6 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};<#
 if (table !== "i18n" && isUseI18n) {
 #>
@@ -620,7 +617,7 @@ pub async fn start_process_<#=table#>(
 pub async fn complete_task_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   action: TaskAction,
-  opinion: Option<SmolStr>,
+  opinion: Option<String>,
   add_sign_usr_ids: Option<Vec<UsrId>>,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -1062,8 +1059,8 @@ pub async fn audit_submit_<#=table#>(
   };
   
   let receiver_usr_ids = get_audit_receiver_usr_ids(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("audit_pass"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("audit_pass"),
     options,
   ).await?;
   
@@ -1223,8 +1220,8 @@ pub async fn audit_pass_<#=table#>(
   };
   
   let receiver_usr_ids = get_audit_receiver_usr_ids(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new("audit_review"),
+    String::from(get_page_path_<#=table#>()),
+    String::from("audit_review"),
     options,
   ).await?;
   
@@ -1421,7 +1418,7 @@ pub async fn audit_reject_<#=table#>(
   let receiver_usr_ids = vec![old_model.create_usr_id];
   
   let next_message = MessageInput {
-    title: Some(format!("<#=table_comment#>已被拒绝").into()),
+    title: Some("<#=table_comment#>已被拒绝".into()),
     content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被拒绝，请重新提交审核").into()),
     route_path: Some(get_page_path_<#=table#>().into()),
     route_query: Some(format!("id={<#=table#>_id}").into()),
@@ -1542,8 +1539,8 @@ pub async fn audit_reverse_<#=table#>(
   };
   
   let receiver_usr_ids = get_audit_receiver_usr_ids(
-    SmolStr::new(get_page_path_<#=table#>()),
-    SmolStr::new(audit.to_string()),
+    String::from(get_page_path_<#=table#>()),
+    String::from(audit.to_string()),
     options,
   ).await?;
   

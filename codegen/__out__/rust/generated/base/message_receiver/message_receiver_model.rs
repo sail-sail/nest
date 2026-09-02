@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -63,49 +60,49 @@ pub struct MessageReceiverModel {
   pub message_id: MessageId,
   /// 消息
   #[graphql(name = "message_id_content")]
-  pub message_id_content: SmolStr,
+  pub message_id_content: String,
   /// 接收人
   #[graphql(name = "receiver_usr_id")]
   pub receiver_usr_id: UsrId,
   /// 接收人
   #[graphql(name = "receiver_usr_id_lbl")]
-  pub receiver_usr_id_lbl: SmolStr,
+  pub receiver_usr_id_lbl: String,
   /// 已读
   #[graphql(name = "is_read")]
   pub is_read: u8,
   /// 已读
   #[graphql(name = "is_read_lbl")]
-  pub is_read_lbl: SmolStr,
+  pub is_read_lbl: String,
   /// 阅读时间
   #[graphql(name = "read_time")]
   pub read_time: Option<chrono::NaiveDateTime>,
   /// 阅读时间
   #[graphql(name = "read_time_lbl")]
-  pub read_time_lbl: SmolStr,
+  pub read_time_lbl: String,
   /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: OrgId,
   /// 所属组织
   #[graphql(name = "org_id_lbl")]
-  pub org_id_lbl: SmolStr,
+  pub org_id_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for MessageReceiverModel {
@@ -117,43 +114,43 @@ impl FromRow<'_, MySqlRow> for MessageReceiverModel {
     // 消息
     let message_id: MessageId = row.try_get("message_id")?;
     let message_id_content: Option<&str> = row.try_get("message_id_content")?;
-    let message_id_content = SmolStr::new(message_id_content.unwrap_or_default());
+    let message_id_content = String::from(message_id_content.unwrap_or_default());
     // 接收人
     let receiver_usr_id: UsrId = row.try_get("receiver_usr_id")?;
     let receiver_usr_id_lbl: Option<&str> = row.try_get("receiver_usr_id_lbl")?;
-    let receiver_usr_id_lbl = SmolStr::new(receiver_usr_id_lbl.unwrap_or_default());
+    let receiver_usr_id_lbl = String::from(receiver_usr_id_lbl.unwrap_or_default());
     // 已读
     let is_read: u8 = row.try_get("is_read")?;
-    let is_read_lbl = SmolStr::new(is_read.to_string());
+    let is_read_lbl = is_read.to_string();
     // 阅读时间
     let read_time: Option<chrono::NaiveDateTime> = row.try_get("read_time")?;
-    let read_time_lbl: SmolStr = match read_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let read_time_lbl: String = match read_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_string(),
     };
     // 所属组织
     let org_id: OrgId = row.try_get("org_id")?;
     let org_id_lbl: Option<&str> = row.try_get("org_id_lbl")?;
-    let org_id_lbl = SmolStr::new(org_id_lbl.unwrap_or_default());
+    let org_id_lbl = String::from(org_id_lbl.unwrap_or_default());
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -192,61 +189,61 @@ impl FromRow<'_, MySqlRow> for MessageReceiverModel {
 pub struct MessageReceiverFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 消息
   #[graphql(name = "message_id")]
-  pub message_id: SmolStr,
+  pub message_id: String,
   /// 消息
   #[graphql(name = "message_id_lbl")]
-  pub message_id_lbl: SmolStr,
+  pub message_id_lbl: String,
   /// 接收人
   #[graphql(name = "receiver_usr_id")]
-  pub receiver_usr_id: SmolStr,
+  pub receiver_usr_id: String,
   /// 接收人
   #[graphql(name = "receiver_usr_id_lbl")]
-  pub receiver_usr_id_lbl: SmolStr,
+  pub receiver_usr_id_lbl: String,
   /// 已读
   #[graphql(name = "is_read")]
-  pub is_read: SmolStr,
+  pub is_read: String,
   /// 已读
   #[graphql(name = "is_read_lbl")]
-  pub is_read_lbl: SmolStr,
+  pub is_read_lbl: String,
   /// 阅读时间
   #[graphql(name = "read_time")]
-  pub read_time: SmolStr,
+  pub read_time: String,
   /// 阅读时间
   #[graphql(name = "read_time_lbl")]
-  pub read_time_lbl: SmolStr,
+  pub read_time_lbl: String,
   /// 所属组织
   #[graphql(name = "org_id")]
-  pub org_id: SmolStr,
+  pub org_id: String,
   /// 所属组织
   #[graphql(name = "org_id_lbl")]
-  pub org_id_lbl: SmolStr,
+  pub org_id_lbl: String,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: SmolStr,
+  pub create_usr_id: String,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: SmolStr,
+  pub update_usr_id: String,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: SmolStr,
+  pub update_time: String,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -270,10 +267,10 @@ pub struct MessageReceiverSearch {
   pub message_id_is_null: Option<bool>,
   /// 消息
   #[graphql(name = "message_id_content")]
-  pub message_id_content: Option<Vec<SmolStr>>,
+  pub message_id_content: Option<Vec<String>>,
   /// 消息
   #[graphql(name = "message_id_content_like")]
-  pub message_id_content_like: Option<SmolStr>,
+  pub message_id_content_like: Option<String>,
   /// 接收人
   #[graphql(name = "receiver_usr_id")]
   pub receiver_usr_id: Option<Vec<UsrId>>,
@@ -282,10 +279,10 @@ pub struct MessageReceiverSearch {
   pub receiver_usr_id_is_null: Option<bool>,
   /// 接收人
   #[graphql(name = "receiver_usr_id_lbl")]
-  pub receiver_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub receiver_usr_id_lbl: Option<Vec<String>>,
   /// 接收人
   #[graphql(name = "receiver_usr_id_lbl_like")]
-  pub receiver_usr_id_lbl_like: Option<SmolStr>,
+  pub receiver_usr_id_lbl_like: Option<String>,
   /// 已读
   #[graphql(name = "is_read")]
   pub is_read: Option<Vec<u8>>,
@@ -300,10 +297,10 @@ pub struct MessageReceiverSearch {
   pub org_id_is_null: Option<bool>,
   /// 所属组织
   #[graphql(name = "org_id_lbl")]
-  pub org_id_lbl: Option<Vec<SmolStr>>,
+  pub org_id_lbl: Option<Vec<String>>,
   /// 所属组织
   #[graphql(name = "org_id_lbl_like")]
-  pub org_id_lbl_like: Option<SmolStr>,
+  pub org_id_lbl_like: Option<String>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -312,10 +309,10 @@ pub struct MessageReceiverSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -327,10 +324,10 @@ pub struct MessageReceiverSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -455,25 +452,25 @@ pub struct MessageReceiverInput {
   pub message_id: Option<MessageId>,
   /// 消息
   #[graphql(name = "message_id_content")]
-  pub message_id_content: Option<SmolStr>,
+  pub message_id_content: Option<String>,
   /// 接收人
   #[graphql(name = "receiver_usr_id")]
   pub receiver_usr_id: Option<UsrId>,
   /// 接收人
   #[graphql(name = "receiver_usr_id_lbl")]
-  pub receiver_usr_id_lbl: Option<SmolStr>,
+  pub receiver_usr_id_lbl: Option<String>,
   /// 已读
   #[graphql(name = "is_read")]
   pub is_read: Option<u8>,
   /// 已读
   #[graphql(name = "is_read_lbl")]
-  pub is_read_lbl: Option<SmolStr>,
+  pub is_read_lbl: Option<String>,
   /// 阅读时间
   #[graphql(name = "read_time")]
   pub read_time: Option<chrono::NaiveDateTime>,
   /// 阅读时间
   #[graphql(name = "read_time_lbl")]
-  pub read_time_lbl: Option<SmolStr>,
+  pub read_time_lbl: Option<String>,
   /// 阅读时间
   #[graphql(name = "read_time_save_null")]
   pub read_time_save_null: Option<bool>,
@@ -482,19 +479,19 @@ pub struct MessageReceiverInput {
   pub org_id: Option<OrgId>,
   /// 所属组织
   #[graphql(name = "org_id_lbl")]
-  pub org_id_lbl: Option<SmolStr>,
+  pub org_id_lbl: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -503,13 +500,13 @@ pub struct MessageReceiverInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -677,7 +674,7 @@ pub fn check_sort_message_receiver(
     }
     if !get_can_sort_in_api_message_receiver.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_message_receiver: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_message_receiver: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

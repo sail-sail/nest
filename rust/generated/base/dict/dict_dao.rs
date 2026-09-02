@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -101,14 +98,14 @@ async fn get_where_query(
     if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -117,7 +114,7 @@ async fn get_where_query(
     }
   }
   {
-    let keyword: Option<SmolStr> = match search {
+    let keyword: Option<String> = match search {
       Some(item) => item.keyword.clone(),
       None => None,
     };
@@ -183,14 +180,14 @@ async fn get_where_query(
     if let Some(r#type) = r#type {
       let arg = {
         if r#type.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(r#type.len());
           for item in r#type {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.type in (");
@@ -207,14 +204,14 @@ async fn get_where_query(
     if let Some(is_add) = is_add {
       let arg = {
         if is_add.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_add.len());
           for item in is_add {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_add in (");
@@ -231,14 +228,14 @@ async fn get_where_query(
     if let Some(is_enabled) = is_enabled {
       let arg = {
         if is_enabled.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(is_enabled.len());
           for item in is_enabled {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.is_enabled in (");
@@ -287,14 +284,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -312,21 +309,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let create_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -368,14 +365,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -393,21 +390,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let update_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -644,7 +641,7 @@ pub async fn find_all_dict(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -696,7 +693,7 @@ pub async fn find_all_dict(
         .iter()
         .find(|item| item.val == model.is_enabled.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_enabled.to_string().into())
+        .unwrap_or_else(|| model.is_enabled.to_string())
     };
     
     // 系统字典明细
@@ -1053,7 +1050,7 @@ pub async fn find_by_id_ok_dict(
   ).await?;
   
   let Some(dict_model) = dict_model else {
-    let err_msg = SmolStr::new("此 系统字典 已被删除");
+    let err_msg = String::from("此 系统字典 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -1165,7 +1162,7 @@ pub async fn find_by_ids_ok_dict(
   ).await?;
   
   if dict_models.len() != len {
-    let err_msg = SmolStr::new("此 系统字典 已被删除");
+    let err_msg = String::from("此 系统字典 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1178,7 +1175,7 @@ pub async fn find_by_ids_ok_dict(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 系统字典 已经被删除");
+      let err_msg = String::from("此 系统字典 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<DictModel>>>()?;
@@ -1683,7 +1680,7 @@ pub async fn set_id_by_lbl_dict(
     let dict_model = type_dict.iter().find(|item| {
       item.lbl == input.type_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.r#type = val.parse::<DictType>()?.into();
     }
@@ -1695,7 +1692,7 @@ pub async fn set_id_by_lbl_dict(
     let dict_model = type_dict.iter().find(|item| {
       item.val == input.r#type.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.type_lbl = lbl;
   }
   
@@ -1708,7 +1705,7 @@ pub async fn set_id_by_lbl_dict(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.is_enabled = val.parse::<u8>()?.into();
     }
@@ -1720,7 +1717,7 @@ pub async fn set_id_by_lbl_dict(
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.is_enabled_lbl = lbl;
   }
   
@@ -1944,7 +1941,7 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -1969,7 +1966,7 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
           options,
@@ -2502,7 +2499,7 @@ pub async fn update_by_id_dict(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2526,7 +2523,7 @@ pub async fn update_by_id_dict(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2644,9 +2641,9 @@ pub async fn del_cache_dict() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      SmolStr::new(format!("dao.sql.{x}"))
+      format!("dao.sql.{x}")
     )
-    .collect::<Vec<SmolStr>>();
+    .collect::<Vec<String>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -2732,7 +2729,7 @@ pub async fn delete_by_ids_dict(
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = SmolStr::new("");
+    let mut usr_lbl = String::from("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
@@ -3222,7 +3219,7 @@ pub async fn validate_is_enabled_dict(
   model: &DictModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let err_msg = SmolStr::new("系统字典已禁用");
+    let err_msg = String::from("系统字典已禁用");
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -3238,7 +3235,7 @@ pub async fn validate_option_dict(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("系统字典不存在");
+      let err_msg = String::from("系统字典不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),

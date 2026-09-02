@@ -13,7 +13,6 @@
     ".editorconfig": true,
     "**/.npmrc": true,
     ".gitignore": true,
-    "app/Cargo.toml": true,
     "**/.oxlintrc.json": true,
     "pnpm-workspace.yaml": true,
     "wx_pay_sdk": true,

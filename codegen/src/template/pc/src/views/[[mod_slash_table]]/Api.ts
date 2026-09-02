@@ -569,16 +569,24 @@ export async function setLblById<#=Table_Up#>(
   
   // <#=column_comment#>
   if (model.<#=column_name#>) {
-    model.<#=column_name#>_lbl = location.origin + getImgUrl({
-      id: model.<#=column_name#>,
-      height: 100,
-    }<#
-    if (column.isPublicAtt) {
-    #>, {
-      notAuthorization: true,
-    }<#
+    const <#=column_name#>_lbls: string[] = [ ];
+    const <#=column_name#>s = model.<#=column_name#>.split(",");
+    for (let i = 0; i < <#=column_name#>s.length; i++) {
+      const img = <#=column_name#>s[i];
+      const img_lbl = location.origin + location.pathname + getImgUrl({
+        id: img,
+        height: 100,
+      }<#
+      if (column.isPublicAtt) {
+      #>, {
+        notAuthorization: true,
+      }<#
+      }
+      #>) || "";
+      <#=column_name#>_lbls.push(img_lbl);
     }
-    #>);
+    model.<#=column_name#>_lbls = <#=column_name#>_lbls;
+    model.<#=column_name#>_lbl = <#=column_name#>_lbls[0] || "";
   }<#
     }
   #><#
@@ -2668,7 +2676,7 @@ export async function completeTask<#=Table_Up#>(
     completeTask<#=Table_Up#>: Mutation["completeTask<#=Table_Up#>"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($id: <#=Table_Up#>Id!, $action: TaskAction!, $opinion: SmolStr, $add_sign_usr_ids: [UsrId!]) {
+      mutation($id: <#=Table_Up#>Id!, $action: TaskAction!, $opinion: String, $add_sign_usr_ids: [UsrId!]) {
         completeTask<#=Table_Up#>(
           id: $id,
           action: $action,

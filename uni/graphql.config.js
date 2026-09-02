@@ -1,5 +1,8 @@
 module.exports = {
-  schema: [ "http://localhost:4001/graphql" ],
+  schema: [
+    "../rust/generated/common/gql/base.graphql",
+    "../rust/generated/common/gql/schema.graphql",
+  ],
   documents: "**/*.ts",
   extensions: {
     endpoints: {
