@@ -1,7 +1,5 @@
 use color_eyre::eyre::Result;
 
-use smol_str::SmolStr;
-
 use super::wxw_app_token_model::WxwGetConfigSignature;
 
 use super::wxw_app_token_dao;
@@ -15,9 +13,9 @@ use generated::wxwork::wxw_app::wxw_app_model::WxwAppSearch;
 
 /// 通过 appid, agentid, url 生成企业签名
 pub async fn wxw_get_config_signature(
-  appid: SmolStr,
-  agentid: SmolStr,
-  url: SmolStr,
+  appid: String,
+  agentid: String,
+  url: String,
 ) -> Result<WxwGetConfigSignature> {
   
   let wx_app_model = validate_option_wxw_app(
@@ -47,9 +45,9 @@ pub async fn wxw_get_config_signature(
 
 /// 通过 appid, agentid, url 生成应用签名
 pub async fn wxw_get_agent_config_signature(
-  appid: SmolStr,
-  agentid: SmolStr,
-  url: SmolStr,
+  appid: String,
+  agentid: String,
+  url: String,
 ) -> Result<WxwGetConfigSignature> {
   
   let wx_app_model = validate_option_wxw_app(

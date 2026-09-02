@@ -13,7 +13,7 @@ export async function wxwSyncUsr(
     wxwSyncUsr: Mutation["wxwSyncUsr"];
   } = await mutation({
     query: /* GraphQL */ `
-      mutation($host: SmolStr!) {
+      mutation($host: String!) {
         wxwSyncUsr(host: $host)
       }
     `,

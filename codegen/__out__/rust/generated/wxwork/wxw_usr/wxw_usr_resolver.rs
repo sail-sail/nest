@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -258,8 +255,8 @@ pub async fn creates_wxw_usr(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_wxw_usr()),
-    SmolStr::new("add"),
+    String::from(get_page_path_wxw_usr()),
+    String::from("add"),
   ).await?;
   
   let ids = wxw_usr_service::creates_wxw_usr(
@@ -318,8 +315,8 @@ pub async fn update_by_id_wxw_usr(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_wxw_usr()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_wxw_usr()),
+    String::from("edit"),
   ).await?;
   
   let res = wxw_usr_service::update_by_id_wxw_usr(
@@ -346,8 +343,8 @@ pub async fn delete_by_ids_wxw_usr(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_wxw_usr()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_wxw_usr()),
+    String::from("delete"),
   ).await?;
   
   let num = wxw_usr_service::delete_by_ids_wxw_usr(
@@ -392,8 +389,8 @@ pub async fn revert_by_ids_wxw_usr(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_wxw_usr()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_wxw_usr()),
+    String::from("delete"),
   ).await?;
   
   let num = wxw_usr_service::revert_by_ids_wxw_usr(
@@ -419,8 +416,8 @@ pub async fn force_delete_by_ids_wxw_usr(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_wxw_usr()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_wxw_usr()),
+    String::from("force_delete"),
   ).await?;
   
   let num = wxw_usr_service::force_delete_by_ids_wxw_usr(

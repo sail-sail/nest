@@ -1,17 +1,15 @@
 use serde::Deserialize;
 
-use smol_str::SmolStr;
-
 #[derive(Deserialize)]
 pub struct NotifyQuery {
   #[serde(rename = "msg_signature")]
-  pub msg_signature: SmolStr,
+  pub msg_signature: String,
   #[serde(rename = "timestamp")]
-  pub timestamp: SmolStr,
+  pub timestamp: String,
   #[serde(rename = "nonce")]
-  pub nonce: SmolStr,
+  pub nonce: String,
   #[serde(rename = "echostr")]
-  pub echostr: SmolStr,
-  pub corpid: SmolStr,
-  pub agentid: SmolStr,
+  pub echostr: String,
+  pub corpid: String,
+  pub agentid: String,
 }

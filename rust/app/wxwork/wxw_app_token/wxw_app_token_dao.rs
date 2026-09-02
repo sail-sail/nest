@@ -10,8 +10,6 @@ use generated::common::context::{
   get_now,
 };
 
-use smol_str::SmolStr;
-
 use generated::wxwork::wxw_app::wxw_app_model::WxwAppId;
 use generated::wxwork::wxw_app_token::wxw_app_token_dao::{
   find_one_wxw_app_token,
@@ -42,25 +40,25 @@ use super::wxw_app_token_model::{
 struct GetuserinfoRes {
   errcode: i32,
   #[serde(default)]
-  errmsg: SmolStr,
+  errmsg: String,
   #[serde(default)]
-  userid: SmolStr,
+  userid: String,
   #[serde(default)]
-  user_ticket: SmolStr,
+  user_ticket: String,
 }
 
 #[derive(Serialize, Deserialize, Default)]
 struct GetuseridlistRes {
   errcode: i32,
   #[serde(default)]
-  errmsg: SmolStr,
+  errmsg: String,
   #[serde(default)]
   dept_user: Vec<Userlist>,
 }
 #[derive(Serialize, Deserialize)]
 struct Userlist {
   #[serde(default)]
-  userid: SmolStr,
+  userid: String,
   // #[serde(default)]
   // department: i32,
 }
@@ -69,7 +67,7 @@ struct Userlist {
 async fn fetch_access_token(
   corpid: &str,
   corpsecret: &str,
-) -> Result<(SmolStr, u32)> {
+) -> Result<(String, u32)> {
   let url = format!(
     "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corpid}&corpsecret={corpsecret}",
     corpid = urlencoding::encode(corpid),
@@ -80,9 +78,8 @@ async fn fetch_access_token(
   struct GettokenRes {
     errcode: i32,
     #[serde(default)]
-    errmsg: SmolStr,
-    #[serde(default)]
-    access_token: SmolStr,
+    errmsg: String,
+    access_token: String,
     #[serde(default)]
     expires_in: u32,
   }
@@ -113,7 +110,7 @@ async fn fetch_access_token(
 pub async fn get_access_token(
   wxw_app_id: WxwAppId,
   force: Option<bool>,
-) -> Result<SmolStr> {
+) -> Result<String> {
   let force = force.unwrap_or(false);
   let wxw_app_model = find_by_id_wxw_app(
     wxw_app_id,
@@ -136,7 +133,7 @@ pub async fn get_access_token(
   let wxw_app_token_model = find_one_wxw_app_token(
     WxwAppTokenSearch {
       wxw_app_id: vec![wxw_app_id].into(),
-      r#type: SmolStr::new("corp").into(),
+      r#type: String::from("corp").into(),
       tenant_id: tenant_id.into(),
       ..Default::default()
     }.into(),
@@ -156,7 +153,7 @@ pub async fn get_access_token(
     create_wxw_app_token(
       WxwAppTokenInput {
         wxw_app_id: wxw_app_id.into(),
-        r#type: SmolStr::new("corp").into(),
+        r#type: String::from("corp").into(),
         access_token: access_token.clone().into(),
         expires_in: expires_in.into(),
         token_time: now.into(),
@@ -193,7 +190,7 @@ pub async fn get_access_token(
     update_by_id_wxw_app_token(
       id,
       WxwAppTokenInput {
-        access_token: SmolStr::new(&access_token).into(),
+        access_token: access_token.clone().into(),
         expires_in: expires_in.into(),
         token_time: now.into(),
         tenant_id: tenant_id.into(),
@@ -210,7 +207,7 @@ pub async fn get_access_token(
 pub async fn get_contact_access_token(
   wxw_app_id: WxwAppId,
   force: Option<bool>,
-) -> Result<SmolStr> {
+) -> Result<String> {
   let force = force.unwrap_or(false);
   let wxw_app_model = find_by_id_wxw_app(
     wxw_app_id,
@@ -239,7 +236,7 @@ pub async fn get_contact_access_token(
   let wxw_app_token_model = find_one_wxw_app_token(
     WxwAppTokenSearch {
       wxw_app_id: vec![wxw_app_id].into(),
-      r#type: SmolStr::new("contact").into(),
+      r#type: String::from("contact").into(),
       tenant_id: tenant_id.into(),
       ..Default::default()
     }.into(),
@@ -259,8 +256,8 @@ pub async fn get_contact_access_token(
     create_wxw_app_token(
       WxwAppTokenInput {
         wxw_app_id: wxw_app_id.into(),
-        r#type: SmolStr::new("contact").into(),
-        access_token: SmolStr::new(&access_token).into(),
+        r#type: String::from("contact").into(),
+        access_token: access_token.clone().into(),
         expires_in: expires_in.into(),
         token_time: now.into(),
         tenant_id: tenant_id.into(),
@@ -296,7 +293,7 @@ pub async fn get_contact_access_token(
     update_by_id_wxw_app_token(
       id,
       WxwAppTokenInput {
-        access_token: SmolStr::new(&access_token).into(),
+        access_token: access_token.clone().into(),
         expires_in: expires_in.into(),
         token_time: now.into(),
         tenant_id: tenant_id.into(),
@@ -315,7 +312,7 @@ async fn find_or_init_wxw_app_token_model(
   let wxw_app_token_model = find_one_wxw_app_token(
     WxwAppTokenSearch {
       wxw_app_id: vec![wxw_app_id].into(),
-      r#type: SmolStr::new("corp").into(),
+      r#type: String::from("corp").into(),
       ..Default::default()
     }.into(),
     None,
@@ -331,7 +328,7 @@ async fn find_or_init_wxw_app_token_model(
       let wxw_app_token_model = find_one_wxw_app_token(
         WxwAppTokenSearch {
           wxw_app_id: vec![wxw_app_id].into(),
-          r#type: SmolStr::new("corp").into(),
+          r#type: String::from("corp").into(),
           ..Default::default()
         }.into(),
         None,
@@ -346,7 +343,7 @@ async fn find_or_init_wxw_app_token_model(
 async fn get_jsapi_ticket(
   wxw_app_id: WxwAppId,
   force: Option<bool>,
-) -> Result<SmolStr> {
+) -> Result<String> {
   
   let force = force.unwrap_or(false);
   
@@ -413,8 +410,6 @@ async fn get_jsapi_ticket(
       return Err(eyre!(msg));
     }
     
-    let ticket = SmolStr::new(&ticket);
-    
     update_by_id_wxw_app_token(
       wxw_app_token_model.id,
       WxwAppTokenInput {
@@ -436,7 +431,7 @@ async fn get_jsapi_ticket(
 /// https://developer.work.weixin.qq.com/document/path/90506
 pub async fn get_jsapi_ticket_signature(
   wxw_app_id: WxwAppId,
-  url: SmolStr,
+  url: String,
   force: Option<bool>,
 ) -> Result<WxwGetConfigSignature> {
   
@@ -458,9 +453,9 @@ pub async fn get_jsapi_ticket_signature(
   let signature = hex::encode(signature);
   
   Ok(WxwGetConfigSignature {
-    timestamp: timestamp.into(),
-    nonce_str: nonce_str.into(),
-    signature: signature.into(),
+    timestamp,
+    nonce_str,
+    signature,
   })
 }
 
@@ -468,7 +463,7 @@ pub async fn get_jsapi_ticket_signature(
 pub async fn get_jsapi_ticket_agent_config(
   wxw_app_id: WxwAppId,
   force: Option<bool>,
-) -> Result<SmolStr> {
+) -> Result<String> {
   
   let force = force.unwrap_or(false);
   
@@ -564,7 +559,7 @@ pub async fn get_jsapi_ticket_agent_config(
 /// https://developer.work.weixin.qq.com/document/path/90506
 pub async fn get_jsapi_ticket_agent_config_signature(
   wxw_app_id: WxwAppId,
-  url: SmolStr,
+  url: String,
   force: Option<bool>,
 ) -> Result<WxwGetConfigSignature> {
   
@@ -586,9 +581,9 @@ pub async fn get_jsapi_ticket_agent_config_signature(
   let signature = hex::encode(signature);
   
   Ok(WxwGetConfigSignature {
-    timestamp: timestamp.into(),
-    nonce_str: nonce_str.into(),
-    signature: signature.into(),
+    timestamp,
+    nonce_str,
+    signature,
   })
 }
 
@@ -596,7 +591,7 @@ pub async fn get_jsapi_ticket_agent_config_signature(
 /// https://developer.work.weixin.qq.com/document/path/91023
 async fn fetch_getuserinfo_by_code(
   wxw_app_id: WxwAppId,
-  code: SmolStr,
+  code: String,
   force: bool,
 ) -> Result<GetuserinfoRes> {
   let access_token = get_access_token(
@@ -635,7 +630,7 @@ async fn fetch_getuserinfo_by_code(
 /// 返回用户身份信息 `userid`, `user_ticket`
 pub async fn getuserinfo_by_code(
   wxw_app_id: WxwAppId,
-  code: SmolStr,
+  code: String,
 ) -> Result<GetuserinfoModel> {
   let mut data: GetuserinfoRes = fetch_getuserinfo_by_code(
     wxw_app_id,
@@ -676,7 +671,7 @@ pub async fn getuserinfo_by_code(
 
 async fn fetch_getuserdetail(
   wxw_app_id: WxwAppId,
-  user_ticket: SmolStr,
+  user_ticket: String,
   force: bool,
 ) -> Result<GetuserDetailRes> {
   let access_token = get_access_token(
@@ -714,7 +709,7 @@ async fn fetch_getuserdetail(
 /// - `user_ticket` - 成员票据
 pub async fn getuserdetail(
   wxw_app_id: WxwAppId,
-  user_ticket: SmolStr,
+  user_ticket: String,
 ) -> Result<GetuserDetailRes> {
   let mut data: GetuserDetailRes = fetch_getuserdetail(
     wxw_app_id,
@@ -769,7 +764,7 @@ async fn fetch_getuseridlist(
 /// 获取成员ID列表
 pub async fn getuseridlist(
   wxw_app_id: WxwAppId,
-) -> Result<Vec<SmolStr>> {
+) -> Result<Vec<String>> {
   let req_id = get_req_id();
   let mut data: GetuseridlistRes = fetch_getuseridlist(
     wxw_app_id,
@@ -792,7 +787,7 @@ pub async fn getuseridlist(
     );
     return Err(eyre!("获取成员ID列表失败: {errmsg}"));
   }
-  let mut userids: Vec<SmolStr> = Vec::with_capacity(userlist.len());
+  let mut userids: Vec<String> = Vec::with_capacity(userlist.len());
   for user in userlist {
     if userids.contains(&user.userid) {
       continue;
@@ -804,7 +799,7 @@ pub async fn getuseridlist(
 
 async fn fetch_getuser(
   wxw_app_id: WxwAppId,
-  userid: SmolStr,
+  userid: String,
   force: Option<bool>,
 ) -> Result<GetuserRes> {
   let req_id = get_req_id();
@@ -846,7 +841,7 @@ async fn fetch_getuser(
 /// 如果获取用户信息失败，则返回 `Err`，其中包含错误信息。
 pub async fn getuser(
   wxw_app_id: WxwAppId,
-  userid: SmolStr,
+  userid: String,
 ) -> Result<Option<GetuserRes>> {
   let req_id = get_req_id();
   let data: GetuserRes = fetch_getuser(

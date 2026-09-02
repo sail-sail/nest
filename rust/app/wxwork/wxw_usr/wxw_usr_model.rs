@@ -8,8 +8,6 @@ use async_graphql::{
   SimpleObject,
 };
 
-use smol_str::SmolStr;
-
 use generated::base::org::org_model::OrgId;
 use generated::base::tenant::tenant_model::TenantId;
 use generated::base::usr::usr_model::UsrId;
@@ -21,13 +19,13 @@ use generated::common::usr::usr_model::GetLoginInfoorgIdModel;
 pub struct WxwGetAppid {
   
   /// 企业微信appid
-  pub appid: SmolStr,
+  pub appid: String,
   
   /// 企业微信agentid
-  pub agentid: SmolStr,
+  pub agentid: String,
   
   /// 企业微信授权范围
-  pub scope: SmolStr,
+  pub scope: String,
   
 }
 
@@ -36,13 +34,13 @@ pub struct WxwGetAppid {
 pub struct WxwLoginByCodeInput {
   
   /// 域名
-  pub host: SmolStr,
+  pub host: String,
   
   /// 企业微信登录时获取的code
-  pub code: SmolStr,
+  pub code: String,
   
   /// 语言
-  pub lang: Option<SmolStr>,
+  pub lang: Option<String>,
   
 }
 
@@ -51,7 +49,7 @@ pub struct WxwLoginByCodeInput {
 pub struct WxwLoginByCode {
   
   /// 授权码
-  pub authorization: SmolStr,
+  pub authorization: String,
   
   /// 组织id
   pub org_id: Option<OrgId>,
@@ -60,16 +58,16 @@ pub struct WxwLoginByCode {
   pub usr_id: UsrId,
   
   /// 用户名
-  pub username: SmolStr,
+  pub username: String,
   
   /// 姓名
-  pub name: SmolStr,
+  pub name: String,
   
   /// 用户展示名
-  pub lbl: SmolStr,
+  pub lbl: String,
   
   /// 角色编码
-  pub role_codes: Vec<SmolStr>,
+  pub role_codes: Vec<String>,
   
   /// 可用组织
   pub org_id_models: Vec<GetLoginInfoorgIdModel>,
@@ -78,20 +76,20 @@ pub struct WxwLoginByCode {
   pub tenant_id: TenantId,
   
   /// 语言
-  pub lang: SmolStr,
+  pub lang: String,
   
 }
 
 #[derive(Deserialize)]
 pub struct NotifyQuery {
   #[serde(rename = "msg_signature")]
-  pub msg_signature: SmolStr,
+  pub msg_signature: String,
   #[serde(rename = "timestamp")]
-  pub timestamp: SmolStr,
+  pub timestamp: String,
   #[serde(rename = "nonce")]
-  pub nonce: SmolStr,
+  pub nonce: String,
   #[serde(rename = "echostr")]
-  pub echostr: SmolStr,
-  pub corpid: SmolStr,
-  pub agentid: SmolStr,
+  pub echostr: String,
+  pub corpid: String,
+  pub agentid: String,
 }

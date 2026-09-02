@@ -12,8 +12,6 @@ use generated::common::context::{
   Options,
 };
 
-use smol_str::SmolStr;
-
 use super::wxw_usr_model::{
   NotifyQuery,
   WxwGetAppid,
@@ -137,7 +135,7 @@ pub async fn wxwork_usr_notify_get(
 
 /// 通过host获取appid, agentid
 pub async fn wxw_get_appid(
-  host: SmolStr,
+  host: String,
 ) -> Result<WxwGetAppid> {
   
   // 获取域名
@@ -451,7 +449,7 @@ fn get_wxw_sync_usr_lock() -> &'static Arc<Mutex<bool>> {
 
 /// 同步企微用户
 pub async fn wxw_sync_usr(
-  host: SmolStr,
+  host: String,
 ) -> Result<i32> {
   let mut wxw_sync_usr_lock = get_wxw_sync_usr_lock().lock().await;
   if *wxw_sync_usr_lock {
@@ -469,7 +467,7 @@ pub async fn wxw_sync_usr(
 
 /// 同步企微用户
 async fn _wxw_sync_usr(
-  host: SmolStr,
+  host: String,
 ) -> Result<i32> {
   
   // 获取域名
@@ -509,7 +507,7 @@ async fn _wxw_sync_usr(
   let corpid = wxw_app_model.corpid;
   let agentid = wxw_app_model.agentid;
   
-  let userids: Vec<SmolStr> = getuseridlist(
+  let userids: Vec<String> = getuseridlist(
     wxw_app_id,
   ).await?;
   let wxw_usr_models = find_all_wxw_usr(
@@ -526,7 +524,7 @@ async fn _wxw_sync_usr(
             && wxw_usr_model.corpid.as_str() == corpid
         )
     })
-    .collect::<Vec<SmolStr>>();
+    .collect::<Vec<String>>();
   let mut wxw_usr_models4add: Vec<WxwUsrInput> = Vec::with_capacity(userids4add.len());
   for userid in userids4add {
     let get_user_res = getuser(

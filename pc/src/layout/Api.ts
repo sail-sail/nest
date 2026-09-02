@@ -101,7 +101,7 @@ export async function wxwGetAppid(
     wxwGetAppid: Query["wxwGetAppid"],
   } = await query({
     query: /* GraphQL */ `
-      query($host: SmolStr!) {
+      query($host: String!) {
         wxwGetAppid(host: $host) {
           appid
           agentid

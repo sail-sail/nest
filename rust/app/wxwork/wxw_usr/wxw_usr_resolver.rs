@@ -3,9 +3,7 @@ use poem::{
   Response,
   http::StatusCode,
 };
-use smol_str::SmolStr;
-
-use generated::common::context::Options;
+  use generated::common::context::Options;
 
 use super::wxw_usr_service;
 
@@ -35,7 +33,7 @@ pub async fn wxwork_usr_notify_get(
 
 /// 通过host获取appid, agentid
 pub async fn wxw_get_appid(
-  host: SmolStr,
+  host: String,
 ) -> color_eyre::eyre::Result<WxwGetAppid> {
   
   let res = wxw_usr_service::wxw_get_appid(
@@ -61,7 +59,7 @@ pub async fn wxw_login_by_code(
 
 /// 同步企业微信用户
 pub async fn wxw_sync_usr(
-  host: SmolStr,
+  host: String,
 ) -> color_eyre::eyre::Result<i32> {
   
   let res = wxw_usr_service::wxw_sync_usr(

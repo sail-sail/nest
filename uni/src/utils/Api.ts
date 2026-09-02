@@ -60,7 +60,7 @@ export async function wxwGetConfigSignature(
     wxwGetConfigSignature: Query["wxwGetConfigSignature"],
   } = await query({
     query: /* GraphQL */ `
-      query($appid: SmolStr!, $agentid: SmolStr!, $url: SmolStr!) {
+      query($appid: String!, $agentid: String!, $url: String!) {
         wxwGetConfigSignature(appid: $appid, agentid: $agentid, url: $url) {
           timestamp
           nonceStr
@@ -89,7 +89,7 @@ export async function wxwGetAgentConfigSignature(
     wxwGetAgentConfigSignature: Query["wxwGetAgentConfigSignature"],
   } = await query({
     query: /* GraphQL */ `
-      query($appid: SmolStr!, $agentid: SmolStr!, $url: SmolStr!) {
+      query($appid: String!, $agentid: String!, $url: String!) {
         wxwGetAgentConfigSignature(appid: $appid, agentid: $agentid, url: $url) {
           timestamp
           nonceStr

@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -61,49 +58,49 @@ pub struct WxwUsrModel {
   pub wxw_app_id: WxwAppId,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: SmolStr,
+  pub wxw_app_id_lbl: String,
   /// 企业ID
   #[graphql(skip)]
-  pub corpid: SmolStr,
+  pub corpid: String,
   /// 应用ID
   #[graphql(skip)]
-  pub agentid: SmolStr,
+  pub agentid: String,
   /// 姓名
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 企微用户
   #[graphql(name = "userid")]
-  pub userid: SmolStr,
+  pub userid: String,
   /// 手机号
   #[graphql(skip)]
-  pub mobile: SmolStr,
+  pub mobile: String,
   /// 性别
   #[graphql(skip)]
-  pub gender: SmolStr,
+  pub gender: String,
   /// 邮箱
   #[graphql(skip)]
-  pub email: SmolStr,
+  pub email: String,
   /// 企业邮箱
   #[graphql(skip)]
-  pub biz_email: SmolStr,
+  pub biz_email: String,
   /// 直属上级
   #[graphql(skip)]
-  pub direct_leader: SmolStr,
+  pub direct_leader: String,
   /// 职位
   #[graphql(skip)]
-  pub position: SmolStr,
+  pub position: String,
   /// 头像
   #[graphql(skip)]
-  pub avatar: SmolStr,
+  pub avatar: String,
   /// 头像缩略图
   #[graphql(skip)]
-  pub thumb_avatar: SmolStr,
+  pub thumb_avatar: String,
   /// 个人二维码
   #[graphql(skip)]
-  pub qr_code: SmolStr,
+  pub qr_code: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -111,25 +108,25 @@ pub struct WxwUsrModel {
   pub create_usr_id: UsrId,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: UsrId,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for WxwUsrModel {
@@ -141,68 +138,54 @@ impl FromRow<'_, MySqlRow> for WxwUsrModel {
     // 企微应用
     let wxw_app_id: WxwAppId = row.try_get("wxw_app_id")?;
     let wxw_app_id_lbl: Option<&str> = row.try_get("wxw_app_id_lbl")?;
-    let wxw_app_id_lbl = SmolStr::new(wxw_app_id_lbl.unwrap_or_default());
+    let wxw_app_id_lbl = String::from(wxw_app_id_lbl.unwrap_or_default());
     // 企业ID
-    let corpid: &str = row.try_get("corpid")?;
-    let corpid = SmolStr::new(corpid);
+    let corpid: String = row.try_get("corpid")?;
     // 应用ID
-    let agentid: &str = row.try_get("agentid")?;
-    let agentid = SmolStr::new(agentid);
+    let agentid: String = row.try_get("agentid")?;
     // 姓名
-    let lbl: &str = row.try_get("lbl")?;
-    let lbl = SmolStr::new(lbl);
+    let lbl: String = row.try_get("lbl")?;
     // 企微用户
-    let userid: &str = row.try_get("userid")?;
-    let userid = SmolStr::new(userid);
+    let userid: String = row.try_get("userid")?;
     // 手机号
-    let mobile: &str = row.try_get("mobile")?;
-    let mobile = SmolStr::new(mobile);
+    let mobile: String = row.try_get("mobile")?;
     // 性别
-    let gender: &str = row.try_get("gender")?;
-    let gender = SmolStr::new(gender);
+    let gender: String = row.try_get("gender")?;
     // 邮箱
-    let email: &str = row.try_get("email")?;
-    let email = SmolStr::new(email);
+    let email: String = row.try_get("email")?;
     // 企业邮箱
-    let biz_email: &str = row.try_get("biz_email")?;
-    let biz_email = SmolStr::new(biz_email);
+    let biz_email: String = row.try_get("biz_email")?;
     // 直属上级
-    let direct_leader: &str = row.try_get("direct_leader")?;
-    let direct_leader = SmolStr::new(direct_leader);
+    let direct_leader: String = row.try_get("direct_leader")?;
     // 职位
-    let position: &str = row.try_get("position")?;
-    let position = SmolStr::new(position);
+    let position: String = row.try_get("position")?;
     // 头像
-    let avatar: &str = row.try_get("avatar")?;
-    let avatar = SmolStr::new(avatar);
+    let avatar: String = row.try_get("avatar")?;
     // 头像缩略图
-    let thumb_avatar: &str = row.try_get("thumb_avatar")?;
-    let thumb_avatar = SmolStr::new(thumb_avatar);
+    let thumb_avatar: String = row.try_get("thumb_avatar")?;
     // 个人二维码
-    let qr_code: &str = row.try_get("qr_code")?;
-    let qr_code = SmolStr::new(qr_code);
+    let qr_code: String = row.try_get("qr_code")?;
     // 备注
-    let rem: &str = row.try_get("rem")?;
-    let rem = SmolStr::new(rem);
+    let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -247,22 +230,22 @@ impl FromRow<'_, MySqlRow> for WxwUsrModel {
 pub struct WxwUsrFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 企微应用
   #[graphql(name = "wxw_app_id")]
-  pub wxw_app_id: SmolStr,
+  pub wxw_app_id: String,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: SmolStr,
+  pub wxw_app_id_lbl: String,
   /// 姓名
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 企微用户
   #[graphql(name = "userid")]
-  pub userid: SmolStr,
+  pub userid: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -284,94 +267,94 @@ pub struct WxwUsrSearch {
   pub wxw_app_id_is_null: Option<bool>,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: Option<Vec<SmolStr>>,
+  pub wxw_app_id_lbl: Option<Vec<String>>,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl_like")]
-  pub wxw_app_id_lbl_like: Option<SmolStr>,
+  pub wxw_app_id_lbl_like: Option<String>,
   /// 企业ID
   #[graphql(skip)]
-  pub corpid: Option<SmolStr>,
+  pub corpid: Option<String>,
   /// 企业ID
   #[graphql(skip)]
-  pub corpid_like: Option<SmolStr>,
+  pub corpid_like: Option<String>,
   /// 应用ID
   #[graphql(skip)]
-  pub agentid: Option<SmolStr>,
+  pub agentid: Option<String>,
   /// 应用ID
   #[graphql(skip)]
-  pub agentid_like: Option<SmolStr>,
+  pub agentid_like: Option<String>,
   /// 姓名
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 姓名
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<SmolStr>,
+  pub lbl_like: Option<String>,
   /// 企微用户
   #[graphql(skip)]
-  pub userid: Option<SmolStr>,
+  pub userid: Option<String>,
   /// 企微用户
   #[graphql(skip)]
-  pub userid_like: Option<SmolStr>,
+  pub userid_like: Option<String>,
   /// 手机号
   #[graphql(skip)]
-  pub mobile: Option<SmolStr>,
+  pub mobile: Option<String>,
   /// 手机号
   #[graphql(skip)]
-  pub mobile_like: Option<SmolStr>,
+  pub mobile_like: Option<String>,
   /// 性别
   #[graphql(skip)]
-  pub gender: Option<SmolStr>,
+  pub gender: Option<String>,
   /// 性别
   #[graphql(skip)]
-  pub gender_like: Option<SmolStr>,
+  pub gender_like: Option<String>,
   /// 邮箱
   #[graphql(skip)]
-  pub email: Option<SmolStr>,
+  pub email: Option<String>,
   /// 邮箱
   #[graphql(skip)]
-  pub email_like: Option<SmolStr>,
+  pub email_like: Option<String>,
   /// 企业邮箱
   #[graphql(skip)]
-  pub biz_email: Option<SmolStr>,
+  pub biz_email: Option<String>,
   /// 企业邮箱
   #[graphql(skip)]
-  pub biz_email_like: Option<SmolStr>,
+  pub biz_email_like: Option<String>,
   /// 直属上级
   #[graphql(skip)]
-  pub direct_leader: Option<SmolStr>,
+  pub direct_leader: Option<String>,
   /// 直属上级
   #[graphql(skip)]
-  pub direct_leader_like: Option<SmolStr>,
+  pub direct_leader_like: Option<String>,
   /// 职位
   #[graphql(skip)]
-  pub position: Option<SmolStr>,
+  pub position: Option<String>,
   /// 职位
   #[graphql(skip)]
-  pub position_like: Option<SmolStr>,
+  pub position_like: Option<String>,
   /// 头像
   #[graphql(skip)]
-  pub avatar: Option<SmolStr>,
+  pub avatar: Option<String>,
   /// 头像
   #[graphql(skip)]
-  pub avatar_like: Option<SmolStr>,
+  pub avatar_like: Option<String>,
   /// 头像缩略图
   #[graphql(skip)]
-  pub thumb_avatar: Option<SmolStr>,
+  pub thumb_avatar: Option<String>,
   /// 头像缩略图
   #[graphql(skip)]
-  pub thumb_avatar_like: Option<SmolStr>,
+  pub thumb_avatar_like: Option<String>,
   /// 个人二维码
   #[graphql(skip)]
-  pub qr_code: Option<SmolStr>,
+  pub qr_code: Option<String>,
   /// 个人二维码
   #[graphql(skip)]
-  pub qr_code_like: Option<SmolStr>,
+  pub qr_code_like: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<SmolStr>,
+  pub rem_like: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -380,10 +363,10 @@ pub struct WxwUsrSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -395,10 +378,10 @@ pub struct WxwUsrSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -587,61 +570,61 @@ pub struct WxwUsrInput {
   pub wxw_app_id: Option<WxwAppId>,
   /// 企微应用
   #[graphql(name = "wxw_app_id_lbl")]
-  pub wxw_app_id_lbl: Option<SmolStr>,
+  pub wxw_app_id_lbl: Option<String>,
   /// 企业ID
   #[graphql(skip)]
-  pub corpid: Option<SmolStr>,
+  pub corpid: Option<String>,
   /// 应用ID
   #[graphql(skip)]
-  pub agentid: Option<SmolStr>,
+  pub agentid: Option<String>,
   /// 姓名
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 企微用户
   #[graphql(name = "userid")]
-  pub userid: Option<SmolStr>,
+  pub userid: Option<String>,
   /// 手机号
   #[graphql(skip)]
-  pub mobile: Option<SmolStr>,
+  pub mobile: Option<String>,
   /// 性别
   #[graphql(skip)]
-  pub gender: Option<SmolStr>,
+  pub gender: Option<String>,
   /// 邮箱
   #[graphql(skip)]
-  pub email: Option<SmolStr>,
+  pub email: Option<String>,
   /// 企业邮箱
   #[graphql(skip)]
-  pub biz_email: Option<SmolStr>,
+  pub biz_email: Option<String>,
   /// 直属上级
   #[graphql(skip)]
-  pub direct_leader: Option<SmolStr>,
+  pub direct_leader: Option<String>,
   /// 职位
   #[graphql(skip)]
-  pub position: Option<SmolStr>,
+  pub position: Option<String>,
   /// 头像
   #[graphql(skip)]
-  pub avatar: Option<SmolStr>,
+  pub avatar: Option<String>,
   /// 头像缩略图
   #[graphql(skip)]
-  pub thumb_avatar: Option<SmolStr>,
+  pub thumb_avatar: Option<String>,
   /// 个人二维码
   #[graphql(skip)]
-  pub qr_code: Option<SmolStr>,
+  pub qr_code: Option<String>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -650,13 +633,13 @@ pub struct WxwUsrInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -879,7 +862,7 @@ pub fn check_sort_wxw_usr(
     }
     if !get_can_sort_in_api_wxw_usr.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_wxw_usr: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_wxw_usr: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

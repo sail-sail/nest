@@ -6,7 +6,6 @@ use serde_json::json;
 use tracing::{info, error};
 
 use color_eyre::eyre::{Result, eyre};
-use smol_str::SmolStr;
 
 use crate::base::domain::domain_dao::find_by_id_domain;
 use crate::base::message::message_dao::create_return_message;
@@ -52,14 +51,14 @@ use crate::wxwork::wxw_msg::wxw_msg_model::{SendCardMsgInput, WxwMsgInput};
 struct SendRes {
   errcode: i32,
   #[serde(default)]
-  errmsg: SmolStr,
+  errmsg: String,
   #[serde(default)]
-  msgid: SmolStr,
+  msgid: String,
   #[serde(default)]
-  response_code: SmolStr,
+  response_code: String,
 }
 
-async fn fetch_access_token(corpid: &str, corpsecret: &str) -> Result<(SmolStr, u32)> {
+async fn fetch_access_token(corpid: &str, corpsecret: &str) -> Result<(String, u32)> {
   let url = format!(
     "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corpid}&corpsecret={corpsecret}",
     corpid = urlencoding::encode(corpid),
@@ -71,9 +70,9 @@ async fn fetch_access_token(corpid: &str, corpsecret: &str) -> Result<(SmolStr, 
   struct GettokenRes {
     errcode: i32,
     #[serde(default)]
-    errmsg: SmolStr,
+    errmsg: String,
     #[serde(default)]
-    access_token: SmolStr,
+    access_token: String,
     #[serde(default)]
     expires_in: u32,
   }
@@ -102,7 +101,7 @@ async fn get_access_token(
   wxw_app_id: WxwAppId,
   force: Option<bool>,
   options: Option<Options>,
-) -> Result<SmolStr> {
+)-> Result<String> {
   let force = force.unwrap_or(false);
   let wxw_app_model = find_by_id_wxw_app(wxw_app_id, None).await?;
   let wxw_app_model = validate_option_wxw_app(wxw_app_model).await?;
@@ -121,7 +120,7 @@ async fn get_access_token(
   let wxw_app_token_model = find_one_wxw_app_token(
     WxwAppTokenSearch {
       wxw_app_id: vec![wxw_app_id].into(),
-      r#type: SmolStr::new("corp").into(),
+      r#type: String::from("corp").into(),
       tenant_id: tenant_id.into(),
       ..Default::default()
     }
@@ -137,7 +136,7 @@ async fn get_access_token(
     create_wxw_app_token(
       WxwAppTokenInput {
         wxw_app_id: wxw_app_id.into(),
-        r#type: SmolStr::new("corp").into(),
+        r#type: String::from("corp").into(),
         access_token: access_token.clone().into(),
         expires_in: expires_in.into(),
         token_time: now.into(),
@@ -163,7 +162,7 @@ async fn get_access_token(
       wxw_app_token_model.id,
       WxwAppTokenInput {
         wxw_app_id: wxw_app_id.into(),
-        r#type: SmolStr::new("corp").into(),
+        r#type: String::from("corp").into(),
         access_token: new_access_token.clone().into(),
         expires_in: expires_in.into(),
         token_time: now.into(),
@@ -425,16 +424,16 @@ pub async fn send_card_msg(
     data.msgid,
   );
 
-  let errmsg: SmolStr = if errcode == 0 {
-    SmolStr::new("")
+  let errmsg: String = if errcode == 0 {
+    "".to_string()
   } else {
-    errmsg.chars().take(256).collect::<String>().into()
+    errmsg.chars().take(256).collect::<String>()
   };
 
   create_wxw_msg(
     WxwMsgInput {
       wxw_app_id: wxw_app_id.into(),
-      errcode: SmolStr::new(errcode.to_string()).into(),
+      errcode: errcode.to_string().into(),
       touser: input.touser.into(),
       title: input.title.into(),
       description: input.description.into(),
@@ -574,11 +573,11 @@ pub async fn send_message_wxwork(
 
   let wecom_input = SendCardMsgInput {
     wxw_app_id,
-    touser: touser.into(),
-    title: title.clone().into(),
-    description: content.clone().into(),
-    url: url.clone().into(),
-    btntxt: if url.is_empty() { "".into() } else { "查看".into() },
+    touser,
+    title: title.clone(),
+    description: content.clone(),
+    url: url.clone(),
+    btntxt: if url.is_empty() { "".to_string() } else { "查看".to_string() },
   };
 
   send_card_msg(wecom_input, options).await?;

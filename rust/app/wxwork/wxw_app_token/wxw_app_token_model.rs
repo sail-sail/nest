@@ -2,27 +2,25 @@ use serde::{Serialize, Deserialize};
 
 use async_graphql::SimpleObject;
 
-use smol_str::SmolStr;
-
 #[derive(Serialize, Deserialize)]
 pub struct GetuserRes {
   pub errcode: i32,
   #[serde(default)]
-  pub errmsg: SmolStr,
+  pub errmsg: String,
   #[serde(default)]
-  pub userid: SmolStr,
+  pub userid: String,
   #[serde(default)]
-  pub name: SmolStr,
+  pub name: String,
   #[serde(default)]
   pub department: Vec<i32>,
   #[serde(default)]
-  pub position: SmolStr,
+  pub position: String,
   #[serde(default)]
   pub status: i32,
   #[serde(default)]
   pub isleader: i32,
   #[serde(default)]
-  pub telephone: SmolStr,
+  pub telephone: String,
   #[serde(default)]
   pub enable: i32,
   #[serde(default)]
@@ -32,7 +30,7 @@ pub struct GetuserRes {
   #[serde(default)]
   pub main_department: i32,
   #[serde(default)]
-  pub alias: SmolStr,
+  pub alias: String,
   #[serde(default)]
   pub is_leader_in_dept: Vec<i32>,
 }
@@ -40,9 +38,9 @@ pub struct GetuserRes {
 #[derive(Serialize, Deserialize)]
 pub struct GetuserinfoModel {
   #[serde(default)]
-  pub userid: SmolStr,
+  pub userid: String,
   #[serde(default)]
-  pub user_ticket: SmolStr,
+  pub user_ticket: String,
 }
 
 /**
@@ -61,32 +59,32 @@ pub struct GetuserinfoModel {
 pub struct GetuserDetailRes {
   pub errcode: i32,
   #[serde(default)]
-  pub errmsg: SmolStr,
+  pub errmsg: String,
   #[serde(default)]
-  pub userid: SmolStr,
+  pub userid: String,
   #[serde(default)]
   pub gender: i32,
   #[serde(default)]
-  pub avatar: SmolStr,
+  pub avatar: String,
   #[serde(default)]
-  pub qr_code: SmolStr,
+  pub qr_code: String,
   #[serde(default)]
-  pub mobile: SmolStr,
+  pub mobile: String,
   #[serde(default)]
-  pub email: SmolStr,
+  pub email: String,
   #[serde(default)]
-  pub biz_mail: SmolStr,
+  pub biz_mail: String,
   #[serde(default)]
-  pub address: SmolStr,
+  pub address: String,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct GetJsapiTicketRes {
   pub errcode: i32,
   #[serde(default)]
-  pub errmsg: SmolStr,
+  pub errmsg: String,
   #[serde(default)]
-  pub ticket: SmolStr,
+  pub ticket: String,
   #[serde(default)]
   pub expires_in: u32,
 }
@@ -94,8 +92,8 @@ pub struct GetJsapiTicketRes {
 #[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]
 #[graphql(rename_fields = "snake_case")]
 pub struct WxwGetConfigSignature {
-  pub timestamp: SmolStr,
+  pub timestamp: String,
   #[graphql(name = "nonceStr")]
-  pub nonce_str: SmolStr,
-  pub signature: SmolStr,
+  pub nonce_str: String,
+  pub signature: String,
 }

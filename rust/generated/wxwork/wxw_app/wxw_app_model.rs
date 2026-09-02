@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -61,79 +58,79 @@ pub struct WxwAppModel {
   pub id: WxwAppId,
   /// 应用名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 企业ID
   #[graphql(name = "corpid")]
-  pub corpid: SmolStr,
+  pub corpid: String,
   /// 应用ID
   #[graphql(name = "agentid")]
-  pub agentid: SmolStr,
+  pub agentid: String,
   /// 可信域名
   #[graphql(name = "domain_id")]
   pub domain_id: DomainId,
   /// 可信域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: SmolStr,
+  pub domain_id_lbl: String,
   /// 应用密钥
   #[graphql(name = "corpsecret")]
-  pub corpsecret: SmolStr,
+  pub corpsecret: String,
   /// 应用回调Token
   #[graphql(name = "notify_token")]
-  pub notify_token: SmolStr,
+  pub notify_token: String,
   /// 应用回调AESKey
   #[graphql(name = "notify_aeskey")]
-  pub notify_aeskey: SmolStr,
+  pub notify_aeskey: String,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
-  pub contactsecret: SmolStr,
+  pub contactsecret: String,
   /// 通讯录回调Token
   #[graphql(name = "contact_notify_token")]
-  pub contact_notify_token: SmolStr,
+  pub contact_notify_token: String,
   /// 通讯录回调AESKey
   #[graphql(name = "contact_notify_aeskey")]
-  pub contact_notify_aeskey: SmolStr,
+  pub contact_notify_aeskey: String,
   /// 发送企微消息
   #[graphql(name = "is_send_msg")]
   pub is_send_msg: u8,
   /// 发送企微消息
   #[graphql(name = "is_send_msg_lbl")]
-  pub is_send_msg_lbl: SmolStr,
+  pub is_send_msg_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: SmolStr,
+  pub is_locked_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for WxwAppModel {
@@ -143,69 +140,65 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
     // ID
     let id: WxwAppId = row.try_get("id")?;
     // 应用名称
-    let lbl: &str = row.try_get("lbl")?;
-    let lbl = SmolStr::new(lbl);
+    let lbl: String = row.try_get("lbl")?;
     // 企业ID
-    let corpid: &str = row.try_get("corpid")?;
-    let corpid = SmolStr::new(corpid);
+    let corpid: String = row.try_get("corpid")?;
     // 应用ID
-    let agentid: &str = row.try_get("agentid")?;
-    let agentid = SmolStr::new(agentid);
+    let agentid: String = row.try_get("agentid")?;
     // 可信域名
     let domain_id: DomainId = row.try_get("domain_id")?;
     let domain_id_lbl: Option<&str> = row.try_get("domain_id_lbl")?;
-    let domain_id_lbl = SmolStr::new(domain_id_lbl.unwrap_or_default());
+    let domain_id_lbl = String::from(domain_id_lbl.unwrap_or_default());
     // 应用密钥
     let corpsecret: &str = row.try_get("corpsecret")?;
-    let corpsecret = SmolStr::new(decrypt(corpsecret));
+    let corpsecret = decrypt(corpsecret);
     // 应用回调Token
     let notify_token: &str = row.try_get("notify_token")?;
-    let notify_token = SmolStr::new(decrypt(notify_token));
+    let notify_token = decrypt(notify_token);
     // 应用回调AESKey
     let notify_aeskey: &str = row.try_get("notify_aeskey")?;
-    let notify_aeskey = SmolStr::new(decrypt(notify_aeskey));
+    let notify_aeskey = decrypt(notify_aeskey);
     // 通讯录密钥
     let contactsecret: &str = row.try_get("contactsecret")?;
-    let contactsecret = SmolStr::new(decrypt(contactsecret));
+    let contactsecret = decrypt(contactsecret);
     // 通讯录回调Token
     let contact_notify_token: &str = row.try_get("contact_notify_token")?;
-    let contact_notify_token = SmolStr::new(decrypt(contact_notify_token));
+    let contact_notify_token = decrypt(contact_notify_token);
     // 通讯录回调AESKey
     let contact_notify_aeskey: &str = row.try_get("contact_notify_aeskey")?;
-    let contact_notify_aeskey = SmolStr::new(decrypt(contact_notify_aeskey));
+    let contact_notify_aeskey = decrypt(contact_notify_aeskey);
     // 发送企微消息
     let is_send_msg: u8 = row.try_get("is_send_msg")?;
-    let is_send_msg_lbl = SmolStr::new(is_send_msg.to_string());
+    let is_send_msg_lbl = is_send_msg.to_string();
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl = SmolStr::new(is_locked.to_string());
+    let is_locked_lbl = is_locked.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl = SmolStr::new(is_enabled.to_string());
+    let is_enabled_lbl = is_enabled.to_string();
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
-    let rem: &str = row.try_get("rem")?;
-    let rem = SmolStr::new(rem);
+    let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -253,88 +246,88 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
 pub struct WxwAppFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 应用名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 企业ID
   #[graphql(name = "corpid")]
-  pub corpid: SmolStr,
+  pub corpid: String,
   /// 应用ID
   #[graphql(name = "agentid")]
-  pub agentid: SmolStr,
+  pub agentid: String,
   /// 可信域名
   #[graphql(name = "domain_id")]
-  pub domain_id: SmolStr,
+  pub domain_id: String,
   /// 可信域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: SmolStr,
+  pub domain_id_lbl: String,
   /// 应用密钥
   #[graphql(name = "corpsecret")]
-  pub corpsecret: SmolStr,
+  pub corpsecret: String,
   /// 应用回调Token
   #[graphql(name = "notify_token")]
-  pub notify_token: SmolStr,
+  pub notify_token: String,
   /// 应用回调AESKey
   #[graphql(name = "notify_aeskey")]
-  pub notify_aeskey: SmolStr,
+  pub notify_aeskey: String,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
-  pub contactsecret: SmolStr,
+  pub contactsecret: String,
   /// 通讯录回调Token
   #[graphql(name = "contact_notify_token")]
-  pub contact_notify_token: SmolStr,
+  pub contact_notify_token: String,
   /// 通讯录回调AESKey
   #[graphql(name = "contact_notify_aeskey")]
-  pub contact_notify_aeskey: SmolStr,
+  pub contact_notify_aeskey: String,
   /// 发送企微消息
   #[graphql(name = "is_send_msg")]
-  pub is_send_msg: SmolStr,
+  pub is_send_msg: String,
   /// 发送企微消息
   #[graphql(name = "is_send_msg_lbl")]
-  pub is_send_msg_lbl: SmolStr,
+  pub is_send_msg_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
-  pub is_locked: SmolStr,
+  pub is_locked: String,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: SmolStr,
+  pub is_locked_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
-  pub is_enabled: SmolStr,
+  pub is_enabled: String,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: SmolStr,
+  pub order_by: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: SmolStr,
+  pub create_usr_id: String,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: SmolStr,
+  pub update_usr_id: String,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: SmolStr,
+  pub update_time: String,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -350,22 +343,22 @@ pub struct WxwAppSearch {
   pub is_deleted: Option<u8>,
   /// 应用名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 应用名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<SmolStr>,
+  pub lbl_like: Option<String>,
   /// 企业ID
   #[graphql(name = "corpid")]
-  pub corpid: Option<SmolStr>,
+  pub corpid: Option<String>,
   /// 企业ID
   #[graphql(name = "corpid_like")]
-  pub corpid_like: Option<SmolStr>,
+  pub corpid_like: Option<String>,
   /// 应用ID
   #[graphql(name = "agentid")]
-  pub agentid: Option<SmolStr>,
+  pub agentid: Option<String>,
   /// 应用ID
   #[graphql(name = "agentid_like")]
-  pub agentid_like: Option<SmolStr>,
+  pub agentid_like: Option<String>,
   /// 可信域名
   #[graphql(name = "domain_id")]
   pub domain_id: Option<Vec<DomainId>>,
@@ -374,10 +367,10 @@ pub struct WxwAppSearch {
   pub domain_id_is_null: Option<bool>,
   /// 可信域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: Option<Vec<SmolStr>>,
+  pub domain_id_lbl: Option<Vec<String>>,
   /// 可信域名
   #[graphql(name = "domain_id_lbl_like")]
-  pub domain_id_lbl_like: Option<SmolStr>,
+  pub domain_id_lbl_like: Option<String>,
   /// 发送企微消息
   #[graphql(skip)]
   pub is_send_msg: Option<Vec<u8>>,
@@ -392,10 +385,10 @@ pub struct WxwAppSearch {
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<SmolStr>,
+  pub rem_like: Option<String>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -404,10 +397,10 @@ pub struct WxwAppSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -419,10 +412,10 @@ pub struct WxwAppSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -554,73 +547,73 @@ pub struct WxwAppInput {
   pub tenant_id: Option<TenantId>,
   /// 应用名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 企业ID
   #[graphql(name = "corpid")]
-  pub corpid: Option<SmolStr>,
+  pub corpid: Option<String>,
   /// 应用ID
   #[graphql(name = "agentid")]
-  pub agentid: Option<SmolStr>,
+  pub agentid: Option<String>,
   /// 可信域名
   #[graphql(name = "domain_id")]
   pub domain_id: Option<DomainId>,
   /// 可信域名
   #[graphql(name = "domain_id_lbl")]
-  pub domain_id_lbl: Option<SmolStr>,
+  pub domain_id_lbl: Option<String>,
   /// 应用密钥
   #[graphql(name = "corpsecret")]
-  pub corpsecret: Option<SmolStr>,
+  pub corpsecret: Option<String>,
   /// 应用回调Token
   #[graphql(name = "notify_token")]
-  pub notify_token: Option<SmolStr>,
+  pub notify_token: Option<String>,
   /// 应用回调AESKey
   #[graphql(name = "notify_aeskey")]
-  pub notify_aeskey: Option<SmolStr>,
+  pub notify_aeskey: Option<String>,
   /// 通讯录密钥
   #[graphql(name = "contactsecret")]
-  pub contactsecret: Option<SmolStr>,
+  pub contactsecret: Option<String>,
   /// 通讯录回调Token
   #[graphql(name = "contact_notify_token")]
-  pub contact_notify_token: Option<SmolStr>,
+  pub contact_notify_token: Option<String>,
   /// 通讯录回调AESKey
   #[graphql(name = "contact_notify_aeskey")]
-  pub contact_notify_aeskey: Option<SmolStr>,
+  pub contact_notify_aeskey: Option<String>,
   /// 发送企微消息
   #[graphql(name = "is_send_msg")]
   pub is_send_msg: Option<u8>,
   /// 发送企微消息
   #[graphql(name = "is_send_msg_lbl")]
-  pub is_send_msg_lbl: Option<SmolStr>,
+  pub is_send_msg_lbl: Option<String>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
   #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: Option<SmolStr>,
+  pub is_locked_lbl: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: Option<SmolStr>,
+  pub is_enabled_lbl: Option<String>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -629,13 +622,13 @@ pub struct WxwAppInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -831,7 +824,7 @@ pub fn check_sort_wxw_app(
     }
     if !get_can_sort_in_api_wxw_app.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_wxw_app: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_wxw_app: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

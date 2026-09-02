@@ -3,7 +3,6 @@
 
 pub mod base;
 pub mod wxwork;
-pub mod scrm;
 
 use async_graphql::{
   MergedObject,
@@ -26,8 +25,6 @@ pub struct Mutation(
   
   base::BaseAppMutation,
   wxwork::WxworkAppMutation,
-  
-  scrm::ScrmAppMutation,
 );
 
 pub type QuerySchema = Schema<Query, Mutation, EmptySubscription>;
