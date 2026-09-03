@@ -190,7 +190,7 @@ if (right_field && !right_field_column) {
         v-model="<#=table#>_input"<#
         if (opts?.isUniPage?.detailFormWidth) {
         #>
-        :label-width="opts?.isUniPage?.detailFormWidth"<#
+        :label-width="<#=opts?.isUniPage?.detailFormWidth#>"<#
         } else {
         #>
         :label-width="160"<#
@@ -729,6 +729,66 @@ if (right_field && !right_field_column) {
               }
               #>
             ></CustomInput>
+          </tm-form-item>
+        </template><#
+        } else if (column.isCountyLbl) {
+        #>
+        
+        <!-- <#=column_comment#> -->
+        <template
+          v-if="<#
+          if (fieldPermit) {
+          #>fieldPermit('<#=column_name#>') && <#
+          }
+          #>props.hideFields?.includes('<#=column_name#>') !== true"
+        >
+          <!-- <#=column_comment#> -->
+          <tm-form-item<#
+            if (column.noAdd === true) {
+            #>
+            v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+            }
+            #>
+            label="<#=column_comment#>"
+            name="<#=column_name#>"<#
+            if (column.readonly) {
+            #>
+            :readonly="true"<#
+            } else {
+            #>
+            :readonly="isReadonly"<#
+            }
+            #><#
+            if (!require) {
+            #>
+            :required="false"<#
+            }
+            #>
+          >
+            <CustomCityPicker
+              v-model="<#=column_name#>_city_picker"<#
+              if (placeholderInForm) {
+              #>
+              placeholder="<#=placeholderInForm#>"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isReadonly"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #>
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
+              }
+              #>
+            ></CustomCityPicker>
           </tm-form-item>
         </template><#
         } else {
@@ -1383,6 +1443,7 @@ if (right_field && !right_field_column) {
         ref="actionBarRef"
         trigger-text="操作"
         trigger-color="info"
+        un-w="full"
       ><#
         if (hasAudit) {
         #>
@@ -1521,6 +1582,7 @@ if (right_field && !right_field_column) {
             v-if="permit('add', '新增') && <#=table#>_id"
             report
             color="info"
+            un-w="full"
             @click="actionBarRef?.close(); onCopy();"
           >
             复制
@@ -1533,6 +1595,7 @@ if (right_field && !right_field_column) {
           <CustomActionButton
             v-if="permit('edit', '编辑')"
             report
+            un-w="full"
             :disabled="!inited || is_form_hydrating || isReadonly"
             @click="actionBarRef?.close(); formRef?.submit();"
           >
@@ -1697,6 +1760,14 @@ import {<#
 } from "./Api.ts";
 
 import TmForm from "@/uni_modules/tm-ui/components/tm-form/tm-form.vue";<#
+if (county_lbl_column) {
+#>
+
+import {
+  findNameByCodePcaCode,
+} from "@/components/CustomCityPicker/CustomCityPickerApi.ts";<#
+}
+#><#
 if (hasAudit) {
 #>
 
@@ -1757,7 +1828,36 @@ let inited = $ref(false);
 let <#=table#>_id = $ref<<#=Table_Up#>Id>();
 
 let <#=table#>_input = $ref<<#=Table_Up#>Input>({ });
-let <#=table#>_model = $ref<<#=Table_Up#>Model>();
+let <#=table#>_model = $ref<<#=Table_Up#>Model>();<#
+if (county_lbl_column) {
+#>
+
+/** 选择省市区县 */
+const <#=county_lbl_column.COLUMN_NAME#>_city_picker = $computed<[string, string, string] | undefined>({
+  get() {
+    return [
+      <#=table#>_input.<#=province_code_column.COLUMN_NAME#> ?? "",
+      <#=table#>_input.<#=city_code_column.COLUMN_NAME#> ?? "",
+      <#=table#>_input.<#=county_code_column.COLUMN_NAME#> ?? "",
+    ] as [string, string, string];
+  },
+  async set(codes) {
+    const <#=province_code_column.COLUMN_NAME#> = codes?.[0] ?? "";
+    const <#=province_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=province_code_column.COLUMN_NAME#>);
+    const <#=city_code_column.COLUMN_NAME#> = codes?.[1] ?? "";
+    const <#=city_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=city_code_column.COLUMN_NAME#>);
+    const <#=county_code_column.COLUMN_NAME#> = codes?.[2] ?? "";
+    const <#=county_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=county_code_column.COLUMN_NAME#>);
+    <#=table#>_input.<#=province_code_column.COLUMN_NAME#> = <#=province_code_column.COLUMN_NAME#>;
+    <#=table#>_input.<#=province_lbl_column.COLUMN_NAME#> = <#=province_lbl_column.COLUMN_NAME#>;
+    <#=table#>_input.<#=city_code_column.COLUMN_NAME#> = <#=city_code_column.COLUMN_NAME#>;
+    <#=table#>_input.<#=city_lbl_column.COLUMN_NAME#> = <#=city_lbl_column.COLUMN_NAME#>;
+    <#=table#>_input.<#=county_code_column.COLUMN_NAME#> = <#=county_code_column.COLUMN_NAME#>;
+    <#=table#>_input.<#=county_lbl_column.COLUMN_NAME#> = <#=county_lbl_column.COLUMN_NAME#>;
+  },
+});<#
+}
+#>
 
 const form_rules: Record<string, TM.FORM_RULE[]> = {<#
   for (let i = 0; i < columns.length; i++) {

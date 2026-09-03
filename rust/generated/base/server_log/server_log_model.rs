@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -53,28 +50,28 @@ pub struct ServerLogModel {
   pub log_date: chrono::NaiveDate,
   /// 日志日期
   #[graphql(name = "log_date_lbl")]
-  pub log_date_lbl: SmolStr,
+  pub log_date_lbl: String,
   /// 日志时间
   #[graphql(name = "log_time")]
   pub log_time: chrono::NaiveDateTime,
   /// 日志时间
   #[graphql(name = "log_time_lbl")]
-  pub log_time_lbl: SmolStr,
+  pub log_time_lbl: String,
   /// 日志级别
   #[graphql(name = "level")]
   pub level: ServerLogLevel,
   /// 日志级别
   #[graphql(name = "level_lbl")]
-  pub level_lbl: SmolStr,
+  pub level_lbl: String,
   /// 模块
   #[graphql(name = "module")]
-  pub module: SmolStr,
+  pub module: String,
   /// 请求ID
   #[graphql(name = "req_id")]
-  pub req_id: SmolStr,
+  pub req_id: String,
   /// 日志内容
   #[graphql(name = "content")]
-  pub content: Option<SmolStr>,
+  pub content: Option<String>,
 }
 
 impl FromRow<'_, MySqlRow> for ServerLogModel {
@@ -83,23 +80,20 @@ impl FromRow<'_, MySqlRow> for ServerLogModel {
     let id: ServerLogId = row.try_get("id")?;
     // 日志日期
     let log_date: chrono::NaiveDate = row.try_get("log_date")?;
-    let log_date_lbl = SmolStr::new(log_date.format("%Y-%m-%d").to_string());
+    let log_date_lbl = log_date.format("%Y-%m-%d").to_string();
     // 日志时间
     let log_time: chrono::NaiveDateTime = row.try_get("log_time")?;
-    let log_time_lbl = SmolStr::new(log_time.format("%Y-%m-%d %H:%M:%S").to_string());
+    let log_time_lbl = log_time.format("%Y-%m-%d %H:%M:%S").to_string();
     // 日志级别
     let level_lbl: &str = row.try_get("level")?;
     let level: ServerLogLevel = level_lbl.try_into()?;
-    let level_lbl = SmolStr::new(level_lbl);
+    let level_lbl = String::from(level_lbl);
     // 模块
-    let module: &str = row.try_get("module")?;
-    let module = SmolStr::new(module);
+    let module: String = row.try_get("module")?;
     // 请求ID
-    let req_id: &str = row.try_get("req_id")?;
-    let req_id = SmolStr::new(req_id);
+    let req_id: String = row.try_get("req_id")?;
     // 日志内容
-    let content: Option<&str> = row.try_get("content")?;
-    let content = content.map(SmolStr::new);
+    let content: Option<String> = row.try_get("content")?;
     
     let model = Self {
       id,
@@ -124,34 +118,34 @@ impl FromRow<'_, MySqlRow> for ServerLogModel {
 pub struct ServerLogFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 日志日期
   #[graphql(name = "log_date")]
-  pub log_date: SmolStr,
+  pub log_date: String,
   /// 日志日期
   #[graphql(name = "log_date_lbl")]
-  pub log_date_lbl: SmolStr,
+  pub log_date_lbl: String,
   /// 日志时间
   #[graphql(name = "log_time")]
-  pub log_time: SmolStr,
+  pub log_time: String,
   /// 日志时间
   #[graphql(name = "log_time_lbl")]
-  pub log_time_lbl: SmolStr,
+  pub log_time_lbl: String,
   /// 日志级别
   #[graphql(name = "level")]
-  pub level: SmolStr,
+  pub level: String,
   /// 日志级别
   #[graphql(name = "level_lbl")]
-  pub level_lbl: SmolStr,
+  pub level_lbl: String,
   /// 模块
   #[graphql(name = "module")]
-  pub module: SmolStr,
+  pub module: String,
   /// 请求ID
   #[graphql(name = "req_id")]
-  pub req_id: SmolStr,
+  pub req_id: String,
   /// 日志内容
   #[graphql(name = "content")]
-  pub content: SmolStr,
+  pub content: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -173,22 +167,22 @@ pub struct ServerLogSearch {
   pub level: Option<Vec<ServerLogLevel>>,
   /// 模块
   #[graphql(name = "module")]
-  pub module: Option<SmolStr>,
+  pub module: Option<String>,
   /// 模块
   #[graphql(name = "module_like")]
-  pub module_like: Option<SmolStr>,
+  pub module_like: Option<String>,
   /// 请求ID
   #[graphql(name = "req_id")]
-  pub req_id: Option<SmolStr>,
+  pub req_id: Option<String>,
   /// 请求ID
   #[graphql(name = "req_id_like")]
-  pub req_id_like: Option<SmolStr>,
+  pub req_id_like: Option<String>,
   /// 日志内容
   #[graphql(name = "content")]
-  pub content: Option<SmolStr>,
+  pub content: Option<String>,
   /// 日志内容
   #[graphql(name = "content_like")]
-  pub content_like: Option<SmolStr>,
+  pub content_like: Option<String>,
 }
 
 impl std::fmt::Debug for ServerLogSearch {
@@ -248,28 +242,28 @@ pub struct ServerLogInput {
   pub log_date: Option<chrono::NaiveDate>,
   /// 日志日期
   #[graphql(name = "log_date_lbl")]
-  pub log_date_lbl: Option<SmolStr>,
+  pub log_date_lbl: Option<String>,
   /// 日志时间
   #[graphql(name = "log_time")]
   pub log_time: Option<chrono::NaiveDateTime>,
   /// 日志时间
   #[graphql(name = "log_time_lbl")]
-  pub log_time_lbl: Option<SmolStr>,
+  pub log_time_lbl: Option<String>,
   /// 日志级别
   #[graphql(name = "level")]
   pub level: Option<ServerLogLevel>,
   /// 日志级别
   #[graphql(name = "level_lbl")]
-  pub level_lbl: Option<SmolStr>,
+  pub level_lbl: Option<String>,
   /// 模块
   #[graphql(name = "module")]
-  pub module: Option<SmolStr>,
+  pub module: Option<String>,
   /// 请求ID
   #[graphql(name = "req_id")]
-  pub req_id: Option<SmolStr>,
+  pub req_id: Option<String>,
   /// 日志内容
   #[graphql(name = "content")]
-  pub content: Option<SmolStr>,
+  pub content: Option<String>,
 }
 
 impl std::fmt::Debug for ServerLogInput {
@@ -385,18 +379,6 @@ impl fmt::Display for ServerLogLevel {
   }
 }
 
-impl From<ServerLogLevel> for SmolStr {
-  fn from(value: ServerLogLevel) -> Self {
-    match value {
-      ServerLogLevel::Trace => "TRACE".into(),
-      ServerLogLevel::Debug => "DEBUG".into(),
-      ServerLogLevel::Info => "INFO".into(),
-      ServerLogLevel::Warn => "WARN".into(),
-      ServerLogLevel::Error => "ERROR".into(),
-    }
-  }
-}
-
 impl From<ServerLogLevel> for String {
   fn from(value: ServerLogLevel) -> Self {
     match value {
@@ -411,7 +393,7 @@ impl From<ServerLogLevel> for String {
 
 impl From<ServerLogLevel> for ArgType {
   fn from(value: ServerLogLevel) -> Self {
-    ArgType::SmolStr(value.into())
+    ArgType::String(value.into())
   }
 }
 
@@ -435,28 +417,6 @@ impl TryFrom<&str> for ServerLogLevel {
   
   fn try_from(s: &str) -> Result<Self, sqlx::Error> {
     match s {
-      "TRACE" => Ok(Self::Trace),
-      "DEBUG" => Ok(Self::Debug),
-      "INFO" => Ok(Self::Info),
-      "WARN" => Ok(Self::Warn),
-      "ERROR" => Ok(Self::Error),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "level".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 日志级别".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for ServerLogLevel {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
-    match s.as_str() {
       "TRACE" => Ok(Self::Trace),
       "DEBUG" => Ok(Self::Debug),
       "INFO" => Ok(Self::Info),
@@ -532,7 +492,7 @@ pub fn check_sort_server_log(
     }
     if !get_can_sort_in_api_server_log.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_server_log: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_server_log: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

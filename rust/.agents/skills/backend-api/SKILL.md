@@ -116,7 +116,6 @@ pub async fn method_name(
 
 ```rust
 use color_eyre::eyre::{Result, eyre};
-use smol_str::SmolStr;
 
 use generated::common::context::{
   Options,
@@ -263,7 +262,6 @@ use generated::common::context::{
 
 1. 类型与参数
 
-- 字符串优先使用 `SmolStr`，三方库要求时再转 `String`
 - `options` 和所有 `id` 类型都是 `Copy`，不要 `.clone()`
 - Input 中 `_lbl` 字段无需传递，DAO 会自动生成
 - 函数定义和调用时，多参数统一换行
@@ -342,6 +340,5 @@ pub mod {table}_service;
 - **数据库**: MySQL (sqlx)
 - **运行时**: tokio
 - **序列化**: serde_json
-- **字符串**: SmolStr (字符串优先使用)
 - **错误处理**: color-eyre
 - **日志**: tracing + tracing-subscriber

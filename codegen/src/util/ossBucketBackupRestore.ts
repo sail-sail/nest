@@ -47,7 +47,7 @@ export interface S3EnvConfig {
 
 export function resolveEnvPath(inputPath?: string) {
   if (!inputPath) {
-    return resolve(process.cwd(), "../deno/.env.dev");
+    return resolve(process.cwd(), "../rust/.env");
   }
   if (isAbsolute(inputPath)) {
     return inputPath;

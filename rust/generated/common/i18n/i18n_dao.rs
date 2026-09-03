@@ -10,8 +10,6 @@ use crate::common::context::{
 };
 use regex::{Regex, Captures};
 
-use smol_str::SmolStr;
-
 use crate::base::lang::lang_dao::find_one_lang;
 use crate::base::lang::lang_model::LangSearch;
 use crate::base::i18n::i18n_dao::find_one_i18n;
@@ -36,7 +34,7 @@ fn server_i18n_enable() -> bool {
 }
 
 pub struct NRoute {
-  pub route_path: Option<SmolStr>,
+  pub route_path: Option<String>,
 }
 
 impl NRoute {
@@ -44,9 +42,9 @@ impl NRoute {
   #[allow(dead_code)]
   pub async fn n(
     &self,
-    code: SmolStr,
-    map: Option<HashMap<SmolStr, SmolStr>>,
-  ) -> Result<SmolStr> {
+    code: String,
+    map: Option<HashMap<String, String>>,
+  ) -> Result<String> {
     let res = n(self.route_path.clone(), code, map).await?;
     Ok(res)
   }
@@ -55,7 +53,7 @@ impl NRoute {
   pub async fn n_batch(
     &self,
     i18n_code_maps: Vec<I18nCodeMap>,
-  ) -> Result<HashMap<SmolStr, SmolStr>> {
+  ) -> Result<HashMap<String, String>> {
     let res = n_batch(self.route_path.clone(), i18n_code_maps).await?;
     Ok(res)
   }
@@ -64,10 +62,10 @@ impl NRoute {
 
 #[allow(dead_code)]
 pub async fn n(
-  route_path: Option<SmolStr>,
-  code: SmolStr,
-  map: Option<HashMap<SmolStr, SmolStr>>,
-) -> Result<SmolStr> {
+  route_path: Option<String>,
+  code: String,
+  map: Option<HashMap<String, String>>,
+) -> Result<String> {
   let lang_code = get_auth_lang();
   if lang_code.is_none() {
     return Ok(code);
@@ -82,17 +80,8 @@ pub async fn n(
 
 #[derive(Debug, Clone)]
 pub struct I18nCodeMap {
-  pub code: SmolStr,
-  pub map: Option<HashMap<SmolStr, SmolStr>>,
-}
-
-impl From<SmolStr> for I18nCodeMap {
-  fn from(code: SmolStr) -> Self {
-    Self {
-      code,
-      map: None,
-    }
-  }
+  pub code: String,
+  pub map: Option<HashMap<String, String>>,
 }
 
 impl From<&str> for I18nCodeMap {
@@ -104,8 +93,8 @@ impl From<&str> for I18nCodeMap {
   }
 }
 
-impl From<(SmolStr, HashMap<SmolStr, SmolStr>)> for I18nCodeMap {
-  fn from((code, map): (SmolStr, HashMap<SmolStr, SmolStr>)) -> Self {
+impl From<(String, HashMap<String, String>)> for I18nCodeMap {
+  fn from((code, map): (String, HashMap<String, String>)) -> Self {
     Self {
       code,
       map: Some(map),
@@ -115,9 +104,9 @@ impl From<(SmolStr, HashMap<SmolStr, SmolStr>)> for I18nCodeMap {
 
 #[allow(dead_code)]
 pub async fn n_batch(
-  route_path: Option<SmolStr>,
+  route_path: Option<String>,
   i18n_code_maps: Vec<I18nCodeMap>,
-) -> Result<HashMap<SmolStr, SmolStr>> {
+) -> Result<HashMap<String, String>> {
   let lang_code = get_auth_lang();
   if lang_code.is_none() {
     return Ok(
@@ -125,7 +114,7 @@ pub async fn n_batch(
       .map(
         |item| (item.code.clone(), item.code.clone()),
       )
-      .collect::<HashMap<SmolStr, SmolStr>>()
+      .collect::<HashMap<String, String>>()
     );
   }
   let lang_code = lang_code.unwrap();
@@ -135,10 +124,10 @@ pub async fn n_batch(
       .map(
         |item| (item.code.clone(), item.code.clone()),
       )
-      .collect::<HashMap<SmolStr, SmolStr>>()
+      .collect::<HashMap<String, String>>()
     );
   }
-  let mut i18n_lbls: HashMap<SmolStr, SmolStr> = HashMap::new();
+  let mut i18n_lbls: HashMap<String, String> = HashMap::new();
   for i18n_code_map in i18n_code_maps {
     let i18n_lbl = n_lang(
       lang_code.clone(),
@@ -153,9 +142,9 @@ pub async fn n_batch(
 
 #[allow(dead_code)]
 pub async fn ns(
-  code: SmolStr,
-  map: Option<HashMap<SmolStr, SmolStr>>,
-) -> Result<SmolStr> {
+  code: String,
+  map: Option<HashMap<String, String>>,
+) -> Result<String> {
   let lang_code = get_auth_lang();
   if lang_code.is_none() {
     return Ok(code);
@@ -169,18 +158,18 @@ pub async fn ns(
 }
 
 pub async fn n_lang(
-  lang_code: SmolStr,
-  route_path: Option<SmolStr>,
-  code: SmolStr,
-  map: Option<HashMap<SmolStr, SmolStr>>,
-) -> Result<SmolStr> {
+  lang_code: String,
+  route_path: Option<String>,
+  code: String,
+  map: Option<HashMap<String, String>>,
+) -> Result<String> {
   
   let server_i18n_enable = server_i18n_enable();
   if !server_i18n_enable {
     let mut i18n_lbl = code;
     if let Some(map) = map {
       let res: Cow<str> = reg().replace_all(&i18n_lbl, |caps: &Captures| {
-        let key: SmolStr = caps.get(1).map(|m| m.as_str().to_owned()).unwrap_or_default().into();
+        let key: String = caps.get(1).map(|m| m.as_str().to_owned()).unwrap_or_default();
         
         map.get(&key).unwrap_or(&"".into()).clone()
       });
@@ -236,7 +225,7 @@ pub async fn n_lang(
   }
   if let Some(map) = map {
     let res: Cow<str> = reg().replace_all(&i18n_lbl, |caps: &Captures| {
-      let key: SmolStr = caps.get(1).map(|m| m.as_str().to_owned()).unwrap_or_default().into();
+      let key: String = caps.get(1).map(|m| m.as_str().to_owned()).unwrap_or_default();
       
       map.get(&key).unwrap_or(&"".into()).clone()
     });

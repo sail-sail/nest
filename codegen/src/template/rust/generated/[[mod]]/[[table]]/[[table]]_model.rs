@@ -146,10 +146,7 @@ use std::collections::HashMap;
 use std::str::FromStr;
 
 use serde::{Serialize, Deserialize};
-use color_eyre::eyre::{Result, eyre};
-
-#[allow(unused_imports)]
-use smol_str::SmolStr;<#
+use color_eyre::eyre::{Result, eyre};<#
 if (hasDecimal) {
 #>
 use rust_decimal::Decimal;<#
@@ -411,14 +408,14 @@ pub struct <#=tableUP#>Model {<#
       hasModelLabel = true;
     }
     let is_nullable = column.IS_NULLABLE === "YES";
-    let _data_type = "SmolStr";
+    let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
       _data_type = `Vec<${ foreignTable_Up }Id>`;
       is_nullable = false;
     } else if (foreignKey && !foreignKey.multiple) {
       _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
-      _data_type = "SmolStr";
+      _data_type = "String";
     } else if (data_type === 'date') {
       _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
@@ -430,9 +427,9 @@ pub struct <#=tableUP#>Model {<#
     } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
       _data_type = 'u32';
     } else if (data_type === 'json') {
-      _data_type = "SmolStr";
+      _data_type = "String";
     } else if (data_type === 'text') {
-      _data_type = "SmolStr";
+      _data_type = "String";
     } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
       _data_type = 'i8';
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
@@ -497,7 +494,7 @@ pub struct <#=tableUP#>Model {<#
   #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=modelLabel#>: Vec<SmolStr>,<#
+  pub <#=modelLabel#>: Vec<String>,<#
     }
   #><#
     for (let j = 0; j < cascade_fields.length; j++) {
@@ -508,9 +505,9 @@ pub struct <#=tableUP#>Model {<#
         throw `表: ${ foreignKey.mod }_${ foreignKey.table } 的外键字段 ${ cascade_field } 不存在`;
         process.exit(1);
       }
-      let _data_type = "SmolStr";
+      let _data_type = "String";
       if (cascade_field_column.DATA_TYPE === 'varchar') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       }
       else if (cascade_field_column.DATA_TYPE === 'date') {
         _data_type = "chrono::NaiveDate";
@@ -528,10 +525,10 @@ pub struct <#=tableUP#>Model {<#
         _data_type = 'u32';
       }
       else if (cascade_field_column.DATA_TYPE === 'json') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       }
       else if (cascade_field_column.DATA_TYPE === 'text') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       }
       else if (cascade_field_column.DATA_TYPE === 'tinyint' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
         _data_type = 'i8';
@@ -578,7 +575,7 @@ pub struct <#=tableUP#>Model {<#
   #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=modelLabel#>: SmolStr,<#
+  pub <#=modelLabel#>: String,<#
     }
   #><#
     for (let j = 0; j < cascade_fields.length; j++) {
@@ -589,9 +586,9 @@ pub struct <#=tableUP#>Model {<#
         throw `表: ${ foreignKey.mod }_${ foreignKey.table } 的外键字段 ${ cascade_field } 不存在`;
         process.exit(1);
       }
-      let _data_type = "SmolStr";
+      let _data_type = "String";
       if (cascade_field_column.DATA_TYPE === 'varchar') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       }
       else if (cascade_field_column.DATA_TYPE === 'date') {
         _data_type = "chrono::NaiveDate";
@@ -609,10 +606,10 @@ pub struct <#=tableUP#>Model {<#
         _data_type = 'u32';
       }
       else if (cascade_field_column.DATA_TYPE === 'json') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       }
       else if (cascade_field_column.DATA_TYPE === 'text') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       }
       else if (cascade_field_column.DATA_TYPE === 'tinyint' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
         _data_type = 'i8';
@@ -659,7 +656,7 @@ pub struct <#=tableUP#>Model {<#
   #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=modelLabel#>: SmolStr,<#
+  pub <#=modelLabel#>: String,<#
     }
   #><#
     } else if (column.dict || column.dictbiz) {
@@ -701,7 +698,7 @@ pub struct <#=tableUP#>Model {<#
   #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=modelLabel#>: SmolStr,<#
+  pub <#=modelLabel#>: String,<#
     }
   #><#
   if (isAuditColumn && auditTable_Up) {
@@ -763,7 +760,7 @@ pub struct <#=tableUP#>Model {<#
   #[graphql(skip)]<#
   }
   #>
-  pub create_usr_id_lbl: SmolStr,<#
+  pub create_usr_id_lbl: String,<#
   }
   #><#
   if (hasCreateTime) {
@@ -785,7 +782,7 @@ pub struct <#=tableUP#>Model {<#
   #[graphql(skip)]<#
   }
   #>
-  pub create_time_lbl: SmolStr,<#
+  pub create_time_lbl: String,<#
   }
   #><#
   if (hasUpdateUsrId) {
@@ -807,7 +804,7 @@ pub struct <#=tableUP#>Model {<#
   #[graphql(skip)]<#
   }
   #>
-  pub update_usr_id_lbl: SmolStr,<#
+  pub update_usr_id_lbl: String,<#
   }
   #><#
   if (hasUpdateTime) {
@@ -829,7 +826,7 @@ pub struct <#=tableUP#>Model {<#
   #[graphql(skip)]<#
   }
   #>
-  pub update_time_lbl: SmolStr,<#
+  pub update_time_lbl: String,<#
   }
   #><#
   if (hasVersion) {
@@ -987,14 +984,14 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       hasModelLabel = true;
     }
     let is_nullable = column.IS_NULLABLE === "YES";
-    let _data_type = "SmolStr";
+    let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
       _data_type = `Vec<${ foreignTable_Up }Id>`;
       is_nullable = false;
     } else if (foreignKey && !foreignKey.multiple) {
       _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
-      _data_type = "SmolStr";
+      _data_type = "String";
     } else if (data_type === 'date') {
       _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
@@ -1006,9 +1003,9 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
       _data_type = 'u32';
     } else if (data_type === 'json') {
-      _data_type = "SmolStr";
+      _data_type = "String";
     } else if (data_type === 'text') {
-      _data_type = "SmolStr";
+      _data_type = "String";
     } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
       _data_type = 'i8';
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
@@ -1036,10 +1033,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       } else if ((data_type === "varchar" || data_type === "text") && isVirtual) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#> = SmolStr::new("<#=column_default || ""#>");<#
+    let <#=column_name_rust#> = String::from("<#=column_default || ""#>");<#
       if (column.dictbiz || column.dict) {
     #>
-    let <#=column_name#>_lbl = SmolStr::new("");<#
+    let <#=column_name#>_lbl = String::new();<#
       }
     #><#
         continue;
@@ -1094,10 +1091,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         .into_iter()
         .map(|x| 
           <#=column_name#>_lbl.get(x.to_string().as_str())
-            .map(SmolStr::new)
+            .map(|x| x.to_string())
             .unwrap_or_default()
         )
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     };<#
       } else if (hasModelLabel) {
     #>
@@ -1105,8 +1102,8 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let <#=modelLabel#> = <#=modelLabel#>.unwrap_or_default();
     let <#=modelLabel#> = <#=modelLabel#>
       .split(',')
-      .map(SmolStr::new)
-      .collect::<Vec<SmolStr>>();<#
+      .map(String::from)
+      .collect::<Vec<String>>();<#
     }
     #><#
       for (let j = 0; j < cascade_fields.length; j++) {
@@ -1117,9 +1114,9 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
           throw `表: ${ foreignKey.mod }_${ foreignKey.table } 的外键字段 ${ cascade_field } 不存在`;
           process.exit(1);
         }
-        let _data_type = "SmolStr";
+        let _data_type = "String";
         if (cascade_field_column.DATA_TYPE === 'varchar') {
-          _data_type = "SmolStr";
+          _data_type = "String";
         }
         else if (cascade_field_column.DATA_TYPE === 'date') {
           _data_type = "chrono::NaiveDate";
@@ -1137,10 +1134,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
           _data_type = 'u32';
         }
         else if (cascade_field_column.DATA_TYPE === 'json') {
-          _data_type = "SmolStr";
+          _data_type = "String";
         }
         else if (cascade_field_column.DATA_TYPE === 'text') {
-          _data_type = "SmolStr";
+          _data_type = "String";
         }
         else if (cascade_field_column.DATA_TYPE === 'tinyint' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
           _data_type = 'i8';
@@ -1171,8 +1168,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         .into_iter()
         .map(|x| 
           <#=column_name#>_<#=cascade_field#>
-            .get(x.to_string().as_str())
-            .map(SmolStr::new)
+            .get(x.to_string())
             .unwrap_or_default()
         )
         .collect::<Vec<<#=_data_type#>>>()
@@ -1183,7 +1179,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: Vec<<#=foreignTable_Up#>Id> = vec![];
-    let <#=column_name#>_lbl: Vec<SmolStr> = vec![];<#
+    let <#=column_name#>_lbl: Vec<String> = vec![];<#
       } else if (foreignKey && !foreignKey.multiple) {
     #>
     // <#=column_comment#>
@@ -1199,10 +1195,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         if (!isVirtual) {
     #>
     let <#=modelLabel#>: Option<&str> = row.try_get("<#=modelLabel#>")?;
-    let <#=modelLabel#> = SmolStr::new(<#=modelLabel#>.unwrap_or_default());<#
+    let <#=modelLabel#> = String::from(<#=modelLabel#>.unwrap_or_default());<#
         } else {
     #>
-    let <#=modelLabel#> = SmolStr::new("");<#
+    let <#=modelLabel#> = String::new();<#
         }
     #><#
       }
@@ -1215,9 +1211,9 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
           throw `表: ${ foreignKey.mod }_${ foreignKey.table } 的外键字段 ${ cascade_field } 不存在`;
           process.exit(1);
         }
-        let _data_type = "SmolStr";
+        let _data_type = "String";
         if (cascade_field_column.DATA_TYPE === 'varchar') {
-          _data_type = "SmolStr";
+          _data_type = "String";
         }
         else if (cascade_field_column.DATA_TYPE === 'date') {
           _data_type = "chrono::NaiveDate";
@@ -1235,10 +1231,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
           _data_type = 'u32';
         }
         else if (cascade_field_column.DATA_TYPE === 'json') {
-          _data_type = "SmolStr";
+          _data_type = "String";
         }
         else if (cascade_field_column.DATA_TYPE === 'text') {
-          _data_type = "SmolStr";
+          _data_type = "String";
         }
         else if (cascade_field_column.DATA_TYPE === 'tinyint' && !cascade_field_column.COLUMN_TYPE.endsWith("unsigned")) {
           _data_type = 'i8';
@@ -1251,18 +1247,18 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         }
     #>
     // <#=column_comment#><#=cascade_field_column.COLUMN_COMMENT#><#
-      if (_data_type !== "SmolStr") {
+      if (_data_type !== "String") {
     #>
     let <#=column_name#>_<#=cascade_field#>: Option<<#=_data_type#>> = row.try_get("<#=column_name#>_<#=cascade_field#>")?;
     let <#=column_name#>_<#=cascade_field#> = <#=column_name#>_<#=cascade_field#>.unwrap_or_default();<#
       } else if (data_type === 'json') {
     #>
     let <#=column_name#>_<#=cascade_field#>: Option<sqlx::types::Json<serde_json::Value>> = row.try_get("<#=column_name#>_<#=cascade_field#>")?;
-    let <#=column_name#>_<#=cascade_field#> = <#=column_name#>_<#=cascade_field#>.map(|v| SmolStr::new(v.to_string()));<#
+    let <#=column_name#>_<#=cascade_field#> = <#=column_name#>_<#=cascade_field#>.map(|v| v.to_string());<#
       } else {
     #>
     let <#=column_name#>_<#=cascade_field#>: Option<&str> = row.try_get("<#=column_name#>_<#=cascade_field#>")?;
-    let <#=column_name#>_<#=cascade_field#> = SmolStr::new(<#=column_name#>_<#=cascade_field#>.unwrap_or_default());<#
+    let <#=column_name#>_<#=cascade_field#> = <#=column_name#>_<#=cascade_field#>.unwrap_or_default().to_string();<#
       }
     #><#
       }
@@ -1292,12 +1288,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     let <#=modelLabel#>: &str = row.try_get("<#=column_name#>")?;
     let <#=column_name_rust#>: <#=enumColumnName#> = <#=modelLabel#>.try_into()?;
-    let <#=modelLabel#> = SmolStr::new(<#=modelLabel#>);<#
+    let <#=modelLabel#> = String::from(<#=modelLabel#>);<#
       } else {
     #>
     let <#=modelLabel#>: &str = row.try_get("<#=modelLabel#>")?;
     let <#=column_name_rust#>: <#=enumColumnName#> = row.try_get("<#=column_name#>")?.try_into()?;
-    let <#=modelLabel#> = SmolStr::new(<#=modelLabel#>);<#
+    let <#=modelLabel#> = String::from(<#=modelLabel#>);<#
       }
     #><#
       } else {
@@ -1306,14 +1302,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       if (!column.modelLabel) {
     #>
     let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
-    let <#=column_name_rust#> = SmolStr::new(<#=column_name_rust#>);
+    let <#=column_name_rust#> = <#=column_name_rust#>.to_string();
     let <#=modelLabel#> = <#=column_name_rust#>.clone();<#
       } else {
     #>
-    let <#=modelLabel#>: &str = row.try_get("<#=modelLabel#>")?;
-    let <#=modelLabel#> = SmolStr::new(<#=modelLabel#>);
-    let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
-    let <#=column_name_rust#>: SmolStr = <#=column_name_rust#>.try_into()?;<#
+    let <#=modelLabel#>: String = row.try_get("<#=modelLabel#>")?;
+    let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;<#
       }
     #><#
       }
@@ -1324,12 +1318,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       if (!column.modelLabel) {
     #>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
-    let <#=modelLabel#> = SmolStr::new(<#=column_name_rust#>.to_string());<#
+    let <#=modelLabel#> = <#=column_name_rust#>.to_string();<#
       } else {
     #>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
-    let <#=modelLabel#>: &str = row.try_get("<#=modelLabel#>")?;
-    let <#=modelLabel#> = SmolStr::new(<#=modelLabel#>);<#
+    let <#=modelLabel#>: String = row.try_get("<#=modelLabel#>")?;<#
       }
     #><#
       } else if (data_type === "datetime") {
@@ -1338,13 +1331,13 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
       if (is_nullable) {
     #>
-    let <#=modelLabel#>: SmolStr = match <#=column_name_rust#> {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let <#=modelLabel#>: String = match <#=column_name_rust#> {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => "".to_string(),
     };<#
       } else {
     #>
-    let <#=modelLabel#> = SmolStr::new(<#=column_name_rust#>.format("%Y-%m-%d %H:%M:%S").to_string());<#
+    let <#=modelLabel#> = <#=column_name_rust#>.format("%Y-%m-%d %H:%M:%S").to_string();<#
       }
     #><#
       } else if (data_type === "date") {
@@ -1353,25 +1346,25 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
       if (is_nullable) {
     #>
-    let <#=modelLabel#>: SmolStr = match <#=column_name_rust#> {
-      Some(item) => SmolStr::new(item.format(<#
+    let <#=modelLabel#>: String = match <#=column_name_rust#> {
+      Some(item) => item.format(<#
         if (column.isMonth) {
       #>"%Y-%m"<#
         } else {
       #>"%Y-%m-%d"<#
         }
-      #>).to_string()),
-      None => SmolStr::new(""),
+      #>).to_string(),
+      None => "".to_string(),
     };<#
       } else {
     #>
-    let <#=modelLabel#> = SmolStr::new(<#=column_name_rust#>.format(<#
+    let <#=modelLabel#> = <#=column_name_rust#>.format(<#
         if (column.isMonth) {
       #>"%Y-%m"<#
         } else {
       #>"%Y-%m-%d"<#
         }
-      #>).to_string());<#
+      #>).to_string();<#
       }
     #><#
       } else {
@@ -1380,12 +1373,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
-    let <#=column_name_rust#> = SmolStr::new(decrypt(<#=column_name_rust#>));<#
+    let <#=column_name_rust#> = decrypt(<#=column_name_rust#>);<#
         } else if (isEncrypt && [ "decimal" ].includes(data_type)) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
-    let <#=column_name_rust#> = SmolStr::new(<#=column_name_rust#>);
+    let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;;
     let <#=column_name_rust#>: <#=_data_type#> = decrypt(<#=column_name_rust#>.as_str())
       .parse::<Decimal>()
       .unwrap_or_default()
@@ -1393,8 +1385,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         } else if (isEncrypt && [ "int" ].includes(data_type)) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
-    let <#=column_name_rust#> = SmolStr::new(<#=column_name_rust#>);
+    let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;
     let <#=column_name_rust#>: <#=_data_type#> = decrypt(<#=column_name_rust#>.as_str())
       .try_into()
       .unwrap_or_default();<#
@@ -1404,15 +1395,13 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       if (data_type === "json") {
     #>
     let <#=column_name_rust#>: Option<sqlx::types::Json<serde_json::Value>> = row.try_get("<#=column_name#>")?;
-    let <#=column_name_rust#> = <#=column_name_rust#>.map(|v| SmolStr::new(v.to_string()));<#
-      } else if (_data_type === "SmolStr") {
+    let <#=column_name_rust#> = <#=column_name_rust#>.map(|v| v.to_string());<#
+      } else if (_data_type === "String") {
     #>
-    let <#=column_name_rust#>: &str = row.try_get("<#=column_name#>")?;
-    let <#=column_name_rust#> = SmolStr::new(<#=column_name_rust#>);<#
-      } else if (_data_type === "Option<SmolStr>") {
+    let <#=column_name_rust#>: String = row.try_get("<#=column_name#>")?;<#
+      } else if (_data_type === "Option<String>") {
     #>
-    let <#=column_name_rust#>: Option<&str> = row.try_get("<#=column_name#>")?;
-    let <#=column_name_rust#> = <#=column_name_rust#>.map(SmolStr::new);<#
+    let <#=column_name_rust#>: Option<String> = row.try_get("<#=column_name#>")?;<#
       } else {
     #>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
@@ -1439,12 +1428,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let <#=column_name_rust#> = if server_i18n_enable {
       let <#=column_name#>_lang: Option<&str> = row.try_get("<#=column_name#>_lang")?;
       if <#=column_name#>_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
-        SmolStr::new(<#=column_name_rust#>)
+        String::from(<#=column_name_rust#>)
       } else {
-        SmolStr::new(<#=column_name#>_lang.unwrap())
+        String::from(<#=column_name#>_lang.unwrap())
       }
     } else {
-      SmolStr::new(<#=column_name_rust#>)
+      String::from(<#=column_name_rust#>)
     };<#
     }
     #><#
@@ -1456,17 +1445,17 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());<#
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();<#
     }
     #><#
     if (hasCreateTime) {
     #>
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };<#
     }
     #><#
@@ -1474,17 +1463,17 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());<#
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();<#
     }
     #><#
     if (hasUpdateTime) {
     #>
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };<#
     }
     #><#
@@ -1570,7 +1559,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         if (isIcon) {
       #>
       <#=column_name_rust#>,
-      <#=column_name#>_lbl: SmolStr::new(""),<#
+      <#=column_name#>_lbl: String::new(),<#
         } else if (foreignKey && foreignKey.multiple) {
       #>
       <#=column_name_rust#>,<#
@@ -1776,7 +1765,7 @@ pub struct <#=tableUP#>FieldComment {<#
   #[graphql(name = "<#=column_name#>")]<#
   }
   #>
-  pub <#=column_name_rust#>: SmolStr,
+  pub <#=column_name_rust#>: String,
   /// <#=column_comment#><#
   if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
@@ -1786,7 +1775,7 @@ pub struct <#=tableUP#>FieldComment {<#
   #[graphql(name = "<#=column_name#>_lbl")]<#
   }
   #>
-  pub <#=column_name#>_lbl: SmolStr,<#
+  pub <#=column_name#>_lbl: String,<#
     } else {
   #>
   /// <#=column_comment#><#
@@ -1798,7 +1787,7 @@ pub struct <#=tableUP#>FieldComment {<#
   #[graphql(name = "<#=column_name#>")]<#
   }
   #>
-  pub <#=column_name_rust#>: SmolStr,<#
+  pub <#=column_name_rust#>: String,<#
     }
   #><#
   }
@@ -1840,7 +1829,7 @@ pub struct <#=tableUP#>Search {<#
   if (searchByKeyword) {
   #>
   #[graphql(name = "<#=searchByKeyword.prop#>")]
-  pub <#=searchByKeyword.prop#>: Option<SmolStr>,<#
+  pub <#=searchByKeyword.prop#>: Option<String>,<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -1869,14 +1858,14 @@ pub struct <#=tableUP#>Search {<#
     const isEncrypt = column.isEncrypt;
     if (isEncrypt) continue;
     let is_nullable = column.IS_NULLABLE === "YES";
-    let _data_type = "SmolStr";
+    let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
       _data_type = `${ foreignTable_Up }Id`;
       is_nullable = true;
     } else if (foreignKey && !foreignKey.multiple) {
       _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'date') {
       _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
@@ -1888,9 +1877,9 @@ pub struct <#=tableUP#>Search {<#
     } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
       _data_type = 'u32';
     } else if (data_type === 'json') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'text') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
       _data_type = 'i8';
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
@@ -1950,7 +1939,7 @@ pub struct <#=tableUP#>Search {<#
   #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=modelLabel_rust#>: Option<Vec<SmolStr>>,
+  pub <#=modelLabel_rust#>: Option<Vec<String>>,
   /// <#=column_comment#><#
   if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
@@ -1960,7 +1949,7 @@ pub struct <#=tableUP#>Search {<#
   #[graphql(name = "<#=modelLabel#>_like")]<#
   }
   #>
-  pub <#=modelLabel#>_like: Option<SmolStr>,<#
+  pub <#=modelLabel#>_like: Option<String>,<#
     } else if (foreignKey.lbl) {
   #>
   /// <#=column_comment#><#
@@ -1972,7 +1961,7 @@ pub struct <#=tableUP#>Search {<#
   #[graphql(name = "<#=column_name#>_<#=foreignKey.lbl#>")]<#
   }
   #>
-  pub <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<SmolStr>>,
+  pub <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<String>>,
   /// <#=column_comment#><#
   if ((onlyCodegenDeno && !onlyCodegenDenoButApi) || !canSearch) {
   #>
@@ -1982,7 +1971,7 @@ pub struct <#=tableUP#>Search {<#
   #[graphql(name = "<#=column_name#>_<#=foreignKey.lbl#>_like")]<#
   }
   #>
-  pub <#=column_name#>_<#=foreignKey.lbl#>_like: Option<SmolStr>,<#
+  pub <#=column_name#>_<#=foreignKey.lbl#>_like: Option<String>,<#
     }
   #><#
     } else if (foreignKey && foreignKey.type === "many2many") {
@@ -2032,7 +2021,7 @@ pub struct <#=tableUP#>Search {<#
   #[graphql(name = "<#=column_name#>_<#=foreignKey.lbl#>_like")]<#
   }
   #>
-  pub <#=column_name#>_<#=foreignKey.lbl#>_like: Option<SmolStr>,<#
+  pub <#=column_name#>_<#=foreignKey.lbl#>_like: Option<String>,<#
   }
   #><#
     } else if ((column.dict || column.dictbiz) && data_type !== "tinyint") {
@@ -2320,11 +2309,11 @@ pub struct <#=tableUP#>Input {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
     const isPassword = column.isPassword;
-    let _data_type = "SmolStr";
+    let _data_type = "String";
     if (foreignKey) {
       _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'date') {
       _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
@@ -2336,9 +2325,9 @@ pub struct <#=tableUP#>Input {
     } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
       _data_type = 'u32';
     } else if (data_type === 'json') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'text') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
       _data_type = 'i8';
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
@@ -2347,7 +2336,7 @@ pub struct <#=tableUP#>Input {
       _data_type = "Decimal";
     }
     if (column_name === "id") {
-      _data_type = "SmolStr";
+      _data_type = "String";
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
     const onlyCodegenDenoButApi = column.onlyCodegenDenoButApi;
@@ -2426,7 +2415,7 @@ pub struct <#=tableUP#>Input {
   #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=modelLabel#>: Option<SmolStr>,<#
+  pub <#=modelLabel#>: Option<String>,<#
     }
   #><#
     } else if (foreignKey && foreignKey?.multiple) {
@@ -2452,7 +2441,7 @@ pub struct <#=tableUP#>Input {
   #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=modelLabel#>: Option<Vec<SmolStr>>,<#
+  pub <#=modelLabel#>: Option<Vec<String>>,<#
     }
   #><#
   } else if (foreignKey && !foreignKey?.multiple) {
@@ -2478,7 +2467,7 @@ pub struct <#=tableUP#>Input {
   #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=modelLabel#>: Option<SmolStr>,<#
+  pub <#=modelLabel#>: Option<String>,<#
     }
   #><#
   } else if (data_type === "date" || data_type === "datetime") {
@@ -2502,7 +2491,7 @@ pub struct <#=tableUP#>Input {
   #[graphql(name = "<#=column_name#>_lbl")]<#
   }
   #>
-  pub <#=column_name#>_lbl: Option<SmolStr>,<#
+  pub <#=column_name#>_lbl: Option<String>,<#
   if (is_nullable) {
   #>
   /// <#=column_comment#><#
@@ -2540,7 +2529,7 @@ pub struct <#=tableUP#>Input {
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,<#
+  pub create_usr_id_lbl: Option<String>,<#
   }
   #><#
   if (hasCreateTime) {
@@ -2550,7 +2539,7 @@ pub struct <#=tableUP#>Input {
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,<#
@@ -2563,7 +2552,7 @@ pub struct <#=tableUP#>Input {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,<#
+  pub update_usr_id_lbl: Option<String>,<#
   }
   #><#
   if (hasUpdateTime) {
@@ -2573,7 +2562,7 @@ pub struct <#=tableUP#>Input {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,<#
@@ -3170,14 +3159,14 @@ pub struct <#=Table_Up#>Summary {
     const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
       let is_nullable = column.IS_NULLABLE === "YES";
       const foreignKey = column.foreignKey;
-      let _data_type = "SmolStr";
+      let _data_type = "String";
       if (foreignKey && foreignKey.multiple) {
         _data_type = `Vec<${ foreignTable_Up }Id>`;
         is_nullable = false;
       } else if (foreignKey && !foreignKey.multiple) {
         _data_type = `${ foreignTable_Up }Id`;
       } else if (data_type === 'varchar') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       } else if (data_type === 'date') {
         _data_type = "chrono::NaiveDate";
       } else if (data_type === 'datetime') {
@@ -3189,9 +3178,9 @@ pub struct <#=Table_Up#>Summary {
       } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
         _data_type = 'u32';
       } else if (data_type === 'json') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       } else if (data_type === 'text') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
         _data_type = 'i8';
       } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
@@ -3235,14 +3224,14 @@ impl FromRow<'_, MySqlRow> for <#=Table_Up#>Summary {
       const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
       let is_nullable = column.IS_NULLABLE === "YES";
       const foreignKey = column.foreignKey;
-      let _data_type = "SmolStr";
+      let _data_type = "String";
       if (foreignKey && foreignKey.multiple) {
         _data_type = `Vec<${ foreignTable_Up }Id>`;
         is_nullable = false;
       } else if (foreignKey && !foreignKey.multiple) {
         _data_type = `${ foreignTable_Up }Id`;
       } else if (data_type === 'varchar') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       } else if (data_type === 'date') {
         _data_type = "chrono::NaiveDate";
       } else if (data_type === 'datetime') {
@@ -3254,9 +3243,9 @@ impl FromRow<'_, MySqlRow> for <#=Table_Up#>Summary {
       } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
         _data_type = 'u32';
       } else if (data_type === 'json') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       } else if (data_type === 'text') {
-        _data_type = "SmolStr";
+        _data_type = "String";
       } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
         _data_type = 'i8';
       } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
@@ -3284,7 +3273,7 @@ impl FromRow<'_, MySqlRow> for <#=Table_Up#>Summary {
       } else if ((data_type === "varchar" || data_type === "text") && isVirtual) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#> = SmolStr::new("<#=column_default || ""#>");<#
+    let <#=column_name_rust#> = "<#=column_default || ""#>".to_string();<#
         continue;
       } else if ([ "int", "tinyint" ].includes(data_type) && isVirtual) {
     #>
@@ -3405,24 +3394,6 @@ impl fmt::Display for <#=enumColumnName#> {
   }
 }
 
-impl From<<#=enumColumnName#>> for SmolStr {
-  fn from(value: <#=enumColumnName#>) -> Self {
-    match value {<#
-      for (const columnDictModel of columnDictModels) {
-        const val = columnDictModel.val;
-        const lbl = columnDictModel.lbl;
-        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
-        valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
-        }).join("");
-      #>
-      <#=enumColumnName#>::<#=valUp#> => "<#=val#>".into(),<#
-      }
-      #>
-    }
-  }
-}
-
 impl From<<#=enumColumnName#>> for String {
   fn from(value: <#=enumColumnName#>) -> Self {
     match value {<#
@@ -3443,7 +3414,7 @@ impl From<<#=enumColumnName#>> for String {
 
 impl From<<#=enumColumnName#>> for ArgType {
   fn from(value: <#=enumColumnName#>) -> Self {
-    ArgType::SmolStr(value.into())
+    ArgType::String(value.into())
   }
 }
 
@@ -3473,34 +3444,6 @@ impl TryFrom<&str> for <#=enumColumnName#> {
   
   fn try_from(s: &str) -> Result<Self, sqlx::Error> {
     match s {<#
-      for (const columnDictModel of columnDictModels) {
-        const val = columnDictModel.val;
-        const lbl = columnDictModel.lbl;
-        let valUp = val.substring(0, 1).toUpperCase()+val.substring(1);
-        valUp = valUp.split("_").map(function(item) {
-          return item.substring(0, 1).toUpperCase() + item.substring(1).toLowerCase();
-        }).join("");
-      #>
-      "<#=val#>" => Ok(Self::<#=valUp#>),<#
-      }
-      #>
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "<#=column_name#>".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 <#=column_comment#>".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for <#=enumColumnName#> {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
-    match s.as_str() {<#
       for (const columnDictModel of columnDictModels) {
         const val = columnDictModel.val;
         const lbl = columnDictModel.lbl;
@@ -3596,7 +3539,7 @@ pub fn check_sort_<#=table#>(
     }
     if !get_can_sort_in_api_<#=table#>.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_<#=table#>: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_<#=table#>: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));
@@ -3623,14 +3566,14 @@ if (opts.noAdd !== true || opts.noEdit !== true) {
 /// 过滤 input 字段权限
 pub async fn field_permit_input_<#=table#>(
   input: &mut <#=tableUP#>Input,
-  fields: Option<Vec<SmolStr>>,
+  fields: Option<Vec<String>>,
 ) -> Result<()> {
   
   let route_path = get_page_path_<#=table#>();
   
   let fields = match fields {
     Some(fields) => fields,
-    None => match get_field_permit(SmolStr::new(route_path)).await? {
+    None => match get_field_permit(route_path.to_string()).await? {
       Some(fields) => fields,
       None => return Ok(()),
     },
@@ -3685,7 +3628,7 @@ pub async fn field_permit_input_<#=table#>(
   #>
   
   // <#=column_comment#>
-  if !fields.contains(&SmolStr::new("<#=column_name#>")) {<#
+  if !fields.contains(&String::from("<#=column_name#>")) {<#
     if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
     ) {
@@ -3734,14 +3677,14 @@ pub async fn field_permit_input_<#=table#>(
 /// 过滤 model 字段权限
 pub async fn field_permit_model_<#=table#>(
   model: &mut <#=tableUP#>Model,
-  fields: Option<Vec<SmolStr>>,
+  fields: Option<Vec<String>>,
 ) -> Result<()> {
   
   let route_path = get_page_path_<#=table#>();
   
   let fields = match fields {
     Some(fields) => fields,
-    None => match get_field_permit(SmolStr::new(route_path)).await? {
+    None => match get_field_permit(route_path.to_string()).await? {
       Some(fields) => fields,
       None => return Ok(()),
     },
@@ -3796,7 +3739,7 @@ pub async fn field_permit_model_<#=table#>(
   #>
   
   // <#=column_comment#>
-  if !fields.contains(&SmolStr::new("<#=column_name#>")) {<#
+  if !fields.contains(&String::from("<#=column_name#>")) {<#
     if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
     ) {

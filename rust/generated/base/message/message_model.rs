@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -59,70 +56,70 @@ pub struct MessageModel {
   pub id: MessageId,
   /// 分类
   #[graphql(name = "category")]
-  pub category: SmolStr,
+  pub category: String,
   /// 分类
   #[graphql(name = "category_lbl")]
-  pub category_lbl: SmolStr,
+  pub category_lbl: String,
   /// 发送通道
   #[graphql(name = "channel")]
-  pub channel: SmolStr,
+  pub channel: String,
   /// 发送通道
   #[graphql(name = "channel_lbl")]
-  pub channel_lbl: SmolStr,
+  pub channel_lbl: String,
   /// 标题
   #[graphql(name = "title")]
-  pub title: SmolStr,
+  pub title: String,
   /// 内容
   #[graphql(name = "content")]
-  pub content: SmolStr,
+  pub content: String,
   /// 跳转路由
   #[graphql(name = "route_path")]
-  pub route_path: SmolStr,
+  pub route_path: String,
   /// 跳转参数
   #[graphql(name = "route_query")]
-  pub route_query: SmolStr,
+  pub route_query: String,
   /// 发送人
   #[graphql(name = "sender_usr_id")]
   pub sender_usr_id: UsrId,
   /// 发送人
   #[graphql(name = "sender_usr_id_lbl")]
-  pub sender_usr_id_lbl: SmolStr,
+  pub sender_usr_id_lbl: String,
   /// 系统消息
   #[graphql(name = "is_sys_msg")]
   pub is_sys_msg: u8,
   /// 系统消息
   #[graphql(name = "is_sys_msg_lbl")]
-  pub is_sys_msg_lbl: SmolStr,
+  pub is_sys_msg_lbl: String,
   /// 置顶
   #[graphql(name = "is_pinned")]
   pub is_pinned: u8,
   /// 置顶
   #[graphql(name = "is_pinned_lbl")]
-  pub is_pinned_lbl: SmolStr,
+  pub is_pinned_lbl: String,
   /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: OrgId,
   /// 所属组织
   #[graphql(name = "org_id_lbl")]
-  pub org_id_lbl: SmolStr,
+  pub org_id_lbl: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for MessageModel {
@@ -133,57 +130,53 @@ impl FromRow<'_, MySqlRow> for MessageModel {
     let id: MessageId = row.try_get("id")?;
     // 分类
     let category: &str = row.try_get("category")?;
-    let category = SmolStr::new(category);
+    let category = category.to_string();
     let category_lbl = category.clone();
     // 发送通道
     let channel: &str = row.try_get("channel")?;
-    let channel = SmolStr::new(channel);
+    let channel = channel.to_string();
     let channel_lbl = channel.clone();
     // 标题
-    let title: &str = row.try_get("title")?;
-    let title = SmolStr::new(title);
+    let title: String = row.try_get("title")?;
     // 内容
-    let content: &str = row.try_get("content")?;
-    let content = SmolStr::new(content);
+    let content: String = row.try_get("content")?;
     // 跳转路由
-    let route_path: &str = row.try_get("route_path")?;
-    let route_path = SmolStr::new(route_path);
+    let route_path: String = row.try_get("route_path")?;
     // 跳转参数
-    let route_query: &str = row.try_get("route_query")?;
-    let route_query = SmolStr::new(route_query);
+    let route_query: String = row.try_get("route_query")?;
     // 发送人
     let sender_usr_id: UsrId = row.try_get("sender_usr_id")?;
     let sender_usr_id_lbl: Option<&str> = row.try_get("sender_usr_id_lbl")?;
-    let sender_usr_id_lbl = SmolStr::new(sender_usr_id_lbl.unwrap_or_default());
+    let sender_usr_id_lbl = String::from(sender_usr_id_lbl.unwrap_or_default());
     // 系统消息
     let is_sys_msg: u8 = row.try_get("is_sys_msg")?;
-    let is_sys_msg_lbl = SmolStr::new(is_sys_msg.to_string());
+    let is_sys_msg_lbl = is_sys_msg.to_string();
     // 置顶
     let is_pinned: u8 = row.try_get("is_pinned")?;
-    let is_pinned_lbl = SmolStr::new(is_pinned.to_string());
+    let is_pinned_lbl = is_pinned.to_string();
     // 所属组织
     let org_id: OrgId = row.try_get("org_id")?;
     let org_id_lbl: Option<&str> = row.try_get("org_id_lbl")?;
-    let org_id_lbl = SmolStr::new(org_id_lbl.unwrap_or_default());
+    let org_id_lbl = String::from(org_id_lbl.unwrap_or_default());
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -228,79 +221,79 @@ impl FromRow<'_, MySqlRow> for MessageModel {
 pub struct MessageFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 分类
   #[graphql(name = "category")]
-  pub category: SmolStr,
+  pub category: String,
   /// 分类
   #[graphql(name = "category_lbl")]
-  pub category_lbl: SmolStr,
+  pub category_lbl: String,
   /// 发送通道
   #[graphql(name = "channel")]
-  pub channel: SmolStr,
+  pub channel: String,
   /// 发送通道
   #[graphql(name = "channel_lbl")]
-  pub channel_lbl: SmolStr,
+  pub channel_lbl: String,
   /// 标题
   #[graphql(name = "title")]
-  pub title: SmolStr,
+  pub title: String,
   /// 内容
   #[graphql(name = "content")]
-  pub content: SmolStr,
+  pub content: String,
   /// 跳转路由
   #[graphql(name = "route_path")]
-  pub route_path: SmolStr,
+  pub route_path: String,
   /// 跳转参数
   #[graphql(name = "route_query")]
-  pub route_query: SmolStr,
+  pub route_query: String,
   /// 发送人
   #[graphql(name = "sender_usr_id")]
-  pub sender_usr_id: SmolStr,
+  pub sender_usr_id: String,
   /// 发送人
   #[graphql(name = "sender_usr_id_lbl")]
-  pub sender_usr_id_lbl: SmolStr,
+  pub sender_usr_id_lbl: String,
   /// 系统消息
   #[graphql(name = "is_sys_msg")]
-  pub is_sys_msg: SmolStr,
+  pub is_sys_msg: String,
   /// 系统消息
   #[graphql(name = "is_sys_msg_lbl")]
-  pub is_sys_msg_lbl: SmolStr,
+  pub is_sys_msg_lbl: String,
   /// 置顶
   #[graphql(name = "is_pinned")]
-  pub is_pinned: SmolStr,
+  pub is_pinned: String,
   /// 置顶
   #[graphql(name = "is_pinned_lbl")]
-  pub is_pinned_lbl: SmolStr,
+  pub is_pinned_lbl: String,
   /// 所属组织
   #[graphql(name = "org_id")]
-  pub org_id: SmolStr,
+  pub org_id: String,
   /// 所属组织
   #[graphql(name = "org_id_lbl")]
-  pub org_id_lbl: SmolStr,
+  pub org_id_lbl: String,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: SmolStr,
+  pub create_usr_id: String,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: SmolStr,
+  pub update_usr_id: String,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: SmolStr,
+  pub update_time: String,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -317,37 +310,37 @@ pub struct MessageSearch {
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   #[graphql(name = "keyword")]
-  pub keyword: Option<SmolStr>,
+  pub keyword: Option<String>,
   /// 分类
   #[graphql(name = "category")]
-  pub category: Option<Vec<SmolStr>>,
+  pub category: Option<Vec<String>>,
   /// 发送通道
   #[graphql(name = "channel")]
-  pub channel: Option<Vec<SmolStr>>,
+  pub channel: Option<Vec<String>>,
   /// 标题
   #[graphql(name = "title")]
-  pub title: Option<SmolStr>,
+  pub title: Option<String>,
   /// 标题
   #[graphql(name = "title_like")]
-  pub title_like: Option<SmolStr>,
+  pub title_like: Option<String>,
   /// 内容
   #[graphql(name = "content")]
-  pub content: Option<SmolStr>,
+  pub content: Option<String>,
   /// 内容
   #[graphql(name = "content_like")]
-  pub content_like: Option<SmolStr>,
+  pub content_like: Option<String>,
   /// 跳转路由
   #[graphql(name = "route_path")]
-  pub route_path: Option<SmolStr>,
+  pub route_path: Option<String>,
   /// 跳转路由
   #[graphql(name = "route_path_like")]
-  pub route_path_like: Option<SmolStr>,
+  pub route_path_like: Option<String>,
   /// 跳转参数
   #[graphql(skip)]
-  pub route_query: Option<SmolStr>,
+  pub route_query: Option<String>,
   /// 跳转参数
   #[graphql(skip)]
-  pub route_query_like: Option<SmolStr>,
+  pub route_query_like: Option<String>,
   /// 发送人
   #[graphql(name = "sender_usr_id")]
   pub sender_usr_id: Option<Vec<UsrId>>,
@@ -356,10 +349,10 @@ pub struct MessageSearch {
   pub sender_usr_id_is_null: Option<bool>,
   /// 发送人
   #[graphql(name = "sender_usr_id_lbl")]
-  pub sender_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub sender_usr_id_lbl: Option<Vec<String>>,
   /// 发送人
   #[graphql(name = "sender_usr_id_lbl_like")]
-  pub sender_usr_id_lbl_like: Option<SmolStr>,
+  pub sender_usr_id_lbl_like: Option<String>,
   /// 系统消息
   #[graphql(skip)]
   pub is_sys_msg: Option<Vec<u8>>,
@@ -374,10 +367,10 @@ pub struct MessageSearch {
   pub org_id_is_null: Option<bool>,
   /// 所属组织
   #[graphql(name = "org_id_lbl")]
-  pub org_id_lbl: Option<Vec<SmolStr>>,
+  pub org_id_lbl: Option<Vec<String>>,
   /// 所属组织
   #[graphql(name = "org_id_lbl_like")]
-  pub org_id_lbl_like: Option<SmolStr>,
+  pub org_id_lbl_like: Option<String>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -386,10 +379,10 @@ pub struct MessageSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -401,10 +394,10 @@ pub struct MessageSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -549,64 +542,64 @@ pub struct MessageInput {
   pub tenant_id: Option<TenantId>,
   /// 分类
   #[graphql(name = "category")]
-  pub category: Option<SmolStr>,
+  pub category: Option<String>,
   /// 分类
   #[graphql(name = "category_lbl")]
-  pub category_lbl: Option<SmolStr>,
+  pub category_lbl: Option<String>,
   /// 发送通道
   #[graphql(name = "channel")]
-  pub channel: Option<SmolStr>,
+  pub channel: Option<String>,
   /// 发送通道
   #[graphql(name = "channel_lbl")]
-  pub channel_lbl: Option<SmolStr>,
+  pub channel_lbl: Option<String>,
   /// 标题
   #[graphql(name = "title")]
-  pub title: Option<SmolStr>,
+  pub title: Option<String>,
   /// 内容
   #[graphql(name = "content")]
-  pub content: Option<SmolStr>,
+  pub content: Option<String>,
   /// 跳转路由
   #[graphql(name = "route_path")]
-  pub route_path: Option<SmolStr>,
+  pub route_path: Option<String>,
   /// 跳转参数
   #[graphql(name = "route_query")]
-  pub route_query: Option<SmolStr>,
+  pub route_query: Option<String>,
   /// 发送人
   #[graphql(name = "sender_usr_id")]
   pub sender_usr_id: Option<UsrId>,
   /// 发送人
   #[graphql(name = "sender_usr_id_lbl")]
-  pub sender_usr_id_lbl: Option<SmolStr>,
+  pub sender_usr_id_lbl: Option<String>,
   /// 系统消息
   #[graphql(name = "is_sys_msg")]
   pub is_sys_msg: Option<u8>,
   /// 系统消息
   #[graphql(name = "is_sys_msg_lbl")]
-  pub is_sys_msg_lbl: Option<SmolStr>,
+  pub is_sys_msg_lbl: Option<String>,
   /// 置顶
   #[graphql(name = "is_pinned")]
   pub is_pinned: Option<u8>,
   /// 置顶
   #[graphql(name = "is_pinned_lbl")]
-  pub is_pinned_lbl: Option<SmolStr>,
+  pub is_pinned_lbl: Option<String>,
   /// 所属组织
   #[graphql(name = "org_id")]
   pub org_id: Option<OrgId>,
   /// 所属组织
   #[graphql(name = "org_id_lbl")]
-  pub org_id_lbl: Option<SmolStr>,
+  pub org_id_lbl: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -615,13 +608,13 @@ pub struct MessageInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -824,7 +817,7 @@ pub fn check_sort_message(
     }
     if !get_can_sort_in_api_message.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_message: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_message: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

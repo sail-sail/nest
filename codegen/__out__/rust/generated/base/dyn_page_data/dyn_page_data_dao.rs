@@ -10,9 +10,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
@@ -105,14 +102,14 @@ async fn get_where_query(
     if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -163,14 +160,14 @@ async fn get_where_query(
     if let Some(create_usr_id) = search.and_then(|item| item.create_usr_id.as_deref()) {
       let arg = {
         if create_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id.len());
           for item in create_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id in (");
@@ -188,21 +185,21 @@ async fn get_where_query(
     }
   }
   {
-    let create_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let create_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.create_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(create_usr_id_lbl) = create_usr_id_lbl {
       let arg = {
         if create_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(create_usr_id_lbl.len());
           for item in create_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.create_usr_id_lbl in (");
@@ -244,14 +241,14 @@ async fn get_where_query(
     if let Some(update_usr_id) = search.and_then(|item| item.update_usr_id.as_deref()) {
       let arg = {
         if update_usr_id.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id.len());
           for item in update_usr_id {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id in (");
@@ -269,21 +266,21 @@ async fn get_where_query(
     }
   }
   {
-    let update_usr_id_lbl: Option<Vec<SmolStr>> = match search {
+    let update_usr_id_lbl: Option<Vec<String>> = match search {
       Some(item) => item.update_usr_id_lbl.clone(),
       None => None,
     };
     if let Some(update_usr_id_lbl) = update_usr_id_lbl {
       let arg = {
         if update_usr_id_lbl.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(update_usr_id_lbl.len());
           for item in update_usr_id_lbl {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.update_usr_id_lbl in (");
@@ -451,8 +448,8 @@ pub async fn set_dyn_page_data_dyn_page_data(
       ref_ids: Some(
         ids
           .into_iter()
-          .map(|item| SmolStr::new(item.as_str()))
-          .collect::<Vec<SmolStr>>()
+          .map(|item| item.as_str().to_string())
+          .collect::<Vec<String>>()
       ),
       ..Default::default()
     }),
@@ -612,7 +609,7 @@ pub async fn find_all_dyn_page_data(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -922,7 +919,7 @@ pub async fn find_by_id_ok_dyn_page_data(
   ).await?;
   
   let Some(dyn_page_data_model) = dyn_page_data_model else {
-    let err_msg = SmolStr::new("此 动态页面数据 已被删除");
+    let err_msg = String::from("此 动态页面数据 已被删除");
     error!(
       "{req_id} {err_msg} id: {id:?}",
       req_id = get_req_id(),
@@ -1034,7 +1031,7 @@ pub async fn find_by_ids_ok_dyn_page_data(
   ).await?;
   
   if dyn_page_data_models.len() != len {
-    let err_msg = SmolStr::new("此 动态页面数据 已被删除");
+    let err_msg = String::from("此 动态页面数据 已被删除");
     return Err(eyre!(err_msg));
   }
   
@@ -1047,7 +1044,7 @@ pub async fn find_by_ids_ok_dyn_page_data(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      let err_msg = SmolStr::new("此 动态页面数据 已经被删除");
+      let err_msg = String::from("此 动态页面数据 已经被删除");
       Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<DynPageDataModel>>>()?;
@@ -1597,7 +1594,7 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -1622,7 +1619,7 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
           options,
@@ -1728,8 +1725,8 @@ async fn _creates(
           ref_ids: Some(
             inputs2_ids
               .iter()
-              .map(|id| SmolStr::new(id.as_str()))
-              .collect::<Vec<SmolStr>>()
+              .map(|id| id.as_str().to_string())
+              .collect::<Vec<String>>()
           ),
           ..Default::default()
         }),
@@ -1798,7 +1795,7 @@ async fn _creates(
               update_by_id_dyn_page_val(
                 old_value_model.id,
                 DynPageValInput {
-                  lbl: Some(SmolStr::new(new_value.clone())),
+                  lbl: Some(new_value.clone()),
                   ..Default::default()
                 },
                 options,
@@ -1808,9 +1805,9 @@ async fn _creates(
             create_dyn_page_val(
               DynPageValInput {
                 ref_code: Some(page_path.clone()),
-                ref_id: Some(SmolStr::new(id.as_str())),
+                ref_id: Some(id.as_str().to_string()),
                 code: Some(field_code),
-                lbl: Some(SmolStr::new(new_value.clone())),
+                lbl: Some(new_value.clone()),
                 ..Default::default()
               },
               options,
@@ -2165,7 +2162,7 @@ pub async fn update_by_id_dyn_page_data(
       let dyn_page_val_models = find_all_dyn_page_val(
         Some(DynPageValSearch {
           ref_code: Some(page_path.clone()),
-          ref_ids: Some(vec![ SmolStr::new(id.as_str()) ]),
+          ref_ids: Some(vec![ String::from(id.as_str()) ]),
           ..Default::default()
         }),
         None,
@@ -2221,7 +2218,7 @@ pub async fn update_by_id_dyn_page_data(
             update_by_id_dyn_page_val(
               old_value_model.id,
               DynPageValInput {
-                lbl: Some(SmolStr::new(new_value.clone())),
+                lbl: Some(String::from(new_value.clone())),
                 ..Default::default()
               },
               options,
@@ -2232,9 +2229,9 @@ pub async fn update_by_id_dyn_page_data(
           create_dyn_page_val(
             DynPageValInput {
               ref_code: Some(page_path.clone()),
-              ref_id: Some(SmolStr::new(id.as_str())),
+              ref_id: Some(String::from(id.as_str())),
               code: Some(field_code),
-              lbl: Some(SmolStr::new(new_value.clone())),
+              lbl: Some(String::from(new_value.clone())),
               ..Default::default()
             },
             options,
@@ -2252,7 +2249,7 @@ pub async fn update_by_id_dyn_page_data(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2276,7 +2273,7 @@ pub async fn update_by_id_dyn_page_data(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -2438,7 +2435,7 @@ pub async fn delete_by_ids_dyn_page_data(
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = SmolStr::new("");
+    let mut usr_lbl = String::from("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
@@ -2713,7 +2710,7 @@ pub async fn validate_option_dyn_page_data(
   let model = match model {
     Some(model) => model,
     None => {
-      let err_msg = SmolStr::new("动态页面数据不存在");
+      let err_msg = String::from("动态页面数据不存在");
       error!(
         "{req_id} {err_msg}",
         req_id = get_req_id(),

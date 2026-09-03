@@ -3,8 +3,6 @@ use async_graphql::{Context, Object};
 
 use crate::common::context::Ctx;
 
-use smol_str::SmolStr;
-
 use super::options_resolver;
 use crate::base::options::options_model::OptionsModel;
 
@@ -18,7 +16,7 @@ impl OptionsQuery {
   async fn get_options_by_lbl(
     &self,
     ctx: &Context<'_>,
-    lbl: SmolStr,
+    lbl: String,
   ) -> Result<Vec<OptionsModel>> {
     Ctx::builder(ctx)
       .with_auth()?

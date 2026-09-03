@@ -8,8 +8,6 @@ use crate::common::context::{
   get_server_tokentimeout,
 };
 
-use smol_str::SmolStr;
-
 use crate::common::exceptions::service_exception::ServiceExceptionBuilder;
 
 use super::usr_model::LoginModel;
@@ -71,11 +69,11 @@ use chrono::{NaiveDateTime, Duration};
 /// 登录, 获得token
 #[allow(unused_variables)]
 pub async fn login(
-  ip: SmolStr,
+  ip: String,
   input: LoginInput,
 ) -> Result<LoginModel> {
   let n_route = NRoute {
-    route_path: SmolStr::new("/base/usr").into()
+    route_path: String::from("/base/usr").into(),
   };
   
   let LoginInput {
@@ -86,14 +84,14 @@ pub async fn login(
   } = input;
   if username.is_empty() || password.is_empty() {
     let err_msg = n_route.n(
-      SmolStr::new("用户名或密码不能为空"),
+      String::from("用户名或密码不能为空"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
   }
   if tenant_id.is_empty() {
     let err_msg = n_route.n(
-      SmolStr::new("请选择租户"),
+      String::from("请选择租户"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
@@ -118,7 +116,7 @@ pub async fn login(
   ).await?;
   
   let lang = lang_model.map_or(
-    SmolStr::new("zh-CN"),
+    String::from("zh-CN"),
     |lang_model| lang_model.code,
   );
   
@@ -154,7 +152,7 @@ pub async fn login(
       ).await?;
       if count >= 6 {
         let err_msg = n_route.n(
-          SmolStr::new("密码错误次数过多, 请10分钟后再试"),
+          String::from("密码错误次数过多, 请10分钟后再试"),
           None,
         ).await?;
         return Err(eyre!(err_msg));
@@ -189,7 +187,7 @@ pub async fn login(
     }
     
     let err_msg = n_route.n(
-      SmolStr::new("用户名或密码错误"),
+      String::from("用户名或密码错误"),
       None,
     ).await?;
     return Err(
@@ -222,7 +220,7 @@ pub async fn login(
     }
     
     let err_msg = n_route.n(
-      SmolStr::new("用户名或密码错误"),
+      String::from("用户名或密码错误"),
       None,
     ).await?;
     return Err(
@@ -313,8 +311,8 @@ pub async fn login(
 /// 选择语言
 pub async fn select_lang(
   ctx: &mut Ctx,
-  lang: SmolStr,
-) -> Result<SmolStr> {
+  lang: String,
+) -> Result<String> {
   
   if lang.is_empty() {
     return Err(eyre!("语言编码不能为空"));
@@ -336,7 +334,7 @@ pub async fn change_password(
 ) -> Result<bool> {
   
   let n_route = NRoute {
-    route_path: SmolStr::new("/base/usr").into()
+    route_path: String::from("/base/usr").into(),
   };
   
   let old_password = input.old_password;
@@ -345,28 +343,28 @@ pub async fn change_password(
   
   if old_password.is_empty() {
     let err_msg = n_route.n(
-      SmolStr::new("旧密码不能为空"),
+      String::from("旧密码不能为空"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
   }
   if password.is_empty() {
     let err_msg = n_route.n(
-      SmolStr::new("新密码不能为空"),
+      String::from("新密码不能为空"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
   }
   if confirm_password.is_empty() {
     let err_msg = n_route.n(
-      SmolStr::new("确认密码不能为空"),
+      String::from("确认密码不能为空"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
   }
   if password != confirm_password {
     let err_msg = n_route.n(
-      SmolStr::new("两次输入的密码不一致"),
+      String::from("两次输入的密码不一致"),
       None,
     ).await?;
     return Err(eyre!(err_msg));
@@ -395,7 +393,7 @@ pub async fn change_password(
   
   if usr_model.password != old_password {
     let err_msg = n_route.n(
-      SmolStr::new("旧密码错误"),
+      String::from("旧密码错误"),
       None,
     ).await?;
     return Err(eyre!(err_msg));

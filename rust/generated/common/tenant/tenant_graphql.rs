@@ -3,8 +3,6 @@ use async_graphql::{Context, Object};
 
 use crate::common::context::Ctx;
 
-use smol_str::SmolStr;
-
 use super::tenant_resolver;
 use super::tenant_model::GetLoginTenants;
 
@@ -24,7 +22,7 @@ impl TenantQuery {
   async fn get_login_tenants(
     &self,
     ctx: &Context<'_>,
-    domain: SmolStr,
+    domain: String,
   ) -> Result<Vec<GetLoginTenants>> {
     Ctx::builder(ctx)
       .build()

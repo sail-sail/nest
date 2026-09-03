@@ -3,14 +3,12 @@ use std::error::Error;
 
 use derive_builder::Builder;
 
-use smol_str::SmolStr;
-
 #[derive(Builder, Debug, Clone)]
 #[builder(setter(into))]
 #[allow(dead_code)]
 pub struct ServiceException {
-  pub code: SmolStr,
-  pub message: SmolStr,
+  pub code: String,
+  pub message: String,
   #[builder(default = "true")]
   pub rollback: bool,
   // 是否打印堆栈信息

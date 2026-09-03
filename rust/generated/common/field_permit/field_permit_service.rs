@@ -5,8 +5,6 @@ use crate::common::context::{
   get_auth_id_ok,
 };
 
-use smol_str::SmolStr;
-
 use crate::base::usr::usr_dao::{
   find_by_id_usr,
   validate_option_usr,
@@ -24,8 +22,8 @@ use crate::base::menu::menu_model::MenuSearch;
 
 /// 字段权限
 pub async fn get_field_permit(
-  route_path: SmolStr,
-) -> Result<Option<Vec<SmolStr>>> {
+  route_path: String,
+) -> Result<Option<Vec<String>>> {
   
   if route_path.is_empty() {
     return Ok(None);

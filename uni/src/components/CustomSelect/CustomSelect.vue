@@ -18,7 +18,7 @@
     un-h="full"
     un-w="full"
     un-p="l-3 r-2 y-1"
-    un-box-border
+    un-box-content
     un-gap="2"
     @click="onClick"
   >
@@ -166,7 +166,7 @@
             :key="item.value"
             :title="item.label"
             un-p="y-4"
-            un-box-border
+            un-box-content
             un-flex="~"
             un-items="center"
             un-gap="2"
@@ -603,7 +603,7 @@ defineExpose({
   // border: 0px solid rgba(230,230,230,1);
   // background-color: rgba(245,245,245,1);
   transition: border 0.24s;
-  height: 88rpx;
+  min-height: 88rpx;
   display: flex;
   align-items: center;
   // border-radius: 4px;

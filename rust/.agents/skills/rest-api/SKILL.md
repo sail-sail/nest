@@ -76,7 +76,7 @@ pub async fn code2session(
 #[function_name::named]
 pub async fn code2session(
   input: Code2sessionInput,
-  ip: SmolStr,
+  ip: String,
   options: Option<Options>,
 ) -> Result<Response> {
 
@@ -148,8 +148,8 @@ pub async fn download_filename(
 ```rust
 #[derive(Deserialize)]
 struct ExportRequest {
-  search: Option<SmolStr>,
-  page: Option<SmolStr>,
+  search: Option<String>,
+  page: Option<String>,
 }
 
 #[handler]

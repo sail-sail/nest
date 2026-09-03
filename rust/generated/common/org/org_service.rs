@@ -8,15 +8,13 @@ use crate::common::context::{
 };
 use crate::common::cache::cache_dao;
 
-use smol_str::SmolStr;
-
 use crate::base::org::org_model::OrgId;
 use super::org_model::OrgIdModel;
 
 pub async fn org_login_select(
   ctx: &mut Ctx,
   org_id: Option<OrgId>,
-) -> Result<SmolStr> {
+) -> Result<String> {
   
   let mut auth_model = ctx.get_auth_model()
     .ok_or_else(|| 
@@ -25,7 +23,7 @@ pub async fn org_login_select(
   
   let auth_org_id = auth_model.org_id;
   if org_id == auth_org_id {
-    return Ok(SmolStr::new(""));
+    return Ok("".to_string());
   }
   let auth_tenant_id = auth_model.tenant_id;
   let auth_usr_id = auth_model.id;

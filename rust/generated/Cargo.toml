@@ -15,7 +15,6 @@ tracing-attributes.workspace = true
 tokio.workspace = true
 poem.workspace = true
 async-graphql.workspace = true
-smol_str.workspace = true
 slab.workspace = true
 chrono.workspace = true
 # anyhow.workspace = true

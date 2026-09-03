@@ -109,7 +109,7 @@ export interface TableColumn {
    *   CURRENT_TENANT_ID: 当前租户ID
    *   其余的请查看dayjs文档: https://dayjs.fenxianglu.cn/category/manipulate.html#%E6%97%B6%E9%97%B4%E7%9A%84%E5%BC%80%E5%A7%8B
    */
-  COLUMN_DEFAULT?: string | "CURRENT_DATE" | "CURRENT_DATETIME" | "CURRENT_USR_ID" | "CURRENT_ORG_ID" | "CURRENT_TENANT_ID"
+  COLUMN_DEFAULT?: "CURRENT_DATE" | "CURRENT_DATETIME" | "CURRENT_USR_ID" | "CURRENT_ORG_ID" | "CURRENT_TENANT_ID"
     | "start_of_year" | "end_of_year" | "start_of_month" | "end_of_month" | "start_of_week" | "end_of_week" | "start_of_day" | "end_of_day"
     | "start_of_hour" | "end_of_hour" | "start_of_minute" | "end_of_minute" | "start_of_second" | "end_of_second",
   

@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -256,8 +253,8 @@ pub async fn creates_dict_detail(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_dict_detail()),
-    SmolStr::new("add"),
+    String::from(get_page_path_dict_detail()),
+    String::from("add"),
   ).await?;
   
   let ids = dict_detail_service::creates_dict_detail(
@@ -292,8 +289,8 @@ pub async fn update_by_id_dict_detail(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_dict_detail()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_dict_detail()),
+    String::from("edit"),
   ).await?;
   
   let res = dict_detail_service::update_by_id_dict_detail(
@@ -320,8 +317,8 @@ pub async fn delete_by_ids_dict_detail(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dict_detail()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_dict_detail()),
+    String::from("delete"),
   ).await?;
   
   let num = dict_detail_service::delete_by_ids_dict_detail(
@@ -371,8 +368,8 @@ pub async fn enable_by_ids_dict_detail(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dict_detail()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_dict_detail()),
+    String::from("edit"),
   ).await?;
   
   let num = dict_detail_service::enable_by_ids_dict_detail(
@@ -418,8 +415,8 @@ pub async fn revert_by_ids_dict_detail(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dict_detail()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_dict_detail()),
+    String::from("delete"),
   ).await?;
   
   let num = dict_detail_service::revert_by_ids_dict_detail(
@@ -445,8 +442,8 @@ pub async fn force_delete_by_ids_dict_detail(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_dict_detail()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_dict_detail()),
+    String::from("force_delete"),
   ).await?;
   
   let num = dict_detail_service::force_delete_by_ids_dict_detail(

@@ -83,9 +83,6 @@ use crate::common::context::{
   UniqueType,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
@@ -1009,7 +1006,7 @@ impl <#=tableUP#>GenMutation {<#
     #[graphql(name = "action")]
     action: TaskAction,
     #[graphql(name = "opinion")]
-    opinion: Option<SmolStr>,
+    opinion: Option<String>,
     #[graphql(name = "add_sign_usr_ids")]
     add_sign_usr_ids: Option<Vec<UsrId>>,
   ) -> Result<bool> {

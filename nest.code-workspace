@@ -86,12 +86,15 @@
     //   "HTTPS_PROXY": "http://127.0.0.1:7890",
     //   "ALL_PROXY": "http://127.0.0.1:7890"
     // },
-		"vue.codeActions.askNewComponentName": false,
-		"vue.editor.reactivityVisualization": false,
-		"vue.editor.templateInterpolationDecorators": false,
-		"vue.format.template.initialIndent": false,
-		"vue.format.wrapAttributes": "force",
-		"mcp": {
+    "rust-analyzer.server.extraEnv": {
+      "STRIP_ASYNC_GRAPHQL": "1"
+    },
+    "vue.codeActions.askNewComponentName": false,
+    "vue.editor.reactivityVisualization": false,
+    "vue.editor.templateInterpolationDecorators": false,
+    "vue.format.template.initialIndent": false,
+    "vue.format.wrapAttributes": "force",
+    "mcp": {
 			"servers": {
 				"influxdb-docs": {
 					"type": "http",
@@ -100,21 +103,21 @@
 			},
 			"inputs": []
 		},
-		"chat.useAgentSkills": true,
-		"chat.useAgentsMdFile": true,
-		"chat.useNestedAgentsMdFiles": true,
-		"chat.tools.terminal.autoApprove": {
-			"cargo check": true,
-			"Tee-Object": true,
-			"ForEach-Object": true,
-			"pnpm": true,
-			"Push-Location": true,
-			"npm run gqlgen": true,
-			"npx vue-tsc": true,
-			"npx eslint": true
-		},
-		"git.enableSmartCommit": true,
-		"diffEditor.experimental.showMoves": true,
-		"diffEditor.experimental.useTrueInlineView": true
-	}
+    "chat.useAgentSkills": true,
+    "chat.useAgentsMdFile": true,
+    "chat.useNestedAgentsMdFiles": true,
+    "chat.tools.terminal.autoApprove": {
+      "cargo check": true,
+      "Tee-Object": true,
+      "ForEach-Object": true,
+      "pnpm": true,
+      "Push-Location": true,
+      "npm run gqlgen": true,
+      "npx vue-tsc": true,
+      "npx eslint": true
+    },
+    "git.enableSmartCommit": true,
+    "diffEditor.experimental.showMoves": true,
+    "diffEditor.experimental.useTrueInlineView": true
+  }
 }

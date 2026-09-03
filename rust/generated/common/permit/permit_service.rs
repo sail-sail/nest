@@ -7,8 +7,6 @@ use crate::common::context::{
   Options,
 };
 
-use smol_str::SmolStr;
-
 use crate::common::i18n::i18n_dao::ns;
 
 use crate::base::menu::menu_dao::{
@@ -36,7 +34,7 @@ use crate::base::permit::permit_model::PermitModel;
 use crate::base::permit::permit_model::PermitId;
 
 /// 根据当前用户获取权限列表
-pub async fn get_usr_permits(route_path: Option<SmolStr>) -> Result<Vec<GetUsrPermits>> {
+pub async fn get_usr_permits(route_path: Option<String>) -> Result<Vec<GetUsrPermits>> {
   let auth_model = get_auth_model();
   if auth_model.is_none() {
     return Ok(Vec::new());
@@ -127,7 +125,7 @@ pub async fn get_usr_permits(route_path: Option<SmolStr>) -> Result<Vec<GetUsrPe
     menu_ids.push(menu_id);
   }
   
-  let mut menu_id_map = HashMap::<MenuId, SmolStr>::with_capacity(menu_ids.len());
+  let mut menu_id_map = HashMap::<MenuId, String>::with_capacity(menu_ids.len());
   if !menu_ids.is_empty() {
     let menu_models = find_all_menu(
       Some(MenuSearch {
@@ -146,10 +144,10 @@ pub async fn get_usr_permits(route_path: Option<SmolStr>) -> Result<Vec<GetUsrPe
   let permits: Vec<GetUsrPermits> = permit_models.into_iter()
     .map(|item| {
       let menu_id = item.menu_id;
-      let route_path: Option<&SmolStr> = menu_id_map.get(&menu_id);
-      let route_path: SmolStr = route_path
+      let route_path: Option<&String> = menu_id_map.get(&menu_id);
+      let route_path: String = route_path
         .map_or_else(
-          || SmolStr::new(""),
+          || "".to_owned(),
           |item| item.clone()
         );
       GetUsrPermits {
@@ -190,8 +188,8 @@ pub fn filter_audit_receiver_usr_ids(
 }
 
 pub async fn get_audit_receiver_usr_ids(
-  route_path: SmolStr,
-  code: SmolStr,
+  route_path: String,
+  code: String,
   options: Option<Options>,
 ) -> Result<Vec<UsrId>> {
   let menu_model = match find_one_menu(
@@ -297,8 +295,8 @@ pub fn find_next_audit_receiver_usr_id_in_list(
 }
 
 pub async fn find_next_audit_receiver_usr_id(
-  route_path: SmolStr,
-  code: SmolStr,
+  route_path: String,
+  code: String,
   current_usr_id: UsrId,
   options: Option<Options>,
 ) -> Result<Option<UsrId>> {
@@ -308,8 +306,8 @@ pub async fn find_next_audit_receiver_usr_id(
 
 /// 后端按钮权限校验
 pub async fn use_permit(
-  route_path: SmolStr,
-  code: SmolStr,
+  route_path: String,
+  code: String,
 ) -> Result<()> {
   
   let options = Options::new()
@@ -333,7 +331,7 @@ pub async fn use_permit(
     Some(auth_model) => auth_model,
     None => {
       let err_msg = ns(
-        SmolStr::new("无权限"),
+        "无权限".to_owned(),
         None,
       ).await?;
       return Err(eyre!(err_msg));
@@ -349,7 +347,7 @@ pub async fn use_permit(
     Some(usr_model) => usr_model,
     None => {
       let err_msg = ns(
-        SmolStr::new("无权限"),
+        "无权限".to_owned(),
         None,
       ).await?;
       return Err(eyre!(err_msg));
@@ -364,7 +362,7 @@ pub async fn use_permit(
   
   if role_ids.is_empty() {
     let err_msg = ns(
-      SmolStr::new("无权限"),
+      "无权限".to_owned(),
       None,
     ).await?;
     return Err(eyre!(err_msg));
@@ -439,12 +437,12 @@ pub async fn use_permit(
     .map(|item| item.lbl)
     .unwrap_or(code);
   
-  let mut map: HashMap<SmolStr, SmolStr> = HashMap::with_capacity(2);
-  map.insert(SmolStr::new("0"), menu_model.lbl);
-  map.insert(SmolStr::new("1"), permit_lbl);
+  let mut map: HashMap<String, String> = HashMap::with_capacity(2);
+  map.insert("0".to_owned(), menu_model.lbl);
+  map.insert("1".to_owned(), permit_lbl);
   
   let err_msg = ns(
-    SmolStr::new("{0} {1} 无权限"),
+    "{0} {1} 无权限".to_owned(),
     Some(map),
   ).await?;
   

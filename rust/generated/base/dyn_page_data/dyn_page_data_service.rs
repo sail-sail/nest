@@ -14,9 +14,6 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 
 use crate::base::tenant::tenant_model::TenantId;
@@ -292,7 +289,7 @@ pub async fn delete_by_ids_dyn_page_data(
 
 /// 获取动态页面数据字段注释
 pub async fn get_field_comments_dyn_page_data(
-  ref_code: Option<SmolStr>,
+  ref_code: Option<String>,
   options: Option<Options>,
 ) -> Result<DynPageDataFieldComment> {
   

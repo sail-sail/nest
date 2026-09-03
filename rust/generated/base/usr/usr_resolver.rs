@@ -13,9 +13,6 @@ use crate::common::context::{
   Options,
 };
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::common::permit::permit_service::use_permit;
@@ -58,7 +55,7 @@ pub async fn find_all_usr(
   let mut models = models;
   for model in &mut models {
     // 密码
-    model.password = SmolStr::new("");
+    model.password = String::new();
   }
   let models = models;
   
@@ -123,7 +120,7 @@ pub async fn find_one_usr(
   let mut model = model;
   if let Some(model) = &mut model {
     // 密码
-    model.password = SmolStr::new("");
+    model.password = String::new();
   }
   let model = model;
   
@@ -160,7 +157,7 @@ pub async fn find_one_ok_usr(
   
   let mut model = model;
   // 密码
-  model.password = SmolStr::new("");
+  model.password = String::new();
   let model = model;
   
   Ok(model)
@@ -187,7 +184,7 @@ pub async fn find_by_id_usr(
   let mut model = model;
   if let Some(model) = &mut model {
     // 密码
-    model.password = SmolStr::new("");
+    model.password = String::new();
   }
   let model = model;
   
@@ -214,7 +211,7 @@ pub async fn find_by_id_ok_usr(
   
   let mut model = model;
   // 密码
-  model.password = SmolStr::new("");
+  model.password = String::new();
   let model = model;
   
   Ok(model)
@@ -241,7 +238,7 @@ pub async fn find_by_ids_usr(
   let mut models = models;
   for model in models.iter_mut() {
     // 密码
-    model.password = SmolStr::new("");
+    model.password = String::new();
   }
   let models = models;
   
@@ -290,7 +287,7 @@ pub async fn find_by_ids_ok_usr(
   let mut models = models;
   for model in models.iter_mut() {
     // 密码
-    model.password = SmolStr::new("");
+    model.password = String::new();
   }
   let models = models;
   
@@ -327,8 +324,8 @@ pub async fn creates_usr(
   let inputs = inputs2;
   
   use_permit(
-    SmolStr::new(get_page_path_usr()),
-    SmolStr::new("add"),
+    String::from(get_page_path_usr()),
+    String::from("add"),
   ).await?;
   
   let ids = usr_service::creates_usr(
@@ -387,8 +384,8 @@ pub async fn update_by_id_usr(
   ).await?;
   
   use_permit(
-    SmolStr::new(get_page_path_usr()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_usr()),
+    String::from("edit"),
   ).await?;
   
   let res = usr_service::update_by_id_usr(
@@ -415,8 +412,8 @@ pub async fn delete_by_ids_usr(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_usr()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_usr()),
+    String::from("delete"),
   ).await?;
   
   let num = usr_service::delete_by_ids_usr(
@@ -466,8 +463,8 @@ pub async fn enable_by_ids_usr(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_usr()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_usr()),
+    String::from("edit"),
   ).await?;
   
   let num = usr_service::enable_by_ids_usr(
@@ -519,8 +516,8 @@ pub async fn lock_by_ids_usr(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_usr()),
-    SmolStr::new("edit"),
+    String::from(get_page_path_usr()),
+    String::from("edit"),
   ).await?;
   
   let num = usr_service::lock_by_ids_usr(
@@ -566,8 +563,8 @@ pub async fn revert_by_ids_usr(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_usr()),
-    SmolStr::new("delete"),
+    String::from(get_page_path_usr()),
+    String::from("delete"),
   ).await?;
   
   let num = usr_service::revert_by_ids_usr(
@@ -593,8 +590,8 @@ pub async fn force_delete_by_ids_usr(
   );
   
   use_permit(
-    SmolStr::new(get_page_path_usr()),
-    SmolStr::new("force_delete"),
+    String::from(get_page_path_usr()),
+    String::from("force_delete"),
   ).await?;
   
   let num = usr_service::force_delete_by_ids_usr(

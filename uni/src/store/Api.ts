@@ -13,7 +13,7 @@ export async function getUsrPermits(
     getUsrPermits: Query["getUsrPermits"],
   } = await query({
     query: /* GraphQL */ `
-      query($route_path: SmolStr) {
+      query($route_path: String) {
         getUsrPermits(route_path: $route_path) {
           route_path
           code
@@ -37,7 +37,7 @@ export async function getFieldPermit(
     getFieldPermit: Query["getFieldPermit"],
   } = await query({
     query: /* GraphQL */ `
-      query($route_path: SmolStr!) {
+      query($route_path: String!) {
         getFieldPermit(route_path: $route_path)
       }
     `,

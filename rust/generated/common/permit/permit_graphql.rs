@@ -1,6 +1,5 @@
 use color_eyre::eyre::Result;
 use async_graphql::{Context, Object};
-use smol_str::SmolStr;
 
 use crate::common::context::Ctx;
 
@@ -18,7 +17,7 @@ impl PermitQuery {
   async fn get_usr_permits(
     &self,
     ctx: &Context<'_>,
-    route_path: Option<SmolStr>,
+    route_path: Option<String>,
   ) -> Result<Vec<GetUsrPermits>> {
     Ctx::builder(ctx)
       .with_auth()?

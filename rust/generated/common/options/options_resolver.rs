@@ -3,14 +3,12 @@ use tracing::info;
 
 use crate::common::context::get_req_id;
 
-use smol_str::SmolStr;
-
 use super::options_service;
 use crate::base::options::options_model::OptionsModel;
 
 #[function_name::named]
 pub async fn get_options_by_lbl(
-  lbl: SmolStr,
+  lbl: String,
 ) -> Result<Vec<OptionsModel>> {
   
   info!(

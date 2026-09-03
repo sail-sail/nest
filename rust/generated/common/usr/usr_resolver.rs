@@ -2,8 +2,6 @@ use color_eyre::eyre::Result;
 
 use crate::common::context::Ctx;
 
-use smol_str::SmolStr;
-
 use super::usr_service;
 
 use super::usr_model::{
@@ -15,7 +13,7 @@ use super::usr_model::{
 
 /// 登录, 获得token
 pub async fn login(
-  ip: SmolStr,
+  ip: String,
   input: LoginInput,
 ) -> Result<LoginModel> {
   
@@ -30,8 +28,8 @@ pub async fn login(
 /// 选择语言
 pub async fn select_lang(
   ctx: &mut Ctx,
-  lang: SmolStr,
-) -> Result<SmolStr> {
+  lang: String,
+) -> Result<String> {
   
   let res = usr_service::select_lang(
     ctx,

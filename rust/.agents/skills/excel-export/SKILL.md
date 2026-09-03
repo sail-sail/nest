@@ -39,7 +39,6 @@ pub struct ExportExcel{Table}Asset;
 
 ```rust
 use color_eyre::eyre::{Result, eyre};
-use smol_str::SmolStr;
 use tracing::error;
 
 use generated::common::context::Options;
@@ -52,7 +51,7 @@ pub async fn export_excel_{table}(
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<(Vec<u8>, SmolStr)> {
+) -> Result<(Vec<u8>, String)> {
   let template_name = "export_excel_{table}.xlsx";
   
   let models = find_all_{table}(
@@ -76,7 +75,7 @@ pub async fn export_excel_{table}(
     eyre!("导出失败，请稍后重试")
   })?;
   
-  Ok((buf, SmolStr::new("导出.xlsx")))
+  Ok((buf, "导出.xlsx".to_string()))
 }
 ```
 
@@ -87,14 +86,14 @@ pub async fn export_excel_{table}(
 ```rust
 #[function_name::named]
 pub async fn export_excel_{table}(
-  search: Option<SmolStr>,
-  page: Option<SmolStr>,
-  sort: Option<SmolStr>,
+  search: Option<String>,
+  page: Option<String>,
+  sort: Option<String>,
   options: Option<Options>,
 ) -> Result<Response> {
   fn parse_query_json<T: serde::de::DeserializeOwned>(
     field: &str,
-    raw: Option<SmolStr>,
+    raw: Option<String>,
   ) -> Result<Option<T>> {
     match raw {
       Some(s) => serde_json::from_str::<T>(&s)
@@ -133,15 +132,14 @@ pub async fn export_excel_{table}(
 ```rust
 use poem::{Request, Response, handler, web::Query};
 use serde::Deserialize;
-use smol_str::SmolStr;
 use generated::common::context::Ctx;
 use super::{table}_resful;
 
 #[derive(Deserialize)]
 struct ExportExcel{Table}Request {
-  search: Option<SmolStr>,
-  page: Option<SmolStr>,
-  sort: Option<SmolStr>,
+  search: Option<String>,
+  page: Option<String>,
+  sort: Option<String>,
 }
 
 #[handler]

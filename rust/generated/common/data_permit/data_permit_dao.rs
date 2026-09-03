@@ -5,8 +5,6 @@ use crate::common::context::{
   get_auth_id,
 };
 
-use smol_str::SmolStr;
-
 use crate::base::menu::menu_dao::find_one_menu;
 use crate::base::menu::menu_model::MenuSearch;
 
@@ -28,7 +26,7 @@ use crate::base::role::role_model::RoleSearch;
 /// 获取数据权限列表
 #[allow(dead_code)]
 pub async fn get_data_permits(
-  route_path: SmolStr,
+  route_path: String,
   options: Option<&Options>,
 ) -> Result<Vec<DataPermitModel>> {
   

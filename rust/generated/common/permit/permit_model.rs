@@ -1,8 +1,6 @@
 use serde::{Serialize, Deserialize};
 use async_graphql::SimpleObject;
 
-use smol_str::SmolStr;
-
 use crate::base::permit::permit_model::PermitId;
 use crate::base::menu::menu_model::MenuId;
 
@@ -14,9 +12,9 @@ pub struct GetUsrPermits {
   /// 菜单
   pub menu_id: MenuId,
   /// 路由
-  pub route_path: SmolStr,
+  pub route_path: String,
   /// 编码
-  pub code: SmolStr,
+  pub code: String,
   /// 名称
-  pub lbl: SmolStr,
+  pub lbl: String,
 }

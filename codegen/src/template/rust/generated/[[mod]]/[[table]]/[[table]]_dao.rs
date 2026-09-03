@@ -200,9 +200,6 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use color_eyre::eyre::{Result, eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};<#
@@ -881,14 +878,14 @@ async fn get_where_query(
     if let Some(ids) = search.and_then(|item| item.ids.as_deref()) {
       let arg = {
         if ids.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(ids.len());
           for id in ids {
             args.push(id.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.id in (");
@@ -906,14 +903,14 @@ async fn get_where_query(
     let dept_ids = get_auth_and_children_dept_ids().await?;
     let arg = {
       if dept_ids.is_empty() {
-        SmolStr::new("null")
+        String::from("null")
       } else {
         let mut items = Vec::with_capacity(dept_ids.len());
         for dept_id in dept_ids {
           args.push(dept_id.into());
           items.push("?");
         }
-        SmolStr::new(items.join(","))
+        items.join(",")
       }
     };
     where_query.push_str(" and _permit_usr_dept_.dept_id in (");
@@ -923,14 +920,14 @@ async fn get_where_query(
     let dept_ids = get_auth_dept_ids().await?;
     let arg = {
       if dept_ids.is_empty() {
-        SmolStr::new("null")
+        String::from("null")
       } else {
         let mut items = Vec::with_capacity(dept_ids.len());
         for dept_id in dept_ids {
           args.push(dept_id.into());
           items.push("?");
         }
-        SmolStr::new(items.join(","))
+        items.join(",")
       }
     };
     where_query.push_str(" and _permit_usr_dept_.dept_id in (");
@@ -940,14 +937,14 @@ async fn get_where_query(
     let role_ids = get_auth_role_ids().await?;
     let arg = {
       if role_ids.is_empty() {
-        SmolStr::new("null")
+        String::from("null")
       } else {
         let mut items = Vec::with_capacity(role_ids.len());
         for role_id in role_ids {
           args.push(role_id.into());
           items.push("?");
         }
-        SmolStr::new(items.join(","))
+        items.join(",")
       }
     };
     where_query.push_str(" and _permit_usr_role_.role_id in (");
@@ -985,7 +982,7 @@ async fn get_where_query(
     const fields = searchByKeyword.fields;
   #>
   {
-    let <#=prop_rust#>: Option<SmolStr> = match search {
+    let <#=prop_rust#>: Option<String> = match search {
       Some(item) => item.<#=prop_rust#>.clone(),
       None => None,
     };
@@ -1045,14 +1042,14 @@ async fn get_where_query(
     const modelLabel = column.modelLabel;
     const modelLabel_rust = rustKeyEscape(modelLabel);
     let is_nullable = column.IS_NULLABLE === "YES";
-    let _data_type = "SmolStr";
+    let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
       _data_type = `Vec<${ foreignTable_Up }Id>`;
       is_nullable = true;
     } else if (foreignKey && !foreignKey.multiple) {
       _data_type = `${ foreignTable_Up }Id`;
     } else if (data_type === 'varchar') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'date') {
       _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
@@ -1064,9 +1061,9 @@ async fn get_where_query(
     } else if (data_type === 'int' && column_type.endsWith("unsigned")) {
       _data_type = 'u32';
     } else if (data_type === 'json') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'text') {
-      _data_type = 'SmolStr';
+      _data_type = 'String';
     } else if (data_type === 'tinyint' && !column_type.endsWith("unsigned")) {
       _data_type = 'i8';
     } else if (data_type === 'tinyint' && column_type.endsWith("unsigned")) {
@@ -1101,14 +1098,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1123,14 +1120,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = search.and_then(|item| item.<#=column_name_rust#>.as_deref()) {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1165,21 +1162,21 @@ async fn get_where_query(
   {<#
     if (!langTableRecords.some((record) => record.COLUMN_NAME === modelLabel)) {
     #>
-    let <#=modelLabel_rust#>: Option<Vec<SmolStr>> = match search {
+    let <#=modelLabel_rust#>: Option<Vec<String>> = match search {
       Some(item) => item.<#=modelLabel_rust#>.clone(),
       None => None,
     };
     if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
       let arg = {
         if <#=modelLabel_rust#>.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
           for item in <#=modelLabel_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=modelLabel#> in (");
@@ -1188,14 +1185,14 @@ async fn get_where_query(
     }<#
     } else {
     #>
-    let <#=modelLabel_rust#>: Option<Vec<SmolStr>> = match search {
+    let <#=modelLabel_rust#>: Option<Vec<String>> = match search {
       Some(item) => item.<#=modelLabel_rust#>.clone(),
       None => None,
     };
     if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
       let arg = {
         if <#=modelLabel_rust#>.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
           for item in <#=modelLabel_rust#> {
@@ -1203,7 +1200,7 @@ async fn get_where_query(
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and (t.<#=modelLabel#> in (");
@@ -1263,21 +1260,21 @@ async fn get_where_query(
     } else if (foreignKey.lbl) {
   #>
   {
-    let <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<SmolStr>> = match search {
+    let <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<String>> = match search {
       Some(item) => item.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
       None => None,
     };
     if let Some(<#=column_name#>_<#=foreignKey.lbl#>) = <#=column_name#>_<#=foreignKey.lbl#> {
       let arg = {
         if <#=column_name#>_<#=foreignKey.lbl#>.is_empty() {
-          SmolStr::new("''")
+          String::from("''")
         } else {
           let mut items = Vec::with_capacity(<#=column_name#>_<#=foreignKey.lbl#>.len());
           for item in <#=column_name#>_<#=foreignKey.lbl#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> in (");
@@ -1314,14 +1311,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = search.and_then(|item| item.<#=column_name_rust#>.as_deref()) {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in (");
@@ -1392,14 +1389,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1450,14 +1447,14 @@ async fn get_where_query(
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
       let arg = {
         if <#=column_name_rust#>.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
           for item in <#=column_name_rust#> {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1504,14 +1501,14 @@ async fn get_where_query(
     if let Some(<#=column_name#>s) = search.and_then(|item| item.<#=column_name#>s.as_deref()) {
       let arg = {
         if <#=column_name#>s.is_empty() {
-          SmolStr::new("null")
+          String::from("null")
         } else {
           let mut items = Vec::with_capacity(<#=column_name#>s.len());
           for item in <#=column_name#>s {
             args.push(item.into());
             items.push("?");
           }
-          SmolStr::new(items.join(","))
+          items.join(",")
         }
       };
       where_query.push_str(" and t.<#=column_name#> in (");
@@ -1856,8 +1853,8 @@ pub async fn set_dyn_page_data_<#=table#>(
       ref_ids: Some(
         ids
           .into_iter()
-          .map(|item| SmolStr::new(item.as_str()))
-          .collect::<Vec<SmolStr>>()
+          .map(|item| item.as_str().to_string())
+          .collect::<Vec<String>>()
       ),
       ..Default::default()
     }),
@@ -2293,7 +2290,7 @@ pub async fn find_all_<#=table#>(
   if is_result_limit && len > result_limit_num {
     return Err(eyre!(
       ServiceException {
-        message: format!("{table}.{method}: result length {len} > {result_limit_num}").into(),
+        message: format!("{table}.{method}: result length {len} > {result_limit_num}"),
         trace: true,
         ..Default::default()
       },
@@ -2549,13 +2546,13 @@ pub async fn find_all_<#=table#>(
     // <#=column_comment#>
     model.<#=column_name#>_lbl = {
       if model.<#=column_name#>.is_empty() {
-        SmolStr::new("")
+        String::from("")
       } else {
         let res = get_object(&model.<#=column_name#>).await?;
         if let Some(res) = res && res.status_code() != 404 {
-          SmolStr::new(String::from_utf8(res.to_vec())?)
+          String::from_utf8(res.to_vec())?
         } else {
-          SmolStr::new("")
+          String::from("")
         }
       }
     };<#
@@ -2626,7 +2623,7 @@ pub async fn find_all_<#=table#>(
         .iter()
         .find(|item| item.val == model.<#=column_name#>.to_string())
         .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.<#=column_name#>.to_string().into())
+        .unwrap_or_else(|| model.<#=column_name#>.to_string())
     };<#
     }
     #><#
@@ -3385,19 +3382,19 @@ pub async fn find_by_id_ok_<#=table#>(
     if (isUseI18n) {
     #>
     let table_comment = i18n_dao::ns(
-      SmolStr::new("<#=table_comment#>"),
+      String::from("<#=table_comment#>"),
       None,
     ).await?;
     let map = HashMap::from([
-      (SmolStr::new("0"), table_comment),
+      (String::from("0"), table_comment),
     ]);
     let err_msg = i18n_dao::ns(
-      SmolStr::new("此 {0} 已被删除"),
+      String::from("此 {0} 已被删除"),
       map.into(),
     ).await?;<#
     } else {
     #>
-    let err_msg = SmolStr::new("此 <#=table_comment#> 已被删除");<#
+    let err_msg = String::from("此 <#=table_comment#> 已被删除");<#
     }
     #>
     error!(
@@ -3518,15 +3515,15 @@ pub async fn find_by_ids_ok_<#=table#>(
       None,
     ).await?;
     let map = HashMap::from([
-      (SmolStr::new("0"), table_comment),
+      (String::from("0"), table_comment),
     ]);
     let err_msg = i18n_dao::ns(
-      SmolStr::new("此 {0} 已被删除"),
+      String::from("此 {0} 已被删除"),
       map.into(),
     ).await?;<#
     } else {
     #>
-    let err_msg = SmolStr::new("此 <#=table_comment#> 已被删除");<#
+    let err_msg = String::from("此 <#=table_comment#> 已被删除");<#
     }
     #>
     return Err(eyre!(err_msg));
@@ -3551,12 +3548,12 @@ pub async fn find_by_ids_ok_<#=table#>(
         ("0".to_owned(), table_comment),
       ]);
       let err_msg = i18n_dao::ns(
-        SmolStr::new("此 {0} 已经被删除"),
+        String::from("此 {0} 已经被删除"),
         map.into(),
       ).await?;<#
       } else {
       #>
-      let err_msg = SmolStr::new("此 <#=table_comment#> 已经被删除");<#
+      let err_msg = String::from("此 <#=table_comment#> 已经被删除");<#
       }
       #>
       Err(eyre!(err_msg))
@@ -4480,7 +4477,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     let dict_model = <#=column_name#>_dict.iter().find(|item| {
       item.lbl == input.<#=column_name#>_lbl.clone().unwrap_or_default()
     });
-    let val = dict_model.map(|item| SmolStr::new(&item.val));
+    let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
       input.<#=column_name_rust#> = val<#
         if (columnDictModels.length > 0 && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
@@ -4514,7 +4511,7 @@ pub async fn set_id_by_lbl_<#=table#>(
         }
       #>
     });
-    let lbl = dict_model.map(|item| SmolStr::new(&item.lbl));
+    let lbl = dict_model.map(|item| item.lbl.to_string());
     input.<#=column_name#>_lbl = lbl;
   }<#
     } else if (column.dictbiz) {
@@ -4584,7 +4581,7 @@ pub async fn set_id_by_lbl_<#=table#>(
     && input.<#=column_name_rust#>.is_none()
   {
     input.<#=rustKeyEscape(modelLabel)#> = input.<#=rustKeyEscape(modelLabel)#>.map(|item| 
-      SmolStr::new(item.trim())
+      String::from(item.trim())
     );<#
     if (foreignTableUp !== tableUP) {
     #>
@@ -4648,15 +4645,15 @@ pub async fn set_id_by_lbl_<#=table#>(
   if input.<#=rustKeyEscape(modelLabel)#>.is_some() && input.<#=column_name_rust#>.is_none() {
     input.<#=rustKeyEscape(modelLabel)#> = input.<#=rustKeyEscape(modelLabel)#>.map(|item| 
       item.into_iter()
-        .map(|item| SmolStr::new(item.trim()))
+        .map(|item| String::from(item.trim()))
         .filter(|item| !item.is_empty())
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     );
     input.<#=rustKeyEscape(modelLabel)#> = input.<#=rustKeyEscape(modelLabel)#>.map(|item| {
       let mut set = HashSet::new();
       item.into_iter()
         .filter(|item| set.insert(item.clone()))
-        .collect::<Vec<SmolStr>>()
+        .collect::<Vec<String>>()
     });
     let mut models = vec![];
     for lbl in input.<#=rustKeyEscape(modelLabel)#>.clone().unwrap_or_default() {
@@ -4952,7 +4949,7 @@ async fn _creates(
         let hash = hash.finalize();
         let bytes = hash.as_slice();
         let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
-        let <#=column_name#> = SmolStr::from(<#=column_name#>.get(0..22).unwrap_or_default());
+        let <#=column_name#> = String::from(<#=column_name#>.get(0..22).unwrap_or_default());
         let stat = head_object(&<#=column_name#>).await?;
         if stat.is_none() {
           let content_type = <#=column_name#>_lbl
@@ -5013,7 +5010,7 @@ async fn _creates(
   #>
 
   let auth_org_id = get_auth_org_id();
-  let mut auth_org_id_lbl = SmolStr::new("");
+  let mut auth_org_id_lbl = String::from("");
   if let Some(auth_org_id) = auth_org_id {
     let org_model = crate::base::org::org_dao::find_by_id_org(
       auth_org_id,
@@ -5403,7 +5400,7 @@ async fn _creates(
     if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -5428,7 +5425,7 @@ async fn _creates(
         sql_values += ",default";
       } else {
         let mut usr_id = input.create_usr_id;
-        let mut usr_lbl = SmolStr::new("");
+        let mut usr_lbl = String::from("");
         let usr_model = find_by_id_usr(
           usr_id.unwrap(),
           options,
@@ -5679,8 +5676,8 @@ async fn _creates(
           ref_ids: Some(
             inputs2_ids
               .iter()
-              .map(|id| SmolStr::new(id.as_str()))
-              .collect::<Vec<SmolStr>>()
+              .map(|id| id.as_str().to_string())
+              .collect::<Vec<String>>()
           ),
           ..Default::default()
         }),
@@ -5749,7 +5746,7 @@ async fn _creates(
               update_by_id_dyn_page_val(
                 old_value_model.id,
                 DynPageValInput {
-                  lbl: Some(SmolStr::new(new_value.clone())),
+                  lbl: Some(new_value.clone()),
                   ..Default::default()
                 },
                 options,
@@ -5759,9 +5756,9 @@ async fn _creates(
             create_dyn_page_val(
               DynPageValInput {
                 ref_code: Some(page_path.clone()),
-                ref_id: Some(SmolStr::new(id.as_str())),
+                ref_id: Some(id.as_str().to_string()),
                 code: Some(field_code),
-                lbl: Some(SmolStr::new(new_value.clone())),
+                lbl: Some(new_value.clone()),
                 ..Default::default()
               },
               options,
@@ -5994,7 +5991,7 @@ if (autoCodeColumn && !dateSeq) {
 pub async fn find_auto_code_<#=table#>(
   num: u32,
   options: Option<Options>,
-) -> Result<Vec<(u32, SmolStr)>> {
+) -> Result<Vec<(u32, String)>> {
   
   let table = get_table_name_<#=table#>();
   let method = "find_auto_code_<#=table#>";
@@ -6059,7 +6056,7 @@ pub async fn find_auto_code_<#=table#>(
   for i in 0..num {
     let <#=autoCodeColumn.autoCode.seq#>_seq_i = <#=autoCodeColumn.autoCode.seq#> + i;
     let <#=autoCodeColumn.autoCode.seq#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=autoCodeColumn.autoCode.seq#>_seq_i:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
-    <#=autoCodeColumn.autoCode.seq#>_vec.push((<#=autoCodeColumn.autoCode.seq#>_seq_i, SmolStr::new(&<#=autoCodeColumn.autoCode.seq#>)));
+    <#=autoCodeColumn.autoCode.seq#>_vec.push((<#=autoCodeColumn.autoCode.seq#>_seq_i, String::from(&<#=autoCodeColumn.autoCode.seq#>)));
   }
   Ok(<#=autoCodeColumn.autoCode.seq#>_vec)
 }<#
@@ -6080,7 +6077,7 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
 } else if (dateSeqColumn.DATA_TYPE.toLowerCase() === "datetime") {
 #>chrono::NaiveDateTime<#
 }
-#>, u32, SmolStr)>> {
+#>, u32, String)>> {
   
   let table = get_table_name_<#=table#>();
   let method = "find_auto_code_<#=table#>";
@@ -6178,7 +6175,7 @@ if (dateSeqColumn.DATA_TYPE.toLowerCase() === "date") {
   for i in 0..num {
     let <#=autoCodeColumn.autoCode.seq#>_seq_i = <#=autoCodeColumn.autoCode.seq#> + i;
     let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{<#=dateSeq#>}{<#=autoCodeColumn.autoCode.seq#>_seq_i:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>");
-    <#=autoCodeColumn.autoCode.seq#>_vec.push((auto_code_date.clone(), <#=autoCodeColumn.autoCode.seq#>_seq_i, SmolStr::new(&<#=autoCodeColumn.COLUMN_NAME#>)));
+    <#=autoCodeColumn.autoCode.seq#>_vec.push((auto_code_date.clone(), <#=autoCodeColumn.autoCode.seq#>_seq_i, String::from(&<#=autoCodeColumn.COLUMN_NAME#>)));
   }
   Ok(<#=autoCodeColumn.autoCode.seq#>_vec)
 }<#
@@ -6858,7 +6855,7 @@ pub async fn update_by_id_<#=table#>(
       let hash = hash.finalize();
       let bytes = hash.as_slice();
       let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
-      let <#=column_name#> = SmolStr::from(<#=column_name#>.get(0..22).unwrap_or_default());
+      let <#=column_name#> = String::from(<#=column_name#>.get(0..22).unwrap_or_default());
       let stat = head_object(&<#=column_name#>).await?;
       if stat.is_none() {
         let content_type = <#=column_name#>_lbl
@@ -7185,7 +7182,7 @@ pub async fn update_by_id_<#=table#>(
   if (cascadeUpdateFields.length > 0) {
   #>
   
-  let mut sql_set_flds: Vec<SmolStr> = vec![];
+  let mut sql_set_flds: Vec<String> = vec![];
   let mut sql_set_fld_input: <#=tableUP#>Input = <#=tableUP#>Input {
     ..Default::default()
   };<#
@@ -7234,7 +7231,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(modelLabel)) {
     #>
-    sql_set_flds.push(SmolStr::new("<#=modelLabel#>"));
+    sql_set_flds.push(String::from("<#=modelLabel#>"));
     sql_set_fld_input.<#=modelLabel#> = Some(<#=modelLabel#>.clone());<#
     }
     #><#
@@ -7304,7 +7301,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
     #>
-    sql_set_flds.push(SmolStr::new("<#=column_name#>"));
+    sql_set_flds.push(String::from("<#=column_name#>"));
     sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
     }
     #>
@@ -7314,7 +7311,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
     #>
-    sql_set_flds.push(SmolStr::new("<#=column_name#>"));
+    sql_set_flds.push(String::from("<#=column_name#>"));
     sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
     }
     #>
@@ -7350,7 +7347,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(column_name)) {
     #>
-    sql_set_flds.push(SmolStr::new("<#=column_name#>"));
+    sql_set_flds.push(String::from("<#=column_name#>"));
     sql_set_fld_input.<#=column_name#> = Some(<#=column_name#>.clone());<#
     }
     #><#
@@ -7405,7 +7402,7 @@ pub async fn update_by_id_<#=table#>(
       let dyn_page_val_models = find_all_dyn_page_val(
         Some(DynPageValSearch {
           ref_code: Some(page_path.clone()),
-          ref_ids: Some(vec![ SmolStr::new(id.as_str()) ]),
+          ref_ids: Some(vec![ String::from(id.as_str()) ]),
           ..Default::default()
         }),
         None,
@@ -7461,7 +7458,7 @@ pub async fn update_by_id_<#=table#>(
             update_by_id_dyn_page_val(
               old_value_model.id,
               DynPageValInput {
-                lbl: Some(SmolStr::new(new_value.clone())),
+                lbl: Some(String::from(new_value.clone())),
                 ..Default::default()
               },
               options,
@@ -7472,9 +7469,9 @@ pub async fn update_by_id_<#=table#>(
           create_dyn_page_val(
             DynPageValInput {
               ref_code: Some(page_path.clone()),
-              ref_id: Some(SmolStr::new(id.as_str())),
+              ref_id: Some(String::from(id.as_str())),
               code: Some(field_code),
-              lbl: Some(SmolStr::new(new_value.clone())),
+              lbl: Some(String::from(new_value.clone())),
               ..Default::default()
             },
             options,
@@ -7514,7 +7511,7 @@ pub async fn update_by_id_<#=table#>(
     field_num += 1;<#
     if (cascadeUpdateFieldWatchColumns.includes(val)) {
     #>
-    sql_set_flds.push(SmolStr::new("<#=val#>"));
+    sql_set_flds.push(String::from("<#=val#>"));
     sql_set_fld_input.<#=val#> = Some(<#=val#>.clone());<#
     }
     #><#
@@ -8020,7 +8017,7 @@ pub async fn update_by_id_<#=table#>(
     if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -8044,7 +8041,7 @@ pub async fn update_by_id_<#=table#>(
         |s| !s.is_empty()
       ) {
         let mut usr_id = input.update_usr_id;
-        let mut usr_id_lbl = SmolStr::new("");
+        let mut usr_id_lbl = String::from("");
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.unwrap(),
@@ -8120,7 +8117,7 @@ pub async fn update_by_id_<#=table#>(
       for (let i = 0; i < cascadeUpdateFieldWatchColumns.length; i++) {
         const fld = cascadeUpdateFieldWatchColumns[i];
       #>
-      sql_set_flds.contains(&SmolStr::new("<#=fld#>"))<#
+      sql_set_flds.contains(&String::from("<#=fld#>"))<#
       if (i < cascadeUpdateFieldWatchColumns.length - 1) {
       #> ||<#
       }
@@ -8155,7 +8152,7 @@ pub async fn update_by_id_<#=table#>(
         };<#
         for (const item of cascadeUpdateFields2) {
         #>
-        if sql_set_flds.contains(&SmolStr::new("<#=item.watchColumn#>")) {
+        if sql_set_flds.contains(&String::from("<#=item.watchColumn#>")) {
           <#=table#>_input.<#=item.column#> = sql_set_fld_input.<#=item.watchColumn#>.clone();
         }<#
         }
@@ -8244,6 +8241,7 @@ pub async fn update_by_id_<#=table#>(
   }<#
   }
   #><#
+  if (false) {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -8275,6 +8273,8 @@ pub async fn update_by_id_<#=table#>(
       );
     }
   }<#
+  }
+  #><#
   }
   #>
   
@@ -8356,7 +8356,7 @@ pub async fn del_cache_<#=table#>() -> Result<()> {
   let cache_key1s = cache_key1s
     .into_iter()
     .map(|x|
-      SmolStr::new(format!("dao.sql.{x}"))
+      format!("dao.sql.{x}")
     )<#
     if (
       cache &&
@@ -8366,10 +8366,10 @@ pub async fn del_cache_<#=table#>() -> Result<()> {
       (mod === "base" && table === "usr")
     ) {
     #>
-    .chain(vec![SmolStr::new("dao.sql.base_menu._getMenus")])<#
+    .chain(vec!["dao.sql.base_menu._getMenus".to_string()])<#
     }
     #>
-    .collect::<Vec<SmolStr>>();
+    .collect::<Vec<String>>();
   
   let cache_key1s_str = cache_key1s
     .iter()
@@ -8564,7 +8564,7 @@ pub async fn delete_by_ids_<#=table#>(
     if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
     #>
     let mut usr_id = get_auth_id();
-    let mut usr_lbl = SmolStr::new("");
+    let mut usr_lbl = String::from("");
     if usr_id.is_some() {
       let usr_model = find_by_id_usr(
         usr_id.unwrap(),
@@ -8864,7 +8864,7 @@ pub async fn delete_by_ids_<#=table#>(
     #><#
     }
     #><#
-    if (!hasIsDeleted) {
+    if (false && !hasIsDeleted) {
     #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -9860,6 +9860,7 @@ pub async fn force_delete_by_ids_<#=table#>(
     #><#
     }
     #><#
+    if (false) {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -9876,6 +9877,8 @@ pub async fn force_delete_by_ids_<#=table#>(
     crate::common::oss::oss_dao::delete_object(
       old_model.<#=column_name#>.as_str(),
     ).await?;<#
+    }
+    #><#
     }
     #>
   }<#
@@ -10235,17 +10238,17 @@ pub async fn validate_is_enabled_<#=table#>(
     if (isUseI18n) {
     #>
     let table_comment = i18n_dao::ns(
-      SmolStr::new("<#=table_comment#>"),
+      String::from("<#=table_comment#>"),
       None,
     ).await?;
     let msg1 = i18n_dao::ns(
-      SmolStr::new("已禁用"),
+      String::from("已禁用"),
       None,
     ).await?;
-    let err_msg = SmolStr::new(format!("{table_comment}{msg1}"));<#
+    let err_msg = String::from(format!("{table_comment}{msg1}"));<#
     } else {
     #>
-    let err_msg = SmolStr::new("<#=table_comment#>已禁用");<#
+    let err_msg = String::from("<#=table_comment#>已禁用");<#
     }
     #>
     return Err(eyre!(err_msg));
@@ -10268,17 +10271,17 @@ pub async fn validate_option_<#=table#>(
       if (isUseI18n) {
       #>
       let table_comment = i18n_dao::ns(
-        SmolStr::new("<#=table_comment#>"),
+        String::from("<#=table_comment#>"),
         None,
       ).await?;
       let msg1 = i18n_dao::ns(
-        SmolStr::new("不存在"),
+        String::from("不存在"),
         None,
       ).await?;
-      let err_msg = SmolStr::new(format!("{table_comment}{msg1}"));<#
+      let err_msg = String::from(format!("{table_comment}{msg1}"));<#
       } else {
       #>
-      let err_msg = SmolStr::new("<#=table_comment#>不存在");<#
+      let err_msg = String::from("<#=table_comment#>不存在");<#
       }
       #>
       error!(
