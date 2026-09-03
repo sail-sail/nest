@@ -1,94 +1,91 @@
 {
-	"folders": [
-		{
-			"path": "./rust",
-			"deno": false
-		},
-		{
-			"path": "./pc",
-			"deno": false
-		},
-		{
-			"path": "./uni",
-			"deno": false
-		},
-		{
-			"path": "./codegen",
-			"deno": false
-		}
-	],
-	"settings": {
-		"diffEditor.useInlineViewWhenSpaceIsLimited": false,
-		"terminal.integrated.defaultProfile.windows": "Command Prompt",
-		"npm.registry": "https://registry.npmmirror.com",
-		"npm.updateStrategy": "LATEST",
-		"npm.autoDetect": "off",
-		"npm.fetchOnlinePackageInfo": false,
-		"deno.enable": true,
-		"deno.lint": true,
-		"unocss.root": [
-			"pc",
-			"uni"
-		],
-		"unocss.colorPreview": false,
-		"references.preferredLocation": "peek",
-		"rust-analyzer.inlayHints.parameterHints.enable": false,
-		"diffEditor.wordWrap": "off",
-		"editor.formatOnSave": false,
-		"rust-analyzer.showUnlinkedFileNotification": false,
-		"editor.inlineSuggest.syntaxHighlightingEnabled": true,
-		"editor.minimap.scale": 1,
-		"editor.minimap.showSlider": "mouseover",
-		"editor.stickyScroll.enabled": false,
-		"editor.bracketPairColorization.enabled": true,
-		"editor.guides.bracketPairs": true,
-		"deno.codeLens.references": false,
-		"deno.codeLens.referencesAllFunctions": false,
-		"git.timeline.showUncommitted": true,
-		"rust-analyzer.imports.group.enable": false,
-		"rust-analyzer.imports.merge.glob": false,
-		"scm.defaultViewMode": "tree",
-		"scm.diffDecorationsGutterPattern": {
-			"added": true
-		},
-		"scm.diffDecorationsIgnoreTrimWhitespace": "true",
-		"js/ts.preferences.quoteStyle": "double",
-		"js/ts.preferences.importModuleSpecifier": "relative",
-		"diffEditor.ignoreTrimWhitespace": true,
-		"explorer.copyRelativePathSeparator": "/",
-		"vue.autoInsert.dotValue": true,
-		"vue.inlayHints.destructuredProps": true,
-		"vue.inlayHints.inlineHandlerLeading": false,
-		"vue.inlayHints.missingProps": true,
-		"rust-analyzer.cachePriming.enable": false,
-		"rust-analyzer.check.workspace": false,
-		"rust-analyzer.procMacro.enable": false,
-		"rust-analyzer.inlayHints.typeHints.hideInferredTypes": true,
-    //"rust-analyzer.workspace.discoverConfig": {
-    //  "command": [
-    //    "cargo-subspace",
-    //    "discover",
-    //    "{arg}"
-    //  ],
-    //  "progressLabel": "cargo-subspace",
-    //  "filesToWatch": [
-    //    "Cargo.toml"
-    //  ]
-    //},
-    //"rust-analyzer.check.overrideCommand": [
-    //  "cargo-subspace",
-    //  "check",
-    //  "$saved_file",
-    //],
-		"rust-analyzer.checkOnSave": true,
+  "folders": [
+    {
+      "path": "./rust",
+      "deno": false
+    },
+    {
+      "path": "./pc",
+      "deno": false
+    },
+    {
+      "path": "./uni",
+      "deno": false
+    },
+    {
+      "path": "./codegen",
+      "deno": false
+    }
+  ],
+  "settings": {
+    "diffEditor.useInlineViewWhenSpaceIsLimited": false,
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "npm.registry": "https://registry.npmmirror.com",
+    "npm.updateStrategy": "LATEST",
+    "npm.autoDetect": "off",
+    "npm.fetchOnlinePackageInfo": false,
+    "deno.enable": true,
+    "deno.lint": true,
+    "unocss.root": [
+      "pc",
+      "uni"
+    ],
+    "unocss.colorPreview": false,
+    "references.preferredLocation": "peek",
+    "rust-analyzer.inlayHints.parameterHints.enable": false,
+    "diffEditor.wordWrap": "off",
+    "editor.formatOnSave": false,
+    "rust-analyzer.showUnlinkedFileNotification": false,
+    "editor.inlineSuggest.syntaxHighlightingEnabled": true,
+    "editor.minimap.scale": 1,
+    "editor.minimap.showSlider": "mouseover",
+    "editor.stickyScroll.enabled": false,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
+    "deno.codeLens.references": false,
+    "deno.codeLens.referencesAllFunctions": false,
+    "git.timeline.showUncommitted": true,
+    "rust-analyzer.imports.group.enable": false,
+    "rust-analyzer.imports.merge.glob": false,
+    "scm.defaultViewMode": "tree",
+    "scm.diffDecorationsGutterPattern": {
+      "added": true
+    },
+    "scm.diffDecorationsIgnoreTrimWhitespace": "true",
+    "js/ts.preferences.quoteStyle": "double",
+    "js/ts.preferences.importModuleSpecifier": "relative",
+    "diffEditor.ignoreTrimWhitespace": true,
+    "explorer.copyRelativePathSeparator": "/",
+    "vue.autoInsert.dotValue": true,
+    "vue.inlayHints.destructuredProps": true,
+    "vue.inlayHints.inlineHandlerLeading": false,
+    "vue.inlayHints.missingProps": true,
+    "rust-analyzer.cachePriming.enable": false,
+    "rust-analyzer.check.workspace": false,
+    "rust-analyzer.procMacro.enable": false,
+    "rust-analyzer.inlayHints.typeHints.hideInferredTypes": true,
+    "rust-analyzer.workspace.discoverConfig": {
+     "command": [
+       "cargo-subspace",
+       "discover",
+       "{arg}"
+     ],
+     "progressLabel": "cargo-subspace",
+     "filesToWatch": [
+       "Cargo.toml"
+     ]
+    },
+    "rust-analyzer.check.overrideCommand": [
+     "cargo-subspace",
+     "check",
+     "$saved_file",
+    ],
+    "rust-analyzer.checkOnSave": true,
     // "rust-analyzer.server.extraEnv": {
     //   "HTTP_PROXY": "http://127.0.0.1:7890",
     //   "HTTPS_PROXY": "http://127.0.0.1:7890",
     //   "ALL_PROXY": "http://127.0.0.1:7890"
     // },
-    "rust-analyzer.server.extraEnv": {
-      "STRIP_ASYNC_GRAPHQL": "1"
-    },
     "vue.codeActions.askNewComponentName": false,
     "vue.editor.reactivityVisualization": false,
     "vue.editor.templateInterpolationDecorators": false,

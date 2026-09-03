@@ -56,29 +56,12 @@ metadata:
 
 ⚠️ 当前团队约定 `.env`（dev 本地）也直连 `{name}4prod` 远程库，不要用 `4dev`。
 
-### 5. `rust/package.json`
-- 删除当前项目用不到的 script，例如新项目不走 test 环境就删 `build-test`
-
-### 6. `codegen/src/tables/base/base_tenant.sql.csv`
+### 5. `codegen/src/tables/base/base_tenant.sql.csv`
 - 默认租户行的 `lbl` 与 `title` 改为新项目中文名
-- ⚠️ 改完后新库初始化才会生效；已有库需要单独刷数据
-
-### 7. `codegen/src/util/npmUpgrade.ts`
-- `parentBranchs` 改为上游源分支名（例如 `rust4wx`）
-- 决定后续 `npm run upgrade` 从哪个分支合并升级，**必须指回真正的上游**，不要保留默认值
-
-### 8. `rust/readme.md`
-- 若本次改动揭示了新规则（例如 `4{env}` 后缀），同步更新"换工程名字"小节，让文档与 skill 互证
-
-## 验证
-
-1. `cargo check` 通过（确认 Cargo.toml 改名无语法错误）
-2. 全局搜索旧工程名：`rust=`、`nest4`、`tmpfile4nest`，应只剩历史引用或无结果
-3. `git diff --cached --stat` 复核：通常约 10 个文件、40+ 行改动
 
 ## 常见遗漏
 
 - ❌ 只改了 `.env`，漏改 `.env.prod` / `.env.test`
 - ❌ 漏改被注释掉的 `database_dw_*` 行（后续启用时会踩坑）
-- ❌ 漏改 `npmUpgrade.ts`，导致下次 upgrade 拉错上游
 - ❌ `cache_db` 沿用旧编号，多项目共用 redis 时串数据
+- ❌ `rust/readme.md` 不需要改动
