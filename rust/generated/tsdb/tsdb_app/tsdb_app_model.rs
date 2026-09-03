@@ -12,9 +12,6 @@ use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 use color_eyre::eyre::{Result, eyre};
 
-#[allow(unused_imports)]
-use smol_str::SmolStr;
-
 use sqlx::{
   FromRow,
   mysql::MySqlRow,
@@ -58,61 +55,61 @@ pub struct TsdbAppModel {
   pub id: TsdbAppId,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 类型
   #[graphql(name = "type")]
   pub r#type: TsdbAppType,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: SmolStr,
+  pub type_lbl: String,
   /// 协议
   #[graphql(name = "protocol")]
   pub protocol: TsdbAppProtocol,
   /// 协议
   #[graphql(name = "protocol_lbl")]
-  pub protocol_lbl: SmolStr,
+  pub protocol_lbl: String,
   /// 主机名
   #[graphql(name = "hostname")]
-  pub hostname: SmolStr,
+  pub hostname: String,
   /// 端口
   #[graphql(name = "port")]
   pub port: i32,
   /// 数据库
   #[graphql(name = "database")]
-  pub database: SmolStr,
+  pub database: String,
   /// 令牌
   #[graphql(name = "token")]
-  pub token: SmolStr,
+  pub token: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
   pub create_usr_id: UsrId,
   /// 创建人
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   pub update_usr_id: UsrId,
   /// 更新人
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 impl FromRow<'_, MySqlRow> for TsdbAppModel {
@@ -122,54 +119,49 @@ impl FromRow<'_, MySqlRow> for TsdbAppModel {
     // ID
     let id: TsdbAppId = row.try_get("id")?;
     // 名称
-    let lbl: &str = row.try_get("lbl")?;
-    let lbl = SmolStr::new(lbl);
+    let lbl: String = row.try_get("lbl")?;
     // 类型
     let type_lbl: &str = row.try_get("type")?;
     let r#type: TsdbAppType = type_lbl.try_into()?;
-    let type_lbl = SmolStr::new(type_lbl);
+    let type_lbl = String::from(type_lbl);
     // 协议
     let protocol_lbl: &str = row.try_get("protocol")?;
     let protocol: TsdbAppProtocol = protocol_lbl.try_into()?;
-    let protocol_lbl = SmolStr::new(protocol_lbl);
+    let protocol_lbl = String::from(protocol_lbl);
     // 主机名
-    let hostname: &str = row.try_get("hostname")?;
-    let hostname = SmolStr::new(hostname);
+    let hostname: String = row.try_get("hostname")?;
     // 端口
     let port: i32 = row.try_get("port")?;
     // 数据库
-    let database: &str = row.try_get("database")?;
-    let database = SmolStr::new(database);
+    let database: String = row.try_get("database")?;
     // 令牌
-    let token: &str = row.try_get("token")?;
-    let token = SmolStr::new(token);
+    let token: String = row.try_get("token")?;
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl = SmolStr::new(is_enabled.to_string());
+    let is_enabled_lbl = is_enabled.to_string();
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
-    let rem: &str = row.try_get("rem")?;
-    let rem = SmolStr::new(rem);
+    let rem: String = row.try_get("rem")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
-    let create_usr_id_lbl: Option<&str> = row.try_get("create_usr_id_lbl")?;
-    let create_usr_id_lbl = SmolStr::new(create_usr_id_lbl.unwrap_or_default());
+    let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
+    let create_usr_id_lbl = create_usr_id_lbl.unwrap_or_default();
     // 创建时间
     let create_time: Option<chrono::NaiveDateTime> = row.try_get("create_time")?;
-    let create_time_lbl: SmolStr = match create_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let create_time_lbl: String = match create_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 更新人
     let update_usr_id: UsrId = row.try_get("update_usr_id")?;
-    let update_usr_id_lbl: Option<&str> = row.try_get("update_usr_id_lbl")?;
-    let update_usr_id_lbl = SmolStr::new(update_usr_id_lbl.unwrap_or_default());
+    let update_usr_id_lbl: Option<String> = row.try_get("update_usr_id_lbl")?;
+    let update_usr_id_lbl = update_usr_id_lbl.unwrap_or_default();
     // 更新时间
     let update_time: Option<chrono::NaiveDateTime> = row.try_get("update_time")?;
-    let update_time_lbl: SmolStr = match update_time {
-      Some(item) => SmolStr::new(item.format("%Y-%m-%d %H:%M:%S").to_string()),
-      None => SmolStr::new(""),
+    let update_time_lbl: String = match update_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
     };
     // 是否已删除
     let is_deleted: u8 = row.try_get("is_deleted")?;
@@ -211,70 +203,70 @@ impl FromRow<'_, MySqlRow> for TsdbAppModel {
 pub struct TsdbAppFieldComment {
   /// ID
   #[graphql(name = "id")]
-  pub id: SmolStr,
+  pub id: String,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: SmolStr,
+  pub lbl: String,
   /// 类型
   #[graphql(name = "type")]
-  pub r#type: SmolStr,
+  pub r#type: String,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: SmolStr,
+  pub type_lbl: String,
   /// 协议
   #[graphql(name = "protocol")]
-  pub protocol: SmolStr,
+  pub protocol: String,
   /// 协议
   #[graphql(name = "protocol_lbl")]
-  pub protocol_lbl: SmolStr,
+  pub protocol_lbl: String,
   /// 主机名
   #[graphql(name = "hostname")]
-  pub hostname: SmolStr,
+  pub hostname: String,
   /// 端口
   #[graphql(name = "port")]
-  pub port: SmolStr,
+  pub port: String,
   /// 数据库
   #[graphql(name = "database")]
-  pub database: SmolStr,
+  pub database: String,
   /// 令牌
   #[graphql(name = "token")]
-  pub token: SmolStr,
+  pub token: String,
   /// 启用
   #[graphql(name = "is_enabled")]
-  pub is_enabled: SmolStr,
+  pub is_enabled: String,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: SmolStr,
+  pub is_enabled_lbl: String,
   /// 排序
   #[graphql(name = "order_by")]
-  pub order_by: SmolStr,
+  pub order_by: String,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: SmolStr,
+  pub rem: String,
   /// 创建人
   #[graphql(name = "create_usr_id")]
-  pub create_usr_id: SmolStr,
+  pub create_usr_id: String,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: SmolStr,
+  pub create_usr_id_lbl: String,
   /// 创建时间
   #[graphql(name = "create_time")]
-  pub create_time: SmolStr,
+  pub create_time: String,
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
-  pub create_time_lbl: SmolStr,
+  pub create_time_lbl: String,
   /// 更新人
   #[graphql(name = "update_usr_id")]
-  pub update_usr_id: SmolStr,
+  pub update_usr_id: String,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: SmolStr,
+  pub update_usr_id_lbl: String,
   /// 更新时间
   #[graphql(name = "update_time")]
-  pub update_time: SmolStr,
+  pub update_time: String,
   /// 更新时间
   #[graphql(name = "update_time_lbl")]
-  pub update_time_lbl: SmolStr,
+  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Serialize, Deserialize, Default, Clone)]
@@ -290,10 +282,10 @@ pub struct TsdbAppSearch {
   pub is_deleted: Option<u8>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl_like")]
-  pub lbl_like: Option<SmolStr>,
+  pub lbl_like: Option<String>,
   /// 类型
   #[graphql(skip)]
   pub r#type: Option<Vec<TsdbAppType>>,
@@ -302,25 +294,25 @@ pub struct TsdbAppSearch {
   pub protocol: Option<Vec<TsdbAppProtocol>>,
   /// 主机名
   #[graphql(name = "hostname")]
-  pub hostname: Option<SmolStr>,
+  pub hostname: Option<String>,
   /// 主机名
   #[graphql(name = "hostname_like")]
-  pub hostname_like: Option<SmolStr>,
+  pub hostname_like: Option<String>,
   /// 端口
   #[graphql(skip)]
   pub port: Option<[Option<i32>; 2]>,
   /// 数据库
   #[graphql(name = "database")]
-  pub database: Option<SmolStr>,
+  pub database: Option<String>,
   /// 数据库
   #[graphql(name = "database_like")]
-  pub database_like: Option<SmolStr>,
+  pub database_like: Option<String>,
   /// 令牌
   #[graphql(skip)]
-  pub token: Option<SmolStr>,
+  pub token: Option<String>,
   /// 令牌
   #[graphql(skip)]
-  pub token_like: Option<SmolStr>,
+  pub token_like: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
@@ -329,10 +321,10 @@ pub struct TsdbAppSearch {
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 备注
   #[graphql(skip)]
-  pub rem_like: Option<SmolStr>,
+  pub rem_like: Option<String>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -341,10 +333,10 @@ pub struct TsdbAppSearch {
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
-  pub create_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建人
   #[graphql(name = "create_usr_id_lbl_like")]
-  pub create_usr_id_lbl_like: Option<SmolStr>,
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -356,10 +348,10 @@ pub struct TsdbAppSearch {
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
-  pub update_usr_id_lbl: Option<Vec<SmolStr>>,
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(name = "update_usr_id_lbl_like")]
-  pub update_usr_id_lbl_like: Option<SmolStr>,
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -489,55 +481,55 @@ pub struct TsdbAppInput {
   pub tenant_id: Option<TenantId>,
   /// 名称
   #[graphql(name = "lbl")]
-  pub lbl: Option<SmolStr>,
+  pub lbl: Option<String>,
   /// 类型
   #[graphql(name = "type")]
   pub r#type: Option<TsdbAppType>,
   /// 类型
   #[graphql(name = "type_lbl")]
-  pub type_lbl: Option<SmolStr>,
+  pub type_lbl: Option<String>,
   /// 协议
   #[graphql(name = "protocol")]
   pub protocol: Option<TsdbAppProtocol>,
   /// 协议
   #[graphql(name = "protocol_lbl")]
-  pub protocol_lbl: Option<SmolStr>,
+  pub protocol_lbl: Option<String>,
   /// 主机名
   #[graphql(name = "hostname")]
-  pub hostname: Option<SmolStr>,
+  pub hostname: Option<String>,
   /// 端口
   #[graphql(name = "port")]
   pub port: Option<i32>,
   /// 数据库
   #[graphql(name = "database")]
-  pub database: Option<SmolStr>,
+  pub database: Option<String>,
   /// 令牌
   #[graphql(name = "token")]
-  pub token: Option<SmolStr>,
+  pub token: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
   #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: Option<SmolStr>,
+  pub is_enabled_lbl: Option<String>,
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
-  pub rem: Option<SmolStr>,
+  pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
   /// 创建人
   #[graphql(skip)]
-  pub create_usr_id_lbl: Option<SmolStr>,
+  pub create_usr_id_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<SmolStr>,
+  pub create_time_lbl: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time_save_null: Option<bool>,
@@ -546,13 +538,13 @@ pub struct TsdbAppInput {
   pub update_usr_id: Option<UsrId>,
   /// 更新人
   #[graphql(skip)]
-  pub update_usr_id_lbl: Option<SmolStr>,
+  pub update_usr_id_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<SmolStr>,
+  pub update_time_lbl: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time_save_null: Option<bool>,
@@ -736,14 +728,6 @@ impl fmt::Display for TsdbAppType {
   }
 }
 
-impl From<TsdbAppType> for SmolStr {
-  fn from(value: TsdbAppType) -> Self {
-    match value {
-      TsdbAppType::Influxdb3 => "influxdb3".into(),
-    }
-  }
-}
-
 impl From<TsdbAppType> for String {
   fn from(value: TsdbAppType) -> Self {
     match value {
@@ -754,7 +738,7 @@ impl From<TsdbAppType> for String {
 
 impl From<TsdbAppType> for ArgType {
   fn from(value: TsdbAppType) -> Self {
-    ArgType::SmolStr(value.into())
+    ArgType::String(value.into())
   }
 }
 
@@ -774,24 +758,6 @@ impl TryFrom<&str> for TsdbAppType {
   
   fn try_from(s: &str) -> Result<Self, sqlx::Error> {
     match s {
-      "influxdb3" => Ok(Self::Influxdb3),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "type".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 类型".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for TsdbAppType {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
-    match s.as_str() {
       "influxdb3" => Ok(Self::Influxdb3),
       _ => Err(sqlx::Error::Decode(
         Box::new(sqlx::Error::ColumnDecode {
@@ -854,15 +820,6 @@ impl fmt::Display for TsdbAppProtocol {
   }
 }
 
-impl From<TsdbAppProtocol> for SmolStr {
-  fn from(value: TsdbAppProtocol) -> Self {
-    match value {
-      TsdbAppProtocol::Https => "https".into(),
-      TsdbAppProtocol::Http => "http".into(),
-    }
-  }
-}
-
 impl From<TsdbAppProtocol> for String {
   fn from(value: TsdbAppProtocol) -> Self {
     match value {
@@ -874,7 +831,7 @@ impl From<TsdbAppProtocol> for String {
 
 impl From<TsdbAppProtocol> for ArgType {
   fn from(value: TsdbAppProtocol) -> Self {
-    ArgType::SmolStr(value.into())
+    ArgType::String(value.into())
   }
 }
 
@@ -895,25 +852,6 @@ impl TryFrom<&str> for TsdbAppProtocol {
   
   fn try_from(s: &str) -> Result<Self, sqlx::Error> {
     match s {
-      "https" => Ok(Self::Https),
-      "http" => Ok(Self::Http),
-      _ => Err(sqlx::Error::Decode(
-        Box::new(sqlx::Error::ColumnDecode {
-          index: "protocol".to_owned(),
-          source: Box::new(sqlx::Error::Protocol(
-            "{s} 无法转换到 协议".to_owned(),
-          )),
-        }),
-      )),
-    }
-  }
-}
-
-impl TryFrom<SmolStr> for TsdbAppProtocol {
-  type Error = sqlx::Error;
-  
-  fn try_from(s: SmolStr) -> Result<Self, sqlx::Error> {
-    match s.as_str() {
       "https" => Ok(Self::Https),
       "http" => Ok(Self::Http),
       _ => Err(sqlx::Error::Decode(
@@ -980,7 +918,7 @@ pub fn check_sort_tsdb_app(
     }
     if !get_can_sort_in_api_tsdb_app.contains(&prop) {
       return Err(eyre!(ServiceException {
-        message: format!("check_sort_tsdb_app: {}", serde_json::to_string(item)?).into(),
+        message: format!("check_sort_tsdb_app: {}", serde_json::to_string(item)?),
         trace: true,
         ..Default::default()
       }));

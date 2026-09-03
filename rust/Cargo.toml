@@ -2,7 +2,7 @@
 name = "rust"
 version = "0.0.0"
 edition = "2024"
-default-run = "rust"
+default-run = "rust4tsdb"
 
 [workspace.dependencies]
 serde_json = "1.0.151"
@@ -182,7 +182,7 @@ resolver = "2"
 # protobuf-codegen = "3.7.1"
 
 [[bin]]
-name = "rust"
+name = "rust4tsdb"
 path = "main.rs"
 
 [profile.release]
