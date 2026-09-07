@@ -3105,8 +3105,6 @@ pub async fn delete_by_ids_wxw_app(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_wxw_app().await?;
-  
   Ok(num)
 }
 

@@ -5,6 +5,13 @@ pub mod wxw_usr;
 
 use async_graphql::MergedObject;
 
+pub fn init() {
+  self::wxw_app::init();
+  self::wxw_app_token::init();
+  self::wxw_msg::init();
+  self::wxw_usr::init();
+}
+
 #[derive(MergedObject, Default)]
 pub struct WxworkGenQuery(
   self::wxw_app::wxw_app_graphql::WxwAppGenQuery,

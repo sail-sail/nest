@@ -2911,8 +2911,6 @@ pub async fn delete_by_ids_wxw_app_token(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_wxw_app_token().await?;
-  
   Ok(num)
 }
 
