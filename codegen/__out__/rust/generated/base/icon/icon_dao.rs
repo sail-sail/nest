@@ -2563,8 +2563,6 @@ pub async fn delete_by_ids_icon(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_icon().await?;
-  
   Ok(num)
 }
 

@@ -32,6 +32,12 @@ pub type QuerySchema = Schema<Query, Mutation, EmptySubscription>;
 #[allow(unused_imports)]
 use poem::{Route, get};
 
+pub fn init() {
+  
+  base::init();
+  
+}
+
 /// 注册 业务路由
 #[allow(unused_mut, clippy::let_and_return)]
 pub fn register_routes(app: Route) -> Route {

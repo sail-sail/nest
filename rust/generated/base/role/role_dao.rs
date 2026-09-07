@@ -3793,8 +3793,6 @@ pub async fn delete_by_ids_role(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_role().await?;
-  
   Ok(num)
 }
 

@@ -2762,8 +2762,6 @@ pub async fn delete_by_ids_optbiz(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_optbiz().await?;
-  
   Ok(num)
 }
 

@@ -2606,8 +2606,6 @@ pub async fn delete_by_ids_dict_detail(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_dict_detail().await?;
-  
   Ok(num)
 }
 

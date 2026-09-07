@@ -8894,16 +8894,6 @@ pub async fn delete_by_ids_<#=table#>(
     }
     #>
   }<#
-  if (cache) {
-  #>
-  
-  del_cache_<#=table#>().await?;<#
-  }
-  #>
-  
-  if num > MAX_SAFE_INTEGER {
-    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
-  }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;
     const mod = inlineForeignTab.mod;
@@ -9013,6 +9003,10 @@ pub async fn delete_by_ids_<#=table#>(
   del_cache_<#=table#>().await?;<#
   }
   #>
+  
+  if num > MAX_SAFE_INTEGER {
+    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
+  }
   
   Ok(num)
 }<#

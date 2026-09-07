@@ -2612,8 +2612,6 @@ pub async fn delete_by_ids_org(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_org().await?;
-  
   Ok(num)
 }
 

@@ -2723,8 +2723,6 @@ pub async fn delete_by_ids_data_permit(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_data_permit().await?;
-  
   Ok(num)
 }
 

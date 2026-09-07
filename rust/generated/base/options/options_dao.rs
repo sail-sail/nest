@@ -2676,8 +2676,6 @@ pub async fn delete_by_ids_options(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_options().await?;
-  
   Ok(num)
 }
 
