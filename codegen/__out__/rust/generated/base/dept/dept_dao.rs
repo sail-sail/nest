@@ -3188,8 +3188,6 @@ pub async fn delete_by_ids_dept(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_dept().await?;
-  
   Ok(num)
 }
 

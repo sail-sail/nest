@@ -2773,12 +2773,6 @@ pub async fn delete_by_ids_dyn_page(
     ).await?;
   }
   
-  del_cache_dyn_page().await?;
-  
-  if num > MAX_SAFE_INTEGER {
-    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
-  }
-  
   // 动态页面字段
   let dyn_page_field_models = find_all_dyn_page_field(
     DynPageFieldSearch {
@@ -2799,6 +2793,10 @@ pub async fn delete_by_ids_dyn_page(
   ).await?;
   
   del_cache_dyn_page().await?;
+  
+  if num > MAX_SAFE_INTEGER {
+    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
+  }
   
   Ok(num)
 }

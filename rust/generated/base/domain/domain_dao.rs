@@ -2561,8 +2561,6 @@ pub async fn delete_by_ids_domain(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_domain().await?;
-  
   Ok(num)
 }
 

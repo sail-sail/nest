@@ -28,7 +28,7 @@ use std::env;
 use poem::{
   get, post,
   listener::TcpListener,
-  middleware::{CatchPanic, TokioMetrics, Tracing},
+  middleware::{CatchPanic, /*TokioMetrics,*/ Tracing},
   EndpointExt, Route, Server,
 };
 use generated::common::gql::server_timing::{
@@ -572,7 +572,10 @@ async fn async_main() -> Result<(), std::io::Error> {
     }
   }
   
-  let metrics_graphql = TokioMetrics::new();
+  generated::init();
+  app::init();
+  
+  // let metrics_graphql = TokioMetrics::new();
   
   let app = {
     let mut app = Route::new();
@@ -581,13 +584,13 @@ async fn async_main() -> Result<(), std::io::Error> {
     //   app = app.at("/graphiql", get(graphql_playground));
     // }
     
-    app = app.at("/metrics/graphql", metrics_graphql.exporter());
+    // app = app.at("/metrics/graphql", metrics_graphql.exporter());
     
     app = app.at(
       "/graphql",
       post(graphql_handler)
       .get(graphql_handler_get)
-      .with(metrics_graphql)
+      // .with(metrics_graphql)
     );
     
     // 上传附件

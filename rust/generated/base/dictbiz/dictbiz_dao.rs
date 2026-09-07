@@ -2849,12 +2849,6 @@ pub async fn delete_by_ids_dictbiz(
     ).await?;
   }
   
-  del_cache_dictbiz().await?;
-  
-  if num > MAX_SAFE_INTEGER {
-    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
-  }
-  
   // 业务字典明细
   let dictbiz_detail_models = find_all_dictbiz_detail(
     DictbizDetailSearch {
@@ -2875,6 +2869,10 @@ pub async fn delete_by_ids_dictbiz(
   ).await?;
   
   del_cache_dictbiz().await?;
+  
+  if num > MAX_SAFE_INTEGER {
+    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
+  }
   
   Ok(num)
 }

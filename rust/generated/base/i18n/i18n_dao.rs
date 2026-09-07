@@ -2557,8 +2557,6 @@ pub async fn delete_by_ids_i18n(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_i18n().await?;
-  
   Ok(num)
 }
 

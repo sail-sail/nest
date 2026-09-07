@@ -3086,12 +3086,6 @@ pub async fn delete_by_ids_dyn_page(
     ).await?;
   }
   
-  del_cache_dyn_page().await?;
-  
-  if num > MAX_SAFE_INTEGER {
-    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
-  }
-  
   // 动态页面字段
   let dyn_page_field_models = find_all_dyn_page_field(
     DynPageFieldSearch {
@@ -3111,14 +3105,18 @@ pub async fn delete_by_ids_dyn_page(
     options,
   ).await?;
   
-  del_cache_dyn_page().await?;
-  
   // 级联删除菜单
   if !menu_ids_to_delete.is_empty() {
     delete_by_ids_menu(
       menu_ids_to_delete,
       options,
     ).await?;
+  }
+  
+  del_cache_dyn_page().await?;
+  
+  if num > MAX_SAFE_INTEGER {
+    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
   Ok(num)

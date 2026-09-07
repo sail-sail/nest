@@ -2515,8 +2515,6 @@ pub async fn delete_by_ids_lang(
     return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  del_cache_lang().await?;
-  
   Ok(num)
 }
 

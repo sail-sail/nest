@@ -2774,12 +2774,6 @@ pub async fn delete_by_ids_dict(
     ).await?;
   }
   
-  del_cache_dict().await?;
-  
-  if num > MAX_SAFE_INTEGER {
-    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
-  }
-  
   // 系统字典明细
   let dict_detail_models = find_all_dict_detail(
     DictDetailSearch {
@@ -2800,6 +2794,10 @@ pub async fn delete_by_ids_dict(
   ).await?;
   
   del_cache_dict().await?;
+  
+  if num > MAX_SAFE_INTEGER {
+    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
+  }
   
   Ok(num)
 }
