@@ -22,6 +22,8 @@ pub struct Mutation(
   generated::common::CommonMutation,
   generated::GenMutation,
   
+  base::BaseAppMutation,
+  
   // cron 定时任务
   cron::cron_job::cron_job_graphql::CronJobMutation,
 );
