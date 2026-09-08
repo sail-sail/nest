@@ -63,7 +63,7 @@ async fn get_where_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let mut where_query = String::with_capacity(80 * 7 * 2);
+  let mut where_query = String::with_capacity(80 * 7 * 6);
   
   where_query.push_str(" 1=1");
   {
@@ -1405,7 +1405,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 7 + 20);
+  let mut sql_fields = String::with_capacity(80 * 7 * 3 + 60);
   
   sql_fields += "id";
   // 菜单
@@ -1422,7 +1422,7 @@ async fn _creates(
   sql_fields += ",is_sys";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 7 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * 7 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1674,7 +1674,7 @@ pub async fn update_by_id_field_permit(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 7 + 20);
+  let mut sql_fields = String::with_capacity((80 * 7 + 20) * 3);
   
   let mut field_num: usize = 0;
   // 菜单

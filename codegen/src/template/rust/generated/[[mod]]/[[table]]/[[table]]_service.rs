@@ -1050,10 +1050,10 @@ pub async fn audit_submit_<#=table#>(
   
   let next_message = MessageInput {
     title: Some("<#=table_comment#>待审核".into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已提交审核，请尽快处理").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已提交审核，请尽快处理")),
     route_path: Some(get_page_path_<#=table#>().into()),
-    route_query: Some(format!("id={<#=table#>_id}").into()),
-    tenant_id: old_model.tenant_id.clone().into(),
+    route_query: Some(format!("id={<#=table#>_id}")),
+    tenant_id: old_model.tenant_id.into(),
     is_sys_msg: Some(1),
     ..Default::default()
   };
@@ -1211,9 +1211,9 @@ pub async fn audit_pass_<#=table#>(
   
   let next_message = MessageInput {
     title: Some("<#=table_comment#>待复核".into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已审核通过，请继续复核").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已审核通过，请继续复核")),
     route_path: Some(get_page_path_<#=table#>().into()),
-    route_query: Some(format!("id={<#=table#>_id}").into()),
+    route_query: Some(format!("id={<#=table#>_id}")),
     tenant_id: old_model.tenant_id.into(),
     is_sys_msg: Some(1),
     ..Default::default()
@@ -1279,9 +1279,9 @@ pub async fn audit_pass_<#=table#>(
   let receiver_usr_ids = vec![old_model.create_usr_id];
   let next_message = MessageInput {
     title: Some("<#=table_comment#>已审核通过".into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已审核通过").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已审核通过")),
     route_path: Some(get_page_path_<#=table#>().into()),
-    route_query: Some(format!("id={<#=table#>_id}").into()),
+    route_query: Some(format!("id={<#=table#>_id}")),
     tenant_id: old_model.tenant_id.into(),
     is_sys_msg: Some(1),
     ..Default::default()
@@ -1419,10 +1419,10 @@ pub async fn audit_reject_<#=table#>(
   
   let next_message = MessageInput {
     title: Some("<#=table_comment#>已被拒绝".into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被拒绝，请重新提交审核").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被拒绝，请重新提交审核")),
     route_path: Some(get_page_path_<#=table#>().into()),
-    route_query: Some(format!("id={<#=table#>_id}").into()),
-    tenant_id: old_model.tenant_id.clone().into(),
+    route_query: Some(format!("id={<#=table#>_id}")),
+    tenant_id: old_model.tenant_id.into(),
     is_sys_msg: Some(1),
     ..Default::default()
   };
@@ -1529,10 +1529,10 @@ pub async fn audit_reverse_<#=table#>(
   #>
   
   let next_message = MessageInput {
-    title: Some(format!("<#=table_comment#>待{audit_log}").into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被反审核，请重新{audit_log}").into()),
+    title: Some(format!("<#=table_comment#>待{audit_log}")),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已被反审核，请重新{audit_log}")),
     route_path: Some(get_page_path_<#=table#>().into()),
-    route_query: Some(format!("id={<#=table#>_id}").into()),
+    route_query: Some(format!("id={<#=table#>_id}")),
     tenant_id: old_model.tenant_id.into(),
     is_sys_msg: Some(1),
     ..Default::default()
@@ -1540,7 +1540,7 @@ pub async fn audit_reverse_<#=table#>(
   
   let receiver_usr_ids = get_audit_receiver_usr_ids(
     String::from(get_page_path_<#=table#>()),
-    String::from(audit.to_string()),
+    audit.to_string(),
     options,
   ).await?;
   
@@ -1694,9 +1694,9 @@ pub async fn audit_review_<#=table#>(
   let receiver_usr_ids = vec![old_model.create_usr_id];
   let next_message = MessageInput {
     title: Some("<#=table_comment#>已复核通过".into()),
-    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已复核通过").into()),
+    content: Some(format!("<#=table_comment#> {<#=auditModelLabel#>} 已复核通过")),
     route_path: Some(get_page_path_<#=table#>().into()),
-    route_query: Some(format!("id={<#=table#>_id}").into()),
+    route_query: Some(format!("id={<#=table#>_id}")),
     tenant_id: old_model.tenant_id.into(),
     is_sys_msg: Some(1),
     ..Default::default()
