@@ -55,16 +55,6 @@ use crate::common::gql::model::{
 use crate::common::dict_detail::dict_detail_dao::get_dict;
 
 use super::lang_model::*;
-
-use crate::base::tenant::tenant_model::{
-  TenantSearch,
-  TenantInput,
-};
-
-use crate::base::tenant::tenant_dao::{
-  find_all_tenant,
-  update_by_id_tenant,
-};
 #[allow(unused_imports)]
 use crate::base::usr::usr_model::UsrId;
 
@@ -81,7 +71,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 12 * 2);
+  let mut where_query = String::with_capacity(80 * 12 * 6);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -1685,7 +1675,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 12 + 20);
+  let mut sql_fields = String::with_capacity(80 * 12 * 3 + 60);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1708,7 +1698,7 @@ async fn _creates(
   sql_fields += ",is_sys";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 12 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity(((2 * 12 + 3) * inputs2_len) * 3);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2015,7 +2005,7 @@ pub async fn sync_usr_lbl_by_usr_id_lang(
   };
   
   let usr_lbl = usr_model.lbl;
-  let mut sql_fields = String::with_capacity(180);
+  let mut sql_fields = String::with_capacity(540);
   let mut where_querys = Vec::with_capacity(3);
   let mut args = QueryArgs::new();
   
@@ -2149,7 +2139,7 @@ pub async fn update_by_id_lang(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 12 + 20);
+  let mut sql_fields = String::with_capacity((80 * 12 + 20) * 3);
   
   let mut field_num: usize = 0;
   
@@ -2296,29 +2286,34 @@ pub async fn update_by_id_lang(
       sql_set_flds.contains(&String::from("lbl"))
     {
       
-      let tenant_models = find_all_tenant(
-        Some(TenantSearch {
-          lang_id: Some(vec![id]),
-          ..Default::default()
-        }),
-        None,
-        None,
-        options,
-      ).await?;
-      
-      for tenant_model in tenant_models {
-        let tenant_id = tenant_model.id;
-        let mut tenant_input: TenantInput = TenantInput {
-          ..Default::default()
-        };
+      {
+        let mut cascade_args = QueryArgs::new();
+        let mut cascade_sql_fields = String::with_capacity(120 * 3);
+        let mut cascade_field_num: usize = 0;
         if sql_set_flds.contains(&String::from("lbl")) {
-          tenant_input.lang_id_lbl = sql_set_fld_input.lbl.clone();
+          if let Some(lbl) = sql_set_fld_input.lbl.clone() {
+            cascade_field_num += 1;
+            cascade_sql_fields += "lang_id_lbl=?,";
+            cascade_args.push(lbl.into());
+          }
         }
-        update_by_id_tenant(
-          tenant_id,
-          tenant_input,
-          options,
-        ).await?;
+        if cascade_field_num > 0 {
+          if cascade_sql_fields.ends_with(',') {
+            cascade_sql_fields.pop();
+          }
+          cascade_args.push(id.into());
+          let sql = format!("update base_tenant set {cascade_sql_fields} where lang_id=? and is_deleted=0");
+          let affected_rows = execute(
+            sql,
+            cascade_args.into(),
+            options,
+          ).await?;
+          if affected_rows > 0 {
+            del_caches([
+              "dao.sql.base_tenant","dao.sql.base_domain","dao.sql.base_menu","dao.sql.base_lang","dao.sql.base_menu._getMenus",
+            ].as_slice()).await?;
+          }
+        }
       }
     }
     
@@ -2461,7 +2456,7 @@ pub async fn delete_by_ids_lang(
     
     let mut args = QueryArgs::new();
     
-    let mut sql_fields = String::with_capacity(30);
+    let mut sql_fields = String::with_capacity(90);
     sql_fields.push_str("is_deleted=1,");
     let mut usr_id = get_auth_id();
     let mut usr_lbl = String::from("");
